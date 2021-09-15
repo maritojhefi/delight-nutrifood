@@ -23,7 +23,7 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 //inicio
-Route::prefix('/inicio')->group(function () {
+Route::prefix('/')->group(function () {
    
     Route::get('', [App\Http\Controllers\InicioController::class, 'index'])->name('inicio');
     
