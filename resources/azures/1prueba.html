@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en" class="isPWA"><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+    <title>Azures BootStrap</title>
+    <link rel="stylesheet" type="text/css" href="styles/bootstrap.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900|Roboto:300,300i,400,400i,500,500i,700,700i,900,900i&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="fonts/css/fontawesome-all.min.css">
+    <link rel="manifest" href="_manifest.json" data-pwa-version="set_in_manifest_and_pwa_js">
+    <link rel="apple-touch-icon" sizes="180x180" href="app/icons/icon-192x192.png">
+    <link rel="stylesheet" class="page-highlight" type="text/css" href="styles/highlights/highlight_blue.css"></head>
+    <body class="theme-light" data-highlight="blue">
+    <div id="preloader" class="preloader-hide"><div class="spinner-border color-highlight" role="status"></div></div>
+    <div id="page" data-swup="0">
+    
+    <div class="header header-fixed header-auto-show header-logo-app" style="transform: translateX(0px);">
+    <a href="index.html" class="header-title">AZURES</a>
+    <a href="#" data-menu="menu-main" class="header-icon header-icon-1"><i class="fas fa-bars"></i></a>
+    <a href="#" data-toggle-theme="" class="header-icon header-icon-2 show-on-theme-dark"><i class="fas fa-sun"></i></a>
+    <a href="#" data-toggle-theme="" class="header-icon header-icon-2 show-on-theme-light"><i class="fas fa-moon"></i></a>
+    <a href="#" data-menu="menu-highlights" class="header-icon header-icon-3"><i class="fas fa-brush"></i></a>
+    </div>
+    <div id="footer-bar" class="footer-bar-5" style="transform: translateX(0px);">
+    <a href="index-components.html"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart" data-feather-line="1" data-feather-size="21" data-feather-color="red-dark" data-feather-bg="red-fade-light" style="stroke-width: 1; width: 21px; height: 21px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><span>Features</span></a>
+    <a href="index-media.html"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-image" data-feather-line="1" data-feather-size="21" data-feather-color="green-dark" data-feather-bg="green-fade-light" style="stroke-width: 1; width: 21px; height: 21px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg><span>Media</span></a>
+    <a href="index.html" class="active-nav"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home" data-feather-line="1" data-feather-size="21" data-feather-color="blue-dark" data-feather-bg="blue-fade-light" style="stroke-width: 1; width: 21px; height: 21px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span><strong></strong></a>
+    <a href="index-pages.html"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file" data-feather-line="1" data-feather-size="21" data-feather-color="brown-dark" data-feather-bg="brown-fade-light" style="stroke-width: 1; width: 21px; height: 21px;"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg><span>Pages</span></a>
+    <a href="index-settings.html"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings" data-feather-line="1" data-feather-size="21" data-feather-color="dark-dark" data-feather-bg="gray-fade-light" style="stroke-width: 1; width: 21px; height: 21px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span>Settings</span></a>
+    </div>
+    <div class="page-content" style="transform: translateX(0px);">
+    <div class="page-title page-title-large">
+    <h2 data-username="Enabled!" class="greeting-text">Good afternoon,<br>Enabled!</h2>
+    <a href="#" data-menu="menu-main" class="bg-fade-highlight-light shadow-xl preload-img entered loaded" data-src="images/avatars/5s.png" data-ll-status="loaded" style="background-image: url(&quot;images/avatars/5s.png&quot;);"></a>
+    </div>
+    <div class="card header-card shape-rounded" data-card-height="210" style="height: 210px;">
+    <div class="card-overlay bg-highlight opacity-95"></div>
+    <div class="card-overlay dark-mode-tint"></div>
+    <div class="card-bg preload-img entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded" style="background-image: url(&quot;images/pictures/20s.jpg&quot;);"></div>
+    </div>
+    
+    <div class="splide single-slider slider-no-arrows slider-no-dots homepage-slider splide--loop splide--ltr splide--draggable is-active" id="single-slider-1" style="visibility: visible;">
+    <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button" aria-controls="single-slider-1-track" aria-label="Previous slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button><button class="splide__arrow splide__arrow--next" type="button" aria-controls="single-slider-1-track" aria-label="Go to first slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button></div><div class="splide__track" id="single-slider-1-track">
+    <div class="splide__list" id="single-slider-1-list" style="transform: translateX(-1236px);">
+    <div class="splide__slide splide__slide--clone" style="width: 309px;" aria-hidden="true" tabindex="-1">
+    <div class="card rounded-l mx-2 text-center shadow-l bg-8" data-card-height="320" style="height: 320px;">
+    <div class="card-bottom">
+    <h1 class="font-24 font-700">Beyond Powerful</h1>
+    <p class="boxed-text-xl">
+    Azures is a Mobile Web App Kit, fully featured, supporting PWA and Native Dark Mode!
+    </p>
+    </div>
+    <div class="card-overlay bg-gradient-fade"></div>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 309px;">
+    <div class="card rounded-l mx-2 text-center shadow-l bg-14" data-card-height="320" style="height: 320px;">
+    <div class="card-bottom">
+    <h1 class="font-24 font-700">A-Level Quality</h1>
+    <p class="boxed-text-xl">
+    We build custom, premium products, that are easy to use and provide all features for you!
+    </p>
+    </div>
+    <div class="card-overlay bg-gradient-fade"></div>
+    </div>
+    </div><div class="splide__slide" id="single-slider-1-slide01" style="width: 309px;" aria-hidden="true" tabindex="-1">
+    <div class="card rounded-l mx-2 text-center shadow-l bg-17" data-card-height="320" style="height: 320px;">
+    <div class="card-bottom">
+    <h1 class="font-24 font-700">Meet Azures</h1>
+    <p class="boxed-text-xl">
+    Azures brings beauty and colors to your Mobile device with a stunning user interface to match.
+    </p>
+    </div>
+    <div class="card-overlay bg-gradient-fade"></div>
+    </div>
+    </div>
+    <div class="splide__slide" id="single-slider-1-slide02" style="width: 309px;" aria-hidden="true" tabindex="-1">
+    <div class="card rounded-l mx-2 text-center shadow-l bg-8" data-card-height="320" style="height: 320px;">
+    <div class="card-bottom">
+    <h1 class="font-24 font-700">Beyond Powerful</h1>
+    <p class="boxed-text-xl">
+    Azures is a Mobile Web App Kit, fully featured, supporting PWA and Native Dark Mode!
+    </p>
+    </div>
+    <div class="card-overlay bg-gradient-fade"></div>
+    </div>
+    </div>
+    <div class="splide__slide is-active is-visible" id="single-slider-1-slide03" style="width: 309px;" aria-hidden="false" tabindex="0">
+    <div class="card rounded-l mx-2 text-center shadow-l bg-14" data-card-height="320" style="height: 320px;">
+    <div class="card-bottom">
+    <h1 class="font-24 font-700">A-Level Quality</h1>
+    <p class="boxed-text-xl">
+    We build custom, premium products, that are easy to use and provide all features for you!
+    </p>
+    </div>
+    <div class="card-overlay bg-gradient-fade"></div>
+    </div>
+    </div>
+    <div class="splide__slide splide__slide--clone" style="width: 309px;">
+    <div class="card rounded-l mx-2 text-center shadow-l bg-17" data-card-height="320" style="height: 320px;">
+    <div class="card-bottom">
+    <h1 class="font-24 font-700">Meet Azures</h1>
+    <p class="boxed-text-xl">
+    Azures brings beauty and colors to your Mobile device with a stunning user interface to match.
+    </p>
+    </div>
+    <div class="card-overlay bg-gradient-fade"></div>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 309px;">
+    <div class="card rounded-l mx-2 text-center shadow-l bg-8" data-card-height="320" style="height: 320px;">
+    <div class="card-bottom">
+    <h1 class="font-24 font-700">Beyond Powerful</h1>
+    <p class="boxed-text-xl">
+    Azures is a Mobile Web App Kit, fully featured, supporting PWA and Native Dark Mode!
+    </p>
+    </div>
+    <div class="card-overlay bg-gradient-fade"></div>
+    </div>
+    </div></div>
+    </div>
+    <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-1-slide01" aria-label="Go to slide 1"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-1-slide02" aria-label="Go to slide 2"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-1-slide03" aria-label="Go to slide 3" aria-current="true"></button></li></ul></div>
+    <div class="content mt-0">
+    <div class="row">
+    <div class="col-6">
+    <a href="#" class="btn btn-full btn-m rounded-s text-uppercase font-900 shadow-xl bg-highlight">Purchase</a>
+    </div>
+    <div class="col-6">
+    <a href="#" class="btn btn-full btn-border btn-m rounded-s text-uppercase font-900 shadow-l border-highlight color-highlight">Contact US</a>
+    </div>
+    </div>
+    </div>
+    <div class="content mb-2">
+    <h5 class="float-start font-16 font-500">Quality Features</h5>
+    <a class="float-end font-12 color-highlight mt-n1" href="#">View All</a>
+    <div class="clearfix"></div>
+    </div>
+    <div class="splide double-slider visible-slider slider-no-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="double-slider-1" style="visibility: visible;">
+    <div class="splide__track" id="double-slider-1-track">
+    <div class="splide__list" id="double-slider-1-list" style="transform: translateX(-867px);">
+    <div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;" aria-hidden="true" tabindex="-1">
+    <div class="bg-theme rounded-m shadow-m text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shield mt-4 mb-4" data-feather-line="1" data-feather-size="45" data-feather-color="blue-dark" data-feather-bg="blue-fade-light" style="stroke-width: 1; width: 45px; height: 45px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    <h5 class="font-16">Elite Quality</h5>
+    <p class="line-height-s font-11 pb-4">
+    Built with care and <br>every detail in mind
+    </p>
+    </div>
+    </div><div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;" aria-hidden="true" tabindex="-1">
+    <div class="bg-theme rounded-m shadow-m text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smartphone mt-4 mb-4" data-feather-line="1" data-feather-size="45" data-feather-color="brown-dark" data-feather-bg="brown-fade-light" style="stroke-width: 1; width: 45px; height: 45px;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+    <h5 class="font-16">PWA Ready</h5>
+    <p class="line-height-s font-11 pb-4">
+    Just add it to your <br>Home Screen
+    </p>
+    </div>
+    </div><div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;">
+    <div class="bg-theme rounded-m shadow-m text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sun mt-4 mb-4" data-feather-line="1" data-feather-size="45" data-feather-color="yellow-dark" data-feather-bg="yellow-fade-light" style="stroke-width: 1; width: 45px; height: 45px;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+    <h5 class="font-16">Eye Friendly</h5>
+    <p class="line-height-s font-11 pb-4">
+    Light &amp; Dark and <br> Auto Dark Detection
+    </p>
+    </div>
+    </div><div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;">
+    <div class="bg-theme rounded-m shadow-m text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smile mt-4 mb-4" data-feather-line="1" data-feather-size="45" data-feather-color="green-dark" data-feather-bg="green-fade-light" style="stroke-width: 1; width: 45px; height: 45px;"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+    <h5 class="font-16">Easy Code</h5>
+    <p class="line-height-s font-11 pb-4">
+    Built for you and me <br> copy and paste code.
+    </p>
+    </div>
+    </div><div class="splide__slide ps-3" id="double-slider-1-slide01" style="width: 144.5px;" aria-hidden="true" tabindex="-1">
+    <div class="bg-theme rounded-m shadow-m text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shield mt-4 mb-4" data-feather-line="1" data-feather-size="45" data-feather-color="blue-dark" data-feather-bg="blue-fade-light" style="stroke-width: 1; width: 45px; height: 45px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    <h5 class="font-16">Elite Quality</h5>
+    <p class="line-height-s font-11 pb-4">
+    Built with care and <br>every detail in mind
+    </p>
+    </div>
+    </div>
+    <div class="splide__slide ps-3" id="double-slider-1-slide02" style="width: 144.5px;" aria-hidden="true" tabindex="-1">
+    <div class="bg-theme rounded-m shadow-m text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smartphone mt-4 mb-4" data-feather-line="1" data-feather-size="45" data-feather-color="brown-dark" data-feather-bg="brown-fade-light" style="stroke-width: 1; width: 45px; height: 45px;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+    <h5 class="font-16">PWA Ready</h5>
+    <p class="line-height-s font-11 pb-4">
+    Just add it to your <br>Home Screen
+    </p>
+    </div>
+    </div>
+    <div class="splide__slide ps-3 is-active is-visible" id="double-slider-1-slide03" style="width: 144.5px;" aria-hidden="false" tabindex="0">
+    <div class="bg-theme rounded-m shadow-m text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sun mt-4 mb-4" data-feather-line="1" data-feather-size="45" data-feather-color="yellow-dark" data-feather-bg="yellow-fade-light" style="stroke-width: 1; width: 45px; height: 45px;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+    <h5 class="font-16">Eye Friendly</h5>
+    <p class="line-height-s font-11 pb-4">
+    Light &amp; Dark and <br> Auto Dark Detection
+    </p>
+    </div>
+    </div>
+    <div class="splide__slide ps-3 is-visible" id="double-slider-1-slide04" style="width: 144.5px;" aria-hidden="false" tabindex="0">
+    <div class="bg-theme rounded-m shadow-m text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smile mt-4 mb-4" data-feather-line="1" data-feather-size="45" data-feather-color="green-dark" data-feather-bg="green-fade-light" style="stroke-width: 1; width: 45px; height: 45px;"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+    <h5 class="font-16">Easy Code</h5>
+    <p class="line-height-s font-11 pb-4">
+    Built for you and me <br> copy and paste code.
+    </p>
+    </div>
+    </div>
+    <div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;">
+    <div class="bg-theme rounded-m shadow-m text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shield mt-4 mb-4" data-feather-line="1" data-feather-size="45" data-feather-color="blue-dark" data-feather-bg="blue-fade-light" style="stroke-width: 1; width: 45px; height: 45px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    <h5 class="font-16">Elite Quality</h5>
+    <p class="line-height-s font-11 pb-4">
+    Built with care and <br>every detail in mind
+    </p>
+    </div>
+    </div><div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;">
+    <div class="bg-theme rounded-m shadow-m text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smartphone mt-4 mb-4" data-feather-line="1" data-feather-size="45" data-feather-color="brown-dark" data-feather-bg="brown-fade-light" style="stroke-width: 1; width: 45px; height: 45px;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+    <h5 class="font-16">PWA Ready</h5>
+    <p class="line-height-s font-11 pb-4">
+    Just add it to your <br>Home Screen
+    </p>
+    </div>
+    </div><div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;">
+    <div class="bg-theme rounded-m shadow-m text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sun mt-4 mb-4" data-feather-line="1" data-feather-size="45" data-feather-color="yellow-dark" data-feather-bg="yellow-fade-light" style="stroke-width: 1; width: 45px; height: 45px;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+    <h5 class="font-16">Eye Friendly</h5>
+    <p class="line-height-s font-11 pb-4">
+    Light &amp; Dark and <br> Auto Dark Detection
+    </p>
+    </div>
+    </div><div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;">
+    <div class="bg-theme rounded-m shadow-m text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smile mt-4 mb-4" data-feather-line="1" data-feather-size="45" data-feather-color="green-dark" data-feather-bg="green-fade-light" style="stroke-width: 1; width: 45px; height: 45px;"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+    <h5 class="font-16">Easy Code</h5>
+    <p class="line-height-s font-11 pb-4">
+    Built for you and me <br> copy and paste code.
+    </p>
+    </div>
+    </div></div>
+    </div>
+    <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="double-slider-1-slide01 double-slider-1-slide02" aria-label="Go to page 1"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="double-slider-1-slide03 double-slider-1-slide04" aria-label="Go to page 2" aria-current="true"></button></li></ul></div>
+    <div class="card preload-img entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded" style="background-image: url(&quot;images/pictures/20s.jpg&quot;);">
+    <div class="card-body">
+    <h4 class="color-white">Built For You</h4>
+    <p class="color-white">
+    Our products suit your website, running incredibly fast and provide an unmatched UX and UI.
+    </p>
+    <div class="card card-style ms-0 me-0 bg-theme">
+    <div class="row mt-3 pt-1 mb-3">
+    <div class="col-6">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe float-start ms-3 me-3" data-feather-line="1" data-feather-size="35" data-feather-color="blue-dark" data-feather-bg="blue-fade-light" style="stroke-width: 1; width: 35px; height: 35px;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+    <h5 class="color-theme float-start font-13 font-500 line-height-s pb-3 mb-3">Mobile<br>Website</h5>
+    </div>
+    <div class="col-6">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smartphone float-start ms-3 me-3" data-feather-line="1" data-feather-size="35" data-feather-color="dark-dark" data-feather-bg="dark-fade-light" style="stroke-width: 1; width: 35px; height: 35px;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+    <h5 class="color-theme float-start font-13 font-500 line-height-s pb-3 mb-3">Mobile<br>PWA</h5>
+    </div>
+    <div class="col-6">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user float-start ms-3 me-3" data-feather-line="1" data-feather-size="35" data-feather-color="brown-dark" data-feather-bg="brown-fade-light" style="stroke-width: 1; width: 35px; height: 35px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+    <h5 class="color-theme float-start font-13 font-500 line-height-s">Mobile<br>Website</h5>
+    </div>
+    <div class="col-6">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-box float-start ms-3 me-3" data-feather-line="1" data-feather-size="35" data-feather-color="green-dark" data-feather-bg="green-fade-light" style="stroke-width: 1; width: 35px; height: 35px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+    <h5 class="color-theme float-start font-13 font-500 line-height-s">Mobile<br>PWA</h5>
+    </div>
+    </div>
+    </div>
+    </div>
+    <div class="card-overlay bg-highlight opacity-90"></div>
+    <div class="card-overlay dark-mode-tint"></div>
+    </div>
+    <div class="card card-style">
+    <div class="content text-center">
+    <h2>Ready in 3 Steps</h2>
+    <p class="boxed-text-xl">
+    Our products are designed to simplify the way you code a page, with focus on easy, copy and paste.
+    </p>
+    </div>
+    <div class="divider divider-small mb-3 bg-highlight"></div>
+    <div class="content">
+    <div class="d-flex mb-4 pb-3">
+    <div>
+    <i class="far fa-star color-yellow-dark fa-3x pt-3 icon-80 text-center ms-n2 me-2"></i>
+    </div>
+    <div>
+    <h5 class="font-16 font-600">Find your Style</h5>
+    <p>
+    We've included multiple styles you can choose to match your exact project needs.
+    </p>
+    </div>
+    </div>
+    <div class="d-flex mb-4 pb-3">
+    <div>
+    <i class="fa fa-mobile-alt color-blue-dark fa-3x pt-3 icon-80 text-center ms-n2 me-2"></i>
+    </div>
+    <div>
+    <h5 class="font-16 font-600">Paste your Blocks</h5>
+    <p>
+    Just choose the blocks you like, copy and past them, add your text and that's it!
+    </p>
+    </div>
+    </div>
+    <div class="d-flex mb-2">
+    <div>
+    <i class="far fa-check-circle color-green-light fa-3x pt-3 icon-80 text-center ms-n2 me-2"></i>
+    </div>
+    <div>
+    <h5 class="font-16 font-600">Publish your Page</h5>
+    <p>
+    Done with copy pasting? Your mobile site is now ready! Publish it or create an app!
+    </p>
+    </div>
+    </div>
+    </div>
+    </div>
+    <div class="card card-style preload-img" data-src="images/pictures/20s.jpg" data-card-height="350" style="height: 350px;">
+    <div class="card-center text-center">
+    <p class="line-height-xl font-19 font-300 color-white ps-3 pe-3 mb-2">
+    This is a great product! Many components that we can use, and I really appreciate the support from Enabled. Very responsive and provides great solutions.
+    </p>
+    <p class="opacity-50 color-white">Envato Customer</p>
+    <a href="#" class="btn btn-m rounded-s btn-border color-white border-white text-uppercase font-900">View Testimonials</a>
+    </div>
+    <div class="card-overlay bg-highlight opacity-90"></div>
+    </div>
+    <div class="card card-style">
+    <div class="content">
+    <h5 class="float-start font-16 font-600">Happy Customers</h5>
+    <a class="float-end font-12 color-highlight mt-n1" href="#">View All</a>
+    <div class="clearfix"></div>
+    <p class="pt-2">
+    Over 30.000 people use our products, and we're always happy to see the positiv impact our products have had! Thank you!
+    </p>
+    </div>
+    <div class="splide user-slider slider-no-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="user-slider-1" style="visibility: visible;">
+    <div class="splide__track" id="user-slider-1-track" style="padding-right: 40px;">
+    <div class="splide__list" id="user-slider-1-list" style="transform: translateX(-578px);">
+    <div class="splide__slide splide__slide--clone" style="width: 72.25px;" aria-hidden="true" tabindex="-1">
+    <div class="text-center">
+    <img src="images/avatars/1s.png" width="55" height="55" class="rounded-xl shadow-l gradient-blue">
+    <p>Jane</p>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 72.25px;" aria-hidden="true" tabindex="-1">
+    <div class="text-center">
+    <img src="images/avatars/2s.png" width="55" height="55" class="rounded-xl shadow-l gradient-red">
+     <p>Craig</p>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 72.25px;" aria-hidden="true" tabindex="-1">
+    <div class="text-center">
+    <img src="images/avatars/1s.png" width="55" height="55" class="rounded-xl shadow-l gradient-green">
+    <p>Jane</p>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 72.25px;" aria-hidden="true" tabindex="-1">
+    <div class="text-center">
+    <img src="images/avatars/2s.png" width="55" height="55" class="rounded-xl shadow-l gradient-brown">
+    <p>Craig</p>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 72.25px;">
+    <div class="text-center">
+    <img src="images/avatars/1s.png" width="55" height="55" class="rounded-xl shadow-l gradient-blue">
+    <p>Jane</p>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 72.25px;">
+    <div class="text-center">
+    <img src="images/avatars/2s.png" width="55" height="55" class="rounded-xl shadow-l gradient-red">
+     <p>Craig</p>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 72.25px;">
+    <div class="text-center">
+    <img src="images/avatars/1s.png" width="55" height="55" class="rounded-xl shadow-l gradient-green">
+    <p>Jane</p>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 72.25px;">
+    <div class="text-center">
+    <img src="images/avatars/2s.png" width="55" height="55" class="rounded-xl shadow-l gradient-brown">
+    <p>Craig</p>
+    </div>
+    </div><div class="splide__slide is-active is-visible" id="user-slider-1-slide01" style="width: 72.25px;" aria-hidden="false" tabindex="0">
+    <div class="text-center">
+    <img src="images/avatars/1s.png" width="55" height="55" class="rounded-xl shadow-l gradient-blue">
+    <p>Jane</p>
+    </div>
+    </div>
+    <div class="splide__slide is-visible" id="user-slider-1-slide02" style="width: 72.25px;" aria-hidden="false" tabindex="0">
+    <div class="text-center">
+    <img src="images/avatars/2s.png" width="55" height="55" class="rounded-xl shadow-l gradient-red">
+     <p>Craig</p>
+    </div>
+    </div>
+    <div class="splide__slide is-visible" id="user-slider-1-slide03" style="width: 72.25px;" aria-hidden="false" tabindex="0">
+    <div class="text-center">
+    <img src="images/avatars/1s.png" width="55" height="55" class="rounded-xl shadow-l gradient-green">
+    <p>Jane</p>
+    </div>
+    </div>
+    <div class="splide__slide is-visible" id="user-slider-1-slide04" style="width: 72.25px;" aria-hidden="false" tabindex="0">
+    <div class="text-center">
+    <img src="images/avatars/2s.png" width="55" height="55" class="rounded-xl shadow-l gradient-brown">
+    <p>Craig</p>
+    </div>
+    </div>
+    <div class="splide__slide splide__slide--clone" style="width: 72.25px;">
+    <div class="text-center">
+    <img src="images/avatars/1s.png" width="55" height="55" class="rounded-xl shadow-l gradient-blue">
+    <p>Jane</p>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 72.25px;">
+    <div class="text-center">
+    <img src="images/avatars/2s.png" width="55" height="55" class="rounded-xl shadow-l gradient-red">
+     <p>Craig</p>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 72.25px;">
+    <div class="text-center">
+    <img src="images/avatars/1s.png" width="55" height="55" class="rounded-xl shadow-l gradient-green">
+    <p>Jane</p>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 72.25px;">
+    <div class="text-center">
+    <img src="images/avatars/2s.png" width="55" height="55" class="rounded-xl shadow-l gradient-brown">
+    <p>Craig</p>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 72.25px;">
+    <div class="text-center">
+    <img src="images/avatars/1s.png" width="55" height="55" class="rounded-xl shadow-l gradient-blue">
+    <p>Jane</p>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 72.25px;">
+    <div class="text-center">
+    <img src="images/avatars/2s.png" width="55" height="55" class="rounded-xl shadow-l gradient-red">
+     <p>Craig</p>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 72.25px;">
+    <div class="text-center">
+    <img src="images/avatars/1s.png" width="55" height="55" class="rounded-xl shadow-l gradient-green">
+    <p>Jane</p>
+    </div>
+    </div><div class="splide__slide splide__slide--clone" style="width: 72.25px;">
+    <div class="text-center">
+    <img src="images/avatars/2s.png" width="55" height="55" class="rounded-xl shadow-l gradient-brown">
+    <p>Craig</p>
+    </div>
+    </div></div>
+    </div>
+    <ul class="splide__pagination"><li><button class="splide__pagination__page is-active" type="button" aria-current="true" aria-controls="user-slider-1-slide01 user-slider-1-slide02 user-slider-1-slide03 user-slider-1-slide04" aria-label="Go to page 1"></button></li></ul></div>
+    </div>
+    <div class="content mb-3 mt-0">
+    <h5 class="float-start font-16 font-500">Products we Love</h5>
+    <a class="float-end font-12 color-highlight mt-n1" href="#">View All</a>
+    <div class="clearfix"></div>
+    </div>
+    <div class="splide double-slider visible-slider slider-no-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="double-slider-2" style="visibility: visible;">
+    <div class="splide__track" id="double-slider-2-track">
+    <div class="splide__list" id="double-slider-2-list" style="transform: translateX(-722.5px);">
+    <div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;" aria-hidden="true" tabindex="-1">
+    <div class="bg-theme pb-3 rounded-m shadow-l text-center overflow-hidden">
+    <div data-card-height="150" class="card mb-2 bg-11" style="height: 150px;">
+    <h5 class="card-bottom color-white mb-2">Bars Mobile</h5>
+    <div class="card-overlay bg-gradient"></div>
+    </div>
+    <p class="mb-3 ps-2 pe-2 pt-2 font-12">
+    Modern sidebars and a very intuitive interface.
+    </p>
+    <a href="#" class="btn btn-xs bg-highlight btn-center-xs rounded-s shadow-s text-uppercase font-900">View</a>
+    </div>
+    </div><div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;" aria-hidden="true" tabindex="-1">
+    <div class="bg-theme pb-3 rounded-m shadow-l text-center overflow-hidden">
+    <div data-card-height="150" class="card mb-2 bg-29" style="height: 150px;">
+    <h5 class="card-bottom color-white mb-2">Sticky Mobile</h5>
+    <div class="card-overlay bg-gradient"></div>
+    </div>
+    <p class="mb-3 ps-2 pe-2 pt-2 font-12">
+    Classic, elegant and powerful. A best seller.
+    </p>
+    <a href="#" class="btn btn-xs bg-highlight btn-center-xs rounded-s shadow-s text-uppercase font-900">View</a>
+    </div>
+    </div><div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;">
+    <div class="bg-theme pb-3 rounded-m shadow-l text-center overflow-hidden">
+    <div data-card-height="150" class="card mb-2 bg-18" style="height: 150px;">
+    <h5 class="card-bottom color-white mb-2">Eazy Mobile</h5>
+    <div class="card-overlay bg-gradient"></div>
+    </div>
+    <p class="mb-3 ps-2 pe-2 pt-2 font-12">
+    A best seller, elegant multi use design.
+    </p>
+    <a href="#" class="btn btn-xs bg-highlight btn-center-xs rounded-s shadow-s text-uppercase font-900">View</a>
+    </div>
+    </div><div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;">
+    <div class="bg-theme pb-3 rounded-m shadow-l text-center overflow-hidden">
+    <div data-card-height="150" class="card mb-2 bg-11" style="height: 150px;">
+    <h5 class="card-bottom color-white mb-2">Bars Mobile</h5>
+    <div class="card-overlay bg-gradient"></div>
+    </div>
+    <p class="mb-3 ps-2 pe-2 pt-2 font-12">
+    Modern sidebars and a very intuitive interface.
+    </p>
+    <a href="#" class="btn btn-xs bg-highlight btn-center-xs rounded-s shadow-s text-uppercase font-900">View</a>
+    </div>
+    </div><div class="splide__slide ps-3" id="double-slider-2-slide01" style="width: 144.5px;" aria-hidden="true" tabindex="-1">
+    <div class="bg-theme pb-3 rounded-m shadow-l text-center overflow-hidden">
+    <div data-card-height="150" class="card mb-2 bg-29" style="height: 150px;">
+    <h5 class="card-bottom color-white mb-2">Sticky Mobile</h5>
+    <div class="card-overlay bg-gradient"></div>
+    </div>
+    <p class="mb-3 ps-2 pe-2 pt-2 font-12">
+    Classic, elegant and powerful. A best seller.
+    </p>
+    <a href="#" class="btn btn-xs bg-highlight btn-center-xs rounded-s shadow-s text-uppercase font-900">View</a>
+    </div>
+    </div>
+    <div class="splide__slide ps-3 is-visible is-active" id="double-slider-2-slide02" style="width: 144.5px;" aria-hidden="false" tabindex="0">
+    <div class="bg-theme pb-3 rounded-m shadow-l text-center overflow-hidden">
+    <div data-card-height="150" class="card mb-2 bg-18" style="height: 150px;">
+    <h5 class="card-bottom color-white mb-2">Eazy Mobile</h5>
+    <div class="card-overlay bg-gradient"></div>
+    </div>
+    <p class="mb-3 ps-2 pe-2 pt-2 font-12">
+    A best seller, elegant multi use design.
+    </p>
+    <a href="#" class="btn btn-xs bg-highlight btn-center-xs rounded-s shadow-s text-uppercase font-900">View</a>
+    </div>
+    </div>
+    <div class="splide__slide ps-3 is-visible" id="double-slider-2-slide03" style="width: 144.5px;" aria-hidden="false" tabindex="0">
+    <div class="bg-theme pb-3 rounded-m shadow-l text-center overflow-hidden">
+    <div data-card-height="150" class="card mb-2 bg-11" style="height: 150px;">
+    <h5 class="card-bottom color-white mb-2">Bars Mobile</h5>
+    <div class="card-overlay bg-gradient"></div>
+    </div>
+    <p class="mb-3 ps-2 pe-2 pt-2 font-12">
+    Modern sidebars and a very intuitive interface.
+    </p>
+    <a href="#" class="btn btn-xs bg-highlight btn-center-xs rounded-s shadow-s text-uppercase font-900">View</a>
+    </div>
+    </div>
+    <div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;">
+    <div class="bg-theme pb-3 rounded-m shadow-l text-center overflow-hidden">
+    <div data-card-height="150" class="card mb-2 bg-29" style="height: 150px;">
+    <h5 class="card-bottom color-white mb-2">Sticky Mobile</h5>
+    <div class="card-overlay bg-gradient"></div>
+    </div>
+    <p class="mb-3 ps-2 pe-2 pt-2 font-12">
+    Classic, elegant and powerful. A best seller.
+    </p>
+    <a href="#" class="btn btn-xs bg-highlight btn-center-xs rounded-s shadow-s text-uppercase font-900">View</a>
+    </div>
+    </div><div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;">
+    <div class="bg-theme pb-3 rounded-m shadow-l text-center overflow-hidden">
+    <div data-card-height="150" class="card mb-2 bg-18" style="height: 150px;">
+    <h5 class="card-bottom color-white mb-2">Eazy Mobile</h5>
+    <div class="card-overlay bg-gradient"></div>
+    </div>
+    <p class="mb-3 ps-2 pe-2 pt-2 font-12">
+    A best seller, elegant multi use design.
+    </p>
+    <a href="#" class="btn btn-xs bg-highlight btn-center-xs rounded-s shadow-s text-uppercase font-900">View</a>
+    </div>
+    </div><div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;">
+    <div class="bg-theme pb-3 rounded-m shadow-l text-center overflow-hidden">
+    <div data-card-height="150" class="card mb-2 bg-11" style="height: 150px;">
+    <h5 class="card-bottom color-white mb-2">Bars Mobile</h5>
+    <div class="card-overlay bg-gradient"></div>
+    </div>
+    <p class="mb-3 ps-2 pe-2 pt-2 font-12">
+    Modern sidebars and a very intuitive interface.
+    </p>
+    <a href="#" class="btn btn-xs bg-highlight btn-center-xs rounded-s shadow-s text-uppercase font-900">View</a>
+    </div>
+    </div><div class="splide__slide ps-3 splide__slide--clone" style="width: 144.5px;">
+    <div class="bg-theme pb-3 rounded-m shadow-l text-center overflow-hidden">
+    <div data-card-height="150" class="card mb-2 bg-29" style="height: 150px;">
+    <h5 class="card-bottom color-white mb-2">Sticky Mobile</h5>
+    <div class="card-overlay bg-gradient"></div>
+    </div>
+    <p class="mb-3 ps-2 pe-2 pt-2 font-12">
+    Classic, elegant and powerful. A best seller.
+    </p>
+    <a href="#" class="btn btn-xs bg-highlight btn-center-xs rounded-s shadow-s text-uppercase font-900">View</a>
+    </div>
+    </div></div>
+    </div>
+    <ul class="splide__pagination"><li><button class="splide__pagination__page" type="button" aria-controls="double-slider-2-slide01 double-slider-2-slide02" aria-label="Go to page 1"></button></li><li><button class="splide__pagination__page is-active" type="button" aria-controls="double-slider-2-slide02 double-slider-2-slide03" aria-label="Go to page 2" aria-current="true"></button></li></ul></div>
+    <div class="card card-style mt-4 shadow-l" data-card-height="150" style="height: 150px;">
+    <div class="card-center ps-3 pe-3">
+    <h4 class="color-white">Did you know?</h4>
+    <p class="color-white mb-0 opacity-60">
+    We're the top selling Mobile Author on Envato. We value the quality of products and efficiency of our support!
+    </p>
+    </div>
+    <div class="card-overlay bg-highlight opacity-90"></div>
+    </div>
+    <div class="card card-style text-center">
+    <div class="content pb-2">
+    <h1>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-gift" data-feather-line="1" data-feather-size="55" data-feather-color="red-dark" data-feather-bg="red-fade-light" style="stroke-width: 1; width: 55px; height: 55px;"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+    </h1>
+    <h3 class="font-700 mt-2">Purchase Today</h3>
+    <p class="font-12 mt-n1 color-highlight mb-3">Quality and Premium Features for You</p>
+    <p class="boxed-text-xl">
+    Fast, easy to use and filled with features. Give your site the Mobile Feeling it deserves.
+    </p>
+    <a href="#" class="btn btn-center-xl btn-m text-uppercase font-900 bg-highlight rounded-sm shadow-l">Buy now - $25</a>
+    </div>
+    </div>
+    
+    <div class="footer" data-menu-load="menu-footer.html"><div class="footer card card-style mx-0 mb-0">
+    <a href="#" class="footer-title pt-4">AZURES</a>
+    <p class="text-center font-12 mt-n1 mb-3 opacity-70">
+    Put a little <span class="color-highlight">color</span> in your life
+    </p>
+    <p class="boxed-text-l">
+    Built to match the design trends and give your page the awesome facelift it deserves.
+    </p>
+    <div class="text-center mb-3">
+    <a href="#" class="icon icon-xs rounded-sm shadow-l me-1 bg-facebook"><i class="fab fa-facebook-f"></i></a>
+    <a href="#" class="icon icon-xs rounded-sm shadow-l me-1 bg-twitter"><i class="fab fa-twitter"></i></a>
+    <a href="#" class="icon icon-xs rounded-sm shadow-l me-1 bg-phone"><i class="fa fa-phone"></i></a>
+    <a href="#" data-menu="menu-share" class="icon icon-xs rounded-sm me-1 shadow-l bg-red-dark"><i class="fa fa-share-alt"></i></a>
+    <a href="#" class="back-to-top icon icon-xs rounded-sm shadow-l bg-highlight color-white"><i class="fa fa-arrow-up"></i></a>
+    </div>
+    <p class="footer-copyright pb-3 mb-1">Copyright © Enabled <span id="copyright-year">2021</span>. All Rights Reserved.</p>
+    </div>
+    <div class="footer-card card shape-rounded bg-20" style="height:230px">
+    <div class="card-overlay bg-highlight opacity-90"></div>
+    </div>
+    </div>
+    </div>
+    
+    <div id="menu-share" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-load="menu-share.html" data-menu-height="420" data-menu-effect="menu-over" style="display: block; height: 420px;"><h1 class="text-center font-700 font-26 mt-3 pt-2">Share Azures</h1>
+    <p class="boxed-text-xl under-heading">
+    Share our page with the world, increase <br>
+    your page exposure with the world.
+    </p>
+    <div class="divider divider-margins"></div>
+    <div class="px-4">
+    <div class="row text-center mb-0">
+    <div class="col-3 mb-n2">
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.enableds.com/products/azures/v310/index.html" class="external-link shareToFacebook icon icon-l bg-facebook rounded-s shadow-l"><i class="fab fa-facebook-f font-22"></i><br></a>
+    <p class="font-11 opacity-70">Facebook</p>
+    </div>
+    <div class="col-3 mb-n2">
+    <a href="https://twitter.com/share?text=https://www.enableds.com/products/azures/v310/index.html" class="external-link shareToTwitter icon icon-l bg-twitter rounded-s shadow-l"><i class="fab fa-twitter font-22"></i><br></a>
+    <p class="font-11 opacity-70">Twitter</p>
+    </div>
+    <div class="col-3 mb-n2">
+    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https://www.enableds.com/products/azures/v310/index.html&amp;title=Azures BootStrap&amp;summary=&amp;source=" class="external-link shareToLinkedIn icon icon-l bg-linkedin rounded-s shadow-l"><i class="fab fa-linkedin-in font-22"></i><br></a>
+    <p class="font-11 opacity-70">LinkedIn</p>
+    </div>
+    <div class="col-3 mb-n2">
+    <a href="mailto:?body=https://www.enableds.com/products/azures/v310/index.html" class="external-link shareToMail icon icon-l bg-mail rounded-s shadow-l"><i class="fa fa-envelope font-22"></i><br></a>
+    <p class="font-11 opacity-70">Email</p>
+    </div>
+    <div class="col-3 mb-n2">
+    <a href="whatsapp://send?text=https://www.enableds.com/products/azures/v310/index.html" class="external-link shareToWhatsApp icon icon-l bg-whatsapp rounded-s shadow-l"><i class="fab fa-whatsapp font-22"></i><br></a>
+    <p class="font-11 opacity-70">WhatsApp</p>
+    </div>
+    <div class="col-3 mb-n2">
+    <a href="#" class="shareToCopyLink icon icon-l bg-blue-dark rounded-s shadow-l">
+    <i class="fa fa-link not-copied font-22"></i>
+    <i class="fa fa-check copied disabled font-22"></i>
+    <br></a>
+    <p class="font-11 opacity-70">Copy URL</p>
+    </div>
+    <div class="col-3 mb-n2">
+    <a href="https://pinterest.com/pin/create/button/?url=https://www.enableds.com/products/azures/v310/index.html" class="external-link shareToPinterest icon icon-l bg-pinterest rounded-s shadow-l"><i class="fab fa-pinterest-p font-22"></i><br></a>
+    <p class="font-11 opacity-70">Pinterest</p>
+    </div>
+    <div class="col-3 mb-n2">
+    <a href="#" class="close-menu icon icon-l bg-red-dark rounded-s shadow-l"><i class="fa fa-times font-22"></i><br></a>
+    <p class="font-11 opacity-70">Close</p>
+    </div>
+    </div>
+    </div>
+    <div class="divider divider-margins mt-n1 mb-3"></div>
+    <p class="text-center font-10 mb-0">Copyright <span class="copyright-year">2021</span> - Enabled. All rights reserved.</p>
+    </div>
+    <div id="menu-highlights" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-load="menu-colors.html" data-menu-height="510" data-menu-effect="menu-over" style="display: block; height: 510px;"><div class="card header-card color-card shape-rounded" style="height:40%">
+    <div class="card-overlay bg-highlight opacity-95"></div>
+    <div class="card-bg preload-img" data-src="images/pictures/20s.jpg"></div>
+    </div>
+    <div class="card bg-transparent mb-0">
+    <h1 class="text-center color-white mt-4 font-35 font-800">AZURES</h1>
+    <p class="text-center color-white font-12 mt-n1 pb-2 mb-3">Put a little color in your life</p>
+    </div>
+    <div class="card card-style">
+    <div class="highlight-changer pt-3 pb-2">
+    <p class="text-center">
+    Azures is packed with a beautiful color scheme.<br>Tap on your favorite! The page will adapt!
+    </p>
+    <a href="#" data-change-highlight="blue" class="highlight-active"><i class="fa fa-circle color-blue-dark"></i><span class="color-blue-light">Default</span></a>
+    <a href="#" data-change-highlight="red"><i class="fa fa-circle color-red-dark"></i><span class="color-red-light">Red</span></a>
+    <a href="#" data-change-highlight="orange"><i class="fa fa-circle color-orange-dark"></i><span class="color-orange-light">Orange</span></a>
+    <a href="#" data-change-highlight="pink2"><i class="fa fa-circle color-pink2-dark"></i><span class="color-pink2-light">Pink</span></a>
+    <a href="#" data-change-highlight="magenta"><i class="fa fa-circle color-magenta-dark"></i><span class="color-magenta-light">Purple</span></a>
+    <a href="#" data-change-highlight="aqua"><i class="fa fa-circle color-aqua-dark"></i><span class="color-aqua-light">Aqua</span></a>
+    <a href="#" data-change-highlight="teal"><i class="fa fa-circle color-teal-dark"></i><span class="color-teal-light">Teal</span></a>
+    <a href="#" data-change-highlight="mint"><i class="fa fa-circle color-mint-dark"></i><span class="color-mint-light">Mint</span></a>
+    <a href="#" data-change-highlight="green"><i class="fa fa-circle color-green-dark"></i><span class="color-green-light">Green</span></a>
+    <a href="#" data-change-highlight="grass"><i class="fa fa-circle color-green-dark"></i><span class="color-green-light">Grass</span></a>
+    <a href="#" data-change-highlight="sunny"><i class="fa fa-circle color-yellow-dark"></i><span class="color-yellow-dark">Sunny</span></a>
+    <a href="#" data-change-highlight="yellow"><i class="fa fa-circle color-yellow-dark"></i><span class="color-yellow-light">Goldish</span></a>
+    <a href="#" data-change-highlight="brown"><i class="fa fa-circle color-brown-dark"></i><span class="color-brown-light">Wood</span></a>
+    <a href="#" data-change-highlight="gray"><i class="fa fa-circle color-gray-dark"></i><span class="color-gray-light">Gray</span></a>
+    <a href="#" data-change-highlight="dark"><i class="fa fa-circle color-dark-dark"></i><span class="color-dark-light">Dark</span></a>
+    <div class="clearfix"></div>
+    </div>
+    </div>
+    <a href="#" class="close-menu btn btn-full btn-margins rounded-sm shadow-l bg-highlight btn-m font-900 text-uppercase mb-0">Close color Menu</a>
+    </div>
+    <div id="menu-main" class="menu menu-box-right menu-box-detached rounded-m" data-menu-width="260" data-menu-load="menu-main.html" data-menu-active="nav-welcome" data-menu-effect="menu-over" style="display: block; width: 260px;"><div class="menu-header">
+    <a href="#" data-toggle-theme="" class="border-right-0"><i class="fa font-12 color-yellow-dark fa-lightbulb"></i></a>
+    <a href="#" data-menu="menu-highlights" class="border-right-0"><i class="fa font-12 color-green-dark fa-brush"></i></a>
+    <a href="#" data-menu="menu-share" class="border-right-0"><i class="fa font-12 color-red-dark fa-share-alt"></i></a>
+    <a href="index-settings.html" class="border-right-0"><i class="fa font-12 color-blue-dark fa-cog"></i></a>
+    <a href="#" class="close-menu border-right-0"><i class="fa font-12 color-red-dark fa-times"></i></a>
+    </div>
+    <div class="menu-logo text-center">
+    <a href="#"><img class="rounded-circle bg-highlight" width="80" src="images/avatars/5s.png"></a>
+    <h1 class="pt-3 font-800 font-28 text-uppercase">Azures</h1>
+    <p class="font-11 mt-n2">Put a little <span class="color-highlight">color</span> in your life.</p>
+    </div>
+    <div class="menu-items mb-4">
+    <h5 class="text-uppercase opacity-20 font-12 pl-3">Menu</h5>
+    <a id="nav-welcome" href="index.html" class="nav-item-active">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home" data-feather-line="1" data-feather-size="16" data-feather-color="blue-dark" data-feather-bg="blue-fade-light" style="stroke-width: 1; width: 16px; height: 16px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+    <span>Welcome</span>
+    <em class="badge bg-highlight color-white">HOT</em>
+    <i class="fa fa-circle"></i>
+    </a>
+    <a id="nav-starters" href="pages-starters.html">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star" data-feather-line="1" data-feather-size="16" data-feather-color="yellow-dark" data-feather-bg="yellow-fade-light" style="stroke-width: 1; width: 16px; height: 16px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+    <span>Starters</span>
+    <i class="fa fa-circle"></i>
+    </a>
+    <a id="nav-features" href="index-components.html">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart" data-feather-line="1" data-feather-size="16" data-feather-color="red-dark" data-feather-bg="red-fade-light" style="stroke-width: 1; width: 16px; height: 16px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+    <span>Features</span>
+    <i class="fa fa-circle"></i>
+    </a>
+    <a id="nav-pages" href="index-pages.html">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file" data-feather-line="1" data-feather-size="16" data-feather-color="brown-dark" data-feather-bg="brown-fade-light" style="stroke-width: 1; width: 16px; height: 16px;"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+    <span>Pages</span>
+    <i class="fa fa-circle"></i>
+    </a>
+    <a id="nav-media" href="index-media.html">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-image" data-feather-line="1" data-feather-size="16" data-feather-color="green-dark" data-feather-bg="green-fade-light" style="stroke-width: 1; width: 16px; height: 16px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+    <span>Media</span>
+    <i class="fa fa-circle"></i>
+    </a>
+    <a id="nav-shapes" href="index-shapes.html">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-hexagon" data-feather-line="1" data-feather-size="16" data-feather-color="magenta-dark" data-feather-bg="magenta-fade-light" style="stroke-width: 1; width: 16px; height: 16px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+    <span>Shapes</span>
+    <i class="fa fa-circle"></i>
+    </a>
+    <a href="#" data-submenu="sub-contact">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail" data-feather-line="1" data-feather-size="16" data-feather-color="blue-dark" data-feather-bg="blue-fade-light" style="stroke-width: 1; width: 16px; height: 16px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+    <span>Contact</span>
+    <strong class="badge bg-highlight color-white">3</strong>
+    <i class="fa fa-circle"></i>
+    </a>
+    <div id="sub-contact" class="submenu">
+    <a href="contact.html" id="nav-contact"><i class="fa fa-envelope color-blue2-dark font-16 opacity-30"></i><span>Email</span><i class="fa fa-circle"></i></a>
+    <a href="#"><i class="fa fa-phone color-green1-dark font-16 opacity-50"></i><span>Phone</span><i class="fa fa-circle"></i></a>
+    <a href="#"><i class="fab fa-whatsapp color-whatsapp font-16 opacity-30"></i><span>WhatsApp</span><i class="fa fa-circle"></i></a>
+    </div>
+    <a id="nav-settings" href="index-settings.html">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings" data-feather-line="1" data-feather-size="16" data-feather-color="gray-light" data-feather-bg="gray-fade-light" style="stroke-width: 1; width: 16px; height: 16px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    <span>Settings</span>
+    <i class="fa fa-circle"></i>
+    </a>
+    <a href="#" class="close-menu">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x" data-feather-line="3" data-feather-size="16" data-feather-color="red-dark" data-feather-bg="red-fade-dark" style="stroke-width: 3; width: 16px; height: 16px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    <span>Close</span>
+    <i class="fa fa-circle"></i>
+    </a>
+    </div>
+    <div class="text-center">
+    <a href="#" class="icon icon-xs mr-1 rounded-s bg-facebook"><i class="fab fa-facebook"></i></a>
+    <a href="#" class="icon icon-xs mr-1 rounded-s bg-twitter"><i class="fab fa-twitter"></i></a>
+    <a href="#" class="icon icon-xs mr-1 rounded-s bg-instagram"><i class="fab fa-instagram"></i></a>
+    <a href="#" class="icon icon-xs mr-1 rounded-s bg-linkedin"><i class="fab fa-linkedin-in"></i></a>
+    <a href="#" class="icon icon-xs rounded-s bg-whatsapp"><i class="fab fa-whatsapp"></i></a>
+    <p class="mb-0 pt-3 font-10 opacity-30">Copyright <span class="copyright-year"></span> Enabled. All rights reserved</p>
+    </div>
+    </div>
+    
+    
+    <div id="menu-install-pwa-android" class="menu menu-box-bottom menu-box-detached rounded-l" data-menu-height="350" data-menu-effect="menu-parallax" style="display: block; height: 350px;">
+    <div class="boxed-text-l mt-4">
+    <img class="rounded-l mb-3" src="app/icons/icon-128x128.png" alt="img" width="90">
+    <h4 class="mt-3">Azures on your Home Screen</h4>
+    <p>
+    Install Azures on your home screen, and access it just like a regular app. It really is that simple!
+    </p>
+    <a href="#" class="pwa-install btn btn-s rounded-s shadow-l text-uppercase font-900 bg-highlight mb-2">Add to Home Screen</a><br>
+    <a href="#" class="pwa-dismiss close-menu color-gray2-light text-uppercase font-900 opacity-60 font-10">Maybe later</a>
+    <div class="clear"></div>
+    </div>
+    </div>
+    
+    <div id="menu-install-pwa-ios" class="menu menu-box-bottom menu-box-detached rounded-l" data-menu-height="320" data-menu-effect="menu-parallax" style="display: block; height: 320px;">
+    <div class="boxed-text-xl mt-4">
+    <img class="rounded-l mb-3" src="app/icons/icon-128x128.png" alt="img" width="90">
+    <h4 class="mt-3">Azures on your Home Screen</h4>
+    <p class="mb-0 pb-3">
+    Install Azures on your home screen, and access it just like a regular app. Open your Safari menu and tap "Add to Home Screen".
+    </p>
+    <div class="clear"></div>
+    <a href="#" class="pwa-dismiss close-menu color-highlight font-800 opacity-80 text-center text-uppercase">Maybe later</a><br>
+    <i class="fa-ios-arrow fa fa-caret-down font-40"></i>
+    </div>
+    </div>
+    </div>
+    <script type="text/javascript" src="scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="scripts/custom.js"></script>
+    
+    <div class="menu-hider"></div><p class="offline-message bg-red-dark color-white">No internet connection detected</p><p class="online-message bg-green-dark color-white">You are back online</p></body></html>
