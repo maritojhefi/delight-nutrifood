@@ -15,6 +15,14 @@ class CreateProductosTable extends Migration
     {
         Schema::create('productos', function (Blueprint $table) {
             $table->id();
+            $table->string('nombre', 100)->nullable();
+            $table->unsignedBigInteger('subcategoria_id')->nullable();
+            $table->foreign('subcategoria_id')->references('id')->on('subcategorias');
+            $table->integer('precio')->nullable();
+            $table->string('detalle')->nullable();
+            $table->string('imagen')->nullable();
+            $table->string('codigoBarra')->nullable();
+            $table->string('descuento', 100)->nullable();
             $table->timestamps();
         });
     }

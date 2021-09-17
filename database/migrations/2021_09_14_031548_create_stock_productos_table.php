@@ -15,6 +15,14 @@ class CreateStockProductosTable extends Migration
     {
         Schema::create('stock_productos', function (Blueprint $table) {
             $table->id();
+            $table->date('fecha_venc', 100)->nullable();
+            $table->date('fecha_entrada', 100)->nullable();
+            $table->unsignedBigInteger('usuario_id')->nullable();
+            $table->foreign('usuario_id')->references('id')->on('users');
+            $table->unsignedBigInteger('sucursale_id')->nullable();
+            $table->foreign('sucursale_id')->references('id')->on('sucursales');
+            $table->unsignedBigInteger('producto_id')->nullable();
+            $table->foreign('producto_id')->references('id')->on('productos');
             $table->timestamps();
         });
     }

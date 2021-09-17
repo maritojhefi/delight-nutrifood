@@ -57,3 +57,16 @@ Route::prefix('/miperfil')->group(function () {
     
 
 });
+
+
+Route::prefix('/admin')->group(function () {
+   
+    Route::prefix('/inicio')->group(function () {
+   
+        Route::get('resumen', [App\Http\Controllers\Admin\ProductosController::class, 'resumen'])->name('resumen');
+        Route::get('ventas/sucursal', [App\Http\Controllers\Admin\ProductosController::class, 'resumen'])->name('ventas.sucursal');
+    
+    });
+    
+
+});
