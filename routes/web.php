@@ -67,6 +67,13 @@ Route::prefix('/admin')->group(function () {
         Route::get('ventas/sucursal', [App\Http\Controllers\admin\ProductosController::class, 'resumen'])->name('ventas.sucursal');
     
     });
+    Route::prefix('/productos')->group(function () {
+   
+        Route::get('listar', [App\Http\Controllers\admin\ProductosController::class, 'listar'])->name('producto.listar');
+        Route::get('crear', [App\Http\Controllers\admin\ProductosController::class, 'crear'])->name('producto.crear');
+        Route::get('categoria', [App\Http\Controllers\admin\ProductosController::class, 'categoria'])->name('producto.categoria');
+        Route::get('subcategoria', [App\Http\Controllers\admin\ProductosController::class, 'subcategoria'])->name('producto.subcategoria');
+    });
     
 
 });

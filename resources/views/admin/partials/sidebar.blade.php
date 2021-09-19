@@ -27,7 +27,12 @@
                 <i class="flaticon-072-printer"></i>
             </x-sidebar-elements>
             
-            <x-sidebar-elements titulo="Productos" linkglobal="admin/productos" :lista="(['Listar Productos'=>'miperfil' ])">
+            <x-sidebar-elements titulo="Productos" linkglobal="admin/productos" :lista="([
+                'Listar Productos'=>'producto.listar',
+                'Crear Nuevo'=>'producto.crear',
+                'Categorias'=>'producto.categoria',
+                'Subcategorias'=>'producto.subcategoria'
+                 ])">
                 <i class="flaticon-043-menu"></i>
             </x-sidebar-elements>
 

@@ -21,6 +21,7 @@ class CreateProductosTable extends Migration
             $table->integer('precio')->nullable();
             $table->string('detalle')->nullable();
             $table->string('imagen')->nullable();
+            $table->string('estado')->nullable()->default('activo');
             $table->string('codigoBarra')->nullable();
             $table->string('descuento', 100)->nullable();
             $table->timestamps();

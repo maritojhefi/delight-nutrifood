@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Sucursale;
+use App\Models\Subcategoria;
 use App\Models\Stock_producto;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,5 +22,9 @@ class Producto extends Model
     public function stockProductos()
     {
         return $this->hasMany(Stock_producto::class);
+    }
+    public function subcategoria()
+    {
+        return $this->belongsTo(Subcategoria::class);
     }
 }

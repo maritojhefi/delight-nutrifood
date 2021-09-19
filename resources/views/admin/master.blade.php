@@ -23,7 +23,10 @@
 	<link href="vendor/jquery-nice-select/css/nice-select.css" rel="stylesheet">
 	<!-- Style css -->
     <link href="{{asset('css/style.css')}}" rel="stylesheet">
-	
+   
+    @livewireStyles
+	@livewireScripts
+   
 </head>
 <body>
     <div id="preloader" >
@@ -63,8 +66,11 @@
         @include('admin.partials.sidebar')
        
         <div class="content-body">
+            <div class="container-fluid">
+                @yield('content')
+            </div>
             <!-- row -->
-		@yield('content')
+		
 			
         </div>
     
@@ -76,7 +82,7 @@
 	<script src="{{asset('vendor/bootstrap-datetimepicker/js/moment.js')}}"></script>
 	<script src="{{asset('vendor/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js')}}"></script>
 	<script src="{{asset('vendor/jquery-nice-select/js/jquery.nice-select.min.js')}}"></script>
-	
+	<script src="{{asset('js/sweetalert.min.js')}}"></script>
 	<!-- Chart piety plugin files -->
     <script src="{{asset('vendor/peity/jquery.peity.min.js')}}"></script>
 	
@@ -85,10 +91,30 @@
 	
 	<!-- Dashboard 1 -->
 	<script src="{{asset('js/dashboard/dashboard-1.js')}}"></script>
-
+   
     <script src="{{asset('js/custom.min.js')}}"></script>
 	<script src="{{asset('js/deznav-init.js')}}"></script>
 	<script src="{{asset('js/demo.js')}}"></script>
-   
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            showCloseButton: true,
+            timer: 5000,
+            timerProgressBar:true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+    
+        window.addEventListener('alert',({detail:{type,message}})=>{
+            Toast.fire({
+                icon:type,
+                title:message
+            })
+        })
+    </script>
 </body>
 </html>
