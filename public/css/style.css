@@ -9295,7 +9295,7 @@ label {
     width: 4rem;
     margin: auto; }
   .loader:after {
-    content: "Cargando";
+    content: "Delight";
     font-weight: bold;
     top: 30px;
     left: 50%;
@@ -9316,13 +9316,13 @@ label {
     transform: translateX(0); } }
 @keyframes loading-text {
   0% {
-    content: "Cargando"; }
+    content: "Delight"; }
   25% {
-    content: "Cargando."; }
+    content: "Delight."; }
   50% {
-    content: "Cargando.."; }
+    content: "Delight.."; }
   75% {
-    content: "Cargando..."; } }
+    content: "Delight..."; } }
 .footer {
   padding-left: 17.1875rem;
   background-color: #fbfbfb;

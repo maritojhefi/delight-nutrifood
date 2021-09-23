@@ -59,7 +59,7 @@ Route::prefix('/miperfil')->group(function () {
 });
 
 
-Route::prefix('/admin')->group(function () {
+Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function(){
    
     Route::prefix('/inicio')->group(function () {
    
@@ -74,6 +74,22 @@ Route::prefix('/admin')->group(function () {
         Route::get('categoria', [App\Http\Controllers\admin\ProductosController::class, 'categoria'])->name('producto.categoria');
         Route::get('subcategoria', [App\Http\Controllers\admin\ProductosController::class, 'subcategoria'])->name('producto.subcategoria');
     });
-    
+    Route::prefix('/usuarios')->group(function () {
+   
+        Route::get('/index', \App\Http\Livewire\admin\usuarios\UserIndex::class)->name('usuario.listar');
+        Route::get('/roles', \App\Http\Livewire\admin\usuarios\RolesIndex::class)->name('usuario.roles');
+        Route::get('/miperfil', \App\Http\Livewire\admin\usuarios\PerfilUsuario::class)->name('usuario.perfil');
+    });
+    Route::prefix('/sucursales')->group(function () {
+   
+        Route::get('/index', \App\Http\Livewire\admin\SucursalesIndex::class)->name('sucursal.listar');
+        Route::get('/stock', \App\Http\Livewire\admin\StockProductos::class)->name('sucursal.stock');
+
+    });
+    Route::prefix('/ventas')->group(function () {
+   
+        Route::get('/index', \App\Http\Livewire\admin\Ventas\VentasIndex::class)->name('ventas.listar');
+
+    });
 
 });

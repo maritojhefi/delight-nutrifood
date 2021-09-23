@@ -23,7 +23,9 @@
 	<link href="vendor/jquery-nice-select/css/nice-select.css" rel="stylesheet">
 	<!-- Style css -->
     <link href="{{asset('css/style.css')}}" rel="stylesheet">
-   
+    <link href="{{asset('vendor/lightgallery/css/lightgallery.min.css')}}" rel="stylesheet">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     @livewireStyles
 	@livewireScripts
    
@@ -46,7 +48,7 @@
             Nav header start
         ***********************************-->
         <div class="nav-header">
-            <a href="index.html" class="brand-logo">
+            <a href="{{route('sucursal.listar')}}" class="brand-logo">
                 <!-- <img class="logo-abbr" src="./images/logo.png" alt="">
 				<div class="brand-title">Ventic</div> -->
 				<img class="logo-abbr" width="54"  viewBox="0 0 54 54" fill="none" src="{{asset('delight_logo.jpg')}}"/>
@@ -82,6 +84,7 @@
 	<script src="{{asset('vendor/bootstrap-datetimepicker/js/moment.js')}}"></script>
 	<script src="{{asset('vendor/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js')}}"></script>
 	<script src="{{asset('vendor/jquery-nice-select/js/jquery.nice-select.min.js')}}"></script>
+    <script src="{{asset('vendor/lightgallery/js/lightgallery-all.min.js')}}"></script>
 	<script src="{{asset('js/sweetalert.min.js')}}"></script>
 	<!-- Chart piety plugin files -->
     <script src="{{asset('vendor/peity/jquery.peity.min.js')}}"></script>

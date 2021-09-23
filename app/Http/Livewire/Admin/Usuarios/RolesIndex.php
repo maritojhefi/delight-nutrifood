@@ -1,23 +1,22 @@
 <?php
 
-namespace App\Http\Livewire\Admin;
+namespace App\Http\Livewire\Admin\Usuarios;
 
+use App\Models\Role;
 use Livewire\Component;
-use App\Models\Categoria;
-use App\Models\Subcategoria;
 use Livewire\WithPagination;
 
-class SubcategoryCreate extends Component
+class RolesIndex extends Component
 {
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
-    public $nombre, $descripcion, $categoria;
-    protected $listeners = ['listar' => 'render'];
+    public $nombre, $descripcion;
+    
  
     protected $rules = [
         'nombre' => 'required',
         'descripcion' => 'required|min:5',
-        'categoria' => 'required|integer',
+        
         
     ];
  
@@ -31,33 +30,32 @@ class SubcategoryCreate extends Component
  
         // Execution doesn't reach here if validation fails.
  
-        Subcategoria::create([
+        Role::create([
             'nombre' => $this->nombre,
             'descripcion' => $this->descripcion,
-            'categoria_id' => $this->categoria,
+            
             
         ]);
          $this->dispatchBrowserEvent('alert',[
             'type'=>'success',
-            'message'=>"Subcategoria: ".$this->nombre." creada satisfactoriamente!!"
+            'message'=>"Rol: ".$this->nombre." creado satisfactoriamente!!"
         ]);
         $this->reset();
     }
 
-    public function eliminar(Subcategoria $subcat)
+    public function eliminar(Role $rol)
     {
-       
-
+        
         try {
-            $subcat->delete();
+            $rol->delete();
             $this->dispatchBrowserEvent('alert',[
                 'type'=>'warning',
-                'message'=>"Subcategoria: ".$subcat->nombre." eliminada"
+                'message'=>"Categoria: ".$rol->nombre." eliminado"
             ]);
         } catch (\Throwable $th) {
             $this->dispatchBrowserEvent('alert',[
                 'type'=>'warning',
-                'message'=>"No se puede eliminar este registro porque esta vinculado a otros"
+                'message'=>"No se puede eliminar este registro porque esta anidado con otros registros"
             ]);
         }
     }
@@ -67,8 +65,9 @@ class SubcategoryCreate extends Component
     }
     public function render()
     {
-        $subcategorias=Subcategoria::paginate(5);
-        $categorias=Categoria::all();
-        return view('livewire.admin.subcategory-create',compact('subcategorias','categorias'));
+        $roles=Role::paginate(5);
+        return view('livewire.admin.usuarios.roles-index',compact('roles'))
+        ->extends('admin.master')
+        ->section('content');
     }
 }

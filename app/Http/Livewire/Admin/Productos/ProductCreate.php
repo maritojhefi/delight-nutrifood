@@ -50,27 +50,30 @@ class ProductCreate extends Component
              $img->rotate(0);
             $img->save('imagenes/productos/'.$filename);
 
-            Producto::create([
+           $producto= Producto::create([
                 'nombre' => $this->nombre,
                 'detalle' => $this->detalle,
                 'subcategoria_id' => $this->cat,
                 'precio' => $this->precio,
                 'descuento' => $this->descuento,
                 'imagen' => $filename,
-                
             ]);
+            $producto->codigoBarra='delight'.$producto->id;
+            $producto->save();
         }
         else
         {
-            Producto::create([
+            $producto= Producto::create([
                 'nombre' => $this->nombre,
                 'detalle' => $this->detalle,
                 'subcategoria_id' => $this->cat,
                 'precio' => $this->precio,
                 'descuento' => $this->descuento,
-                
+               
                 
             ]); 
+            $producto->codigoBarra='delight'.$producto->id;
+            $producto->save();
         }
          $this->dispatchBrowserEvent('alert',[
             'type'=>'success',

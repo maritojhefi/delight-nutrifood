@@ -10,16 +10,16 @@
                 <i class="flaticon-041-graph"></i>
             </x-sidebar-elements>
 
-            <x-sidebar-elements titulo="Sucursales" linkglobal="admin/sucursales" :lista="(['Todas'=>'miperfil' ])">
+            <x-sidebar-elements titulo="Sucursales" linkglobal="admin/sucursales" :lista="(['Todas'=>'sucursal.listar','Agregar Stock'=>'sucursal.stock' ])">
                 <i class="flaticon-086-star"></i>
             </x-sidebar-elements>
            
-            <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="(['Crear Usuario'=>'miperfil' ])">
+            <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="(['Listar Usuarios'=>'usuario.listar','Roles'=>'usuario.roles' ])">
                 <i class="flaticon-045-heart"></i>
             </x-sidebar-elements>
            
 
-            <x-sidebar-elements titulo="Ventas" linkglobal="admin/ventas" :lista="(['Ventas diarias'=>'miperfil' ])">
+            <x-sidebar-elements titulo="Ventas" linkglobal="admin/ventas" :lista="(['Ventas diarias'=>'ventas.listar' ])">
                 <i class="flaticon-013-checkmark"></i>
             </x-sidebar-elements>
 
