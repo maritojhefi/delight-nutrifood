@@ -76,9 +76,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function(){
     });
     Route::prefix('/usuarios')->group(function () {
    
-        Route::get('/index', \App\Http\Livewire\admin\usuarios\UserIndex::class)->name('usuario.listar');
-        Route::get('/roles', \App\Http\Livewire\admin\usuarios\RolesIndex::class)->name('usuario.roles');
-        Route::get('/miperfil', \App\Http\Livewire\admin\usuarios\PerfilUsuario::class)->name('usuario.perfil');
+        Route::get('/index', \App\Http\Livewire\admin\Usuarios\UserIndex::class)->name('usuario.listar');
+        Route::get('/roles', \App\Http\Livewire\admin\Usuarios\RolesIndex::class)->name('usuario.roles');
+        Route::get('/miperfil', \App\Http\Livewire\admin\Usuarios\PerfilUsuario::class)->name('usuario.perfil');
     });
     Route::prefix('/sucursales')->group(function () {
    
