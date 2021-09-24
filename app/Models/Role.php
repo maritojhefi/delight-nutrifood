@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Role extends Model
 {
     use HasFactory;
-    const CLIENTE=1;
-    const ADMIN=2;
-    const MESERO=3;
-    const COCINA=4;
-    const PANADERO=5;
+    const CLIENTE=4;
+    const ADMIN=1;
+    const INFLUENCER=5;
+    const COCINA=3;
+    const CAJERO=2;
     protected $fillable = [
         'nombre','descripcion'
        

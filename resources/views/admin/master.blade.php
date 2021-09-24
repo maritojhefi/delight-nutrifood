@@ -31,20 +31,21 @@
    
 </head>
 <body  version="dark">
-    <div id="preloader" >
-        <div class="loader">
-            <div class="loader--dot"></div>
-            <div class="loader--dot"></div>
-            <div class="loader--dot"></div>
-            <div class="loader--dot"></div>
-            <div class="loader--dot"></div>
-            <div class="loader--dot"></div>
-            <div class="loader--text"></div>
-        </div>
+    
+@hasSection ('content')
+<div id="preloader" >
+    <div class="loader">
+        <div class="loader--dot"></div>
+        <div class="loader--dot"></div>
+        <div class="loader--dot"></div>
+        <div class="loader--dot"></div>
+        <div class="loader--dot"></div>
+        <div class="loader--dot"></div>
+        <div class="loader--text"></div>
     </div>
-    <div id="main-wrapper">
-
-        <!--**********************************
+</div>
+<div id="main-wrapper">
+    <!--**********************************
             Nav header start
         ***********************************-->
         <div class="nav-header">
@@ -77,6 +78,10 @@
         </div>
     
 	</div>
+@elseif('login')
+@yield('login')
+@endif
+        
    
     <!-- Required vendors -->
     <script src="{{asset('vendor/global/global.min.js')}}"></script>

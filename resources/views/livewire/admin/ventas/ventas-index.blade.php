@@ -74,7 +74,7 @@
         <h4 class="d-flex justify-content-between align-items-center mb-3">
             <span class="m-3 text-muted" wire:loading.remove>Productos agregados (#{{$cuenta->id}})</span>
             <span class="m-3 text-muted" wire:loading>Actualizando...</span>
-            <span class="badge badge-primary badge-pill">{{$cuenta->productos->count()}}</span>
+            <span class="badge badge-primary badge-pill">{{$itemsCuenta}}</span>
         </h4>
         <ul class="list-group mb-3">
            

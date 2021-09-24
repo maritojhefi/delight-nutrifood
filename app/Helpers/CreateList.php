@@ -12,6 +12,7 @@ class CreateList {
     static function crearlista(Venta $cuenta)
     {
         $listafiltrada=$cuenta->productos->pluck('nombre');
+        $cantidadItems=$listafiltrada->count();
         $contando=$listafiltrada->countBy();
         
         $coleccion=collect($contando);
@@ -36,6 +37,6 @@ class CreateList {
              
              $total=$total+$subtotal;
          }  
-         return [$personalizado,$total]; 
+         return [$personalizado,$total,$cantidadItems]; 
     }
 }

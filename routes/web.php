@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Livewire\Client\Inicio\Index;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,7 +26,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 //inicio
 Route::prefix('/')->group(function () {
    
-    Route::get('', [App\Http\Controllers\InicioController::class, 'index'])->name('inicio');
+    Route::get('', \App\Http\Livewire\Client\Inicio\Index::class)->name('inicio');
     
 
 });
@@ -59,7 +60,7 @@ Route::prefix('/miperfil')->group(function () {
 });
 
 
-Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function(){
+Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], function(){
    
     Route::prefix('/inicio')->group(function () {
    

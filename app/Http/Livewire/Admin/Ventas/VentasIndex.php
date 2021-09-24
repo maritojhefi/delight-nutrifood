@@ -14,6 +14,7 @@ class VentasIndex extends Component
     public $sucursal;
     public $cuenta;
     public $search;
+    public $itemsCuenta;
     public $listacuenta;
 
     protected $rules = [
@@ -39,6 +40,8 @@ class VentasIndex extends Component
         ->where('id', $cuenta->id)
         ->update(['total' => $resultado[1]]);
         $this->cuenta->total=$resultado[1];
+        $this->itemsCuenta=$resultado[2];
+        
         $this->dispatchBrowserEvent('alert',[
             'type'=>'success',
             'message'=>"Se agrego ".$producto->nombre." a esta venta"
@@ -61,7 +64,8 @@ class VentasIndex extends Component
         ->where('id', $cuenta->id)
         ->update(['total' => $resultado[1]]);
         $this->cuenta->total=$resultado[1];
-         
+        $this->itemsCuenta=$resultado[2];
+
         $this->dispatchBrowserEvent('alert',[
             'type'=>'success',
             'message'=>"Se elimino 1 ".$producto->nombre." de esta venta"
@@ -78,7 +82,8 @@ class VentasIndex extends Component
         ->where('id', $cuenta->id)
         ->update(['total' => $resultado[1]]);
         $this->cuenta->total=$resultado[1];
-         
+        $this->itemsCuenta=$resultado[2];
+
         $this->dispatchBrowserEvent('alert',[
             'type'=>'success',
             'message'=>"Se elimino a ".$producto->nombre." de esta venta"
@@ -95,6 +100,7 @@ class VentasIndex extends Component
         ->where('id', $venta->id)
         ->update(['total' => $resultado[1]]);
         $this->cuenta->total=$resultado[1];
+        $this->itemsCuenta=$resultado[2];
     }
 
     public function eliminar(Venta $venta)
