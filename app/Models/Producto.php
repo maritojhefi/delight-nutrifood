@@ -27,4 +27,7 @@ class Producto extends Model
     {
         return $this->belongsTo(Subcategoria::class);
     }
+    public function pathAttachment(){
+        return "imagenes/productos/".$this->imagen;
+    }
 }

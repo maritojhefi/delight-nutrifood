@@ -17,15 +17,20 @@ class RoleSeeder extends Seeder
        
         Role::create(
             ['nombre'=>'admin',
-            'descripcion'=>'Acceso a todo'],
-            ['nombre'=>'cajero',
-            'descripcion'=>'Solo ventas'],
-            ['nombre'=>'cocina',
-            'descripcion'=>'Vista a la cocina'],
-            ['nombre'=>'cliente',
-            'descripcion'=>'Consumidor final'],
-            ['nombre'=>'influencer',
-            'descripcion'=>'Cliente con privilegios'],
-    );
+            'descripcion'=>'Acceso a todo']);
+            Role::create(
+                ['nombre'=>'cajero',
+                'descripcion'=>'Solo ventas']);
+                Role::create(
+                    ['nombre'=>'cocina',
+                    'descripcion'=>'Vista a la cocina']);
+                    Role::create(
+                        ['nombre'=>'cliente',
+                        'descripcion'=>'Consumidor final']);
+                        Role::create(
+                           ['nombre'=>'influencer',
+                           'descripcion'=>'Cliente con privilegios']);
     }
 }
+
+

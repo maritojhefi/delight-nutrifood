@@ -16,10 +16,11 @@
                                 
                                 <th><strong>Nombre</strong></th>
                                 <th><strong>Precio</strong></th>
+                                <th><strong>Stock</strong></th>
                                 <th><strong>Subcategoria</strong></th>
                                 <th><strong>Codigo Barra</strong></th>
                                 <th><strong>Estado</strong></th>
-                                <th><strong>Descuento</strong></th>
+                               
                                 <th><strong>Acciones</strong></th>
                             </tr>
                         </thead>
@@ -27,8 +28,15 @@
                            @foreach ($productos as $item)
                            <tr>
                                
-                            <td><div class="d-flex align-items-center"><img src="{{asset('delight_logo.jpg')}}" class="rounded-lg me-2" width="24" alt=""> <strong>{{$item->nombre}}</strong></div></td>
-                            <td><span class="w-space-no">{{$item->precio}} Bs</span></td>
+                            <td><div class="d-flex align-items-center">@if($item->imagen)<img src="{{asset($item->pathAttachment())}}" class="rounded-lg me-2" width="24" alt="">@else<img src="{{asset('delight_logo.jpg')}}" class="rounded-lg me-2" width="24" alt=""> @endif<strong>{{$item->nombre}}</strong></div></td>
+                            
+                            @if ($item->descuento)
+                            <td><del class="w-space-no badge light badge-danger">{{$item->precio}}</del><span class="w-space-no badge light badge-success">{{$item->descuento}} Bs</span></td>
+                            @else
+                            <td><span class="w-space-no badge light badge-success">{{$item->precio}} Bs</span></td>
+
+                            @endif
+                            <td><span class="w-space-no">{{$item->stockProductos->count()}}</span></td>
                             <td><span class="w-space-no">{{$item->subcategoria->nombre}}</span></td>
                             @if ($item->codigoBarra)
                             <td><img src="data:image/png;base64,{{DNS1D::getBarcodePNG($item->codigoBarra, 'C39+',1,33)}}" alt=""></td>
@@ -37,7 +45,7 @@
                             @endif
                             <td><a href="#" wire:click="cambiarestado('{{$item->id}}')"><div class="d-flex align-items-center"><i class="fa fa-circle text-{{$item->estado=='activo'?'success':'danger'}} me-1" ></i> {{$item->estado}}</div></a></td>
                             
-                            <td>{{$item->descuento}} Bs</td>
+                           
                             <td>
                                 <div class="d-flex">
                                     <a href="#" class="btn btn-primary shadow btn-xs sharp me-1"><i class="fa fa-pencil"></i></a>
