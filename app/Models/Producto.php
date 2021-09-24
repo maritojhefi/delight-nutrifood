@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Venta;
 use App\Models\Sucursale;
 use App\Models\Subcategoria;
 use App\Models\Stock_producto;
@@ -29,5 +30,9 @@ class Producto extends Model
     }
     public function pathAttachment(){
         return "imagenes/productos/".$this->imagen;
+    }
+    public function ventas()
+    {
+        return $this->belongsToMany(Venta::class);
     }
 }

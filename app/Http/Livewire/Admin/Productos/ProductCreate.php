@@ -17,7 +17,7 @@ class ProductCreate extends Component
     public $precio , $imagen, $descuento;
  
     protected $rules = [
-        'nombre' => 'required|min:6',
+        'nombre' => 'required|min:6|unique:productos,nombre',
         'detalle' => 'required|min:15',
         'cat' => 'required',
         'precio' => 'required|integer',

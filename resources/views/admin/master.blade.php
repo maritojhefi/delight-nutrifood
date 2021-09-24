@@ -30,7 +30,7 @@
 	@livewireScripts
    
 </head>
-<body>
+<body  version="dark">
     <div id="preloader" >
         <div class="loader">
             <div class="loader--dot"></div>
@@ -90,7 +90,7 @@
     <script src="{{asset('vendor/peity/jquery.peity.min.js')}}"></script>
 	
 	<!-- Apex Chart -->
-	<script src="{{asset('vendor/apexchart/apexchart.js')}}"></script>
+	
 	
 	<!-- Dashboard 1 -->
 	<script src="{{asset('js/dashboard/dashboard-1.js')}}"></script>

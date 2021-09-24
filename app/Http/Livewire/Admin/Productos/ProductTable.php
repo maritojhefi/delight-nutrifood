@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Admin\Productos;
 use Livewire\Component;
 use App\Models\Producto;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Storage;
 
 class ProductTable extends Component
 {
@@ -20,7 +21,7 @@ class ProductTable extends Component
 
     public function render()
     {
-        $productos=Producto::where('nombre','LIKE','%'.$this->buscar.'%')->orWhere('estado',$this->buscar)->orderBy('created_at','asc')->paginate(5);
+        $productos=Producto::where('nombre','LIKE','%'.$this->buscar.'%')->orWhere('estado',$this->buscar)->orderBy('created_at','desc')->paginate(5);
         return view('livewire.admin.productos.product-table',compact('productos'));
     }
 
@@ -44,10 +45,24 @@ class ProductTable extends Component
     }
     public function eliminar(Producto $prod)
     {
-        $prod->delete();
-        $this->dispatchBrowserEvent('alert',[
-            'type'=>'warning',
-            'message'=>"Producto: ".$prod->nombre." eliminado"
-        ]);
+        try {
+            Storage::disk('public_images')->delete('productos/'.$prod->imagen);
+            $prod->delete();
+            
+            
+            $this->dispatchBrowserEvent('alert',[
+                'type'=>'success',
+                'message'=>"Producto: ".$prod->nombre." eliminado"
+            ]);
+    
+           
+            
+        } catch (\Throwable $th) {
+            $this->dispatchBrowserEvent('alert',[
+                'type'=>'warning',
+                'message'=>"Ups! no puedes borrar productos que tengan stock"
+            ]);
+        }
+      
     }
 }
