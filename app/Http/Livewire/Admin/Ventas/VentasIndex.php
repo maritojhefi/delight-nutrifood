@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Admin\Ventas;
 
+use App\Models\User;
 use App\Models\Venta;
 use Livewire\Component;
 use App\Models\Producto;
@@ -16,6 +17,8 @@ class VentasIndex extends Component
     public $search;
     public $itemsCuenta;
     public $listacuenta;
+    public $user;
+    public $cliente;
 
     protected $rules = [
         'sucursal' => 'required|integer',
@@ -27,9 +30,19 @@ class VentasIndex extends Component
         Venta::create([
             'usuario_id'=>auth()->user()->id,
             'sucursale_id'=>$this->sucursal,
+            'cliente_id'=>$this->cliente,
         ]);
+        $this->reset(['user','cliente','sucursal']);
     }
 
+    public function seleccionarcliente($id, $name)
+    {
+        $this->cliente=$id;
+        $this->dispatchBrowserEvent('alert',[
+            'type'=>'success',
+            'message'=>"Usuario ".$name." seleccionado"
+        ]);
+    }
     public function adicionar(Producto $producto){
         $cuenta = Venta::find($this->cuenta->id);
         $cuenta->productos()->attach($producto->id); 
@@ -105,28 +118,35 @@ class VentasIndex extends Component
 
     public function eliminar(Venta $venta)
     {
-        
-        try {
             $venta->delete();
             $this->dispatchBrowserEvent('alert',[
                 'type'=>'success',
                 'message'=>"Venta eliminada"
             ]);
-        } catch (\Throwable $th) {
-            $this->dispatchBrowserEvent('alert',[
-                'type'=>'warning',
-                'message'=>"No se puede eliminar una venta que tiene productos agregados"
-            ]);
-        }
+            if($this->cuenta!=null)
+            {
+                if($venta->id==$this->cuenta->id)
+                {
+                    $this->reset();
+                }
+            }
+          
+            
+       
     }
     
     public function render()
     {
-        $ventas=Venta::all();
+        $ventas=Venta::orderBy('created_at','desc')->get();
+        $usuarios=collect();
         $sucursales=Sucursale::pluck('id','nombre');
         $productos=Producto::where('codigoBarra',$this->search)->orWhere('nombre','LIKE','%'.$this->search.'%')->take(5)->get();
+        if($this->user!=null)
+        {
+            $usuarios=User::where('name','LIKE','%'.$this->user.'%')->orWhere('email','LIKE','%'.$this->user.'%')->take(3)->get();
 
-        return view('livewire.admin.ventas.ventas-index',compact('ventas','sucursales','productos'))
+        }
+        return view('livewire.admin.ventas.ventas-index',compact('ventas','sucursales','productos','usuarios'))
         ->extends('admin.master')
         ->section('content');
     }

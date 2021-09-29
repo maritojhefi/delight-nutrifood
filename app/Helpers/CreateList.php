@@ -24,14 +24,14 @@ class CreateList {
              if($producto->descuento!=0)
              {
                 $subtotal=$producto->descuento*$cantidad;
-                $personalizado->prepend(['id'=>$producto->id,'nombre'=>$nombre,'cantidad'=>$cantidad,'precio'=>$producto->descuento,'subtotal'=>$subtotal,'id'=>$producto->id]);
-                
+                $personalizado->prepend(['id'=>$producto->id,'nombre'=>$nombre,'cantidad'=>$cantidad,'precio'=>$producto->descuento,'subtotal'=>$subtotal,'foto'=>$producto->pathAttachment()]);
+               
              }
              else
              {
                 $subtotal=$producto->precio*$cantidad;
-                $personalizado->prepend(['id'=>$producto->id,'nombre'=>$nombre,'cantidad'=>$cantidad,'precio'=>$producto->precio,'subtotal'=>$subtotal,'id'=>$producto->id]);
-                
+                $personalizado->prepend(['id'=>$producto->id,'nombre'=>$nombre,'cantidad'=>$cantidad,'precio'=>$producto->precio,'subtotal'=>$subtotal,'foto'=>$producto->pathAttachment()]);
+              
              }
              
              

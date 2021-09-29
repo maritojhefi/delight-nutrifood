@@ -25,7 +25,8 @@
     <link href="{{asset('css/style.css')}}" rel="stylesheet">
     <link href="{{asset('vendor/lightgallery/css/lightgallery.min.css')}}" rel="stylesheet">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
+  
+    
     @livewireStyles
 	@livewireScripts
    
@@ -99,7 +100,7 @@
 	
 	<!-- Dashboard 1 -->
 	<script src="{{asset('js/dashboard/dashboard-1.js')}}"></script>
-   
+  
     <script src="{{asset('js/custom.min.js')}}"></script>
 	<script src="{{asset('js/deznav-init.js')}}"></script>
 	<script src="{{asset('js/demo.js')}}"></script>

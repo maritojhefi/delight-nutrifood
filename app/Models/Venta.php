@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use App\Models\Producto;
 use App\Models\Sucursale;
 use Illuminate\Database\Eloquent\Model;
@@ -22,5 +23,9 @@ class Venta extends Model
     public function productos()
     {
         return $this->belongsToMany(Producto::class);
+    }
+    public function cliente()
+    {
+        return $this->belongsTo(User::class);
     }
 }
