@@ -46,7 +46,8 @@
    <div class="col-xl-4">
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Llene los campos({{$prodlisto->nombre}})</h4>
+            <h4 class="card-title">{{$prodlisto->nombre}}</h4>
+            stock:{{$stock}} {{$prodlisto->medicion}}(s)
         </div>
         <div class="card-body">
             <div class="basic-list-group">

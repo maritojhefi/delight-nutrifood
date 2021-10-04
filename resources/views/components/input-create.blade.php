@@ -7,15 +7,15 @@
     
           @if ($variables[1]=='text' || $variables[1]=='number' || $variables[1]=='password' || $variables[1]=='email' || $variables[1]=='date')
                                                
-            @if ($variables[0]=='precio' || $variables[0]=='Precio' )
+            @if ($variables[0]=='precio' || $variables[0]=='Precio' || $variables[0]=='Descuento' || $variables[0]=='descuento')
             <div class="mb-3 row">
               <label class="col-sm-4 col-form-label">{{$titulo}}</label>
               <div class="col-sm-8">
                 <div class=" input-group" >
-              <input type="{{$variables[1]}}"  wire:model.debounce.1000ms="{{$variables[0]}}" placeholder="@isset($variables[2]){{$variables[2]}} @endisset" min="0" class=" form-control  @error($variables[0]) is-invalid @enderror">
-              <span class="input-group-text">Bs</span>
+              <input type="{{$variables[1]}}"  wire:model.debounce.1000ms="{{$variables[0]}}" placeholder="@isset($variables[2]){{$variables[2]}} @endisset" min="0" step=".01" class=" form-control  @error($variables[0]) is-invalid @enderror">
+              <small class="input-group-text">Bs</small>
             </div>
-              @error($variables[0]) <span class="error">{{ $message }}</span> @enderror
+              @error($variables[0]) <small class="error">{{ $message }}</small> @enderror
               </div>
             </div>
          
@@ -24,7 +24,7 @@
               <label class="col-sm-4 col-form-label">{{$titulo}}</label>
               <div class="col-sm-8">
               <input type="{{$variables[1]}}" wire:model.debounce.1000ms="{{$variables[0]}}" placeholder="@isset($variables[2]){{$variables[2]}} @endisset" class=" form-control  @error($variables[0]) is-invalid @enderror">
-              @error($variables[0]) <span class="error">{{ $message }}</span> @enderror
+              @error($variables[0]) <small class="error">{{ $message }}</small> @enderror
               </div>
             </div>
             @endif                              
@@ -56,7 +56,7 @@
             <div wire:loading wire:target="{{$variables[0]}}"  class="mb-3 row">
             Cargando...
             </div>
-            @error($variables[0])<span class="error">{{ $message }}</span> @enderror
+            @error($variables[0])<small class="error">{{ $message }}</small> @enderror
           </div>
           
         
@@ -68,7 +68,7 @@
             <label class="col-sm-4 col-form-label">{{$titulo}}</label>
             <div class="col-sm-8">
             <textarea type="text" wire:model.debounce.1000ms="{{$variables[0]}}" placeholder="@isset($variables[2]){{$variables[2]}} @endisset" class=" form-control @error($variables[0]) is-invalid @enderror"></textarea>
-            @error($variables[0]) <span class="error">{{ $message }}</span> @enderror
+            @error($variables[0]) <small class="error">{{ $message }}</small> @enderror
             </div>
           </div>
           

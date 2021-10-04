@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Tag;
+use App\Models\Combo;
 use App\Models\Venta;
+use App\Models\Deshecho;
 use App\Models\Sucursale;
 use App\Models\Subcategoria;
 use App\Models\Stock_producto;
@@ -13,17 +16,14 @@ class Producto extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'nombre','subcategoria_id','precio','imagen','detalle','codigoBarra','descuento'
+        'nombre','subcategoria_id','precio','imagen','detalle','codigoBarra','descuento','puntos','medicion'
        
     ];
     public function sucursale()
     {
-        return $this->belongsTo(Sucursale::class);
+        return $this->belongsToMany(Sucursale::class);
     }
-    public function stockProductos()
-    {
-        return $this->hasMany(Stock_producto::class);
-    }
+   
     public function subcategoria()
     {
         return $this->belongsTo(Subcategoria::class);
@@ -34,5 +34,17 @@ class Producto extends Model
     public function ventas()
     {
         return $this->belongsToMany(Venta::class);
+    }
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+    public function combos()
+    {
+        return $this->belongsToMany(Combo::class);
+    }
+    public function deshechos()
+    {
+        return $this->belongsToMany(Deshecho::class);
     }
 }

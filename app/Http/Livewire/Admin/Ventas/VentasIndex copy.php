@@ -9,7 +9,6 @@ use App\Models\Producto;
 use App\Models\Sucursale;
 use App\Helpers\CreateList;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
 class VentasIndex extends Component
 {
@@ -28,7 +27,6 @@ class VentasIndex extends Component
 
     public function crear(){
         $this->validate();
-       
         Venta::create([
             'usuario_id'=>auth()->user()->id,
             'sucursale_id'=>$this->sucursal,
@@ -53,16 +51,23 @@ class VentasIndex extends Component
         if($this->cantidadespecifica!=null)
         {
             $cuenta = Venta::find($this->cuenta->id);
-          
-            DB::table('producto_venta')
-            ->where('venta_id', $cuenta->id)
-            ->where('producto_id', $producto->id)
-            ->increment('cantidad',$this->cantidadespecifica);  
-           $this->actualizarlista($cuenta);
-         
+            for ($i=0; $i <$this->cantidadespecifica ; $i++) { 
+                $cuenta->productos()->attach($producto->id); 
+            }
+           
+            
+            $resultado=CreateList::crearlista($cuenta);
+            $this->listacuenta=$resultado[0];
+            DB::table('ventas')
+            ->where('id', $cuenta->id)
+            ->update(['total' => $resultado[1]]);
+            $this->cuenta->total=$resultado[1];
+            $this->cuenta->puntos=$resultado[3];
+            $this->itemsCuenta=$resultado[2];
+            
             $this->dispatchBrowserEvent('alert',[
                 'type'=>'success',
-                'message'=>"Se agrego ".$this->cantidadespecifica." ".$producto->nombre."(s) a esta venta"
+                'message'=>"Se agrego ".$producto->nombre." a esta venta"
             ]);
             $this->reset('cantidadespecifica');
         }
@@ -78,7 +83,10 @@ class VentasIndex extends Component
         
     }
 
-    public function actualizarlista($cuenta){
+    public function adicionar1(Producto $producto){
+        $cuenta = Venta::find($this->cuenta->id);
+        $cuenta->productos()->attach($producto->id); 
+        
         $resultado=CreateList::crearlista($cuenta);
         $this->listacuenta=$resultado[0];
         DB::table('ventas')
@@ -87,8 +95,14 @@ class VentasIndex extends Component
         $this->cuenta->total=$resultado[1];
         $this->cuenta->puntos=$resultado[3];
         $this->itemsCuenta=$resultado[2];
-    }
+        
+        $this->dispatchBrowserEvent('alert',[
+            'type'=>'success',
+            'message'=>"Se agrego ".$producto->nombre." a esta venta"
+        ]);
 
+        
+    }
     public function adicionar(Producto $producto){
         $cuenta = Venta::find($this->cuenta->id);
         $registro = DB::table('producto_venta')->where('producto_id',$producto->id)->where('venta_id',$cuenta->id)->get();
@@ -96,6 +110,10 @@ class VentasIndex extends Component
         if($registro->count()==0)
         {
             $cuenta->productos()->attach($producto->id); 
+            $this->dispatchBrowserEvent('alert',[
+                'type'=>'success',
+                'message'=>"Se creo"
+            ]);
         }
         else
         {
@@ -103,11 +121,12 @@ class VentasIndex extends Component
                   ->where('venta_id', $cuenta->id)
                   ->where('producto_id', $producto->id)
                   ->increment('cantidad',1);  
+                  $this->dispatchBrowserEvent('alert',[
+                    'type'=>'success',
+                    'message'=>"Ya existe"
+                ]);
+                
         }
-        $this->dispatchBrowserEvent('alert',[
-            'type'=>'success',
-            'message'=>"Se agrego 1 ".$producto->nombre." a esta venta"
-        ]);
         $resultado=CreateList::crearlista($cuenta);
         $this->listacuenta=$resultado[0];
         DB::table('ventas')
@@ -116,35 +135,28 @@ class VentasIndex extends Component
         $this->cuenta->total=$resultado[1];
         $this->cuenta->puntos=$resultado[3];
         $this->itemsCuenta=$resultado[2];
+        
+       
+        
     }
 
     public function eliminaruno(Producto $producto){
         
 
         $cuenta = Venta::find($this->cuenta->id);
-        $registro = DB::table('producto_venta')->where('producto_id',$producto->id)->where('venta_id',$cuenta->id)->get();
-       
-        if($registro[0]->cantidad==1)
-        {
-            $cuenta->productos()->detach($producto->id);
-        }
-       else
-       {
-        DB::table('producto_venta')
-        ->where('venta_id', $cuenta->id)
-        ->where('producto_id', $producto->id)
-        ->decrement('cantidad',1);   
-       }
-       
-       $resultado=CreateList::crearlista($cuenta);
+        $registro = DB::table('producto_venta')->where('producto_id',$producto->id)->where('venta_id',$cuenta->id)->latest()->first();
+        
+        $cuenta->productos()->newPivotStatementForId($producto->id)->whereId($registro->id)->delete();
+        
+        $resultado=CreateList::crearlista($cuenta); 
         $this->listacuenta=$resultado[0];
         DB::table('ventas')
         ->where('id', $cuenta->id)
         ->update(['total' => $resultado[1]]);
         $this->cuenta->total=$resultado[1];
         $this->cuenta->puntos=$resultado[3];
-        $this->itemsCuenta=$resultado[2]; 
-       
+        $this->itemsCuenta=$resultado[2];
+
         $this->dispatchBrowserEvent('alert',[
             'type'=>'success',
             'message'=>"Se elimino 1 ".$producto->nombre." de esta venta"
@@ -163,6 +175,7 @@ class VentasIndex extends Component
         $this->cuenta->total=$resultado[1];
         $this->cuenta->puntos=$resultado[3];
         $this->itemsCuenta=$resultado[2];
+
         $this->dispatchBrowserEvent('alert',[
             'type'=>'success',
             'message'=>"Se elimino a ".$producto->nombre." de esta venta"
@@ -173,7 +186,14 @@ class VentasIndex extends Component
         $this->cuenta=$venta;
         $listafiltrada=$venta->productos->pluck('nombre');
         
-      $this->actualizarlista($venta);
+        $resultado=CreateList::crearlista($venta); 
+        $this->listacuenta=$resultado[0];
+        DB::table('ventas')
+        ->where('id', $venta->id)
+        ->update(['total' => $resultado[1]]);
+        $this->cuenta->total=$resultado[1];
+        $this->cuenta->puntos=$resultado[3];
+        $this->itemsCuenta=$resultado[2];
     }
 
     public function eliminar(Venta $venta)
@@ -190,7 +210,9 @@ class VentasIndex extends Component
                     $this->reset();
                 }
             }
+          
             
+       
     }
     
     public function render()

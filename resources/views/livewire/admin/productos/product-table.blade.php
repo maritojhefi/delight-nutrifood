@@ -17,8 +17,10 @@
                                 <th><strong>Nombre</strong></th>
                                 <th><strong>Precio</strong></th>
                                 <th><strong>Stock</strong></th>
+                                <th><strong>Puntos</strong></th>
                                 <th><strong>Subcategoria</strong></th>
                                 <th><strong>Codigo Barra</strong></th>
+                                <th><strong>Medicion</strong></th>
                                 <th><strong>Estado</strong></th>
                                
                                 <th><strong>Acciones</strong></th>
@@ -37,12 +39,14 @@
 
                             @endif
                             <td><span class="w-space-no">{{$item->stockProductos->count()}}</span></td>
+                            <td><span class="w-space-no">{{$item->puntos}}</span></td>
                             <td><span class="w-space-no">{{$item->subcategoria->nombre}}</span></td>
                             @if ($item->codigoBarra)
                             <td><img src="data:image/png;base64,{{DNS1D::getBarcodePNG($item->codigoBarra, 'C39+',1,33)}}" alt=""></td>
                             @else
                             <td><span class="badge light badge-danger">Sin codigo</span></td>
                             @endif
+                            <td><span class="w-space-no">{{$item->medicion}}</span></td>
                             <td><a href="#" wire:click="cambiarestado('{{$item->id}}')"><div class="d-flex align-items-center"><i class="fa fa-circle text-{{$item->estado=='activo'?'success':'danger'}} me-1" ></i> {{$item->estado}}</div></a></td>
                             
                            

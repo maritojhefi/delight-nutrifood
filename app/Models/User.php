@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Models\Role;
 use App\Models\Venta;
+use App\Models\Pensione;
+use App\Models\Traslado;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
@@ -61,4 +63,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Venta::class);
     }
+    public function pensione()
+    {
+        return $this->belongsTo(Pensione::class);
+    }
+   
 }

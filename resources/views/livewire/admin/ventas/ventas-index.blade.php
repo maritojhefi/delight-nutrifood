@@ -6,14 +6,14 @@
             <div class="">
                 
                     @foreach ($ventas as $item)
-                    <div class="alert alert-{{$item->productos->count()>0?'success':'dark'}} alert-dismissible alert-alt fade show">
+                    <div class="alert alert-{{$item->productos->count()>0?'success':'dark' }}@isset($cuenta) {{$item->id==$cuenta->id?'solid':''}}@endisset  alert-dismissible alert-alt fade show">
                         @if($item->productos->count()==0)
                         <button type="button" class="btn-close" wire:click="eliminar('{{ $item->id }}')">
                         </button>
                         @endif
                         
                         <a href="#" wire:click="seleccionar('{{ $item->id }}')">
-                            #{{$item->id}} <span class="badge badge-xs light badge-dark">{{$item->sucursale->nombre}}</span>  <strong>{{$item->total}} Bs</strong>
+                            #{{$item->id}}@isset($item->cliente)<span class="badge badge-xs light badge-dark">{{Str::limit($item->cliente->name, 10)}}</span> @endisset  <strong>{{$item->total}} Bs</strong>
                         </a>
                     </div>
                       @endforeach
@@ -54,16 +54,8 @@
                                    <a href="#" class="m-2" wire:click="seleccionarcliente('{{ $item->id }}','{{$item->name}}')"><span class="badge light badge-primary"> {{$item->name}} <i class="fa fa-check"></i></span></a> 
                                     @endforeach
                                     </div>
-                                   
-                                   
                                     <button type="button" wire:click="crear" class="btn btn-primary btn-sm">Crear Cuenta</button>
-                          
-                            
-                       
-
-
-
-                    </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -72,7 +64,7 @@
     @isset($cuenta)
     <x-card-col4>
         <h4 class="d-flex justify-content-between align-items-center mb-3">
-            <span class="m-3 text-muted" wire:loading.remove>(Venta #{{$cuenta->id}})</span> <br>
+            <small class="m-3 text-muted" wire:loading.remove>Venta #{{$cuenta->id}}</small> <br>
             @if($cuenta->cliente)
             <span class="badge light badge-success">{{$cuenta->cliente->name}}</span>
             @else
@@ -91,28 +83,42 @@
                     <div>
                         <div class="row">
                             <div class="col-3"><img src="{{asset($item['foto'])}}" alt="" class="me-3 rounded" width="50"></div>
-                            <div class="col"><h6 class="my-0">{{$item['nombre']}}</h6></div>
+                            <div class="col"><h6 class="my-0"><small>{{$item['nombre']}}</small></h6></div>
                         </div>
                         
                         <small class="text-muted">
-                          <a href="#" wire:click="adicionar('{{ $item['id'] }}')"><span class="badge badge-xs light badge-success"><i class="fa fa-plus"></i></span></a> 
-                            <strong>{{$item['cantidad']}}</strong> 
-                           <a href="#" wire:click="eliminaruno('{{ $item['id'] }}')"> <span class="badge badge-xs light badge-danger"><i class="fa fa-minus"></i></span></a>
-                             ({{$item['precio']}}Bs c/u)
-
-                            <a href="#" class="btn btn-danger shadow btn-xs sharp" wire:click="eliminarproducto('{{ $item['id'] }}')"><i class="fa fa-trash"></i></a>
-                           
-                        
+                            <div class="row">
+                                <div class="col">
+                                    <a href="#" wire:click="adicionar('{{ $item['id'] }}')"><span class="badge badge-xs light badge-success"><i class="fa fa-plus"></i></span></a> 
+                                    <strong>{{$item['cantidad']}}</strong> {{$item['medicion']}}(s)
+                                   <a href="#" wire:click="eliminaruno('{{ $item['id'] }}')"> <span class="badge badge-xs light badge-danger"><i class="fa fa-minus"></i></span></a>
+                                    <a href="#" class="btn btn-danger shadow btn-xs sharp" wire:click="eliminarproducto('{{ $item['id'] }}')"><i class="fa fa-trash"></i></a>
+                                </div> 
+                            </div>
+                         
                         </small>
                     </div>
-                    <span class="text-muted">{{$item['subtotal']}} Bs</span>
+                    <div>
+                        <span class="text-muted row">{{$item['subtotal']}} Bs</span>
+                        <div x-data="{ open: false }">
+                            <button @click="open = ! open" class="badge badge-xs light badge-info">Añadir</button>
+                         
+                            <div x-show="open" @click.outside="open = false"> <div class="mb-3 col-md-2">
+                                <input type="text" class="form-control" wire:model.lazy="cantidadespecifica" style="padding: 3px;height:30px;width:40px" value="{{$item['cantidad']}}">
+                            </div>
+                        <button class="btn btn-xxs light btn-warning" wire:click="adicionarvarios('{{ $item['id'] }}')"><i class="fa fa-plus"></i></button>
+                   </div>
+                        </div>
+                       
+                    </div>
+                    
                 </li>
                 @endforeach
                 
           
             <li class="list-group-item d-flex justify-content-between">
                 <span>Total</span>
-                <strong>{{$cuenta->total}}</strong>
+                <strong>{{$cuenta->total}} Bs/{{$cuenta->puntos}} pts</strong>
             </li>
         </ul>
 
@@ -134,7 +140,10 @@
 
                         </div>
                         <div class="col">
-                            {{$item->nombre}} 
+                            {{$item->nombre}}
+                             @if ($item->puntos!=0 && $item->puntos !=null)
+                            ({{$item->puntos}}pts)
+                            @endif
                         </div>
                            
                        
@@ -148,7 +157,7 @@
                             @else
                             <span class="badge badge-xs light badge-warning">{{$item->precio}} Bs</span>
                             @endif
-                            <button type="button" class="btn btn-rounded btn-primary btn-xxs" wire:click="adicionar('{{ $item->id }}')" ><span class="btn-icon-start text-primary btn-xxs" ><i class="fa fa-shopping-cart"></i>
+                            <button type="button" class="btn btn-rounded btn-primary btn-xxs pull-right" wire:click="adicionar('{{ $item->id }}')" ><span class="btn-icon-start text-primary btn-xxs" ><i class="fa fa-shopping-cart"></i>
                             </span>Añadir</button>
                             
                         </div>

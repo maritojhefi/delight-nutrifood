@@ -25,7 +25,7 @@ class SubcategoriaSeeder extends Seeder
             'categoria_id'=>1
         ]);
         Subcategoria::create([
-            'nombre'=>'Jugos Naturales',
+            'nombre'=>'Granel',
             'descripcion'=>'Jugos elaborados con frutas de temporada y variedad de ingredientes 100% naturales',
             'categoria_id'=>1
         ]);

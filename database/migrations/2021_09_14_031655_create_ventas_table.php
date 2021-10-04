@@ -24,6 +24,7 @@ class CreateVentasTable extends Migration
             $table->integer('total')->nullable()->unsigned()->default(0);
             $table->integer('puntos')->nullable()->unsigned()->default(0);
             $table->integer('descuento')->nullable()->unsigned()->default(0);
+            $table->string('tipo', 100)->nullable();
             $table->timestamps();
         });
     }

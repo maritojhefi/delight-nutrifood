@@ -18,12 +18,14 @@ class CreateProductosTable extends Migration
             $table->string('nombre', 100)->nullable();
             $table->unsignedBigInteger('subcategoria_id')->nullable();
             $table->foreign('subcategoria_id')->references('id')->on('subcategorias');
-            $table->integer('precio')->nullable();
+            $table->decimal('precio')->nullable();
             $table->string('detalle')->nullable();
             $table->string('imagen')->nullable();
             $table->string('estado')->nullable()->default('activo');
             $table->string('codigoBarra')->nullable();
-            $table->string('descuento', 100)->nullable();
+            $table->decimal('descuento')->nullable();
+            $table->integer('puntos')->unsigned()->nullable()->default(0);
+            $table->string('medicion')->default('unidad');
             $table->timestamps();
         });
     }

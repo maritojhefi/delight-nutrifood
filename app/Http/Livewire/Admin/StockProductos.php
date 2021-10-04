@@ -9,6 +9,7 @@ use Livewire\Component;
 use App\Models\Producto;
 use App\Models\Sucursale;
 use App\Models\Stock_producto;
+use Illuminate\Support\Facades\DB;
 
 class StockProductos extends Component
 {
@@ -16,6 +17,7 @@ class StockProductos extends Component
     public $search;
     public $prodlisto;
     public $cantidad,$fecha_venc;
+    public $stock;
    
     protected $rules = [
         'cantidad' => 'required|integer',
@@ -27,34 +29,44 @@ class StockProductos extends Component
     public function seleccionar(Producto $prod)
     {
         $this->prodlisto=$prod;
+        $registro = DB::table('producto_sucursale')
+        ->where('producto_id',$this->prodlisto->id)
+        ->where('sucursale_id',$this->sucursal)
+        ->get();
+
+        $this->stock=$registro->pluck('cantidad')->sum();
     }
     public function submit()
     {
         $this->validate();
  
         // Execution doesn't reach here if validation fails.
-     for ($i=0; $i <$this->cantidad ; $i++) { 
-        Stock_producto::create([
-        'fecha_venc' => $this->fecha_venc,
-        'fecha_entrada'=>Carbon::now(),
-        'usuario_id' => auth()->user()->id,
-        'sucursale_id'=>$this->sucursal,
-        'producto_id'=>$this->prodlisto->id
+        DB::beginTransaction();
+        $sucursal=Sucursale::find($this->sucursal);
+        $sucursal->productos()->attach($this->prodlisto->id);
         
-    ]);
- }
+        $registro = DB::table('producto_sucursale')->where('producto_id',$this->prodlisto->id)->where('sucursale_id',$this->sucursal)->get()->last();
         
+        DB::table('producto_sucursale')
+        ->where('id', $registro->id)
+        ->increment('cantidad',$this->cantidad);  
+
+        DB::table('producto_sucursale')
+        ->where('id', $registro->id)
+        ->update(['fecha_venc'=>$this->fecha_venc]); 
+       DB::commit();
          $this->dispatchBrowserEvent('alert',[
             'type'=>'success',
             'message'=>"Se agregaron ".$this->cantidad." productos de ".$this->prodlisto->nombre
         ]);
+        $this->reset(['prodlisto','cantidad','fecha_venc']);
        
     }
     public function render()
     {
       
         $sucursales=Sucursale::all();
-        $productos=Producto::where('codigoBarra',$this->search)->orWhere('nombre','LIKE','%'.$this->search.'%')->take(5)->get();
+        $productos=Producto::where('codigoBarra',$this->search)->orWhere('nombre','LIKE','%'.$this->search.'%')->take(3)->get();
         
         return view('livewire.admin.stock-productos',compact('sucursales','productos'))
         ->extends('admin.master')

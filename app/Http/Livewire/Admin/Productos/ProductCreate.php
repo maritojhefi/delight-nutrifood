@@ -14,13 +14,13 @@ class ProductCreate extends Component
 {
     use WithFileUploads;
     public $nombre, $detalle, $cat;
-    public $precio , $imagen, $descuento;
+    public $precio , $imagen, $descuento, $medicion, $puntos;
  
     protected $rules = [
         'nombre' => 'required|min:6|unique:productos,nombre',
         'detalle' => 'required|min:15',
-        'cat' => 'required',
-        'precio' => 'required|integer',
+        'cat' => 'required|integer',
+        'precio' => 'required|numeric|min:0',
         
     ];
  
@@ -34,7 +34,18 @@ class ProductCreate extends Component
  
         // Execution doesn't reach here if validation fails.
  
-       
+       if($this->descuento=="")
+       {
+           $this->descuento=null;
+       }
+       if($this->puntos=="")
+       {
+           $this->puntos=null;
+       }
+       if($this->medicion=="" || $this->medicion==null)
+       {
+           $this->medicion='unidad';
+       }
         if($this->imagen){
             $this->validate([
                 'imagen'=>'required|mimes:jpeg,bmp,png,gif|max:10240'
@@ -57,6 +68,8 @@ class ProductCreate extends Component
                 'precio' => $this->precio,
                 'descuento' => $this->descuento,
                 'imagen' => $filename,
+                'medicion' => $this->medicion,
+                'puntos' => $this->puntos,
             ]);
             $producto->codigoBarra='delight'.$producto->id;
             $producto->save();
@@ -69,7 +82,8 @@ class ProductCreate extends Component
                 'subcategoria_id' => $this->cat,
                 'precio' => $this->precio,
                 'descuento' => $this->descuento,
-               
+                'medicion' => $this->medicion,
+                'puntos' => $this->puntos,
                 
             ]); 
             $producto->codigoBarra='delight'.$producto->id;

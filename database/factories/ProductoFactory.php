@@ -30,6 +30,7 @@ class ProductoFactory extends Factory
             'imagen'=>'delight_logo.jpg',
             'codigoBarra'=>'delight'.$this->faker->numberBetween($min = 1, $max = 1000),
             'descuento'=>$this->faker->numberBetween($min = 10, $max = 1000),
+            'puntos'=>$this->faker->numberBetween($min = 3, $max = 20),
         ];
     }
 }

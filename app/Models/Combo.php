@@ -6,17 +6,15 @@ use App\Models\Producto;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Stock_producto extends Model
+class Combo extends Model
 {
     use HasFactory;
-    
     protected $fillable = [
-        'fecha_venc','fecha_entrada','usuario_id','sucursale_id','producto_id'
+        'nombre','precio'
        
     ];
-    public function producto()
+    public function productos()
     {
-        return $this->belongsTo(Producto::class);
+        return $this->belongsToMany(Producto::class);
     }
-
 }

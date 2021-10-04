@@ -11,7 +11,9 @@
                         'Precio'=>['precio','number'],
                         'Detalle'=>['detalle','textarea'],
                         'Imagen'=>['imagen','file'],
-                        'Descuento'=>['descuento','number'],
+                        'Descuento'=>['descuento','number','Opcional'],
+                        'Puntos'=>['puntos','number','Opcional']
+                        
                           ])" >
                                    
                           @if ($imagen)
@@ -31,7 +33,20 @@
                                     </select>
                                 </div>
                             </div>
-                           
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label">Medicion</label>
+                                <div class="col-sm-9">
+                                    <select  wire:model="medicion"  class="form-control @error($medicion)is-invalid @enderror">
+                                        
+                                       
+                                        <option value="unidad" class="dropdown-item" aria-labelledby="dropdownMenuButton" >Unidades</option>
+                                        <option value="gramo" class="dropdown-item" aria-labelledby="dropdownMenuButton" >Gramos</option>
+                                        
+                                        
+                                        
+                                    </select>
+                                </div>
+                            </div>
                         </x-slot>
                     </x-create-form>
                    

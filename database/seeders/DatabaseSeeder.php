@@ -8,6 +8,7 @@ use App\Models\Sucursale;
 use Illuminate\Database\Seeder;
 use Database\Seeders\RoleSeeder;
 use Database\Seeders\UserSeeder;
+use Database\Seeders\ProductoSeeder;
 use Database\Seeders\SucursalSeeder;
 use Database\Seeders\CategoriaSeeder;
 use Database\Seeders\SubcategoriaSeeder;
@@ -27,7 +28,8 @@ class DatabaseSeeder extends Seeder
         $this->call(SubcategoriaSeeder::class);
         $this->call(RoleSeeder::class);
         $this->call(UserSeeder::class);
-        Producto::factory(100)->create();
+        $this->call(ProductoSeeder::class);
+        //Producto::factory(100)->create();
         User::factory(100)->create();
         
     }
