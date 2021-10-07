@@ -21,7 +21,10 @@ class Producto extends Model
     ];
     public function sucursale()
     {
-        return $this->belongsToMany(Sucursale::class);
+        
+        return $this->belongsToMany(Sucursale::class)
+        ->withPivot('sucursale_id','cantidad','id','fecha_venc')
+        ->wherePivot('cantidad','!=',0);
     }
    
     public function subcategoria()
@@ -33,7 +36,8 @@ class Producto extends Model
     }
     public function ventas()
     {
-        return $this->belongsToMany(Venta::class);
+        return $this->belongsToMany(Venta::class)
+        ->withPivot('cantidad','adicionales');
     }
     public function tags()
     {

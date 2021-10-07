@@ -38,7 +38,12 @@
                             <td><span class="w-space-no badge light badge-success">{{$item->precio}} Bs</span></td>
 
                             @endif
-                            <td><span class="w-space-no">{{$item->stockProductos->count()}}</span></td>
+                            <td><span class="w-space-no">
+                                
+                                <button class="btn btn-success light btn-xxs" data-bs-toggle="modal" data-bs-target="#modalgrande{{$item->id}}">Ver stock</button>
+                               
+                                </span>
+                            </td>
                             <td><span class="w-space-no">{{$item->puntos}}</span></td>
                             <td><span class="w-space-no">{{$item->subcategoria->nombre}}</span></td>
                             @if ($item->codigoBarra)
@@ -70,6 +75,41 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-danger btn-sm light" data-bs-dismiss="modal">Cancelar</button>
                                         <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal" wire:click="eliminar('{{ $item->id }}')">Aceptar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="modal fade" id="modalgrande{{$item->id}}">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Lotes dentro de cada sucursal para "{{$item->nombre}}"</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                       @if($item->sucursale->count()!=0)
+                                       @foreach ($item->sucursale as $stock)
+                                       <div class="card overflow-hidden bg-image-2 bg-secondary">
+                                           <div class="card-header  border-0">
+                                               <div>
+                                                   <p class="mb-2 font-w100 text-white">Lugar: {{$stock->pivot->sucursale_id}}  -  Vencimiento: {{date('d-m-Y', strtotime($stock->pivot->fecha_venc))}}</p>
+                                                   <h3 class="mb-0 fs-24 font-w600 text-white">Cantidad: {{$stock->pivot->id}}</h3>
+                                               </div>
+                                           </div>
+                                       </div>
+                                       
+                                       @endforeach
+                                       
+                                       @else
+                                           No hay registro de stock para este producto
+                                       @endif
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Cerrar</button>
+                                       
                                     </div>
                                 </div>
                             </div>

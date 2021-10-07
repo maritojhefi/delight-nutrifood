@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Models\Role;
 use App\Models\Venta;
 use App\Models\Pensione;
@@ -65,7 +66,13 @@ class User extends Authenticatable
     }
     public function pensione()
     {
-        return $this->belongsTo(Pensione::class);
+        return $this->hasOne(Pensione::class);
+    }
+    public function dias(){
+        $fecha1 = Carbon::now();
+        $fecha2 = date_create($this->fecha_venc);
+        $dias = date_diff($fecha1, $fecha2)->format('%R%a');
+        return $dias;
     }
    
 }

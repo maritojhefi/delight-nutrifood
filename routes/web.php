@@ -74,12 +74,17 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('crear', [App\Http\Controllers\admin\ProductosController::class, 'crear'])->name('producto.crear');
         Route::get('categoria', [App\Http\Controllers\admin\ProductosController::class, 'categoria'])->name('producto.categoria');
         Route::get('subcategoria', [App\Http\Controllers\admin\ProductosController::class, 'subcategoria'])->name('producto.subcategoria');
+        Route::get('adicionales', \App\Http\Livewire\Admin\Productos\Adicionales::class)->name('producto.adicionales');
+        Route::get('agregar/adicional', \App\Http\Livewire\Admin\Productos\AgregarAdicional::class)->name('producto.agregar.adicional');
     });
     Route::prefix('/usuarios')->group(function () {
    
         Route::get('/index', \App\Http\Livewire\Admin\Usuarios\UserIndex::class)->name('usuario.listar');
         Route::get('/roles', \App\Http\Livewire\Admin\Usuarios\RolesIndex::class)->name('usuario.roles');
         Route::get('/miperfil', \App\Http\Livewire\Admin\Usuarios\PerfilUsuario::class)->name('usuario.perfil');
+        Route::get('/pensionados', \App\Http\Livewire\Admin\Usuarios\Pensionados::class)->name('pensionados');
+        Route::get('/personal', \App\Http\Livewire\Admin\Usuarios\Personal::class)->name('personal');
+
     });
     Route::prefix('/sucursales')->group(function () {
    

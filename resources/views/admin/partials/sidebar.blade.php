@@ -14,7 +14,7 @@
                 <i class="flaticon-086-star"></i>
             </x-sidebar-elements>
            
-            <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="(['Listar Usuarios'=>'usuario.listar','Roles'=>'usuario.roles' ])">
+            <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="(['Listar Usuarios'=>'usuario.listar','Roles'=>'usuario.roles','Pensionados'=>'pensionados','Personal'=>'personal' ])">
                 <i class="flaticon-045-heart"></i>
             </x-sidebar-elements>
            
@@ -31,7 +31,9 @@
                 'Listar Productos'=>'producto.listar',
                 'Crear Nuevo'=>'producto.crear',
                 'Categorias'=>'producto.categoria',
-                'Subcategorias'=>'producto.subcategoria'
+                'Subcategorias'=>'producto.subcategoria',
+                'Adicionales'=>'producto.adicionales',
+                'Agregar adicional a subcategoria'=>'producto.agregar.adicional'
                  ])">
                 <i class="flaticon-043-menu"></i>
             </x-sidebar-elements>

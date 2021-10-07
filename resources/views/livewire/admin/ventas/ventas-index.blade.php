@@ -65,6 +65,7 @@
     <x-card-col4>
         <h4 class="d-flex justify-content-between align-items-center mb-3">
             <small class="m-3 text-muted" wire:loading.remove>Venta #{{$cuenta->id}}</small> <br>
+            <small class="m-3 text-muted" wire:loading>Actualizando...</small>
             @if($cuenta->cliente)
             <span class="badge light badge-success">{{$cuenta->cliente->name}}</span>
             @else
@@ -72,7 +73,7 @@
 
             @endif
            
-            <span class="m-3 text-muted" wire:loading>Actualizando...</span>
+            
             <span class="badge badge-primary badge-pill">{{$itemsCuenta}}</span>
         </h4>
         <ul class="list-group mb-3">
@@ -83,7 +84,7 @@
                     <div>
                         <div class="row">
                             <div class="col-3"><img src="{{asset($item['foto'])}}" alt="" class="me-3 rounded" width="50"></div>
-                            <div class="col"><h6 class="my-0"><small>{{$item['nombre']}}</small></h6></div>
+                            <div class="col"><a href="#" wire:click="mostraradicionales('{{ $item['id'] }}')"><h6 class="my-0"><small class="@isset($productoapuntado){{$item['nombre']==$productoapuntado->nombre?'text-success':''}} @endisset">{{$item['nombre']}}</small></h6></a></div>
                         </div>
                         
                         <small class="text-muted">
@@ -97,17 +98,37 @@
                             </div>
                          
                         </small>
+                        @isset($productoapuntado)
+                        @if($productoapuntado->id==$item['id'])
+                        @foreach ($array as $lista)
+                       <ul>
+                           <li> <small class="badge badge-xs badge-warning">{{$loop->iteration}}</small>
+                            @foreach ($lista as $posicion=>$adic)
+                            @foreach ($adic as $nombre=>$precio)
+                                <small class="badge badge-xs light badge-warning">{{$nombre}} <label class="text-dark">{{$precio}}Bs</label></small>
+                            @endforeach
+                          
+                           @endforeach</li>
+                       </ul>
+                       
+                        
+                           
+                        @endforeach
+                        @endif
+                        @endisset
+                       
                     </div>
                     <div>
                         <span class="text-muted row">{{$item['subtotal']}} Bs</span>
                         <div x-data="{ open: false }">
                             <button @click="open = ! open" class="badge badge-xs light badge-info">Añadir</button>
                          
-                            <div x-show="open" @click.outside="open = false"> <div class="mb-3 col-md-2">
+                            <div x-show="open" @click.outside="open = false"> 
+                                <div class="mb-3 col-md-2">
                                 <input type="text" class="form-control" wire:model.lazy="cantidadespecifica" style="padding: 3px;height:30px;width:40px" value="{{$item['cantidad']}}">
+                                </div>
+                                <button class="btn btn-xxs light btn-warning" wire:click="adicionarvarios('{{ $item['id'] }}')"><i class="fa fa-plus"></i></button>
                             </div>
-                        <button class="btn btn-xxs light btn-warning" wire:click="adicionarvarios('{{ $item['id'] }}')"><i class="fa fa-plus"></i></button>
-                   </div>
                         </div>
                        
                     </div>
@@ -121,12 +142,29 @@
                 <strong>{{$cuenta->total}} Bs/{{$cuenta->puntos}} pts</strong>
             </li>
         </ul>
-
-   
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Codigo Promocional">
-                <button type="submit" class="input-group-text">Agregar</button>
-            </div>
+        
+        @isset($productoapuntado)
+        
+        <label>Adicionales para {{$productoapuntado->nombre}}({{$adicionales->count()}})</label>
+        <div class="input-group">
+            @foreach ($productoapuntado->ventas->where('id',$cuenta->id) as $agregados)
+            @for ($i = 1; $i <= $agregados->pivot->cantidad; $i++)
+            <a href="#" wire:click="seleccionaritem('{{ $i }}')"><i class="badge badge-rounded badge-outline-warning {{$itemseleccionado==$i?'badge-outline-dark':''}} m-2">{{ $i }}</i></a> 
+            @endfor
+            @endforeach
+       
+        
+            @isset($itemseleccionado)
+            @foreach ($adicionales as $item)
+            <a href="#" wire:click="agregaradicional('{{ $item->id }}', '{{ $itemseleccionado }}')"><i class="badge badge-rounded badge-outline-primary m-2">{{$item->nombre}}</i></a> 
+             @endforeach
+            @endisset
+         
+        </div>
+        @endisset
+        
+       
+            
     </x-card-col4>
    <x-card-col4>
         <div class="basic-list-group m-3">

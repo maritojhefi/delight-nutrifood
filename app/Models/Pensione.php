@@ -15,6 +15,6 @@ class Pensione extends Model
     ];
     public function usuario()
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
     }
 }

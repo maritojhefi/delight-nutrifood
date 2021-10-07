@@ -18,7 +18,8 @@ class Sucursale extends Model
     ];
     public function productos()
     {
-        return $this->belongsToMany(Producto::class);
+        return $this->belongsToMany(Producto::class)
+        ->withPivot('producto_id','usuario_id','cantidad','fecha_venc');
 
     }
     public function ventas()
