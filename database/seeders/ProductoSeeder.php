@@ -15,33 +15,33 @@ class ProductoSeeder extends Seeder
     public function run()
     {
         Producto::create(
-            ['nombre'=>'Naranja',
-            'subcategoria_id'=>'1',
-            'precio'=>'2',
+            ['nombre'=>'Licuado de agua',
+            'subcategoria_id'=>6,
+            'precio'=>'5',
             'detalle'=>'nada',
             'imagen'=>'delight_logo.jpg',
             'estado'=>'activo',
             'codigoBarra'=>'delight-123',
-            'descuento'=>'20',
+            'descuento'=>'4',
             'puntos'=>'1',
             ]);
             Producto::create(
-                ['nombre'=>'Manzana',
+                ['nombre'=>'Sandwich integral',
                 'subcategoria_id'=>'2',
-                'precio'=>'4.30',
+                'precio'=>'12',
                 'detalle'=>'nada',
                 'imagen'=>'delight_logo.jpg',
                 'estado'=>'activo',
                 'codigoBarra'=>'delight-123',
-                'descuento'=>'18',
+               
                 'puntos'=>'2',
                 ]);
 
                 Producto::create(
-                    ['nombre'=>'Pera',
-                    'subcategoria_id'=>'3',
-                    'precio'=>'3.5',
-                    'detalle'=>'nada',
+                    ['nombre'=>'Almuerzo ejecutivo',
+                    'subcategoria_id'=>'8',
+                    'precio'=>'15.5',
+                    'detalle'=>'almuerzo que incluye pollo asado, papa hervida etc',
                     'imagen'=>'delight_logo.jpg',
                     'estado'=>'activo',
                     'codigoBarra'=>'delight-123',
@@ -50,26 +50,26 @@ class ProductoSeeder extends Seeder
                     ]);
 
                     Producto::create(
-                        ['nombre'=>'Sandia',
-                        'subcategoria_id'=>'4',
-                        'precio'=>'10.50',
-                        'detalle'=>'nada',
+                        ['nombre'=>'Almuerzo vegano',
+                        'subcategoria_id'=>'8',
+                        'precio'=>'20.50',
+                        'detalle'=>'almuerzo con pollo a la plancha, brocoli, pure de almejas',
                         'imagen'=>'delight_logo.jpg',
                         'estado'=>'activo',
                         'codigoBarra'=>'delight-123',
-                        'descuento'=>'7',
+                       
                         'puntos'=>'4',
                         ]);
 
                         Producto::create(
                             ['nombre'=>'Grano de cafe',
-                            'subcategoria_id'=>'5',
-                            'precio'=>'1.75',
+                            'subcategoria_id'=>'7',
+                            'precio'=>'0.75',
                             'detalle'=>'nada',
                             'imagen'=>'delight_logo.jpg',
                             'estado'=>'activo',
                             'codigoBarra'=>'delight-123',
-                            'descuento'=>'7',
+                            
                             'puntos'=>'1',
                             'medicion'=>'gramo'
                             ]);

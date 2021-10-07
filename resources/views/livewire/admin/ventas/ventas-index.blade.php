@@ -37,7 +37,7 @@
                                     <div class="row">
                                         <div class="mb-3 col-md-6 mt-2">
                                             <label class="form-label">Sucursal</label>
-                                            <select class="form-control form-control-sm  form-white @error($sucursal) is-invalid @enderror" wire:model="sucursal">
+                                            <select class="form-control form-control-sm  form-white @error($sucursal) is-invalid @enderror" wire:model.lazy="sucursal">
                                                 <option >Elija 1</option>
                                                 @foreach ($sucursales as $nombre=>$id)
                                                 <option value="{{$id}}">{{$nombre}}</option>
@@ -104,9 +104,12 @@
                        <ul>
                            <li> <small class="badge badge-xs badge-warning">{{$loop->iteration}}</small>
                             @foreach ($lista as $posicion=>$adic)
-                            @foreach ($adic as $nombre=>$precio)
+                           
+                                @foreach ($adic as $nombre=>$precio)
                                 <small class="badge badge-xs light badge-warning">{{$nombre}} <label class="text-dark">{{$precio}}Bs</label></small>
                             @endforeach
+                            
+                           
                           
                            @endforeach</li>
                        </ul>
@@ -125,7 +128,7 @@
                          
                             <div x-show="open" @click.outside="open = false"> 
                                 <div class="mb-3 col-md-2">
-                                <input type="text" class="form-control" wire:model.lazy="cantidadespecifica" style="padding: 3px;height:30px;width:40px" value="{{$item['cantidad']}}">
+                                <input type="number" class="form-control" wire:model.lazy="cantidadespecifica" style="padding: 3px;height:30px;width:40px" value="{{$item['cantidad']}}">
                                 </div>
                                 <button class="btn btn-xxs light btn-warning" wire:click="adicionarvarios('{{ $item['id'] }}')"><i class="fa fa-plus"></i></button>
                             </div>
@@ -155,9 +158,12 @@
        
         
             @isset($itemseleccionado)
+           
+            <ul id="myList">
             @foreach ($adicionales as $item)
-            <a href="#" wire:click="agregaradicional('{{ $item->id }}', '{{ $itemseleccionado }}')"><i class="badge badge-rounded badge-outline-primary m-2">{{$item->nombre}}</i></a> 
+            <li><a href="#" wire:click="agregaradicional('{{ $item->id }}', '{{ $itemseleccionado }}')"><i class="badge badge-rounded badge-outline-primary m-2">{{$item->nombre}}</i></a> </li>  
              @endforeach
+            </ul>
             @endisset
          
         </div>
@@ -212,5 +218,7 @@
    </x-card-col4>
    
     @endisset
-    
+   
+   
+
 </div>

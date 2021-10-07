@@ -25,6 +25,8 @@
     <link href="{{asset('css/style.css')}}" rel="stylesheet">
     <link href="{{asset('vendor/lightgallery/css/lightgallery.min.css')}}" rel="stylesheet">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+ 
   
     
     @livewireStyles
@@ -82,15 +84,15 @@
 @elseif('login')
 @yield('login')
 @endif
-        
-   
+
+@stack('scripts')
+
     <!-- Required vendors -->
     <script src="{{asset('vendor/global/global.min.js')}}"></script>
 	<script src="{{asset('vendor/chart.js/Chart.bundle.min.js')}}"></script>
-	<script src="{{asset('vendor/bootstrap-datetimepicker/js/moment.js')}}"></script>
-	<script src="{{asset('vendor/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js')}}"></script>
+	
 	<script src="{{asset('vendor/jquery-nice-select/js/jquery.nice-select.min.js')}}"></script>
-    <script src="{{asset('vendor/lightgallery/js/lightgallery-all.min.js')}}"></script>
+ 
 	<script src="{{asset('js/sweetalert.min.js')}}"></script>
 	<!-- Chart piety plugin files -->
     <script src="{{asset('vendor/peity/jquery.peity.min.js')}}"></script>

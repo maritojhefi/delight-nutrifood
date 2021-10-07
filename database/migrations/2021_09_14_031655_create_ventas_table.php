@@ -21,9 +21,9 @@ class CreateVentasTable extends Migration
             $table->foreign('sucursale_id')->references('id')->on('sucursales');
             $table->unsignedBigInteger('cliente_id')->nullable();
             $table->foreign('cliente_id')->references('id')->on('users');
-            $table->integer('total')->nullable()->unsigned()->default(0);
+            $table->decimal('total')->nullable()->unsigned()->default(0);
             $table->integer('puntos')->nullable()->unsigned()->default(0);
-            $table->integer('descuento')->nullable()->unsigned()->default(0);
+            $table->decimal('descuento')->nullable()->unsigned()->default(0);
             $table->string('tipo', 100)->nullable();
             $table->timestamps();
         });

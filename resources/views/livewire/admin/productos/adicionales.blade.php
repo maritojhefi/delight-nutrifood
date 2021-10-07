@@ -10,7 +10,7 @@
                         <x-input-create  :lista="([
                             'Nombre'=>['nombre','text'],
                             'Precio'=>['precio','number'],
-                              ])" >
+                              ])">
                         
                         </x-input-create>
                        
@@ -41,7 +41,7 @@
                                 @foreach ($adicionales as $item)
                                 <tr>
                                     <td><span class="badge light badge-info">{{$item->nombre}}</span></td>
-                                    <td>{{$item->precio}}</td>
+                                    <td>{{$item->precio}} Bs</td>
                                    
                                     
                                     
