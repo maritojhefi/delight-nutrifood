@@ -24,9 +24,10 @@ class CreateList {
          {
             $producto=Producto::find($item->producto_id);
             $adicionales=json_decode($item->adicionales, true);
+            $totaladicionales=0;
             if(isset($adicionales))
             {
-                $totaladicionales=0;
+                
                 foreach($adicionales as $array)
                 {
                     if(isset($array))
