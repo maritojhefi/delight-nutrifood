@@ -24,7 +24,7 @@ class CheckRol
         }
         if(auth()->user()->role->id==Role::CLIENTE) 
         {
-            return redirect('/');
+            return redirect('/miperfil');
 
         }
     }

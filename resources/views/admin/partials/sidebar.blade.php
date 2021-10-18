@@ -14,7 +14,11 @@
                 <i class="flaticon-086-star"></i>
             </x-sidebar-elements>
            
-            <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="(['Listar Usuarios'=>'usuario.listar','Roles'=>'usuario.roles','Pensionados'=>'pensionados','Personal'=>'personal' ])">
+            <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="([
+                'Listar Usuarios'=>'usuario.listar',
+                'Roles'=>'usuario.roles',
+                'Planes'=>'planes',
+                'Personal'=>'personal' ])">
                 <i class="flaticon-045-heart"></i>
             </x-sidebar-elements>
            

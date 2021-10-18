@@ -23,11 +23,22 @@
 	<link href="vendor/jquery-nice-select/css/nice-select.css" rel="stylesheet">
 	<!-- Style css -->
     <link href="{{asset('css/style.css')}}" rel="stylesheet">
+    
+   
+
     <link href="{{asset('vendor/lightgallery/css/lightgallery.min.css')}}" rel="stylesheet">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
  
-  
+  <script>
+      new TomSelect("#select-beast",{
+	create: true,
+	sortField: {
+		field: "text",
+		direction: "asc"
+	}
+});
+  </script>
     
     @livewireStyles
 	@livewireScripts

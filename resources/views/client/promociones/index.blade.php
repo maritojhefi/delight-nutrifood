@@ -7,178 +7,36 @@
     <div class="splide single-slider slider-no-arrows slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active" id="single-slider-2" style="visibility: visible;">
     <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button" aria-controls="single-slider-2-track" aria-label="Go to last slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button><button class="splide__arrow splide__arrow--next" type="button" aria-controls="single-slider-2-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button></div><div class="splide__track" id="single-slider-2-track">
     <div class="splide__list" id="single-slider-2-list" style="transform: translateX(-698px);">
+   
+    @foreach ($planes as $item)
     <div class="splide__slide splide__slide--clone" style="width: 349px;" aria-hidden="true" tabindex="-1">
-    <div data-card-height="400" class="card mx-3 rounded-m shadow-l" style="background-image: url(&quot;images/grocery/3.jpg&quot;); height: 400px;">
-    <div class="card-top">
-    <a href="#" class="bg-theme color-theme rounded-sm icon icon-xs float-end m-3"><i class="far fa-shopping-bag font-12"></i></a>
-    </div>
-    <div class="card-bottom p-3 m-2 rounded-m bg-white">
-    <a href="#">
-    <h1 class="font-18 line-height-m font-700 mb-0">
-    Red Fruit
-    </h1>
-    <p class="mb-0">
-    Locally grown and freshly brought to our store.
-    </p>
-    </a>
-    <div class="d-flex pt-3">
-    <div class="align-self-center">
-    <strong class="font-800 font-22 color-theme">$12.35</strong>
-    </div>
-    <div class="align-self-center ms-auto">
-    <a href="#" class="btn-s rounded-s btn bg-highlight font-700 text-uppercase mb-1">Add to Bag</a>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div><div class="splide__slide splide__slide--clone" style="width: 349px;">
-    <div data-card-height="400" class="card mx-3 rounded-m shadow-l" style="background-image: url(&quot;images/grocery/2.jpg&quot;); height: 400px;">
-    <div class="card-top">
-    <a href="#" class="bg-theme color-theme rounded-sm icon icon-xs float-end m-3"><i class="far fa-shopping-bag font-12"></i></a>
-    </div>
-    <div class="card-bottom p-3 m-2 rounded-m bg-white">
-    <a href="#">
-    <h1 class="font-18 line-height-m font-700 mb-0">
-    Wholegrain Bread
-    </h1>
-    <p class="mb-0">
-    Locally grown and freshly brought to our store.
-    </p>
-    </a>
-    <div class="d-flex pt-3">
-    <div class="align-self-center">
-    <strong class="font-800 font-22 color-theme">$2.35</strong>
-     </div>
-    <div class="align-self-center ms-auto">
-    <a href="#" class="btn-s rounded-s btn bg-highlight font-700 text-uppercase mb-1">Add to Bag</a>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div><div class="splide__slide is-active is-visible" id="single-slider-2-slide01" style="width: 349px;" aria-hidden="false" tabindex="0">
-    <div data-card-height="400" class="card mx-3 rounded-m shadow-l" style="background-image: url(&quot;images/grocery/1.jpg&quot;); height: 400px;">
-    <div class="card-top">
-    <a href="#" class="bg-theme color-theme rounded-sm icon icon-xs float-end m-3"><i class="far fa-shopping-bag font-12"></i></a>
-    </div>
-    <div class="card-bottom p-3 m-2 rounded-m bg-white">
-    <a href="#">
-    <h1 class="font-18 line-height-m font-700 mb-0">
-    Fresh Cranberries
-    </h1>
-    <p class="mb-0">
-    Locally grown and freshly brought to our store.
-    </p>
-    </a>
-    <div class="d-flex pt-3">
-    <div class="align-self-center">
-    <strong class="font-800 font-22 color-theme">$25.53</strong>
-    </div>
-    <div class="align-self-center ms-auto">
-    <a href="#" class="btn-s rounded-s btn bg-highlight font-700 text-uppercase mb-1">Add to Bag</a>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    <div class="splide__slide" id="single-slider-2-slide02" style="width: 349px;" aria-hidden="true" tabindex="-1">
-    <div data-card-height="400" class="card mx-3 rounded-m shadow-l" style="background-image: url(&quot;images/grocery/3.jpg&quot;); height: 400px;">
-    <div class="card-top">
-    <a href="#" class="bg-theme color-theme rounded-sm icon icon-xs float-end m-3"><i class="far fa-shopping-bag font-12"></i></a>
-    </div>
-    <div class="card-bottom p-3 m-2 rounded-m bg-white">
-    <a href="#">
-    <h1 class="font-18 line-height-m font-700 mb-0">
-    Red Fruit
-    </h1>
-    <p class="mb-0">
-    Locally grown and freshly brought to our store.
-    </p>
-    </a>
-    <div class="d-flex pt-3">
-    <div class="align-self-center">
-    <strong class="font-800 font-22 color-theme">$12.35</strong>
-    </div>
-    <div class="align-self-center ms-auto">
-    <a href="#" class="btn-s rounded-s btn bg-highlight font-700 text-uppercase mb-1">Add to Bag</a>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    <div class="splide__slide" id="single-slider-2-slide03" style="width: 349px;" aria-hidden="true" tabindex="-1">
-    <div data-card-height="400" class="card mx-3 rounded-m shadow-l" style="background-image: url(&quot;images/grocery/2.jpg&quot;); height: 400px;">
-    <div class="card-top">
-    <a href="#" class="bg-theme color-theme rounded-sm icon icon-xs float-end m-3"><i class="far fa-shopping-bag font-12"></i></a>
-    </div>
-    <div class="card-bottom p-3 m-2 rounded-m bg-white">
-    <a href="#">
-    <h1 class="font-18 line-height-m font-700 mb-0">
-    Wholegrain Bread
-    </h1>
-    <p class="mb-0">
-    Locally grown and freshly brought to our store.
-    </p>
-    </a>
-    <div class="d-flex pt-3">
-    <div class="align-self-center">
-    <strong class="font-800 font-22 color-theme">$2.35</strong>
-     </div>
-    <div class="align-self-center ms-auto">
-    <a href="#" class="btn-s rounded-s btn bg-highlight font-700 text-uppercase mb-1">Add to Bag</a>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    <div class="splide__slide splide__slide--clone" style="width: 349px;">
-    <div data-card-height="400" class="card mx-3 rounded-m shadow-l" style="background-image: url(&quot;images/grocery/1.jpg&quot;); height: 400px;">
-    <div class="card-top">
-    <a href="#" class="bg-theme color-theme rounded-sm icon icon-xs float-end m-3"><i class="far fa-shopping-bag font-12"></i></a>
-    </div>
-    <div class="card-bottom p-3 m-2 rounded-m bg-white">
-    <a href="#">
-    <h1 class="font-18 line-height-m font-700 mb-0">
-    Fresh Cranberries
-    </h1>
-    <p class="mb-0">
-    Locally grown and freshly brought to our store.
-    </p>
-    </a>
-    <div class="d-flex pt-3">
-    <div class="align-self-center">
-    <strong class="font-800 font-22 color-theme">$25.53</strong>
-    </div>
-    <div class="align-self-center ms-auto">
-    <a href="#" class="btn-s rounded-s btn bg-highlight font-700 text-uppercase mb-1">Add to Bag</a>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div><div class="splide__slide splide__slide--clone" style="width: 349px;">
-    <div data-card-height="400" class="card mx-3 rounded-m shadow-l" style="background-image: url(&quot;images/grocery/3.jpg&quot;); height: 400px;">
-    <div class="card-top">
-    <a href="#" class="bg-theme color-theme rounded-sm icon icon-xs float-end m-3"><i class="far fa-shopping-bag font-12"></i></a>
-    </div>
-    <div class="card-bottom p-3 m-2 rounded-m bg-white">
-    <a href="#">
-    <h1 class="font-18 line-height-m font-700 mb-0">
-    Red Fruit
-    </h1>
-    <p class="mb-0">
-    Locally grown and freshly brought to our store.
-    </p>
-    </a>
-    <div class="d-flex pt-3">
-    <div class="align-self-center">
-    <strong class="font-800 font-22 color-theme">$12.35</strong>
-    </div>
-    <div class="align-self-center ms-auto">
-    <a href="#" class="btn-s rounded-s btn bg-highlight font-700 text-uppercase mb-1">Add to Bag</a>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div></div>
+        <div data-card-height="400" class="card mx-3 rounded-m shadow-l" style="background-image: url(&quot;{{asset('delight_logo.jpg')}}&quot;); height: 400px;">
+        <div class="card-top">
+        <a href="#" class="bg-theme color-theme rounded-sm icon icon-xs float-end m-3"><i class="far fa-shopping-bag font-12"></i></a>
+        </div>
+        <div class="card-bottom p-3 m-2 rounded-m bg-white">
+        <a href="#">
+        <h1 class="font-18 line-height-m font-700 mb-0">
+        {{$item->nombre}}
+        </h1>
+        <p class="mb-0">
+            {{$item->producto->nombre}}({{$item->cantidad}} unidades)
+        </p>
+        </a>
+        <div class="d-flex pt-3">
+        <div class="align-self-center">
+        <strong class="font-800 font-22 color-theme">{{$item->precio}} Bs</strong>
+        </div>
+        <div class="align-self-center ms-auto">
+        <a href="#" class="btn-s rounded-s btn bg-highlight font-700 text-uppercase mb-1">Mas informacion</a>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+    @endforeach
+    
+   </div>
     </div>
     <ul class="splide__pagination"><li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-2-slide01" aria-label="Go to slide 1" aria-current="true"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-2-slide02" aria-label="Go to slide 2"></button></li><li><button class="splide__pagination__page" type="button" aria-controls="single-slider-2-slide03" aria-label="Go to slide 3"></button></li></ul></div>
     <div class="row mb-0">

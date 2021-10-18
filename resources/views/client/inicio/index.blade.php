@@ -1,62 +1,9 @@
 @extends('client.master')
 @section('content')
-<x-cabecera-pagina titulo="Ajustes" cabecera="bordeado"/>
+<x-cabecera-pagina titulo="Inicio" cabecera="bordeado"/>
 
    
-    <div class="content mb-2" style="z-index:10; position: relative;">
-    <div class="search-box search-dark shadow-m border-0 mt-4 bg-theme rounded-m bottom-0">
-    <i class="fa fa-search ms-n3"></i>
-    <input type="text" class="border-0" placeholder="Searching for something? Try 'all'" data-search="">
-    </div>
-    <div class="search-results disabled-search-list shadow-xl rounded-m mt-3">
-    <div class="card card-style mx-0 px-3 mt-0 mb-0 shadow-0">
-     <div class="list-group list-custom-large">
-    <a href="#" data-filter-item="" data-filter-name="all demo smartphone apple iphone ios">
-    <i class="fab fa-apple color-gray-dark"></i>
-    <span>Apple</span>
-    <strong>Works on iOS 10 and Higher</strong>
-    <i class="fa fa-angle-right"></i>
-    </a>
-    <a href="#" data-filter-item="" data-filter-name="all demo smartphone samsung android htc oneplus">
-    <i class="fab fa-android color-green-dark"></i>
-    <span>Android</span>
-    <strong>Works on Android 5.1.1 and Higher</strong>
-    <i class="fa fa-angle-right"></i>
-    </a>
-    <a href="#" data-filter-item="" data-filter-name="all demo code css3 css">
-    <i class="fab fa-css3 color-blue-dark font-17"></i>
-    <span>CSS3 </span>
-    <strong>Beautiful Design. Simple Code.</strong>
-    <i class="fa fa-angle-right"></i>
-    </a>
-    <a href="#" data-filter-item="" data-filter-name="fox all demo code html5 html">
-    <i class="fab fa-html5 color-orange-dark"></i>
-    <span>HTML5 </span>
-    <strong>Powerful and Universally Compatible</strong>
-    <i class="fa fa-angle-right"></i>
-    </a>
-    <a href="#" data-filter-item="" data-filter-name="all demo support help">
-    <i class="fa fa-life-ring color-red-dark font-17"></i>
-    <span>Support </span>
-    <strong>Elite Quality, 24/7 Support for Buyers</strong>
-    <i class="fa fa-angle-right"></i>
-    </a>
-    <a href="#" data-filter-item="" data-filter-name="all demo code js jquery java javascript">
-    <i class="fab fa-js color-yellow-dark font-17"></i>
-    <span>JavaScript </span>
-    <strong>Clean Code, Easy to Use and Modify</strong>
-    <i class="fa fa-angle-right"></i>
-    </a>
-    <a href="#" data-filter-item="" data-filter-name="all demo support elite help documentation">
-    <i class="fa fa-file color-gray-dark font-17"></i>
-    <span>Documentation </span>
-    <strong>Every Feature and Aspect Covered.</strong>
-    <i class="fa fa-angle-right"></i>
-    </a>
-    </div>
-    </div>
-    </div>
-    </div>
+    
     <div class="splide single-slider slider-no-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-1" style="visibility: visible;">
     <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button" aria-controls="single-slider-1-track" aria-label="Go to last slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button><button class="splide__arrow splide__arrow--next" type="button" aria-controls="single-slider-1-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path></svg></button></div><div class="splide__track" id="single-slider-1-track">
     <div class="splide__list" id="single-slider-1-list" style="transform: translateX(-836px);">

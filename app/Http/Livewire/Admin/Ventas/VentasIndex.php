@@ -3,15 +3,18 @@
 namespace App\Http\Livewire\Admin\Ventas;
 
 use App\Models\User;
+use App\Models\Plane;
 use App\Models\Venta;
 use Livewire\Component;
 use App\Models\Producto;
 use App\Models\Sucursale;
 use App\Models\Adicionale;
 use App\Helpers\CreateList;
+use Illuminate\Support\Str;
+use App\Models\Historial_venta;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
+
 class VentasIndex extends Component
 {
     public $sucursal;
@@ -26,6 +29,9 @@ class VentasIndex extends Component
     public $productoapuntado;
     public $itemseleccionado;
     public $array;
+    public $tipocobro;
+    public $descuento;
+
     protected $rules = [
         'sucursal' => 'required|integer',
     ];
@@ -54,6 +60,7 @@ class VentasIndex extends Component
         
         $this->itemseleccionado=$numero;
     }
+
     public function mostraradicionales(Producto $producto)
     {
         if($producto->medicion=="unidad")
@@ -85,6 +92,7 @@ class VentasIndex extends Component
        
 
     }
+
     public function seleccionarcliente($id, $name)
     {
         $this->cliente=$id;
@@ -93,34 +101,7 @@ class VentasIndex extends Component
             'message'=>"Usuario ".$name." seleccionado"
         ]);
     }
-    public function adicionarvarios(Producto $producto){
-        if($this->cantidadespecifica!=null)
-        {
-            $cuenta = Venta::find($this->cuenta->id); 
-            DB::table('producto_venta')
-            ->where('venta_id', $cuenta->id)
-            ->where('producto_id', $producto->id)
-            ->increment('cantidad',$this->cantidadespecifica);  
-           $this->actualizarlista($cuenta);
-         
-            $this->dispatchBrowserEvent('alert',[
-                'type'=>'success',
-                'message'=>"Se agrego ".$this->cantidadespecifica." ".$producto->nombre."(s) a esta venta"
-            ]);
-            if($producto->medicion=="unidad")
-            {
-                $this->actualizaradicionales($producto->id, 'muchos');
-            }
-            $this->reset('cantidadespecifica');
-        }
-        else
-        {
-            $this->dispatchBrowserEvent('alert',[
-                'type'=>'warning',
-                'message'=>"Fije una cantidad"
-            ]);
-        }
-    }
+    
 
     public function actualizaradicionales($idproducto, $operacion)
     {
@@ -169,6 +150,7 @@ class VentasIndex extends Component
         }
         
     }
+
     public function actualizarlista($cuenta){
         $resultado=CreateList::crearlista($cuenta);
         $this->listacuenta=$resultado[0];
@@ -249,6 +231,36 @@ class VentasIndex extends Component
        $this->actualizarlista($cuenta);
     }
 
+    public function adicionarvarios(Producto $producto)
+    {
+        if($this->cantidadespecifica!=null)
+        {
+            $cuenta = Venta::find($this->cuenta->id); 
+            DB::table('producto_venta')
+            ->where('venta_id', $cuenta->id)
+            ->where('producto_id', $producto->id)
+            ->increment('cantidad',$this->cantidadespecifica);  
+           $this->actualizarlista($cuenta);
+         
+            $this->dispatchBrowserEvent('alert',[
+                'type'=>'success',
+                'message'=>"Se agrego ".$this->cantidadespecifica." ".$producto->nombre."(s) a esta venta"
+            ]);
+            if($producto->medicion=="unidad")
+            {
+                $this->actualizaradicionales($producto->id, 'muchos');
+            }
+            $this->reset('cantidadespecifica');
+        }
+        else
+        {
+            $this->dispatchBrowserEvent('alert',[
+                'type'=>'warning',
+                'message'=>"Fije una cantidad"
+            ]);
+        }
+    }
+
     public function eliminaruno(Producto $producto){
         $cuenta = Venta::find($this->cuenta->id);
         $registro = DB::table('producto_venta')->where('producto_id',$producto->id)->where('venta_id',$cuenta->id)->get();
@@ -305,7 +317,87 @@ class VentasIndex extends Component
                 }
             }  
     }
+    public function agregardesdeplan($user, $plan, $producto)
+    {
+       
+        $planusuario=DB::table('plane_user')
+        ->where('user_id', $user)
+        ->where('plane_id',$plan)
+        ->decrement('restante',1);
+        $this->dispatchBrowserEvent('alert',[
+            'type'=>'success',
+            'message'=>"Se resto una unidad al plan"
+        ]);
+
+        $ventaactual= Venta::find($this->cuenta->id);
+        $productoplan=Producto::find($producto);
+        if($productoplan->descuento!=null || $productoplan->descuento!="")
+        {
+            $ventaactual->descuento=$ventaactual->descuento+$productoplan->descuento;
+        }
+        else
+        {
+            $ventaactual->descuento=$ventaactual->descuento+$productoplan->precio;
+        }
+        
+        $ventaactual->update();
+        $this->adicionar($productoplan);
+        $ventaactual=Venta::find($this->cuenta->id);
+        $this->cuenta=$ventaactual;
+    }
     
+    public function cobrar()
+    {
+        if($this->tipocobro!=null)
+        {
+            $cuenta=Venta::find($this->cuenta->id);
+            $cuentaguardada= Historial_venta::create([
+                'usuario_id'=>$this->cuenta->usuario_id,
+                'sucursale_id'=>$this->cuenta->sucursale_id,
+                'cliente_id'=>$this->cuenta->cliente_id,
+                'total'=>$this->cuenta->total,
+                'puntos'=>$this->cuenta->puntos,
+                'descuento'=>$this->cuenta->descuento,
+                'tipo'=>$this->tipocobro
+            ]);
+            $productos=$cuenta->productos;
+            
+             foreach($productos as $prod)
+             {
+                 
+                $cuentaguardada->productos()->attach($prod->id);
+        
+             }
+             $cuenta->productos()->detach();
+                $cuenta->delete();
+                
+                $this->reset('cuenta');
+                $this->dispatchBrowserEvent('alert',[
+                    'type'=>'success',
+                    'message'=>"Venta finalizada!"
+                ]);
+        }
+        else
+        {
+            $this->dispatchBrowserEvent('alert',[
+                'type'=>'warning',
+                'message'=>"Seleccione un tipo de pago!"
+            ]);
+        }
+       
+    }
+
+    public function editardescuento(){
+        DB::table('ventas')->where('id',$this->cuenta->id)->update(['descuento'=>$this->descuento]);
+        $this->dispatchBrowserEvent('alert',[
+            'type'=>'success',
+            'message'=>"Descuento actualizado!"
+        ]);
+        $cuenta=Venta::find($this->cuenta->id);
+        $this->cuenta=$cuenta;
+        $this->reset('descuento');
+    }
+
     public function render()
     {
         $ventas=Venta::orderBy('created_at','desc')->get();

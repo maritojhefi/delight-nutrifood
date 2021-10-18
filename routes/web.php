@@ -41,7 +41,8 @@ Route::prefix('/ajustes')->group(function () {
 Route::prefix('/productos')->group(function () {
    
     Route::get('', [App\Http\Controllers\ProductoController::class, 'index'])->name('productos');
-    
+    Route::get('/detalle/{id}', [App\Http\Controllers\ProductoController::class, 'detalleproducto'])->name('detalleproducto');
+
 
 });
 //promociones
@@ -83,7 +84,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('/roles', \App\Http\Livewire\Admin\Usuarios\RolesIndex::class)->name('usuario.roles');
         Route::get('/miperfil', \App\Http\Livewire\Admin\Usuarios\PerfilUsuario::class)->name('usuario.perfil');
         Route::get('/pensionados', \App\Http\Livewire\Admin\Usuarios\Pensionados::class)->name('pensionados');
+        Route::get('/planes', \App\Http\Livewire\Admin\Usuarios\Planes::class)->name('planes');
         Route::get('/personal', \App\Http\Livewire\Admin\Usuarios\Personal::class)->name('personal');
+        Route::get('/crear/plan', \App\Http\Livewire\Admin\Usuarios\CrearPlan::class)->name('crear.plan');
+
 
     });
     Route::prefix('/sucursales')->group(function () {

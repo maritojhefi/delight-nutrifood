@@ -4,11 +4,13 @@ namespace App\Models;
 
 use App\Models\Tag;
 use App\Models\Combo;
+use App\Models\Plane;
 use App\Models\Venta;
 use App\Models\Deshecho;
 use App\Models\Sucursale;
 use App\Models\Subcategoria;
 use App\Models\Stock_producto;
+use App\Models\Historial_venta;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -39,6 +41,11 @@ class Producto extends Model
         return $this->belongsToMany(Venta::class)
         ->withPivot('cantidad','adicionales');
     }
+    public function historialVentas()
+    {
+        return $this->belongsToMany(Historial_venta::class)
+        ->withPivot('cantidad','adicionales');
+    }
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
@@ -50,5 +57,9 @@ class Producto extends Model
     public function deshechos()
     {
         return $this->belongsToMany(Deshecho::class);
+    }
+    public function plane()
+    {
+        return $this->hasOne(Plane::class);
     }
 }

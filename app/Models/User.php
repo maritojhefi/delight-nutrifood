@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use App\Models\Role;
+use App\Models\Plane;
 use App\Models\Venta;
 use App\Models\Pensione;
 use App\Models\Traslado;
@@ -73,6 +74,11 @@ class User extends Authenticatable
         $fecha2 = date_create($this->fecha_venc);
         $dias = date_diff($fecha1, $fecha2)->format('%R%a');
         return $dias;
+    }
+    public function planes()
+    {
+        return $this->belongsToMany(Plane::class)
+        ->withPivot('restante','dia_limite');
     }
    
 }

@@ -67,7 +67,7 @@
             <small class="m-3 text-muted" wire:loading.remove>Venta #{{$cuenta->id}}</small> <br>
             <small class="m-3 text-muted" wire:loading>Actualizando...</small>
             @if($cuenta->cliente)
-            <span class="badge light badge-success">{{$cuenta->cliente->name}}</span>
+            <a href="#" data-bs-toggle="modal" data-bs-target="#planesusuario"><span class="badge light badge-success">{{$cuenta->cliente->name}}</span></a>
             @else
             <span class="badge light badge-danger">Sin usuario</span>
 
@@ -141,8 +141,31 @@
                 
           
             <li class="list-group-item d-flex justify-content-between">
-                <span>Total</span>
-                <strong>{{$cuenta->total}} Bs/{{$cuenta->puntos}} pts</strong>
+                <small>Subtotal</small>
+                <strong>{{$cuenta->total}} Bs</strong>
+                
+            </li>
+            
+            <li class="list-group-item d-flex justify-content-between">
+                <small>Descuento</small>
+               
+                <div x-data="{ open: false }">
+                    <button @click="open = ! open" class="badge badge-xs light badge-secondary">Editar</button>
+                 
+                    <div x-show="open" @click.outside="open = false"> 
+                        <div class="mb-3 col-md-2">
+                        <input type="number" class="form-control" wire:model.lazy="descuento" style="padding: 3px;height:30px;width:80px" value="{{$item['cantidad']}}">
+                        </div>
+                        <button class="btn btn-xxs btn-warning" wire:click="editardescuento"><i class="fa fa-check"></i>Guardar</button>
+                    </div>
+                </div>
+                <strong>{{$cuenta->descuento}} Bs</strong>
+            </li>
+           
+            <li class="list-group-item d-flex justify-content-between">
+                <span>Total a pagar</span>
+                <strong>{{$cuenta->total-$cuenta->descuento}} Bs/{{$cuenta->puntos}} pts</strong>
+                
             </li>
         </ul>
         
@@ -168,7 +191,40 @@
          
         </div>
         @endisset
-        
+        @if ($cuenta->total!=0)
+        <div class="row m-2">
+            <div x-data="{ open: false }">
+                <button @click="open = ! open" class="badge badge-xs light badge-info">Cobrar</button>
+             
+                <div x-show="open" @click.outside="open = false"> 
+                    <div class="row">
+                        
+                        <div class="col">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="gridRadios" wire:model="tipocobro" value="efectivo" checked="">
+                                <label class="form-check-label">
+                                    Efectivo
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="gridRadios" wire:model="tipocobro" value="transferencia">
+                                <label class="form-check-label">
+                                    Transferencia
+                                </label>
+                            </div>
+                            <div class="form-check disabled">
+                                <input class="form-check-input" type="radio" name="gridRadios" wire:model="tipocobro" value="tarjeta" >
+                                <label class="form-check-label">
+                                    Tarjeta
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-xs light btn-warning" wire:click="cobrar">Cobrar Cuenta</button>
+                </div>
+            </div>
+           </div>   
+        @endif
        
             
     </x-card-col4>
@@ -219,6 +275,44 @@
    
     @endisset
    
-   
+  
+    <!-- Modal -->
+    <div class="modal fade" id="planesusuario">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                @isset($cuenta->cliente->planes)
+                <div class="modal-header">
+                    <h5 class="modal-title">Planes existentes ({{$cuenta->cliente->planes->count()}})</h5>
+                    <a href="{{route('planes')}}" class="btn btn-xs btn-warning">Ir a todos los planes</a>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+                </div>
+                <div class="modal-body">
+                
+                @foreach ($cuenta->cliente->planes as $item)
+                <div class="card overflow-hidden bg-image-2 bg-secondary">
+                   <div class="card-header  border-0">
+                       <div>
+                           <p class="mb-2 font-w100 text-white">Plan: {{$item->nombre}}  - Expira : {{$item->pivot->dia_limite}}
+                           
+                           
+                           <h3 class="mb-0 fs-24 font-w600 text-white">Restante: {{$item->pivot->restante}}</h3> <button data-bs-dismiss="modal" wire:click="agregardesdeplan({{$item->pivot->user_id}},{{$item->pivot->plane_id}},{{$item->producto_id}})" class="btn light btn-xxs btn-success">Agregar al carro</button>
+                       </div>
+                   </div>
+               </div>
+               
+                @endforeach  
+                
+               
+                </div>
+               
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Cerrar</button>
+                    
+                </div>
+                @endisset
+            </div>
+        </div>
+    </div>
 
 </div>
