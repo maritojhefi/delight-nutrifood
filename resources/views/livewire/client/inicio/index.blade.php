@@ -1,5 +1,5 @@
 <div>
-    <x-cabecera-pagina titulo="Ajustes" cabecera="bordeado"/>
+    <x-cabecera-pagina titulo="Bienvenido!" cabecera="bordeado"/>
 
 
     <div class="splide single-slider slider-no-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-1" style="visibility: visible;">
@@ -10,8 +10,8 @@
         <div class="content">
         <div class="card rounded-l shadow-xl bg-12 mb-3" data-card-height="320" style="height: 320px;">
         <div class="card-top mt-3 me-3">
-        <a href="#" class="icon icon-s rounded-l shadow-xl bg-red-dark color-white float-end ms-2 me-2"><i class="fa fa-heart"></i></a>
-        <a href="#" data-menu="menu-share" class="icon icon-s rounded-l shadow-xl bg-highlight color-white float-end"><i class="fa fa-shopping-cart"></i></a>
+        <a href="#" wire:click="toast" class="icon icon-s rounded-l shadow-xl bg-red-dark color-white float-end ms-2 me-2"><i class="fa fa-heart"></i></a>
+        <a href="#" wire:click="toast" data-menu="menu-share" class="icon icon-s rounded-l shadow-xl bg-highlight color-white float-end"><i class="fa fa-shopping-cart"></i></a>
         </div>
         <div class="card-bottom mb-3">
         <div class="content mb-0">
@@ -21,7 +21,7 @@
         <h1 class="font-700">{{$item->nombre}}</h1>
         </div>
         <div class="ms-auto">
-        <a href="" class="btn btn-secondary btn-rounded">Ver</a>
+        <a href="#" wire:click="toast()" class="btn btn-secondary btn-rounded">Ver</a>
         </div>
         </div>
         </div>
@@ -179,6 +179,16 @@
     </div>
     <div class="divider divider-margins"></div>
     
-    
+    <div id="notification-1" data-dismiss="notification-1" data-bs-delay="3000" data-bs-autohide="true" class="notification notification-ios bg-dark-dark ms-2 me-2 mt-2 rounded-s fade hide">
+        <span class="notification-icon color-white rounded-s">
+        <i class="fa fa-bell"></i>
+        <em>Enabled</em>
+        <i data-dismiss="notification-1" class="fa fa-times-circle"></i>
+        </span>
+        <h1 class="font-18 color-white mb-n3">All Good</h1>
+        <p class="pt-1">
+        I'm a notification. I show at the top or bottom of the page.
+        </p>
+        </div>
     
 </div>

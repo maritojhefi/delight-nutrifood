@@ -10,6 +10,13 @@ use App\Models\Historial_venta;
 
 class Index extends Component
 {
+    public function toast(){
+        $this->dispatchBrowserEvent('toast',[
+            'toastid'=>'notification-1',
+            
+        ]);
+        dd($this);
+    }
     public function render()
     {
         if (session()->missing('productos')) {
@@ -26,6 +33,7 @@ class Index extends Component
             dd($masvendidos);
             session(['masvendidos' => $masvendidos]);
         }*/
+        
         return view('livewire.client.inicio.index')
         ->extends('client.master')
         ->section('content');
