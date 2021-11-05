@@ -20,26 +20,43 @@
             </div>
             <div class="card-body">
                 <ul class="index-chart-point-list">
-                    @foreach ($seleccionado->planes as $item)
+                    @foreach ($lista as $item)
                     <div class="row align-items-center mt-2">
                         <ul class="list-group mb-3">
-                            <li class="list-group-item d-flex justify-content-between lh-condensed">
-                                <div>
-                                    <h6 class="my-0">Cantidad restante:</h6>
-                                    <small class="text-muted">{{$item->nombre}}</small><br>
-                                    <small class="text-muted">Expira:{{DateTime::createFromFormat('Y-m-d',$item->pivot->dia_limite)->format('d-M-Y')}}</small>
-                                    <a href="javascript:void(0);" wire:click="eliminar('{{$item->id}}')" class="btn btn-xs btn-danger btn-xxs px-4">Borrar</a>
-                                    <a href="#" wire:click="adicionar('{{$item->id}}')" class="badge  light badge-success"><i class="fa fa-angle-double-left"></i></a>
-                                    <a href="#" wire:click="restar('{{$item->id}}')" class="badge  light badge-danger"><i class="fa fa-angle-double-right"></i></a>
-
-                                </div>
-                                <span class="text-muted">{{$item->pivot->restante}}</span>
-
-                            </li>
+                           
+                                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                    <div>
+                                        <a href="{{route('detalleplan',[$seleccionado->id,$item['id']])}}">
+                                        <h4>{{$item['plan']}}</h4>
+                                        </a>
+                                        <small class="my-0">Cantidad restante:</small>
+                                        <small class="text-muted">{{$item['cantidad']}}</small><br>
+                                        <button class="btn btn-danger btn-xs" data-bs-toggle="modal" data-bs-target="#modal{{$item['id']}}">Eliminar plan</button>
+                                     
+                                    </div>
+                                    
+    
+                                </li>
+                           
+                           
                            
                         </ul>
                     </div>
-                  
+                    <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true" id="modal{{$item['id']}}">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Esta seguro?</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                    </button>
+                                </div>
+                                <div class="modal-body">Se borraran todos los registros del plan: {{$item['plan']}}</div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" wire:click="eliminar('{{ $item['id']}}')" data-bs-dismiss="modal">Confirmar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                    
                     @endforeach
                  

@@ -25,8 +25,8 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('direccion')->nullable();
             $table->string('nacimiento')->nullable();
-            $table->integer('saldo')->nullable();
-            $table->integer('puntos')->nullable();
+            $table->integer('saldo')->nullable()->default(0);
+            $table->integer('puntos')->nullable()->default(0);
             $table->rememberToken();
             $table->timestamps();
         });

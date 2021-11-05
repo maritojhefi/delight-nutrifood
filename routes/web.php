@@ -56,7 +56,9 @@ Route::prefix('/promociones')->group(function () {
 Route::prefix('/miperfil')->group(function () {
    
     Route::get('', [App\Http\Controllers\MiperfilController::class, 'index'])->name('miperfil');
-    
+    Route::get('/calendario/{plan}/{usuario}', [App\Http\Controllers\MiperfilController::class, 'calendario'])->name('calendario.cliente');
+    Route::post('/personalizardia', [App\Http\Controllers\MiperfilController::class, 'personalizardia'])->name('personalizardia');
+    Route::get('/editardia/{idpivot}', [App\Http\Controllers\MiperfilController::class, 'editardia'])->name('editardia');
 
 });
 
@@ -87,7 +89,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('/planes', \App\Http\Livewire\Admin\Usuarios\Planes::class)->name('planes');
         Route::get('/personal', \App\Http\Livewire\Admin\Usuarios\Personal::class)->name('personal');
         Route::get('/crear/plan', \App\Http\Livewire\Admin\Usuarios\CrearPlan::class)->name('crear.plan');
+        Route::get('detalleplan/{id}/{planid}', [App\Http\Controllers\admin\UsuariosController::class, 'detalleplan'])->name('detalleplan');
+        Route::post('/agregarplan', [App\Http\Controllers\admin\UsuariosController::class, 'agregar']);
+        Route::post('/feriado', [App\Http\Controllers\admin\UsuariosController::class, 'feriado']);
+        Route::get('/editar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'editar']);
+        Route::get('/borrar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'borrar']);
 
+        Route::get('/mostrar/{idplan}/{iduser}', [App\Http\Controllers\admin\UsuariosController::class, 'mostrar']);
 
     });
     Route::prefix('/sucursales')->group(function () {
@@ -101,5 +109,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('/index', \App\Http\Livewire\Admin\Ventas\VentasIndex::class)->name('ventas.listar');
 
     });
+    Route::prefix('/almuerzos')->group(function () {
+   
+        Route::get('/index', \App\Http\Livewire\Admin\Almuerzos\Personalizar::class)->name('almuerzos.listar');
 
+    });
 });

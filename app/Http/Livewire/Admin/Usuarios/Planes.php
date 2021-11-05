@@ -6,15 +6,19 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Plane;
 use Livewire\Component;
+use App\Helpers\CreateList;
 use Illuminate\Support\Facades\DB;
 
 class Planes extends Component
 {
     public $user, $seleccionado;
+    public $lista;
     
     public function seleccionar($id){
         $user=User::find($id);
          $this->seleccionado=$user;
+         $this->lista=CreateList::crearlistaplan($this->seleccionado->id);
+        
         
      }
      public function agregar(Plane $plan)
@@ -32,18 +36,19 @@ class Planes extends Component
         else
         {
             $ahora = Carbon::now();
-            $diassumados = $ahora->add($plan->dias, 'day');
-            $formateado=$diassumados->format('Y-m-d');
+            $diassumados = $ahora->add($plan->dias, 'day');//no se usa
+            $formateado=$diassumados->format('Y-m-d');//no se usa
             $user->planes()->attach($plan->id);
             
             DB::table('plane_user')->where('user_id',$user->id)
             ->where('plane_id',$plan->id)
-            ->update(['dia_limite'=>$formateado,'restante'=>$plan->cantidad]);
+            ->update(['start'=>$ahora,'end'=>$ahora,'title'=>$plan->nombre]);
             $this->dispatchBrowserEvent('alert',[
                 'type'=>'success',
                 'message'=>"Se agrego satisfactoriamente!"
             ]);
             $this->seleccionado=$user;
+            $this->lista=CreateList::crearlistaplan($this->seleccionado->id);
         }
      
     }
@@ -57,6 +62,7 @@ class Planes extends Component
             'message'=>"Se elimino el plan de este usuario!"
         ]);
         $this->seleccionado=$user;
+        $this->lista=CreateList::crearlistaplan($this->seleccionado->id);
     }
     public function adicionar(Plane $plan)
     {

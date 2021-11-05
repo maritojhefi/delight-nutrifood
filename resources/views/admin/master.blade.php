@@ -11,7 +11,7 @@
 	<meta property="og:description" content="Ventic : Ticketing Admin Template" />
 	<meta property="og:image" content=""/>
 	<meta name="format-detection" content="telephone=no">
-	
+	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 	<!-- PAGE TITLE HERE -->
 	<title>DELIGHT</title>
 	
@@ -23,9 +23,16 @@
 	<link href="vendor/jquery-nice-select/css/nice-select.css" rel="stylesheet">
 	<!-- Style css -->
     <link href="{{asset('css/style.css')}}" rel="stylesheet">
+    <script src="{{asset('js/app.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment.min.js"></script>
     <link href="{{asset('vendor/lightgallery/css/lightgallery.min.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/locales-all.min.js"></script>
+    <script src="{{asset('js/calendario.js')}}"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
     @livewireStyles
 	@livewireScripts
    
@@ -87,7 +94,7 @@
     <!-- Required vendors -->
     <script src="{{asset('vendor/global/global.min.js')}}"></script>
 	<script src="{{asset('vendor/chart.js/Chart.bundle.min.js')}}"></script>
-	
+   
 	<script src="{{asset('vendor/jquery-nice-select/js/jquery.nice-select.min.js')}}"></script>
  
 	<script src="{{asset('js/sweetalert.min.js')}}"></script>

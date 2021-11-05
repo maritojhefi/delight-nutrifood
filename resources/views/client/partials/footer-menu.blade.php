@@ -17,8 +17,8 @@
             <i data-feather="file" data-feather-line="1" data-feather-size="21" data-feather-color="brown-dark" data-feather-bg="brown-fade-light"></i>
             <span>Productos</span>
         </a>
-        <a href="{{route('ajustes')}}" class="{{(request () -> is ('ajustes'.'*'))? 'active-nav': ''}} ">
+      <!--  <a href="{{route('ajustes')}}" class="{{(request () -> is ('ajustes'.'*'))? 'active-nav': ''}} ">
             <i data-feather="settings" data-feather-line="1" data-feather-size="21" data-feather-color="dark-dark" data-feather-bg="gray-fade-light"></i>
             <span>Ajustes</span>
-        </a>
+        </a> -->
         </div>

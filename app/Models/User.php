@@ -63,7 +63,7 @@ class User extends Authenticatable
     }
     public function ventas()
     {
-        return $this->hasMany(Venta::class);
+        return $this->hasMany(Venta::class,'cliente_id');
     }
     public function pensione()
     {
@@ -78,7 +78,7 @@ class User extends Authenticatable
     public function planes()
     {
         return $this->belongsToMany(Plane::class)
-        ->withPivot('restante','dia_limite');
+        ->withPivot('start','end','title','detalle','id');
     }
    
 }

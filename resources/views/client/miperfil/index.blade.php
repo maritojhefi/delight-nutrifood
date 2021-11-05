@@ -16,49 +16,51 @@ Encuentra toda la informacion sobre tu cuenta en esta pestaña.
 <div class="content mb-0">
 <div class="row mb-0 text-center">
 <div class="col-4">
-<h1 class="mb-n1">351</h1>
-<p class="font-10 mb-0 pb-0">Me gusta</p>
+<h1 class="mb-n1">{{$usuario->saldo}}</h1>
+<p class="font-10 mb-0 pb-0">Saldo</p>
 </div>
 <div class="col-4">
-<h1 class="mb-n1">193</h1>
+<h1 class="mb-n1">{{$usuario->puntos}}</h1>
 <p class="font-10 mb-0 pb-0">Puntos</p>
 </div>
 <div class="col-4">
-<h1 class="mb-n1">615</h1>
-<p class="font-10 mb-0 pb-0">Productos Comprados</p>
+<h1 class="mb-n1">{{$usuario->ventas->count()}}</h1>
+<p class="font-10 mb-0 pb-0">Compras realizadas</p>
 </div>
 </div>
 <div class="divider mb-4 mt-3"></div>
-<div class="row mb-0 pb-4">
-<div class="col-6">
-<a href="#" class="btn btn-m btn-full rounded-s bg-highlight text-uppercase font-900">Ver Detalle</a>
-</div>
-<div class="col-6">
-<a href="#" class="btn btn-m btn-border btn-full rounded-s border-highlight color-highlight text-uppercase font-900">Mensajear</a>
+
 </div>
 </div>
-</div>
-</div>
+<div class="card card-style">
+  <div class="content mb-0">
+  <h1>Planes suscritos</h1>
+  <p class="font-10 color-highlight mt-n2 mb-0">Tienes actualmente {{$usuario->planes->count()}} plan(es) activos</p>
+  <div class="list-group list-custom-large mb-4">
+  @isset($planes)
+  @foreach ($planes as $item)
+      
+    <a href="{{route('calendario.cliente',[$item['id'],$usuario->id])}}">
+    <i class="fa fa-ticket-alt color-green-dark"></i>
+    <span>{{$item['plan']}}</span>
+    <strong>Cantidad restante - {{$item['cantidad']}}</strong>
+     
+       
+    <span class="badge bg-blue-dark">Ir a detalles</span>
+    
+    <i class="fa fa-angle-right"></i>
+    </a>
+  @endforeach
+  @endisset
+ 
+  </div>
+ 
+  
+  </div>
+  </div>
 <div class="card card-style p-3">
 <div class="row text-center row-cols-3 mb-n4">
-<a class="col mb-4" data-gallery="gallery-1" href="images/pictures/30t.jpg" title="Vynil and Typerwritter">
-<img data-src="images/pictures/30s.jpg" class="img-fluid rounded-xs preload-img entered loaded" alt="img" data-ll-status="loaded" src="images/pictures/30s.jpg">
-</a>
-<a class="col mb-4" data-gallery="gallery-1" href="images/pictures/22t.jpg" title="Cream Cookie">
-<img data-src="images/pictures/22s.jpg" class="img-fluid rounded-xs preload-img entered loaded" alt="img" data-ll-status="loaded" src="images/pictures/22s.jpg">
-</a>
-<a class="col mb-4" data-gallery="gallery-1" href="images/pictures/23t.jpg" title="Cookies and Flowers">
-<img data-src="images/pictures/23s.jpg" class="img-fluid rounded-xs preload-img entered loaded" alt="img" data-ll-status="loaded" src="images/pictures/23s.jpg">
-</a>
-<a class="col mb-4" data-gallery="gallery-1" href="images/pictures/24t.jpg" title="Pots and Pans">
-<img data-src="images/pictures/24s.jpg" class="img-fluid rounded-xs preload-img entered loaded" alt="img" data-ll-status="loaded" src="images/pictures/24s.jpg">
-</a>
-<a class="col mb-4" data-gallery="gallery-1" href="images/pictures/25t.jpg" title="Berries are Packed with Fiber">
-<img data-src="images/pictures/25s.jpg" class="img-fluid rounded-xs preload-img entered loaded" alt="img" data-ll-status="loaded" src="images/pictures/25s.jpg">
-</a>
-<a class="col mb-4" data-gallery="gallery-1" href="images/pictures/26t.jpg" title="A beautiful Retro Camera">
-<img data-src="images/pictures/26s.jpg" class="img-fluid rounded-xs preload-img entered loaded" alt="img" data-ll-status="loaded" src="images/pictures/26s.jpg">
-</a>
+
 <a class="col mb-4" data-gallery="gallery-1" href="images/pictures/27t.jpg" title="Pots and Pans">
 <img data-src="images/pictures/27s.jpg" class="img-fluid rounded-xs preload-img entered loaded" alt="img" data-ll-status="loaded" src="images/pictures/27s.jpg">
 </a>

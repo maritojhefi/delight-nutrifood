@@ -11,14 +11,13 @@ class CrearPlan extends Component
 {
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
-    public $nombre, $dias, $cantidad, $producto, $precio, $productoseleccionado;
+    public $nombre, $producto, $detalle, $productoseleccionado;
     
  
     protected $rules = [
         'nombre' => 'required|min:5',
-        'dias' => 'required|integer',
-        'cantidad' => 'required|integer',
-       'precio'=>'required|numeric'
+       
+       'detalle'=>'required|min:5'
        
     ];
  
@@ -48,9 +47,8 @@ class CrearPlan extends Component
  
         Plane::create([
             'nombre' => $this->nombre,
-            'dias' => $this->dias,
-            'cantidad'=>$this->cantidad,
-            'precio'=>$this->precio,
+           
+            'detalle'=>$this->detalle,
             'producto_id'=>$this->productoseleccionado->id
         ]);
          $this->dispatchBrowserEvent('alert',[

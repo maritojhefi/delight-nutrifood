@@ -10,6 +10,7 @@ use Database\Seeders\RoleSeeder;
 use Database\Seeders\UserSeeder;
 use Database\Seeders\ProductoSeeder;
 use Database\Seeders\SucursalSeeder;
+use Database\Seeders\AlmuerzosSeeder;
 use Database\Seeders\CategoriaSeeder;
 use Database\Seeders\AdicionalesSeeder;
 use Database\Seeders\SubcategoriaSeeder;
@@ -31,6 +32,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(ProductoSeeder::class);
         $this->call(AdicionalesSeeder::class);
+        $this->call(AlmuerzosSeeder::class);
         //Producto::factory(100)->create();
         User::factory(100)->create();
         

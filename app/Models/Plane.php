@@ -11,13 +11,13 @@ class Plane extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'nombre','cantidad','dias','producto_id','precio'
+        'nombre','producto_id','detalle'
        
     ];
     public function usuarios()
     {
         return $this->belongsToMany(User::class)
-        ->withPivot('restante','dia_limite');
+        ->withPivot('start','end','title');
     }
     public function producto()
     {

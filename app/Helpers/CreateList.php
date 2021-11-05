@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\Plane;
 use App\Models\Venta;
 use App\Models\Producto;
 use Illuminate\Support\Facades\DB;
@@ -99,5 +100,23 @@ class CreateList {
              $total=$total+$subtotal;
          }  
          return [$personalizado,$total,$cantidadItems,$puntos]; 
+    }
+
+    static function crearlistaplan($id)
+    {
+        $planes=DB::table('plane_user')
+        ->where('user_id',$id)
+        ->get();
+        //dd($planes);
+        $agrupado=$planes->pluck('plane_id');
+        $contado=$agrupado->countBy();
+        $coleccion=collect();
+        foreach($contado as $idplan=>$cantidad)
+        {
+            $plan=Plane::find($idplan);
+            $coleccion->push(['plan'=>$plan->nombre,'cantidad'=>$cantidad,'id'=>$plan->id]);
+        }
+        return $coleccion;
+
     }
 }

@@ -19,9 +19,8 @@
                         <span class="badge light badge-lg m-3 badge-danger">{{$productoseleccionado->nombre}}({{$productoseleccionado->precio}} Bs)<button type="button" class="btn-close" wire:click="resetproducto()"></button></span>
                         <x-input-create  :lista="([
                             'Nombre'=>['nombre','text'],
-                            'Cantidad'=>['cantidad','number'],
-                            'Dias'=>['dias','number'],
-                            'Precio'=>['precio','number'],
+                          
+                            'Detalle'=>['detalle','text'],
                               ])">
                                </x-input-create>
                        
@@ -47,9 +46,8 @@
                             <thead>
                                 <tr>
                                     <th><strong>Nombre</strong></th>
-                                    <th><strong>Precio</strong></th>
-                                    <th><strong>Cant</strong></th>
-                                    <th><strong>Dias Maximos</strong></th>
+                                    <th><strong>Detalle</strong></th>
+                                  
                                   
                                     <th></th>
                                 </tr>
@@ -58,9 +56,8 @@
                                 @foreach ($planes as $item)
                                 <tr>
                                     <td><span class="badge light badge-success">{{$item->nombre}}</span></td>
-                                    <td>{{$item->precio}}<span class="badge light badge-xs badge-info">Bs</span></td>
-                                    <td>{{$item->cantidad}}</td>
-                                    <td>{{$item->dias}}<span class="badge badge-xs light badge-warning">Dias</span></td>
+                                    <td>{{$item->detalle}}</td>
+                                  
                                    
                                     
                                     

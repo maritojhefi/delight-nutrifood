@@ -15,10 +15,9 @@ class CreatePlanesTable extends Migration
     {
         Schema::create('planes', function (Blueprint $table) {
             $table->id();
-            $table->integer('dias')->unsigned();
-            $table->integer('cantidad')->unsigned();
+            
             $table->string('nombre', 100)->nullable();
-            $table->decimal('precio');
+            $table->string('detalle')->nullable();
             $table->unsignedBigInteger('producto_id')->nullable();
             $table->foreign('producto_id')->references('id')->on('productos');
             $table->timestamps();
