@@ -12,7 +12,12 @@ use Illuminate\Support\Facades\DB;
 class MiperfilController extends Controller
 {
     public function index(){
-        $usuario=User::find(auth()->user()->id);
+        $usuario='';
+        if(auth())
+        {
+            $usuario=User::find(auth()->user()->id);
+        }
+        
         $planes=CreateList::crearlistaplan($usuario->id);
         return view('client.miperfil.index',compact('usuario','planes'));
     }
