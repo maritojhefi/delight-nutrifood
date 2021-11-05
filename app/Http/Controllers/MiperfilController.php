@@ -48,7 +48,7 @@ class MiperfilController extends Controller
         $carbohidrato='carb'.$request->id;
         if($request[$plato] && $request[$carbohidrato])
         {
-            $array=array('sopa'=>'sopa','plato'=>'ejecutivo','carbohidrato'=>'papa','jugo'=>$request->jugo,'jugo');
+            $array=array('SOPA'=>$request->sopa,'PLATO'=>$request[$plato],'CARBOHIDRATO'=>$request[$carbohidrato],'JUGO'=>$request->jugo);
            
             DB::table('plane_user')->where('id',$request->id)->update(['detalle'=>$array]);
             return back()->with('success','Dia '.$request->dia.' guardado!');
