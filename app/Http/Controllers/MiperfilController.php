@@ -13,12 +13,14 @@ class MiperfilController extends Controller
 {
     public function index(){
         $usuario='';
-        if(auth())
+        $planes='';
+        if(auth()->user()!=null)
         {
             $usuario=User::find(auth()->user()->id);
+            $planes=CreateList::crearlistaplan($usuario->id);
         }
         
-        $planes=CreateList::crearlistaplan($usuario->id);
+       
         return view('client.miperfil.index',compact('usuario','planes'));
     }
     public function calendario(Plane $plan, User $usuario){
