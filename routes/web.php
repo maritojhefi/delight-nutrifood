@@ -112,6 +112,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
     Route::prefix('/almuerzos')->group(function () {
    
         Route::get('/index', \App\Http\Livewire\Admin\Almuerzos\Personalizar::class)->name('almuerzos.listar');
-
+        Route::get('/reporte', \App\Http\Livewire\Admin\Almuerzos\ReporteDiario::class)->name('almuerzos.reporte');
     });
 });

@@ -21,7 +21,7 @@
                 'Personal'=>'personal' ])">
                 <i class="flaticon-045-heart"></i>
             </x-sidebar-elements>
-           <x-sidebar-elements titulo="Almuerzos" linkglobal="admin/almuerzos" :lista="(['Personalizar dias'=>'almuerzos.listar'])">
+           <x-sidebar-elements titulo="Almuerzos" linkglobal="admin/almuerzos" :lista="(['Personalizar dias'=>'almuerzos.listar','Reporte Diario'=>'almuerzos.reporte'])">
             <i class="flaticon-022-copy"></i>
             </x-sidebar-elements>
 

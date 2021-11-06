@@ -80,5 +80,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Plane::class)
         ->withPivot('start','end','title','detalle','id');
     }
+    public function planesHoy()
+    {
+        return $this->belongsToMany(Plane::class)->wherePivot('start', date('y-m-d'))->wherePivot('detalle','!=',null)
+        ->withPivot('start','end','title','detalle','id');
+    }
+    
    
 }
