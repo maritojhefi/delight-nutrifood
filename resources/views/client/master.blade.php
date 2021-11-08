@@ -1,10 +1,9 @@
 
 <!DOCTYPE HTML>
-<html lang="en">
+<html lang="es">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1, user-scalable=0 viewport-fit=cover" />
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
@@ -17,7 +16,7 @@
 @laravelPWA
 
 
-<link rel="apple-touch-icon" sizes="180x180" href="app/icons/icon-192x192.png">
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 @livewireStyles
