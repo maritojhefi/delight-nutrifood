@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use App\Models\Venta;
 use App\Models\Producto;
 use App\Models\Traslado;
@@ -13,7 +14,7 @@ class Sucursale extends Model
     use HasFactory;
    
     protected $fillable = [
-        'nombre','direccion','telefono'
+        'nombre','direccion','telefono','id_impresora'
        
     ];
     public function productos()
@@ -26,5 +27,6 @@ class Sucursale extends Model
     {
         return $this->hasMany(Venta::class);
     }
+    
    
 }

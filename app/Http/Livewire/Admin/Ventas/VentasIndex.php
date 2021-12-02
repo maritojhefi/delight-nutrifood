@@ -2,6 +2,8 @@
 
 namespace App\Http\Livewire\Admin\Ventas;
 
+use Carbon\Carbon;
+use App\Models\Caja;
 use App\Models\User;
 use App\Models\Plane;
 use App\Models\Venta;
@@ -9,11 +11,16 @@ use Livewire\Component;
 use App\Models\Producto;
 use App\Models\Sucursale;
 use App\Models\Adicionale;
+use Mike42\Escpos\Printer;
 use App\Helpers\CreateList;
 use Illuminate\Support\Str;
+use App\Helpers\CustomPrint;
+use Mike42\Escpos\EscposImage;
 use App\Models\Historial_venta;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 class VentasIndex extends Component
 {
@@ -152,18 +159,19 @@ class VentasIndex extends Component
     }
 
     public function actualizarlista($cuenta){
+        
         $resultado=CreateList::crearlista($cuenta);
         $this->listacuenta=$resultado[0];
         DB::table('ventas')
         ->where('id', $cuenta->id)
-        ->update(['total' => $resultado[1]]);
-        DB::table('ventas')
-        ->where('id', $cuenta->id)
-        ->update(['puntos' => $resultado[3]]);
+        ->update(['total' => $resultado[1],'puntos' => $resultado[3]]);
+        
+
         $this->cuenta->total=$resultado[1];
         $this->cuenta->puntos=$resultado[3];
         $this->itemsCuenta=$resultado[2];
         $this->reset(['adicionales','productoapuntado']);
+        
     }
 
     public function agregaradicional(Adicionale $adicional, $item)
@@ -202,55 +210,223 @@ class VentasIndex extends Component
             }
 
     }
-
-    public function adicionar(Producto $producto){
-        $cuenta = Venta::find($this->cuenta->id);
-        $registro = DB::table('producto_venta')->where('producto_id',$producto->id)->where('venta_id',$cuenta->id)->get();
-       
-        if($registro->count()==0)
+    public function actualizarstock(Producto $producto, $operacion, $cant)
+    {
+        $consulta=DB::table('producto_sucursale')->where('producto_id',$producto->id)->where('sucursale_id',$this->cuenta->sucursale_id)->orderBy('fecha_venc','asc')->get();
+        $stock=$consulta->where('cantidad','!=',0)->first();
+        $cantidadtotal=$consulta->pluck('cantidad');
+        $sumado=$cantidadtotal->sum();
+        
+        if($consulta==null)
         {
-           $cuenta->productos()->attach($producto->id); 
+            return null;
         }
         else
         {
-            DB::table('producto_venta')
-                  ->where('venta_id', $cuenta->id)
-                  ->where('producto_id', $producto->id)
-                  ->increment('cantidad',1);
-        }
-        //actualiza lista de adicionales en el atributo
-        if($producto->medicion=="unidad")
-        {
-            $this->actualizaradicionales($producto->id, 'sumar');
-        }
+            switch ($operacion) {
+                case 'sumar':
+                  if($stock==null)
+                  {
+                      return null;
+                  }
+                  else
+                  {
+                    $restado=$stock->cantidad-$cant;
+                    DB::table('producto_sucursale')->where('id',$stock->id)->update(['cantidad'=>$restado]);
+                  }
+                  
+                  
+                    break;
+                case 'restar':
+                   $consultarestar=$consulta->sortByDesc('fecha_venc');
+                   
+                   foreach($consultarestar as $array)
+                   {
+                       $espacio=$array->max-$array->cantidad;
+                       
+                       if($espacio!=0)
+                       {
+                        if($espacio>=$cant)
+                        {
+                            
+                         DB::table('producto_sucursale')->where('id',$array->id)->increment('cantidad',$cant);
+                         break;
+                        }
+                        else
+                        {
+                         $cant=$cant-$espacio;
+                         DB::table('producto_sucursale')->where('id',$array->id)->update(['cantidad'=>$array->max]);
+                        }
+                       }
+                       
+                   }
+                    break;
+                case 'sumarvarios':
+                    if($sumado>$cant)
+                    {
+                         foreach($consulta as $array)
+                         {
+                             if($array->cantidad>$cant)
+                             {
+                                DB::table('producto_sucursale')->where('id',$array->id)->decrement('cantidad',$cant);
+                                break;
+                             }
+                             else
+                             {
+                                $cant=$cant-$array->cantidad;
+                                DB::table('producto_sucursale')->where('id',$array->id)->update(['cantidad'=>0]);
+                             }
+                         }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    break;
+               
+            }
+            return true;
 
-        $this->dispatchBrowserEvent('alert',[
-            'type'=>'success',
-            'message'=>"Se agrego 1 ".$producto->nombre." a esta venta"
-        ]);
-       $this->actualizarlista($cuenta);
+        }
+        
+    }
+
+    public function adicionar(Producto $producto){
+        if($producto->contable==true)
+        {
+           $resultado= $this->actualizarstock($producto,'sumar',1);
+           if($resultado==null)
+           {
+            $this->dispatchBrowserEvent('alert',[
+                'type'=>'warning',
+                'message'=>"No se puede agregar porque no existe stock para este producto"
+            ]);
+            
+           }
+           else
+           {
+            $cuenta = Venta::find($this->cuenta->id);
+            $registro = DB::table('producto_venta')->where('producto_id',$producto->id)->where('venta_id',$cuenta->id)->get();
+           
+            if($registro->count()==0)
+            {
+               $cuenta->productos()->attach($producto->id); 
+            }
+            else
+            {
+                DB::table('producto_venta')
+                      ->where('venta_id', $cuenta->id)
+                      ->where('producto_id', $producto->id)
+                      ->increment('cantidad',1);
+            }
+            //actualiza lista de adicionales en el atributo
+            if($producto->medicion=="unidad")
+            {
+                $this->actualizaradicionales($producto->id, 'sumar');
+            }
+    
+            $this->dispatchBrowserEvent('alert',[
+                'type'=>'success',
+                'message'=>"Se agrego 1 ".$producto->nombre." a esta venta"
+            ]);
+            $this->actualizarlista($cuenta);
+           }
+        }
+        else
+        {
+            $cuenta = Venta::find($this->cuenta->id);
+            $registro = DB::table('producto_venta')->where('producto_id',$producto->id)->where('venta_id',$cuenta->id)->get();
+           
+            if($registro->count()==0)
+            {
+               $cuenta->productos()->attach($producto->id); 
+            }
+            else
+            {
+                DB::table('producto_venta')
+                      ->where('venta_id', $cuenta->id)
+                      ->where('producto_id', $producto->id)
+                      ->increment('cantidad',1);
+            }
+            //actualiza lista de adicionales en el atributo
+            if($producto->medicion=="unidad")
+            {
+                $this->actualizaradicionales($producto->id, 'sumar');
+            }
+    
+            $this->dispatchBrowserEvent('alert',[
+                'type'=>'success',
+                'message'=>"Se agrego 1 ".$producto->nombre." a esta venta"
+            ]);
+            $this->actualizarlista($cuenta);
+        }
+       
+        
+       
+       
     }
 
     public function adicionarvarios(Producto $producto)
     {
         if($this->cantidadespecifica!=null)
         {
-            $cuenta = Venta::find($this->cuenta->id); 
-            DB::table('producto_venta')
-            ->where('venta_id', $cuenta->id)
-            ->where('producto_id', $producto->id)
-            ->increment('cantidad',$this->cantidadespecifica);  
-           $this->actualizarlista($cuenta);
-         
-            $this->dispatchBrowserEvent('alert',[
-                'type'=>'success',
-                'message'=>"Se agrego ".$this->cantidadespecifica." ".$producto->nombre."(s) a esta venta"
-            ]);
-            if($producto->medicion=="unidad")
+            if($producto->contable==true)
             {
-                $this->actualizaradicionales($producto->id, 'muchos');
+                $resultado= $this->actualizarstock($producto,'sumarvarios',$this->cantidadespecifica);
+                if($resultado==false)
+                {
+                    $this->dispatchBrowserEvent('alert',[
+                        'type'=>'warning',
+                        'message'=>"No se puede agregar porque no existe stock suficiente para este producto"
+                    ]);
+                    
+                }
+                else if($resultado==null)
+                {
+                    $this->dispatchBrowserEvent('alert',[
+                        'type'=>'warning',
+                        'message'=>"Este producto no tiene stock"
+                    ]);
+                }
+                else
+                {
+                    $cuenta = Venta::find($this->cuenta->id); 
+                    DB::table('producto_venta')
+                    ->where('venta_id', $cuenta->id)
+                    ->where('producto_id', $producto->id)
+                    ->increment('cantidad',$this->cantidadespecifica);  
+                   $this->actualizarlista($cuenta);
+                 
+                    $this->dispatchBrowserEvent('alert',[
+                        'type'=>'success',
+                        'message'=>"Se agrego ".$this->cantidadespecifica." ".$producto->nombre."(s) a esta venta"
+                    ]);
+                    if($producto->medicion=="unidad")
+                    {
+                        $this->actualizaradicionales($producto->id, 'muchos');
+                    }
+                    $this->reset('cantidadespecifica');
+                }
             }
-            $this->reset('cantidadespecifica');
+            else
+            {
+                $cuenta = Venta::find($this->cuenta->id); 
+                DB::table('producto_venta')
+                ->where('venta_id', $cuenta->id)
+                ->where('producto_id', $producto->id)
+                ->increment('cantidad',$this->cantidadespecifica);  
+               $this->actualizarlista($cuenta);
+             
+                $this->dispatchBrowserEvent('alert',[
+                    'type'=>'success',
+                    'message'=>"Se agrego ".$this->cantidadespecifica." ".$producto->nombre."(s) a esta venta"
+                ]);
+                if($producto->medicion=="unidad")
+                {
+                    $this->actualizaradicionales($producto->id, 'muchos');
+                }
+                $this->reset('cantidadespecifica');
+            }
         }
         else
         {
@@ -262,6 +438,10 @@ class VentasIndex extends Component
     }
 
     public function eliminaruno(Producto $producto){
+        if($producto->contable==true)
+        {
+           $this->actualizarstock($producto,'restar',1);
+        }
         $cuenta = Venta::find($this->cuenta->id);
         $registro = DB::table('producto_venta')->where('producto_id',$producto->id)->where('venta_id',$cuenta->id)->get();
        
@@ -286,6 +466,11 @@ class VentasIndex extends Component
 
     public function eliminarproducto(Producto $producto){
         $cuenta = Venta::find($this->cuenta->id);
+        $registro=DB::table('producto_venta')->where('producto_id',$producto->id)->where('venta_id',$cuenta->id)->get()->first();
+        if($producto->contable==true)
+        {
+           $this->actualizarstock($producto,'restar',$registro->cantidad);
+        }
         $cuenta->productos()->detach($producto->id);
         
         $this->actualizarlista($cuenta);
@@ -298,6 +483,7 @@ class VentasIndex extends Component
     public function seleccionar(Venta $venta){
         $this->cuenta=$venta;
         $listafiltrada=$venta->productos->pluck('nombre');
+        $this->reset('tipocobro');
         
       $this->actualizarlista($venta);
     }
@@ -348,42 +534,62 @@ class VentasIndex extends Component
     
     public function cobrar()
     {
-        if($this->tipocobro!=null)
-        {
-            $cuenta=Venta::find($this->cuenta->id);
-            $cuentaguardada= Historial_venta::create([
-                'usuario_id'=>$this->cuenta->usuario_id,
-                'sucursale_id'=>$this->cuenta->sucursale_id,
-                'cliente_id'=>$this->cuenta->cliente_id,
-                'total'=>$this->cuenta->total,
-                'puntos'=>$this->cuenta->puntos,
-                'descuento'=>$this->cuenta->descuento,
-                'tipo'=>$this->tipocobro
-            ]);
-            $productos=$cuenta->productos;
-            
-             foreach($productos as $prod)
-             {
-                 
-                $cuentaguardada->productos()->attach($prod->id);
+        $this->validate(['tipocobro'=>'required']);
+        $cajaactiva=Caja::where('sucursale_id',$this->cuenta->sucursale->id)->whereDate('created_at',Carbon::today())->first();
         
-             }
-             $cuenta->productos()->detach();
-                $cuenta->delete();
+        if($cajaactiva!=null)
+        {
+            if($cajaactiva->estado=="abierto")
+            {
                 
-                $this->reset('cuenta');
-                $this->dispatchBrowserEvent('alert',[
-                    'type'=>'success',
-                    'message'=>"Venta finalizada!"
+
+                $cuenta=Venta::find($this->cuenta->id);
+                $cuentaguardada= Historial_venta::create([
+                    'caja_id'=>$cajaactiva->id,
+                    'usuario_id'=>auth()->user()->id,
+                    'sucursale_id'=>$this->cuenta->sucursale_id,
+                    'cliente_id'=>$this->cuenta->cliente_id,
+                    'total'=>$this->cuenta->total,
+                    'puntos'=>$this->cuenta->puntos,
+                    'descuento'=>$this->cuenta->descuento,
+                    'tipo'=>$this->tipocobro
                 ]);
+                $productos=$cuenta->productos;
+                if($this->cuenta->cliente_id!=null)
+                {
+                    DB::table('users')->where('id',$this->cuenta->cliente_id)->increment('puntos',$this->cuenta->puntos);
+                }
+                 foreach($productos as $prod)
+                 {
+                     $cuentaguardada->productos()->attach($prod->id, ['cantidad' => $prod->pivot->cantidad,'adicionales'=>$prod->pivot->adicionales]);
+                    
+                 }
+                 $cuenta->productos()->detach();
+                    $cuenta->delete();
+                    
+                    $this->reset('cuenta');
+                    $this->dispatchBrowserEvent('alert',[
+                        'type'=>'success',
+                        'message'=>"Venta finalizada!"
+                    ]);
+            }
+            else
+            {
+                $this->dispatchBrowserEvent('alert',[
+                    'type'=>'error',
+                    'message'=>"La caja se encuentra cerrada!"
+                ]);
+            }
         }
         else
         {
             $this->dispatchBrowserEvent('alert',[
-                'type'=>'warning',
-                'message'=>"Seleccione un tipo de pago!"
+                'type'=>'error',
+                'message'=>"Aun no se abrio la caja de hoy!"
             ]);
         }
+        
+        
        
     }
 
@@ -398,12 +604,88 @@ class VentasIndex extends Component
         $this->reset('descuento');
     }
 
+    public function imprimir()
+    {
+        
+        if($this->cuenta->sucursale->id_impresora)
+        {
+            
+            $nombre_impresora = "POS-582"; 
+            $connector = new WindowsPrintConnector($nombre_impresora);
+            $printer = new Printer($connector);
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->setTextSize(1, 2);
+            $printer->text("DELIGHT-NUTRIFOOD" . "\n");
+            /*$img = EscposImage::load("public/delight_logo.jpg",false);
+            $printer -> graphics($img);*/
+            $printer->setTextSize(1, 1);
+            $printer->text("Eco-Tienda" . "\n");
+            $printer->feed(1);
+            $printer->text("'NUTRIENDO HABITOS!'" . "\n");
+            $printer->feed(1);
+            $printer->text("Contacto : 78227629". "\n"."Campero e/15 de abril y Madrid" . "\n");
+            $printer->setTextSize(2, 2);
+            $printer->text("--------------\n");
+            $printer->setTextSize(1, 1);
+            foreach ($this->listacuenta as $list) {
+                $printer->setJustification(Printer::JUSTIFY_LEFT);
+                if($list['cantidad']==1)
+                {
+                     $printer->text($list['cantidad'] . "x " . $list['nombre'] . "\n");
+                }
+                else
+                {
+                      $printer->text($list['cantidad'] . "x " . $list['nombre'] ."(".$list['precio']." c/u)". "\n"); 
+                }
+                $printer->setJustification(Printer::JUSTIFY_RIGHT);
+                $printer->text(' Bs ' . $list['subtotal'] . "\n");
+            }
+        $printer->text("--------\n");
+        $printer->setTextSize(1, 1);
+        $printer->text("Subtotal: ". $this->cuenta->total ."\n");
+        $printer->text("Descuento: ". $this->cuenta->descuento ."\n");
+        $printer->feed(1);
+        $printer->setTextSize(1, 2);
+        $printer->text("TOTAL: Bs ". $this->cuenta->total-$this->cuenta->descuento ."\n");
+        $printer->feed(1);
+        $printer->setTextSize(1, 1);
+        $printer->text("Muchas gracias por preferirnos!\n");
+        $printer->feed(1);
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->text(date("Y-m-d H:i:s") . "\n");
+        $printer->feed(3);
+          $respuesta=CustomPrint::imprimir($printer,$this->cuenta->sucursale->id_impresora);
+          if($respuesta==true)
+          {
+            $this->dispatchBrowserEvent('alert',[
+                'type'=>'success',
+                'message'=>"Se imprimio el recibo correctamente"
+            ]);
+          }
+          else if($respuesta==false)
+          {
+            $this->dispatchBrowserEvent('alert',[
+                'type'=>'error',
+                'message'=>"La impresora no esta conectada"
+            ]);
+          }
+           
+        }
+        else
+        {
+            $this->dispatchBrowserEvent('alert',[
+                'type'=>'warning',
+                'message'=>"La sucursal no tiene una impresora activa"
+            ]);
+        }
+       
+    }
     public function render()
     {
         $ventas=Venta::orderBy('created_at','desc')->get();
         $usuarios=collect();
         $sucursales=Sucursale::pluck('id','nombre');
-        $productos=Producto::where('codigoBarra',$this->search)->orWhere('nombre','LIKE','%'.$this->search.'%')->take(5)->get();
+        $productos=Producto::where('estado','=','activo')->where(function (Builder $query) {return $query->where('codigoBarra',$this->search)->orWhere('nombre','LIKE','%'.$this->search.'%');})->take(5)->get();
         if($this->user!=null)
         {
             $usuarios=User::where('name','LIKE','%'.$this->user.'%')->orWhere('email','LIKE','%'.$this->user.'%')->take(3)->get();

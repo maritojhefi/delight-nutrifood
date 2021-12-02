@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use Livewire\Livewire;
 use App\Http\Middleware\CheckRol;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -65,5 +66,7 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'checkCajaOpen'=>\App\Http\Middleware\CheckIfCajaOpen::class
     ];
+    
 }

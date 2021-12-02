@@ -43,6 +43,24 @@ class ProductTable extends Component
         ]);
         
     }
+    public function cambiarcontable(Producto $producto)
+    {
+        
+        if($producto->contable==true)
+        {
+            $producto->contable=false;
+            $producto->save();
+        }
+        else{
+            $producto->contable=true;
+            $producto->save();
+        }
+        $this->dispatchBrowserEvent('alert',[
+            'type'=>'success',
+            'message'=>"Se guardo el cambio!"
+        ]);
+        
+    }
     public function eliminar(Producto $prod)
     {
         try {

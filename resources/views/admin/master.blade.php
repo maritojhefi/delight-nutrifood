@@ -77,6 +77,7 @@
        
         <div class="content-body">
             <div class="container-fluid">
+                @include('admin.partials.alertas')
                 @yield('content')
             </div>
             <!-- row -->

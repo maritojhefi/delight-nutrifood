@@ -3,15 +3,15 @@
 <x-cabecera-pagina titulo="{{$plan->nombre}}" cabecera="bordeado"/>
     <div class="card card-style">
         <div class="content text-white">
-        <h4>Tus proximos 5 dias!(Restante:{{$coleccion->count()}} dias)</h4>
+        <h4>Personaliza tu plan de esta semana!</h4>
         <p>
-        Personaliza el pedido de tu semana!
+        Quedan {{$coleccion->count()}} dias, personaliza cada uno! 
         </p>
         </div>
         <div class="accordion mt-4" id="accordion-2">
         @foreach ($coleccion as $lista)
         <div class="card card-style shadow-0 bg-highlight mb-1">
-            <button class="btn accordion-btn color-white no-effect collapsed" data-bs-toggle="collapse" data-bs-target="#collapse{{$lista['id']}}" aria-expanded="false">
+            <button class="btn accordion-btn color-white no-effect {{$lista['detalle']==null?'':'bg-green-dark'}} collapsed" data-bs-toggle="collapse" data-bs-target="#collapse{{$lista['id']}}" aria-expanded="false">
             <i class="fa fa-star me-2"></i>
             {{$lista['dia']}}({{$lista['fecha']}})
             @if ($lista['detalle'] ==null || $lista['detalle'] =="") 

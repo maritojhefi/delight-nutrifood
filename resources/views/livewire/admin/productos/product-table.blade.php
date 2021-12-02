@@ -22,7 +22,7 @@
                                 <th><strong>Codigo Barra</strong></th>
                                 <th><strong>Medicion</strong></th>
                                 <th><strong>Estado</strong></th>
-                               
+                                <th><strong>Contable</strong></th>
                                 <th><strong>Acciones</strong></th>
                             </tr>
                         </thead>
@@ -53,7 +53,7 @@
                             @endif
                             <td><span class="w-space-no">{{$item->medicion}}</span></td>
                             <td><a href="#" wire:click="cambiarestado('{{$item->id}}')"><div class="d-flex align-items-center"><i class="fa fa-circle text-{{$item->estado=='activo'?'success':'danger'}} me-1" ></i> {{$item->estado}}</div></a></td>
-                            
+                            <td><a href="#" wire:click="cambiarcontable('{{$item->id}}')"><span class="badge badge-{{$item->contable==0?'warning':'success'}}">{{$item->contable==0?'NO':'SI'}}</span></a></td>
                            
                             <td>
                                 <div class="d-flex">
@@ -95,7 +95,8 @@
                                        <div class="card overflow-hidden bg-image-2 bg-secondary">
                                            <div class="card-header  border-0">
                                                <div>
-                                                   <p class="mb-2 font-w100 text-white">Lugar: {{$stock->pivot->sucursale_id}}  -  Vencimiento: {{date('d-m-Y', strtotime($stock->pivot->fecha_venc))}}</p>
+                                                   <small class="mb-2 font-w100 text-white">Lugar: {{$stock->nombre}}  -  Vencimiento: {{date('d-m-Y', strtotime($stock->pivot->fecha_venc))}}</small>
+                                                   
                                                    <h3 class="mb-0 fs-24 font-w600 text-white">Cantidad: {{$stock->pivot->id}}</h3>
                                                </div>
                                            </div>

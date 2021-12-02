@@ -18,7 +18,7 @@ class Producto extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'nombre','subcategoria_id','precio','imagen','detalle','codigoBarra','descuento','puntos','medicion'
+        'nombre','subcategoria_id','precio','imagen','detalle','codigoBarra','descuento','puntos','medicion','contable'
        
     ];
     public function sucursale()

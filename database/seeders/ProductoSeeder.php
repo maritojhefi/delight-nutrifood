@@ -33,7 +33,7 @@ class ProductoSeeder extends Seeder
                 'imagen'=>'delight_logo.jpg',
                 'estado'=>'activo',
                 'codigoBarra'=>'delight-123',
-               
+                'contable'=>false,
                 'puntos'=>'2',
                 ]);
 
@@ -45,7 +45,7 @@ class ProductoSeeder extends Seeder
                     'imagen'=>'delight_logo.jpg',
                     'estado'=>'activo',
                     'codigoBarra'=>'delight-123',
-                   
+                    'contable'=>true,
                     'puntos'=>'3',
                     ]);
 
@@ -57,7 +57,7 @@ class ProductoSeeder extends Seeder
                         'imagen'=>'delight_logo.jpg',
                         'estado'=>'activo',
                         'codigoBarra'=>'delight-123',
-                       
+                        'contable'=>false,
                         'puntos'=>'4',
                         ]);
 
@@ -69,7 +69,7 @@ class ProductoSeeder extends Seeder
                             'imagen'=>'delight_logo.jpg',
                             'estado'=>'activo',
                             'codigoBarra'=>'delight-123',
-                            
+                            'contable'=>true,
                             'puntos'=>'1',
                             'medicion'=>'gramo'
                             ]);

@@ -3,10 +3,11 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Models\Role;
+use Carbon\Carbon;
+use App\Models\Caja;
 use Illuminate\Http\Request;
 
-class CheckRol
+class CheckIfCajaOpen
 {
     /**
      * Handle an incoming request.
@@ -17,15 +18,14 @@ class CheckRol
      */
     public function handle(Request $request, Closure $next)
     {
-        if(auth()->user()->role->id==Role::ADMIN || auth()->user()->role->id==Role::CAJERO) 
+        $caja= Caja::whereDate('created_At',Carbon::today())->get();
+        foreach($caja as $cash)
+        if($cash->estado=='abierto') 
         {
             return $next($request);
 
         }
-        else 
-        {
-            return redirect('/miperfil');
-
-        }
+        
+        return redirect()->route('producto.listar')->with('danger','Acceso denegado, la caja diaria debe estar activa');
     }
 }

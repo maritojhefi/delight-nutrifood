@@ -62,7 +62,7 @@
         </div>
     </x-card-col4>
     @isset($cuenta)
-    <x-card-col4>
+    <x-card-col4 >
         <h4 class="d-flex justify-content-between align-items-center mb-3">
             <small class="m-3 text-muted" wire:loading.remove>Venta #{{$cuenta->id}}</small> <br>
             <small class="m-3 text-muted" wire:loading>Actualizando...</small>
@@ -76,7 +76,10 @@
             
             <span class="badge badge-primary badge-pill">{{$itemsCuenta}}</span>
         </h4>
-        <ul class="list-group mb-3">
+        
+       
+       
+        <ul class="list-group mb-3"@isset($cuenta->cliente) @php $time = strtotime($cuenta->cliente->nacimiento); @endphp  @if (date("m-d")==date('m-d', $time)) style="background-image: url('{{asset('images/cumple.gif')}}')"@endif @endisset>
            
            
                 @foreach ($listacuenta as $item)
@@ -193,37 +196,98 @@
         @endisset
         @if ($cuenta->total!=0)
         <div class="row m-2">
-            <div x-data="{ open: false }">
-                <button @click="open = ! open" class="badge badge-xs light badge-info">Cobrar</button>
-             
-                <div x-show="open" @click.outside="open = false"> 
-                    <div class="row">
-                        
+            <button class="btn btn-xs light btn-warning"  data-bs-toggle="modal" data-bs-target="#basicModal" >Cobrar Cuenta</button>
+
+           </div>  
+           <div wire:ignore.self class="modal fade" id="basicModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Esta seguro?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-group mb-3">
+                            <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                <div>
+                                    <h6 class="my-0">Subtotal</h6>
+                                    
+                                </div>
+                                <span class="text-muted">{{$cuenta->total}}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                <div>
+                                    <h6 class="my-0">Descuento</h6>
+                                 
+                                </div>
+                                <span class="text-muted">{{$cuenta->descuento}}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                <div>
+                                    <h6 class="my-0">Puntos</h6>
+                                    @isset($cuenta->cliente)
+                                    <small class="text-muted">Para :
+                                        {{$cuenta->cliente->name}}  </small>
+                                    @endisset
+                                </div>
+                                <span class="text-muted">{{$cuenta->puntos}}</span>
+                            </li>
+                            
+                            <li class="list-group-item d-flex justify-content-between active">
+                                <span>Total (BS)</span>
+                                <strong>{{$cuenta->total-$cuenta->descuento}}</strong>
+                            </li>
+                        </ul>
+                        <span class="badge light badge-warning">Tipo de pago: </span>
+                        @isset($tipocobro)
+                        <span class="badge light badge-success">{{$tipocobro}}</span> 
+                        @endisset
+
                         <div class="col">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gridRadios" wire:model="tipocobro" value="efectivo" checked="">
+                                <input class="form-check-input" type="radio" name="gridRadios" wire:model="tipocobro" value="efectivo">
                                 <label class="form-check-label">
                                     Efectivo
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gridRadios" wire:model="tipocobro" value="transferencia">
-                                <label class="form-check-label">
-                                    Transferencia
-                                </label>
-                            </div>
-                            <div class="form-check disabled">
-                                <input class="form-check-input" type="radio" name="gridRadios" wire:model="tipocobro" value="tarjeta" >
+                                <input class="form-check-input" type="radio" name="gridRadios" wire:model="tipocobro" value="tarjeta">
                                 <label class="form-check-label">
                                     Tarjeta
                                 </label>
                             </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="gridRadios" wire:model="tipocobro" value="banco-sol">
+                                <label class="form-check-label">
+                                    Banco Sol
+                                </label>
+                            </div>
+                            <div class="form-check disabled">
+                                <input class="form-check-input" type="radio" name="gridRadios" wire:model="tipocobro" value="banco-bisa" >
+                                <label class="form-check-label">
+                                    Banco Bisa
+                                </label>
+                            </div>
+                            <div class="form-check disabled">
+                                <input class="form-check-input" type="radio" name="gridRadios" wire:model="tipocobro" value="banco-mercantil" >
+                                <label class="form-check-label">
+                                    Banco Mercantil
+                                </label>
+                            </div>
+                            
                         </div>
                     </div>
-                    <button class="btn btn-xs light btn-warning" wire:click="cobrar">Cobrar Cuenta</button>
+                    <div class="modal-footer">
+                        <button wire:loading.remove wire:target='imprimir' type="button" class="btn btn-warning btn-sm" wire:click="imprimir"  ><span >Imprimir</span></button>
+                        <button wire:loading wire:target='imprimir' type="button" disabled class="btn btn-warning btn-sm" wire:click="imprimir"  ><span >Espere...</span></button>
+
+                        
+                        <button type="button" class="btn btn-primary" wire:click="cobrar" {{$tipocobro?'':'disabled'}}  data-bs-dismiss="modal">Confirmar y cerrar venta</button>
+                    </div>
                 </div>
             </div>
-           </div>   
+        </div> 
         @endif
        
             
@@ -240,9 +304,32 @@
 
                         </div>
                         <div class="col">
-                            {{$item->nombre}}
+                            @php
+                             $total=0;
+                            @endphp
+                            {{$item->nombre}} 
+                            @foreach ($item->sucursale->where('id',$cuenta->sucursale_id) as $relacion)
+                            @isset($relacion)
+                            @php
+                            $total+=$relacion->pivot->cantidad;
+                            @endphp
+                            @endisset
+                           
+                                 
+                            @endforeach
+                            <small>
+                                @if ($item->contable==true)
+                                @if ($total==0)
+                                <span class="badge badge-danger mb-2">Agotado</span>
+                                @else 
+                                <span class="badge badge-warning mb-2">Stock actual:{{$total}}</span>  
+                                @endif
+                                @endif
+                               
+                                
+                            </small>
                              @if ($item->puntos!=0 && $item->puntos !=null)
-                            ({{$item->puntos}}pts)
+                             <span class="badge light badge-dark">{{$item->puntos}}pts</span>
                             @endif
                         </div>
                            
@@ -257,7 +344,7 @@
                             @else
                             <span class="badge badge-xs light badge-warning">{{$item->precio}} Bs</span>
                             @endif
-                            <button type="button" class="btn btn-rounded btn-primary btn-xxs pull-right" wire:click="adicionar('{{ $item->id }}')" ><span class="btn-icon-start text-primary btn-xxs" ><i class="fa fa-shopping-cart"></i>
+                            <button type="button" class="btn btn-rounded btn-primary btn-xxs pull-right" {{$total==0 && $item->contable==true?'disabled':''}} wire:click="adicionar('{{ $item->id }}')" ><span class="btn-icon-start text-primary btn-xxs" ><i class="fa fa-shopping-cart"></i>
                             </span>Añadir</button>
                             
                         </div>

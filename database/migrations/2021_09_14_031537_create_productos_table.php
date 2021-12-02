@@ -26,6 +26,7 @@ class CreateProductosTable extends Migration
             $table->decimal('descuento')->nullable();
             $table->integer('puntos')->unsigned()->nullable()->default(0);
             $table->string('medicion')->default('unidad');
+            $table->boolean('contable')->nullable()->default(false);
             $table->timestamps();
         });
     }

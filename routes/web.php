@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Rawilk\Printing\Facades\Printing;
 use App\Http\Livewire\Client\Inicio\Index;
 
 /*
@@ -104,7 +105,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('/stock', \App\Http\Livewire\Admin\StockProductos::class)->name('sucursal.stock');
 
     });
-    Route::prefix('/ventas')->group(function () {
+    Route::prefix('/ventas')->middleware('checkCajaOpen')->group(function () {
    
         Route::get('/index', \App\Http\Livewire\Admin\Ventas\VentasIndex::class)->name('ventas.listar');
 
@@ -114,4 +115,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('/index', \App\Http\Livewire\Admin\Almuerzos\Personalizar::class)->name('almuerzos.listar');
         Route::get('/reporte', \App\Http\Livewire\Admin\Almuerzos\ReporteDiario::class)->name('almuerzos.reporte');
     });
+    Route::prefix('/perifericos')->group(function () {
+   
+        Route::get('/impresoras', \App\Http\Livewire\Perifericos\ImpresorasIndex::class)->name('impresoras.index');
+    });
+    Route::prefix('/caja')->group(function () {
+   
+       Route::get('/diaria', \App\Http\Livewire\Admin\Caja\CajaDiaria::class)->name('caja.diaria');
+       Route::get('/reportes', \App\Http\Livewire\Admin\Caja\Reportes::class)->name('caja.reportes');
+    });
 });
+
+

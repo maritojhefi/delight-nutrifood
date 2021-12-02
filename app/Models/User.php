@@ -8,6 +8,7 @@ use App\Models\Plane;
 use App\Models\Venta;
 use App\Models\Pensione;
 use App\Models\Traslado;
+use App\Models\Historial_venta;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
@@ -64,6 +65,10 @@ class User extends Authenticatable
     public function ventas()
     {
         return $this->hasMany(Venta::class,'cliente_id');
+    }
+    public function historial_ventas()
+    {
+        return $this->hasMany(Historial_venta::class,'cliente_id');
     }
     public function pensione()
     {

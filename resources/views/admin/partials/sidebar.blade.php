@@ -2,25 +2,27 @@
     <div class="deznav-scroll">
         <ul class="metismenu" id="menu">
             
-            <x-sidebar-elements titulo="Inicio" linkglobal="admin/inicio" :lista="(['Resumen de hoy'=>'resumen','Ventas por sucursal'=>'ventas.sucursal' ])">
-                <i class="flaticon-025-dashboard"></i>
-            </x-sidebar-elements>
-           
-            <x-sidebar-elements titulo="Estadisticas" linkglobal="admin/estadisticas" :lista="(['Crear Reporte'=>'miperfil' ])">
-                <i class="flaticon-041-graph"></i>
-            </x-sidebar-elements>
+           @if (auth()->user()->role->nombre=='admin')
+           <x-sidebar-elements titulo="Inicio" linkglobal="admin/inicio" :lista="(['Resumen de hoy'=>'resumen','Ventas por sucursal'=>'ventas.sucursal' ])">
+            <i class="flaticon-025-dashboard"></i>
+        </x-sidebar-elements>
+       
+        <x-sidebar-elements titulo="Estadisticas" linkglobal="admin/caja" :lista="(['Crear Reporte'=>'caja.reportes' ])">
+            <i class="flaticon-041-graph"></i>
+        </x-sidebar-elements>
 
-            <x-sidebar-elements titulo="Sucursales" linkglobal="admin/sucursales" :lista="(['Todas'=>'sucursal.listar','Agregar Stock'=>'sucursal.stock' ])">
-                <i class="flaticon-086-star"></i>
-            </x-sidebar-elements>
-           
-            <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="([
-                'Listar Usuarios'=>'usuario.listar',
-                'Roles'=>'usuario.roles',
-                'Planes'=>'planes',
-                'Personal'=>'personal' ])">
-                <i class="flaticon-045-heart"></i>
-            </x-sidebar-elements>
+        <x-sidebar-elements titulo="Sucursales" linkglobal="admin/sucursales" :lista="(['Todas'=>'sucursal.listar','Agregar Stock'=>'sucursal.stock' ])">
+            <i class="flaticon-086-star"></i>
+        </x-sidebar-elements>
+       
+        <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="([
+            'Listar Usuarios'=>'usuario.listar',
+            'Roles'=>'usuario.roles',
+            'Planes'=>'planes',
+            'Personal'=>'personal' ])">
+            <i class="flaticon-045-heart"></i>
+        </x-sidebar-elements>
+           @endif
            <x-sidebar-elements titulo="Almuerzos" linkglobal="admin/almuerzos" :lista="(['Personalizar dias'=>'almuerzos.listar','Reporte Diario'=>'almuerzos.reporte'])">
             <i class="flaticon-022-copy"></i>
             </x-sidebar-elements>
@@ -29,7 +31,7 @@
                 <i class="flaticon-013-checkmark"></i>
             </x-sidebar-elements>
 
-            <x-sidebar-elements titulo="Perifericos" linkglobal="admin/perifericos" :lista="(['Impresoras'=>'miperfil' ])">
+            <x-sidebar-elements titulo="Perifericos" linkglobal="admin/perifericos" :lista="(['Impresoras'=>'impresoras.index' ])">
                 <i class="flaticon-072-printer"></i>
             </x-sidebar-elements>
             
@@ -52,8 +54,8 @@
 
 
         <div class="plus-box" style="padding:20px 20px 30px">
-            <p class="fs-16 font-w300 mb-4">Estas en modo administracion!</p>
-            <a class="text-white fs-14" href="javascript:void(0);">Tienes acceso total.</a>
+            <p class="fs-16 font-w300 mb-4">Estas en el panel principal!</p>
+            <a class="text-white fs-14" href="javascript:void(0);">Eres parte del equipo DELIGHT!</a>
         </div>
         <div class="copyright">
             <p><strong>Delight</strong> © 2021 Todos los derechos reservados</p>

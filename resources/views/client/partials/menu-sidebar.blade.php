@@ -7,7 +7,7 @@
     <div class="menu-logo text-center">
     <a href="#"><img class="rounded-circle bg-highlight" width="80" src="{{asset('user.png')}}"></a>
     @auth
-    <h1 class="pt-3 font-800 font-28 text-uppercase">{{Str::words(auth()->user()->name, 1)}}</h1>
+    <h1 class="pt-3 font-800 font-28 text-uppercase">{{Str::words(auth()->user()->name, 1,"")}}</h1>
     @endauth
     @guest
     <h1 class="pt-3 font-800 font-28 text-uppercase">DELIGHT</h1>   

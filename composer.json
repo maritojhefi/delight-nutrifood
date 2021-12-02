@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "consoletvs/charts": "7.*",
         "davejamesmiller/laravel-breadcrumbs": "^5.3",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
@@ -17,6 +18,8 @@
         "laravel/ui": "^3.3",
         "livewire/livewire": "^2.5",
         "milon/barcode": "^8.0",
+        "printnode/printnode-php": "master",
+        "rawilk/laravel-printing": "^2.0",
         "silviolleite/laravelpwa": "^2.0"
     },
     "require-dev": {
@@ -26,7 +29,8 @@
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.2",
         "nunomaduro/collision": "^5.0",
-        "phpunit/phpunit": "^9.3.3"
+        "phpunit/phpunit": "^9.3.3",
+        "react/dns": "1.1"
     },
     "autoload": {
         "psr-4": {
@@ -35,7 +39,8 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/CreateList.php"
+            "app/Helpers/CreateList.php",
+            "app/Helpers/CustomPrint.php"
         ]
     },
     "autoload-dev": {

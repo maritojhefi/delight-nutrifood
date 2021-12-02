@@ -46,15 +46,13 @@ class StockProductos extends Component
         $sucursal->productos()->attach($this->prodlisto->id);
         
         $registro = DB::table('producto_sucursale')->where('producto_id',$this->prodlisto->id)->where('sucursale_id',$this->sucursal)->get()->last();
-        
-        DB::table('producto_sucursale')
-        ->where('id', $registro->id)
-        ->increment('cantidad',$this->cantidad);  
+      
 
         DB::table('producto_sucursale')
         ->where('id', $registro->id)
-        ->update(['fecha_venc'=>$this->fecha_venc]); 
-       DB::commit();
+        ->update(['fecha_venc'=>$this->fecha_venc,'usuario_id'=>auth()->user()->id,'cantidad'=>$this->cantidad,'max'=>$this->cantidad]); 
+        DB::table('productos')->where('id',$this->prodlisto->id)->update(['contable'=>1]);
+        DB::commit();
          $this->dispatchBrowserEvent('alert',[
             'type'=>'success',
             'message'=>"Se agregaron ".$this->cantidad." productos de ".$this->prodlisto->nombre

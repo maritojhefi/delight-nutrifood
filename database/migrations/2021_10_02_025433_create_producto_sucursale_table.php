@@ -23,6 +23,7 @@ class CreateProductoSucursaleTable extends Migration
             $table->unsignedBigInteger('producto_id')->nullable();
             $table->foreign('producto_id')->references('id')->on('productos');
             $table->integer('cantidad')->unsigned()->default(0);
+            $table->integer('max')->unsigned()->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
