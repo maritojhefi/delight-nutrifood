@@ -114,7 +114,7 @@ class CreateList {
         foreach($contado as $idplan=>$cantidad)
         {
             $plan=Plane::find($idplan);
-            $coleccion->push(['plan'=>$plan->nombre,'cantidad'=>$cantidad,'id'=>$plan->id]);
+            $coleccion->push(['plan'=>$plan->nombre,'cantidad'=>$cantidad,'id'=>$plan->id,'editable'=>$plan->editable]);
         }
         return $coleccion;
 

@@ -19,11 +19,11 @@ class UserSeeder extends Seeder
             ['name'=>'Jacquelinne',
             'password'=>'delight123',
         'email'=>'jacquelinne@gmail.com',
-    'role_id'=>1]);
+        'role_id'=>1]);
           User::create(
         ['name'=>'Mario',
         'password'=>'jhefi123',
-    'email'=>'maritojhefi@gmail.com',
-    'role_id'=>1]);
+        'email'=>'maritojhefi@gmail.com',
+         'role_id'=>1]);
     }
 }

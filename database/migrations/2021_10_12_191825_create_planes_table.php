@@ -18,6 +18,7 @@ class CreatePlanesTable extends Migration
             
             $table->string('nombre', 100)->nullable();
             $table->string('detalle')->nullable();
+            $table->boolean('editable')->nullable()->default(false);
             $table->unsignedBigInteger('producto_id')->nullable();
             $table->foreign('producto_id')->references('id')->on('productos');
             $table->timestamps();

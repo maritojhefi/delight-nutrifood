@@ -36,6 +36,15 @@ class Producto extends Model
     public function pathAttachment(){
         return "imagenes/productos/".$this->imagen;
     }
+    public function setPrecioAttribute($value)
+    {
+        
+        $this->attributes['precio'] = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT,FILTER_FLAG_ALLOW_FRACTION);
+    }
+    public function setMedicionAttribute($value)
+    {
+        $this->attributes['medicion'] = $this->attributes['precio']>1?'unidad':'gramo';
+    }
     public function ventas()
     {
         return $this->belongsToMany(Venta::class)

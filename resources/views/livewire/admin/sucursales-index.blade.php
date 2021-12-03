@@ -71,19 +71,19 @@
                         <div class="new-arrival-content position-relative">
                             <div class="comment-review star-rating">
                                
-                                <span class="review-text">Ventas de hoy</span>
-                                <p class="price">500 bs</p>
+                                <span class="review-text">Ventas totales</span>
+                                <p class="price">{{$item->cajas->sum('acumulado')}} Bs</p>
                             </div>
                             <h4><a href="ecom-product-detail.html">{{$item->nombre}}</a></h4>
-                            <p>{{$item->direccion}}</p>
+                             <small>{{$item->direccion}}</small>
                             
-                            <p>Productos existentes: <span class="item">456 en stock <i class="fa fa-check-circle text-success"></i></span></p>
-                            <p>Productos vendidos: <span class="item">54</span> </p>
-                            <p>Cantidad de personal: <span class="item">6</span></p>
+                            <p>Stock existente: <span class="item badge badge-xxs badge-warning light">{{$item->productos->sum('cantidad')}} en stock <i class="fa fa-check-circle text-success"></i></span></p>
+                            <p>Ventas totales: <span class="item badge badge-xxs badge-info light">{{$item->historial_ventas->sum('total')}} Bs</span> </p>
+                            
                         </div>
                     </div>
                     <div class="row">
-                        <a href="javascript:void(0);" class="btn btn-outline-warning btn-sm rounded  col-6">Editar</a>
+                        
                         <a href="javascript:void(0);" class="btn btn-danger rounded btn-sm  col-6" wire:click="eliminar('{{ $item->id }}')">Eliminar</a>
                     </div>
                 </div>

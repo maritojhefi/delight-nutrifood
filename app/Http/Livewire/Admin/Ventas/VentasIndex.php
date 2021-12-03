@@ -542,7 +542,7 @@ class VentasIndex extends Component
             if($cajaactiva->estado=="abierto")
             {
                 
-
+                DB::table('cajas')->where('id',$cajaactiva->id)->increment('acumulado',$this->cuenta->total);
                 $cuenta=Venta::find($this->cuenta->id);
                 $cuentaguardada= Historial_venta::create([
                     'caja_id'=>$cajaactiva->id,

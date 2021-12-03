@@ -17,6 +17,7 @@
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.3",
         "livewire/livewire": "^2.5",
+        "maatwebsite/excel": "^3.1",
         "milon/barcode": "^8.0",
         "printnode/printnode-php": "master",
         "rawilk/laravel-printing": "^2.0",

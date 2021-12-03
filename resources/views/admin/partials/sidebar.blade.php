@@ -3,11 +3,11 @@
         <ul class="metismenu" id="menu">
             
            @if (auth()->user()->role->nombre=='admin')
-           <x-sidebar-elements titulo="Inicio" linkglobal="admin/inicio" :lista="(['Resumen de hoy'=>'resumen','Ventas por sucursal'=>'ventas.sucursal' ])">
+           <x-sidebar-elements titulo="Inicio" linkglobal="admin/inicio" :lista="(['Resumen de hoy'=>'caja.diaria'])">
             <i class="flaticon-025-dashboard"></i>
         </x-sidebar-elements>
        
-        <x-sidebar-elements titulo="Estadisticas" linkglobal="admin/caja" :lista="(['Crear Reporte'=>'caja.reportes' ])">
+        <x-sidebar-elements titulo="Estadisticas" linkglobal="admin/caja" :lista="(['Todas las ventas'=>'caja.reportes' ])">
             <i class="flaticon-041-graph"></i>
         </x-sidebar-elements>
 
@@ -46,7 +46,7 @@
                 <i class="flaticon-043-menu"></i>
             </x-sidebar-elements>
 
-            <x-sidebar-elements titulo="Otros" linkglobal="admin/otros" :lista="(['Otro'=>'miperfil' ])">
+            <x-sidebar-elements titulo="Otros" linkglobal="admin/otros" :lista="(['Importar excel'=>'importar.index' ])">
                 <i class="flaticon-022-copy"></i>
             </x-sidebar-elements>
            

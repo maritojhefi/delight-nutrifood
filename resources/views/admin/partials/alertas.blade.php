@@ -1,31 +1,13 @@
 @if (session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert" id="contenido">
-        <strong><span class="material-icons">
-            done
-            </span> 
-            Notificacion:</strong> {{session('success')}} 
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span class="material-icons">
-            close
-            </span>
-        </button>
-    </div>
+<div class="alert alert-success alert-dismissible alert-alt fade show" id="contenido">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
+    </button>
+    <strong>Bien!</strong> {{session('success')}} 
+</div>
     @endif
-    @if (session('info'))
-    <div class="alert alert-info alert-dismissible fade show" role="alert" id="contenido">
-        <strong><span class="material-icons">
-            info
-            </span> 
-            Notificacion:</strong> {{session('info')}} 
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span class="material-icons">
-            close
-            </span>
-        </button>
-    </div>
-@endif
+   
 @if (session('danger'))
-<div class="alert alert-danger alert-dismissible alert-alt solid fade show">
+<div class="alert alert-danger alert-dismissible alert-alt solid fade show" id="contenido">
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
     </button>
     <strong>Error!</strong> {{session('danger')}} 

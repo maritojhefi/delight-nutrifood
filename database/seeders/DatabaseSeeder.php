@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SubcategoriaSeeder::class);
         $this->call(RoleSeeder::class);
         $this->call(UserSeeder::class);
-        $this->call(ProductoSeeder::class);
+        //$this->call(ProductoSeeder::class);
         $this->call(AdicionalesSeeder::class);
         $this->call(AlmuerzosSeeder::class);
         //Producto::factory(100)->create();

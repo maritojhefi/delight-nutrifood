@@ -124,6 +124,12 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
        Route::get('/diaria', \App\Http\Livewire\Admin\Caja\CajaDiaria::class)->name('caja.diaria');
        Route::get('/reportes', \App\Http\Livewire\Admin\Caja\Reportes::class)->name('caja.reportes');
     });
+    Route::prefix('/otros')->group(function () {
+   
+        Route::post('importar', [App\Http\Controllers\admin\OtroController::class, 'importar'])->name('importar.excel');
+        Route::get('index', [App\Http\Controllers\admin\OtroController::class, 'index'])->name('importar.index');
+
+     });
 });
 
 

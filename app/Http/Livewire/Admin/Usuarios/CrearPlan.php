@@ -33,7 +33,22 @@ class CrearPlan extends Component
     {
         $this->validateOnly($propertyName);
     }
-
+    public function cambiarEditable(Plane $plane)
+    {
+        if($plane->editable==true)
+        {
+            $plane->editable=false;
+        }
+        else
+        {
+            $plane->editable=true;
+        }
+        $plane->save();
+        $this->dispatchBrowserEvent('alert',[
+            'type'=>'success',
+            'message'=>"Se cambio el estado de este plan!!"
+        ]);
+    }
     public function resetproducto()
     {
         $this->reset('productoseleccionado');

@@ -53,6 +53,7 @@ class Planes extends Component
      
     }
 
+    
     public function eliminar(Plane $plan)
     {
         $user=User::find($this->seleccionado->id);

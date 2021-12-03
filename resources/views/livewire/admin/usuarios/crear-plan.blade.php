@@ -46,6 +46,7 @@
                             <thead>
                                 <tr>
                                     <th><strong>Nombre</strong></th>
+                                    <th><strong>Editable</strong></th>
                                     <th><strong>Detalle</strong></th>
                                   
                                   
@@ -56,6 +57,7 @@
                                 @foreach ($planes as $item)
                                 <tr>
                                     <td><span class="badge light badge-success">{{$item->nombre}}</span></td>
+                                    <td><a href="#" wire:click="cambiarEditable({{$item->id}})"><span class="badge badge-pill badge-{{$item->editable==true?'success':'danger'}} light">{{$item->editable==true?'SI':'NO'}}</span></a></td>
                                     <td>{{$item->detalle}}</td>
                                   
                                    

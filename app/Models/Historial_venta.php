@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Sucursale;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Historial_venta extends Model
 {
@@ -26,5 +27,9 @@ class Historial_venta extends Model
     public function cliente()
     {
         return $this->belongsTo(User::class,'cliente_id');
+    }
+    public function sucursale()
+    {
+        return $this->belongsTo(Sucursale::class);
     }
 }

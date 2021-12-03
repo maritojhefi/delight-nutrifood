@@ -20,11 +20,6 @@ class SucursalSeeder extends Seeder
             'telefono'=>'+59178227629'
           
         ]);
-        Sucursale::create([
-            'nombre'=>'Sucursal 2',
-            'direccion'=>'Av. La Paz y Circunvalacion',
-            'telefono'=>'+59178227629'
-          
-        ]);
+       
     }
 }

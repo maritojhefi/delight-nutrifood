@@ -11,7 +11,7 @@ class Plane extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'nombre','producto_id','detalle'
+        'nombre','producto_id','detalle','editable'
        
     ];
     public function usuarios()
