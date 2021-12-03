@@ -40,10 +40,24 @@ class MiperfilController extends Controller
              $menusemanal=Almuerzo::where('dia',$this->saber_dia($dias->pivot->start))->first();  
          
              $coleccion->push([
-                 'detalle'=>$dias->pivot->detalle,'dia'=>$this->saber_dia($dias->pivot->start),'id'=>$dias->pivot->id,'fecha'=>date('d-M', strtotime($dias->pivot->start)),
-                 'sopa'=>$menusemanal->sopa,'ensalada'=>$menusemanal->ensalada,'ejecutivo'=>$menusemanal->ejecutivo,
-                 'dieta'=>$menusemanal->dieta,'vegetariano'=>$menusemanal->vegetariano,'carbohidrato_1'=>$menusemanal->carbohidrato_1,
-                 'carbohidrato_2'=>$menusemanal->carbohidrato_2,'carbohidrato_3'=>$menusemanal->carbohidrato_3,'jugo'=>$menusemanal->jugo
+                 'detalle'=>$dias->pivot->detalle,
+                 'dia'=>$this->saber_dia($dias->pivot->start),
+                 'id'=>$dias->pivot->id,
+                 'fecha'=>date('d-M', strtotime($dias->pivot->start)),
+                 'sopa'=>$menusemanal->sopa,
+                 'ensalada'=>$menusemanal->ensalada,
+                 'ejecutivo'=>$menusemanal->ejecutivo,
+                 'dieta'=>$menusemanal->dieta,
+                 'vegetariano'=>$menusemanal->vegetariano,
+                 'carbohidrato_1'=>$menusemanal->carbohidrato_1,
+                 'carbohidrato_2'=>$menusemanal->carbohidrato_2,
+                 'carbohidrato_3'=>$menusemanal->carbohidrato_3,
+                 'jugo'=>$menusemanal->jugo,
+                 'envio1'=>'Para Mesa',
+                 'envio2'=>'Para llevar(Paso a recoger)',
+                 'envio3'=>'Delivery',
+                 'empaque1'=>'Vianda',
+                 'empaque2'=>'Eco-Empaque Delight',
                             ]);
              
             }
@@ -60,9 +74,19 @@ class MiperfilController extends Controller
     public function personalizardia(Request $request){
         $plato='plato'.$request->id;
         $carbohidrato='carb'.$request->id;
-        if($request[$plato] && $request[$carbohidrato])
+        $envio='envio'.$request->id;
+        $empaque='empaque'.$request->id;
+        if($request[$plato] && $request[$carbohidrato] && $request[$envio] && $request[$empaque])
         {
-            $array=array('SOPA'=>$request->sopa,'PLATO'=>$request[$plato],'ENSALADA'=>$request->ensalada,'CARBOHIDRATO'=>$request[$carbohidrato],'JUGO'=>$request->jugo);
+            $array=array(
+            'SOPA'=>$request->sopa,
+            'PLATO'=>$request[$plato],
+            'ENSALADA'=>$request->ensalada,
+            'CARBOHIDRATO'=>$request[$carbohidrato],
+            'JUGO'=>$request->jugo,
+            'ENVIO'=>$request[$envio],
+            'EMPAQUE'=>$request[$empaque],
+        );
            
             DB::table('plane_user')->where('id',$request->id)->update(['detalle'=>$array]);
             return back()->with('success','Dia '.$request->dia.' guardado!');

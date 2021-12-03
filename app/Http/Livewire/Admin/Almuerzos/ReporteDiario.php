@@ -21,12 +21,14 @@ class ReporteDiario extends Component
                 
                 $coleccion->push([
                     'NOMBRE'=>$pensionado->name,
-                    'ENVASE'=>$det['SOPA'],
+                    
                     'ENSALADA'=>$det['ENSALADA'],
                     'SOPA'=>$det['SOPA'],
                     'PLATO'=>$det['PLATO'],
                     'CARBOHIDRATO'=>$det['CARBOHIDRATO'],
-                    'JUGO'=>$det['JUGO']
+                    'JUGO'=>$det['JUGO'],
+                    'ENVIO'=>$det['ENVIO'],
+                    'EMPAQUE'=>$det['EMPAQUE']
                 ]);
                 
                 
@@ -36,12 +38,15 @@ class ReporteDiario extends Component
         }
         $total=collect();
         $total->push([
-            'envase'=>$coleccion->pluck('ENVASE')->countBy(),
+            
             'sopa'=>$coleccion->pluck('SOPA')->countBy(),
             'ensalada'=>$coleccion->pluck('ENSALADA')->countBy(),
             'plato'=>$coleccion->pluck('PLATO')->countBy(),
             'carbohidrato'=>$coleccion->pluck('CARBOHIDRATO')->countBy(),
-            'jugo'=>$coleccion->pluck('JUGO')->countBy()
+            'jugo'=>$coleccion->pluck('JUGO')->countBy(),
+            
+            'empaque'=>$coleccion->pluck('EMPAQUE')->countBy(),
+            'envio'=>$coleccion->pluck('ENVIO')->countBy()
         ]);
         //dd($total);
         return view('livewire.admin.almuerzos.reporte-diario',compact('usuarios','coleccion','total'))

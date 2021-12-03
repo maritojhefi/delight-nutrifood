@@ -27,7 +27,7 @@
                 <p class="font-10 mb-0 pb-0">Puntos</p>
             </div>
             <div class="col-4">
-                <h1 class="mb-n1">{{$usuario->ventas->count()}}</h1>
+                <h1 class="mb-n1">{{$usuario->historial_ventas->count()}}</h1>
                 <p class="font-10 mb-0 pb-0">Compras realizadas</p>
             </div>
         </div>
@@ -35,6 +35,7 @@
 
     </div>
 </div>
+
 <div class="card card-style">
     <div class="content mb-0">
         <h1>Planes suscritos</h1>
@@ -54,14 +55,14 @@
                     <strong>Cantidad restante - {{$item['cantidad']}}</strong>
 
                     @if($item['editable']==true)
-                    <span class="badge bg-blue-dark">Editar semana</span> 
+                    <span class="badge bg-blue-dark">Editar semana</span>
                     @else
-                    <span class="badge bg-red-dark">No personalizable</span> 
+                    <span class="badge bg-red-dark">No personalizable</span>
                     @endif
                     <i class="fa fa-angle-right"></i>
-              </a>
-              @endforeach
-               @endisset
+                </a>
+                @endforeach
+                @endisset
 
         </div>
 

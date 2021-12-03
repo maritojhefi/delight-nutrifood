@@ -10,12 +10,13 @@
                         <tr>
                             <th>#</th>
                             <th>Nombre</th>
-                            <th>Envase</th>
                             <th>Ensalada</th>
                             <th>Sopa</th>
                             <th>Plato</th>
                             <th>Carbohidrato</th>
                             <th>Jugo</th>
+                            <th>Empaque</th>
+                            <th>Envio</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -23,12 +24,13 @@
                         <tr>
                             <td>{{$loop->iteration}}</td>
                            <td>{{$lista['NOMBRE']}}</td>
-                           <td>{{$lista['ENVASE']}}</td>
                            <td>{{$lista['ENSALADA']}}</td>
                            <td>{{$lista['SOPA']}}</td>
                            <td>{{$lista['PLATO']}}</td>
                            <td>{{$lista['CARBOHIDRATO']}}</td>
                            <td>{{$lista['JUGO']}}</td>
+                           <td>{{$lista['EMPAQUE']}}</td>
+                           <td>{{$lista['ENVIO']}}</td>
                             
                            
                         </tr>

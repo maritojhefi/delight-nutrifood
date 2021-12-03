@@ -18,8 +18,9 @@
         <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="([
             'Listar Usuarios'=>'usuario.listar',
             'Roles'=>'usuario.roles',
-            'Planes'=>'planes',
-            'Personal'=>'personal' ])">
+            'Detalle planes'=>'planes',
+            'Listar Planes'=>'crear.plan'
+             ])">
             <i class="flaticon-045-heart"></i>
         </x-sidebar-elements>
            @endif
