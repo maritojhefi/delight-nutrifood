@@ -26,8 +26,6 @@ class AddCajaIdToHistorialVentas extends Migration
      */
     public function down()
     {
-        Schema::table('historial_ventas', function (Blueprint $table) {
-            $table->dropColumn('caja_id');
-        });
+      
     }
 }
