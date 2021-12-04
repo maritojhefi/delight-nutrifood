@@ -2,9 +2,9 @@
 @section('content')
 <x-cabecera-pagina titulo="Productos" cabecera="bordeado"/>
 
-
+<x-page-construccion/>
     
-    <div class="card card-style bg-transparent mx-0 mb-n2 mt-n3 shadow-0">
+  <!--  <div class="card card-style bg-transparent mx-0 mb-n2 mt-n3 shadow-0">
     <div class="content mt-2">
     <div class="search-box bg-theme color-theme rounded-m shadow-l">
     <i class="fa fa-search"></i>
@@ -167,7 +167,7 @@
     </div>
     
    
-    
+-->
     
     
 @endsection

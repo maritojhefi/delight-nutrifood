@@ -4,12 +4,12 @@
 @auth
 <x-cabecera-pagina titulo="Mi Perfil" cabecera="bordeado" />
 
-<div class="card card-style preload-img entered loaded" data-src="images/pictures/0l.jpg" data-card-height="450"
-    style="height: 450px; background-image: url(&quot;images/pictures/0l.jpg&quot;);" data-ll-status="loaded">
-    <div class="card-bottom ms-3">
-        <h1 class="font-40 line-height-xl">{{auth()->user()->name}}</h1>
-        <p class="pb-0 mb-0 font-12"><i class="fa fa-map-marker me-2"></i>Tarija, Bolivia</p>
-        <p>
+<div class="card card-style preload-img entered loaded" data-src="{{asset('images/imagen4.jpg')}}" data-card-height="450"
+    style="height: 450px; background-image: url(&quot;{{asset('images/imagen4.jpg')}}&quot;);" data-ll-status="loaded">
+    <div class="card-bottom ms-3 ">
+        <h1 class="font-40 line-height-xl ">{{auth()->user()->name}}</h1>
+        <p class="pb-0 mb-0 font-12 "><i class="fa fa-map-marker me-2"></i>Tarija, Bolivia</p>
+        <p class="">
             Encuentra toda la informacion sobre tu cuenta en esta pestaña.
         </p>
     </div>
@@ -72,18 +72,18 @@
 <div class="card card-style p-3">
     <div class="row text-center row-cols-3 mb-n4">
 
-        <a class="col mb-4" data-gallery="gallery-1" href="images/pictures/27t.jpg" title="Pots and Pans">
-            <img data-src="images/pictures/27s.jpg" class="img-fluid rounded-xs preload-img entered loaded" alt="img"
-                data-ll-status="loaded" src="images/pictures/27s.jpg">
+        <a class="col mb-4" data-gallery="gallery-1" href="{{asset('images/imagen1.jpg')}}" title="Pots and Pans">
+            <img data-src="{{asset('images/imagen1.jpg')}}" class="img-fluid rounded-xs preload-img entered loaded" alt="img"
+                data-ll-status="loaded" src="{{asset('images/imagen1.jpg')}}">
         </a>
-        <a class="col mb-4" data-gallery="gallery-1" href="images/pictures/28t.jpg"
+        <a class="col mb-4" data-gallery="gallery-1" href="{{asset('images/imagen2.jpg')}}"
             title="Berries are Packed with Fiber">
-            <img data-src="images/pictures/28s.jpg" class="img-fluid rounded-xs preload-img entered loaded" alt="img"
-                data-ll-status="loaded" src="images/pictures/28s.jpg">
+            <img data-src="{{asset('images/imagen2.jpg')}}" class="img-fluid rounded-xs preload-img entered loaded" alt="img"
+                data-ll-status="loaded" src="{{asset('images/imagen2.jpg')}}">
         </a>
-        <a class="col mb-4" data-gallery="gallery-1" href="images/pictures/31t.jpg" title="A beautiful Retro Camera">
-            <img data-src="images/pictures/31s.jpg" class="img-fluid rounded-xs preload-img entered loaded" alt="img"
-                data-ll-status="loaded" src="images/pictures/31s.jpg">
+        <a class="col mb-4" data-gallery="gallery-1" href="{{asset('images/imagen3.jpg')}}" title="A beautiful Retro Camera">
+            <img data-src="{{asset('images/imagen3.jpg')}}" class="img-fluid rounded-xs preload-img entered loaded" alt="img"
+                data-ll-status="loaded" src="{{asset('images/imagen3.jpg')}}">
         </a>
     </div>
 </div>

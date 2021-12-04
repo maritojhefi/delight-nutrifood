@@ -71,11 +71,12 @@
     </a> -->
     </div>
     <div class="text-center">
-    <a href="#" class="icon icon-xs mr-1 rounded-s bg-facebook"><i class="fab fa-facebook"></i></a>
+    <a href="https://www.facebook.com/DelightNutriFoodEcoTienda" class="icon icon-xs mr-1 rounded-s bg-facebook"><i class="fab fa-facebook"></i></a>
   <!--  <a href="#" class="icon icon-xs mr-1 rounded-s bg-twitter"><i class="fab fa-twitter"></i></a> -->
   <!--  <a href="#" class="icon icon-xs mr-1 rounded-s bg-instagram"><i class="fab fa-instagram"></i></a> -->
   <!-- <a href="#" class="icon icon-xs mr-1 rounded-s bg-linkedin"><i class="fab fa-linkedin-in"></i></a> -->
-    <a href="#" class="icon icon-xs rounded-s bg-whatsapp"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://wa.link/ewfjau" class="icon icon-xs rounded-s bg-whatsapp"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://www.instagram.com/delight_nutrifood_ecotienda/" class="icon icon-xs rounded-s bg-instagram"><i class="fab fa-instagram"></i></a>
     <p class="mb-0 pt-3 font-10 opacity-30">Delight-Nutrifood <span class="copyright-year"></span> by Macrobyte</p>
     
     </div>
