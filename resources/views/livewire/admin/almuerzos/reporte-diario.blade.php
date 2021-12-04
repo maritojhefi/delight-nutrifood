@@ -10,8 +10,9 @@
                         <tr>
                             <th>#</th>
                             <th>Nombre</th>
-                            <th>Ensalada</th>
                             <th>Sopa</th>
+                            <th>Ensalada</th>
+                           
                             <th>Plato</th>
                             <th>Carbohidrato</th>
                             <th>Jugo</th>
@@ -24,8 +25,9 @@
                         <tr>
                             <td>{{$loop->iteration}}</td>
                            <td>{{$lista['NOMBRE']}}</td>
-                           <td>{{$lista['ENSALADA']}}</td>
+                           
                            <td>{{$lista['SOPA']}}</td>
+                           <td>{{$lista['ENSALADA']}}</td>
                            <td>{{$lista['PLATO']}}</td>
                            <td>{{$lista['CARBOHIDRATO']}}</td>
                            <td>{{$lista['JUGO']}}</td>
@@ -41,7 +43,7 @@
                             @foreach ($total[0] as $producto=>$array)
                             <th><small>
                             @foreach ($array as $nombre=>$cantidad)
-                                {{$nombre}}:{{$cantidad}}
+                                <span class="badge badge-pill badge-primary light">{{$nombre}}:{{$cantidad}}</span><br>
                             @endforeach</th>
                             @endforeach
                             </small>
