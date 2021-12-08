@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\admin;
 
+use Carbon\Carbon;
+use App\Models\Asistencia;
 use Illuminate\Http\Request;
 use App\Imports\ProductosImport;
 use App\Http\Controllers\Controller;
@@ -18,6 +20,32 @@ class OtroController extends Controller
       
        
        
+    }
+    public function marcar()
+    {
+        $ahora=Carbon::now()->toDateString();
+       $usuario=auth()->user()->id;
+        $asistencia=Asistencia::where('user_id',$usuario)->whereDate('entrada',$ahora)->first();
+        
+        if($asistencia==null)
+        {
+            Asistencia::create([
+                'user_id'=>$usuario,
+                'entrada'=>Carbon::now(),
+            ]);
+            return redirect(route('marcado'))->with('success', 'Marcaste tu entrada exitosamente!');
+        }
+        else
+        {
+            $asistencia->salida=Carbon::now();
+            $asistencia->save();
+            return redirect(route('marcado'))->with('success', 'Marcaste tu salida exitosamente!');
+        }
+    }
+
+    public function marcado()
+    {
+        return view('admin.otros.marcado');
     }
     public function index(){
         return view('admin.otros.index');

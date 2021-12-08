@@ -17,7 +17,7 @@ class CheckRol
      */
     public function handle(Request $request, Closure $next)
     {
-        if(auth()->user()->role->id==Role::ADMIN || auth()->user()->role->id==Role::CAJERO) 
+        if(auth()->user()->role->id!=Role::CLIENTE || auth()->user()->role->id==Role::INFLUENCER) 
         {
             return $next($request);
 

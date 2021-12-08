@@ -98,6 +98,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
 
         Route::get('/mostrar/{idplan}/{iduser}', [App\Http\Controllers\admin\UsuariosController::class, 'mostrar']);
 
+        Route::get('/asistencia', \App\Http\Livewire\Admin\Usuarios\AsistenciaPersonal::class)->name('usuario.asistencia');
     });
     Route::prefix('/sucursales')->group(function () {
    
@@ -114,6 +115,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
    
         Route::get('/index', \App\Http\Livewire\Admin\Almuerzos\Personalizar::class)->name('almuerzos.listar');
         Route::get('/reporte', \App\Http\Livewire\Admin\Almuerzos\ReporteDiario::class)->name('almuerzos.reporte');
+        Route::get('/reporte/semana', \App\Http\Livewire\Admin\Almuerzos\ReporteSemanal::class)->name('reporte.semana');
     });
     Route::prefix('/perifericos')->group(function () {
    
@@ -128,7 +130,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
    
         Route::post('importar', [App\Http\Controllers\admin\OtroController::class, 'importar'])->name('importar.excel');
         Route::get('index', [App\Http\Controllers\admin\OtroController::class, 'index'])->name('importar.index');
-
+        Route::get('marcar', [App\Http\Controllers\admin\OtroController::class, 'marcar'])->name('marcar.asistencia');
+        Route::get('/marcado', function () {return view('admin.otros.marcado');})->name('marcado');
      });
 });
 

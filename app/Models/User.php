@@ -8,6 +8,7 @@ use App\Models\Plane;
 use App\Models\Venta;
 use App\Models\Pensione;
 use App\Models\Traslado;
+use App\Models\Asistencia;
 use App\Models\Historial_venta;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
@@ -89,6 +90,15 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Plane::class)->wherePivot('start', date('y-m-d'))->wherePivot('detalle','!=',null)
         ->withPivot('start','end','title','detalle','id');
+    }
+    public function planesSemana()
+    {
+        return $this->belongsToMany(Plane::class)->wherePivotBetween('start',[date("y-m-d", strtotime("last sunday")),date("y-m-d", strtotime("next sunday"))] )
+        ->withPivot('start','end','title','detalle','id');
+    }
+    public function asistencias()
+    {
+        return $this->hasMany(Asistencia::class);
     }
     
    
