@@ -25,7 +25,7 @@
                     <tbody>
                         @foreach ($distribuido as $dia=>$item)
                         <tr>
-                            <td><span class="badge badge-info light badge-lg">{{$dia}}</span></td>
+                            <td><a href="#" wire:click="resumenDia('{{$dia}}')" data-bs-toggle="modal" data-bs-target="#modalResumen"><span class="badge badge-info light badge-lg">{{$dia}}</span></a></td>
 
 
                             <td> @foreach ($item as $lista)
@@ -73,4 +73,30 @@
             </div>
         </div>
     </div>
+    @isset($diaSeleccionado)
+    <div wire:ignore.self class="modal fade" id="modalResumen">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Resumen del dia: {{$diaSeleccionado}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @foreach ($resumen[0] as $nombre=>$array)
+                    <span class="badge badge-primary">{{$nombre}}</span>
+                    <ul>
+                        @foreach ($array as $plato=>$cantidad)
+                            <li>{{$plato}}:{{$cantidad}}</li>
+                        @endforeach
+                    </ul>
+                       <br> 
+                    @endforeach
+                </div>
+               
+            </div>
+        </div>
+    </div>
+    @endisset
+    
 </div>

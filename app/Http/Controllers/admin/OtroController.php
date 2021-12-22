@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use Carbon\Carbon;
 use App\Models\Asistencia;
+use App\Imports\UsersImport;
 use Illuminate\Http\Request;
 use App\Imports\ProductosImport;
 use App\Http\Controllers\Controller;
@@ -17,6 +18,16 @@ class OtroController extends Controller
             $import = new ProductosImport();
             Excel::import($import, request()->file('registros'));
             return redirect(route('importar.index'))->with('success','Archivo importado con exito!');
+      
+       
+       
+    }
+    public function importarUser(Request $request)
+    {
+        
+            $import = new UsersImport();
+            Excel::import($import, request()->file('registros'));
+            return redirect(route('importar.index'))->with('success','Usuarios importados con exito!');
       
        
        

@@ -1,7 +1,9 @@
 <div class="row">
     <x-card-col4>
         <div class="card-body">
-            <h4 class="card-intro-title">Seleccione Subcategoria</h4>
+            <h4 class="card-intro-title" wire:loading.remove>Busque una subcategoria</h4>
+            <h4 class="card-intro-title" wire:loading>Buscando...</h4>
+            <input type="text" class="form-control" wire:model.debounce.500ms="searchSub">
             @foreach ($subcategorias as $item)
             <div class="media pb-3 border-bottom mb-3 align-items-center">
                <a href="#" wire:click="seleccionado('{{$item->id}}')"> 

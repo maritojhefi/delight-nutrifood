@@ -26,6 +26,7 @@ class CreatePlaneUserTable extends Migration
             $table->string('color')->nullable()->default('#20C995');
             $table->string('title')->nullable();
             $table->string('detalle',500)->nullable();
+            $table->string('estado', 100)->nullable()->default('pendiente');
             $table->timestamps();
         });
     }

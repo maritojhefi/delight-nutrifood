@@ -31,7 +31,7 @@ class MiperfilController extends Controller
       
        $array=array();
        $lunes=false;
-       $planes=$usuario->planes->where('id',$plan->id)->sortBy(function($col) {return $col;})->take(5);
+       $planes=$usuario->planesPendientes->where('id',$plan->id)->sortBy(function($col) {return $col;})->take(5);
        $menusemanal="";
        foreach($planes as $dias){
            

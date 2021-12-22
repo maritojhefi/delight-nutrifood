@@ -37,12 +37,20 @@ class VentasIndex extends Component
     public $itemseleccionado;
     public $array;
     public $tipocobro;
-    public $descuento;
+    public $descuento, $observacion;
 
     protected $rules = [
         'sucursal' => 'required|integer',
     ];
 
+    public function guardarObservacion($idprod)
+    {
+       DB::table('producto_venta')->where('producto_id',$idprod)->where('venta_id',$this->cuenta->id)->update(['observacion'=>$this->observacion]);
+       $this->dispatchBrowserEvent('alert',[
+        'type'=>'success',
+        'message'=>"Guardado"
+    ]);
+    }
     public function crear(){
         $this->validate();
        
@@ -68,6 +76,20 @@ class VentasIndex extends Component
         $this->itemseleccionado=$numero;
     }
 
+    public function cargarObservacion(Producto $prod)
+    {
+        //dd($prod);
+        $observacion=$prod->ventas;
+        
+        foreach ($observacion->where('id',$this->cuenta->id) as $lista) {
+            
+            $this->observacion=$lista->pivot->observacion;
+           
+            break;
+        }
+        
+        
+    }
     public function mostraradicionales(Producto $producto)
     {
         if($producto->medicion=="unidad")
@@ -88,7 +110,7 @@ class VentasIndex extends Component
                    }
                 }*/
             }
-           $this->reset('itemseleccionado');
+           $this->reset('itemseleccionado','observacion');
             $this->productoapuntado=$producto;
            
         }

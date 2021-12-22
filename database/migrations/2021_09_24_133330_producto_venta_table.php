@@ -22,7 +22,8 @@ class ProductoVentaTable extends Migration
             $table->foreign('venta_id')->references('id')->on('ventas');
             $table->string('estado_actual', 10)->nullable()->default('pendiente');
             $table->integer('cantidad')->unsigned()->default(1);
-            $table->string('adicionales')->nullable();
+            $table->longText('adicionales')->nullable();
+            $table->longText('observacion')->nullable();
             $table->timestamps();
         });
     }

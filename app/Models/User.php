@@ -81,15 +81,22 @@ class User extends Authenticatable
         $dias = date_diff($fecha1, $fecha2)->format('%R%a');
         return $dias;
     }
+    
     public function planes()
     {
         return $this->belongsToMany(Plane::class)
-        ->withPivot('start','end','title','detalle','id');
+        ->withPivot('start','end','title','detalle','id','estado');
+    }
+    public function planesPendientes()
+    {
+        return $this->belongsToMany(Plane::class)
+        ->withPivot('start','end','title','detalle','id','estado')
+        ->wherePivot('estado','pendiente');
     }
     public function planesHoy()
     {
         return $this->belongsToMany(Plane::class)->wherePivot('start', date('y-m-d'))->wherePivot('detalle','!=',null)
-        ->withPivot('start','end','title','detalle','id');
+        ->withPivot('start','end','title','detalle','id','estado');
     }
     public function planesSemana()
     {

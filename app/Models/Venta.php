@@ -23,7 +23,7 @@ class Venta extends Model
     public function productos()
     {
         return $this->belongsToMany(Producto::class)
-        ->withPivot('cantidad','estado_actual','adicionales');
+        ->withPivot('cantidad','estado_actual','adicionales','observacion');
     }
     public function cliente()
     {

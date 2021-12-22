@@ -11,6 +11,7 @@ class AgregarAdicional extends Component
 {   
     public $subcategoria;
     public $search;
+    public $searchSub;
 
     public function seleccionado(Subcategoria $sub)
     {
@@ -55,7 +56,7 @@ class AgregarAdicional extends Component
     {
         $adicionales=Adicionale::where('nombre','LIKE','%'.$this->search.'%')->take(5)->get();
 
-        $subcategorias=Subcategoria::all();
+        $subcategorias=Subcategoria::where('nombre','LIKE','%'.$this->searchSub.'%')->get();
         return view('livewire.admin.productos.agregar-adicional',compact('subcategorias','adicionales'))
         ->extends('admin.master')
         ->section('content');

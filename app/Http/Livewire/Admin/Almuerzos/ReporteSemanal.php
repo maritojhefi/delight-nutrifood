@@ -7,10 +7,53 @@ use Livewire\Component;
 
 class ReporteSemanal extends Component
 {
+    public $distribuido, $resumen, $diaSeleccionado;
+
     public function saber_dia($nombredia) {
         $dias = array('Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado');
         $fecha = $dias[date('N', strtotime($nombredia))];
         return $fecha;
+    }
+    public function resumenDia($dia)
+    {
+        $this->diaSeleccionado=$dia;
+        foreach($this->distribuido as $nombreDia=>$valores)
+        {
+            if($nombreDia==$dia)
+            {
+                $resumenDiaArray=collect();
+                $resumenDiaArray->push($valores);
+                //dd($resumenDiaArray);
+                foreach($resumenDiaArray as $lista)
+                {
+                 $coleccion= collect($lista);
+                 $ensalada=$coleccion->pluck('ENSALADA');
+                 $resEnsalada=$ensalada->countBy(); 
+                 $sopa=$coleccion->pluck('SOPA');
+                 $resSopa=$sopa->countBy(); 
+                 $plato=$coleccion->pluck('PLATO');
+                 $resPlato=$plato->countBy(); 
+                 $carbohidrato=$coleccion->pluck('CARBOHIDRATO');
+                 $resCarbohidrato=$carbohidrato->countBy(); 
+                 $jugo=$coleccion->pluck('JUGO');
+                 $resJugo=$jugo->countBy(); 
+                 $envio=$coleccion->pluck('ENVIO');
+                 $resEnvio=$envio->countBy(); 
+                 $empaque=$coleccion->pluck('EMPAQUE');
+                 $resEmpaque=$empaque->countBy(); 
+                 $this->resumen=collect();
+                 $this->resumen->push([
+                    'ensaladas'=>$resEnsalada,
+                    'sopas'=>$resSopa,
+                    'platos'=>$resPlato,
+                    'carbohidratos'=>$resCarbohidrato,
+                    'jugos'=>$resJugo,
+                    'envios'=>$resEnvio,
+                    'empaques'=>$resEmpaque,
+                 ]);
+                }
+            }
+        }
     }
     public function render()
     {
@@ -55,8 +98,8 @@ class ReporteSemanal extends Component
             }
            
         }
-        $distribuido=$coleccion->groupBy('DIA');
-        //dd($distribuido);
+        $this->distribuido=$coleccion->groupBy('DIA');
+       // dd($this->distribuido);
         $total=collect();
         $total->push([
             
@@ -70,7 +113,7 @@ class ReporteSemanal extends Component
             'envio'=>$coleccion->pluck('ENVIO')->countBy()
         ]);
        
-        return view('livewire.admin.almuerzos.reporte-semanal',compact('distribuido','total'))
+        return view('livewire.admin.almuerzos.reporte-semanal',compact('total'))
         ->extends('admin.master')
         ->section('content');
     }

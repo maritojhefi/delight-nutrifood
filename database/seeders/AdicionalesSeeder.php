@@ -14,37 +14,21 @@ class AdicionalesSeeder extends Seeder
      */
     public function run()
     {
+
+        $array=['con stevia','con azucar','sin endulzante','leche de coco','leche de vaca','leche de tarwi',
+                'jengibre','curcuma','maca','algarrobo','spirulina','moringa','chia','linaza','pito quinua',
+                'pito cañahua','pito amaranto','hojuelas de avena','granola','almendras','nuez','caju','sem. de calabaza','sem. de girasol',
+                'mani','banana','manzana','piña','sandia','kiwi','manzana','acai','copoazu','tumbo','maracuya','carambola',   
+                'frutilla','arandano','mora','frambuesa'          
+    ];
+    foreach($array as $lista)
+    {
         Adicionale::create([
-            'nombre'=>'Piña',
-            'precio'=>1.50
+            'nombre'=>$lista,
+            'precio'=>0
         ]);
-        Adicionale::create([
-            'nombre'=>'Manzana',
-            'precio'=>1
-        ]);
-        Adicionale::create([
-            'nombre'=>'Palta',
-            'precio'=>1.50
-        ]);
-        Adicionale::create([
-            'nombre'=>'Miel',
-            'precio'=>3.50
-        ]);
-        Adicionale::create([
-            'nombre'=>'Zanahoria',
-            'precio'=>2
-        ]);
-        Adicionale::create([
-            'nombre'=>'Remolacha',
-            'precio'=>0.50
-        ]);
-        Adicionale::create([
-            'nombre'=>'Chia',
-            'precio'=>3
-        ]);
-        Adicionale::create([
-            'nombre'=>'Nuez',
-            'precio'=>1.50
-        ]);
+    }
+        
+        
     }
 }

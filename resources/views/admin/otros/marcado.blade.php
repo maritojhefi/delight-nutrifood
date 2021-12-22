@@ -1,7 +1,7 @@
 @extends('admin.master')
 @section('content')
 
-    sdfsdfd
+    Delight Derechos reservados
 
 
 @endsection

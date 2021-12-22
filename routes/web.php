@@ -129,6 +129,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
     Route::prefix('/otros')->group(function () {
    
         Route::post('importar', [App\Http\Controllers\admin\OtroController::class, 'importar'])->name('importar.excel');
+        Route::post('importar/usuarios', [App\Http\Controllers\admin\OtroController::class, 'importarUser'])->name('importarUser.excel');
         Route::get('index', [App\Http\Controllers\admin\OtroController::class, 'index'])->name('importar.index');
         Route::get('marcar', [App\Http\Controllers\admin\OtroController::class, 'marcar'])->name('marcar.asistencia');
         Route::get('/marcado', function () {return view('admin.otros.marcado');})->name('marcado');

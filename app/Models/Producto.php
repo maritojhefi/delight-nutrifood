@@ -18,7 +18,7 @@ class Producto extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'nombre','subcategoria_id','precio','imagen','detalle','codigoBarra','descuento','puntos','medicion','contable'
+        'nombre','subcategoria_id','precio','imagen','detalle','codigoBarra','descuento','puntos','medicion','contable','observacion'
        
     ];
     public function sucursale()
@@ -48,7 +48,7 @@ class Producto extends Model
     public function ventas()
     {
         return $this->belongsToMany(Venta::class)
-        ->withPivot('cantidad','adicionales');
+        ->withPivot('cantidad','adicionales','observacion');
     }
     public function historialVentas()
     {
