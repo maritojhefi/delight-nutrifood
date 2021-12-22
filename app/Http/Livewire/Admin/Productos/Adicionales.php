@@ -11,7 +11,7 @@ class Adicionales extends Component
 {
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
-    public $nombre, $precio;
+    public $nombre, $precio, $adicional;
    
  
     protected $rules = [
@@ -21,6 +21,23 @@ class Adicionales extends Component
         
     ];
  
+    public function editar(Adicionale $adicional)
+    {
+        $this->adicional=$adicional;
+        $this->nombre=$adicional->nombre;
+        $this->precio=$adicional->precio;
+    }
+    public function guardarEdit()
+    {
+        $this->validate();
+        $this->adicional->nombre=$this->nombre;
+        $this->adicional->precio=$this->precio;
+        $this->adicional->save();
+        $this->dispatchBrowserEvent('alert',[
+            'type'=>'success',
+            'message'=>"Adicional actualizado!!"
+        ]);
+    }
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName);
