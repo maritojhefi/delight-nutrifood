@@ -38,6 +38,8 @@ class VentasIndex extends Component
     public $array;
     public $tipocobro;
     public $descuento, $observacion;
+    //variables para crear Cliente
+    public $name, $cumpleano, $email, $direccion, $password, $password_confirmation;
 
     protected $rules = [
         'sucursal' => 'required|integer',
@@ -75,7 +77,16 @@ class VentasIndex extends Component
         
         $this->itemseleccionado=$numero;
     }
-
+    public function cambiarClienteACuenta(User $cliente)
+    {
+        $this->cuenta->cliente_id=$cliente->id;
+        $this->dispatchBrowserEvent('alert',[
+            'type'=>'success',
+            'message'=>"Se asigno a esta venta el cliente: ".$cliente->name
+        ]);
+        $this->cuenta->save();
+        
+    }
     public function cargarObservacion(Producto $prod)
     {
         //dd($prod);
@@ -89,6 +100,30 @@ class VentasIndex extends Component
         }
         
         
+    }
+
+    public function crearCliente()
+    {
+        $this->validate([
+            'name' => 'required|min:5|unique:users,name',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
+        ]);
+ 
+        User::create([
+            'name' => $this->name,
+            'email' => $this->email,
+            'password' => $this->password,
+            'role_id'=> 4,
+            'nacimiento'=>$this->cumpleano,
+            'direccion'=>$this->direccion
+            
+        ]);
+         $this->dispatchBrowserEvent('alert',[
+            'type'=>'success',
+            'message'=>"Nuevo cliente: ".$this->name." creado!"
+        ]);
+        $this->reset();
     }
     public function mostraradicionales(Producto $producto)
     {

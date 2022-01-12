@@ -36,7 +36,7 @@
                             </template>
                         </button>
 
-                        <div x-show="open">
+                        <div x-show="open" @click.outside="open = false">
                             <div class="row">
                                 <div class="mb-3 col-md-6 mt-2">
                                     <label class="form-label">Sucursal</label>
@@ -50,7 +50,7 @@
                                     </select>
                                 </div>
                                 <div class="mb-3 col-md-6 mt-2">
-                                    <label class="form-label">Cliente</label>
+                                    <label class="form-label">Cliente</label><button data-bs-toggle="modal" data-bs-target="#modalNuevoCliente" class="btn btn-xxs btn-success"><i class="fa fa-plus"></i></button>
                                     <input type="text" class="form-control  form-control-sm" placeholder="Opcional"
                                         wire:model.debounce.1000ms='user'>
                                 </div>
@@ -60,8 +60,9 @@
 
                                 <a href="#" class="m-2"
                                     wire:click="seleccionarcliente('{{ $item->id }}','{{$item->name}}')"><span
-                                        class="badge light badge-primary"> {{$item->name}} <i
-                                            class="fa fa-check"></i></span></a>
+                                        class="badge light badge-{{$item->id==$cliente?'warning':'primary'}}"> {{$item->name}} @if ($item->id==$cliente)
+                                        <i class="fa fa-check"></i>
+                                        @endif</span></a>
                                 @endforeach
                             </div>
                             <button type="button" wire:click="crear" class="btn btn-primary btn-sm">Crear
@@ -82,7 +83,7 @@
             <a href="#" data-bs-toggle="modal" data-bs-target="#planesusuario"><span
                     class="badge light badge-success">{{$cuenta->cliente->name}}</span></a>
             @else
-            <span class="badge light badge-danger">Sin usuario</span>
+          <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span class="badge light badge-danger">Sin usuario</span></a>  
 
             @endif
 
@@ -522,4 +523,51 @@
         </div>
     </div>
 
+    <div wire:ignore.self class="modal fade" id="modalNuevoCliente">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"> 
+                    Creando nuevo cliente
+                </div>
+                <div class="modal-body">
+                    <x-input-create-custom-function funcion="crearCliente" boton="Crear Cliente" :lista="([
+                        'Nombre'=>['name','text'],
+                        'Correo'=>['email','email'],
+                        'Nacimiento'=>['cumpleano','date','(opcional)'],
+                        'Direccion'=>['direccion','text','(opcional)'],
+                        'Contraseña'=>['password','password'],
+                       
+                          ])">
+                       
+                    </x-input-create-custom-function>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div wire:ignore.self class="modal fade" id="modalClientes">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"> 
+                    Cambiar Usuario para esta cuenta
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3 col-md-6 mt-2">
+                        <input type="text" class="form-control  form-control-sm" placeholder="Buscar Usuario"
+                            wire:model.debounce.1000ms='user'>
+                    </div>
+                    <span class="badge light badge-info" wire:loading wire:target='user'> Cargando...
+                    </span>
+
+                    @foreach ($usuarios as $item)
+
+                                <a href="#" class="m-2"
+                                    wire:click="cambiarClienteACuenta({{ $item->id }})"><span
+                                    class="badge light badge-primary"> {{$item->name}} <i
+                                    class="fa fa-check"></i></span></a>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
