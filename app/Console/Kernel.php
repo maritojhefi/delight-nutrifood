@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Models\Caja;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -25,6 +27,13 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->call(function () {
+            Caja::create([
+                'sucursale_id'=>1,
+                'entrada'=>0,
+                'estado'=>'abierto'
+            ]);
+        })->dailyAt('01:00');
     }
 
     /**

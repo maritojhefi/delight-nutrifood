@@ -131,6 +131,12 @@
                 title:message
             })
         })
+
+        window.addEventListener('copiarTexto', ({detail: {id,ag}}) => {
+            var content = document.getElementById('copiar'+id);
+            content.select();
+            document.execCommand('copy');
+        })
     </script>
 </body>
 </html>

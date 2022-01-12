@@ -11,6 +11,7 @@ class ProductTable extends Component
 {
     use WithPagination;
     public $buscar;
+    public $productoEdit, $nombre, $precio, $puntos, $medicion, $detalle, $descuento;
     protected $paginationTheme = 'bootstrap';
     protected $queryString = ['buscar'];
 
@@ -19,6 +20,53 @@ class ProductTable extends Component
         $this->resetPage();
     }
 
+    public function editarProducto(Producto $producto)
+    {
+        $this->productoEdit=$producto;
+        $this->nombre=$producto->nombre;
+        $this->precio=$producto->precio;
+        $this->puntos=$producto->puntos;
+        $this->detalle=$producto->detalle;
+        $this->medicion=$producto->medicion;
+        $this->descuento=$producto->descuento;
+    }
+    public function actualizarProducto()
+    {
+        
+        $this->validate([
+            'nombre'=>'required|min:8',
+            'precio'=>'required|numeric',
+            'medicion'=>'required'
+        ]);
+        if($this->descuento)
+        {
+            $this->validate([
+                'descuento'=>'numeric|lt:precio',
+              
+            ]);
+        }
+        $this->productoEdit->nombre=$this->nombre;
+        $this->productoEdit->precio=$this->precio;
+        $this->productoEdit->puntos=$this->puntos;
+        $this->productoEdit->detalle=$this->detalle;
+      
+        if($this->descuento!="")
+        {
+            $this->productoEdit->descuento=$this->descuento;
+        }
+        else
+        {
+            $this->productoEdit->descuento=null;
+
+        }
+        $this->productoEdit->save();
+
+        $this->dispatchBrowserEvent('alert',[
+            'type'=>'success',
+            'message'=>"El producto ".$this->productoEdit->nombre." se actualizo!"
+        ]);
+
+    }
     public function render()
     {
         $productos=Producto::where('nombre','LIKE','%'.$this->buscar.'%')->orWhere('estado',$this->buscar)->orderBy('created_at','desc')->paginate(5);

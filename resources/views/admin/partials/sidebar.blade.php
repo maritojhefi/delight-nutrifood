@@ -23,15 +23,7 @@
                 <i class="flaticon-086-star"></i>
             </x-sidebar-elements>
 
-            <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="([
-            'Listar Usuarios'=>'usuario.listar',
-            'Roles'=>'usuario.roles',
-            'Detalle planes'=>'planes',
-            'Listar Planes'=>'crear.plan',
-            'Asistencia'=>'usuario.asistencia'
-             ])">
-                <i class="flaticon-045-heart"></i>
-            </x-sidebar-elements>
+            
             @endif
             <x-sidebar-elements titulo="Productos" linkglobal="admin/productos" :lista="([
                 'Listar Productos'=>'producto.listar',
@@ -44,6 +36,15 @@
                 <i class="flaticon-043-menu"></i>
             </x-sidebar-elements>
             @if (auth()->user()->role->nombre!='cocina')
+            <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="([
+            'Listar Usuarios'=>'usuario.listar',
+            'Roles'=>'usuario.roles',
+            'Agregar Plan a Usuario'=>'planes',
+            'Crear Plan'=>'crear.plan',
+            'Asistencia'=>'usuario.asistencia'
+             ])">
+                <i class="flaticon-045-heart"></i>
+            </x-sidebar-elements>
             <x-sidebar-elements titulo="Almuerzos" linkglobal="admin/almuerzos"
             :lista="(['Personalizar dias'=>'almuerzos.listar','Reporte Diario'=>'almuerzos.reporte','Reporte Semanal'=>'reporte.semana'])">
             <i class="flaticon-022-copy"></i>

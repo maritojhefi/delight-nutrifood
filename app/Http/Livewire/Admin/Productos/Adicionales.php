@@ -29,7 +29,10 @@ class Adicionales extends Component
     }
     public function guardarEdit()
     {
-        $this->validate();
+        $this->validate([
+            'nombre' => 'required|unique:adicionales,nombre,'.$this->adicional->id,
+            'precio' => 'required|numeric',
+        ]);
         $this->adicional->nombre=$this->nombre;
         $this->adicional->precio=$this->precio;
         $this->adicional->save();

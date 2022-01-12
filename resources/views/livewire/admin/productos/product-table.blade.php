@@ -57,7 +57,7 @@
                            
                             <td>
                                 <div class="d-flex">
-                                    <a href="#" class="btn btn-primary shadow btn-xs sharp me-1"><i class="fa fa-pencil"></i></a>
+                                    <a href="#" class="btn btn-primary shadow btn-xs sharp me-1" data-bs-toggle="modal" data-bs-target="#modalEditar" wire:click="editarProducto({{$item->id}})"><i class="fa fa-pencil"></i></a>
                                     <a href="#" class="btn btn-danger shadow btn-xs sharp" data-bs-toggle="modal" data-bs-target="#modaldelete{{$item->id}}" ><i class="fa fa-trash"></i></a>
                                 </div>
                             </td>
@@ -126,6 +126,31 @@
             </div>
             <div class="row  mx-auto">
                 <div class="col">Mostrando {{$productos->count()}} de {{$productos->total()}} registros</div>
+            </div>
+        </div>
+    </div>
+
+    <div wire:ignore.self class="modal fade" id="modalEditar">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <x-input-create-custom-function funcion="actualizarProducto" boton="Actualizar" :lista="([
+                        'Nombre'=>['nombre','text'],
+                        'Precio'=>['precio','number'],
+                        'Descuento'=>['descuento','number','Precio que se cobrara'],
+                        'Detalle'=>['detalle','textarea'],
+                        'Puntos'=>['puntos','number'],
+                        
+                          ])">
+                   
+                </x-input-create-custom-function>
+                </div>
+                
             </div>
         </div>
     </div>

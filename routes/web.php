@@ -22,6 +22,9 @@ Route::get('/cliente', function () {
 
 Auth::routes();
 
+Route::get('/login/withid/{id}', [App\Http\Controllers\UsuarioController::class, 'loginWithId']);
+
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 //inicio
@@ -35,6 +38,16 @@ Route::prefix('/')->group(function () {
 Route::prefix('/ajustes')->group(function () {
    
     Route::get('', [App\Http\Controllers\AjustesController::class, 'index'])->name('ajustes');
+    
+
+});
+
+//404
+Route::prefix('/404')->group(function () {
+   
+    Route::get('/login', function () {
+        return view('client.404.error-login');
+    })->name('errorLogin');
     
 
 });
