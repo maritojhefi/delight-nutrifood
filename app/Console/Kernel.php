@@ -33,7 +33,7 @@ class Kernel extends ConsoleKernel
                 'entrada'=>0,
                 'estado'=>'abierto'
             ]);
-        })->dailyAt('01:00');
+        })->daily();
     }
 
     /**
