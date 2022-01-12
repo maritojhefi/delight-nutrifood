@@ -14,7 +14,7 @@ var calendar = new FullCalendar.Calendar(calendarEl, {
       formulario.reset();
       formulario.start.value=info.dateStr;
       formulario.end.value=info.dateStr;
-      formulario.total.value=1;
+      //formulario.total.value=1;
       $("#modalcalendar").modal('show');
   },
   eventClick:function(info){
@@ -43,7 +43,7 @@ var calendar = new FullCalendar.Calendar(calendarEl, {
     formulario.reset();
     formulario.start.value=info.startStr;
     formulario.end.value=fecharestada;
-    formulario.total.value=fecha2.diff(fecha1, 'days');
+    //formulario.total.value=fecha2.diff(fecha1, 'days');
     $("#modalcalendar").modal('show');
   }
 });
