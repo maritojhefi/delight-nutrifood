@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        Commands\AperturaDiariaCaja::class,
     ];
 
     /**
@@ -26,14 +26,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('apertura:diaria')
+        ->daily();
         // $schedule->command('inspire')->hourly();
-        $schedule->call(function () {
-            Caja::create([
-                'sucursale_id'=>1,
-                'entrada'=>0,
-                'estado'=>'abierto'
-            ]);
-        })->daily();
+        /*$schedule->call(function () {
+           
+        })->daily();*/
     }
 
     /**

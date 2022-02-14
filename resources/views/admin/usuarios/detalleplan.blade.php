@@ -45,10 +45,7 @@
                             <label>Fin</label>
                             <input type="date" class="form-control" name="end" placeholder="Fecha Final" id="end">
                         </div>
-                        <div class="mb-3 col-md-6">
-                            <label>Dias Seleccionados</label>
-                            <input type="number" class="form-control" name="total" id="total" readonly>
-                        </div>
+                       
                     </div>
                 </form>
                

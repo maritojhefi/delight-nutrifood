@@ -21,7 +21,8 @@
         "milon/barcode": "^8.0",
         "printnode/printnode-php": "master",
         "rawilk/laravel-printing": "^2.0",
-        "silviolleite/laravelpwa": "^2.0"
+        "silviolleite/laravelpwa": "^2.0",
+        "yoeunes/toastr": "^1.2"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.6",
