@@ -27,10 +27,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('plan:diario --force')
-        ->everyMinute();
-        $schedule->command('apertura:diaria --force')
-        ->everyMinute();
+        $filePath='logs.txt';
+        $schedule->command('plan:diario')
+        ->everyMinute()->sendOutputTo($filePath);
+        $schedule->command('apertura:diaria')
+        ->everyMinute()->sendOutputTo($filePath);
         // $schedule->command('inspire')->hourly();
         /*$schedule->call(function () {
            

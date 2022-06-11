@@ -51,6 +51,8 @@ class AperturaDiariaCaja extends Command
         }
         else
         {
+            $ultimaCaja->estado="abierto";
+            $ultimaCaja->save();
             $this->info('Ya existe la caja abierta!');
         }
         
