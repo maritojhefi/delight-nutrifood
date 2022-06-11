@@ -74,6 +74,16 @@ class UsuariosController extends Controller
             
         }
     }
+    public function permiso($id)
+    {
+       $evento= DB::table('plane_user')->where('id',$id)->update(['estado'=>'permiso','color'=>'#A314CD']);
+       return response()->json($evento);
+    }
+    public function quitarpermiso($id)
+    {
+       $evento= DB::table('plane_user')->where('id',$id)->update(['estado'=>'pendiente','color'=>'#20C995']);
+       return response()->json($evento);
+    }
     public function mostrar($idplan,$iduser)
     {
         
