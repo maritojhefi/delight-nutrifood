@@ -47,11 +47,11 @@ class CambioEstadoPlanDiario extends Command
             DB::table('plane_user')->where('id',$registros->id)->update(['color'=>'#F7843A','estado'=>'finalizado']);
             
           }
-          $this->info('Se realizo la actualizacion de planes con exito!');
+          $this->info('Se realizo la actualizacion de planes con exito! -- '.date('d-m-Y h:i:s'));
         }
         else
         {
-            $this->info('No se encontro ningun registro para actualizar, todo se encuentra al dia!');
+            $this->info('No se encontro ningun registro para actualizar, todo se encuentra al dia!  -- '.date('d-m-Y h:i:s'));
         }
     }
 }

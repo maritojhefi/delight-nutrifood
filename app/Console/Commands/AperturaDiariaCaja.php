@@ -47,13 +47,13 @@ class AperturaDiariaCaja extends Command
                 'entrada'=>0,
                 'estado'=>'abierto'
             ]);
-            $this->info('Se hizo apertura de la caja en sucursal 1 con entrada de 0 bs');
+            $this->info('Se hizo apertura de la caja en sucursal 1 con entrada de 0 bs -- '.date('d-m-Y h:i:s'));
         }
         else
         {
             $ultimaCaja->estado="abierto";
             $ultimaCaja->save();
-            $this->info('Ya existe la caja abierta!');
+            $this->info('Ya existe la caja abierta! -- '.date('d-m-Y h:i:s'));
         }
         
         
