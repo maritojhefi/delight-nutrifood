@@ -108,6 +108,7 @@ class CreateList {
         ->where('user_id',$id)->where('estado','pendiente')
         ->get();
         
+        //asd
         $agrupado=$planes->pluck('plane_id');
         $contado=$agrupado->countBy();
         $coleccion=collect();
