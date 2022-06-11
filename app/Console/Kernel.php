@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $filePath='logs.txt';
+        $filePath='public/logs.txt';
         $schedule->command('plan:diario')
         ->everyMinute()->appendOutputTo($filePath);
         $schedule->command('apertura:diaria')
