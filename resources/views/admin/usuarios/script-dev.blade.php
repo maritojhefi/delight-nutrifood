@@ -23,10 +23,18 @@ var calendar = new FullCalendar.Calendar(calendarEl, {
       axios.get('http://delight.test/admin/usuarios/editar/'+info.event.id).
     then(
         (respuesta)=>{
-            formBasic.title.value=respuesta.data.title;
-            formBasic.detalle.value=respuesta.data.detalle;
-            formBasic.id.value=respuesta.data.id;
-            $("#basicModal").modal('show');
+            if(respuesta.data.estado=="finalizado")
+            {
+                window.alert('Este registro ya expiro!');
+            }
+            else
+            {
+                formBasic.title.value=respuesta.data.title;
+                formBasic.detalle.value=respuesta.data.detalle;
+                formBasic.id.value=respuesta.data.id;
+                $("#basicModal").modal('show');
+            }
+           
         }
         ).
     catch(error=>{

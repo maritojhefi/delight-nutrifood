@@ -67,6 +67,7 @@ class MiperfilController extends Controller
         return view('client.miperfil.calendario',compact('plan','usuario','coleccion','menusemanal'));
     }
     public function saber_dia($nombredia) {
+        
         $dias = array('Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado');
         $fecha = $dias[date('N', strtotime($nombredia))];
         return $fecha;

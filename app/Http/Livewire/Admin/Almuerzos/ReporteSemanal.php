@@ -10,6 +10,7 @@ class ReporteSemanal extends Component
     public $distribuido, $resumen, $diaSeleccionado;
 
     public function saber_dia($nombredia) {
+        //dd(date('N', strtotime($nombredia)));
         $dias = array('Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado');
         $fecha = $dias[date('N', strtotime($nombredia))];
         return $fecha;

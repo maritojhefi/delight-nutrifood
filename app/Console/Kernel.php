@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\AperturaDiariaCaja::class,
+        Commands\CambioEstadoPlanDiario::class,
     ];
 
     /**
@@ -26,7 +27,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('apertura:diaria')
+        $schedule->command('plan:diario --force')
+        ->everyMinute();
+        $schedule->command('apertura:diaria --force')
         ->everyMinute();
         // $schedule->command('inspire')->hourly();
         /*$schedule->call(function () {
