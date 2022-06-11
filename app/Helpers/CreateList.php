@@ -107,8 +107,7 @@ class CreateList {
         $planes=DB::table('plane_user')
         ->where('user_id',$id)->where('estado','pendiente')
         ->get();
-        
-        //asd
+        //dd($planes);
         $agrupado=$planes->pluck('plane_id');
         $contado=$agrupado->countBy();
         $coleccion=collect();
