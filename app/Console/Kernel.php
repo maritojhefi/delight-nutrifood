@@ -29,9 +29,9 @@ class Kernel extends ConsoleKernel
     {
         $filePath='public/logs.txt';
         $schedule->command('plan:diario')
-        ->everyMinute()->appendOutputTo($filePath);
+        ->dailyAt('01:00')->appendOutputTo($filePath);
         $schedule->command('apertura:diaria')
-        ->everyMinute()->appendOutputTo($filePath);
+        ->hourly()->appendOutputTo($filePath);
         // $schedule->command('inspire')->hourly();
         /*$schedule->call(function () {
            
