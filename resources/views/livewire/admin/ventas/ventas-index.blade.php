@@ -43,8 +43,8 @@
                                 <label class="form-label">Sucursal</label>
                                 <select
                                     class="form-control form-control-sm  form-white @error($sucursal) is-invalid @enderror"
-                                    wire:model.lazy="sucursal">
-                                    <option>Elija 1</option>
+                                    wire:model="sucursal">
+                                    
                                     @foreach ($sucursales as $nombre => $id)
                                         <option value="{{ $id }}">{{ $nombre }}</option>
                                     @endforeach
@@ -98,7 +98,7 @@
 
 
 
-        <ul class="list-group mb-3"
+        <ul class="list-group mb-3 "  style="overflow-y: scroll;max-height:300px"
             @isset($cuenta->cliente) @php $time = strtotime($cuenta->cliente->nacimiento);
             @endphp @if (date('m-d') == date('m-d', $time)) style="background-image:
             url('{{ asset('images/cumple.gif') }}')" @endif
@@ -106,7 +106,7 @@
 
 
         @foreach ($listacuenta as $item)
-            <li class="list-group-item d-flex justify-content-between lh-condensed">
+            <li class="list-group-item d-flex justify-content-between lh-condensed" >
                 <div>
                     <div class="row">
 
@@ -178,38 +178,40 @@
 
             </li>
         @endforeach
-
-
-        <li class="list-group-item d-flex justify-content-between">
-            <small>Subtotal</small>
-            <strong>{{ $cuenta->total }} Bs</strong>
-
-        </li>
-
-        <li class="list-group-item d-flex justify-content-between">
-            <small>Descuento</small>
-
-            <div x-data="{ open: false }">
-                <button @click="open = ! open" class="badge badge-xs light badge-secondary">Editar</button>
-
-                <div x-show="open" @click.outside="open = false">
-                    <div class="mb-3 col-md-2">
-                        <input type="number" class="form-control" wire:model.lazy="descuento"
-                            style="padding: 3px;height:30px;width:80px" value="{{ $item['cantidad'] }}">
-                    </div>
-                    <button class="btn btn-xxs btn-warning" wire:click="editardescuento"><i
-                            class="fa fa-check"></i>Guardar</button>
-                </div>
-            </div>
-            <strong>{{ $cuenta->descuento }} Bs</strong>
-        </li>
-
-        <li class="list-group-item d-flex justify-content-between">
-            <span>Total a pagar</span>
-            <strong>{{ $cuenta->total - $cuenta->descuento }} Bs/{{ $cuenta->puntos }} pts</strong>
-
-        </li>
     </ul>
+        <ul class="list-group mb-3 ">
+            <li class="list-group-item d-flex justify-content-between">
+                <small>Subtotal</small>
+                <strong>{{ $cuenta->total }} Bs</strong>
+    
+            </li>
+    
+            <li class="list-group-item d-flex justify-content-between">
+                <small>Descuento</small>
+    
+                <div x-data="{ open: false }">
+                    <button @click="open = ! open" class="badge badge-xs light badge-secondary">Editar</button>
+    
+                    <div x-show="open" @click.outside="open = false">
+                        <div class="mb-3 col-md-2">
+                            <input type="number" class="form-control" wire:model.lazy="descuento"
+                                style="padding: 3px;height:30px;width:80px" value="{{ $item['cantidad'] }}">
+                        </div>
+                        <button class="btn btn-xxs btn-warning" wire:click="editardescuento"><i
+                                class="fa fa-check"></i>Guardar</button>
+                    </div>
+                </div>
+                <strong>{{ $cuenta->descuento }} Bs</strong>
+            </li>
+    
+            <li class="list-group-item d-flex justify-content-between">
+                <span>Total a pagar</span>
+                <strong>{{ $cuenta->total - $cuenta->descuento }} Bs/{{ $cuenta->puntos }} pts</strong>
+    
+            </li>
+        </ul>
+        
+    
 
     @isset($productoapuntado)
 
@@ -432,7 +434,7 @@
                 @php
                     $total = 0;
                 @endphp
-                {{ $item->nombre }}
+                
                 @foreach ($item->sucursale->where('id', $cuenta->sucursale_id) as $relacion)
                     @isset($relacion)
                         @php
@@ -442,15 +444,17 @@
                 @endforeach
 
                 <li class="list-group-item">
+                    
                     <a class="" {{ $total == 0 && $item->contable == true ? 'disabled' : '' }}
                         wire:click="adicionar('{{ $item->id }}')">
+                        {{ $item->nombre }}
                         <div class="row">
                             <div class="col-3">
                                 <img src="{{ asset($item->pathAttachment()) }}" alt="" class="me-3 rounded"
                                     width="50">
 
                             </div>
-                            <div class="col">
+                            <div class="col-5">
 
                                 <small>
                                     @if ($item->contable == true)
@@ -458,7 +462,7 @@
                                             <span class="badge badge-danger mb-2">Agotado</span>
                                         @else
                                             <span class="badge badge-warning mb-2">Stock
-                                                actual:{{ $total }}</span>
+                                                :{{ $total }}</span>
                                         @endif
                                     @endif
 
@@ -469,11 +473,7 @@
                                 @endif
                             </div>
 
-
-
-                        </div>
-                        <div class="row">
-                            <div class="col">
+                            <div class="col-4">
                                 @if ($item->descuento != 0)
                                     <span class="badge badge-xs light badge-success">{{ $item->descuento }}
                                         Bs</span>

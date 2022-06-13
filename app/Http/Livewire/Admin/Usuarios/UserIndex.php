@@ -13,7 +13,7 @@ class UserIndex extends Component
     protected $paginationTheme = 'bootstrap';
     public $searchUser, $userEdit;
     public $name, $email, $password, $search, $password_confirmation, $rol, $cumpleano, $direccion;
-    public $nameE, $emailE, $passwordE, $passwordE_confirmation, $cumpleanoE, $direccionE;
+    public $nameE, $emailE, $passwordE, $passwordE_confirmation, $cumpleanoE, $direccionE ,$rolE;
     
     public function updatingSearchUser()
     {
@@ -32,11 +32,12 @@ class UserIndex extends Component
     }
     public function edit(User $user)
     {
+        
         $this->userEdit=$user;
         $this->nameE=$user->name;
         $this->emailE=$user->email;
         $this->passwordE=null;
-       
+        $this->rolE=$user->role_id;
         $this->cumpleanoE=$user->nacimiento;
         $this->direccionE=$user->direccion;
         $this->reset('passwordE_confirmation');
@@ -65,6 +66,7 @@ class UserIndex extends Component
         $this->userEdit->name=$this->nameE;
         $this->userEdit->email=$this->emailE;
         $this->userEdit->password=$this->passwordE;
+        $this->userEdit->role_id=$this->rolE;
         $this->userEdit->nacimiento=$this->cumpleanoE;
         $this->userEdit->direccion=$this->direccionE;
         $this->userEdit->save();

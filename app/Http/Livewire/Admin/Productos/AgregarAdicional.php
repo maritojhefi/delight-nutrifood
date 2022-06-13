@@ -16,6 +16,7 @@ class AgregarAdicional extends Component
     public function seleccionado(Subcategoria $sub)
     {
         $this->subcategoria=$sub;
+        $this->emit('change-focus-other-field');
     }
     public function agregar(Adicionale $ad)
     {

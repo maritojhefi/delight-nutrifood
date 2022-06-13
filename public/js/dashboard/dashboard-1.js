@@ -212,8 +212,7 @@ var randomScalingFactor = function() {
           }
           };
   
-          var chartBar1 = new ApexCharts(document.querySelector("#widgetChart1"), options);
-          chartBar1.render();
+       
        
       }
       

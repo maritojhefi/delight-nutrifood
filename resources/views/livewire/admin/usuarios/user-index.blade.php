@@ -142,7 +142,17 @@
                             'Contraseña'=>['passwordE','password']
                            
                               ])">
-
+                    @slot('otrosinputs')
+                    <select wire:model="rolE" class="form-control mb-3 @error($rolE)is-invalid @enderror">
+                        <option class="dropdown-item" aria-labelledby="dropdownMenuButton">
+                            Seleccione un rol</option>
+                        @foreach ($roles as $rol)
+                        <option value="{{$rol->id}}" {{$rolE==$rol->id?'selected':''}} class="dropdown-item"
+                            aria-labelledby="dropdownMenuButton">{{$rol->nombre}}</option>
+                
+                        @endforeach
+                    </select>
+                    @endslot
                     </x-input-create-custom-function>
                 </div>
 

@@ -16,11 +16,10 @@
 	<title>DELIGHT</title>
 	
 	<!-- FAVICONS ICON -->
-	<link rel="shortcut icon" type="image/png" href="images/favicon.png" />
+	<link rel="shortcut icon" type="image/png" href="{{asset('delight_logo.jpg')}}" />
 	
-	<link rel="stylesheet" href="vendor/chartist/css/chartist.min.css">
-	<link href="vendor/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
-	<link href="vendor/jquery-nice-select/css/nice-select.css" rel="stylesheet">
+	
+	
 	<!-- Style css -->
     <link href="{{asset('css/style.css')}}" rel="stylesheet">
     <script src="{{asset('js/app.js')}}"></script>
@@ -90,13 +89,13 @@
 @yield('login')
 @endif
 
-@stack('scripts')
+
 
     <!-- Required vendors -->
     <script src="{{asset('vendor/global/global.min.js')}}"></script>
 	<script src="{{asset('vendor/chart.js/Chart.bundle.min.js')}}"></script>
    
-	<script src="{{asset('vendor/jquery-nice-select/js/jquery.nice-select.min.js')}}"></script>
+	
  
 	<script src="{{asset('js/sweetalert.min.js')}}"></script>
 	<!-- Chart piety plugin files -->
@@ -138,5 +137,7 @@
             document.execCommand('copy');
         })
     </script>
+
+@stack('scripts')
 </body>
 </html>

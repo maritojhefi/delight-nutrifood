@@ -742,6 +742,7 @@ class VentasIndex extends Component
         $ventas=Venta::orderBy('created_at','desc')->get();
         $usuarios=collect();
         $sucursales=Sucursale::pluck('id','nombre');
+        $this->sucursal=$sucursales->first();
         $productos=Producto::where('estado','=','activo')->where(function (Builder $query) {return $query->where('codigoBarra',$this->search)->orWhere('nombre','LIKE','%'.$this->search.'%');})->take(5)->get();
         if($this->user!=null)
         {

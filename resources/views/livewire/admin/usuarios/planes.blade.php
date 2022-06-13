@@ -12,6 +12,24 @@
             @endforeach
         </div>
     </x-card-col4>
+    @empty($seleccionado)
+    <x-card-col4>
+        <div class="card-body">
+            <h4 class="card-intro-title">Usuarios recientes</h4>
+            <ul class="list-group mb-3">
+
+               
+            @foreach ($recientes as $item)
+            <li class="list-group-item d-flex justify-content-between lh-condensed">
+                 <a href="#" wire:click="seleccionar('{{ $item['id'] }}')"><span
+                    class="badge light badge-primary mt-2">{{$item->name}}</span></a>
+            </li>
+            @endforeach
+
+            
+        </div>
+    </x-card-col4>
+    @endempty
     @isset($seleccionado)
     <x-card-col4>
         <div class="card-header">

@@ -92,12 +92,14 @@ class Planes extends Component
     public function render()
     {
         $usuarios=[];
+        $recientes=User::has('planes')->take(5)->get();
+        
         if($this->user!=null && $this->user!="")
         {
             $usuarios=User::where('name','LIKE','%'.$this->user.'%')->take(3)->get();
         }
         $planes=Plane::all();
-        return view('livewire.admin.usuarios.planes',compact('usuarios','planes'))
+        return view('livewire.admin.usuarios.planes',compact('usuarios','planes','recientes'))
         ->extends('admin.master')
         ->section('content');
        
