@@ -34,7 +34,8 @@ class User extends Authenticatable
         'nacimiento',
         'saldo',
         'puntos',
-        'role_id'
+        'role_id',
+        'telf'
     ];
 
     /**
@@ -78,6 +79,10 @@ class User extends Authenticatable
     public function historial_ventas()
     {
         return $this->hasMany(Historial_venta::class,'cliente_id');
+    }
+    public function atencionWhatsapp()
+    {
+        return $this->hasOne(WhatsappPlanAlmuerzo::class,'cliente_id');
     }
     public function pensione()
     {

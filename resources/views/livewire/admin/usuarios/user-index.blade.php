@@ -10,6 +10,7 @@
                         <x-input-create :lista="([
                             'Nombre'=>['name','text'],
                             'Correo'=>['email','email'],
+                            'Telefono'=>['telf','number'],
                             'Nacimiento'=>['cumpleano','date','(opcional)'],
                             'Direccion'=>['direccion','text','(opcional)'],
                             'Contraseña'=>['password','password'],
@@ -137,6 +138,7 @@
                     <x-input-create-custom-function funcion="update" boton="Actualizar" :lista="([
                             'Nombre'=>['nameE','text'],
                             'Correo'=>['emailE','email'],
+                            'Telefono'=>['telfE','number'],
                             'Nacimiento'=>['cumpleanoE','date'],
                             'Direccion'=>['direccionE','text'],
                             'Contraseña'=>['passwordE','password']

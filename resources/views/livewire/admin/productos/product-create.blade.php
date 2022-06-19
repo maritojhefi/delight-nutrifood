@@ -6,6 +6,7 @@
             </div>
             <div class="card-body">
                 <div class="">
+                   
                     <x-input-create  :lista="([
                         'Nombre'=>['nombre','text'],
                         'Precio'=>['precio','number'],
@@ -48,7 +49,7 @@
                                 </div>
                             </div>
                         </x-slot>
-                    </x-create-form>
+                    </x-input-create>
                    
                 </div>
             </div>

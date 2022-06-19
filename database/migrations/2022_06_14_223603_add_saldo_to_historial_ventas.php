@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddCajaIdToHistorialVentas extends Migration
+class AddSaldoToHistorialVentas extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,7 @@ class AddCajaIdToHistorialVentas extends Migration
     public function up()
     {
         Schema::table('historial_ventas', function (Blueprint $table) {
-            $table->unsignedBigInteger('caja_id')->nullable();
-            $table->foreign('caja_id')->references('id')->on('cajas');
+            $table->unsignedBigInteger('saldo')->nullable()->default(0);
         });
     }
 
@@ -27,10 +26,7 @@ class AddCajaIdToHistorialVentas extends Migration
     public function down()
     {
         Schema::table('historial_ventas', function (Blueprint $table) {
-            $table->dropForeign('historial_ventas_caja_id_foreign');
-            $table->dropColumn('caja_id');
-            
-                
+            $table->dropColumn('saldo');
         });
     }
 }

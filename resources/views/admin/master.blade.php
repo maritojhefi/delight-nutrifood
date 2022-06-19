@@ -34,7 +34,7 @@
     
     @livewireStyles
 	@livewireScripts
-   
+   @stack('css')
 </head>
 <body  version="dark">
     

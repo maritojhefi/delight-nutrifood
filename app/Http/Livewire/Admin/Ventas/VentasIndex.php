@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 use App\Helpers\CustomPrint;
 use Mike42\Escpos\EscposImage;
 use App\Models\Historial_venta;
+use App\Models\Saldo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
@@ -40,18 +41,62 @@ class VentasIndex extends Component
     public $descuento, $observacion;
     //variables para crear Cliente
     public $name, $cumpleano, $email, $direccion, $password, $password_confirmation;
-
+    public $saldo, $valorSaldo=0, $deshabilitarBancos=false, $saldoRestante=0;
     protected $rules = [
         'sucursal' => 'required|integer',
     ];
 
+    public function actualizarSaldo()
+    {
+        if($this->saldo)
+        {
+            $this->valorSaldo=$this->cuenta->total-$this->cuenta->descuento;
+            $this->tipocobro='efectivo';     
+            $this->emit('cambiarCheck');
+            $this->deshabilitarBancos=true;
+        }
+        else
+        {
+            $this->valorSaldo=0;
+            $this->deshabilitarBancos=false;
+            $this->saldoRestante=0;
+        }
+        
+    }
+    public function controlarSaldo()
+    {
+        if($this->valorSaldo>$this->cuenta->total-$this->cuenta->descuento)
+        {
+            
+            $this->valorSaldo=$this->cuenta->total-$this->cuenta->descuento;
+            $this->tipocobro=false;
+            $this->dispatchBrowserEvent('alert',[
+                'type'=>'error',
+                'message'=>"El saldo no debe ser mayor al monto a cobrar"
+                ]);
+            
+        }
+        else
+        {
+            $this->deshabilitarBancos=false;
+            $this->saldoRestante=($this->cuenta->total-$this->cuenta->descuento)-$this->valorSaldo;
+        }
+        if($this->valorSaldo==$this->cuenta->total-$this->cuenta->descuento)
+        {
+            $this->tipocobro='efectivo';
+            $this->emit('cambiarCheck');
+            $this->deshabilitarBancos=true;
+            $this->saldoRestante=0;
+        }
+        
+    }
     public function guardarObservacion($idprod)
     {
        DB::table('producto_venta')->where('producto_id',$idprod)->where('venta_id',$this->cuenta->id)->update(['observacion'=>$this->observacion]);
        $this->dispatchBrowserEvent('alert',[
         'type'=>'success',
         'message'=>"Guardado"
-    ]);
+        ]);
     }
     public function crear(){
         $this->validate();
@@ -228,6 +273,8 @@ class VentasIndex extends Component
         $this->cuenta->puntos=$resultado[3];
         $this->itemsCuenta=$resultado[2];
         $this->reset(['adicionales','productoapuntado']);
+        $this->saldo=false;
+        $this->saldoRestante=0;
         
     }
 
@@ -541,6 +588,8 @@ class VentasIndex extends Component
         $this->cuenta=$venta;
         $listafiltrada=$venta->productos->pluck('nombre');
         $this->reset('tipocobro');
+        $this->saldoRestante=0;
+        $this->saldo=false;
         
       $this->actualizarlista($venta);
     }
@@ -609,12 +658,25 @@ class VentasIndex extends Component
                     'total'=>$this->cuenta->total,
                     'puntos'=>$this->cuenta->puntos,
                     'descuento'=>$this->cuenta->descuento,
-                    'tipo'=>$this->tipocobro
+                    'tipo'=>$this->tipocobro,
+                    'saldo'=>$this->valorSaldo
                 ]);
+
                 $productos=$cuenta->productos;
                 if($this->cuenta->cliente_id!=null)
                 {
+                    
                     DB::table('users')->where('id',$this->cuenta->cliente_id)->increment('puntos',$this->cuenta->puntos);
+                }
+                if($this->valorSaldo>0)
+                {
+                    Saldo::create([
+                        'user_id'=>$this->cuenta->cliente_id,
+                        'historial_venta_id'=>$cuentaguardada->id,
+                        'monto'=>$this->valorSaldo,
+                        'es_deuda'=>true
+                    ]);
+                    DB::table('users')->where('id',$this->cuenta->cliente_id)->increment('saldo',$this->valorSaldo);
                 }
                  foreach($productos as $prod)
                  {

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Plane;
 use Livewire\Component;
 use App\Helpers\CreateList;
+use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
 
 class Planes extends Component
@@ -36,8 +37,14 @@ class Planes extends Component
         else
         {
             $ahora = Carbon::now();
-            $diassumados = $ahora->add($plan->dias, 'day');//no se usa
-            $formateado=$diassumados->format('Y-m-d');//no se usa
+            $nombreDia=WhatsappAPIHelper::saber_dia($ahora);
+            //dd($nombreDia);
+            if($nombreDia=="Domingo")
+            {
+                $ahora= Carbon::now()->addDays(1)->format('Y-m-d');
+            }
+            // $diassumados = $ahora->add($plan->dias, 'day');//no se usa
+            // $formateado=$diassumados->format('Y-m-d');//no se usa
             $user->planes()->attach($plan->id);
             
             DB::table('plane_user')->where('user_id',$user->id)

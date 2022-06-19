@@ -44,7 +44,7 @@
                                 <select
                                     class="form-control form-control-sm  form-white @error($sucursal) is-invalid @enderror"
                                     wire:model="sucursal">
-                                    
+
                                     @foreach ($sucursales as $nombre => $id)
                                         <option value="{{ $id }}">{{ $nombre }}</option>
                                     @endforeach
@@ -98,7 +98,7 @@
 
 
 
-        <ul class="list-group mb-3 "  style="overflow-y: scroll;max-height:300px"
+        <ul class="list-group mb-3 " style="overflow-y: scroll;max-height:300px"
             @isset($cuenta->cliente) @php $time = strtotime($cuenta->cliente->nacimiento);
             @endphp @if (date('m-d') == date('m-d', $time)) style="background-image:
             url('{{ asset('images/cumple.gif') }}')" @endif
@@ -106,7 +106,7 @@
 
 
         @foreach ($listacuenta as $item)
-            <li class="list-group-item d-flex justify-content-between lh-condensed" >
+            <li class="list-group-item d-flex justify-content-between lh-condensed">
                 <div>
                     <div class="row">
 
@@ -166,9 +166,9 @@
                         <div x-show="open" @click.outside="open = false">
                             <div class="mb-3 col-md-2">
                                 <input type="number" class="form-control" wire:model.lazy="cantidadespecifica"
-                                    style="padding: 3px;height:30px;width:40px" value="{{ $item['cantidad'] }}">
+                                    style="padding: 3px;height:30px;width:50px" value="{{ $item['cantidad'] }}">
                             </div>
-                            <button class="btn btn-xxs light btn-warning"
+                            <button class="btn btn-xxs btn-warning"
                                 wire:click="adicionarvarios('{{ $item['id'] }}')"><i
                                     class="fa fa-plus"></i></button>
                         </div>
@@ -179,39 +179,39 @@
             </li>
         @endforeach
     </ul>
-        <ul class="list-group mb-3 ">
-            <li class="list-group-item d-flex justify-content-between">
-                <small>Subtotal</small>
-                <strong>{{ $cuenta->total }} Bs</strong>
-    
-            </li>
-    
-            <li class="list-group-item d-flex justify-content-between">
-                <small>Descuento</small>
-    
-                <div x-data="{ open: false }">
-                    <button @click="open = ! open" class="badge badge-xs light badge-secondary">Editar</button>
-    
-                    <div x-show="open" @click.outside="open = false">
-                        <div class="mb-3 col-md-2">
-                            <input type="number" class="form-control" wire:model.lazy="descuento"
-                                style="padding: 3px;height:30px;width:80px" value="{{ $item['cantidad'] }}">
-                        </div>
-                        <button class="btn btn-xxs btn-warning" wire:click="editardescuento"><i
-                                class="fa fa-check"></i>Guardar</button>
+    <ul class="list-group mb-3 ">
+        <li class="list-group-item d-flex justify-content-between">
+            <small>Subtotal</small>
+            <strong>{{ $cuenta->total }} Bs</strong>
+
+        </li>
+
+        <li class="list-group-item d-flex justify-content-between">
+            <small>Descuento</small>
+
+            <div x-data="{ open: false }">
+                <button @click="open = ! open" class="badge badge-xs light badge-secondary">Editar</button>
+
+                <div x-show="open" @click.outside="open = false">
+                    <div class="mb-3 col-md-2">
+                        <input type="number" class="form-control" wire:model.lazy="descuento"
+                            style="padding: 3px;height:30px;width:80px" value="{{ $item['cantidad'] }}">
                     </div>
+                    <button class="btn btn-xxs btn-warning" wire:click="editardescuento"><i
+                            class="fa fa-check"></i>Guardar</button>
                 </div>
-                <strong>{{ $cuenta->descuento }} Bs</strong>
-            </li>
-    
-            <li class="list-group-item d-flex justify-content-between">
-                <span>Total a pagar</span>
-                <strong>{{ $cuenta->total - $cuenta->descuento }} Bs/{{ $cuenta->puntos }} pts</strong>
-    
-            </li>
-        </ul>
-        
-    
+            </div>
+            <strong>{{ $cuenta->descuento }} Bs</strong>
+        </li>
+
+        <li class="list-group-item d-flex justify-content-between">
+            <span>Total a pagar</span>
+            <strong>{{ $cuenta->total - $cuenta->descuento }} Bs/{{ $cuenta->puntos }} pts</strong>
+
+        </li>
+    </ul>
+
+
 
     @isset($productoapuntado)
 
@@ -318,7 +318,8 @@
     @endisset
     @if ($cuenta->total != 0)
         <div class="row m-2">
-            <button class="btn btn-xs light btn-warning" data-bs-toggle="modal" data-bs-target="#basicModal">Cobrar
+            <button class="btn btn-xs light btn-warning" data-bs-toggle="modal" data-bs-target="#basicModal"
+                wire:click="actualizarSaldo">Cobrar
                 Cuenta</button>
 
         </div>
@@ -326,7 +327,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Esta seguro?</h5>
+                        <h5 class="modal-title">Detalle de la cuenta</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal">
                         </button>
                     </div>
@@ -367,48 +368,93 @@
                             <span class="badge light badge-success">{{ $tipocobro }}</span>
                         @endisset
 
+                        @push('scripts')
+                            <script>
+                                Livewire.on('cambiarCheck', cambiar => {
+                                    document.getElementById("check-efectivo").checked = true;
+                                   
+                                })
+                            </script>
+                        @endpush
                         <div class="col">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gridRadios"
+                                <input class="form-check-input" type="radio" name="gridRadios" id="check-efectivo"
                                     wire:model="tipocobro" value="efectivo">
                                 <label class="form-check-label">
                                     Efectivo
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gridRadios"
+                                <input class="form-check-input " {{$deshabilitarBancos?'disabled':''}} type="radio" name="gridRadios" 
                                     wire:model="tipocobro" value="tarjeta">
                                 <label class="form-check-label">
                                     Tarjeta
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gridRadios"
+                                <input class="form-check-input " {{$deshabilitarBancos?'disabled':''}} type="radio" name="gridRadios"
                                     wire:model="tipocobro" value="banco-sol">
                                 <label class="form-check-label">
                                     Banco Sol
                                 </label>
                             </div>
                             <div class="form-check disabled">
-                                <input class="form-check-input" type="radio" name="gridRadios"
+                                <input class="form-check-input " {{$deshabilitarBancos?'disabled':''}} type="radio" name="gridRadios" 
                                     wire:model="tipocobro" value="banco-bisa">
                                 <label class="form-check-label">
                                     Banco Bisa
                                 </label>
                             </div>
                             <div class="form-check disabled">
-                                <input class="form-check-input" type="radio" name="gridRadios"
+                                <input class="form-check-input " {{$deshabilitarBancos?'disabled':''}} type="radio" name="gridRadios"
                                     wire:model="tipocobro" value="banco-mercantil">
                                 <label class="form-check-label">
                                     Banco Mercantil
                                 </label>
                             </div>
+                            @isset($cuenta->cliente->name)
+                                <div class="form-check disabled">
+                                    <input class="form-check-input" type="checkbox" name="checkbox" wire:model="saldo"
+                                        wire:change="actualizarSaldo">
+                                    <label class="form-check-label">
+                                        A saldo del cliente
+                                    </label>
+                                </div>
+                                @if ($saldo == true)
+                                    <div id="saldo" class="col-4">
+                                        <div class="input-group input-group-sm mb-3 input-info">
+                                            <span class="input-group-text">Bs</span>
+                                            <input type="number" wire:model.lazy="valorSaldo"
+                                                wire:change="controlarSaldo" class="form-control">
+                                        </div>
+
+                                    </div>
+                                    @if ($saldoRestante==0)
+                                    
+                                    <div class="alert alert-success notification">
+                                        <p class="notificaiton-title mb-2"><strong>Correcto!</strong> Se agregara el total de <strong>{{$cuenta->total-$cuenta->descuento}} Bs</strong> al saldo por cobrar de <strong>{{$cuenta->cliente->name}}!</strong></p>
+                                        
+                                    </div>
+                               
+                                @elseif($saldoRestante!=0)
+                               
+                                <div class="alert alert-warning notification">
+                                    <p class="notificaiton-title mb-2"><strong>Atencion!</strong> Estas agregando <strong>{{$valorSaldo}} Bs</strong> al saldo de <strong>{{$cuenta->cliente->name}}</strong> y cobrando <strong>{{$saldoRestante}} Bs</strong> por el metodo <strong>"{{$tipocobro}}"</strong> </p>
+                                    
+                                </div>
+                                @endif
+                                @endif
+                                
+                            @endisset
+
 
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button wire:loading.remove wire:target='imprimir' type="button"
                             class="btn btn-warning btn-sm" wire:click="imprimir"><span>Imprimir</span></button>
+                        <button wire:loading.remove wire:target='imprimir' type="button"
+                            class="btn btn-info btn-sm" wire:click="imprimirCocina"><span>Cocina</span></button>
                         <button wire:loading wire:target='imprimir' type="button" disabled
                             class="btn btn-warning btn-sm" wire:click="imprimir"><span>Espere...</span></button>
 
@@ -434,7 +480,7 @@
                 @php
                     $total = 0;
                 @endphp
-                
+
                 @foreach ($item->sucursale->where('id', $cuenta->sucursale_id) as $relacion)
                     @isset($relacion)
                         @php
@@ -443,11 +489,19 @@
                     @endisset
                 @endforeach
 
-                <li class="list-group-item">
-                    
-                    <a class="" {{ $total == 0 && $item->contable == true ? 'disabled' : '' }}
-                        wire:click="adicionar('{{ $item->id }}')">
-                        {{ $item->nombre }}
+
+
+                <a class="" href="#"
+                    {{ $total == 0 && $item->contable == true ? 'disabled' : '' }}
+                    wire:click="adicionar('{{ $item->id }}')">
+                    <li class="list-group-item ">
+                        @if ($total == 0 && $item->contable == true)
+                            <del class=" text-muted"> {{ $item->nombre }}</del>
+                        @else
+                            {{ $item->nombre }}
+                        @endif
+
+
                         <div class="row">
                             <div class="col-3">
                                 <img src="{{ asset($item->pathAttachment()) }}" alt="" class="me-3 rounded"
@@ -487,9 +541,8 @@
                             </div>
 
                         </div>
-
-                    </a>
-                </li>
+                    </li>
+                </a>
             @endforeach
         </ul>
     </div>

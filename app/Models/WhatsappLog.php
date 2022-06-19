@@ -5,13 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Almuerzo extends Model
+class WhatsappLog extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'dia','ensalada','sopa','foto','ejecutivo','vegetariano','dieta','carbohidrato_1','carbohidrato_2','carbohidrato_3','jugo',
+        'log','titulo'
        
     ];
-
-    
 }

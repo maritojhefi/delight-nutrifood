@@ -1,3 +1,4 @@
+@push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
@@ -9,6 +10,7 @@
             locale: "es",
             hiddenDays: [0],
             selectable: true,
+            //eventContent: { html: '<i>some html</i>' },
             events: "{{$path}}/admin/usuarios/mostrar/" + {{ $plan->id }} + "/" +
                 {{ $usuario->id }},
             dateClick: function(info) {
@@ -149,3 +151,5 @@
         });
     });
 </script>
+@endpush
+

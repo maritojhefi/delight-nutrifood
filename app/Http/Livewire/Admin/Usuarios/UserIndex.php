@@ -12,8 +12,8 @@ class UserIndex extends Component
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
     public $searchUser, $userEdit;
-    public $name, $email, $password, $search, $password_confirmation, $rol, $cumpleano, $direccion;
-    public $nameE, $emailE, $passwordE, $passwordE_confirmation, $cumpleanoE, $direccionE ,$rolE;
+    public $name, $email, $password, $search, $password_confirmation, $rol, $cumpleano, $direccion,$telf;
+    public $nameE, $emailE, $passwordE, $passwordE_confirmation, $cumpleanoE, $direccionE ,$rolE, $telfE;
     
     public function updatingSearchUser()
     {
@@ -24,6 +24,7 @@ class UserIndex extends Component
         'email' => 'required|email|unique:users,email',
         'password' => 'required|min:8|confirmed',
         'rol'=>'required|integer',
+        'telf'=>'required|size:8|unique:users,telf'
        
     ];
     public function updated($propertyName)
@@ -35,6 +36,7 @@ class UserIndex extends Component
         
         $this->userEdit=$user;
         $this->nameE=$user->name;
+        $this->telfE=$user->telf;
         $this->emailE=$user->email;
         $this->passwordE=null;
         $this->rolE=$user->role_id;
@@ -60,11 +62,13 @@ class UserIndex extends Component
     {
         $this->validate([
             'nameE' => 'required|min:5|unique:users,name,'.$this->userEdit->id,
+            'telfE' => 'required|size:8|unique:users,telf,'.$this->userEdit->id,
             'emailE' => 'required|email|unique:users,email,'.$this->userEdit->id,
             'passwordE' => 'required|min:8|confirmed',
         ]);
         $this->userEdit->name=$this->nameE;
         $this->userEdit->email=$this->emailE;
+        $this->userEdit->telf=$this->telfE;
         $this->userEdit->password=$this->passwordE;
         $this->userEdit->role_id=$this->rolE;
         $this->userEdit->nacimiento=$this->cumpleanoE;
@@ -87,7 +91,8 @@ class UserIndex extends Component
             'password' => $this->password,
             'role_id'=> $this->rol,
             'nacimiento'=>$this->cumpleano,
-            'direccion'=>$this->direccion
+            'direccion'=>$this->direccion,
+            'telf'=>$this->telf
             
         ]);
          $this->dispatchBrowserEvent('alert',[
