@@ -73,7 +73,7 @@
                     </div>
                     <div class="card-overlay rounded-s bg-black opacity-70"></div>
                 </div>
-                <div id="collapse{{ $almuerzo->id }}" class="collapse" data-bs-parent="#collapse{{ $almuerzo->id }}"
+                <div id="collapse{{ $almuerzo->id }}" class="collapse" data-bs-parent="#accordion-3"
                     style="">
                     <div class="content">
                         <h4 class="mb-n1">{{ $almuerzo->dia }}</h4>

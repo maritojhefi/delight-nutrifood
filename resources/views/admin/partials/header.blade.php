@@ -172,7 +172,9 @@
                                 <i class="la la-dollar"></i> <span class="ms-2">Caja Diaria</span>
                             </a>  
                             @endif
-                            
+                            <a href="{{route('miperfil')}}" class="dropdown-item ai-icon">
+                                <i class="fa fa-user"></i> <span class="ms-2">Ir a la tienda</span>
+                            </a> 
                             
                             <a href="{{route('logout')}}" class="dropdown-item ai-icon"  onclick="event.preventDefault();
                             document.getElementById('logout-form').submit();">
