@@ -25,7 +25,10 @@
           /* For large screens: */
           #margen {margin-right: 700px !important; margin-left: 700px}
         }
-        
+        @media only screen and (min-width: 800px) {
+          /* For large screens: */
+          #margen {margin-right: 300px !important; margin-left: 300px}
+        }
         </style>
         
 @stack('header')
