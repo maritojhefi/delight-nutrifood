@@ -20,75 +20,78 @@
                 </p>
             </div>
         </div>
-        <div class="card card-style mb-2 map-full" data-card-height="cover-card" style="height: 573px;">
-            <h3 class="m-3 text-center"> Ubique su domicilio detalladamente</h3>
-            <div id="map" style="width:100%;height:600px;"></div>
+        <div id="todoBien">
+            <div class="card card-style mb-2 map-full" data-card-height="cover-card" style="height: 573px;">
+                <h3 class="m-3 text-center"> Ubique su domicilio detalladamente</h3>
+                <div id="map" style="width:100%;height:600px;"></div>
+            </div>
+            <div  class="card card-style">
+                <form action="{{ route('guardarPerfilFaltante') }}" method="post">
+    
+                    <div class="content mb-0">
+                        <h3 class="font-600">Informacion de tu perfil</h3>
+                        <p>
+                            Por favor llena con el maximo detalle los siguientes campos.
+                        </p>
+    
+                        @csrf
+    
+                        <br>
+                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                            <input type="email" class="form-control" placeholder="" name="email"
+                                value="{{ old('email', $usuario->email) }}">
+                            <label for="form1" class="color-highlight font-400 font-13">Email</label>
+    
+                            @error('email')
+                                <i class="fa fa-times  invalid color-red-dark"></i>
+                                <p class="text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+    
+                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                            <input type="text" class="form-control"
+                                placeholder="Ejm: Tomatitas Av. Principal #134 Porton guindo" name="direccion"
+                                value="{{ old('direccion', $usuario->direccion) }}">
+                            <label for="form1" class="color-highlight font-400 font-13">Direccion</label>
+    
+                            @error('direccion')
+                                <i class="fa fa-times  invalid color-red-dark"></i>
+                                <p class="text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                            <input type="number" class="form-control" placeholder="" name="telf"
+                                value="{{ old('telf', $usuario->telf) }}">
+                            <label for="form1" class="color-highlight font-400 font-13">Telefono</label>
+    
+                            @error('telf')
+                                <i class="fa fa-times  invalid color-red-dark"></i>
+                                <p class="text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                            <input type="date" class="form-control" placeholder="A detalle" name="nacimiento"
+                                value="{{ old('nacimiento', $usuario->nacimiento) }}">
+                            <label for="form1" class="color-highlight font-400 font-13">Fecha Nacimiento</label>
+    
+                            @error('nacimiento')
+                                <i class="fa fa-times  invalid color-red-dark"></i>
+                                <p class="text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+    
+                        <input type="hidden" value="{{ $usuario->id }}" name="idUsuario">
+                        <input type="hidden" id="latitud" name="latitud">
+                        <input type="hidden" id="longitud" name="longitud">
+                    </div>
+    
+                    <button type="submit"
+                        class="btn btn-full btn-margins bg-highlight mt-3 rounded-sm shadow-xl btn-m text-uppercase font-900 btn-block">Guardar
+                        Perfil</button>
+                </form>
+            </div>
         </div>
-        <div id="todoBien" class="card card-style">
-            <form action="{{ route('guardarPerfilFaltante') }}" method="post">
-
-                <div class="content mb-0">
-                    <h3 class="font-600">Informacion de tu perfil</h3>
-                    <p>
-                        Por favor llena con el maximo detalle los siguientes campos.
-                    </p>
-
-                    @csrf
-
-                    <br>
-                    <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
-                        <input type="email" class="form-control" placeholder="" name="email"
-                            value="{{ old('email', $usuario->email) }}">
-                        <label for="form1" class="color-highlight font-400 font-13">Email</label>
-
-                        @error('email')
-                            <i class="fa fa-times  invalid color-red-dark"></i>
-                            <p class="text-danger">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
-                        <input type="text" class="form-control"
-                            placeholder="Ejm: Tomatitas Av. Principal #134 Porton guindo" name="direccion"
-                            value="{{ old('direccion', $usuario->direccion) }}">
-                        <label for="form1" class="color-highlight font-400 font-13">Direccion</label>
-
-                        @error('direccion')
-                            <i class="fa fa-times  invalid color-red-dark"></i>
-                            <p class="text-danger">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
-                        <input type="number" class="form-control" placeholder="" name="telf"
-                            value="{{ old('telf', $usuario->telf) }}">
-                        <label for="form1" class="color-highlight font-400 font-13">Telefono</label>
-
-                        @error('telf')
-                            <i class="fa fa-times  invalid color-red-dark"></i>
-                            <p class="text-danger">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
-                        <input type="date" class="form-control" placeholder="A detalle" name="nacimiento"
-                            value="{{ old('nacimiento', $usuario->nacimiento) }}">
-                        <label for="form1" class="color-highlight font-400 font-13">Fecha Nacimiento</label>
-
-                        @error('nacimiento')
-                            <i class="fa fa-times  invalid color-red-dark"></i>
-                            <p class="text-danger">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <input type="hidden" value="{{ $usuario->id }}" name="idUsuario">
-                    <input type="hidden" id="latitud" name="latitud">
-                    <input type="hidden" id="longitud" name="longitud">
-                </div>
-
-                <button type="submit"
-                    class="btn btn-full btn-margins bg-highlight mt-3 rounded-sm shadow-xl btn-m text-uppercase font-900 btn-block">Guardar
-                    Perfil</button>
-            </form>
-        </div>
+        
         <div id="errorMapa" class="displayNone">
             <div class="alert me-3 ms-3 rounded-s bg-red-dark " role="alert">
                 <span class="alert-icon"><i class="fa fa-times-circle font-18"></i></span>
