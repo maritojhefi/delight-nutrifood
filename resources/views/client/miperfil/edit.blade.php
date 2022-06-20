@@ -70,7 +70,7 @@
                             @enderror
                         </div>
                         <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
-                            <input type="date" class="form-control" placeholder="A detalle" name="nacimiento"
+                            <input type="date" class="form-control" name="nacimiento"
                                 value="{{ old('nacimiento', $usuario->nacimiento) }}">
                             <label for="form1" class="color-highlight font-400 font-13">Fecha Nacimiento</label>
     
@@ -95,7 +95,7 @@
         <div id="errorMapa" class="displayNone">
             <div class="alert me-3 ms-3 rounded-s bg-red-dark " role="alert">
                 <span class="alert-icon"><i class="fa fa-times-circle font-18"></i></span>
-                <h4 class="text-uppercase color-white">Error</h4>
+                <h4 class="text-uppercase color-white">Active el GPS</h4>
                 <strong class="alert-icon-text">Necesitamos permiso de su ubicacion.</strong>
 
                 <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert"
