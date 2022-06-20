@@ -16,6 +16,7 @@ class WhatsappPlanAlmuerzo extends Model
         'paso_carbohidrato',
         'paso_metodo_envio',
         'paso_metodo_empaque',
+        'id_plane_user'
         
     ];
     public function cliente()

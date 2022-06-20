@@ -123,11 +123,11 @@
             @endif
 
             <div class="divider"></div>
-            <a href="#" class="btn btn-icon btn-m btn-full shadow-l bg-facebook text-uppercase font-900 text-start"><i
+            {{-- <a href="#" class="btn btn-icon btn-m btn-full shadow-l bg-facebook text-uppercase font-900 text-start"><i
                     class="fab fa-facebook-f text-center"></i>Loguea con Facebook</a>
             <a href="#"
                 class="btn btn-icon btn-m mt-2 btn-full shadow-l bg-google text-uppercase font-900 text-start"><i
-                    class="fab fa-google text-center"></i>Loguea con Google</a>
+                    class="fab fa-google text-center"></i>Loguea con Google</a> --}}
             <div class="divider mt-4 mb-3"></div>
             <div class="d-flex">
                 <div class="w-50 font-11 pb-2 color-theme opacity-60 pb-3 text-start"><a href="#"

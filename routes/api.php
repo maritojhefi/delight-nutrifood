@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\AdminTicketsHelper;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Almuerzo;
@@ -25,7 +26,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/pruebas', function (Request $request) {
 
+    
+    AdminTicketsHelper::calcular('75140175','1');
+});
 Route::post('/pruebas/webhook', function (Request $request) {
 
 
@@ -44,37 +49,24 @@ Route::post('/circuito/delight/planes', function (Request $request) {
     try {
 
         $json = json_decode(json_encode($request->all()));
-        if (isset($json->message->from)) {//si viene de un cliente y no de la api o numero origen wp business
+        if (isset($json->message->from)) { //si viene de un cliente y no de la api o numero origen wp business
             $contenido = $json->message->content->text;
             $idConversacion = $json->conversation->id;
             $numeroDestino = $json->message->to;
-            $numeroOrigen = $json->message->from;
+            $numeroOrigen = substr($json->message->from, -8);
             $estadoMensaje = $json->message->status; //si es pending algo genero error, received es correcto
             $tipo = $json->message->type;
-            
-            if ($tipo == 'text') {//si es texto lo que envia
+
+            if ($tipo == 'text') { //si es texto lo que envia
                 preg_match_all('!\d+!', $contenido, $matches); //matches es un array que obtiene numeros dentro del cuerpo del mensaje recibido
                 if (count($matches[0]) > 0) {
                     foreach ($matches[0] as $numero) {
-                        switch ($numero) {
-                            case '1':
-                                $usuarioCliente = WhatsappPlanAlmuerzo::where('cliente_id', '!=', null)->first();
-                                break;
-                            case '0':
-
-                                break;
-                            default:
-                                WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Marca una respuesta correcta');
-
-                                break;
-                        }
+                        
                     }
                 } else {
                     WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Marca una respuesta correcta');
                 }
-            }
-            else
-            {
+            } else {
                 WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Envia una respuesta valida');
             }
         }

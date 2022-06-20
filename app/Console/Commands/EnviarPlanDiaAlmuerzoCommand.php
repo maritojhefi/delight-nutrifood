@@ -77,11 +77,13 @@ class EnviarPlanDiaAlmuerzoCommand extends Command
                 $estadoAtencion = WhatsappPlanAlmuerzo::where('cliente_id', $idUser)->first();
                 if ($estadoAtencion) {
                     $estadoAtencion->cantidad = $cantidadAlmuerzos->count();
+                    $estadoAtencion->id_plane_user = $cantidadAlmuerzos[0]->id;
                     $estadoAtencion->save();
                 } else {
                     WhatsappPlanAlmuerzo::create([
                         'cliente_id' => $idUser,
-                        'cantidad' => $cantidadAlmuerzos->count()
+                        'cantidad' => $cantidadAlmuerzos->count(),
+                        'id_plane_user'=>$cantidadAlmuerzos[0]->id
                     ]);
                 }
             }
