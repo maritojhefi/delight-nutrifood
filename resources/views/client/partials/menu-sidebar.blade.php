@@ -16,7 +16,7 @@
 </div>
 <div class="menu-items mb-4">
     <h5 class="text-uppercase opacity-20 font-12 pl-3">Menu</h5>
-    <a id="nav-welcome" href="index.html">
+    <a id="nav-welcome" href="{{route('menusemanal')}}">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             class="feather feather-home" data-feather-line="1" data-feather-size="16" data-feather-color="blue-dark"
