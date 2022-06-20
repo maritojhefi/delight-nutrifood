@@ -134,7 +134,13 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal">
                     </button>
                 </div>
-                <div class="modal-body">
+                <div  wire:loading>
+                    <div class="spinner-border text-light d-block mx-auto m-3" role="status">
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                </div>
+                
+                <div class="modal-body" wire:loading.remove>
                     <x-input-create-custom-function funcion="update" boton="Actualizar" :lista="([
                             'Nombre'=>['nameE','text'],
                             'Correo'=>['emailE','email'],
