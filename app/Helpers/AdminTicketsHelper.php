@@ -52,19 +52,7 @@ class AdminTicketsHelper
     {
         switch ($numero) {
             case '1':
-                $buscarUsuario = DB::table('users')->select(
-                    'users.*',
-                    'plane_user.*',
-                    'whatsapp_plan_almuerzos.*'
-                )
-                    ->leftjoin('plane_user', 'plane_user.user_id', 'users.id')
-                    ->leftjoin('whatsapp_plan_almuerzos', 'whatsapp_plan_almuerzos.cliente_id', 'users.id')
-                    ->where('users.telf', $numeroOrigen)->first();
-                if ($buscarUsuario) {
-                } else {
-                    WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Tu plan para este dia cambio de estado y ya no se encuentra disponible, contactate al +59178227629 para mas detalles y consultas.');
-                    WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'No te olvides que estas conversando con un asistente virtual, no contesta a respuestas personalizadas');
-                }
+                
                 break;
             case '2':
 
@@ -76,7 +64,6 @@ class AdminTicketsHelper
 
                 break;
             default:
-                WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Marca una respuesta correcta');
 
                 break;
         }

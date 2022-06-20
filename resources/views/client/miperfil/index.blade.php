@@ -130,7 +130,7 @@
                     class="fab fa-google text-center"></i>Loguea con Google</a> --}}
             <div class="divider mt-4 mb-3"></div>
             <div class="d-flex">
-                <div class="w-50 font-11 pb-2 color-theme opacity-60 pb-3 text-start"><a href="#"
+                <div class="w-50 font-11 pb-2 color-theme opacity-60 pb-3 text-start"><a href="{{route('register')}}"
                         class="color-theme">Crear una cuenta</a></div>
             </div>
         </div>

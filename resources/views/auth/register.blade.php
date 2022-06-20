@@ -33,6 +33,33 @@
                                         </span>
                                     @enderror
                                     </div>
+                                    <div class="mb-3">
+                                        <label class="mb-1"><strong>Telefono</strong></label>
+                                        <input id="telefono" type="number" class="form-control @error('telefono') is-invalid @enderror" name="telefono" value="{{ old('telefono') }}" required  >
+                                        @error('telefono')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="mb-1"><strong>Fecha de Nacimiento</strong></label>
+                                        <input id="fecha" type="date" class="form-control @error('fecha') is-invalid @enderror" name="fecha" value="{{ old('fecha') }}" required  >
+                                        @error('fecha')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="mb-1"><strong>Direccion(Domicilio)</strong></label>
+                                        <input id="direccion" type="text" class="form-control @error('direccion') is-invalid @enderror" name="direccion" value="{{ old('direccion') }}" required  >
+                                        @error('direccion')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                    </div>
                                   
                                     <div class="mb-3">
                                         <label class="mb-1"><strong>Contraseña</strong></label>
