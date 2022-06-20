@@ -76,58 +76,58 @@
                 <div id="collapse{{ $almuerzo->id }}" class="collapse" data-bs-parent="#collapse{{ $almuerzo->id }}"
                     style="">
                     <div class="content">
-                        <h4 class="mb-n1">Lunes</h4>
+                        <h4 class="mb-n1">{{ $almuerzo->dia }}</h4>
                         <div class="divider mb-3"></div>
                         <div class="row mb-0">
-                            <div class="col-4">
+                            <div class="col-5">
                                 <p class="color-theme font-700">Sopa</p>
                             </div>
-                            <div class="col-8">
+                            <div class="col-7">
                                 <p class="font-400">{{ $almuerzo->sopa }}</p>
                             </div>
                             <div class="divider mb-3"></div>
-                            <div class="col-4">
+                            <div class="col-5">
                                 <p class="color-theme font-700">Segundo Ejecutivo</p>
                             </div>
-                            <div class="col-8">
+                            <div class="col-7">
                                 <p class="font-400">{{ $almuerzo->ejecutivo }}</p>
                             </div>
-                            <div class="col-4">
+                            <div class="col-5">
                                 <p class="color-theme font-700">Segundo Dieta</p>
                             </div>
-                            <div class="col-8">
+                            <div class="col-7">
                                 <p class="font-400">{{ $almuerzo->dieta }}</p>
                             </div>
-                            <div class="col-4">
+                            <div class="col-5">
                                 <p class="color-theme font-700">Segundo Veggie</p>
                             </div>
-                            <div class="col-8">
+                            <div class="col-7">
                                 <p class="font-400">{{ $almuerzo->vegetariano }}</p>
                             </div>
                             <div class="divider mb-3"></div>
-                            <div class="col-4">
+                            <div class="col-5">
                                 <p class="color-theme font-700">Carbohidrato 1</p>
                             </div>
-                            <div class="col-8">
+                            <div class="col-7">
                                 <p class="font-400">{{ $almuerzo->carbohidrato_1 }}</p>
                             </div>
-                            <div class="col-4">
+                            <div class="col-5">
                                 <p class="color-theme font-700">Carbohidrato 2</p>
                             </div>
-                            <div class="col-8">
+                            <div class="col-7">
                                 <p class="font-400">{{ $almuerzo->carbohidrato_2 }}</p>
                             </div>
-                            <div class="col-4">
+                            <div class="col-5">
                                 <p class="color-theme font-700">Carbohidrato 3</p>
                             </div>
-                            <div class="col-8">
+                            <div class="col-7">
                                 <p class="font-400">{{ $almuerzo->carbohidrato_3 }}</p>
                             </div>
                             <div class="divider mb-3"></div>
-                            <div class="col-4">
+                            <div class="col-5">
                                 <p class="color-theme font-700">Jugo</p>
                             </div>
-                            <div class="col-8">
+                            <div class="col-7">
                                 <p class="font-400">{{ $almuerzo->jugo }}</p>
                             </div>
                         </div>

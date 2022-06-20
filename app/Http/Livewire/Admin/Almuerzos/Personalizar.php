@@ -33,20 +33,14 @@ class Personalizar extends Component
     public function guardarFoto()
     {
         $this->validate([
-            'imagen' => 'required|mimes:jpeg,bmp,png,jpg|max:10240'
+            'imagen' => 'required|mimes:jpeg,bmp,png,jpg|max:5120'
         ]);
         $nombreFotoAntigua=Almuerzo::find(1);
         Storage::disk('public_images')->delete('almuerzo/'.$nombreFotoAntigua->foto);
         $filename = time() . "." . $this->imagen->extension();
         //$this->imagen->move(public_path('imagenes'),$filename);
         $this->imagen->storeAs('almuerzo', $filename, 'public_images');
-        //comprimir la foto
-        $img = Image::make('imagenes/almuerzo/' . $filename);
-        $img->resize(320, null, function ($constraint) {
-            $constraint->aspectRatio();
-        });
-        $img->rotate(0);
-        $img->save('imagenes/almuerzo/' . $filename);
+        
         DB::table('almuerzos')->update(['foto' => $filename]);
 
         $this->dispatchBrowserEvent('alert', [
