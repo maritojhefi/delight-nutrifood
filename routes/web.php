@@ -74,7 +74,7 @@ Route::prefix('/promociones')->group(function () {
 
 });
 //perfil
-Route::prefix('/miperfil')->group(function () {
+Route::prefix('/miperfil')->middleware('auth','revisarPerfil')->group(function () {
    
     Route::get('', [App\Http\Controllers\MiperfilController::class, 'index'])->name('miperfil');
     Route::get('/calendario/{plan}/{usuario}', [App\Http\Controllers\MiperfilController::class, 'calendario'])->name('calendario.cliente');
