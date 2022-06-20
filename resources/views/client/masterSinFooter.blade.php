@@ -15,14 +15,44 @@
         href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900|Roboto:300,300i,400,400i,500,500i,700,700i,900,900i&amp;display=swap"
         rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{asset('fonts/css/fontawesome-all.min.css')}}">
-    <link rel="stylesheet" type="text/css" href="{{asset('styles/highlights/highlight_aqua.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('styles/highlights/highlight_mint.css')}}">
     @laravelPWA
+    <style>
+        /* Extra small devices (phones, 600px and down) */
+        @media only screen and (max-width: 600px) {}
 
+        /* Small devices (portrait tablets and large phones, 600px and up) */
+        @media only screen and (min-width: 600px) {}
+
+        /* Medium devices (landscape tablets, 768px and up) */
+        @media only screen and (min-width: 768px) {
+            #margen {
+                margin-right: 20%;
+                margin-left: 20%;
+            }
+        }
+
+        /* Large devices (laptops/desktops, 992px and up) */
+        @media only screen and (min-width: 992px) {
+            #margen {
+                margin-right: 30%;
+                margin-left: 30%;
+            }
+        }
+
+        /* Extra large devices (large laptops and desktops, 1200px and up) */
+        @media only screen and (min-width: 1200px) {
+            #margen {
+                margin-right: 35%;
+                margin-left: 35%
+            }
+        }
+    </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 @stack('header')
 </head>
 
-<body class="theme-light">
+<body id="margen" class="theme-light">
     <div id="preloader">
         <div class="spinner-border color-highlight" role="status"></div>
     </div>
