@@ -3,8 +3,9 @@
     @auth
         <x-cabecera-pagina titulo="Mi Perfil" cabecera="bordeado" />
 
-        <div class="card card-style preload-img entered loaded" data-src="{{ asset('images/imagen4.jpg') }}" data-card-height="450"
-            style="height: 450px; background-image: url(&quot;{{ asset('images/imagen4.jpg') }}&quot;);" data-ll-status="loaded">
+        <div class="card card-style preload-img entered loaded" data-src="{{ asset('images/imagen4.jpg') }}"
+            data-card-height="450" style="height: 450px; background-image: url(&quot;{{ asset('images/imagen4.jpg') }}&quot;);"
+            data-ll-status="loaded">
             <div class="card-bottom ms-3 ">
                 <h1 class="font-40 line-height-xl ">{{ auth()->user()->name }}</h1>
                 <a href="{{ route('llenarDatosPerfil') }}"
@@ -37,7 +38,157 @@
 
             </div>
         </div>
-
+        {{-- <div class="splide single-slider slider-no-arrows slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"
+            id="single-slider-3" style="visibility: visible;">
+            <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button"
+                    aria-controls="single-slider-3-track" aria-label="Previous slide"><svg xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 40 40" width="40" height="40">
+                        <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
+                    </svg></button><button class="splide__arrow splide__arrow--next" type="button"
+                    aria-controls="single-slider-3-track" aria-label="Go to first slide"><svg xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 40 40" width="40" height="40">
+                        <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
+                    </svg></button></div>
+            <div class="splide__track" id="single-slider-3-track">
+                <div class="splide__list" id="single-slider-3-list" style="transform: translateX(-1528px);">
+                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 382px;">
+                        <div class="card rounded-m mx-3 bg-red-dark">
+                            <div class="content m-2">
+                                <div class="d-flex">
+                                    <div class="pe-3">
+                                        <img src="images/pictures/28s.jpg" width="85" class="rounded-m">
+                                    </div>
+                                    <div class="ms-auto">
+                                        <span class="color-white font-10 mb-n1 d-block opacity-50">John Doe</span>
+                                        <h4 class="color-white font-15 font-500">Google plans to release a new Plane this year.
+                                        </h4>
+                                        <strong class="font-10 opacity-30 font-300 mt-n2 mb-n1 d-block">Jun 25, <span
+                                                class="copyright-year"></span></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="splide__slide splide__slide--clone" style="width: 382px;">
+                        <div class="card rounded-m mx-3 bg-green-dark">
+                            <div class="content m-2">
+                                <div class="d-flex">
+                                    <div class="pe-3">
+                                        <img src="images/pictures/28s.jpg" width="85" class="rounded-m">
+                                    </div>
+                                    <div class="ms-auto">
+                                        <span class="color-white font-10 mb-n1 d-block opacity-50">John Doe</span>
+                                        <h4 class="color-white font-15 font-500">New fuel derived from your Facebook likes.</h4>
+                                        <strong class="font-10 opacity-30 font-300 mt-n2 mb-n1 d-block">Jun 25, <span
+                                                class="copyright-year"></span></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="splide__slide" id="single-slider-3-slide01" aria-hidden="true" tabindex="-1"
+                        style="width: 382px;">
+                        <div class="card rounded-m mx-3 bg-blue-dark">
+                            <div class="content m-2">
+                                <div class="d-flex">
+                                    <div class="pe-3">
+                                        <img src="images/pictures/28s.jpg" width="85" class="rounded-m">
+                                    </div>
+                                    <div class="ms-auto">
+                                        <span class="color-white font-10 mb-n1 d-block opacity-50">John Doe</span>
+                                        <h4 class="color-white font-15 font-500">Apple rumoured to release a Car next year.</h4>
+                                        <strong class="font-10 opacity-30 font-300 mt-n2 mb-n1 d-block">Jun 25, <span
+                                                class="copyright-year"></span></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="splide__slide" id="single-slider-3-slide02" style="width: 382px;" aria-hidden="true"
+                        tabindex="-1">
+                        <div class="card rounded-m mx-3 bg-red-dark">
+                            <div class="content m-2">
+                                <div class="d-flex">
+                                    <div class="pe-3">
+                                        <img src="images/pictures/28s.jpg" width="85" class="rounded-m">
+                                    </div>
+                                    <div class="ms-auto">
+                                        <span class="color-white font-10 mb-n1 d-block opacity-50">John Doe</span>
+                                        <h4 class="color-white font-15 font-500">Google plans to release a new Plane this year.
+                                        </h4>
+                                        <strong class="font-10 opacity-30 font-300 mt-n2 mb-n1 d-block">Jun 25, <span
+                                                class="copyright-year"></span></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="splide__slide is-active is-visible" id="single-slider-3-slide03" style="width: 382px;"
+                        aria-hidden="false" tabindex="0">
+                        <div class="card rounded-m mx-3 bg-green-dark">
+                            <div class="content m-2">
+                                <div class="d-flex">
+                                    <div class="pe-3">
+                                        <img src="images/pictures/28s.jpg" width="85" class="rounded-m">
+                                    </div>
+                                    <div class="ms-auto">
+                                        <span class="color-white font-10 mb-n1 d-block opacity-50">John Doe</span>
+                                        <h4 class="color-white font-15 font-500">New fuel derived from your Facebook likes.
+                                        </h4>
+                                        <strong class="font-10 opacity-30 font-300 mt-n2 mb-n1 d-block">Jun 25, <span
+                                                class="copyright-year"></span></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="splide__slide splide__slide--clone" style="width: 382px;">
+                        <div class="card rounded-m mx-3 bg-blue-dark">
+                            <div class="content m-2">
+                                <div class="d-flex">
+                                    <div class="pe-3">
+                                        <img src="images/pictures/28s.jpg" width="85" class="rounded-m">
+                                    </div>
+                                    <div class="ms-auto">
+                                        <span class="color-white font-10 mb-n1 d-block opacity-50">John Doe</span>
+                                        <h4 class="color-white font-15 font-500">Apple rumoured to release a Car next year.
+                                        </h4>
+                                        <strong class="font-10 opacity-30 font-300 mt-n2 mb-n1 d-block">Jun 25, <span
+                                                class="copyright-year"></span></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="splide__slide splide__slide--clone" style="width: 382px;">
+                        <div class="card rounded-m mx-3 bg-red-dark">
+                            <div class="content m-2">
+                                <div class="d-flex">
+                                    <div class="pe-3">
+                                        <img src="images/pictures/28s.jpg" width="85" class="rounded-m">
+                                    </div>
+                                    <div class="ms-auto">
+                                        <span class="color-white font-10 mb-n1 d-block opacity-50">John Doe</span>
+                                        <h4 class="color-white font-15 font-500">Google plans to release a new Plane this year.
+                                        </h4>
+                                        <strong class="font-10 opacity-30 font-300 mt-n2 mb-n1 d-block">Jun 25, <span
+                                                class="copyright-year"></span></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ul class="splide__pagination">
+                <li><button class="splide__pagination__page" type="button" aria-controls="single-slider-3-slide01"
+                        aria-label="Go to slide 1"></button></li>
+                <li><button class="splide__pagination__page" type="button" aria-controls="single-slider-3-slide02"
+                        aria-label="Go to slide 2"></button></li>
+                <li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-3-slide03"
+                        aria-label="Go to slide 3" aria-current="true"></button></li>
+            </ul>
+        </div> --}}
         <div class="card card-style">
             <div class="content mb-0">
                 <h1>Planes suscritos</h1>
@@ -83,20 +234,23 @@
                 </a>
                 <a class="col mb-4" data-gallery="gallery-1" href="{{ asset('imagenes/delight/6.jpeg') }}"
                     title="Berries are Packed with Fiber">
-                    <img data-src="{{ asset('imagenes/delight/6.jpeg') }}" class="img-fluid rounded-xs preload-img entered loaded"
-                        alt="img" data-ll-status="loaded" src="{{ asset('imagenes/delight/6.jpeg') }}">
+                    <img data-src="{{ asset('imagenes/delight/6.jpeg') }}"
+                        class="img-fluid rounded-xs preload-img entered loaded" alt="img" data-ll-status="loaded"
+                        src="{{ asset('imagenes/delight/6.jpeg') }}">
                 </a>
                 <a class="col mb-4" data-gallery="gallery-1" href="{{ asset('imagenes/delight/2.jpeg') }}"
                     title="A beautiful Retro Camera">
-                    <img data-src="{{ asset('imagenes/delight/2.jpeg') }}" class="img-fluid rounded-xs preload-img entered loaded"
-                        alt="img" data-ll-status="loaded" src="{{ asset('imagenes/delight/2.jpeg') }}">
+                    <img data-src="{{ asset('imagenes/delight/2.jpeg') }}"
+                        class="img-fluid rounded-xs preload-img entered loaded" alt="img" data-ll-status="loaded"
+                        src="{{ asset('imagenes/delight/2.jpeg') }}">
                 </a>
             </div>
         </div>
         <div class="row mb-0">
             <div class="col-6 pe-0">
-                <a href="{{route('menusemanal')}}">
-                    <div class="card card-style me-0 bg-18"  data-card-height="280" style="height: 280px;background-image:url({{ asset('imagenes/almuerzo/' . $fotoMenu->foto) }})">
+                <a href="{{ route('menusemanal') }}">
+                    <div class="card card-style me-0 bg-18" data-card-height="280"
+                        style="height: 280px;background-image:url({{ asset('imagenes/almuerzo/' . $fotoMenu->foto) }})">
                         <div class="card-top">
                             <span class="badge bg-highlight px-2 py-1 color-white m-3">MENU DE LA SEMANA</span>
                         </div>
@@ -109,29 +263,35 @@
                         <div class="card-overlay bg-black opacity-60"></div>
                     </div>
                 </a>
-                
+
             </div>
             <div class="col-6 ps-0">
-                <a href="{{route('productos')}}"><div class="card card-style bg-20 mb-2" data-card-height="135" style="height: 135px;background-image:url({{ asset('imagenes/delight/4.jpeg') }})">
-                    <div class="card-bottom p-3">
-                        <h5 class="color-white font-500 font-14 mb-n1">
-                            Ver los <br>productos
-                        </h5>
-                        <span class="color-white opacity-50 font-10">En todas sus categorias</span>
+                <a href="{{ route('productos') }}">
+                    <div class="card card-style bg-20 mb-2" data-card-height="135"
+                        style="height: 135px;background-image:url({{ asset('imagenes/delight/4.jpeg') }})">
+                        <div class="card-bottom p-3">
+                            <h5 class="color-white font-500 font-14 mb-n1">
+                                Ver los <br>productos
+                            </h5>
+                            <span class="color-white opacity-50 font-10">En todas sus categorias</span>
+                        </div>
+                        <div class="card-overlay bg-black opacity-60"></div>
                     </div>
-                    <div class="card-overlay bg-black opacity-60"></div>
-                </div></a>
-                <a href="{{route('promociones')}}"><div class="card card-style bg-14 mb-2" data-card-height="135" style="height: 135px;background-image:url({{ asset('imagenes/delight/22.jpeg') }})">
-                    <div class="card-bottom p-3">
-                        <h5 class="color-white font-500 font-14 mb-n1">
-                            Descubre las promociones
-                        </h5>
-                        <span class="color-white opacity-50 font-10">Siempre hay novedades!</span>
+                </a>
+                <a href="{{ route('promociones') }}">
+                    <div class="card card-style bg-14 mb-2" data-card-height="135"
+                        style="height: 135px;background-image:url({{ asset('imagenes/delight/22.jpeg') }})">
+                        <div class="card-bottom p-3">
+                            <h5 class="color-white font-500 font-14 mb-n1">
+                                Descubre las promociones
+                            </h5>
+                            <span class="color-white opacity-50 font-10">Siempre hay novedades!</span>
+                        </div>
+                        <div class="card-overlay bg-black opacity-60"></div>
                     </div>
-                    <div class="card-overlay bg-black opacity-60"></div>
-                </div></a>
-                
-                
+                </a>
+
+
             </div>
         </div>
     @endauth
