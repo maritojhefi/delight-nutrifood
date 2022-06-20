@@ -17,8 +17,8 @@ class TiendaComponent extends Component
     public $foto, $titulo, $descripcion;
 
     protected $rules = [
-        'titulo' => 'required|min:6|max:25',
-        'descripcion' => 'required|min:10|max:50',
+        'titulo' => 'required|min:6|max:30',
+        'descripcion' => 'required|min:10|max:60',
         'foto'=>'required|mimes:jpeg,bmp,png,gif|max:5120'
         
     ];
