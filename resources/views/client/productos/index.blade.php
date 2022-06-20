@@ -49,7 +49,7 @@
     <div class="splide__list" id="double-slider-1a-list" style="transform: translateX(-1221.5px);">
     
     
-    @foreach (session('subcategorias') as $item)
+    {{-- @foreach (session('subcategorias') as $item)
     <div class="splide__slide splide__slide--clone" style="width: 174.5px;">
         <a href="#" class="mx-3">
         <div class="card card-style me-0 mb-0" style="background-image: url(&quot;delight_logo.jpg&quot;); height: 250px;" data-card-height="250">
@@ -60,7 +60,7 @@
         </div>
         </a>
         </div>
-    @endforeach
+    @endforeach --}}
     
     
     </div>
