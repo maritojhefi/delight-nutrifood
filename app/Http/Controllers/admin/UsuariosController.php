@@ -71,6 +71,13 @@ class UsuariosController extends Controller
                    
                 ]);
             }
+
+            $getPlanesCoincidentes=DB::table('plane_user')->where('start',$dia)->get();
+            foreach($getPlanesCoincidentes as $planCoincidente)
+            {
+                $extraerUltimo=DB::table('plane_user')->where('user_id',$planCoincidente->user_id)->where('estado','!=','feriado')->orderBy('start', 'ASC')->get();
+                dd($extraerUltimo);
+            }
             
         }
     }

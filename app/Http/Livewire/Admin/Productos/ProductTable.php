@@ -5,13 +5,16 @@ namespace App\Http\Livewire\Admin\Productos;
 use Livewire\Component;
 use App\Models\Producto;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
+use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 
 class ProductTable extends Component
 {
     use WithPagination;
+    use WithFileUploads;
     public $buscar;
-    public $productoEdit, $nombre, $precio, $puntos, $medicion, $detalle, $descuento;
+    public $productoEdit, $nombre, $precio, $puntos, $medicion, $detalle, $descuento, $imagen;
     protected $paginationTheme = 'bootstrap';
     protected $queryString = ['buscar'];
 
@@ -22,113 +25,118 @@ class ProductTable extends Component
 
     public function editarProducto(Producto $producto)
     {
-        $this->productoEdit=$producto;
-        $this->nombre=$producto->nombre;
-        $this->precio=$producto->precio;
-        $this->puntos=$producto->puntos;
-        $this->detalle=$producto->detalle;
-        $this->medicion=$producto->medicion;
-        $this->descuento=$producto->descuento;
+        $this->productoEdit = $producto;
+        $this->nombre = $producto->nombre;
+        $this->precio = $producto->precio;
+        $this->puntos = $producto->puntos;
+        $this->detalle = $producto->detalle;
+        $this->medicion = $producto->medicion;
+        $this->descuento = $producto->descuento;
     }
     public function actualizarProducto()
     {
-        
+
         $this->validate([
-            'nombre'=>'required|min:8',
-            'precio'=>'required|numeric',
-            'medicion'=>'required'
+            'nombre' => 'required|min:8',
+            'precio' => 'required|numeric',
+            'medicion' => 'required',
+            'imagen' => 'mimes:jpg,jpeg,png|max:5120'
         ]);
-        if($this->descuento)
-        {
+        if ($this->descuento) {
             $this->validate([
-                'descuento'=>'numeric|lt:precio',
-              
+                'descuento' => 'numeric|lt:precio',
+
             ]);
         }
-        $this->productoEdit->nombre=$this->nombre;
-        $this->productoEdit->precio=$this->precio;
-        $this->productoEdit->puntos=$this->puntos;
-        $this->productoEdit->detalle=$this->detalle;
-      
-        if($this->descuento!="")
+        if($this->productoEdit->imagen!=null || $this->productoEdit->imagen!="")
         {
-            $this->productoEdit->descuento=$this->descuento;
+            $filename = $this->productoEdit->imagen;
         }
         else
         {
-            $this->productoEdit->descuento=null;
+            $filename= time().".". $this->imagen->extension();
+        }
+        
+        //$this->imagen->move(public_path('imagenes'),$filename);
+        $this->imagen->storeAs('productos', $filename, 'public_images');
+        //comprimir la foto
+        $img = Image::make('imagenes/productos/' . $filename);
+        $img->resize(320, null, function ($constraint) {
+            $constraint->aspectRatio();
+        });
+        $img->rotate(0);
+        $img->save('imagenes/productos/' . $filename);
+        $this->productoEdit->nombre = $this->nombre;
+        $this->productoEdit->imagen = $filename;
+        $this->productoEdit->precio = $this->precio;
+        $this->productoEdit->puntos = $this->puntos;
+        $this->productoEdit->detalle = $this->detalle;
 
+        if ($this->descuento != "") {
+            $this->productoEdit->descuento = $this->descuento;
+        } else {
+            $this->productoEdit->descuento = null;
         }
         $this->productoEdit->save();
 
-        $this->dispatchBrowserEvent('alert',[
-            'type'=>'success',
-            'message'=>"El producto ".$this->productoEdit->nombre." se actualizo!"
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => "El producto " . $this->productoEdit->nombre . " se actualizo!"
         ]);
-
+        $this->reset('imagen');
     }
     public function render()
     {
-        $productos=Producto::where('nombre','LIKE','%'.$this->buscar.'%')->orWhere('estado',$this->buscar)->orderBy('created_at','desc')->paginate(5);
-        return view('livewire.admin.productos.product-table',compact('productos'));
+        $productos = Producto::where('nombre', 'LIKE', '%' . $this->buscar . '%')->orWhere('estado', $this->buscar)->orderBy('created_at', 'desc')->paginate(5);
+        return view('livewire.admin.productos.product-table', compact('productos'));
     }
 
     public function cambiarestado(Producto $producto)
     {
-        
-        if($producto->estado=='activo')
-        {
-            $producto->estado='inactivo';
+
+        if ($producto->estado == 'activo') {
+            $producto->estado = 'inactivo';
+            $producto->save();
+        } else {
+            $producto->estado = 'activo';
             $producto->save();
         }
-        else{
-            $producto->estado='activo';
-            $producto->save();
-        }
-        $this->dispatchBrowserEvent('alert',[
-            'type'=>'success',
-            'message'=>"El producto ".$producto->nombre." cambio de estado!"
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => "El producto " . $producto->nombre . " cambio de estado!"
         ]);
-        
     }
     public function cambiarcontable(Producto $producto)
     {
-        
-        if($producto->contable==true)
-        {
-            $producto->contable=false;
+
+        if ($producto->contable == true) {
+            $producto->contable = false;
+            $producto->save();
+        } else {
+            $producto->contable = true;
             $producto->save();
         }
-        else{
-            $producto->contable=true;
-            $producto->save();
-        }
-        $this->dispatchBrowserEvent('alert',[
-            'type'=>'success',
-            'message'=>"Se guardo el cambio!"
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => "Se guardo el cambio!"
         ]);
-        
     }
     public function eliminar(Producto $prod)
     {
         try {
-            Storage::disk('public_images')->delete('productos/'.$prod->imagen);
+            Storage::disk('public_images')->delete('productos/' . $prod->imagen);
             $prod->delete();
-            
-            
-            $this->dispatchBrowserEvent('alert',[
-                'type'=>'success',
-                'message'=>"Producto: ".$prod->nombre." eliminado"
+
+
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => "Producto: " . $prod->nombre . " eliminado"
             ]);
-    
-           
-            
         } catch (\Throwable $th) {
-            $this->dispatchBrowserEvent('alert',[
-                'type'=>'warning',
-                'message'=>"Ups! no puedes borrar productos que tengan stock"
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "Ups! no puedes borrar productos que tengan stock"
             ]);
         }
-      
     }
 }

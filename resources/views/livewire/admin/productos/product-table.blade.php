@@ -145,9 +145,12 @@
                         'Descuento'=>['descuento','number','Precio que se cobrara'],
                         'Detalle'=>['detalle','textarea'],
                         'Puntos'=>['puntos','number'],
-                        
+                        'Imagen'=>['imagen','file'],
                           ])">
-                   
+                        
+                    @if ($imagen)
+                    <img src="{{ $imagen->temporaryUrl() }}" class="w-100 border-radius-lg shadow-sm">
+                   @endif
                 </x-input-create-custom-function>
                 </div>
                 

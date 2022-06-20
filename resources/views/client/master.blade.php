@@ -20,17 +20,11 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
-       
-
         /* Extra small devices (phones, 600px and down) */
-        @media only screen and (max-width: 600px) {
-           
-        }
+        @media only screen and (max-width: 600px) {}
 
         /* Small devices (portrait tablets and large phones, 600px and up) */
-        @media only screen and (min-width: 600px) {
-            ...
-        }
+        @media only screen and (min-width: 600px) {}
 
         /* Medium devices (landscape tablets, 768px and up) */
         @media only screen and (min-width: 768px) {
@@ -52,7 +46,7 @@
         @media only screen and (min-width: 1200px) {
             #margen {
                 margin-right: 35%;
-                margin-left: 35%;
+                margin-left: 35%
             }
         }
     </style>
@@ -113,16 +107,7 @@
     </script>
     @stack('scripts')
 
-    <script>
-        quarter()
 
-        function quarter() {
-
-            window.resizeTo(
-                window.screen.availWidth / 2,
-                window.screen.availHeight / 2
-            );
-            console.log('hola')
-        }
-    </script>
 </body>
+
+</html>
