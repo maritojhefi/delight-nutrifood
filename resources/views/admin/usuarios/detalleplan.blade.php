@@ -89,9 +89,22 @@
                             <label>Evento</label>
                             <input type="text" class="form-control" name="title" id="title" readonly>
                         </div>
+                        
                         <div class="mb-3 col-md-6">
-                            <label>Detalle</label>
-                            <textarea name="detalle" id="detalle" class="form-control" readonly></textarea>
+                            <label>Segundo</label>
+                            <input type="text" class="form-control" id="segundo">
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label>Carbohidrato</label>
+                            <input type="text" class="form-control" id="carbo">
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label>Tipo Envio</label>
+                            <input type="text" class="form-control" id="'envio'">
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label>Tipo Empaque</label>
+                           <input type="text" class="form-control" id="empaque">
                         </div>
                     </form>
 
