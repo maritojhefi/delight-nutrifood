@@ -35,7 +35,7 @@ Route::get('/',function()
 Route::prefix('/inicio')->group(function () {
    
     
-    Route::get('', \App\Http\Livewire\Client\Inicio\Index::class)->name('inicio');
+    Route::get('',[App\Http\Controllers\ProductoController::class, 'menusemanal'])->name('inicio');
     Route::get('menusemanal', [App\Http\Controllers\ProductoController::class, 'menusemanal'])->name('menusemanal');
 
 });
