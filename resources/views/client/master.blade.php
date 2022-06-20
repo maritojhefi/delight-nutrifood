@@ -88,16 +88,5 @@
     </script>
     @stack('scripts')
 
-    <script>
-        quarter()
-                    function quarter() {
-                       
-          window.resizeTo(
-            window.screen.availWidth / 2,
-            window.screen.availHeight / 2
-          );
-          console.log('hola')
-        }
-        
-                </script>
+   
 </body>
