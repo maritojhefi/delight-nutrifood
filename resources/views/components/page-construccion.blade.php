@@ -1,7 +1,7 @@
 
     <div data-card-height="cover-card" class="card card-style" style="height: 513px;">
         <div class="card-center text-center">
-            <i class="fa fa-clock fa-9x color-highlight mb-5"></i>
+            {{-- <i class="fa fa-clock fa-9x color-highlight mb-5"></i> --}}
             <h1 class="font-30 font-800 mb-2">Estamos construyendo!</h1>
             <p class="boxed-text-xl">
                 Muy pronto lanzaremos nuevas funciones a esta aplicacion! Delight "Nutriendo tus Habitos!"
