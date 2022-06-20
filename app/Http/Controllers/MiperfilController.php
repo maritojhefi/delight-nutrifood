@@ -20,9 +20,9 @@ class MiperfilController extends Controller
         {
             $usuario=User::find(auth()->user()->id);
             $planes=CreateList::crearlistaplan($usuario->id);
-            $fotoMenu=Almuerzo::find(1);
+            
         }
-        
+        $fotoMenu=Almuerzo::find(1);
        
         return view('client.miperfil.index',compact('usuario','planes','fotoMenu'));
     }
