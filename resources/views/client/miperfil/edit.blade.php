@@ -70,7 +70,7 @@
                             @enderror
                         </div>
                         <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
-                            <input type="date" class="form-control" placeholder="A detalle" name="nacimiento"
+                            <input type="date" class="form-control" name="nacimiento"
                                 value="{{ old('nacimiento', $usuario->nacimiento) }}">
                             <label for="form1" class="color-highlight font-400 font-13">Fecha Nacimiento</label>
     
