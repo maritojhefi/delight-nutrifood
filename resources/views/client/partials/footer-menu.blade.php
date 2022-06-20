@@ -9,7 +9,7 @@
             <i data-feather="plus" data-feather-line="1" data-feather-size="21" data-feather-color="green-dark" data-feather-bg="green-fade-light"></i>
             <span>Promociones</span>
         </a>
-        <a href="{{route('inicio')}}" class="{{(request () -> is ('/'))? 'active-nav': ''}} ">
+        <a href="{{route('menusemanal')}}" class="{{(request () -> is ('inicio'.'*'))? 'active-nav': ''}} ">
             <i data-feather="home" data-feather-line="1" data-feather-size="21" data-feather-color="blue-dark" data-feather-bg="blue-fade-light"></i>
             <span>Inicio</span>
         </a>

@@ -28,10 +28,10 @@ Route::get('/login/withid/{id}', [App\Http\Controllers\UsuarioController::class,
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 //inicio
-Route::prefix('/')->group(function () {
+Route::prefix('/inicio')->group(function () {
    
     Route::get('', \App\Http\Livewire\Client\Inicio\Index::class)->name('inicio');
-    
+    Route::get('menusemanal', [App\Http\Controllers\ProductoController::class, 'menusemanal'])->name('menusemanal');
 
 });
 //ajustes
@@ -64,10 +64,12 @@ Route::prefix('/promociones')->group(function () {
    
     Route::get('', [App\Http\Controllers\PromocionesController::class, 'index'])->name('promociones');
     
+ 
+
 
 });
 //perfil
-Route::prefix('/miperfil')->group(function () {
+Route::prefix('/miperfil')->middleware('revisarPerfil')->group(function () {
    
     Route::get('', [App\Http\Controllers\MiperfilController::class, 'index'])->name('miperfil');
     Route::get('/calendario/{plan}/{usuario}', [App\Http\Controllers\MiperfilController::class, 'calendario'])->name('calendario.cliente');
@@ -75,6 +77,8 @@ Route::prefix('/miperfil')->group(function () {
     Route::get('/editardia/{idpivot}', [App\Http\Controllers\MiperfilController::class, 'editardia'])->name('editardia');
 
 });
+Route::get('perfil/editar', [App\Http\Controllers\MiperfilController::class, 'revisarPerfil'])->middleware('auth')->name('llenarDatosPerfil');
+Route::post('perfil/guardarPerfilFaltante', [App\Http\Controllers\MiperfilController::class, 'guardarPerfilFaltante'])->middleware('auth')->name('guardarPerfilFaltante');
 
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], function(){
@@ -83,6 +87,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
    
         Route::get('resumen', [App\Http\Controllers\admin\ProductosController::class, 'resumen'])->name('resumen');
         Route::get('ventas/sucursal', [App\Http\Controllers\admin\ProductosController::class, 'resumen'])->name('ventas.sucursal');
+    
+    });
+    Route::prefix('/tienda')->group(function () {
+   
+        Route::get('galeria', \App\Http\Livewire\Admin\TiendaComponent::class)->name('tienda.galeria');
     
     });
     Route::prefix('/productos')->group(function () {

@@ -35,7 +35,9 @@ class User extends Authenticatable
         'saldo',
         'puntos',
         'role_id',
-        'telf'
+        'telf',
+        'latitud',
+        'longitud'
     ];
 
     /**

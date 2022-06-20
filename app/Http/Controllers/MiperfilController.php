@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class MiperfilController extends Controller
 {
+
     public function index(){
         $usuario='';
         $planes='';
@@ -19,10 +20,11 @@ class MiperfilController extends Controller
         {
             $usuario=User::find(auth()->user()->id);
             $planes=CreateList::crearlistaplan($usuario->id);
+            $fotoMenu=Almuerzo::find(1);
         }
         
        
-        return view('client.miperfil.index',compact('usuario','planes'));
+        return view('client.miperfil.index',compact('usuario','planes','fotoMenu'));
     }
     public function calendario(Plane $plan, User $usuario){
        $coleccion=collect();
@@ -99,5 +101,29 @@ class MiperfilController extends Controller
     public function editardia($idpivot){
         DB::table('plane_user')->where('id',$idpivot)->update(['detalle'=>null]);
         return back()->with('success','Ya puede editar este dia!');
+    }
+
+    public function revisarPerfil()
+    {
+        $usuario=User::find(auth()->user()->id);
+        return view('client.miperfil.edit',compact('usuario'));
+    }
+
+    public function guardarPerfilFaltante(Request $request)
+    {
+        
+        $request->validate([    
+        'email' => 'required|email|unique:users,email,'.$request->idUsuario,
+        'direccion' => 'required|min:15',
+        'nacimiento'=>'required|date',
+        'telf'=>'required|size:8|unique:users,telf,'.$request->idUsuario,
+        'latitud'=>'required|string|min:10',
+        'longitud'=>'required|string|min:10',
+        ]);
+        $usuario=User::find(auth()->user()->id);
+
+        $usuario->fill($request->all());
+        $usuario->save();
+        return back()->with('success','Gracias! Ya tienes tu perfil completo y actualizado');
     }
 }

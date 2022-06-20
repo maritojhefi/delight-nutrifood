@@ -25,19 +25,22 @@ class AdminTicketsHelper
             if($buscarUsuario->paso_segundo==false)
             {
                 DB::table('whatsapp_plan_almuerzos')->where('id',$buscarUsuario->idwhatsapp)->update(['paso_segundo'=>true]);
-                AdminTicketsHelper::seleccionarMenu($numero);
+                AdminTicketsHelper::seleccionarMenu($numero,1);
             }
             elseif($buscarUsuario->paso_carbohidrato==false)
             {
                 DB::table('whatsapp_plan_almuerzos')->where('id',$buscarUsuario->idwhatsapp)->update(['paso_carbohidrato'=>true]);
+                AdminTicketsHelper::seleccionarMenu($numero,2);
             }
             elseif($buscarUsuario->paso_metodo_envio==false)
             {
                 DB::table('whatsapp_plan_almuerzos')->where('id',$buscarUsuario->idwhatsapp)->update(['paso_metodo_envio'=>true]);
+                AdminTicketsHelper::seleccionarMenu($numero,3);
             }
             elseif($buscarUsuario->paso_metodo_empaque==false)
             {
                 DB::table('whatsapp_plan_almuerzos')->where('id',$buscarUsuario->idwhatsapp)->update(['paso_metodo_empaque'=>true]);
+                AdminTicketsHelper::seleccionarMenu($numero,4);
             }
         }
         else
@@ -48,7 +51,7 @@ class AdminTicketsHelper
         dd($buscarUsuario);
     }
 
-    public static function seleccionarMenu($numero)
+    public static function seleccionarMenu($numero, $paso)
     {
         switch ($numero) {
             case '1':

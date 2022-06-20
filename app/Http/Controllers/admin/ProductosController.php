@@ -22,4 +22,5 @@ class ProductosController extends Controller
     public function subcategoria(){
         return view('admin.productos.subcategory');
     }
+   
 }
