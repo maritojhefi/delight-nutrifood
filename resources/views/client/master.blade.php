@@ -15,14 +15,23 @@
         href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900|Roboto:300,300i,400,400i,500,500i,700,700i,900,900i&amp;display=swap"
         rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{asset('fonts/css/fontawesome-all.min.css')}}">
-    <link rel="stylesheet" type="text/css" href="{{asset('styles/highlights/highlight_aqua.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('styles/highlights/highlight_mint.css')}}">
     @laravelPWA
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+
+        @media only screen and (min-width: 1000px) {
+          /* For large screens: */
+          #margen {margin-right: 700px !important; margin-left: 700px}
+        }
+        
+        </style>
+        
 @stack('header')
 </head>
 
-<body class="theme-light">
+<body id="margen" class="theme-light">
     <div id="preloader">
         <div class="spinner-border color-highlight" role="status"></div>
     </div>
@@ -75,4 +84,17 @@
     
     </script>
     @stack('scripts')
+
+    <script>
+        quarter()
+                    function quarter() {
+                       
+          window.resizeTo(
+            window.screen.availWidth / 2,
+            window.screen.availHeight / 2
+          );
+          console.log('hola')
+        }
+        
+                </script>
 </body>
