@@ -20,8 +20,13 @@
                 </p>
             </div>
         </div>
+        <div class="card card-style mb-2 map-full" data-card-height="cover-card" style="height: 573px;">
+            <h3 class="m-3 text-center"> Ubique su domicilio detalladamente</h3>
+            <div id="map" style="width:100%;height:600px;"></div>
+        </div>
         <div id="todoBien" class="card card-style">
             <form action="{{ route('guardarPerfilFaltante') }}" method="post">
+
                 <div class="content mb-0">
                     <h3 class="font-600">Informacion de tu perfil</h3>
                     <p>
@@ -29,10 +34,7 @@
                     </p>
 
                     @csrf
-                    <div class="card card-style mb-0 map-full" data-card-height="cover-card" style="height: 573px;">
-                        <h3 class="m-3 text-center"> Ubique su domicilio detalladamente</h3>
-                        <div id="map" style="width:100%;height:600px;"></div>
-                    </div>
+
                     <br>
                     <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
                         <input type="email" class="form-control" placeholder="" name="email"
@@ -81,32 +83,35 @@
                     <input type="hidden" id="latitud" name="latitud">
                     <input type="hidden" id="longitud" name="longitud">
                 </div>
-               
+
                 <button type="submit"
                     class="btn btn-full btn-margins bg-highlight mt-3 rounded-sm shadow-xl btn-m text-uppercase font-900 btn-block">Guardar
                     Perfil</button>
             </form>
         </div>
-<div id="errorMapa"  class="displayNone">
-    <div class="alert me-3 ms-3 rounded-s bg-red-dark " role="alert">
-        <span class="alert-icon"><i class="fa fa-times-circle font-18"></i></span>
-        <h4 class="text-uppercase color-white">Error</h4>
-        <strong class="alert-icon-text">Necesitamos permiso de su ubicacion.</strong>
-        
-        <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert" aria-label="Close">×</button>
-        </div>
+        <div id="errorMapa" class="displayNone">
+            <div class="alert me-3 ms-3 rounded-s bg-red-dark " role="alert">
+                <span class="alert-icon"><i class="fa fa-times-circle font-18"></i></span>
+                <h4 class="text-uppercase color-white">Error</h4>
+                <strong class="alert-icon-text">Necesitamos permiso de su ubicacion.</strong>
 
-        
-        <div  class="card card-style  round-medium " style="height: 380px;">
-            <img src="{{asset('errorMapa.png')}}" class="card-image " style="height: 430px;">
-            <div class="card-bottom ms-3 mb-2">
-            <h2 class="font-700 color-white">Concede el permiso</h2>
-            <p class="color-white mt-n2 mb-0">Haz click en el icono del candado en la parte de la url de la pagina y recarga la pagina!</p>
+                <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert"
+                    aria-label="Close">×</button>
             </div>
-            <div class="card-overlay bg-black opacity-30"></div>
+
+
+            <div class="card card-style  round-medium " style="height: 380px;">
+                <img src="{{ asset('errorMapa.png') }}" class="card-image " style="height: 430px;">
+                <div class="card-bottom ms-3 mb-2">
+                    <h2 class="font-700 color-white">Concede el permiso</h2>
+                    <p class="color-white mt-n2 mb-0">Haz click en el icono del candado en la parte de la url de la pagina y
+                        recarga la pagina!</p>
+                </div>
+                <div class="card-overlay bg-black opacity-30"></div>
             </div>
-</div>
-      
+        </div>
+        <div id="toast-3" class="toast toast-tiny toast-top bg-blue-dark fade hide" data-bs-delay="1500"
+            data-bs-autohide="true"><i class="fa fa-sync fa-spin me-3"></i>Actualizando...</div>
     @else
         <div data-card-height="200" class="card card-style preload-img entered loaded"
             data-src="{{ asset('delight_logo.jpg') }}"
@@ -130,19 +135,24 @@
     @endif
 
     @push('header')
-    <style>
-        .displayNone{
-           display: none
-        }
-        .dislayFull{
-            display: contents
-        }
-    </style>
+        <style>
+            .displayNone {
+                display: none
+            }
+
+            .dislayFull {
+                display: contents
+            }
+        </style>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChXiGEyXk4hNpeiAR8EyBDWzHVZJxMk2U" async defer></script>
     @endpush
     @push('scripts')
         <script>
             window.onload = function() {
+
+                var asd = document.getElementById('toast-3');
+                toastID = new bootstrap.Toast(asd);
+                toastID.show();
                 navigator.geolocation.getCurrentPosition(function(location) {
                         console.log(location.coords.latitude);
                         console.log(location.coords.longitude);
@@ -178,7 +188,7 @@
                             $('#longitud').val(location.coords.longitude);
                             marker.addListener('dragend', function(event) {
                                 //escribimos las coordenadas de la posicion actual del marcador dentro del input #coords
-
+                                toastID.show();
                                 $('#latitud').val(this.getPosition().lat());
                                 $('#longitud').val(this.getPosition().lng());
                             });
@@ -192,8 +202,8 @@
                     if (err.code == err.TIMEOUT)
                         alert("Se ha superado el tiempo de espera");
                     if (err.code == err.PERMISSION_DENIED)
-                    $( "#errorMapa" ).removeClass( "displayNone" )
-                    $( "#todoBien" ).addClass( "displayNone" )
+                        $("#errorMapa").removeClass("displayNone")
+                    $("#todoBien").addClass("displayNone")
                     if (err.code == err.POSITION_UNAVAILABLE)
                         alert("El dispositivo no pudo recuperar la posición actual");
                 }
