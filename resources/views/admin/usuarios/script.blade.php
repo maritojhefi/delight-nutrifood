@@ -32,12 +32,13 @@
                                 formBasic.title.value = respuesta.data.title;
                                 if(respuesta.data.detalle != null)
                                 {
-                                    var detalle=JSON.parse(''+respuesta.data.detalle+'')
-
-                                    formBasic.segundo.value = detalle['PLATO']
-                                    formBasic.carbo.value =detalle['CARBOHIDRATO']
-                                    formBasic.empaque.value = detalle['EMPAQUE']
-                                    formBasic.envio.value = detalle['ENVIO']
+                                    let detalle=JSON.parse(''+respuesta.data.detalle+'')
+                                    console.log(detalle['EMPAQUE']);
+                                    formBasic.segundo.value = detalle['PLATO'];
+                                    formBasic.carbo.value =detalle['CARBOHIDRATO'];
+                                    formBasic.empaque.value = detalle['EMPAQUE'];
+                                    formBasic.envio.value = detalle['ENVIO'];
+                                    
                                 }
                                 
                                 

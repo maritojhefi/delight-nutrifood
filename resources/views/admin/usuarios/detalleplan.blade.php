@@ -92,19 +92,19 @@
                         
                         <div class="mb-3 col-md-6">
                             <label>Segundo</label>
-                            <input type="text" class="form-control" id="segundo">
+                            <input type="text" class="form-control" id="segundo" readonly>
                         </div>
                         <div class="mb-3 col-md-6">
                             <label>Carbohidrato</label>
-                            <input type="text" class="form-control" id="carbo">
+                            <input type="text" class="form-control" id="carbo" readonly>
                         </div>
                         <div class="mb-3 col-md-6">
                             <label>Tipo Envio</label>
-                            <input type="text" class="form-control" id="'envio'">
+                            <input type="text" class="form-control" id="envio" readonly>
                         </div>
                         <div class="mb-3 col-md-6">
                             <label>Tipo Empaque</label>
-                           <input type="text" class="form-control" id="empaque">
+                           <input type="text" class="form-control" id="empaque" readonly>
                         </div>
                     </form>
 
