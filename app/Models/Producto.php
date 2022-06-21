@@ -16,11 +16,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Producto extends Model
 {
+   
     use HasFactory;
     protected $fillable = [
         'nombre','subcategoria_id','precio','imagen','detalle','codigoBarra','descuento','puntos','medicion','contable','observacion'
        
     ];
+  
     public function sucursale()
     {
         

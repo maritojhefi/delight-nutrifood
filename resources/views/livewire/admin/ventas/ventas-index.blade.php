@@ -6,8 +6,8 @@
             <div class="">
 
                 @foreach ($ventas as $item)
-                    <div
-                        class="alert alert-{{ $item->productos->count() > 0 ? 'success' : 'danger' }}@isset($cuenta) {{ $item->id == $cuenta->id ? 'solid alert-alt' : '' }} @endisset alert-dismissible fade show">
+                    <div class="alert alert-{{ $item->productos->count() > 0 ? 'success' : 'danger' }}@isset($cuenta) {{ $item->id == $cuenta->id ? 'solid alert-alt' : '' }} @endisset alert-dismissible fade show"
+                        style="padding: 10px">
                         @if ($item->productos->count() == 0)
                             <button type="button" class="btn-close" wire:click="eliminar('{{ $item->id }}')">
                             </button>
@@ -58,8 +58,8 @@
                             </div>
                             <div class="mb-3 col-md-6 mt-2">
                                 <label class="form-label">Cliente</label><button data-bs-toggle="modal"
-                                    data-bs-target="#modalNuevoCliente" class="badge badge-xs light badge-success"><i
-                                        class="fa fa-plus"></i></button>
+                                    data-bs-target="#modalNuevoCliente"
+                                    class="badge badge-xs light badge-success"><i class="fa fa-plus"></i></button>
                                 <input type="text" class="form-control  form-control-sm" placeholder="Opcional"
                                     wire:model.debounce.1000ms='user'>
                             </div>
@@ -111,7 +111,7 @@
         </div> --}}
 
 
-        <ul class="list-group mb-3 " style="overflow-y: scroll;max-height:300px" wire:loading.remove
+        <ul class="list-group mb-3 " style="overflow-y: auto;max-height:300px;overflow-x: hidden" wire:loading.remove
             wire:target="seleccionar"
             @isset($cuenta->cliente) @php $time = strtotime($cuenta->cliente->nacimiento);
             @endphp @if (date('m-d') == date('m-d', $time)) style="background-image:
@@ -120,14 +120,15 @@
 
 
         @foreach ($listacuenta as $item)
-            <li class="list-group-item d-flex justify-content-between lh-condensed">
+            <li class="list-group-item d-flex justify-content-between lh-condensed" style="padding: 15px">
                 <div>
                     <div class="row">
 
-                        <div class="col"><a href="#"
+                        <div class="col"><a href="#" data-toggle="modal"
+                                data-target="#modalAdicionales{{ $item['id'] }}"
                                 wire:click="mostraradicionales('{{ $item['id'] }}')">
                                 <h6 class="my-0"><small
-                                        class="@isset($productoapuntado) {{ $item['nombre'] == $productoapuntado->nombre ? 'text-success' : '' }} @endisset">{{ $item['nombre'] }}</small>
+                                        class="@isset($productoapuntado) {{ $item['nombre'] == $productoapuntado->nombre ? 'text-success' : '' }} @endisset">{{Str::limit($item['nombre'], 30, '...')  }}</small>
                                 </h6>
                             </a></div>
                     </div>
@@ -149,52 +150,143 @@
                         </div>
 
                     </small>
-                    @isset($productoapuntado)
-                        @if ($productoapuntado->id == $item['id'])
-                            @foreach ($array as $lista)
-                                <ul>
-                                    <li> <small class="badge badge-xs badge-warning">{{ $loop->iteration }}</small>
-                                        @foreach ($lista as $posicion => $adic)
-                                            @foreach ($adic as $nombre => $precio)
-                                                <small class="badge badge-xs light badge-warning">{{ $nombre }}
-                                                    <label class="text-dark">{{ $precio }}Bs</label></small>
-                                            @endforeach
-                                        @endforeach
-                                    </li>
-                                </ul>
-                            @endforeach
-                            <button class="btn btn-xxs btn-info light" data-bs-toggle="modal"
-                                data-bs-target="#modalObservacion"
-                                wire:click="cargarObservacion({{ $productoapuntado->id }})">Observacion</button>
-                            <button class="btn btn-xxs btn-accent light" data-bs-toggle="modal"
-                                data-bs-target="#modalEnviar">Enviar a cocina</button>
-                        @endif
-                    @endisset
-
                 </div>
                 <div>
-                    <span class=" row badge badge-secondary light">{{ $item['subtotal'] }} Bs</span>
-                    <div x-data="{ open: false }">
-                        <button @click="open = ! open" class="badge badge-xs light badge-info">Añadir</button>
+                    <div class="row">
+                        <strong class="">{{ $item['subtotal'] }} Bs</strong>
 
-                        <div x-show="open" @click.outside="open = false">
-                            <div class="mb-3 col-md-2">
-                                <input type="number" class="form-control" wire:model.lazy="cantidadespecifica"
-                                    style="padding: 3px;height:30px;width:50px"
-                                    value="{{ $item['cantidad'] }}">
+                    </div>
+                    <div class="row">
+                        <div x-data="{ open: false }">
+                            <button @click="open = ! open" class="badge badge-xs light badge-info">Añadir</button>
+    
+                            <div x-show="open" @click.outside="open = false">
+                                        <div class="input-group">
+                                            <button class="btn btn-primary" type="button" wire:click="adicionarvarios('{{ $item['id'] }}')"  style="padding: 3px;height:30px;width:30px"><i
+                                                class="fa fa-plus"></i></button>
+                                                <input type="number" class="form-control" wire:model.lazy="cantidadespecifica"
+                                                style="padding: 3px;height:30px;width:50px"
+                                                value="{{ $item['cantidad'] }}">
+                                        </div>
                             </div>
-                            <button class="btn btn-xxs btn-warning"
-                                wire:click="adicionarvarios('{{ $item['id'] }}')"><i
-                                    class="fa fa-plus"></i></button>
                         </div>
                     </div>
+                    
+
 
                 </div>
 
+
             </li>
+            <div wire:ignore.self class="modal fade" id="modalAdicionales{{ $item['id'] }}" tabindex="-1"
+                role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4>Adicionales para {{ $item['nombre'] }}</h4>
+                        </div>
+                        <div class="modal-body">
+                            @isset($productoapuntado)
+                                <div class="row mb-3">
+                                   
+                                    <div x-data="{ open: false }">
+                                        <button @click="open = ! open" class="badge light badge-warning" wire:click="mostraradicionales({{$productoapuntado->id}})">Ver
+                                            Detalle</button>
+
+                                        <div x-show="open" @click.outside="open = false">
+                                            
+                                            <div class="table-responsive" >
+                                                <table class="table table-responsive-sm" style="padding: 10px">
+
+                                                    <tbody style="padding: 10px">
+                                                        @foreach ($array as $lista)
+                                                            <tr style="padding: 10px">
+                                                                <th style="padding: 10px">#{{ $loop->iteration }}</th>
+                                                                @foreach ($lista as $posicion => $adic)
+                                                                <td style="padding: 10px">
+                                                                    @foreach ($adic as $nombre => $precio)
+                                                                        <small
+                                                                                class="badge badge-xs light badge-warning">{{ $nombre }}
+                                                                                <label
+                                                                                    class="text-dark">{{ $precio }}Bs</label></small>
+                                                                        
+                                                                    @endforeach
+                                                                </td>
+                                                                @endforeach
+                                                            </tr>
+                                                        @endforeach
+
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6 col-xl-3">
+                                        <div class="list-group mb-4 " id="list-tab" role="tablist">
+
+                                            @foreach ($productoapuntado->ventas->where('id', $cuenta->id) as $agregados)
+                                                @for ($i = 1; $i <= $agregados->pivot->cantidad; $i++)
+                                                    <a href="#"
+                                                        class="list-group-item list-group-item-action
+                                                        {{ $itemseleccionado == $i ? 'active' : '' }}"
+                                                        wire:click="seleccionaritem('{{ $i }}')">
+                                                        Item # {{ $i }}<span wire:loading
+                                                            wire:target="seleccionaritem('{{ $i }}')"
+                                                            class="spinner-border spinner-border-sm ml-2 text-primary"
+                                                            role="status" aria-hidden="true"></span>
+                                                    </a>
+                                                @endfor
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-xl-8">
+                                        <div class="list-group mb-4 " id="list-tab" role="tablist">
+                                            @isset($itemseleccionado)
+                                                @foreach ($adicionales as $item)
+                                                    <a href="#"
+                                                        wire:click="agregaradicional('{{ $item->id }}', '{{ $itemseleccionado }}')"
+                                                        class="list-group-item list-group-item-action">{{ $item->nombre }}
+                                                        ({{ $item->precio }} Bs)
+                                                        <span wire:loading
+                                                            wire:target="agregaradicional('{{ $item->id }}', '{{ $itemseleccionado }}')"
+                                                            class="spinner-border spinner-border-sm" role="status"
+                                                            aria-hidden="true"></span>
+                                                    </a>
+                                                @endforeach
+                                            @endisset
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <span>Agregar observacion</span>
+                                            <textarea id="my-textarea" wire:model.defer="observacion" class="form-control" name="" rows="5">{{ $this->observacion }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <br>
+                                        <button class="btn btn-success btn-sm"
+                                            wire:click="guardarObservacion({{ $productoapuntado->id }})">Guardar</button>
+                                    </div>
+
+                                </div>
+
+                            @endisset
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+           
         @endforeach
     </ul>
-    <ul class="list-group mb-3 ">
+    <ul class="list-group mb-3 border border-primary">
         <li class="list-group-item d-flex justify-content-between">
             <small>Subtotal</small>
             <strong>{{ $cuenta->total }} Bs</strong>
@@ -228,109 +320,7 @@
 
 
 
-    @isset($productoapuntado)
 
-        <label for="">Seleccione un item</label>
-        <div class="input-group">
-            @foreach ($productoapuntado->ventas->where('id', $cuenta->id) as $agregados)
-                @for ($i = 1; $i <= $agregados->pivot->cantidad; $i++)
-                    <a href="#" wire:click="seleccionaritem('{{ $i }}')" data-bs-toggle="modal"
-                        data-bs-target="#modalAdicionales">
-                        <i
-                            class="badge badge-rounded badge-outline-warning {{ $itemseleccionado == $i ? 'badge-outline-dark' : '' }} m-2">{{ $i }}</i></a>
-                @endfor
-            @endforeach
-
-
-
-            <div wire:ignore.self class="modal fade" id="modalAdicionales">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title"><small>Adicionales para</small> <span
-                                    class="badge badge-primary">{{ $productoapuntado->nombre }}({{ $adicionales->count() }})</span>
-                                <span class="badge badge-secondary">Item #{{ $itemseleccionado }}</span>
-                            </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal">
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            @isset($itemseleccionado)
-
-                                <div class="row">
-                                    @foreach ($adicionales as $item)
-                                        <div class="col-6">
-                                            <a href="#"
-                                                wire:click="agregaradicional('{{ $item->id }}', '{{ $itemseleccionado }}')"><i
-                                                    class="badge badge-rounded badge-outline-warning m-2">{{ $item->nombre }}
-                                                    ({{ $item->precio }} Bs)
-                                                </i></a>
-                                        </div>
-                                    @endforeach
-                                </div>
-
-
-                            @endisset
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <div wire:ignore.self class="modal fade" id="modalObservacion">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-
-                            <h5 class="modal-title"><small>Observaciones para</small> <span
-                                    class="badge badge-primary">{{ $productoapuntado->nombre }}</span></h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal">
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-
-                                <textarea id="my-textarea" wire:model.defer="observacion" class="form-control" name="" rows="5">{{ $this->observacion }}</textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-success btn-sm"
-                                wire:click="guardarObservacion({{ $productoapuntado->id }})">Guardar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div wire:ignore.self class="modal fade" id="modalEnviar">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-
-                            <h5 class="modal-title"><small>Esta seguro de enviar a cocina?</small></h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal">
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            <span class="badge badge-primary">{{ $productoapuntado->nombre }}</span>
-                            <br>
-                            <h4>Detalle:</h4>
-                            <ul>
-                                @foreach ($productoapuntado->ventas as $item)
-                                    <li>{{ $item->pivot->adicionales }}</li>
-
-                                    <li>{{ $item->pivot->observacion }}</li>
-                                @endforeach
-                            </ul>
-
-
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-success btn-sm"
-                                wire:click="enviarCocina({{ $productoapuntado->id }})">Enviar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endisset
     @if ($cuenta->total != 0)
         <div class="row m-2">
             <button class="btn btn-xs light btn-warning" data-bs-toggle="modal" data-bs-target="#basicModal"
@@ -515,13 +505,15 @@
 
                 <a href="#" {{ $total == 0 && $item->contable == true ? 'disabled' : ' ' }}
                     wire:click="adicionar('{{ $item->id }}')">
-                    <li
-                        class="list-group-item {{ $total == 0 && $item->contable == true ? '' : ' border border-primary' }}" wire:target="adicionar({{$item->id}})"  wire:loading.class="border-success">
+                    <li class="list-group-item {{ $total == 0 && $item->contable == true ? '' : ' border border-primary' }}"
+                        wire:target="adicionar({{ $item->id }})" wire:loading.class="border-success"
+                        style="padding: 10px">
                         @if ($total == 0 && $item->contable == true)
                             <del class=" text-muted"> {{ $item->nombre }}</del>
                         @else
-                            {{ $item->nombre }} <span class="spinner-grow spinner-grow-sm text-primary ml-2"  wire:loading wire:target="adicionar({{ $item->id }})" role="status" aria-hidden="true"></span>
-                                
+                            {{ $item->nombre }} <span class="spinner-border spinner-border-sm text-primary ml-2"
+                                wire:loading wire:target="adicionar({{ $item->id }})" role="status"
+                                aria-hidden="true"></span>
                         @endif
 
 
@@ -554,7 +546,7 @@
                                 @if ($item->descuento != 0)
                                     <span class="badge badge-xs light badge-success">{{ $item->descuento }}
                                         Bs</span>
-                                    <del class="badge badge-xs light badge-danger">{{ $item->precio }} Bs</del>
+                                    <del class="badge badge-xs light badge-dark">{{ $item->precio }} Bs</del>
                                 @else
                                     <span class="badge badge-xs light badge-warning">{{ $item->precio }}
                                         Bs</span>
@@ -588,66 +580,75 @@
             </div>
             <div class="modal-body">
 
-                @foreach ($cuenta->cliente->planes->groupBy('nombre') as $nombre=>$item)
-                
-                <div class="card m-0 ">
-                    <div class="card-body px-4 py-3 py-lg-2">
-                        <div class="row align-items-center">
-                            <div class="col-xl-3 col-xxl-12 col-lg-12 my-2">
-                                <strong class="mb-0 fs-14">{{$nombre}}</strong> <a href="{{route('detalleplan',[$item[0]->id,$cuenta->cliente->id])}}" class="badge badge-info">Ir</a>
-                            </div>
-                            <div class="col-xl-7 col-xxl-12 col-lg-12">
-                                <div class="row align-items-center">
-                                    <div class="col-xl-4 col-md-4 col-sm-4 my-2">
-                                        <div class="media align-items-center style-2">
-                                           
-                                            <div class="media-body ml-1">
-                                                <p class="mb-0 fs-12">Ultima fecha</p>
-                                                @php
-                                                    $ultimaFecha= $item->where('pivot.start','>',date('Y-m-d'))->last();
-                                                @endphp
-                                                <h5 class="mb-0   fs-22">{{date_format(date_create($ultimaFecha->pivot->start), 'd-M')}}</h5>
+                @foreach ($cuenta->cliente->planes->groupBy('nombre') as $nombre => $item)
+                    <div class="card m-0 ">
+                        <div class="card-body px-4 py-3 py-lg-2">
+                            <div class="row align-items-center">
+                                <div class="col-xl-3 col-xxl-12 col-lg-12 my-2">
+                                    <strong class="mb-0 fs-14">{{ $nombre }}</strong> <a
+                                        href="{{ route('detalleplan', [$item[0]->id, $cuenta->cliente->id]) }}"
+                                        class="badge badge-info">Ir <i class="fa fa-arrow-right"></i></a>
+                                </div>
+                                <div class="col-xl-7 col-xxl-12 col-lg-12">
+                                    <div class="row align-items-center">
+                                        <div class="col-xl-4 col-md-4 col-sm-4 my-2">
+                                            <div class="media align-items-center style-2">
+
+                                                <div class="media-body ml-1">
+                                                    <p class="mb-0 fs-12">Ultima fecha</p>
+                                                    @php
+                                                        $ultimaFecha = $item->where('pivot.start', '>', date('Y-m-d'))->last();
+                                                    @endphp
+                                                    <h5 class="mb-0   fs-22">
+                                                        {{ date_format(date_create($ultimaFecha->pivot->start), 'd-M') }}
+                                                    </h5>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-xl-4 col-md-4 col-sm-4 my-2">
-                                        <div class="media align-items-center style-2">
-                                            <span class="me-3 fa fa-shield text-warning">
-                                                
-                                            </span>
-                                            <div class="media-body ml-1">
-                                                <p class="mb-0 fs-12">Permisos</p>
-                                                <h4 class="mb-0 font-w600  fs-22">{{$item->where('pivot.title','permiso')->count()}}</h4>
+                                        <div class="col-xl-4 col-md-4 col-sm-4 my-2">
+                                            <div class="media align-items-center style-2">
+                                                <span class="me-3 fa fa-shield text-warning">
+
+                                                </span>
+                                                <div class="media-body ml-1">
+                                                    <p class="mb-0 fs-12">Permisos</p>
+                                                    <h4 class="mb-0 font-w600  fs-22">
+                                                        {{ $item->where('pivot.estado', 'permiso')->count() }}
+                                                    </h4>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-xl-4 col-md-4 col-sm-4 my-2">
-                                        <div class="media align-items-center style-2">
-                                            <span class="me-3 fa fa-check text-success">
-                                               
-                                            </span>
-                                            <div class="media-body ml-1">
-                                                <p class="mb-0 fs-12">Restantes</p>
-                                                <h4 class="mb-0 font-w600 fs-22">{{$item->where('pivot.start','>',date('Y-m-d'))->where('pivot.estado','pendiente')->count()}}
-                                                    <svg class="ml-2" width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M0 6L6 2.62268e-07L12 6" fill="#13B497"></path>
-                                                    </svg>
-                                                </h4>
+                                        <div class="col-xl-4 col-md-4 col-sm-4 my-2">
+                                            <div class="media align-items-center style-2">
+                                                <span class="me-3 fa fa-check text-success">
+
+                                                </span>
+                                                <div class="media-body ml-1">
+                                                    <p class="mb-0 fs-12">Restantes</p>
+                                                    <h4 class="mb-0 font-w600 fs-22">
+                                                        {{ $item->where('pivot.start', '>', date('Y-m-d'))->where('pivot.estado', 'pendiente')->count() }}
+                                                        <svg class="ml-2" width="12" height="6"
+                                                            viewBox="0 0 12 6" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M0 6L6 2.62268e-07L12 6" fill="#13B497">
+                                                            </path>
+                                                        </svg>
+                                                    </h4>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
-                            
-                        </div>							
+                        </div>
                     </div>
-                </div>
                 @endforeach
 
 
             </div>
 
-           
+
         @endisset
     </div>
 </div>
@@ -698,4 +699,5 @@
     </div>
 </div>
 </div>
+
 </div>

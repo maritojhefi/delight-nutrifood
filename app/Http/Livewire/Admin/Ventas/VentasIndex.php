@@ -530,6 +530,7 @@ class VentasIndex extends Component
                     $this->actualizaradicionales($producto->id, 'muchos');
                 }
                 $this->reset('cantidadespecifica');
+                
             }
         }
         else
