@@ -128,7 +128,7 @@
                                 data-target="#modalAdicionales{{ $item['id'] }}"
                                 wire:click="mostraradicionales('{{ $item['id'] }}')">
                                 <h6 class="my-0"><small
-                                        class="@isset($productoapuntado) {{ $item['nombre'] == $productoapuntado->nombre ? 'text-success' : '' }} @endisset">{{Str::limit($item['nombre'], 30, '...')  }}</small>
+                                        class="@isset($productoapuntado) {{ $item['nombre'] == $productoapuntado->nombre ? 'text-success' : '' }} @endisset">{{ Str::limit($item['nombre'], 30, '...') }}</small>
                                 </h6>
                             </a></div>
                     </div>
@@ -159,19 +159,22 @@
                     <div class="row">
                         <div x-data="{ open: false }">
                             <button @click="open = ! open" class="badge badge-xs light badge-info">Añadir</button>
-    
+
                             <div x-show="open" @click.outside="open = false">
-                                        <div class="input-group">
-                                            <button class="btn btn-primary" type="button" wire:click="adicionarvarios('{{ $item['id'] }}')"  style="padding: 3px;height:30px;width:30px"><i
-                                                class="fa fa-plus"></i></button>
-                                                <input type="number" class="form-control" wire:model.lazy="cantidadespecifica"
-                                                style="padding: 3px;height:30px;width:50px"
-                                                value="{{ $item['cantidad'] }}">
-                                        </div>
+                                <div class="input-group">
+                                    <button class="btn btn-primary" type="button"
+                                        wire:click="adicionarvarios('{{ $item['id'] }}')"
+                                        style="padding: 3px;height:30px;width:30px"><i
+                                            class="fa fa-plus"></i></button>
+                                    <input type="number" class="form-control"
+                                        wire:model.lazy="cantidadespecifica"
+                                        style="padding: 3px;height:30px;width:50px"
+                                        value="{{ $item['cantidad'] }}">
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
+
 
 
                 </div>
@@ -188,30 +191,31 @@
                         <div class="modal-body">
                             @isset($productoapuntado)
                                 <div class="row mb-3">
-                                   
+
                                     <div x-data="{ open: false }">
-                                        <button @click="open = ! open" class="badge light badge-warning" wire:click="mostraradicionales({{$productoapuntado->id}})">Ver
+                                        <button @click="open = ! open" class="badge light badge-warning"
+                                            wire:click="mostraradicionales({{ $productoapuntado->id }})">Ver
                                             Detalle</button>
 
                                         <div x-show="open" @click.outside="open = false">
-                                            
-                                            <div class="table-responsive" >
+
+                                            <div class="table-responsive">
                                                 <table class="table table-responsive-sm" style="padding: 10px">
 
                                                     <tbody style="padding: 10px">
                                                         @foreach ($array as $lista)
                                                             <tr style="padding: 10px">
-                                                                <th style="padding: 10px">#{{ $loop->iteration }}</th>
+                                                                <th style="padding: 10px">#{{ $loop->iteration }}
+                                                                </th>
                                                                 @foreach ($lista as $posicion => $adic)
-                                                                <td style="padding: 10px">
-                                                                    @foreach ($adic as $nombre => $precio)
-                                                                        <small
+                                                                    <td style="padding: 10px">
+                                                                        @foreach ($adic as $nombre => $precio)
+                                                                            <small
                                                                                 class="badge badge-xs light badge-warning">{{ $nombre }}
                                                                                 <label
                                                                                     class="text-dark">{{ $precio }}Bs</label></small>
-                                                                        
-                                                                    @endforeach
-                                                                </td>
+                                                                        @endforeach
+                                                                    </td>
                                                                 @endforeach
                                                             </tr>
                                                         @endforeach
@@ -283,7 +287,7 @@
                     </div>
                 </div>
             </div>
-           
+
         @endforeach
     </ul>
     <ul class="list-group mb-3 border border-primary">
@@ -503,7 +507,8 @@
 
 
 
-                <a wire:key="{{ $loop->index }}" href="#" {{ $total == 0 && $item->contable == true ? 'disabled' : ' ' }}
+                <a wire:key="{{ $loop->index }}" href="#"
+                    {{ $total == 0 && $item->contable == true ? 'disabled' : ' ' }}
                     wire:click="adicionar('{{ $item->id }}')">
                     <li class="list-group-item {{ $total == 0 && $item->contable == true ? '' : ' border border-primary' }}"
                         wire:target="adicionar({{ $item->id }})" wire:loading.class="border-success"
@@ -567,137 +572,139 @@
 @endisset
 
 
-<!-- Modal -->
+
 <div class="modal fade" id="planesusuario">
-<div class="modal-dialog">
-    <div class="modal-content">
-        @isset($cuenta->cliente->planes)
-            <div class="modal-header">
-                <h5 class="modal-title">Planes existentes ({{ $cuenta->cliente->planes->count() }})</h5>
-                <a href="{{ route('planes') }}" class="btn btn-xs btn-warning">Ir a todos los planes</a>
-                <button type="button" class="btn-close" data-bs-dismiss="modal">
-                </button>
-            </div>
-            <div class="modal-body">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @isset($cuenta->cliente->planes)
+                <div class="modal-header">
+                    <h5 class="modal-title">Planes existentes ({{ $cuenta->cliente->planes->count() }})</h5>
+                    <a href="{{ route('planes') }}" class="btn btn-xs btn-warning">Ir a todos los planes</a>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+                </div>
+                <div class="modal-body">
 
-                @foreach ($cuenta->cliente->planes->groupBy('nombre') as $nombre => $item)
-                    <div class="card m-0 ">
-                        <div class="card-body px-4 py-3 py-lg-2">
-                            <div class="row align-items-center">
-                                <div class="col-xl-3 col-xxl-12 col-lg-12 my-2">
-                                    <strong class="mb-0 fs-14">{{ $nombre }}</strong> <a
-                                        href="{{ route('detalleplan', [$item[0]->id, $cuenta->cliente->id]) }}"
-                                        class="badge badge-info">Ir <i class="fa fa-arrow-right"></i></a>
-                                </div>
-                                <div class="col-xl-7 col-xxl-12 col-lg-12">
-                                    <div class="row align-items-center">
-                                        <div class="col-xl-4 col-md-4 col-sm-4 my-2">
-                                            <div class="media align-items-center style-2">
+                    @foreach ($cuenta->cliente->planes->groupBy('nombre') as $nombre => $item)
+                        <div class="card m-0 ">
+                            <div class="card-body px-4 py-3 py-lg-2">
+                                <div class="row align-items-center">
+                                    <div class="col-xl-3 col-xxl-12 col-lg-12 my-2">
+                                        <strong class="mb-0 fs-14">{{ $nombre }}</strong> <a
+                                            href="{{ route('detalleplan', [$item[0]->id, $cuenta->cliente->id]) }}"
+                                            class="badge badge-info">Ir <i class="fa fa-arrow-right"></i></a>
+                                    </div>
+                                    <div class="col-xl-7 col-xxl-12 col-lg-12">
+                                        <div class="row align-items-center">
+                                            <div class="col-xl-4 col-md-4 col-sm-4 my-2">
+                                                <div class="media align-items-center style-2">
 
-                                                <div class="media-body ml-1">
-                                                    <p class="mb-0 fs-12">Ultima fecha</p>
-                                                    @php
-                                                        $ultimaFecha = $item->where('pivot.start', '>', date('Y-m-d'))->last();
-                                                    @endphp
-                                                    <h5 class="mb-0   fs-22">
-                                                        {{ date_format(date_create($ultimaFecha->pivot->start), 'd-M') }}
-                                                    </h5>
+                                                    <div class="media-body ml-1">
+                                                        <p class="mb-0 fs-12">Ultima fecha</p>
+                                                        @php
+                                                            $ultimaFecha = $item->where('pivot.start', '>', date('Y-m-d'))->last();
+                                                        @endphp
+                                                        <h5 class="mb-0   fs-22">
+                                                            {{ date_format(date_create($ultimaFecha->pivot->start), 'd-M') }}
+                                                        </h5>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-xl-4 col-md-4 col-sm-4 my-2">
-                                            <div class="media align-items-center style-2">
-                                                <span class="me-3 fa fa-shield text-warning">
+                                            <div class="col-xl-4 col-md-4 col-sm-4 my-2">
+                                                <div class="media align-items-center style-2">
+                                                    <span class="me-3 fa fa-shield text-warning">
 
-                                                </span>
-                                                <div class="media-body ml-1">
-                                                    <p class="mb-0 fs-12">Permisos</p>
-                                                    <h4 class="mb-0 font-w600  fs-22">
-                                                        {{ $item->where('pivot.estado', 'permiso')->count() }}
-                                                    </h4>
+                                                    </span>
+                                                    <div class="media-body ml-1">
+                                                        <p class="mb-0 fs-12">Permisos</p>
+                                                        <h4 class="mb-0 font-w600  fs-22">
+                                                            {{ $item->where('pivot.estado', 'permiso')->count() }}
+                                                        </h4>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-xl-4 col-md-4 col-sm-4 my-2">
-                                            <div class="media align-items-center style-2">
-                                                <span class="me-3 fa fa-check text-success">
+                                            <div class="col-xl-4 col-md-4 col-sm-4 my-2">
+                                                <div class="media align-items-center style-2">
+                                                    <span class="me-3 fa fa-check text-success">
 
-                                                </span>
-                                                <div class="media-body ml-1">
-                                                    <p class="mb-0 fs-12">Restantes</p>
-                                                    <h4 class="mb-0 font-w600 fs-22">
-                                                        {{ $item->where('pivot.start', '>', date('Y-m-d'))->where('pivot.estado', 'pendiente')->count() }}
-                                                        <svg class="ml-2" width="12" height="6"
-                                                            viewBox="0 0 12 6" fill="none"
-                                                            xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M0 6L6 2.62268e-07L12 6" fill="#13B497">
-                                                            </path>
-                                                        </svg>
-                                                    </h4>
+                                                    </span>
+                                                    <div class="media-body ml-1">
+                                                        <p class="mb-0 fs-12">Restantes</p>
+                                                        <h4 class="mb-0 font-w600 fs-22">
+                                                            {{ $item->where('pivot.start', '>', date('Y-m-d'))->where('pivot.estado', 'pendiente')->count() }}
+                                                            <svg class="ml-2" width="12" height="6"
+                                                                viewBox="0 0 12 6" fill="none"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <path d="M0 6L6 2.62268e-07L12 6" fill="#13B497">
+                                                                </path>
+                                                            </svg>
+                                                        </h4>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
 
 
-            </div>
+                </div>
 
 
-        @endisset
+            @endisset
+        </div>
     </div>
-</div>
 </div>
 
 <div wire:ignore.self class="modal fade" id="modalNuevoCliente">
-<div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            Creando nuevo cliente
-        </div>
-        <div class="modal-body">
-            <x-input-create-custom-function funcion="crearCliente" boton="Crear Cliente" :lista="[
-                'Nombre' => ['name', 'text'],
-                'Correo' => ['email', 'email'],
-                'Nacimiento' => ['cumpleano', 'date', '(opcional)'],
-                'Direccion' => ['direccion', 'text', '(opcional)'],
-                'Contraseña' => ['password', 'password'],
-            ]">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                Creando nuevo cliente <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <x-input-create-custom-function funcion="crearCliente" boton="Crear Cliente" :lista="[
+                    'Nombre' => ['name', 'text'],
+                    'Correo' => ['email', 'email'],
+                    'Nacimiento' => ['cumpleano', 'date', '(opcional)'],
+                    'Direccion' => ['direccion', 'text', '(opcional)'],
+                    'Contraseña' => ['password', 'password'],
+                ]">
 
-            </x-input-create-custom-function>
+                </x-input-create-custom-function>
+            </div>
         </div>
     </div>
-</div>
 </div>
 
 <div wire:ignore.self class="modal fade" id="modalClientes">
-<div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            Cambiar Usuario para esta cuenta
-        </div>
-        <div class="modal-body">
-            <div class="mb-3 col-md-6 mt-2">
-                <input type="text" class="form-control  form-control-sm" placeholder="Buscar Usuario"
-                    wire:model.debounce.1000ms='user'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                Cambiar Usuario para esta cuenta
             </div>
-            <span class="badge light badge-info" wire:loading wire:target='user'> Cargando...
-            </span>
+            <div class="modal-body">
+                <div class="mb-3 col-md-6 mt-2">
+                    <input type="text" class="form-control  form-control-sm" placeholder="Buscar Usuario"
+                        wire:model.debounce.1000ms='user'>
+                </div>
+                <span class="badge light badge-info" wire:loading wire:target='user'> Cargando...
+                </span>
 
-            @foreach ($usuarios as $item)
-                <a href="#" class="m-2"
-                    wire:click="cambiarClienteACuenta({{ $item->id }})"><span
-                        class="badge light badge-primary"> {{ $item->name }} <i
-                            class="fa fa-check"></i></span></a>
-            @endforeach
+                @foreach ($usuarios as $item)
+                    <a href="#" class="m-2"
+                        wire:click="cambiarClienteACuenta({{ $item->id }})"><span
+                            class="badge light badge-primary"> {{ $item->name }} <i
+                                class="fa fa-check"></i></span></a>
+                @endforeach
+            </div>
         </div>
     </div>
 </div>
-</div>
+
 
 </div>
