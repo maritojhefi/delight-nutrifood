@@ -503,7 +503,7 @@
 
 
 
-                <a href="#" {{ $total == 0 && $item->contable == true ? 'disabled' : ' ' }}
+                <a wire:key="{{ $loop->index }}" href="#" {{ $total == 0 && $item->contable == true ? 'disabled' : ' ' }}
                     wire:click="adicionar('{{ $item->id }}')">
                     <li class="list-group-item {{ $total == 0 && $item->contable == true ? '' : ' border border-primary' }}"
                         wire:target="adicionar({{ $item->id }})" wire:loading.class="border-success"
