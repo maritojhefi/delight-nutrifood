@@ -628,7 +628,7 @@
                                             </span>
                                             <div class="media-body ml-1">
                                                 <p class="mb-0 fs-12">Restantes</p>
-                                                <h4 class="mb-0 font-w600 fs-22">{{$item->where('pivot.start','>',date('Y-m-d'))->count()}}
+                                                <h4 class="mb-0 font-w600 fs-22">{{$item->where('pivot.start','>',date('Y-m-d'))->where('pivot.estado','pendiente')->count()}}
                                                     <svg class="ml-2" width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                         <path d="M0 6L6 2.62268e-07L12 6" fill="#13B497"></path>
                                                     </svg>

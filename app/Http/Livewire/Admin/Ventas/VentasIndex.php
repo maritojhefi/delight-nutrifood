@@ -590,16 +590,7 @@ class VentasIndex extends Component
         $this->reset('tipocobro');
         $this->saldoRestante=0;
         $this->saldo=false;
-        // foreach($this->cuenta->cliente->planes->groupBy('nombre') as $nombre=>$item)
-        // {
-        //     foreach($item as $plan)
-        //     {
-        //         dd($item->where('pivot.start','>',Carbon::now())); 
-        //     }
-           
-        // }
-       
-        
+
       $this->actualizarlista($venta);
     }
 
