@@ -28,9 +28,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $filePath='public/logs.txt';
-        $schedule->command('plan:diario')
-        ->dailyAt('01:00')->appendOutputTo($filePath);
         $schedule->command('apertura:diaria')
+        ->dailyAt('01:00')->appendOutputTo($filePath);
+        $schedule->command('plan:diario')
         ->hourly()->appendOutputTo($filePath);
         // $schedule->command('inspire')->hourly();
         /*$schedule->call(function () {

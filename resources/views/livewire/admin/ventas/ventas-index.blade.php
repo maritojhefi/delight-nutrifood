@@ -7,17 +7,23 @@
 
                 @foreach ($ventas as $item)
                     <div
-                        class="alert alert-{{ $item->productos->count() > 0 ? 'success' : 'dark' }}@isset($cuenta) {{ $item->id == $cuenta->id ? 'solid' : '' }} @endisset  alert-dismissible alert-alt fade show">
+                        class="alert alert-{{ $item->productos->count() > 0 ? 'success' : 'danger' }}@isset($cuenta) {{ $item->id == $cuenta->id ? 'solid alert-alt' : '' }} @endisset alert-dismissible fade show">
                         @if ($item->productos->count() == 0)
                             <button type="button" class="btn-close" wire:click="eliminar('{{ $item->id }}')">
                             </button>
                         @endif
 
                         <a href="#" wire:click="seleccionar('{{ $item->id }}')">
+                            <div wire:loading wire:target="seleccionar({{ $item->id }})"
+                                class="spinner-grow spinner-grow-sm" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
                             #{{ $item->id }}@isset($item->cliente)
                             <span
                                 class="badge badge-xs light badge-dark">{{ Str::limit($item->cliente->name, 10) }}</span>
-                        @endisset <strong>{{ $item->total }} Bs</strong>
+                        @endisset <strong
+                            class="@isset($cuenta) {{ $item->id == $cuenta->id ? 'text-white' : '' }} @endisset ">{{ $item->total }}
+                            Bs</strong>
                     </a>
                 </div>
             @endforeach
@@ -52,7 +58,7 @@
                             </div>
                             <div class="mb-3 col-md-6 mt-2">
                                 <label class="form-label">Cliente</label><button data-bs-toggle="modal"
-                                    data-bs-target="#modalNuevoCliente" class="btn btn-xxs btn-success"><i
+                                    data-bs-target="#modalNuevoCliente" class="badge badge-xs light badge-success"><i
                                         class="fa fa-plus"></i></button>
                                 <input type="text" class="form-control  form-control-sm" placeholder="Opcional"
                                     wire:model.debounce.1000ms='user'>
@@ -82,8 +88,11 @@
 
     <x-card-col4>
         <h4 class="d-flex justify-content-between align-items-center mb-3">
-            <small class="m-3 text-muted" wire:loading.remove>Venta #{{ $cuenta->id }}</small> <br>
-            <small class="m-3 text-muted" wire:loading>Actualizando...</small>
+            <small class="m-3 text-muted">Venta #{{ $cuenta->id }}</small> <br>
+            <a class="btn btn-primary btn-xxs" href="#" wire:loading>
+                <small class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></small>
+
+            </a>
             @if ($cuenta->cliente)
                 <a href="#" data-bs-toggle="modal" data-bs-target="#planesusuario"><span
                         class="badge light badge-success">{{ $cuenta->cliente->name }}</span></a>
@@ -95,10 +104,15 @@
 
             <span class="badge badge-primary badge-pill">{{ $itemsCuenta }}</span>
         </h4>
+        {{-- <div  wire:loading wire:target="seleccionar" wire:target="seleccionar">
+            <div class="spinner-border  d-block mx-auto m-3 text-warning" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+        </div> --}}
 
 
-
-        <ul class="list-group mb-3 " style="overflow-y: scroll;max-height:300px"
+        <ul class="list-group mb-3 " style="overflow-y: scroll;max-height:300px" wire:loading.remove
+            wire:target="seleccionar"
             @isset($cuenta->cliente) @php $time = strtotime($cuenta->cliente->nacimiento);
             @endphp @if (date('m-d') == date('m-d', $time)) style="background-image:
             url('{{ asset('images/cumple.gif') }}')" @endif
@@ -166,7 +180,8 @@
                         <div x-show="open" @click.outside="open = false">
                             <div class="mb-3 col-md-2">
                                 <input type="number" class="form-control" wire:model.lazy="cantidadespecifica"
-                                    style="padding: 3px;height:30px;width:50px" value="{{ $item['cantidad'] }}">
+                                    style="padding: 3px;height:30px;width:50px"
+                                    value="{{ $item['cantidad'] }}">
                             </div>
                             <button class="btn btn-xxs btn-warning"
                                 wire:click="adicionarvarios('{{ $item['id'] }}')"><i
@@ -372,50 +387,51 @@
                             <script>
                                 Livewire.on('cambiarCheck', cambiar => {
                                     document.getElementById("check-efectivo").checked = true;
-                                   
+
                                 })
                             </script>
                         @endpush
                         <div class="col">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gridRadios" id="check-efectivo"
-                                    wire:model="tipocobro" value="efectivo">
+                                <input class="form-check-input" type="radio" name="gridRadios"
+                                    id="check-efectivo" wire:model="tipocobro" value="efectivo">
                                 <label class="form-check-label">
                                     Efectivo
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input " {{$deshabilitarBancos?'disabled':''}} type="radio" name="gridRadios" 
-                                    wire:model="tipocobro" value="tarjeta">
+                                <input class="form-check-input " {{ $deshabilitarBancos ? 'disabled' : '' }}
+                                    type="radio" name="gridRadios" wire:model="tipocobro" value="tarjeta">
                                 <label class="form-check-label">
                                     Tarjeta
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input " {{$deshabilitarBancos?'disabled':''}} type="radio" name="gridRadios"
-                                    wire:model="tipocobro" value="banco-sol">
+                                <input class="form-check-input " {{ $deshabilitarBancos ? 'disabled' : '' }}
+                                    type="radio" name="gridRadios" wire:model="tipocobro" value="banco-sol">
                                 <label class="form-check-label">
                                     Banco Sol
                                 </label>
                             </div>
                             <div class="form-check disabled">
-                                <input class="form-check-input " {{$deshabilitarBancos?'disabled':''}} type="radio" name="gridRadios" 
-                                    wire:model="tipocobro" value="banco-bisa">
+                                <input class="form-check-input " {{ $deshabilitarBancos ? 'disabled' : '' }}
+                                    type="radio" name="gridRadios" wire:model="tipocobro" value="banco-bisa">
                                 <label class="form-check-label">
                                     Banco Bisa
                                 </label>
                             </div>
                             <div class="form-check disabled">
-                                <input class="form-check-input " {{$deshabilitarBancos?'disabled':''}} type="radio" name="gridRadios"
-                                    wire:model="tipocobro" value="banco-mercantil">
+                                <input class="form-check-input " {{ $deshabilitarBancos ? 'disabled' : '' }}
+                                    type="radio" name="gridRadios" wire:model="tipocobro"
+                                    value="banco-mercantil">
                                 <label class="form-check-label">
                                     Banco Mercantil
                                 </label>
                             </div>
                             @isset($cuenta->cliente->name)
                                 <div class="form-check disabled">
-                                    <input class="form-check-input" type="checkbox" name="checkbox" wire:model="saldo"
-                                        wire:change="actualizarSaldo">
+                                    <input class="form-check-input" type="checkbox" name="checkbox"
+                                        wire:model="saldo" wire:change="actualizarSaldo">
                                     <label class="form-check-label">
                                         A saldo del cliente
                                     </label>
@@ -429,22 +445,28 @@
                                         </div>
 
                                     </div>
-                                    @if ($saldoRestante==0)
-                                    
-                                    <div class="alert alert-success notification">
-                                        <p class="notificaiton-title mb-2"><strong>Correcto!</strong> Se agregara el total de <strong>{{$cuenta->total-$cuenta->descuento}} Bs</strong> al saldo por cobrar de <strong>{{$cuenta->cliente->name}}!</strong></p>
-                                        
-                                    </div>
-                               
-                                @elseif($saldoRestante!=0)
-                               
-                                <div class="alert alert-warning notification">
-                                    <p class="notificaiton-title mb-2"><strong>Atencion!</strong> Estas agregando <strong>{{$valorSaldo}} Bs</strong> al saldo de <strong>{{$cuenta->cliente->name}}</strong> y cobrando <strong>{{$saldoRestante}} Bs</strong> por el metodo <strong>"{{$tipocobro}}"</strong> </p>
-                                    
-                                </div>
+                                    @if ($saldoRestante == 0)
+                                        <div class="alert alert-success notification">
+                                            <p class="notificaiton-title mb-2"><strong>Correcto!</strong> Se agregara
+                                                el total de <strong>{{ $cuenta->total - $cuenta->descuento }}
+                                                    Bs</strong>
+                                                al saldo por cobrar de <strong>{{ $cuenta->cliente->name }}!</strong>
+                                            </p>
+
+                                        </div>
+                                    @elseif($saldoRestante != 0)
+                                        <div class="alert alert-warning notification">
+                                            <p class="notificaiton-title mb-2"><strong>Atencion!</strong> Estas
+                                                agregando <strong>{{ $valorSaldo }} Bs</strong> al saldo de
+                                                <strong>{{ $cuenta->cliente->name }}</strong> y cobrando
+                                                <strong>{{ $saldoRestante }} Bs</strong> por el metodo
+                                                <strong>"{{ $tipocobro }}"</strong>
+                                            </p>
+
+                                        </div>
+                                    @endif
                                 @endif
-                                @endif
-                                
+
                             @endisset
 
 
@@ -474,7 +496,7 @@
 <x-card-col4>
     <div class="basic-list-group m-3">
         <ul class="list-group">
-            <li class="list-group-item active"><input type="search" wire:model.debounce.750ms="search"
+            <li class="list-group-item active  "><input type="search" wire:model.debounce.750ms="search"
                     class="form-control" placeholder="Busca Productos"></li>
             @foreach ($productos as $item)
                 @php
@@ -491,21 +513,22 @@
 
 
 
-                <a class="" href="#"
-                    {{ $total == 0 && $item->contable == true ? 'disabled' : '' }}
+                <a href="#" {{ $total == 0 && $item->contable == true ? 'disabled' : ' ' }}
                     wire:click="adicionar('{{ $item->id }}')">
-                    <li class="list-group-item ">
+                    <li
+                        class="list-group-item {{ $total == 0 && $item->contable == true ? '' : ' border border-primary' }}" wire:target="adicionar({{$item->id}})"  wire:loading.class="border-success">
                         @if ($total == 0 && $item->contable == true)
                             <del class=" text-muted"> {{ $item->nombre }}</del>
                         @else
-                            {{ $item->nombre }}
+                            {{ $item->nombre }} <span class="spinner-grow spinner-grow-sm text-primary ml-2"  wire:loading wire:target="adicionar({{ $item->id }})" role="status" aria-hidden="true"></span>
+                                
                         @endif
 
 
                         <div class="row">
                             <div class="col-3">
-                                <img src="{{ asset($item->pathAttachment()) }}" alt="" class="me-3 rounded"
-                                    width="50">
+                                <img src="{{ asset($item->pathAttachment()) }}" alt=""
+                                    class="me-3 rounded" width="50">
 
                             </div>
                             <div class="col-5">
@@ -565,31 +588,66 @@
             </div>
             <div class="modal-body">
 
-                @foreach ($cuenta->cliente->planes as $item)
-                    <div class="card overflow-hidden bg-image-2 bg-secondary">
-                        <div class="card-header  border-0">
-                            <div>
-                                <p class="mb-2 font-w100 text-white">Plan: {{ $item->nombre }} - Expira :
-                                    {{ $item->pivot->dia_limite }}
-
-
-                                <h3 class="mb-0 fs-24 font-w600 text-white">Restante:
-                                    {{ $item->pivot->restante }}
-                                </h3> <button data-bs-dismiss="modal"
-                                    wire:click="agregardesdeplan({{ $item->pivot->user_id }},{{ $item->pivot->plane_id }},{{ $item->producto_id }})"
-                                    class="btn light btn-xxs btn-success">Agregar al carro</button>
+                @foreach ($cuenta->cliente->planes->groupBy('nombre') as $nombre=>$item)
+                
+                <div class="card m-0 ">
+                    <div class="card-body px-4 py-3 py-lg-2">
+                        <div class="row align-items-center">
+                            <div class="col-xl-3 col-xxl-12 col-lg-12 my-2">
+                                <strong class="mb-0 fs-14">{{$nombre}}</strong> <a href="{{route('detalleplan',[$item[0]->id,$cuenta->cliente->id])}}" class="badge badge-info">Ir</a>
                             </div>
-                        </div>
+                            <div class="col-xl-7 col-xxl-12 col-lg-12">
+                                <div class="row align-items-center">
+                                    <div class="col-xl-4 col-md-4 col-sm-4 my-2">
+                                        <div class="media align-items-center style-2">
+                                           
+                                            <div class="media-body ml-1">
+                                                <p class="mb-0 fs-12">Ultima fecha</p>
+                                                @php
+                                                    $ultimaFecha= $item->where('pivot.start','>',date('Y-m-d'))->last();
+                                                @endphp
+                                                <h5 class="mb-0   fs-22">{{date_format(date_create($ultimaFecha->pivot->start), 'd-M')}}</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-md-4 col-sm-4 my-2">
+                                        <div class="media align-items-center style-2">
+                                            <span class="me-3 fa fa-shield text-warning">
+                                                
+                                            </span>
+                                            <div class="media-body ml-1">
+                                                <p class="mb-0 fs-12">Permisos</p>
+                                                <h4 class="mb-0 font-w600  fs-22">{{$item->where('pivot.title','permiso')->count()}}</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-md-4 col-sm-4 my-2">
+                                        <div class="media align-items-center style-2">
+                                            <span class="me-3 fa fa-check text-success">
+                                               
+                                            </span>
+                                            <div class="media-body ml-1">
+                                                <p class="mb-0 fs-12">Restantes</p>
+                                                <h4 class="mb-0 font-w600 fs-22">{{$item->where('pivot.start','>',date('Y-m-d'))->count()}}
+                                                    <svg class="ml-2" width="12" height="6" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M0 6L6 2.62268e-07L12 6" fill="#13B497"></path>
+                                                    </svg>
+                                                </h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>							
                     </div>
+                </div>
                 @endforeach
 
 
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Cerrar</button>
-
-            </div>
+           
         @endisset
     </div>
 </div>
