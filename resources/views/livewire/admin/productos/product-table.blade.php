@@ -97,7 +97,7 @@
                                                <div>
                                                    <small class="mb-2 font-w100 text-white">Lugar: {{$stock->nombre}}  -  Vencimiento: {{date('d-m-Y', strtotime($stock->pivot->fecha_venc))}}</small>
                                                    
-                                                   <h3 class="mb-0 fs-24 font-w600 text-white">Cantidad: {{$stock->pivot->id}}</h3>
+                                                   <h3 class="mb-0 fs-24 font-w600 text-white">Cantidad: {{$stock->pivot->cantidad}}</h3>
                                                </div>
                                            </div>
                                        </div>

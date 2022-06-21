@@ -36,13 +36,30 @@ class Planes extends Component
         }
         else
         {
-            $ahora = Carbon::now();
+            $ahora = Carbon::now()->format('Y-m-d');
             $nombreDia=WhatsappAPIHelper::saber_dia($ahora);
             //dd($nombreDia);
             if($nombreDia=="Domingo")
             {
                 $ahora= Carbon::now()->addDays(1)->format('Y-m-d');
             }
+            //dd($ahora);
+            $siEsFeriado = DB::table('plane_user')->where('start',$ahora)->where('title','feriado')->first();
+            //dd($siEsFeriado);
+            while ($siEsFeriado) {
+                $ahora= Carbon::parse(Carbon::create($ahora)->addDays(1))->format('Y-m-d');
+                $nombreDia=WhatsappAPIHelper::saber_dia($ahora);
+                //dd($nombreDia);
+                if($nombreDia=="Domingo")
+                {
+                $ahora=Carbon::parse(Carbon::create($ahora)->addDays(1))->format('Y-m-d');
+                }
+              
+                $siEsFeriado = DB::table('plane_user')->where('start',$ahora)->where('title','feriado')->first();
+             
+                
+            }
+          
             // $diassumados = $ahora->add($plan->dias, 'day');//no se usa
             // $formateado=$diassumados->format('Y-m-d');//no se usa
             $user->planes()->attach($plan->id);
