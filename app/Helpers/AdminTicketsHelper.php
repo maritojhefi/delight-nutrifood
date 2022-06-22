@@ -116,11 +116,11 @@ class AdminTicketsHelper
                 break;
             case '2':
 
-                WhatsappAPIHelper::enviarTemplate('delight_tipo_envio', ['*1* Para Mesa\/ *2* Para llevar(Paso a recoger) \/ *3* Delivery', 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
+                WhatsappAPIHelper::enviarTemplate('delight_tipo_envio', ['*1* Para Mesa             *2* Para llevar(Paso a recoger)             *3* Delivery', 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
                 break;
             case '3':
 
-                WhatsappAPIHelper::enviarTemplate('delight_empaque', ['*1* Vianda\/ *2* Eco-Empaque Delight', 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
+                WhatsappAPIHelper::enviarTemplate('delight_empaque', ['*1* Vianda        *2* Eco-Empaque Delight', 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
                 break;
             case '4':
                 $actualizarTicket=DB::table('whatsapp_plan_almuerzos')->where('cliente_id',$usuario->idUser)->first();
@@ -130,11 +130,11 @@ class AdminTicketsHelper
                 $detalle=json_decode($datosPlan->detalle);
                 if($detalle->EMPAQUE!="")
                 {
-                    WhatsappAPIHelper::enviarTemplate('delight_pedido_listo', [$diaPlan, $detalle->SOPA, $detalle->PLATO, 'Metodo: *'.$detalle->ENVIO.'*','Empaque: *'.$detalle->EMPAQUE.'*','Ingresa a tu perfil en nuestra pagina para personalizar toda tu semana o contactate con nosotros!'], $usuario->telf, 'es');
+                    WhatsappAPIHelper::enviarTemplate('delight_pedido_listo', [$diaPlan, $detalle->SOPA, $detalle->PLATO.'('.$detalle->CARBOHIDRATO.')', 'Metodo: *'.$detalle->ENVIO.'*','Empaque: *'.$detalle->EMPAQUE.'*','Ingresa a tu perfil en nuestra pagina para personalizar toda tu semana o contactate con nosotros!'], $usuario->telf, 'es');
                 }
                 else
                 {
-                    WhatsappAPIHelper::enviarTemplate('delight_pedido_listo', [$diaPlan, $detalle->SOPA, $detalle->PLATO, 'Metodo: *'.$detalle->ENVIO.'*','-','Ingresa a tu perfil en nuestra pagina para personalizar toda tu semana o contactate con nosotros!'], $usuario->telf, 'es');
+                    WhatsappAPIHelper::enviarTemplate('delight_pedido_listo', [$diaPlan, $detalle->SOPA, $detalle->PLATO.'('.$detalle->CARBOHIDRATO.')', 'Metodo: *'.$detalle->ENVIO.'*','-','Ingresa a tu perfil en nuestra pagina para personalizar toda tu semana o contactate con nosotros!'], $usuario->telf, 'es');
 
                 }
                 if($actualizarTicket->cantidad==1)
