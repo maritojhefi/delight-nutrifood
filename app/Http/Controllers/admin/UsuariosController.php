@@ -26,16 +26,18 @@ class UsuariosController extends Controller
     }
     public function borrar($id)
     {
-        $evento = DB::table('plane_user')->where('id', $id)->first();
-        if($evento->detalle==null)
-        {
-            $evento = DB::table('plane_user')->where('id', $id)->delete();
-            return response()->json('si');
-        }
-        else
-        {
-            return response()->json('no');
-        }
+        //$evento = DB::table('plane_user')->where('id', $id)->first();
+        $evento = DB::table('plane_user')->where('id', $id)->delete();
+        return response()->json('si');
+        // if($evento->detalle==null)
+        // {
+        //     $evento = DB::table('plane_user')->where('id', $id)->delete();
+           
+        // }
+        // else
+        // {
+        //     return response()->json('no');
+        // }
 
         
     }
