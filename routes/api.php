@@ -38,7 +38,7 @@ Route::get('/pruebas', function (Request $request) {
     //     ->where('plane_user.detalle',null)
     //     ->whereDate('start', '2022-06-23')->get();
     //     dd($clientesConPlan);
-    AdminTicketsHelper::calcular('75140175','1','0c3982f00ec0416081a7b98e5d294e59');
+    AdminTicketsHelper::calcular('75140175','0','0c3982f00ec0416081a7b98e5d294e59');
 });
 Route::post('/pruebas/webhook', function (Request $request) {
 
