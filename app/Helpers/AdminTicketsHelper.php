@@ -50,6 +50,7 @@ class AdminTicketsHelper
             if ($buscarUsuario) {
                 if($buscarUsuario->idwhatsapp!=null)
                 {
+                    //dd($buscarUsuario->idwhatsapp);
                     if($numero!='0')
                     {
                         if ($buscarUsuario->paso_segundo == false) {
@@ -89,8 +90,8 @@ class AdminTicketsHelper
                 else
                 {
                     
-                  WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola! No te encuentras registrado en ningun plan, probablemente se modifico tu plan o no te encuentras registrado en ninguno, contactate con soporte para mas informacion!');
-                    //dd($devlucion);
+                 $devlucion= WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola! No te encuentras registrado en ningun plan, probablemente se modifico tu plan o no te encuentras registrado en ninguno, contactate con soporte para mas informacion!');
+                   // dd($devlucion);
                 }
                 
             } else {
@@ -116,39 +117,43 @@ class AdminTicketsHelper
                 break;
             case '2':
 
-                WhatsappAPIHelper::enviarTemplate('delight_tipo_envio', ['*1* Para Mesa             *2* Para llevar(Paso a recoger)             *3* Delivery', 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
+                $devolucion=WhatsappAPIHelper::enviarTemplate('delight_tipo_envio', ['*1* Para Mesa   *2* Para llevar(Paso a recoger)   *3* Delivery', 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
+               // dd($devolucion);
                 break;
             case '3':
 
-                WhatsappAPIHelper::enviarTemplate('delight_empaque', ['*1* Vianda        *2* Eco-Empaque Delight', 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
+                WhatsappAPIHelper::enviarTemplate('delight_empaque', ['*1* Vianda   *2* Eco-Empaque Delight', 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
                 break;
             case '4':
+                
                 $actualizarTicket=DB::table('whatsapp_plan_almuerzos')->where('cliente_id',$usuario->idUser)->first();
+                //dd($actualizarTicket->id);
                 $fechaManana = Carbon::parse(Carbon::now()->addDays(1))->format('Y-m-d');
                 $diaPlan = WhatsappAPIHelper::saber_dia($fechaManana);
                 $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id',$usuario->idUser)->first();
                 $detalle=json_decode($datosPlan->detalle);
                 if($detalle->EMPAQUE!="")
                 {
-                    WhatsappAPIHelper::enviarTemplate('delight_pedido_listo', [$diaPlan, $detalle->SOPA, $detalle->PLATO.'('.$detalle->CARBOHIDRATO.')', 'Metodo: *'.$detalle->ENVIO.'*','Empaque: *'.$detalle->EMPAQUE.'*','Ingresa a tu perfil en nuestra pagina para personalizar toda tu semana o contactate con nosotros!'], $usuario->telf, 'es');
+                 $devolucion = WhatsappAPIHelper::enviarTemplate('delight_pedido_listo', [$diaPlan, $detalle->SOPA, $detalle->PLATO.'('.$detalle->CARBOHIDRATO.')', 'Metodo: *'.$detalle->ENVIO.'*','Empaque: *'.$detalle->EMPAQUE.'*','Ingresa a tu perfil en nuestra pagina para personalizar toda tu semana o contactate con nosotros!'], $usuario->telf, 'es');
+                //dd($devolucion);
                 }
                 else
                 {
-                    WhatsappAPIHelper::enviarTemplate('delight_pedido_listo', [$diaPlan, $detalle->SOPA, $detalle->PLATO.'('.$detalle->CARBOHIDRATO.')', 'Metodo: *'.$detalle->ENVIO.'*','-','Ingresa a tu perfil en nuestra pagina para personalizar toda tu semana o contactate con nosotros!'], $usuario->telf, 'es');
-
+                   $devolucion = WhatsappAPIHelper::enviarTemplate('delight_pedido_listo', [$diaPlan, $detalle->SOPA, $detalle->PLATO.'('.$detalle->CARBOHIDRATO.')', 'Metodo: *'.$detalle->ENVIO.'*','-','Ingresa a tu perfil en nuestra pagina para personalizar toda tu semana o contactate con nosotros!'], $usuario->telf, 'es');
+                    //dd($devolucion);
                 }
                 if($actualizarTicket->cantidad==1)
                 {
                     DB::table('whatsapp_plan_almuerzos')->where('id',$actualizarTicket->id)->delete();
-                    
+                    //dd($actualizarTicket);
 
                 }
                 else
                 {
                     DB::table('whatsapp_plan_almuerzos')->where('id',$actualizarTicket->id)->decrement('cantidad');
                     
-                    WhatsappAPIHelper::enviarTemplate('delight_cantidad_planes_dia', [$menuDiaActual->carbohidrato_1, $menuDiaActual->carbohidrato_2, $menuDiaActual->carbohidrato_3, 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
-
+                 $devolucion =  WhatsappAPIHelper::enviarTemplate('delight_cantidad_planes_dia', [$menuDiaActual->carbohidrato_1, $menuDiaActual->carbohidrato_2, $menuDiaActual->carbohidrato_3, 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
+                   // dd($devolucion);
                 }
                 break;
             default:
@@ -180,7 +185,7 @@ class AdminTicketsHelper
                         'PLATO'=>$segundo,
                         'ENSALADA'=>$menuDiaActual->ensalada,
                         'CARBOHIDRATO'=>'',
-                        'JUGO'=>$menuDiaActual->ejecutivo,
+                        'JUGO'=>$menuDiaActual->jugo,
                         'ENVIO'=>'',
                         'EMPAQUE'=>'',
                     ); 

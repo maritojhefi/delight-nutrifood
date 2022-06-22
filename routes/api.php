@@ -29,7 +29,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/pruebas', function (Request $request) {
 
     
-    AdminTicketsHelper::calcular('75140175','1','0c3982f00ec0416081a7b98e5d294e59');
+    AdminTicketsHelper::calcular('75140175','2','0c3982f00ec0416081a7b98e5d294e59');
 });
 Route::post('/pruebas/webhook', function (Request $request) {
 
