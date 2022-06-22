@@ -162,6 +162,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('index', [App\Http\Controllers\admin\OtroController::class, 'index'])->name('importar.index');
         Route::get('marcar', [App\Http\Controllers\admin\OtroController::class, 'marcar'])->name('marcar.asistencia');
         Route::get('/marcado', function () {return view('admin.otros.marcado');})->name('marcado');
+       // Route::get('/whatsapp/tickets', \App\Http\Livewire\Admin\WhatsappTicket::class)->name('whatsapp.index');
+
+
      });
 });
 
