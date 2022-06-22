@@ -7,7 +7,7 @@
                         Listado de tickets en atencion
                     </div>
                     <div class="card-body">
-                        <table class="table">
+                        <table class="table table-responsive">
                             <thead>
                                 <tr>
                                     <th>Cliente</th>
@@ -30,6 +30,7 @@
                                     <td>{{$ticket->paso_metodo_envio?'FINALIZADO':'PENDIENTE'}}</td>
                                     <td>{{$ticket->paso_metodo_empaque?'FINALIZADO':'PENDIENTE'}}</td>
                                     <td>{{$ticket->created_at->format('d-M-Y')}}</td>
+                                    <td><button wire:click="eliminar({{$ticket->id}})" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button></td>
                                     @endforeach
                                 </tr>
                             </tbody>

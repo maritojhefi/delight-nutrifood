@@ -7,6 +7,14 @@ use Livewire\Component;
 
 class WhatsappTicket extends Component
 {
+    public function eliminar(WhatsappPlanAlmuerzo $ticket)
+    {
+        $ticket->delete();
+        $this->dispatchBrowserEvent('alert',[
+            'type'=>'success',
+            'message'=>"Ticket borrado"
+        ]);
+    }
     public function render()
     {
         $tickets=WhatsappPlanAlmuerzo::all();
