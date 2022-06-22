@@ -6,8 +6,8 @@
                     <div class="card-header">
                         Listado de tickets en atencion
                     </div>
-                    <div class="card-body">
-                        <table class="table table-responsive">
+                    <div class="card-body table-responsive">
+                        <table class="table table-responsive-md">
                             <thead>
                                 <tr>
                                     <th>Cliente</th>
