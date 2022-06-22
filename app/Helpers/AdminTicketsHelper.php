@@ -32,7 +32,7 @@ class AdminTicketsHelper
     public static function calcular($telefono, $numero,$idConversacion)
     {
 
-        if($numero==3 || $numero==2 || $numero==1 || $numero==0)
+        if($numero=="3" || $numero=="2" || $numero=="1" || $numero=="0")
         {
             $buscarUsuario = DB::table('users')->select(
                 'users.id as idUser',
