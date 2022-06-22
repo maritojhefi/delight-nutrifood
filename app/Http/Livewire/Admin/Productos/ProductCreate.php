@@ -5,9 +5,11 @@ namespace App\Http\Livewire\Admin\Productos;
 use Livewire\Component;
 use App\Models\Producto;
 use App\Models\Categoria;
-use App\Models\Subcategoria;
+use App\Models\Sucursale;
 
+use App\Models\Subcategoria;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
 
 class ProductCreate extends Component
@@ -15,7 +17,7 @@ class ProductCreate extends Component
     use WithFileUploads;
     public $nombre, $detalle, $cat;
     public $precio , $imagen, $descuento, $medicion, $puntos;
- 
+    public $productoSeleccionado, $sucursales, $sucursalSeleccionada=1,$fecha,$cantidad;
     protected $rules = [
         'nombre' => 'required|min:6|unique:productos,nombre',
         'detalle' => 'required|min:15',
@@ -23,7 +25,40 @@ class ProductCreate extends Component
         'precio' => 'required|numeric|min:0',
         
     ];
- 
+    public function addStock()
+    {
+        $this->validate([
+            'cantidad'=>'required|integer|numeric',
+            'fecha'=>'required|date',
+            'sucursalSeleccionada'=>'required|integer'
+        ]);
+        DB::beginTransaction();
+        $sucursal=Sucursale::find($this->sucursalSeleccionada);
+        $sucursal->productos()->attach($this->productoSeleccionado->id);
+        
+        $registro = DB::table('producto_sucursale')->where('producto_id',$this->productoSeleccionado->id)->where('sucursale_id',$this->sucursalSeleccionada)->get()->last();
+      
+
+        DB::table('producto_sucursale')
+        ->where('id', $registro->id)
+        ->update(['fecha_venc'=>$this->fecha,'usuario_id'=>auth()->user()->id,'cantidad'=>$this->cantidad,'max'=>$this->cantidad]); 
+        DB::table('productos')->where('id',$this->productoSeleccionado->id)->update(['contable'=>1]);
+        DB::commit();
+         $this->dispatchBrowserEvent('alert',[
+            'type'=>'success',
+            'message'=>"Se agregaron ".$this->cantidad." productos de ".$this->productoSeleccionado->nombre
+        ]);
+        $this->reset(['productoSeleccionado','cantidad','fecha']);
+    }
+    public function seleccionarProducto(Producto $producto)
+    {
+        $this->productoSeleccionado=$producto;
+        $this->sucursales=Sucursale::all();
+    }
+    public function resetProducto()
+    {
+        $this->reset('productoSeleccionado');
+    }
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName);
@@ -37,6 +72,12 @@ class ProductCreate extends Component
        if($this->descuento=="")
        {
            $this->descuento=null;
+       }
+       else
+       {
+        $this->validate([
+            'descuento'=>'lt:precio'
+        ]);
        }
        if($this->puntos=="")
        {
@@ -98,6 +139,7 @@ class ProductCreate extends Component
     public function render()
     {
         $subcategorias=Subcategoria::all();
-        return view('livewire.admin.productos.product-create',compact('subcategorias'));
+        $productos=Producto::orderBy('created_at','DESC')->take(5)->get();
+        return view('livewire.admin.productos.product-create',compact('subcategorias','productos'));
     }
 }

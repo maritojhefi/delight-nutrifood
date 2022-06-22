@@ -127,7 +127,7 @@ class UserIndex extends Component
     {
         if($this->searchUser)
         {
-            $usuarios=User::where('name','LIKE','%'.$this->searchUser.'%')->paginate(5);
+            $usuarios=User::where('name','LIKE','%'.$this->searchUser.'%')->orWhere('telf','LIKE','%'.$this->searchUser.'%')->paginate(5);
         }
         else
         {

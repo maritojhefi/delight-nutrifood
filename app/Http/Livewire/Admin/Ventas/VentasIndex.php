@@ -530,6 +530,7 @@ class VentasIndex extends Component
                     $this->actualizaradicionales($producto->id, 'muchos');
                 }
                 $this->reset('cantidadespecifica');
+                
             }
         }
         else
@@ -590,7 +591,7 @@ class VentasIndex extends Component
         $this->reset('tipocobro');
         $this->saldoRestante=0;
         $this->saldo=false;
-        
+
       $this->actualizarlista($venta);
     }
 

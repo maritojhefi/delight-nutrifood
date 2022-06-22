@@ -17,6 +17,7 @@
                     formulario.reset();
                     formulario.start.value = info.dateStr;
                     formulario.end.value = info.dateStr;
+                    
                     //formulario.total.value=1;
                     $("#modalcalendar").modal('show');
                 },
@@ -39,6 +40,13 @@
                                     formBasic.empaque.value = detalle['EMPAQUE'];
                                     formBasic.envio.value = detalle['ENVIO'];
                                     
+                                }
+                                else
+                                {
+                                    formBasic.segundo.value = '';
+                                    formBasic.carbo.value ='';
+                                    formBasic.empaque.value = '';
+                                    formBasic.envio.value ='';
                                 }
                                 
                                 
@@ -115,6 +123,10 @@
                     (respuesta) => {
                         calendar.refetchEvents();
                         $("#basicModal").modal('hide');
+                        if(respuesta.data=='no')
+                        {
+                            alert('No se puede borrar este registro porque ya tiene agregados');
+                        }
 
                     }
                 ).

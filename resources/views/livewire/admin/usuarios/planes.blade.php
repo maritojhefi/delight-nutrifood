@@ -33,7 +33,7 @@
     @isset($seleccionado)
     <x-card-col4>
         <div class="card-header">
-            Planes para {{$seleccionado->name}} ({{$seleccionado->planes->count()}})
+            Planes para {{$seleccionado->name}} ({{$seleccionado->planes->groupBy('nombre')->count()}})
 
         </div>
         <div class="card-body">

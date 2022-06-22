@@ -42,8 +42,8 @@
                 <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="[
                     'Listar Usuarios' => 'usuario.listar',
                     'Roles' => 'usuario.roles',
-                    'Agregar Plan a Usuario' => 'planes',
-                    'Crear Plan' => 'crear.plan',
+                    
+                    
                     'Asistencia' => 'usuario.asistencia',
                 ]">
                     <i class="flaticon-045-heart"></i>
@@ -52,6 +52,8 @@
                     'Personalizar dias' => 'almuerzos.listar',
                     'Reporte Diario' => 'almuerzos.reporte',
                     'Reporte Semanal' => 'reporte.semana',
+                    'Planes' => 'crear.plan',
+                    'Agregar Plan a Usuario' => 'planes'
                 ]">
                     <i class="flaticon-022-copy"></i>
                 </x-sidebar-elements>

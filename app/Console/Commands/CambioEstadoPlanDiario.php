@@ -39,7 +39,7 @@ class CambioEstadoPlanDiario extends Command
      */
     public function handle()
     {
-        $registrosPasadosDeFechaActual = DB::table('plane_user')->where('estado','pendiente')->whereDate('start','<',Carbon::today())->get();
+        $registrosPasadosDeFechaActual = DB::table('plane_user')->where('estado','pendiente')->where('title','!=','feriado')->whereDate('start','<',Carbon::today())->get();
         if($registrosPasadosDeFechaActual)
         {
           foreach($registrosPasadosDeFechaActual as $registros)

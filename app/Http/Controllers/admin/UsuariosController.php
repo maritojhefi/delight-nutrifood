@@ -26,8 +26,20 @@ class UsuariosController extends Controller
     }
     public function borrar($id)
     {
+        //$evento = DB::table('plane_user')->where('id', $id)->first();
         $evento = DB::table('plane_user')->where('id', $id)->delete();
-        return response()->json($evento);
+        return response()->json('si');
+        // if($evento->detalle==null)
+        // {
+        //     $evento = DB::table('plane_user')->where('id', $id)->delete();
+           
+        // }
+        // else
+        // {
+        //     return response()->json('no');
+        // }
+
+        
     }
     public function agregar(Request $request)
     {
@@ -55,7 +67,7 @@ class UsuariosController extends Controller
     {
 
         $dias = $this->getDiasHabiles($request->start, $request->end, []);
-        $contador=0;
+        $contador = 0;
         foreach ($dias as $dia) {
             $siexiste = DB::table('plane_user')->where('start', $dia)->where('title', 'feriado')->get();
             if ($siexiste->count() != 0) {
@@ -68,8 +80,8 @@ class UsuariosController extends Controller
 
                 ]);
             }
-            
-            $getPlanesCoincidentes = DB::table('plane_user')->where('start', $dia)->where('title','!=','feriado')->get();
+
+            $getPlanesCoincidentes = DB::table('plane_user')->where('start', $dia)->where('title', '!=', 'feriado')->get();
             foreach ($getPlanesCoincidentes as $planCoincidente) {
                 DB::beginTransaction();
                 $extraerUltimo = DB::table('plane_user')
@@ -77,14 +89,9 @@ class UsuariosController extends Controller
                     ->where('title', '!=', 'feriado')
                     ->orderBy('start', 'DESC')
                     ->first();
+
                 $ultimaFecha = $extraerUltimo->start;
-                $saberDia = WhatsappAPIHelper::saber_dia($ultimaFecha);
-                if ($saberDia == 'Sabado') {
-                    $fechaParaAgregar = Carbon::parse(Carbon::create($ultimaFecha)->addDays(2))->format('Y-m-d');
-                } else {
-                    $fechaParaAgregar = Carbon::parse(Carbon::create($ultimaFecha)->addDays(1))->format('Y-m-d');
-                }
-                //dd($fechaParaAgregar);
+                $fechaParaAgregar =  $this->diaSiguienteAlUltimo($ultimaFecha);
                 DB::table('plane_user')->insert([
 
                     'start' => $fechaParaAgregar,
@@ -100,8 +107,42 @@ class UsuariosController extends Controller
         }
         return response()->json($contador);
     }
+    public function diaSiguienteAlUltimo($ultimaFecha)
+    {
+
+        $saberDia = WhatsappAPIHelper::saber_dia($ultimaFecha);
+        if ($saberDia == 'Sabado') {
+            $fechaParaAgregar = Carbon::parse(Carbon::create($ultimaFecha)->addDays(2))->format('Y-m-d');
+        } else {
+            $fechaParaAgregar = Carbon::parse(Carbon::create($ultimaFecha)->addDays(1))->format('Y-m-d');
+        }
+        //dd($fechaParaAgregar);
+        $siExisteFeriado = DB::table('plane_user')->where('start', $fechaParaAgregar)->where('title', 'feriado')->first();
+        while ($siExisteFeriado) {
+            $fechaParaAgregar = Carbon::parse(Carbon::create($fechaParaAgregar)->addDays(1))->format('Y-m-d');
+            $siExisteFeriado = DB::table('plane_user')->where('start', $fechaParaAgregar)->where('title', 'feriado')->first();
+        }
+        return $fechaParaAgregar;
+    }
     public function permiso($id)
     {
+        $evento = DB::table('plane_user')->where('id', $id)->first();
+
+        $extraerUltimo = DB::table('plane_user')
+            ->where('user_id', $evento->user_id)
+            ->where('plane_id', $evento->plane_id)
+            ->where('title', '!=', 'feriado')
+            ->orderBy('start', 'DESC')
+            ->first();
+         $fechaParaAgregar=$this->diaSiguienteAlUltimo($extraerUltimo->start); 
+         DB::table('plane_user')->insert([
+
+            'start' => $fechaParaAgregar,
+            'end' => $fechaParaAgregar,
+            'title' => $evento->title,
+            'plane_id' => $evento->plane_id,
+            'user_id' => $evento->user_id
+        ]);  
         $evento = DB::table('plane_user')->where('id', $id)->update(['estado' => 'permiso', 'color' => '#A314CD']);
         return response()->json($evento);
     }

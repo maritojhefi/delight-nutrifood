@@ -52,6 +52,7 @@ class EnviarPlanDiaAlmuerzoCommand extends Command
         )->leftjoin('users', 'users.id', 'plane_user.user_id')
             ->leftjoin('planes', 'planes.id', 'plane_user.plane_id')
             ->where('estado', 'pendiente')
+            ->where('plane_user.detalle',null)
             ->whereDate('start', $fechaManana)->get();
 
         //dd($clientesConPlan->groupBy('user_id'));
@@ -105,15 +106,21 @@ class EnviarPlanDiaAlmuerzoCommand extends Command
                             $menuDiaActual->vegetariano . '(veggie)',
                             'Pedir Permiso'
                         ],
-                        env('APP_ENV') == 'local' ? 'https://delight-nutrifood.com/delight_logo.jpg' : asset($menuDiaActual->foto),
+                        env('APP_ENV') == 'local' ? 'https://delight-nutrifood.com/delight_logo.jpg' : asset('imagenes/almuerzo/'.$menuDiaActual->foto),
                         'image',
                         $cliente->cliente->telf,
                         'es'
                     );
+                    $this->info('Se envio mensaje a '.$cliente->cliente->name);
                 }
+                
             } else {
-                dd('ninguno para enviar');
+                $this->info('No se encontro ningun cliente para enviar mensajes');
             }
+        }
+        else
+        {
+            $this->info('no se encontro ningun plan para el dia de manana');
         }
     }
 }

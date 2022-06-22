@@ -8,6 +8,11 @@ use GuzzleHttp\Client;
 
 class WhatsappAPIHelper
 {
+
+    // public static function menuDiaSiguiente($fecha)
+    // {
+    //     return $dia;
+    // }
     public static function saber_dia($nombredia) {
         //dd(date('N', strtotime($nombredia)));
         $dias = array('Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado','Domingo');
