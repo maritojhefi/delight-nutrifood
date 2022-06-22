@@ -28,8 +28,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/pruebas', function (Request $request) {
 
-    
-    AdminTicketsHelper::calcular('75140175','2','0c3982f00ec0416081a7b98e5d294e59');
+    // $clientesConPlan = DB::table('plane_user')->select(
+    //     'plane_user.*',
+    //     'users.name',
+    //     'planes.nombre'
+    // )->leftjoin('users', 'users.id', 'plane_user.user_id')
+    //     ->leftjoin('planes', 'planes.id', 'plane_user.plane_id')
+    //     ->where('estado', 'pendiente')
+    //     ->where('plane_user.detalle',null)
+    //     ->whereDate('start', '2022-06-23')->get();
+    //     dd($clientesConPlan);
+    AdminTicketsHelper::calcular('75140175','1','0c3982f00ec0416081a7b98e5d294e59');
 });
 Route::post('/pruebas/webhook', function (Request $request) {
 

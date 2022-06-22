@@ -28,7 +28,7 @@
                     then(
                         (respuesta) => {
                             if (respuesta.data.estado == "finalizado") {
-                                window.alert('Este registro ya expiro!');
+                                window.alert('Este registro ya se encuentra finalizado!');
                             } else if (respuesta.data.estado == "pendiente") {
                                 formBasic.title.value = respuesta.data.title;
                                 if(respuesta.data.detalle != null)
