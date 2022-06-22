@@ -223,10 +223,10 @@ class AdminTicketsHelper
                     DB::table('whatsapp_plan_almuerzos')->where('id', $usuario->idwhatsapp)->update(['paso_metodo_envio' => true]);
                     if ($array->ENVIO != 'Para Mesa') {
                         AdminTicketsHelper::enviarMensajeConMenu($usuario, $paso, $menuDiaActual);
-                        DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => json_encode($array), 'estado' => 'finalizado']);
+                        DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => json_encode($array), 'estado' => 'finalizado','color'=>'#F7843A']);
                     } else {
                         DB::table('whatsapp_plan_almuerzos')->where('id', $usuario->idwhatsapp)->update(['paso_metodo_empaque' => true]);
-                        DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => json_encode($array), 'estado' => 'finalizado']);
+                        DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => json_encode($array), 'estado' => 'finalizado','color'=>'#F7843A']);
                         AdminTicketsHelper::enviarMensajeConMenu($usuario, '4', $menuDiaActual);
                     }
                     break;

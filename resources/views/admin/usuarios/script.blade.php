@@ -17,7 +17,7 @@
                     formulario.reset();
                     formulario.start.value = info.dateStr;
                     formulario.end.value = info.dateStr;
-                    
+
                     //formulario.total.value=1;
                     $("#modalcalendar").modal('show');
                 },
@@ -28,28 +28,41 @@
                     then(
                         (respuesta) => {
                             if (respuesta.data.estado == "finalizado") {
-                                window.alert('Este registro ya se encuentra finalizado!');
+                                if (confirm('Se encuentra finalizado, desea cambiar a disponinble?')) {
+
+                                    axios.get('{{ $path }}/admin/usuarios/quitarpermiso/' +
+                                        respuesta.data.id).
+                                    then(
+                                        (respuesta) => {
+                                            calendar.refetchEvents();
+
+
+                                        }
+                                    ).
+                                    catch(error => {
+                                        if (error.response) {
+                                            console.log(error.response.data);
+                                        }
+                                    })
+                                }
                             } else if (respuesta.data.estado == "pendiente") {
                                 formBasic.title.value = respuesta.data.title;
-                                if(respuesta.data.detalle != null)
-                                {
-                                    let detalle=JSON.parse(''+respuesta.data.detalle+'')
+                                if (respuesta.data.detalle != null) {
+                                    let detalle = JSON.parse('' + respuesta.data.detalle + '')
                                     console.log(detalle['EMPAQUE']);
                                     formBasic.segundo.value = detalle['PLATO'];
-                                    formBasic.carbo.value =detalle['CARBOHIDRATO'];
+                                    formBasic.carbo.value = detalle['CARBOHIDRATO'];
                                     formBasic.empaque.value = detalle['EMPAQUE'];
                                     formBasic.envio.value = detalle['ENVIO'];
-                                    
-                                }
-                                else
-                                {
+
+                                } else {
                                     formBasic.segundo.value = '';
-                                    formBasic.carbo.value ='';
+                                    formBasic.carbo.value = '';
                                     formBasic.empaque.value = '';
-                                    formBasic.envio.value ='';
+                                    formBasic.envio.value = '';
                                 }
-                                
-                                
+
+
                                 formBasic.id.value = respuesta.data.id;
                                 $("#basicModal").modal('show');
                             } else if (respuesta.data.estado == "permiso") {
@@ -123,8 +136,7 @@
                     (respuesta) => {
                         calendar.refetchEvents();
                         $("#basicModal").modal('hide');
-                        if(respuesta.data=='no')
-                        {
+                        if (respuesta.data == 'no') {
                             alert('No se puede borrar este registro porque ya tiene agregados');
                         }
 
@@ -162,23 +174,23 @@
                 $("#modalcalendar").modal('hide');
                 if (alert == true) {
                     axios.post('{{ $path }}/admin/usuarios/feriado', datos).
-                then(
-                    (respuesta) => {
-                        console.log(respuesta)
-                        calendar.refetchEvents();
-                       
-                       
-                    }
-                ).
-                catch(error => {
-                    if (error.response) {
-                        console.log(error.response.data);
-                    }
-                })
+                    then(
+                        (respuesta) => {
+                            console.log(respuesta)
+                            calendar.refetchEvents();
+
+
+                        }
+                    ).
+                    catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data);
+                        }
+                    })
                 } else {
                     alert('No se realizo ningun cambio');
                 }
-               
+
             });
         });
     </script>
