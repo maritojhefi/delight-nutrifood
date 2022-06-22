@@ -106,7 +106,7 @@ class EnviarPlanDiaAlmuerzoCommand extends Command
                             $menuDiaActual->vegetariano . '(veggie)',
                             'Pedir Permiso'
                         ],
-                        env('APP_ENV') == 'local' ? 'https://delight-nutrifood.com/delight_logo.jpg' : asset($menuDiaActual->foto),
+                        env('APP_ENV') == 'local' ? 'https://delight-nutrifood.com/delight_logo.jpg' : asset('imagenes/almuerzo/'.$menuDiaActual->foto),
                         'image',
                         $cliente->cliente->telf,
                         'es'
