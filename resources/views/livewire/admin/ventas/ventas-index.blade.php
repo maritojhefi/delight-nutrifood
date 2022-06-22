@@ -591,7 +591,7 @@
                                 <div class="row align-items-center">
                                     <div class="col-xl-3 col-xxl-12 col-lg-12 my-2">
                                         <strong class="mb-0 fs-14">{{ $nombre }}</strong> <a
-                                            href="{{ route('detalleplan', [$item[0]->id, $cuenta->cliente->id]) }}"
+                                            href="{{ route('detalleplan', [ $cuenta->cliente->id,$item[0]->id]) }}"
                                             class="badge badge-info">Ir <i class="fa fa-arrow-right"></i></a>
                                     </div>
                                     <div class="col-xl-7 col-xxl-12 col-lg-12">
@@ -602,10 +602,15 @@
                                                     <div class="media-body ml-1">
                                                         <p class="mb-0 fs-12">Ultima fecha</p>
                                                         @php
-                                                            $ultimaFecha = $item->where('pivot.start', '>', date('Y-m-d'))->last();
+                                                            $ultimaFecha = $item->last();
                                                         @endphp
                                                         <h5 class="mb-0   fs-22">
+                                                            @if ($ultimaFecha)
                                                             {{ date_format(date_create($ultimaFecha->pivot->start), 'd-M') }}
+                                                            @else
+                                                            N/A
+                                                            @endif
+                                                            
                                                         </h5>
                                                     </div>
                                                 </div>

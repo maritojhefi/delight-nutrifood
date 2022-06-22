@@ -46,6 +46,7 @@
                             <thead>
                                 <tr>
                                     <th><strong>Nombre</strong></th>
+                                    <th><strong>Añadidos</strong></th>
                                     <th><strong>Editable</strong></th>
                                     <th><strong>Detalle</strong></th>
                                   
@@ -57,10 +58,13 @@
                                 @foreach ($planes as $item)
                                 <tr>
                                     <td><span class="badge light badge-success">{{$item->nombre}}</span></td>
+                                    <td><a href="#" wire:click="seleccionarPlan({{$item->id}})" data-bs-toggle="modal" data-bs-target="#modalAnadidos" class=" badge badge-sm badge-primary"><span class="fa fa-eye"></span> Ver</a></td>
                                     <td><a href="#" wire:click="cambiarEditable({{$item->id}})"><span class="badge badge-pill badge-{{$item->editable==true?'success':'danger'}} light">{{$item->editable==true?'SI':'NO'}}</span></a></td>
                                     <td>{{$item->detalle}}</td>
                                   
                                    
+                                    
+                                    
                                     
                                     
                                     <td>
@@ -76,6 +80,7 @@
                                     </td>
                                 </tr>
                                 
+
                                 <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true" id="modaldelete{{$item->id}}">
                                     <div class="modal-dialog modal-sm">
                                         <div class="modal-content">
@@ -107,5 +112,57 @@
         
         </div>
     </div>
-   
+    <div wire:ignore.self class="modal fade" id="modalAnadidos" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            
+            @isset($planSeleccionado)
+            
+            <div class="modal-content" >
+                <div class="modal-header"><h4>Habilita/deshabilita caracteristicas para: {{$planSeleccionado->nombre}}</h4></div>
+             <div class="card-body">
+                <div  class="d-flex justify-content-center">
+                    <div wire:loading class="spinner-border" role="status">
+                      <span class="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                 <div class="basic-list-group" wire:loading.remove>
+                     <ul class="list-group">
+                        <a href="#" wire:click="cambiarSopa()">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Sopa <span class="badge badge-{{$planSeleccionado->sopa?'primary':'danger'}} badge-pill">{{$planSeleccionado->sopa?'SI':'NO'}}</span>
+                            </li>
+                        </a>
+                         <a href="#" wire:click="cambiarSegundo()">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Segundo <span class="badge badge-{{$planSeleccionado->segundo?'primary':'danger'}} badge-pill">{{$planSeleccionado->segundo?'SI':'NO'}}</span>
+                            </li>
+                        </a>
+                        <a href="#" wire:click="cambiarCarbohidrato()">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Carbohidrato <span class="badge badge-{{$planSeleccionado->carbohidrato?'primary':'danger'}} badge-pill">{{$planSeleccionado->carbohidrato?'SI':'NO'}}</span>
+                            </li>
+                        </a>
+                        <a href="#" wire:click="cambiarEnsalada()">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Ensalada <span class="badge badge-{{$planSeleccionado->ensalada?'primary':'danger'}} badge-pill">{{$planSeleccionado->ensalada?'SI':'NO'}}</span>
+                            </li>
+                        </a>
+                        <a href="#" wire:click="cambiarJugo()">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Jugo <span class="badge badge-{{$planSeleccionado->jugo?'primary':'danger'}} badge-pill">{{$planSeleccionado->jugo?'SI':'NO'}}</span>
+                            </li>
+                        </a>
+                         
+                         
+                         
+                         
+                     </ul>
+                 </div>
+             </div>
+             
+         </div> 
+            @endisset
+            
+        </div>
+    </div>
 </div>

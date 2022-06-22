@@ -115,6 +115,10 @@
                     (respuesta) => {
                         calendar.refetchEvents();
                         $("#basicModal").modal('hide');
+                        if(respuesta.data=='no')
+                        {
+                            alert('No se puede borrar este registro porque ya tiene agregados');
+                        }
 
                     }
                 ).

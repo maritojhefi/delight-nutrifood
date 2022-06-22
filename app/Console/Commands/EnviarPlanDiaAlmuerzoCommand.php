@@ -52,6 +52,7 @@ class EnviarPlanDiaAlmuerzoCommand extends Command
         )->leftjoin('users', 'users.id', 'plane_user.user_id')
             ->leftjoin('planes', 'planes.id', 'plane_user.plane_id')
             ->where('estado', 'pendiente')
+            ->where('plane_user.detalle',null)
             ->whereDate('start', $fechaManana)->get();
 
         //dd($clientesConPlan->groupBy('user_id'));
@@ -110,10 +111,16 @@ class EnviarPlanDiaAlmuerzoCommand extends Command
                         $cliente->cliente->telf,
                         'es'
                     );
+                    $this->info('Se envio mensaje a '.$cliente->cliente->name);
                 }
+                
             } else {
-                dd('ninguno para enviar');
+                $this->info('No se encontro ningun cliente para enviar mensajes');
             }
+        }
+        else
+        {
+            $this->info('no se encontro ningun plan para el dia de manana');
         }
     }
 }

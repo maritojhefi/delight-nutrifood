@@ -29,11 +29,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/pruebas', function (Request $request) {
 
     
-    AdminTicketsHelper::calcular('75140175','1');
+    AdminTicketsHelper::calcular('75140175','1','0c3982f00ec0416081a7b98e5d294e59');
 });
 Route::post('/pruebas/webhook', function (Request $request) {
 
-
+    //AdminTicketsHelper::calcular('75140175','1');
     $json = json_decode(json_encode($request->all()));
     //$cuerpo = $json->message->content;
     WhatsappLog::create([
@@ -61,13 +61,14 @@ Route::post('/circuito/delight/planes', function (Request $request) {
                 preg_match_all('!\d+!', $contenido, $matches); //matches es un array que obtiene numeros dentro del cuerpo del mensaje recibido
                 if (count($matches[0]) > 0) {
                     foreach ($matches[0] as $numero) {
-                        
+                        AdminTicketsHelper::calcular($numeroOrigen,$numero,$idConversacion);
+                        break;
                     }
                 } else {
                     WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Marca una respuesta correcta');
                 }
             } else {
-                WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Envia una respuesta valida');
+                WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Para interactuar con el asistente solo puedes responder con mensajes de texto');
             }
         }
     } catch (\Throwable $th) {
