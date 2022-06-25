@@ -735,15 +735,19 @@ class VentasIndex extends Component
             $printer = new Printer($connector);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $printer->setTextSize(1, 2);
-            $printer->text("DELIGHT-NUTRIFOOD" . "\n");
+            $printer->text("DELIGHT" . "\n");
             /*$img = EscposImage::load("public/delight_logo.jpg",false);
             $printer -> graphics($img);*/
             $printer->setTextSize(1, 1);
-            $printer->text("Eco-Tienda" . "\n");
+            $printer->text("Nutri-Food/Eco-Tienda" . "\n");
             $printer->feed(1);
             $printer->text("'NUTRIENDO HABITOS!'" . "\n");
             $printer->feed(1);
             $printer->text("Contacto : 78227629". "\n"."Campero e/15 de abril y Madrid" . "\n");
+            if(isset($this->cuenta->cliente->name))
+            {
+                $printer->text($this->cuenta->cliente->name."\n");
+            }
             $printer->setTextSize(2, 2);
             $printer->text("--------------\n");
             $printer->setTextSize(1, 1);
