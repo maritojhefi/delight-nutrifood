@@ -746,7 +746,7 @@ class VentasIndex extends Component
             $printer->text("Contacto : 78227629". "\n"."Campero e/15 de abril y Madrid" . "\n");
             if(isset($this->cuenta->cliente->name))
             {
-                $printer->text($this->cuenta->cliente->name."\n");
+                $printer->text("Cliente: ".Str::limit($this->cuenta->cliente->name,'15')."\n");
             }
             $printer->setTextSize(2, 2);
             $printer->text("--------------\n");
@@ -773,7 +773,7 @@ class VentasIndex extends Component
         $printer->text("TOTAL: Bs ". $this->cuenta->total-$this->cuenta->descuento ."\n");
         $printer->feed(1);
         $printer->setTextSize(1, 1);
-        $printer->text("Muchas gracias por preferirnos!\n");
+        $printer->text("Gracias por tu compra, vuelve pronto!\n");
         $printer->feed(1);
         $printer->setJustification(Printer::JUSTIFY_CENTER);
         $printer->text(date("Y-m-d H:i:s") . "\n");
