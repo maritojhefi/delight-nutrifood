@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-    <x-cabecera-pagina titulo="Menu de la semana" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Bienvenidos a Delight" cabecera="bordeado" />
 
     <div class="splide single-slider slider-no-arrows slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"
         id="single-slider-2" style="visibility: visible;">
@@ -56,7 +56,7 @@
     </div>
     <div class="card card-style pb-3">
         <div class="content">
-            <h4>Que hay de comer?</h4>
+            <h4>Almuerzos Saludables</h4>
             <p>
                 Nuestros menus cambian cada semana y tenemos varias opciones!
             </p>
