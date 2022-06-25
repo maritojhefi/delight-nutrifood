@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use App\Models\Almuerzo;
 use Illuminate\Support\Facades\DB;
 use App\Models\WhatsappPlanAlmuerzo;
+use Illuminate\Support\Facades\Artisan;
 
 
 
@@ -148,7 +149,8 @@ class AdminTicketsHelper
                 } else {
                     DB::table('whatsapp_plan_almuerzos')->where('id', $actualizarTicket->id)->decrement('cantidad');
                     DB::table('whatsapp_plan_almuerzos')->where('id', $actualizarTicket->id)->update(['paso_segundo' => 0, 'paso_carbohidrato' => 0, 'paso_metodo_envio' => 0, 'paso_metodo_empaque' => 0]);
-                    $devolucion =  WhatsappAPIHelper::enviarTemplate('delight_cantidad_planes_dia', [$menuDiaActual->carbohidrato_1, $menuDiaActual->carbohidrato_2, $menuDiaActual->carbohidrato_3, 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
+                    $devolucion =  WhatsappAPIHelper::enviarTemplate('delight_cantidad_planes_dia', [$diaPlan,$actualizarTicket->cantidad-1], $usuario->telf, 'es');
+                    Artisan::command('whatsapp:enviarMenu');
                     // dd($devolucion);
                 }
                 break;

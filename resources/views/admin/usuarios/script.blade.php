@@ -28,7 +28,7 @@
                     then(
                         (respuesta) => {
                             if (respuesta.data.estado == "finalizado") {
-                                if (confirm('Se encuentra finalizado, desea cambiar a disponinble?')) {
+                                if (confirm('Se encuentra finalizado, desea cambiar a disponible?')) {
 
                                     axios.get('{{ $path }}/admin/usuarios/quitarpermiso/' +
                                         respuesta.data.id).
