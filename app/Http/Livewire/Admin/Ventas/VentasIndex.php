@@ -746,7 +746,7 @@ class VentasIndex extends Component
             $printer->text("Contacto : 78227629". "\n"."Campero e/15 de abril y Madrid" . "\n");
             if(isset($this->cuenta->cliente->name))
             {
-                $printer->text("Cliente: ".Str::limit($this->cuenta->cliente->name,'15')."\n");
+                $printer->text("Cliente: ".Str::limit($this->cuenta->cliente->name,'20','')."\n");
             }
             $printer->setTextSize(2, 2);
             $printer->text("--------------\n");
