@@ -138,7 +138,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal">
                     </button>
                 </div>
+                @isset($subcategorias)
                 <div class="modal-body">
+                   
                     <x-input-create-custom-function funcion="actualizarProducto" boton="Actualizar" :lista="([
                         'Nombre'=>['nombre','text'],
                         'Precio'=>['precio','number'],
@@ -147,12 +149,24 @@
                         'Puntos'=>['puntos','number'],
                         'Imagen'=>['imagen','file'],
                           ])">
-                        
+                        <x-slot name="otrosinputs">
+                            <div class="mb-3 row">
+                               <select name="" class="form-control @error($subcategoria_id) is-invalid @enderror" wire:model="subcategoria_id" id="">
+
+                                   <option>Seleccione subcategoria ({{$subcategorias->count()}})</option>
+                                   @foreach ($subcategorias as $item)
+                                   <option  value="{{$item->id}}">{{$item->nombre}}</option>
+                                   @endforeach
+                               </select>
+                            </div>
+                        </x-slot>
                     @if ($imagen)
                     <img src="{{ $imagen->temporaryUrl() }}" class="w-100 border-radius-lg shadow-sm">
                    @endif
                 </x-input-create-custom-function>
-                </div>
+                </div> 
+                @endisset
+               
                 
             </div>
         </div>

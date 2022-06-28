@@ -66,7 +66,7 @@
                                                 <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24"></rect><circle fill="#000000" cx="5" cy="12" r="2"></circle><circle fill="#000000" cx="12" cy="12" r="2"></circle><circle fill="#000000" cx="19" cy="12" r="2"></circle></g></svg>
                                             </button>
                                             <div class="dropdown-menu">
-                                                <a class="dropdown-item" >Editar</a>
+                                                <a class="dropdown-item"  href="#" data-bs-toggle="modal" wire:click="seleccionarSubcategoria({{$item->id}})" data-bs-target="#modaleditar">Editar</a>
                                                 <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modaldelete{{$item->id}}">Eliminar</a>
                                             </div>
                                         </div>
@@ -104,5 +104,49 @@
         
         </div>
     </div>
-   
+    <div wire:ignore.self class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true" id="modaleditar">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-body" wire:loading wire:target="seleccionarSubcategoria">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                          <span class="sr-only">Loading...</span>
+                        </div>
+                      </div>
+                </div>
+                @isset($subcategoria)
+                <div wire:loading.remove wire:target="seleccionarSubcategoria">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editando : {{$subcategoria->nombre}}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <x-input-create-custom-function funcion="actualizar" boton="Actualizar" :lista="([
+                            'Nombre'=>['nombreE','text'],
+                            'Descripcion'=>['descripcionE','textarea'],
+                            
+                              ])">
+                            <x-slot name="otrosinputs">
+                                <div class="mb-3 row">
+                                   <select name="" class="form-control @error($categoria) is-invalid @enderror" wire:model="categoriaE" id="">
+    
+                                       <option>Seleccione categoria ({{$categorias->count()}})</option>
+                                       @foreach ($categorias as $item)
+                                       <option  value="{{$item->id}}">{{$item->nombre}}</option>
+                                       @endforeach
+                                   </select>
+                                </div>
+                            </x-slot>
+                       
+                    </x-input-create-custom-function>
+                    </div>
+                </div>
+               
+                
+                @endisset
+                
+            </div>
+        </div>
+    </div>
 </div>
