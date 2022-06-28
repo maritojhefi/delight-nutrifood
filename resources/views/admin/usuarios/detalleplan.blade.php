@@ -57,7 +57,10 @@
                                 <label>Fin</label>
                                 <input type="date" class="form-control" name="end" placeholder="Fecha Final" id="end">
                             </div>
-
+                            <div class="mb-3 col-md-6">
+                                <label>Personalizado</label>
+                                <input type="number" class="form-control" name="dias" placeholder="Agregar mas dias" id="dias">
+                            </div>
                         </div>
                     </form>
 
