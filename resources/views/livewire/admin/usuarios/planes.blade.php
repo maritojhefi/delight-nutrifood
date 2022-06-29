@@ -47,7 +47,7 @@
                                 <a href="{{route('detalleplan',[$seleccionado->id,$item['id']])}}">
                                     <button class="btn btn-primary light btn-lg">{{$item['plan']}}</button>
                                 </a><br>
-                                <small class="my-0">Cantidad restante:</small>
+                                <small class="my-0">Registros totales:</small>
                                 <small class="text-muted">{{$item['cantidad']}}</small><br>
                                 <button class="btn btn-danger btn-xs" data-bs-toggle="modal"
                                     data-bs-target="#modal{{$item['id']}}">Eliminar plan</button>

@@ -105,7 +105,7 @@ class CreateList {
     static function crearlistaplan($id)
     {
         $planes=DB::table('plane_user')
-        ->where('user_id',$id)->where('estado','pendiente')
+        ->where('user_id',$id)
         ->get();
         //dd($planes);
         $agrupado=$planes->pluck('plane_id');

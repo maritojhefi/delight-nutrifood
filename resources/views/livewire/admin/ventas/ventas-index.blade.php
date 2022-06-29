@@ -95,7 +95,7 @@
             </a>
             @if ($cuenta->cliente)
                 <a href="#" data-bs-toggle="modal" data-bs-target="#planesusuario"><span
-                        class="badge light badge-success">{{ $cuenta->cliente->name }}</span></a>
+                        class="badge light badge-success">{{ Str::limit($cuenta->cliente->name,15,'...') }}</span></a>
             @else
                 <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span
                         class="badge light badge-danger">Sin usuario</span></a>
