@@ -14,6 +14,7 @@ class SubcategoryCreate extends Component
     public $nombre, $descripcion, $categoria;
     protected $listeners = ['listar' => 'render'];
     public $subcategoria, $nombreE, $descripcionE, $categoriaE;
+    public $search;
     protected $rules = [
         'nombre' => 'required',
         'descripcion' => 'required|min:5',
@@ -90,7 +91,16 @@ class SubcategoryCreate extends Component
     }
     public function render()
     {
-        $subcategorias = Subcategoria::paginate(5);
+        if(isset($this->search))
+        {
+            $subcategorias = Subcategoria::where('nombre','LIKE','%'.$this->search.'%')->paginate(5);
+        }
+        else
+        {
+            $subcategorias = Subcategoria::paginate(5);
+        }
+        
+        
         $categorias = Categoria::all();
         return view('livewire.admin.subcategory-create', compact('subcategorias', 'categorias'));
     }

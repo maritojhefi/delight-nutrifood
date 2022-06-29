@@ -35,7 +35,11 @@
         <div class="card overflow-hidden">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Listado de Subcategorias</h4>
+                    <div class="row">
+                        <div class="col"> <h4 class="card-title">Todas</h4></div>
+                        <div class="col"><input type="text" class=" form-control" placeholder="Buscar" wire:model.debounce.500ms="search"></div>
+                    </div>
+                   
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
