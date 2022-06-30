@@ -15,7 +15,7 @@ class ModalCambiarUsuario extends Component
         //dd($this->usuario);
         if($this->search)
         {
-            $usuarios=User::has('planes')->where('name','LIKE','%'.$this->search.'%')->get();
+            $usuarios=User::where('name','LIKE','%'.$this->search.'%')->get();
         }
         else
         {
