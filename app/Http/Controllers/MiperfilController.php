@@ -33,7 +33,8 @@ class MiperfilController extends Controller
       
        $array=array();
        $lunes=false;
-       $planes=$usuario->planesPendientes->where('id',$plan->id)->sortBy(function($col) {return $col;})->take(5);
+       $planes=$usuario->planesPendientes->where('id',$plan->id)->sortBy(function($col) {return $col;})->take(15);
+       //dd($planes);
        $menusemanal="";
        foreach($planes as $dias){
            
@@ -75,28 +76,68 @@ class MiperfilController extends Controller
         return $fecha;
     }
     public function personalizardia(Request $request){
+        //dd($request);
+       
+        $plan=Plane::find($request->plan);
         $plato='plato'.$request->id;
         $carbohidrato='carb'.$request->id;
         $envio='envio'.$request->id;
         $empaque='empaque'.$request->id;
-        if($request[$plato] && $request[$carbohidrato] && $request[$envio] && $request[$empaque])
+        if($plan->sopa)
         {
+            $request->validate(['sopa'=>'required']);
+            $varSopa=$request->sopa;
+        }
+           
+        else $varSopa='';
+        
+        if($plan->segundo)
+        {
+            $request->validate([$plato=>'required']);
+            $varSegundo=$request[$plato];
+        }
+        else $varSegundo='';
+
+        if($plan->carbohidrato)
+        {
+            $request->validate([$carbohidrato=>'required']);
+            $varCarbo=$request[$carbohidrato];
+        }
+        
+        else $varCarbo='';
+
+        if($plan->ensalada)
+        {
+            $request->validate(['ensalada'=>'required']);
+            $varEnsalada=$request->ensalada;
+        }
+        else $varEnsalada='';
+
+        if($plan->jugo)
+        {
+            $request->validate(['jugo'=>'required']);
+            $varJugo=$request->jugo;
+        }
+        
+        else $varJugo='';
+        $request->validate([
+            $envio=>'required',
+            $empaque=>'required'
+        ]);
             $array=array(
-            'SOPA'=>$request->sopa,
-            'PLATO'=>$request[$plato],
-            'ENSALADA'=>$request->ensalada,
-            'CARBOHIDRATO'=>$request[$carbohidrato],
-            'JUGO'=>$request->jugo,
+            'SOPA'=>$varSopa,
+            'PLATO'=>$varSegundo,
+            'ENSALADA'=>$varEnsalada,
+            'CARBOHIDRATO'=>$varCarbo,
+            'JUGO'=>$varJugo,
             'ENVIO'=>$request[$envio],
-            'EMPAQUE'=>$request[$empaque],
-        );
+            'EMPAQUE'=>$request[$empaque]
+            );
+      
            
             DB::table('plane_user')->where('id',$request->id)->update(['detalle'=>$array]);
             return back()->with('success','Dia '.$request->dia.' guardado!');
-        }
-        else{
-            return back()->with('danger','Rellene bien los campos del dia '.$request->dia);
-        }
+        
     }
     public function editardia($idpivot){
         DB::table('plane_user')->where('id',$idpivot)->update(['detalle'=>null]);
