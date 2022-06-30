@@ -61,6 +61,13 @@
                                 <label>Personalizado</label>
                                 <input type="number" class="form-control" name="dias" placeholder="Agregar mas dias" id="dias">
                             </div>
+                            <div class="mb-3 col-md-6">
+                                <label></label>
+                                <div class="form-check custom-checkbox mb-3 checkbox-success">
+                                    <input type="checkbox" class="form-check-input" id="sabados" name="sabados">
+                                    <label class="form-check-label" for="sabados">Excluir Sabados</label>
+                                </div>
+                            </div>
                         </div>
                     </form>
 

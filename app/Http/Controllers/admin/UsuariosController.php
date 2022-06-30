@@ -51,18 +51,42 @@ class UsuariosController extends Controller
                 array_push($listafechas, $fe);
             }
         }
+        $excluirSabados=false;
+        if(isset($request->sabados))
+        {
+            $excluirSabados=true;
+        }
         if($request->dias==null || $request->dias=="" || $request->dias==0)
         {
             $dias = $this->getDiasHabiles($request->start, $request->end, $listafechas);
             foreach ($dias as $dia) {
-                DB::table('plane_user')->insert([
+                if($excluirSabados)
+                {
+                    $saberDia = WhatsappAPIHelper::saber_dia($dia);
+                    if($saberDia!="Sabado")
+                    {
+                        DB::table('plane_user')->insert([
     
-                    'start' => $dia,
-                    'end' => $dia,
-                    'title' => $request->plan,
-                    'plane_id' => $request->idplan,
-                    'user_id' => $request->iduser
-                ]);
+                            'start' => $dia,
+                            'end' => $dia,
+                            'title' => $request->plan,
+                            'plane_id' => $request->idplan,
+                            'user_id' => $request->iduser
+                        ]);
+                    }
+                }
+                else
+                {
+                    DB::table('plane_user')->insert([
+    
+                        'start' => $dia,
+                        'end' => $dia,
+                        'title' => $request->plan,
+                        'plane_id' => $request->idplan,
+                        'user_id' => $request->iduser
+                    ]);
+                }
+                
             }
         }
         else
@@ -72,15 +96,35 @@ class UsuariosController extends Controller
             $contador=0;
             //dd($request->start);
             foreach ($dias as $dia) {
-                DB::table('plane_user')->insert([
+                if($excluirSabados)
+                {
+                    $saberDia = WhatsappAPIHelper::saber_dia($dia);
+                    if($saberDia!="Sabado")
+                    {
+                        DB::table('plane_user')->insert([
     
-                    'start' => $dia,
-                    'end' => $dia,
-                    'title' => $request->plan,
-                    'plane_id' => $request->idplan,
-                    'user_id' => $request->iduser
-                ]);
-                $contador++;
+                            'start' => $dia,
+                            'end' => $dia,
+                            'title' => $request->plan,
+                            'plane_id' => $request->idplan,
+                            'user_id' => $request->iduser
+                        ]);
+                        $contador++;
+                    }
+                }
+                else
+                {
+                    DB::table('plane_user')->insert([
+    
+                        'start' => $dia,
+                        'end' => $dia,
+                        'title' => $request->plan,
+                        'plane_id' => $request->idplan,
+                        'user_id' => $request->iduser
+                    ]);
+                    $contador++;
+                }
+                
                 if($contador==$request->dias)
                 {
                     break;
