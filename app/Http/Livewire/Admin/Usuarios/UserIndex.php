@@ -64,12 +64,19 @@ class UserIndex extends Component
             'nameE' => 'required|min:5|unique:users,name,'.$this->userEdit->id,
             'telfE' => 'required|size:8|unique:users,telf,'.$this->userEdit->id,
             'emailE' => 'required|email|unique:users,email,'.$this->userEdit->id,
-            'passwordE' => 'required|min:8|confirmed',
+            
         ]);
         $this->userEdit->name=$this->nameE;
         $this->userEdit->email=$this->emailE;
         $this->userEdit->telf=$this->telfE;
-        $this->userEdit->password=$this->passwordE;
+        if($this->passwordE!=null || $this->passwordE!='')
+        {
+            $this->validate([
+                'passwordE' => 'required|min:8|confirmed',
+            ]);
+            $this->userEdit->password=$this->passwordE;
+        }
+        
         $this->userEdit->role_id=$this->rolE;
         $this->userEdit->nacimiento=$this->cumpleanoE;
         $this->userEdit->direccion=$this->direccionE;
