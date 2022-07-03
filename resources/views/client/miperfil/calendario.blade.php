@@ -197,10 +197,9 @@
     @if ($errors->any())
         <div class="ms-3 me-3 mb-5 alert alert-small rounded-s shadow-xl bg-red-dark" role="alert">
             <span><i class="fa fa-times"></i></span>
-            <strong>Incompleto!</strong> Llene correctamente todos los campos del dia seleccionado.
+            <strong>Incompleto!</strong> Formulario incompleto del dia seleccionado.
 
-            <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert"
-                aria-label="Close">×</button>
+            
         </div>
     @endif
     @if (session('success'))

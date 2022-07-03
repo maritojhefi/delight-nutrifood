@@ -16,7 +16,7 @@
         rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('fonts/css/fontawesome-all.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_mint.css') }}">
-    @laravelPWA
+    {{-- @laravelPWA --}}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
@@ -86,10 +86,17 @@
             @include('client.partials.menu-sidebar')
         </div>
     </div>
+    <div id="toast-loading" class="toast toast-tiny toast-top bg-blue-dark fade hide" data-bs-delay="1500"
+            data-bs-autohide="true"><i class="fa fa-sync fa-spin me-3"></i>Actualizado!</div>
     @include('client.partials.modalredes')
 
     <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('scripts/custom.js') }}"></script>
+    <script>
+        $( "h1" ).click(function() {
+            console.log('asd');
+        });
+    </script>
     <script>
         function myFunction() {
             var element = document.body;

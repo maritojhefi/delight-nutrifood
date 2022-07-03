@@ -1,9 +1,17 @@
 <div>
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Reporte de hoy {{date("d-M");}}</h4> <a href="#" wire:click="cambiarDisponibilidad"
+            <h4 class="card-title">Reporte de fecha {{(date_format(date_create($fechaSeleccionada), 'd-M'))}}</h4> 
+            <div class="col-3"><div  class="d-flex justify-content-center">
+                <div wire:loading class="spinner-border" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div></div>
+            <div class="col-3"><input type="date" class="form-control" wire:model="fechaSeleccionada" wire:change="cambioDeFecha"></div>
+            
+            {{-- <a href="#" wire:click="cambiarDisponibilidad"
                 data-bs-toggle="modal" data-bs-target="#modalDisponibilidad"><span
-                    class="badge badge-pill badge-primary">Cambiar Disponibilidad</span></a>
+                    class="badge badge-pill badge-primary">Cambiar Disponibilidad</span></a> --}}
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -23,7 +31,8 @@
                             <th>Estado</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    
+                    <tbody wire:loading.remove wire:target="cambioDeFecha">
                         @foreach ($coleccion as $lista)
                         <tr class="{{$lista['ESTADO']=='despachado'?'table-success':''}}">
                             <td>{{$loop->iteration}}</td>
@@ -37,12 +46,12 @@
                             <td>{{$lista['EMPAQUE']}}</td>
                             <td>{{$lista['ENVIO']}}</td>
                             @if ($lista['ESTADO']=="pendiente")
-                            <td><button wire:click="cambiarEstado('{{$lista['ID']}}')"
+                            <td><button wire:click="cambiarEstado('{{$lista['ID']}}')" wire:loading.attr="disabled" wire:target="cambiarEstado('{{$lista['ID']}}')"
                                     class="btn btn-warning">Pendiente</button></td>
 
                             @else
                             <td><button wire:click="cambiarAPendiente('{{$lista['ID']}}')"
-                                    class="btn btn-success">Despachado</button></td>
+                                    class="btn btn-success">Finalizado</button></td>
 
                             @endif
 
@@ -54,8 +63,11 @@
                             @foreach ($total[0] as $producto=>$array)
                             <th><small>
                                     @foreach ($array as $nombre=>$cantidad)
+                                    @if ($nombre!='')
                                     <span
-                                        class="badge badge-pill badge-primary light">{{$nombre}}:{{$cantidad}}</span><br>
+                                    class="badge badge-pill badge-primary light">{{$nombre}}:{{$cantidad}}</span><br>
+                                    @endif
+                                   
                                     @endforeach</th>
                             @endforeach
                             </small>
@@ -64,7 +76,11 @@
 
 
                     </tbody>
+                   
                 </table>
+                <div  class="d-flex justify-content-center">
+                    <h4>Planes para este dia:{{$coleccion->count()}}</h4>
+                </div>
             </div>
         </div>
     </div>

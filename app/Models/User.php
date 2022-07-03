@@ -108,9 +108,10 @@ class User extends Authenticatable
         ->withPivot('start','end','title','detalle','id','estado')
         ->wherePivot('estado','pendiente');
     }
-    public function planesHoy()
+    public function planesHoy($fecha)
     {
-        return $this->belongsToMany(Plane::class)->wherePivot('start', date('y-m-d'))->wherePivot('detalle','!=',null)
+        //dd($this->belongsToMany(Plane::class)->wherePivot('start',$fecha));
+        return $this->belongsToMany(Plane::class)->wherePivot('start',$fecha)//->wherePivot('detalle','!=',null)
         ->withPivot('start','end','title','detalle','id','estado');
     }
     public function planesSemana()

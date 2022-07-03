@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Admin\Almuerzos;
 
+use Carbon\Carbon;
 use App\Models\User;
 use Livewire\Component;
 use App\Models\Almuerzo;
@@ -10,10 +11,15 @@ use Illuminate\Support\Facades\DB;
 class ReporteDiario extends Component
 {
     public $menuHoy;
+    public $fechaSeleccionada,$cambioFecha=false;
     public function saber_dia($nombredia) {
         $dias = array('Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado');
         $fecha = $dias[date('N', strtotime($nombredia))];
         return $fecha;
+    }
+    public function cambioDeFecha()
+    {
+        $this->cambioFecha=true;
     }
     public function cambiarEstadoPlato($variable)
     {
@@ -79,32 +85,58 @@ class ReporteDiario extends Component
     {
         $usuarios=User::has('planes')->get();
         $coleccion=collect();
-        foreach($usuarios as $pensionado)
+        $fecha=date('Y-m-d');
+        if($this->cambioFecha==false)
         {
-            foreach($pensionado->planesHoy as $lista)
+            $this->fechaSeleccionada=Carbon::now()->format('Y-m-d');
+        }
+            
+            $pens=DB::table('plane_user')->select('plane_user.*','users.name')->leftjoin('users','users.id','plane_user.user_id')->whereDate('plane_user.start',$this->fechaSeleccionada)->get();
+            //dd($pens);
+            foreach($pens as $lista)
             {
-                $detalle=$lista->pivot->detalle;
-                $det=collect(json_decode($detalle,true));
+                //dd($lista);
+                $detalle=$lista->detalle;
+                if($detalle!=null)
+                {
+                    $det=collect(json_decode($detalle,true));
                 
                 
-                $coleccion->push([
-                    'ID'=>$lista->pivot->id,
-                    'NOMBRE'=>$pensionado->name,
-                    'ENSALADA'=>$det['ENSALADA'],
-                    'SOPA'=>$det['SOPA'],
-                    'PLATO'=>$det['PLATO'],
-                    'CARBOHIDRATO'=>$det['CARBOHIDRATO'],
-                    'JUGO'=>$det['JUGO'],
-                    'ENVIO'=>$det['ENVIO'],
-                    'EMPAQUE'=>$det['EMPAQUE'],
-                    'ESTADO'=>$lista->pivot->estado
-                ]);
+                    $coleccion->push([
+                        'ID'=>$lista->id,
+                        'NOMBRE'=>$lista->name,
+                        'ENSALADA'=>$det['ENSALADA'],
+                        'SOPA'=>$det['SOPA'],
+                        'PLATO'=>$det['PLATO'],
+                        'CARBOHIDRATO'=>$det['CARBOHIDRATO'],
+                        'JUGO'=>$det['JUGO'],
+                        'ENVIO'=>$det['ENVIO'],
+                        'EMPAQUE'=>$det['EMPAQUE'],
+                        'ESTADO'=>$lista->estado
+                    ]);
+                }
+                else
+                {
+                    $coleccion->push([
+                        'ID'=>$lista->id,
+                        'NOMBRE'=>$lista->name,
+                        'ENSALADA'=>'',
+                        'SOPA'=>'',
+                        'PLATO'=>'',
+                        'CARBOHIDRATO'=>'',
+                        'JUGO'=>'',
+                        'ENVIO'=>'',
+                        'EMPAQUE'=>'',
+                        'ESTADO'=>$lista->estado
+                    ]);
+                }
+                
                 
                 
                 
             }
            
-        }
+        
         $total=collect();
         $total->push([
             

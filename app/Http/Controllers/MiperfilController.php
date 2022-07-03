@@ -30,16 +30,17 @@ class MiperfilController extends Controller
        $coleccion=collect();
        $fechaactual=Carbon::now()->format('y-m-d');
        $fechalimite=date("y-m-d", strtotime("next sunday"));
-      
+      //dd($fechalimite);
        $array=array();
        $lunes=false;
-       $planes=$usuario->planesPendientes->where('id',$plan->id)->sortBy(function($col) {return $col;})->take(15);
+       $planes=$usuario->planesPendientes->where('id',$plan->id)->sortBy(function($col) {return $col;});
        //dd($planes);
        $menusemanal="";
        foreach($planes as $dias){
            
             if(date('y-m-d', strtotime($dias->pivot->start))<=$fechalimite && date('y-m-d', strtotime($dias->pivot->start))>=$fechaactual)
             {
+            
              $menusemanal=Almuerzo::where('dia',$this->saber_dia($dias->pivot->start))->first();  
          
              $coleccion->push([

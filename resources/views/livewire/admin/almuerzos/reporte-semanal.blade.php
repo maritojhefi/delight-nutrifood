@@ -60,7 +60,11 @@
                             @foreach ($total[0] as $producto=>$array)
                             <th><small>
                             @foreach ($array as $nombre=>$cantidad)
-                                <span class="badge badge-pill badge-{{$nombre=='N/D'?'danger':'warning light'}} ">{{$nombre}}: <strong>{{$cantidad}}</strong> </span><br>
+                            @if ($nombre!="")
+                            <span class="badge badge-pill badge-{{$nombre=='N/D'?'danger':'warning light'}} ">{{$nombre}}: <strong>{{$cantidad}}</strong> </span><br>
+                                
+                            @endif
+                               
                             @endforeach</th>
                             @endforeach
                             </small>
