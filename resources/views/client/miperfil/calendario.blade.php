@@ -249,6 +249,10 @@
             </div>
         </div>
     </div>
+
+    <div id="toast-finalizado" class="toast toast-tiny toast-top bg-orange-dark fade hide" data-bs-delay="2000" data-bs-autohide="true"><i class="fa fa-exclamation"></i> Este dia ya pasó...</div>
+    <div id="toast-permiso" class="toast toast-tiny toast-top bg-magenta-dark fade hide" data-bs-delay="2000" data-bs-autohide="true"><i class="fa fa-date"></i> Dia de permiso!</div>
+
     {{-- <div class="m-3" >
        
                 <div class="row">
@@ -275,9 +279,9 @@
         <div class="card-overlay bg-black opacity-80"></div>
     </div>
 
-    <div class="modal fade" id="basicModal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
+    <div class="modal fade" id="basicModal" data-bs-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered" role="document" >
+            <div class="modal-content" style="border-radius: 15px;box-shadow: 1px 1px 1px 1px teal;">
                 <div class="modal-header">
                     <h5 class="modal-title">Pedir permiso</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal">
@@ -293,7 +297,7 @@
                 </div>
                 <div class="modal-footer">
                    
-                    <button type="button" class="btn btn-primary btn-rounded btn-sm" id="btnPermiso">Confirmar <span class="btn-icon-end"><i
+                    <button type="button" class="btn btn-xxs mb-3 rounded-s text-uppercase font-900 shadow-s border-magenta-dark  bg-magenta-light" id="btnPermiso">Confirmar <span class="btn-icon-end"><i
                                 class="fa fa-calendar"></i></span>
                     </button>
                 </div>

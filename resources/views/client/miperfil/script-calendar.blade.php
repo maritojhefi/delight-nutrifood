@@ -7,6 +7,7 @@
 @push('scripts')
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
+        
         document.addEventListener('DOMContentLoaded', function() {
 
             let formulario = document.getElementById("form-cal");
@@ -29,7 +30,10 @@
                     then(
                         (respuesta) => {
                             if (respuesta.data.estado == "finalizado") {
-
+                                console.log('asdsa');
+                                var toastID = document.getElementById('toast-finalizado');
+                                toastID = new bootstrap.Toast(toastID);
+                                toastID.show();
                             } else if (respuesta.data.estado == "pendiente" && respuesta.data
                                 .title !=
                                 "feriado") {
@@ -37,7 +41,9 @@
                                 formBasic.id.value = respuesta.data.id;
                                 $("#basicModal").modal('show');
                             } else if (respuesta.data.estado == "permiso") {
-
+                                var toastID = document.getElementById('toast-permiso');
+                                toastID = new bootstrap.Toast(toastID);
+                                toastID.show();
 
 
                             }
@@ -56,6 +62,8 @@
             calendar.render();
             window.onload = function() {
                 const myTimeout = setTimeout(resetear, 500);
+
+
             };
 
             $(".fc-icon").click(function() {
