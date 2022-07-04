@@ -12,18 +12,14 @@
                 hiddenDays: [0],
                 selectable: true,
                 //eventContent: { html: '<i>some html</i>' },
-                events: "{{ $path }}/admin/usuarios/mostrar/" + {{ $plan->id }} + "/" +
+                events: "{{ $path }}/miperfil/mostrar/" + {{ $plan->id }} + "/" +
                     {{ $usuario->id }},
 
-                dayRender: function(date, cell) {
-
-                    $(cell).addClass('disabled');
-
-                },
+                
                 eventClick: function(info) {
                     var evento = info.event;
 
-                    axios.get('{{ $path }}/admin/usuarios/editar/' + info.event.id).
+                    axios.get('{{ $path }}/miperfil/editar/' + info.event.id).
                     then(
                         (respuesta) => {
                             if (respuesta.data.estado == "finalizado") {
@@ -70,7 +66,7 @@
             document.getElementById("btnPermiso").addEventListener("click", function() {
 
                 console.log('escuchando');
-                axios.get('{{ $path }}/admin/usuarios/permiso/' + formBasic.id.value).
+                axios.get('{{ $path }}/miperfil/permiso/' + formBasic.id.value).
                 then(
                     (respuesta) => {
                         calendar.refetchEvents();
@@ -86,23 +82,7 @@
                     }
                 })
             });
-            document.getElementById("btnQuitar").addEventListener("click", function() {
-
-                axios.get('{{ $path }}/admin/usuarios/quitarpermiso/' +
-                    formulario.id.value).
-                then(
-                    (respuesta) => {
-                        calendar.refetchEvents();
-                        const asd = setTimeout(resetear, 500);
-                        $("#permisoModal").modal('hide');
-                    }
-                ).
-                catch(error => {
-                    if (error.response) {
-                        console.log(error.response.data);
-                    }
-                })
-            });
+            
 
         });
     </script>

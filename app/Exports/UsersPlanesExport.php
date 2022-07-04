@@ -27,10 +27,10 @@ class UsersPlanesExport implements WithMultipleSheets, WithStyles,WithColumnWidt
     public function columnWidths(): array
     {
         return [
-            'A' => 35,
-            'B' => 35,   
-            'E' => 35, 
-            'F' => 35,          
+            'A' => 30,
+            'B' => 30,   
+            'E' => 25, 
+            'F' => 25,          
         ];
     }
     public function collection()

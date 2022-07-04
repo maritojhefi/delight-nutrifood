@@ -27,6 +27,12 @@ class MiperfilController extends Controller
         return view('client.miperfil.index',compact('usuario','planes','fotoMenu'));
     }
     public function calendario(Plane $plan, User $usuario){
+        if($usuario->id!=auth()->user()->id)
+        {
+           
+            return back();
+        }
+        
        $coleccion=collect();
        $fechaactual=Carbon::now()->format('y-m-d');
        $fechalimite=date("y-m-d", strtotime("next sunday"));
