@@ -198,21 +198,17 @@
                 <div class="list-group list-custom-large mb-4">
                     @isset($planes)
                         @foreach ($planes as $item)
-                            @if ($item['editable'] == true)
+                            
                                 <a href="{{ route('calendario.cliente', [$item['id'], $usuario->id]) }}">
-                                @else
-                                    <a href="#">
-                            @endif
+                              
 
                             <i class="fa fa-ticket-alt color-green-dark"></i>
                             <span>{{ $item['plan'] }}</span>
                             <strong>Cantidad restante - {{ $item['cantidad'] }}</strong>
 
-                            @if ($item['editable'] == true)
-                                <span class="badge bg-blue-dark">Editar menu</span>
-                            @else
-                                <span class="badge bg-red-dark">No editable</span>
-                            @endif
+                            
+                                <span class="badge bg-blue-dark">Ver</span>
+                           
                             <i class="fa fa-angle-right"></i>
                             </a>
                         @endforeach

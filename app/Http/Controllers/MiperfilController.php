@@ -135,14 +135,31 @@ class MiperfilController extends Controller
             'EMPAQUE'=>$request[$empaque]
             );
       
-           
+           $dia=DB::table('plane_user')->where('id',$request->id)->first();
+           if($dia->estado=="pendiente")
+           {
             DB::table('plane_user')->where('id',$request->id)->update(['detalle'=>$array]);
             return back()->with('success','Dia '.$request->dia.' guardado!');
+           }
+           else
+           {
+            return back()->with('error','Este dia ya no se encuentra en su plan!');
+           }
+            
         
     }
     public function editardia($idpivot){
-        DB::table('plane_user')->where('id',$idpivot)->update(['detalle'=>null]);
-        return back()->with('success','Ya puede editar este dia!');
+        $dia=DB::table('plane_user')->where('id',$idpivot)->first();
+           if($dia->estado=="pendiente")
+           {
+            DB::table('plane_user')->where('id',$idpivot)->update(['detalle'=>null]);
+            return back()->with('success','Ya puede editar este dia!');
+           }
+           else
+           {
+           return back()->with('error','Este dia ya no se encuentra en su plan!');
+           }
+        
     }
 
     public function revisarPerfil()

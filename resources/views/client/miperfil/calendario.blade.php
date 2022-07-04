@@ -1,7 +1,20 @@
 @extends('client.master')
 @section('content')
     <x-cabecera-pagina titulo="{{ $plan->nombre }}" cabecera="bordeado" />
+        @env('local')
+        @php
+        $path = env('APP_URL');
+        @endphp
+        @endenv
+        @production
+            @php
+            $path = 'https://delight-nutrifood.com';
+            @endphp
+        @endproduction
+        @include('client.miperfil.script-calendar')
     <div class="card card-style">
+        
+        @if ($plan->editable)
         <div class="content text-white">
             <h4>Personaliza tu plan de esta semana!</h4>
             <p>
@@ -61,7 +74,7 @@
                                             </div>
                                         @endif
                                         @if ($plan->carbohidrato)
-                                            <div class="col-6">
+                                            <div class="col-12">
                                                 <i class="fa fa-star color-yellow-dark"></i> <strong>Elija su carbohidrato</strong>
                                                 <div class="fac fac-radio fac-default"><span></span>
                                                     <input id="box4-fac-radio{{ $lista['id'] }}" type="radio"
@@ -193,12 +206,14 @@
                 </div>
             @endforeach
         </div>
+        @endif
+       
 
     </div>
     @if ($errors->any())
         <div class="ms-3 me-3 mb-5 alert alert-small rounded-s shadow-xl bg-red-dark" role="alert">
             <span><i class="fa fa-times"></i></span>
-            <strong>Incompleto!</strong> Formulario incompleto del dia seleccionado.
+            <strong>Rellene bien los campos</strong>
 
             
         </div>
@@ -211,13 +226,55 @@
                 aria-label="Close">×</button>
         </div>
     @endif
-    @once
-        <div class="card card-style bg-18" data-card-height="150" style="height: 150px;">
-            <div class="card-center ms-3">
-                <h1 class="color-white">Detalles del plan:</h1>
-                <p class="color-white mt-n1 mb-0 opacity-70">{{$plan->detalle}}</p>
-            </div>
-            <div class="card-overlay bg-black opacity-80"></div>
+    @if (session('error'))
+        <div class="ms-3 me-3 mb-5 alert alert-small rounded-s shadow-xl bg-red-dark" role="alert">
+            <span><i class="fa fa-times-circle "></i></span>
+            <strong>{{ session('error') }}</strong>
+            <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert"
+                aria-label="Close">×</button>
         </div>
-    @endonce
+    @endif
+        
+    
+    <div class="card card-style bg-18" >
+        <div class="card">
+            <div class="card-body">
+                <div id="calendar" class="app-fullcalendar"></div>
+            </div>
+        </div>
+    </div>
+    <div class="card card-style bg-18" data-card-height="150" style="height: 150px;">
+        <div class="card-center ms-3">
+            <h1 class="color-white">Detalles del plan:</h1>
+            <p class="color-white mt-n1 mb-0 opacity-70">{{$plan->detalle}}</p>
+        </div>
+        <div class="card-overlay bg-black opacity-80"></div>
+    </div>
+
+    <div class="modal fade" id="basicModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Pedir permiso</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <span>Esta seguro? Esta accion no se puede revertir</span>
+                    <form action="" id="formBasic">
+                        <input type="hidden" name="id" id="id">
+                        
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                   
+                    <button type="button" class="btn btn-primary btn-rounded btn-sm" id="btnPermiso">Confirmar <span class="btn-icon-end"><i
+                                class="fa fa-calendar"></i></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 @endsection

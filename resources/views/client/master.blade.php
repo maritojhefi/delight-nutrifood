@@ -16,6 +16,7 @@
         rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('fonts/css/fontawesome-all.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_mint.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.css">
     {{-- @laravelPWA --}}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -92,6 +93,7 @@
 
     <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('scripts/custom.js') }}"></script>
+    
     <script>
         $( "h1" ).click(function() {
             console.log('asd');
@@ -112,6 +114,10 @@
             })
         }
     </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/locales-all.min.js"></script>
+    <script src="{{asset('js/calendario.js')}}"></script>
     @stack('scripts')
 
 
