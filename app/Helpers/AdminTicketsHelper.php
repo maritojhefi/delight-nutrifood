@@ -241,7 +241,7 @@ class AdminTicketsHelper
                     if ($numero == "1") {
                         $empaque = 'Vianda';
                     } else if ($numero == "2") {
-                        $empaque = 'Eco-Empaque Delight';
+                        $empaque = 'Empaque Bio(apto/microondas)';
                     } else {
                         $empaque = "";
                     }

@@ -36,34 +36,33 @@
                                     @csrf
                                     <div class="row">
                                         @if ($plan->segundo)
-                                            <div class="col-6">
-                                                <mark class="highlight ps-2 font-12 pe-2 bg-red-dark">Elija su plato</mark>
+                                            <div class="col-12 mb-3">
+                                                <i class="fa fa-star color-yellow-dark"></i> <strong>Elija su plato</strong>
                                                 <div class="fac fac-radio fac-default"><span></span>
                                                     <input id="box1-fac-radio{{ $lista['id'] }}" type="radio"
                                                         name="plato{{ $lista['id'] }}" value="{{ $lista['ejecutivo'] }}">
                                                     <label
-                                                        for="box1-fac-radio{{ $lista['id'] }}">{{ $lista['ejecutivo'] }}</label>
+                                                        for="box1-fac-radio{{ $lista['id'] }}"><mark class="highlight ps-2 font-12 pe-2 bg-magenta-dark mr-2">Ejecutivo</mark> {{ $lista['ejecutivo'] }}</label>
                                                 </div>
                                                 <div class="fac fac-radio fac-default"><span></span>
                                                     <input id="box2-fac-radio{{ $lista['id'] }}" type="radio"
                                                         name="plato{{ $lista['id'] }}" value="{{ $lista['dieta'] }}">
                                                     <label
-                                                        for="box2-fac-radio{{ $lista['id'] }}">{{ $lista['dieta'] }}</label>
+                                                        for="box2-fac-radio{{ $lista['id'] }}"><mark class="highlight ps-2 font-12 pe-2 bg-magenta-dark mr-2">Dieta</mark> {{ $lista['dieta'] }} </label>
                                                 </div>
                                                 <div class="fac fac-radio fac-default"><span></span>
                                                     <input id="box3-fac-radio{{ $lista['id'] }}" type="radio"
                                                         name="plato{{ $lista['id'] }}"
                                                         value="{{ $lista['vegetariano'] }}">
                                                     <label
-                                                        for="box3-fac-radio{{ $lista['id'] }}">{{ $lista['vegetariano'] }}</label>
+                                                        for="box3-fac-radio{{ $lista['id'] }}"><mark class="highlight ps-2 font-12 pe-2 bg-magenta-dark mr-2">Veggie</mark> {{ $lista['vegetariano'] }} </label>
                                                 </div>
 
                                             </div>
                                         @endif
                                         @if ($plan->carbohidrato)
                                             <div class="col-6">
-                                                <mark class="highlight ps-2 font-12 pe-2 bg-blue-dark">Elija su
-                                                    carbohidrato</mark>
+                                                <i class="fa fa-star color-yellow-dark"></i> <strong>Elija su carbohidrato</strong>
                                                 <div class="fac fac-radio fac-default"><span></span>
                                                     <input id="box4-fac-radio{{ $lista['id'] }}" type="radio"
                                                         name="carb{{ $lista['id'] }}"
@@ -93,7 +92,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-6">
-                                            <mark class="highlight ps-2 font-12 pe-2 bg-mint-dark">Tipo de Envio</mark>
+                                            <i class="fa fa-map-marker font-16 color-red-dark"></i> <strong>Tipo de envio</strong>
                                             <div class="fac fac-radio fac-default"><span></span>
                                                 <input id="box7-fac-radio{{ $lista['id'] }}" type="radio"
                                                     name="envio{{ $lista['id'] }}" value="{{ $lista['envio1'] }}">
@@ -115,7 +114,7 @@
 
                                         </div>
                                         <div class="col-6">
-                                            <mark class="highlight ps-2 font-12 pe-2 bg-green-dark">Tipo de empaque</mark>
+                                            <i class="fa fa-edit font-16 color-red-dark"></i> <strong>Tipo de empaque</strong>
                                             <div class="fac fac-radio fac-default"><span></span>
                                                 <input id="box10-fac-radio{{ $lista['id'] }}" type="radio"
                                                     name="empaque{{ $lista['id'] }}" value="{{ $lista['empaque1'] }}">
@@ -140,24 +139,21 @@
                                     </div>
                                     <div class="row mb-0">
                                         @if ($plan->sopa)
-                                            <h4 class="col-6 font-500  font-13 text-white"><mark
-                                                    class="highlight ps-2 font-12 pe-2 bg-orange-dark">Sopa</mark></h4>
+                                            <h4 class="col-6 font-500  font-13"> <i class="fa fa-check color-green-dark"></i> <strong>Sopa</strong></h4>
                                             <p class="col-6 mb-3 text-end  font-900 mb-0">
                                                 {{ $lista['sopa'] }}
                                             </p>
                                             <input type="hidden" value="{{ $lista['sopa'] }}" name="sopa">
                                         @endif
                                         @if ($plan->ensalada)
-                                            <h4 class="col-6 font-500 font-13 text-white"><mark
-                                                    class="highlight ps-2 font-12 pe-2 bg-orange-dark">Ensalada</mark></h4>
+                                            <h4 class="col-6 font-500 font-13 "> <i class="fa fa-check color-green-dark"></i> <strong>Ensalada</strong></h4>
                                             <p class="col-6 mb-3 text-end  font-900 mb-0">
                                                 {{ $lista['ensalada'] }}
                                             </p>
                                             <input type="hidden" value="{{ $lista['ensalada'] }}" name="ensalada">
                                         @endif
                                         @if ($plan->jugo)
-                                            <h4 class="col-6 font-500 font-13 text-white"><mark
-                                                    class="highlight ps-2 font-12 pe-2 bg-orange-dark">Jugo</mark></h4>
+                                            <h4 class="col-6 font-500 font-13"> <i class="fa fa-check color-green-dark"></i> <strong>Jugo</strong></h4>
                                             <p class="col-6 mb-3 text-end  font-900 mb-0">
                                                 {{ $lista['jugo'] }}
                                             </p>

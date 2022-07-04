@@ -61,7 +61,7 @@ class MiperfilController extends Controller
                  'envio2'=>'Para llevar(Paso a recoger)',
                  'envio3'=>'Delivery',
                  'empaque1'=>'Vianda',
-                 'empaque2'=>'Eco-Empaque Delight',
+                 'empaque2'=>'Empaque Bio(apto/microondas)',
                             ]);
              
             }
