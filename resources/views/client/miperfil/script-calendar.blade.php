@@ -1,8 +1,8 @@
 @push('header')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.css">
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/locales-all.min.js"></script>
-<script src="{{asset('js/calendario.js')}}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/locales-all.min.js"></script>
+    <script src="{{ asset('js/calendario.js') }}"></script>
 @endpush
 @push('scripts')
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -21,7 +21,7 @@
                 events: "{{ $path }}/miperfil/mostrar/" + {{ $plan->id }} + "/" +
                     {{ $usuario->id }},
 
-                
+
                 eventClick: function(info) {
                     var evento = info.event;
 
@@ -30,14 +30,15 @@
                         (respuesta) => {
                             if (respuesta.data.estado == "finalizado") {
 
-                            } else if (respuesta.data.estado == "pendiente" && respuesta.data.title !=
+                            } else if (respuesta.data.estado == "pendiente" && respuesta.data
+                                .title !=
                                 "feriado") {
 
                                 formBasic.id.value = respuesta.data.id;
                                 $("#basicModal").modal('show');
-                            } else if (respuesta.data.estado == "permiso" ) {
-                                    
-                            
+                            } else if (respuesta.data.estado == "permiso") {
+
+
 
                             }
 
@@ -58,7 +59,9 @@
             };
 
             $(".fc-icon").click(function() {
-                const asd = setTimeout(resetear, 500);
+                const asd = setTimeout(resetear, 100);
+                const dsad = setTimeout(resetear, 300);
+                const asfdfd = setTimeout(resetear, 500);
             });
 
             function resetear() {
@@ -76,7 +79,10 @@
                 then(
                     (respuesta) => {
                         calendar.refetchEvents();
-                        const asd = setTimeout(resetear, 500);
+                        const asd = setTimeout(resetear, 100);
+                        const dsad = setTimeout(resetear, 300);
+                        const asfdfd = setTimeout(resetear, 500);
+                        const asfdffd = setTimeout(resetear, 1000);
                         $("#basicModal").modal('hide');
 
                     }
@@ -84,11 +90,14 @@
                 catch(error => {
                     if (error.response) {
                         console.log(error.response.data);
-                        const asd = setTimeout(resetear, 500);
+                        const asd = setTimeout(resetear, 100);
+                        const dsad = setTimeout(resetear, 300);
+                        const asfdfd = setTimeout(resetear, 500);
+                        const asfdfdd = setTimeout(resetear, 1000);
                     }
                 })
             });
-            
+
 
         });
     </script>
