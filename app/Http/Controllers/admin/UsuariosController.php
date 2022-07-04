@@ -144,10 +144,11 @@ class UsuariosController extends Controller
             if ($siexiste->count() != 0) {
             } else {
                 DB::table('plane_user')->insert([
-                    'color' => '#c01222',
+                    'color' => Plane::COLORFERIADO,
                     'start' => $dia,
                     'end' => $dia,
                     'title' => 'feriado',
+                    'estado'=>Plane::ESTADOFERIADO
 
                 ]);
             }
@@ -214,12 +215,12 @@ class UsuariosController extends Controller
             'plane_id' => $evento->plane_id,
             'user_id' => $evento->user_id
         ]);  
-        $evento = DB::table('plane_user')->where('id', $id)->update(['estado' => 'permiso', 'color' => '#A314CD']);
+        $evento = DB::table('plane_user')->where('id', $id)->update(['estado' => Plane::ESTADOPERMISO, 'color' => Plane::COLORPERMISO,'detalle'=>null]);
         return response()->json($evento);
     }
     public function quitarpermiso($id)
     {
-        $evento = DB::table('plane_user')->where('id', $id)->update(['estado' => 'pendiente', 'color' => '#20C995']);
+        $evento = DB::table('plane_user')->where('id', $id)->update(['estado' => Plane::ESTADOPENDIENTE, 'color' => Plane::COLORPENDIENTE]);
         return response()->json($evento);
     }
     public function mostrar($idplan, $iduser)

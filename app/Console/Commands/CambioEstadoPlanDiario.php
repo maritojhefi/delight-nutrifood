@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Carbon\Carbon;
+use App\Models\Plane;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -44,7 +45,7 @@ class CambioEstadoPlanDiario extends Command
         {
           foreach($registrosPasadosDeFechaActual as $registros)
           {
-            DB::table('plane_user')->where('id',$registros->id)->update(['color'=>'#F7843A','estado'=>'finalizado']);
+            DB::table('plane_user')->where('id',$registros->id)->update(['color'=>Plane::COLORFINALIZADO,'estado'=>Plane::ESTADOFINALIZADO]);
             
           }
           $this->info('Se realizo la actualizacion de planes con exito! -- '.date('d-m-Y h:i:s'));

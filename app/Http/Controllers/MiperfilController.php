@@ -163,7 +163,7 @@ class MiperfilController extends Controller
            }
            else
            {
-           return back()->with('error','Este dia ya no se encuentra en su plan!');
+           return back()->with('error','Este dia ya no se encuentra disponible!');
            }
         
     }

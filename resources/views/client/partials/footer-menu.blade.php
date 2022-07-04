@@ -21,7 +21,7 @@
         </a> -->
     </div> --}}
 
-<div id="footer-bar" class="footer-bar-2 bg-dark-dark mb-4 ms-3 me-3 rounded-s">
+<div id="footer-bar" class="footer-bar-2 bg-dark-dark mb-1 ms-3 me-3 rounded-s">
     {{-- <a href="index.html"><i class="fa fa-home color-white"></i><span class="color-white">Home</span></a>
         <a href="index-components.html"><i class="fa fa-star color-white"></i><span class="color-white">Features</span></a>
         <a href="index-pages.html" class="active-nav"><i class="fa fa-heart color-white"></i><span class="color-white">Pages</span></a>

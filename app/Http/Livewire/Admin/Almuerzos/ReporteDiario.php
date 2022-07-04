@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Admin\Almuerzos;
 
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Plane;
 use Livewire\Component;
 use App\Models\Almuerzo;
 use App\Exports\UsersPlanesExport;
@@ -60,6 +61,14 @@ class ReporteDiario extends Component
             'message'=>"Se actualizo correctamente!"
         ]);
     }
+    public function finalizarTodos()
+    {
+        DB::table('plane_user')->whereDate('start',$this->fechaSeleccionada)->where('estado',Plane::ESTADOPENDIENTE)->update(['estado'=>Plane::ESTADOFINALIZADO,'color'=>Plane::COLORFINALIZADO]);
+        $this->dispatchBrowserEvent('alert',[
+            'type'=>'success',
+            'message'=>"Se finalizaron todos los registros para el dia seleccionado!"
+        ]);
+    }
     public function cambiarDisponibilidad()
     {
         $fecha=date('Y-m-d');
@@ -69,7 +78,7 @@ class ReporteDiario extends Component
     }
     public function cambiarEstado($id)
     {
-        DB::table('plane_user')->where('id',$id)->update(['estado'=>'finalizado']);
+        DB::table('plane_user')->where('id',$id)->update(['estado'=>Plane::ESTADOFINALIZADO,'color'=>Plane::COLORFINALIZADO]);
         $this->dispatchBrowserEvent('alert',[
             'type'=>'success',
             'message'=>"Se despacho este pedido!"
@@ -89,7 +98,7 @@ class ReporteDiario extends Component
 
     public function cambiarAPendiente($id)
     {
-        DB::table('plane_user')->where('id',$id)->update(['estado'=>'pendiente']);
+        DB::table('plane_user')->where('id',$id)->update(['estado'=>Plane::ESTADOPENDIENTE,'color'=>Plane::COLORPENDIENTE]);
         $this->dispatchBrowserEvent('alert',[
             'type'=>'warning',
             'message'=>"Este pedido vuelve a estar pendiente"

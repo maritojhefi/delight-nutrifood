@@ -1,13 +1,17 @@
 <div>
+  
+    
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Reporte de fecha {{(date_format(date_create($fechaSeleccionada), 'd-M'))}}</h4> 
+            <h4 class="card-title">Reporte de fecha {{(date_format(date_create($fechaSeleccionada), 'd-M'))}}
+                <button class="btn btn-xs btn-info"  data-toggle="modal" data-target="#exampleModal">Finalizar todos</button></h4> 
+            
             <div class="col-3"><div  class="d-flex justify-content-center">
                 <div wire:loading class="spinner-border" role="status">
                   <span class="sr-only">Loading...</span>
                 </div>
               </div></div>
-            <div class="col-3"><input type="date" class="form-control" wire:model="fechaSeleccionada" wire:change="cambioDeFecha"></div>
+            <div class="col-sm-6 col-md-4 col-lg-3"><input type="date" class="form-control" wire:model="fechaSeleccionada" wire:change="cambioDeFecha"></div>
             
             {{-- <a href="#" wire:click="cambiarDisponibilidad"
                 data-bs-toggle="modal" data-bs-target="#modalDisponibilidad"><span
@@ -151,4 +155,24 @@
             </div>
         </div>
     </div>
+
+  <div wire:ignore.self class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Esta seguro?</h5>
+          <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+         Los usuarios ya no podran registrar sus planes para el dia {{date_format(date_create($fechaSeleccionada),"d-M")}}
+        </div>
+        <div class="modal-footer">
+          
+          <button type="button" class="btn btn-primary" wire:click="finalizarTodos">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
