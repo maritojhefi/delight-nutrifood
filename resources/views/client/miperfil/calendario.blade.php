@@ -98,11 +98,11 @@
                                                         for="box6-fac-radio{{ $lista['id'] }}">{{ $lista['carbohidrato_3'] }}</label>
                                                 </div>
                                                 <div class="fac fac-radio fac-default"><span></span>
-                                                    <input id="box7-fac-radio{{ $lista['id'] }}" type="radio"
+                                                    <input id="box13-fac-radio{{ $lista['id'] }}" type="radio"
                                                         name="carb{{ $lista['id'] }}"
                                                         value="sin carbohidrato">
                                                     <label
-                                                        for="box7-fac-radio{{ $lista['id'] }}">Sin carbohidrato</label>
+                                                        for="box13-fac-radio{{ $lista['id'] }}">Sin carbohidrato</label>
                                                 </div>
 
                                             </div>
