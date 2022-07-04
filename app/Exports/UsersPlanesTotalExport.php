@@ -3,10 +3,12 @@
 namespace App\Exports;
 
 use App\Models\User;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class UsersPlanesTotalExport implements FromCollection//, WithHeadings
+class UsersPlanesTotalExport implements FromCollection//, WithStyles//, WithHeadings
 {
     /**
     * @return \Illuminate\Support\Collection
@@ -72,4 +74,5 @@ class UsersPlanesTotalExport implements FromCollection//, WithHeadings
         //dd($total);
         return $resumen;
     }
+   
 }

@@ -14,9 +14,9 @@
                     class="badge badge-pill badge-primary">Cambiar Disponibilidad</span></a> --}}
         </div>
         <div class="card-body">
-            <div class="table-responsive">
+            <div class="table-responsive " style="padding:5px">
                 <table class="table table-responsive-sm">
-                    <thead>
+                    <thead style="padding:5px">
                         <tr>
                             <th>#</th>
                             <th>Plan</th>
@@ -33,29 +33,29 @@
                         </tr>
                     </thead>
                     
-                    <tbody wire:loading.remove wire:target="cambioDeFecha">
+                    <tbody wire:loading.remove wire:target="cambioDeFecha" style="padding:5px">
                         @foreach ($coleccion as $lista)
-                        <tr class="{{$lista['ESTADO']=='finalizado'?'table-success':'' }}{{$lista['ESTADO']=='permiso'?'table-warning':''}}">
-                            <td>{{$loop->iteration}}</td>
-                            <td>{{Str::limit($lista['PLAN'],20)}}</td>
-                            <td>{{Str::limit($lista['NOMBRE'],20)}}</td>
+                        <tr class="{{$lista['ESTADO']=='finalizado'?'table-success':'' }}{{$lista['ESTADO']=='permiso'?'table-warning':''}}" style="padding:5px">
+                            <td style="padding:5px">{{$loop->iteration}}</td>
+                            <td style="padding:5px">{{Str::limit($lista['PLAN'],20)}}</td>
+                            <td style="padding:5px">{{Str::limit($lista['NOMBRE'],20)}}</td>
 
-                            <td>{{$lista['SOPA']}}</td>
-                            <td>{{$lista['ENSALADA']}}</td>
-                            <td>{{$lista['PLATO']}}</td>
-                            <td>{{$lista['CARBOHIDRATO']}}</td>
-                            <td>{{$lista['JUGO']}}</td>
-                            <td>{{$lista['EMPAQUE']}}</td>
-                            <td>{{$lista['ENVIO']}}</td>
+                            <td style="padding:5px">{{$lista['SOPA']!=""?'SI':'NO'}}</td>
+                            <td style="padding:5px">{{$lista['ENSALADA']!=""?'SI':'NO'}}</td>
+                            <td style="padding:5px">{{$lista['PLATO']}}</td>
+                            <td style="padding:5px">{{$lista['CARBOHIDRATO']}}</td>
+                            <td style="padding:5px">{{$lista['JUGO']!=""?'SI':'NO'}}</td>
+                            <td style="padding:5px">{{$lista['EMPAQUE']}}</td>
+                            <td style="padding:5px">{{$lista['ENVIO']}}</td>
                             @if ($lista['ESTADO']=="pendiente")
-                            <td><button wire:click="cambiarEstado('{{$lista['ID']}}')" wire:loading.attr="disabled" wire:target="cambiarEstado('{{$lista['ID']}}')"
+                            <td style="padding:5px"><button wire:click="cambiarEstado('{{$lista['ID']}}')" wire:loading.attr="disabled" wire:target="cambiarEstado('{{$lista['ID']}}')"
                                     class="btn btn-info">Pendiente</button></td>
 
                             @elseif($lista['ESTADO']=="finalizado")
-                            <td><button wire:click="cambiarAPendiente('{{$lista['ID']}}')"
+                            <td style="padding:5px"><button wire:click="cambiarAPendiente('{{$lista['ID']}}')"
                                     class="btn btn-success">Finalizado</button></td>
                             @elseif($lista['ESTADO']=="permiso")
-                            <td><button 
+                            <td style="padding:5px"><button 
                                 class="btn btn-warning" disabled>Permiso</button></td>
                             @endif
 

@@ -3,11 +3,16 @@
 namespace App\Exports;
 
 use App\Models\User;
+use App\Models\Almuerzo;
+use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class UsersPlanesExport implements WithMultipleSheets
+class UsersPlanesExport implements WithMultipleSheets, WithStyles,WithColumnWidths
 {
     /**
     * @return \Illuminate\Support\Collection
@@ -17,6 +22,14 @@ class UsersPlanesExport implements WithMultipleSheets
     public function __construct($fechaSeleccionada)
     {
             $this->fechaSeleccionada=$fechaSeleccionada;
+    }
+
+    public function columnWidths(): array
+    {
+        return [
+            'A' => 35,
+            'B' => 35,            
+        ];
     }
     public function collection()
     {
@@ -35,17 +48,25 @@ class UsersPlanesExport implements WithMultipleSheets
                 if($detalle!=null)
                 {
                     $det=collect(json_decode($detalle,true));
-                
-                
+                    $sopaCustom='';
+                    $det['SOPA']==''?$sopaCustom='Sin Sopa':$sopaCustom=$det['SOPA'];
+
+                    $saberDia=WhatsappAPIHelper::saber_dia($this->fechaSeleccionada);
+                    $menu=Almuerzo::where('dia',$saberDia)->first();
+                    $tipoSegundo='';
+                    $tipoCarbo='';
+                    if($det['PLATO']==$menu->ejecutivo)$tipoSegundo='EJECUTIVO';
+                    if($det['PLATO']==$menu->dieta)$tipoSegundo='DIETA';
+                    if($det['PLATO']==$menu->vegetariano)$tipoSegundo='VEGGIE';
                     $coleccion->push([
-                       
+                        
                         'PLAN'=>$lista->nombre,
                         'NOMBRE'=>$lista->name,
-                        'ENSALADA'=>$det['ENSALADA'],
-                        'SOPA'=>$det['SOPA'],
-                        'PLATO'=>$det['PLATO'],
+                        'ENSALADA'=>1,
+                        'SOPA'=>$sopaCustom,
+                        'PLATO'=>$tipoSegundo,
                         'CARBOHIDRATO'=>$det['CARBOHIDRATO'],
-                        'JUGO'=>$det['JUGO'],
+                        'JUGO'=>1,
                         'ENVIO'=>$det['ENVIO'],
                         'EMPAQUE'=>$det['EMPAQUE'],
                         'ESTADO'=>$lista->estado
@@ -136,5 +157,12 @@ class UsersPlanesExport implements WithMultipleSheets
        
 
         return $sheets;
+    }
+    public function styles(Worksheet $sheet)
+    {
+        $sheet->getStyle('1')
+            ->getFont()
+            ->setBold(true);
+            
     }
 }
