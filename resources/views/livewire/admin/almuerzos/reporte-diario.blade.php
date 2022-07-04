@@ -19,6 +19,7 @@
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th>Plan</th>
                             <th>Nombre</th>
                             <th>Sopa</th>
                             <th>Ensalada</th>
@@ -36,7 +37,8 @@
                         @foreach ($coleccion as $lista)
                         <tr class="{{$lista['ESTADO']=='finalizado'?'table-success':'' }}{{$lista['ESTADO']=='permiso'?'table-warning':''}}">
                             <td>{{$loop->iteration}}</td>
-                            <td>{{$lista['NOMBRE']}}</td>
+                            <td>{{Str::limit($lista['PLAN'],20)}}</td>
+                            <td>{{Str::limit($lista['NOMBRE'],20)}}</td>
 
                             <td>{{$lista['SOPA']}}</td>
                             <td>{{$lista['ENSALADA']}}</td>

@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Rawilk\Printing\Facades\Printing;
 use App\Http\Livewire\Client\Inicio\Index;
@@ -128,6 +129,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('/mostrar/{idplan}/{iduser}', [App\Http\Controllers\admin\UsuariosController::class, 'mostrar']);
 
         Route::get('/asistencia', \App\Http\Livewire\Admin\Usuarios\AsistenciaPersonal::class)->name('usuario.asistencia');
+        Route::get('/cambiarEstados', function(){
+            DB::table('plane_user')->where('estado','despachado')->update(['estado'=>'pendiente']);
+        });
+
     });
     Route::prefix('/sucursales')->group(function () {
    

@@ -21,12 +21,12 @@ class UsersPlanesExport implements WithMultipleSheets
     public function collection()
     {
         $coleccion=collect();
-        $pens=DB::table('plane_user')->select('plane_user.*','users.name','planes.editable')
+        $pens=DB::table('plane_user')->select('plane_user.*','users.name','planes.editable','planes.nombre')
         ->leftjoin('users','users.id','plane_user.user_id')
         ->leftjoin('planes','planes.id','plane_user.plane_id')
         ->whereDate('plane_user.start',$this->fechaSeleccionada)
-        ->where('planes.editable',1)
-        ->get();
+        //->where('planes.editable',1)
+        ->get();   
            
             foreach($pens as $lista)
             {
@@ -39,6 +39,7 @@ class UsersPlanesExport implements WithMultipleSheets
                 
                     $coleccion->push([
                         'ID'=>$lista->id,
+                        'PLAN'=>$lista->nombre,
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>$det['ENSALADA'],
                         'SOPA'=>$det['SOPA'],
@@ -54,6 +55,7 @@ class UsersPlanesExport implements WithMultipleSheets
                 {
                     $coleccion->push([
                         'ID'=>$lista->id,
+                        'PLAN'=>$lista->nombre,
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>'',
                         'SOPA'=>'',
@@ -77,12 +79,12 @@ class UsersPlanesExport implements WithMultipleSheets
     public function sheets(): array
     {
         $coleccion=collect();
-        $pens=DB::table('plane_user')->select('plane_user.*','users.name','planes.editable')
+        $pens=DB::table('plane_user')->select('plane_user.*','users.name','planes.editable','planes.nombre')
         ->leftjoin('users','users.id','plane_user.user_id')
         ->leftjoin('planes','planes.id','plane_user.plane_id')
         ->whereDate('plane_user.start',$this->fechaSeleccionada)
-        ->where('planes.editable',1)
-        ->get();           
+        //->where('planes.editable',1)
+        ->get();            
             foreach($pens as $lista)
             {
                 //dd($lista);
@@ -94,6 +96,7 @@ class UsersPlanesExport implements WithMultipleSheets
                     $det['SOPA']==''?$sopaCustom='Sin Sopa':$sopaCustom=$det['SOPA'];
                     $coleccion->push([
                         'ID'=>$lista->id,
+                        'PLAN'=>$lista->nombre,
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>$det['ENSALADA'],
                         'SOPA'=>$sopaCustom,
@@ -109,6 +112,7 @@ class UsersPlanesExport implements WithMultipleSheets
                 {
                     $coleccion->push([
                         'ID'=>$lista->id,
+                        'PLAN'=>$lista->nombre,
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>'',
                         'SOPA'=>'',

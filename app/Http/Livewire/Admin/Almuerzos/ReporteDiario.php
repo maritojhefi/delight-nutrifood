@@ -105,11 +105,11 @@ class ReporteDiario extends Component
             $this->fechaSeleccionada=Carbon::now()->format('Y-m-d');
         }
             
-        $pens=DB::table('plane_user')->select('plane_user.*','users.name','planes.editable')
+        $pens=DB::table('plane_user')->select('plane_user.*','users.name','planes.editable','planes.nombre')
         ->leftjoin('users','users.id','plane_user.user_id')
         ->leftjoin('planes','planes.id','plane_user.plane_id')
         ->whereDate('plane_user.start',$this->fechaSeleccionada)
-        ->where('planes.editable',1)
+        //->where('planes.editable',1)
         ->get();            //dd($pens);
             foreach($pens as $lista)
             {
@@ -130,7 +130,8 @@ class ReporteDiario extends Component
                         'JUGO'=>$det['JUGO'],
                         'ENVIO'=>$det['ENVIO'],
                         'EMPAQUE'=>$det['EMPAQUE'],
-                        'ESTADO'=>$lista->estado
+                        'ESTADO'=>$lista->estado,
+                        'PLAN'=>$lista->nombre
                     ]);
                 }
                 else
@@ -145,7 +146,8 @@ class ReporteDiario extends Component
                         'JUGO'=>'',
                         'ENVIO'=>'',
                         'EMPAQUE'=>'',
-                        'ESTADO'=>$lista->estado
+                        'ESTADO'=>$lista->estado,
+                        'PLAN'=>$lista->nombre
                     ]);
                 }
                 

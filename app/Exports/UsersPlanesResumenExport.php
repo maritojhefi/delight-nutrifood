@@ -24,6 +24,7 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings
         return [
             
             'Folio',
+            'Plan',
             'Nombre',
             'Ensalada',
             'Sopa',
@@ -39,7 +40,12 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings
     public function collection()
     {
         $coleccion=collect();
-        $pens=DB::table('plane_user')->select('plane_user.*','users.name')->leftjoin('users','users.id','plane_user.user_id')->whereDate('plane_user.start',$this->fechaSeleccionada)->get();
+        $pens=DB::table('plane_user')->select('plane_user.*','users.name','planes.editable','planes.nombre')
+        ->leftjoin('users','users.id','plane_user.user_id')
+        ->leftjoin('planes','planes.id','plane_user.plane_id')
+        ->whereDate('plane_user.start',$this->fechaSeleccionada)
+        //->where('planes.editable',1)
+        ->get();   
            
             foreach($pens as $lista)
             {
@@ -52,6 +58,7 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings
                     $det['SOPA']==''?$sopaCustom='Sin Sopa':$sopaCustom=$det['SOPA'];
                     $coleccion->push([
                         'ID'=>$lista->id,
+                        'PLAN'=>$lista->nombre,
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>$det['ENSALADA'],
                         'SOPA'=>$sopaCustom,
@@ -67,6 +74,7 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings
                 {
                     $coleccion->push([
                         'ID'=>$lista->id,
+                        'PLAN'=>$lista->nombre,
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>'',
                         'SOPA'=>'',
