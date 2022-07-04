@@ -56,7 +56,7 @@ class UsersPlanesTotalExport implements FromCollection//, WithHeadings
                     if($nombre!='')
                     {
                         $resumen->push([
-                            $nombre=> $key
+                            $nombre=> $nombre.' : '.$key
                           ]);
                     }
                     
