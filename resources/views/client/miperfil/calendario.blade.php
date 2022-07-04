@@ -1,4 +1,4 @@
-@extends('client.master')
+use@extends('client.master')
 @section('content')
     <x-cabecera-pagina titulo="{{ $plan->nombre }}" cabecera="bordeado" />
         @env('local')
@@ -97,7 +97,13 @@
                                                     <label
                                                         for="box6-fac-radio{{ $lista['id'] }}">{{ $lista['carbohidrato_3'] }}</label>
                                                 </div>
-
+                                                <div class="fac fac-radio fac-default"><span></span>
+                                                    <input id="box7-fac-radio{{ $lista['id'] }}" type="radio"
+                                                        name="carb{{ $lista['id'] }}"
+                                                        value="sin carbohidrato">
+                                                    <label
+                                                        for="box6-fac-radio{{ $lista['id'] }}">{{ $lista['carbohidrato_3'] }}</label>
+                                                </div>
 
                                             </div>
                                         @endif
