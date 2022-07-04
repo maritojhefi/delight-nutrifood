@@ -6,11 +6,13 @@ use Carbon\Carbon;
 use App\Models\User;
 use Livewire\Component;
 use App\Models\Almuerzo;
+use App\Exports\UsersPlanesExport;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReporteDiario extends Component
 {
-    public $menuHoy;
+    public $menuHoy,$reporte;
     public $fechaSeleccionada,$cambioFecha=false;
     public function saber_dia($nombredia) {
         $dias = array('Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado');
@@ -67,12 +69,24 @@ class ReporteDiario extends Component
     }
     public function cambiarEstado($id)
     {
-        DB::table('plane_user')->where('id',$id)->update(['estado'=>'despachado']);
+        DB::table('plane_user')->where('id',$id)->update(['estado'=>'finalizado']);
         $this->dispatchBrowserEvent('alert',[
             'type'=>'success',
             'message'=>"Se despacho este pedido!"
         ]);
     }
+    public function exportarexcel()
+    {
+        $data=$this->reporte;
+        // Excel::create('metricas-visitas-y-consultas-propiedades-experto-', function ($excel) use ($data) {
+        //     $excel->sheet('Hoja1', function ($sheet) use ($data) {
+        //         $sheet->fromArray($data, null, 'A1', true);
+        //     });
+        // }, 'UTF-8')->export('xlsx');
+        return Excel::download(new UsersPlanesExport($this->fechaSeleccionada), 'users.xlsx');
+    }
+
+
     public function cambiarAPendiente($id)
     {
         DB::table('plane_user')->where('id',$id)->update(['estado'=>'pendiente']);
@@ -91,8 +105,12 @@ class ReporteDiario extends Component
             $this->fechaSeleccionada=Carbon::now()->format('Y-m-d');
         }
             
-            $pens=DB::table('plane_user')->select('plane_user.*','users.name')->leftjoin('users','users.id','plane_user.user_id')->whereDate('plane_user.start',$this->fechaSeleccionada)->get();
-            //dd($pens);
+        $pens=DB::table('plane_user')->select('plane_user.*','users.name','planes.editable')
+        ->leftjoin('users','users.id','plane_user.user_id')
+        ->leftjoin('planes','planes.id','plane_user.plane_id')
+        ->whereDate('plane_user.start',$this->fechaSeleccionada)
+        ->where('planes.editable',1)
+        ->get();            //dd($pens);
             foreach($pens as $lista)
             {
                 //dd($lista);
@@ -136,7 +154,7 @@ class ReporteDiario extends Component
                 
             }
            
-        
+        $this->reporte=$coleccion;
         $total=collect();
         $total->push([
             

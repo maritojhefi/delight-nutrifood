@@ -34,7 +34,7 @@
                     
                     <tbody wire:loading.remove wire:target="cambioDeFecha">
                         @foreach ($coleccion as $lista)
-                        <tr class="{{$lista['ESTADO']=='despachado'?'table-success':''}}">
+                        <tr class="{{$lista['ESTADO']=='finalizado'?'table-success':'' }}{{$lista['ESTADO']=='permiso'?'table-warning':''}}">
                             <td>{{$loop->iteration}}</td>
                             <td>{{$lista['NOMBRE']}}</td>
 
@@ -47,12 +47,14 @@
                             <td>{{$lista['ENVIO']}}</td>
                             @if ($lista['ESTADO']=="pendiente")
                             <td><button wire:click="cambiarEstado('{{$lista['ID']}}')" wire:loading.attr="disabled" wire:target="cambiarEstado('{{$lista['ID']}}')"
-                                    class="btn btn-warning">Pendiente</button></td>
+                                    class="btn btn-info">Pendiente</button></td>
 
-                            @else
+                            @elseif($lista['ESTADO']=="finalizado")
                             <td><button wire:click="cambiarAPendiente('{{$lista['ID']}}')"
                                     class="btn btn-success">Finalizado</button></td>
-
+                            @elseif($lista['ESTADO']=="permiso")
+                            <td><button 
+                                class="btn btn-warning" disabled>Permiso</button></td>
                             @endif
 
                         </tr>
@@ -80,6 +82,7 @@
                 </table>
                 <div  class="d-flex justify-content-center">
                     <h4>Planes para este dia:{{$coleccion->count()}}</h4>
+                    <a href="#" wire:click="exportarexcel" class="badge badge-success pill light">Exportar</a>
                 </div>
             </div>
         </div>
