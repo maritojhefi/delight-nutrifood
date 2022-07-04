@@ -16,7 +16,7 @@
         
         @if ($plan->editable)
         <div class="content text-white">
-            <h4>Personaliza tu plan de esta semana!</h4>
+            <h4>Personaliza tu menu de esta semana!</h4>
             <p>
                 Quedan {{ $coleccion->count() }} dias, personaliza cada uno!
             </p>
