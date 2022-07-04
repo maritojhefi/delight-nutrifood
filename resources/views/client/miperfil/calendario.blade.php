@@ -102,7 +102,7 @@ use@extends('client.master')
                                                         name="carb{{ $lista['id'] }}"
                                                         value="sin carbohidrato">
                                                     <label
-                                                        for="box6-fac-radio{{ $lista['id'] }}">{{ $lista['carbohidrato_3'] }}</label>
+                                                        for="box6-fac-radio{{ $lista['id'] }}">Sin carbohidrato</label>
                                                 </div>
 
                                             </div>
