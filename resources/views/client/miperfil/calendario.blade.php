@@ -102,7 +102,7 @@
                                                         name="carb{{ $lista['id'] }}"
                                                         value="sin carbohidrato">
                                                     <label
-                                                        for="box6-fac-radio{{ $lista['id'] }}">Sin carbohidrato</label>
+                                                        for="box7-fac-radio{{ $lista['id'] }}">Sin carbohidrato</label>
                                                 </div>
 
                                             </div>
