@@ -52,11 +52,11 @@
             });
             calendar.render();
             window.onload = function() {
-                const myTimeout = setTimeout(resetear, 200);
+                const myTimeout = setTimeout(resetear, 500);
             };
 
             $(".fc-icon").click(function() {
-                const asd = setTimeout(resetear, 400);
+                const asd = setTimeout(resetear, 500);
             });
 
             function resetear() {
@@ -74,7 +74,7 @@
                 then(
                     (respuesta) => {
                         calendar.refetchEvents();
-                        const asd = setTimeout(resetear, 400);
+                        const asd = setTimeout(resetear, 500);
                         $("#basicModal").modal('hide');
 
                     }
@@ -82,7 +82,7 @@
                 catch(error => {
                     if (error.response) {
                         console.log(error.response.data);
-                        const asd = setTimeout(resetear, 400);
+                        const asd = setTimeout(resetear, 500);
                     }
                 })
             });
@@ -93,7 +93,7 @@
                 then(
                     (respuesta) => {
                         calendar.refetchEvents();
-                        const asd = setTimeout(resetear, 400);
+                        const asd = setTimeout(resetear, 500);
                         $("#permisoModal").modal('hide');
                     }
                 ).
