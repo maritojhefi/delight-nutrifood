@@ -28,7 +28,9 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings, WithStyl
     {
         return [
             'A' => 35,
-            'B' => 35,            
+            'B' => 35, 
+            'E' => 35, 
+            'F' => 35,            
         ];
     }
     public function headings(): array
