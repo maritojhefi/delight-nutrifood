@@ -1,4 +1,4 @@
-use@extends('client.master')
+@extends('client.master')
 @section('content')
     <x-cabecera-pagina titulo="{{ $plan->nombre }}" cabecera="bordeado" />
         @env('local')
