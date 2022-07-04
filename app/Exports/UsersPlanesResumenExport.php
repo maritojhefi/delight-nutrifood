@@ -23,7 +23,7 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings
     {
         return [
             
-            'Folio',
+            
             'Plan',
             'Nombre',
             'Ensalada',
@@ -57,7 +57,7 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings
                     $sopaCustom='';
                     $det['SOPA']==''?$sopaCustom='Sin Sopa':$sopaCustom=$det['SOPA'];
                     $coleccion->push([
-                        'ID'=>$lista->id,
+                        
                         'PLAN'=>$lista->nombre,
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>$det['ENSALADA'],
@@ -73,7 +73,7 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings
                 else
                 {
                     $coleccion->push([
-                        'ID'=>$lista->id,
+                        
                         'PLAN'=>$lista->nombre,
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>'',

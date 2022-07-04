@@ -83,7 +83,7 @@ class ReporteDiario extends Component
         //         $sheet->fromArray($data, null, 'A1', true);
         //     });
         // }, 'UTF-8')->export('xlsx');
-        return Excel::download(new UsersPlanesExport($this->fechaSeleccionada), 'users.xlsx');
+        return Excel::download(new UsersPlanesExport($this->fechaSeleccionada), 'reporte-diario-'.$this->fechaSeleccionada.'.xlsx');
     }
 
 

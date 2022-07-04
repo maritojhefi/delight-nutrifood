@@ -38,7 +38,7 @@ class UsersPlanesExport implements WithMultipleSheets
                 
                 
                     $coleccion->push([
-                        'ID'=>$lista->id,
+                       
                         'PLAN'=>$lista->nombre,
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>$det['ENSALADA'],
@@ -54,7 +54,7 @@ class UsersPlanesExport implements WithMultipleSheets
                 else
                 {
                     $coleccion->push([
-                        'ID'=>$lista->id,
+                       
                         'PLAN'=>$lista->nombre,
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>'',
