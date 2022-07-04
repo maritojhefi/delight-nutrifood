@@ -243,6 +243,24 @@
             </div>
         </div>
     </div>
+    {{-- <div class="m-3" >
+       
+                <div class="row">
+                    <div class="col-6">
+                        <mark class="highlight ps-2 font-12 pe-2 bg-orange-dark mr-2"></mark> Finalizado
+                    </div>
+                    <div class="col-6">
+                        <mark class="highlight ps-2 font-12 pe-2 text-white mr-2" style="background-color: #A314CD"></mark> Permiso
+                    </div>
+                    <div class="col-6">
+                        <mark class="highlight ps-2 font-12 pe-2 text-white mr-2" style="background-color: #20C995"></mark> Pendiente
+                    </div>
+                    <div class="col-6">
+                        <mark class="highlight ps-2 font-12 pe-2 bg-red-dark mr-2"></mark><label for="" class="ml-3">Feriado</label> 
+                    </div>
+                </div>
+           
+    </div> --}}
     <div class="card card-style bg-18" data-card-height="150" style="height: 150px;">
         <div class="card-center ms-3">
             <h1 class="color-white">Detalles del plan:</h1>
