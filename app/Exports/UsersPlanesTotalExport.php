@@ -61,7 +61,9 @@ class UsersPlanesTotalExport implements FromCollection//, WithHeadings
                     }
                     
                 }
-                
+                $resumen->push([
+                    ''
+                  ]);
             }
            
             
