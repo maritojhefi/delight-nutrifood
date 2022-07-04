@@ -3,7 +3,7 @@
         <div class="row">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Nueva SubCategoria</h4>
+                    <h4 class="card-title">Nuevo Evento</h4>
                 </div>
                 <div class="card-body">
                     <div class="">
