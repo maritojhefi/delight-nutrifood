@@ -76,13 +76,14 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings, WithStyl
                     if($det['PLATO']==$menu->ejecutivo)$tipoSegundo='EJECUTIVO';
                     if($det['PLATO']==$menu->dieta)$tipoSegundo='DIETA';
                     if($det['PLATO']==$menu->vegetariano)$tipoSegundo='VEGGIE';
+                    
                     $coleccion->push([
                         
                         'PLAN'=>$lista->nombre,
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>1,
                         'SOPA'=>$sopaCustom,
-                        'PLATO'=>$tipoSegundo,
+                        'PLATO'=>$det['PLATO'],
                         'CARBOHIDRATO'=>$det['CARBOHIDRATO'],
                         'JUGO'=>1,
                         'ENVIO'=>$det['ENVIO'],

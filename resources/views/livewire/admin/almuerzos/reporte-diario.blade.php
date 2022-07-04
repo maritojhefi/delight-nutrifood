@@ -64,6 +64,7 @@
                         <tr>
                             <td></td>
                             <td></td>
+                            <td></td>
                             @foreach ($total[0] as $producto=>$array)
                             <th><small>
                                     @foreach ($array as $nombre=>$cantidad)

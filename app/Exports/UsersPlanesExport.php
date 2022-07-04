@@ -64,7 +64,7 @@ class UsersPlanesExport implements WithMultipleSheets, WithStyles,WithColumnWidt
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>1,
                         'SOPA'=>$sopaCustom,
-                        'PLATO'=>$tipoSegundo,
+                        'PLATO'=>$det['PLATO'],
                         'CARBOHIDRATO'=>$det['CARBOHIDRATO'],
                         'JUGO'=>1,
                         'ENVIO'=>$det['ENVIO'],
