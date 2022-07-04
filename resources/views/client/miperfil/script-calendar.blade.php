@@ -1,3 +1,9 @@
+@push('header')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.css">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/locales-all.min.js"></script>
+<script src="{{asset('js/calendario.js')}}"></script>
+@endpush
 @push('scripts')
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>

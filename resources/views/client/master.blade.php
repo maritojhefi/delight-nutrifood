@@ -16,7 +16,8 @@
         rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('fonts/css/fontawesome-all.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_mint.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.css">
+    @stack('header')
+    
     {{-- @laravelPWA --}}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -52,7 +53,7 @@
         }
     </style>
 
-    @stack('header')
+    
 </head>
 
 <body id="margen" class="theme-light">
@@ -115,9 +116,7 @@
         }
     </script>
     
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/locales-all.min.js"></script>
-    <script src="{{asset('js/calendario.js')}}"></script>
+   
     @stack('scripts')
 
 
