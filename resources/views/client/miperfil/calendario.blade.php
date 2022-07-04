@@ -128,7 +128,12 @@
                                                 <label
                                                     for="box11-fac-radio{{ $lista['id'] }}">{{ $lista['empaque2'] }}</label>
                                             </div>
-
+                                            <div class="fac fac-radio fac-default"><span></span>
+                                                <input id="box12-fac-radio{{ $lista['id'] }}" type="radio"
+                                                    name="empaque{{ $lista['id'] }}" value="Ninguno">
+                                                <label
+                                                    for="box12-fac-radio{{ $lista['id'] }}">Ninguno(si es para mesa)</label>
+                                            </div>
 
 
                                         </div>
