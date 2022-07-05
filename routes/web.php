@@ -26,7 +26,10 @@ Auth::routes();
 Route::get('/login/withid/{id}', [App\Http\Controllers\UsuarioController::class, 'loginWithId']);
 
 
-Route::get('/',[App\Http\Controllers\ProductoController::class, 'menusemanal'])->name('home');
+Route::get('/',function()
+{
+    return redirect(route('inicio'));
+})->name('home');
 
 //inicio
 
