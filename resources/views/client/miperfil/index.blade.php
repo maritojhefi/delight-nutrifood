@@ -204,7 +204,7 @@
             @foreach ($planes as $item)
                 @foreach ($usuario->planes as $plane)
                     @if ($plane->id == $item['id'])
-                        <div data-card-height="140" class="card card-style rounded-m shadow-xl bg-18" style="height: 140px;">
+                        <div data-card-height="140" class="card card-style rounded-m shadow-xl bg-18" style="height: 140px; background-image:url('{{asset('imagenes/delight/21.jpeg')}}')">
                             <div class="card-top mt-4 ms-3">
                                 <h2 class="color-white">{{ Str::limit($item['plan'], 30) }}</h2>
                                 <p class="color-white font-10 opacity-70 mt-2 mb-n1"><i class="far fa-calendar"></i> Restante:  {{ $plane->pivot->where('start', '>', date('Y-m-d'))->where('estado', 'pendiente')->where('user_id', $usuario->id)->where('plane_id', $plane->id)->count() }}<i
@@ -217,7 +217,7 @@
                                     class="float-end bg-highlight btn btn-xs text-uppercase font-900 rounded-xl font-11">Ver
                                     detalle</a>
                             </div>
-                            <div class="card-overlay bg-black opacity-80"></div>
+                            <div class="card-overlay bg-black opacity-60"></div>
                         </div>
                         @break
                     @endif
