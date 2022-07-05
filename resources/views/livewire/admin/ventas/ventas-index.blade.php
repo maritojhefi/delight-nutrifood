@@ -427,7 +427,7 @@
                                     <input class="form-check-input" type="checkbox" name="checkbox"
                                         wire:model="saldo" wire:change="actualizarSaldo">
                                     <label class="form-check-label">
-                                        A saldo del cliente
+                                        A deuda
                                     </label>
                                 </div>
                                 @if ($saldo == true)
