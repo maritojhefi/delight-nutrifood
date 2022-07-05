@@ -79,7 +79,7 @@ Route::prefix('/miperfil')->middleware('auth','revisarPerfil')->group(function (
     Route::get('/mostrar/{idplan}/{iduser}', [App\Http\Controllers\admin\UsuariosController::class, 'mostrar']);
     Route::get('/permiso/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'permiso']);
     Route::get('/editar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'editar']);
-
+    Route::get('/saldo/usuario', [App\Http\Controllers\admin\UsuariosController::class, 'saldo'])->name('usuario.saldo');
     Route::get('', [App\Http\Controllers\MiperfilController::class, 'index'])->name('miperfil');
     Route::get('/calendario/{plan}/{usuario}', [App\Http\Controllers\MiperfilController::class, 'calendario'])->name('calendario.cliente');
     Route::post('/personalizardia', [App\Http\Controllers\MiperfilController::class, 'personalizardia'])->name('personalizardia');

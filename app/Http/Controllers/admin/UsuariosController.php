@@ -12,6 +12,11 @@ use App\Http\Controllers\Controller;
 
 class UsuariosController extends Controller
 {
+    public function saldo()
+    {
+        $usuario=User::find(auth()->user()->id);
+        return view('client.miperfil.saldo',compact('usuario'));
+    }
     public function detalleplan($id, $planid)
     {
         $usuario = User::find($id);

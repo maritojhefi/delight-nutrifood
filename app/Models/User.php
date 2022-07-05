@@ -123,6 +123,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Asistencia::class);
     }
+    public function saldos()
+    {
+        return $this->hasMany(Saldo::class);
+
+    }
     
    
 }

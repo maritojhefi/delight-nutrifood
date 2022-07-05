@@ -22,12 +22,16 @@
             <div class="content mb-0">
                 <div class="row mb-0 text-center">
                     <div class="col-4">
+                        <a href="{{route('usuario.saldo')}}">
                         <h1 class="mb-n1">{{ $usuario->saldo }}</h1>
                         <p class="font-10 mb-0 pb-0">Saldo</p>
+                        
+                        <em class="badge bg-highlight color-white">DETALLES</em></a>
                     </div>
                     <div class="col-4">
                         <h1 class="mb-n1">{{ $usuario->puntos }}</h1>
                         <p class="font-10 mb-0 pb-0">Puntos</p>
+                        
                     </div>
                     <div class="col-4">
                         <h1 class="mb-n1">{{ $usuario->historial_ventas->count() }}</h1>
@@ -198,18 +202,17 @@
                 <div class="list-group list-custom-large mb-4">
                     @isset($planes)
                         @foreach ($planes as $item)
-                            
-                                <a href="{{ route('calendario.cliente', [$item['id'], $usuario->id]) }}">
-                              
+                            <a href="{{ route('calendario.cliente', [$item['id'], $usuario->id]) }}">
 
-                            <i class="fa fa-ticket-alt color-green-dark"></i>
-                            <span>{{ $item['plan'] }}</span>
-                            <strong>Cantidad restante - {{ $item['cantidad'] }}</strong>
 
-                            
+                                <i class="fa fa-ticket-alt color-green-dark"></i>
+                                <span>{{ $item['plan'] }}</span>
+                                <strong>Cantidad restante - {{ $item['cantidad'] }}</strong>
+
+
                                 <span class="badge bg-blue-dark">Ver</span>
-                           
-                            <i class="fa fa-angle-right"></i>
+
+                                <i class="fa fa-angle-right"></i>
                             </a>
                         @endforeach
                     @endisset

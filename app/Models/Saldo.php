@@ -13,5 +13,17 @@ class Saldo extends Model
         'historial_venta_id','user_id','monto','es_deuda'
        
     ];
+    public function usuario()
+    {
+   
+        return $this->belongsTo(User::class);
+    
+    }
+    public function venta()
+    {
+   
+        return $this->belongsTo(Historial_venta::class,'historial_venta_id');
+    
+    }
     
 }
