@@ -22,19 +22,23 @@
             <div class="content mb-0">
                 <div class="row mb-0 text-center">
                     
-                    <div class="col-4">
+                    <div class="col-3">
                         <h1 class="mb-n1">{{ $usuario->puntos }}</h1>
                         <p class="font-10 mb-0 pb-0">Puntos</p>
                         
                     </div>
-                    <div class="col-4">
+                    <div class="col-6">
                         <a href="{{route('usuario.saldo')}}">
-                        <h1 class="mb-n1">{{ $usuario->saldo }}</h1>
+                        <h1 class="mb-n1">{{ $usuario->saldo }} Bs @if ($usuario->saldo>0)
+                            <i class="fa fa-arrow-right rotate-135 color-red-dark"></i>
+                            @else
+                            <i class="fa fa-arrow-right rotate-45 color-green-dark"></i>
+                        @endif</h1>
                         <p class="font-10 mb-0 pb-0">Saldo</p>
                         
                         <em class="badge bg-highlight color-white">DETALLES</em></a>
                     </div>
-                    <div class="col-4">
+                    <div class="col-3">
                         <h1 class="mb-n1">{{ $usuario->historial_ventas->count() }}</h1>
                         <p class="font-10 mb-0 pb-0">Compras realizadas</p>
                     </div>
