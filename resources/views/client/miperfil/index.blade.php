@@ -21,17 +21,18 @@
         <div class="card card-style">
             <div class="content mb-0">
                 <div class="row mb-0 text-center">
+                    
+                    <div class="col-4">
+                        <h1 class="mb-n1">{{ $usuario->puntos }}</h1>
+                        <p class="font-10 mb-0 pb-0">Puntos</p>
+                        
+                    </div>
                     <div class="col-4">
                         <a href="{{route('usuario.saldo')}}">
                         <h1 class="mb-n1">{{ $usuario->saldo }}</h1>
                         <p class="font-10 mb-0 pb-0">Saldo</p>
                         
                         <em class="badge bg-highlight color-white">DETALLES</em></a>
-                    </div>
-                    <div class="col-4">
-                        <h1 class="mb-n1">{{ $usuario->puntos }}</h1>
-                        <p class="font-10 mb-0 pb-0">Puntos</p>
-                        
                     </div>
                     <div class="col-4">
                         <h1 class="mb-n1">{{ $usuario->historial_ventas->count() }}</h1>

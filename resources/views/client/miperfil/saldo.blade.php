@@ -5,7 +5,7 @@
         <div class="content mb-2">
             <h4>Resumen detallado</h4>
             <p>
-                Todos los registros a continuacion:
+                Registros de saldos a continuacion:
             </p>
             <table class="table table-borderless text-center rounded-sm shadow-l" style="overflow: hidden;">
                 <thead>
