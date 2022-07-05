@@ -11,8 +11,12 @@ use App\Models\Historial_venta;
 
 class CajaDiaria extends Component
 {
-    public $entrada ,$estadoCaja, $lista, $resumen, $sucursalSeleccionada, $cajaactiva, $ventasHoy;
-
+    public $entrada ,$estadoCaja, $lista, $resumen, $sucursalSeleccionada, $cajaactiva, $ventasHoy,$reporteGeneral=true;
+    
+    public function cambiarReporte()
+    {
+        $this->reporteGeneral==true?$this->reporteGeneral=false:$this->reporteGeneral=true;
+    }
     public function alterarCaja()
     {
         if($this->cajaactiva->estado=="abierto")

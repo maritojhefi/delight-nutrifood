@@ -257,7 +257,7 @@
                         </li>
                         <li class="list-group-item d-flex px-0 justify-content-between">
                             <strong>Banco Bisa</strong>
-                            <span class="mb-0">{{$ventasHoy->where('tipo','banco-visa')->sum('total')}}</span>
+                            <span class="mb-0">{{$ventasHoy->where('tipo','banco-bisa')->sum('total')}}</span>
                         </li>
                         <li class="list-group-item d-flex px-0 justify-content-between">
                             <strong>Banco Mercantil</strong>

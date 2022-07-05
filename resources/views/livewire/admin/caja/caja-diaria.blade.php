@@ -99,7 +99,7 @@
                                 </span>
                                 <div class="media-body">
                                     <p class="mb-1">Ventas de hoy</p>
-                                    <h4 class="mb-0">{{$ventasHoy->sum('total')}}</h4>
+                                    <h4 class="mb-0">{{$ventasHoy->sum('total')-$ventasHoy->sum('descuento')-$ventasHoy->sum('saldo')}}</h4>
                                     <span class="badge badge-danger">BS</span>
                                 </div>
                             </div>
@@ -164,7 +164,7 @@
                            
                         </div>
                         <div class="col">
-                            <span class="badge badge-pill badge-lg badge-info m-2">Total sin adicionales:{{$resumen}} Bs</span>  
+                            <span class="badge badge-pill badge-lg badge-info m-2">Total bruto(sin adicionales):{{$resumen}} Bs</span>  
                         </div>
                                         
                     </div>
@@ -178,25 +178,30 @@
     @endisset
     @endisset
     
-    <div class="modal fade" id="modalVentas" style="display: none;" aria-hidden="true">
+    <div wire:ignore.self class="modal fade" id="modalVentas" style="display: none;" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Todas las ventas</h5>
+                   <a href="#" wire:click="cambiarReporte" class="badge badge-{{$reporteGeneral?'success':'warning'}} light">{{$reporteGeneral?'Cambia a reporte por Usuarios':'Cambiar a reporte general'}}</a> 
                     <button type="button" class="btn-close" data-bs-dismiss="modal">
                     </button>
                 </div>
                 <div class="modal-body">
+                    @if ($reporteGeneral)
                     <div class="table-responsive">
                         <table class="table table-striped table-responsive-sm">
                             <thead>
                                 <tr>
                                     
                                     <th>Cliente</th>
-                                    <th>Descuento</th>
+                                    
                                     <th>Metodo</th>
                                     <th>Puntos</th>
-                                    <th>Total</th>
+                                    <th>Subtotal</th>
+                                    <th>A saldo</th>
+                                    <th>Descuento</th>
+                                    
+                                    <th>Total Cobrado</th>
                                     <th>Detalle</th>
                                     <th>Usuario</th>
                                 </tr>
@@ -210,11 +215,16 @@
                                    @else
                                    <td>S/N</td>
                                    @endif
-                                    <td><span class="badge badge-info light">{{$item->descuento}} Bs</span>
-                                    </td>
+                                    
                                     <td><span class="badge badge-warning light">{{$item->tipo}}</span></td>
                                     <td>{{$item->puntos}} pts</td>
-                                    <td class="color-primary"><span class="badge badge-pill badge-success">{{$item->total-$item->descuento}} Bs</span></td>
+                                    <td class="color-primary">{{$item->total}} Bs</td>
+                                    <td>{{$item->saldo}} Bs</td>
+                                    <td>{{$item->descuento}} Bs
+                                    </td>
+                                   
+                                    
+                                    <td class="color-primary" style="background-color: rgb(31, 224, 159)">{{$item->total-$item->descuento-$item->saldo}} Bs</td>
                                     <td>
                                         <div class="dropdown">
                                         <button type="button" class="btn btn-success light sharp" data-bs-toggle="dropdown">
@@ -222,7 +232,7 @@
                                         </button>
                                         <div class="dropdown-menu">
                                             @foreach ($item->productos as $prod)
-                                                <small class="m-1">{{$prod->nombre}} : {{$prod->pivot->cantidad}}</small>
+                                                <small class="m-1">{{$prod->nombre}} : {{$prod->pivot->cantidad}}</small><br>
                                             @endforeach
                                         </div>
                                         </div>
@@ -234,6 +244,15 @@
                                     @endif
                                 </tr>
                                 @endforeach
+                                <tr>
+                                    <td><span class="badge badge-xs badge-info">Resumen</span></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td  style="background-color: rgb(31, 224, 159)">{{$ventasHoy->sum('total')-$ventasHoy->sum('descuento')-$ventasHoy->sum('saldo')}} Bs</td>
+                                </tr>
                                 @endisset
                                 
                                 
@@ -241,6 +260,53 @@
                             </tbody>
                         </table>
                     </div>
+                    @else
+                    <div class="table-responsive">
+                        <table class="table table-striped table-responsive-sm">
+                            <thead>
+                                <tr>
+                                    
+                                    <th>Usuario</th>
+                                    
+                                    <th># Ventas</th>
+                                    <th>Puntos</th>
+                                    <th>Subtotal</th>
+                                    <th>A saldo</th>
+                                    <th>Descuento</th>
+                                    
+                                    <th>Total Cobrado</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($ventasHoy->groupBy('usuario_id') as $item)
+                                   <tr>
+                                    <td>{{Str::limit($item[0]->usuario->name,15,'')}}</td>
+                                    <td>{{$item->count()}} </td>
+                                    <td>{{$item->sum('puntos')}}</td>
+                                    <td>{{$item->sum('total')}} Bs</td>
+                                    <td>{{$item->sum('saldo')}} Bs</td>
+                                    <td>{{$item->sum('descuento')}} Bs</td>
+                                    
+                                    <td style="background-color: rgb(31, 224, 159)">{{$item->sum('total')-$item->sum('descuento')-$item->sum('saldo')}} Bs</td>
+                                   </tr>
+                                
+                                @endforeach
+                                <tr>
+                                    <td><span class="badge badge-xxs badge-info">Resumen</span></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{$ventasHoy->sum('total')}} Bs</td>
+                                    <td>{{$ventasHoy->sum('saldo')}} Bs</td>
+                                    <td>{{$ventasHoy->sum('descuento')}} Bs</td>
+                                    
+                                    <td style="background-color: rgb(31, 224, 159)">{{$ventasHoy->sum('total')-$ventasHoy->sum('descuento')-$ventasHoy->sum('saldo')}} Bs</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    @endif
+                    
                 </div>
                
             </div>
@@ -252,7 +318,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Mas Detalles</h5>
+                <h5 class="modal-title">Mas Detalles de esta caja</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal">
                 </button>
             </div>
@@ -262,40 +328,51 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item d-flex px-0 justify-content-between">
                             <strong>En efectivo</strong>
-                            <span class="mb-0">{{$ventasHoy->where('tipo','efectivo')->sum('total')}}</span>
+                            <span class="mb-0">{{$ventasHoy->where('tipo','efectivo')->sum('total')-$ventasHoy->where('tipo','efectivo')->sum('saldo')-$ventasHoy->where('tipo','efectivo')->sum('descuento')}} Bs</span>
                         </li>
                         <li class="list-group-item d-flex px-0 justify-content-between">
                             <strong>Tarjeta</strong>
-                            <span class="mb-0">{{$ventasHoy->where('tipo','tarjeta')->sum('total')}}</span>
+                            <span class="mb-0">{{$ventasHoy->where('tipo','tarjeta')->sum('total')-$ventasHoy->where('tipo','tarjeta')->sum('saldo')-$ventasHoy->where('tipo','tarjeta')->sum('descuento')}} Bs</span>
                         </li>
                         <li class="list-group-item d-flex px-0 justify-content-between">
                             <strong>Banco Bisa</strong>
-                            <span class="mb-0">{{$ventasHoy->where('tipo','banco-visa')->sum('total')}}</span>
+                            <span class="mb-0">{{$ventasHoy->where('tipo','banco-bisa')->sum('total')-$ventasHoy->where('tipo','banco-bisa')->sum('saldo')-$ventasHoy->where('tipo','banco-bisa')->sum('descuento')}} Bs</span>
                         </li>
                         <li class="list-group-item d-flex px-0 justify-content-between">
                             <strong>Banco Mercantil</strong>
-                            <span class="mb-0">{{$ventasHoy->where('tipo','banco-mercantil')->sum('total')}}</span>
+                            <span class="mb-0">{{$ventasHoy->where('tipo','banco-mercantil')->sum('total')-$ventasHoy->where('tipo','banco-mercantil')->sum('saldo')-$ventasHoy->where('tipo','banco-mercantil')->sum('descuento')}} Bs</span>
                         </li>
                         <li class="list-group-item d-flex px-0 justify-content-between">
                             <strong>Banco Sol</strong>
-                            <span class="mb-0">{{$ventasHoy->where('tipo','banco-sol')->sum('total')}}</span>
+                            <span class="mb-0">{{$ventasHoy->where('tipo','banco-sol')->sum('total')-$ventasHoy->where('tipo','banco-sol')->sum('saldo')-$ventasHoy->where('tipo','banco-sol')->sum('descuento')}} Bs</span>
                         </li>
                     </ul>
                 </div>
                 <div class="card-footer pt-0 pb-0 text-center">
                     <div class="row">
                         <div class="col-4 pt-3 pb-3 border-end">
-                            <h3 class="mb-1 text-primary">{{$ventasHoy->sum('total')}} Bs</h3>
-                            <span>Total</span>
+                            <h3 class="mb-1 text-primary">{{$ventasHoy->sum('descuento')}} Bs</h3>
+                            <span>Descuentos acumulados</span>
                         </div>
                         <div class="col-4 pt-3 pb-3 border-end">
-                            <h3 class="mb-1 text-primary">{{$ventasHoy->sum('total')-$resumen}} Bs</h3>
-                            <span>Adicionales</span>
+                            <h3 class="mb-1 text-primary">{{$ventasHoy->sum('saldo')}} Bs</h3>
+                            <span>Saldos acumulados</span>
                         </div>
                         <div class="col-4 pt-3 pb-3">
-                            <h3 class="mb-1 text-primary">{{$lista->sum('cantidad')}}</h3>
-                            <span>Cantidad Neto de Productos Vendidos</span>
+                            <h3 class="mb-1 text-primary">{{$lista->sum('puntos')}} Pts</h3>
+                            <span>Puntos otorgados</span>
                         </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 pt-3 pb-3 border-end">
+                            <h3 class="mb-1 text-primary">{{$ventasHoy->sum('total')}} Bs</h3>
+                            <span>Total Bruto</span>
+                        </div>
+                        <div class="col-4 pt-3 pb-3 border-end">
+                            <h3 class="mb-1 text-primary">{{$ventasHoy->sum('total')-$ventasHoy->sum('descuento')-$ventasHoy->sum('saldo')}} Bs</h3>
+                            <span>Total con descuentos/saldos</span>
+                        </div>
+                       
                     </div>
                 </div>
             </div>
