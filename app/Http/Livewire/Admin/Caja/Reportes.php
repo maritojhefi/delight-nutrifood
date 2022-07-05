@@ -19,13 +19,16 @@ class Reportes extends Component
    
     protected $paginationTheme = 'bootstrap';
     
-    public $ventasHoy, $resumen, $lista, $cajaactiva;
+    public $ventasHoy, $resumen, $lista, $cajaactiva,$reporteGeneral=true;
 
     public function resetCaja()
     {
         $this->reset('cajaactiva');
     }
-
+    public function cambiarReporte()
+    {
+        $this->reporteGeneral==true?$this->reporteGeneral=false:$this->reporteGeneral=true;
+    }
     public function buscarCaja(Caja $caja)
     {
             $this->cajaactiva=$caja;

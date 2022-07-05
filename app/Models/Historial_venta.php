@@ -32,4 +32,9 @@ class Historial_venta extends Model
     {
         return $this->belongsTo(Sucursale::class);
     }
+    public function caja()
+    {
+        return $this->belongsTo(Caja::class);
+
+    }
 }

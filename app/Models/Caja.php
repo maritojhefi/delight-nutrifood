@@ -18,4 +18,8 @@ class Caja extends Model
     {
         return $this->belongsTo(Sucursale::class);
     }
+    public function ventas()
+    {
+        return $this->hasMany(Historial_venta::class);
+    }
 }
