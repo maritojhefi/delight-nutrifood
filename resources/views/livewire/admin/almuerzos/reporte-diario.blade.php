@@ -23,16 +23,15 @@
                     <thead style="padding:5px">
                         <tr>
                             <th>#</th>
-                            <th>Plan</th>
                             <th>Nombre</th>
                             <th>Sopa</th>
-                            <th>Ensalada</th>
-
+                            {{-- <th>Ensalada</th> --}}
                             <th>Plato</th>
                             <th>Carbohidrato</th>
-                            <th>Jugo</th>
+                            {{-- <th>Jugo</th> --}}
                             <th>Empaque</th>
                             <th>Envio</th>
+                            <th>Plan</th>
                             <th>Estado</th>
                         </tr>
                     </thead>
@@ -41,16 +40,17 @@
                         @foreach ($coleccion as $lista)
                         <tr class="{{$lista['ESTADO']=='finalizado'?'table-success':'' }}{{$lista['ESTADO']=='permiso'?'table-warning':''}}" style="padding:5px">
                             <td style="padding:5px">{{$loop->iteration}}</td>
-                            <td style="padding:5px">{{Str::limit($lista['PLAN'],20)}}</td>
+                            
                             <td style="padding:5px">{{Str::limit($lista['NOMBRE'],20)}}</td>
 
-                            <td style="padding:5px">{{$lista['SOPA']!=""?'SI':'NO'}}</td>
-                            <td style="padding:5px">{{$lista['ENSALADA']!=""?'SI':'NO'}}</td>
+                            <td style="padding:5px">{{$lista['SOPA']!=""?'SI':''}}</td>
+                            {{-- <td style="padding:5px">{{$lista['ENSALADA']!=""?'SI':''}}</td> --}}
                             <td style="padding:5px">{{$lista['PLATO']}}</td>
                             <td style="padding:5px">{{$lista['CARBOHIDRATO']}}</td>
-                            <td style="padding:5px">{{$lista['JUGO']!=""?'SI':'NO'}}</td>
+                            {{-- <td style="padding:5px">{{$lista['JUGO']!=""?'SI':''}}</td> --}}
                             <td style="padding:5px">{{$lista['EMPAQUE']}}</td>
                             <td style="padding:5px">{{$lista['ENVIO']}}</td>
+                            <td style="padding:5px">{{Str::limit($lista['PLAN'],20)}}</td>
                             @if ($lista['ESTADO']=="pendiente")
                             <td style="padding:5px"><button wire:click="cambiarEstado('{{$lista['ID']}}')" wire:loading.attr="disabled" wire:target="cambiarEstado('{{$lista['ID']}}')"
                                     class="btn btn-info">Pendiente</button></td>
@@ -68,7 +68,7 @@
                         <tr>
                             <td></td>
                             <td></td>
-                            <td></td>
+                            
                             @foreach ($total[0] as $producto=>$array)
                             <th><small>
                                     @foreach ($array as $nombre=>$cantidad)

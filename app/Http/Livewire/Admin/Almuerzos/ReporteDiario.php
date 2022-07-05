@@ -8,6 +8,7 @@ use App\Models\Plane;
 use Livewire\Component;
 use App\Models\Almuerzo;
 use App\Exports\UsersPlanesExport;
+use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -127,6 +128,16 @@ class ReporteDiario extends Component
                 if($detalle!=null)
                 {
                     $det=collect(json_decode($detalle,true));
+                    $sopaCustom='';
+                    $det['SOPA']==''?$sopaCustom='Sin Sopa':$sopaCustom=$det['SOPA'];
+
+                    $saberDia=WhatsappAPIHelper::saber_dia($this->fechaSeleccionada);
+                    $menu=Almuerzo::where('dia',$saberDia)->first();
+                    $tipoSegundo='';
+                    $tipoCarbo='';
+                    if($det['PLATO']==$menu->ejecutivo)$tipoSegundo='EJECUTIVO';
+                    if($det['PLATO']==$menu->dieta)$tipoSegundo='DIETA';
+                    if($det['PLATO']==$menu->vegetariano)$tipoSegundo='VEGGIE';
                 
                 
                     $coleccion->push([
@@ -134,7 +145,7 @@ class ReporteDiario extends Component
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>$det['ENSALADA'],
                         'SOPA'=>$det['SOPA'],
-                        'PLATO'=>$det['PLATO'],
+                        'PLATO'=>$tipoSegundo,
                         'CARBOHIDRATO'=>$det['CARBOHIDRATO'],
                         'JUGO'=>$det['JUGO'],
                         'ENVIO'=>$det['ENVIO'],
@@ -170,10 +181,10 @@ class ReporteDiario extends Component
         $total->push([
             
             'sopa'=>$coleccion->pluck('SOPA')->countBy(),
-            'ensalada'=>$coleccion->pluck('ENSALADA')->countBy(),
+            //'ensalada'=>$coleccion->pluck('ENSALADA')->countBy(),
             'plato'=>$coleccion->pluck('PLATO')->countBy(),
             'carbohidrato'=>$coleccion->pluck('CARBOHIDRATO')->countBy(),
-            'jugo'=>$coleccion->pluck('JUGO')->countBy(),
+            //'jugo'=>$coleccion->pluck('JUGO')->countBy(),
             
             'empaque'=>$coleccion->pluck('EMPAQUE')->countBy(),
             'envio'=>$coleccion->pluck('ENVIO')->countBy()
