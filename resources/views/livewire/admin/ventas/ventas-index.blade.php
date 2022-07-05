@@ -573,13 +573,13 @@
 
 
 
-<div class="modal fade" id="planesusuario">
+<div wire:ignore.self class="modal fade" id="planesusuario">
     <div class="modal-dialog">
         <div class="modal-content">
             @isset($cuenta->cliente->planes)
                 <div class="modal-header">
-                    <h5 class="modal-title">Planes existentes ({{ $cuenta->cliente->planes->count() }})</h5>
-                    <a href="{{ route('planes') }}" class="btn btn-xs btn-warning">Ir a todos los planes</a>
+                    <h5 class="modal-title">Saldo : {{$cuenta->cliente->saldo}} Bs </h5>
+                    <a href="#" wire:click="verSaldo" class="btn btn-xxs btn-warning">Descontar saldo</a>
                     <button type="button" class="btn-close" data-bs-dismiss="modal">
                     </button>
                 </div>
@@ -590,7 +590,7 @@
                             <div class="card-body px-4 py-3 py-lg-2">
                                 <div class="row align-items-center">
                                     <div class="col-xl-3 col-xxl-12 col-lg-12 my-2">
-                                        <strong class="mb-0 fs-14">{{ $nombre }}</strong> <a
+                                        <strong class="mb-0 fs-14">{{ Str::limit($nombre,20,'') }}</strong> <a
                                             href="{{ route('detalleplan', [ $cuenta->cliente->id,$item[0]->id]) }}"
                                             class="badge badge-info">Ir <i class="fa fa-arrow-right"></i></a>
                                     </div>

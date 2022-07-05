@@ -23,7 +23,7 @@
                                     data-bs-target="#modalSaldo{{ $item->id }}"><span
                                         class="fa-fw select-all fas"></span></a></td>
                             <th scope="row">
-                                {{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at->format('Y-m-d')) }}</th>
+                                {{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at->) }}</th>
                             <td class="color-{{ $item->es_deuda ? 'red' : 'green' }}-dark">{{ $item->monto }} Bs</td>
                             @if ($item->es_deuda)
                                 <td>
@@ -66,7 +66,7 @@
                                 <p class="color-theme font-700">Fecha</p>
                             </div>
                             <div class="col-8">
-                                <p class="font-400"><strong>{{$item->created_at->format('d-M')}}</strong> ( {{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at->format('Y-m-d')) }} )</p>
+                                <p class="font-400"><strong>{{$item->created_at->format('d-M')}}</strong> ( {{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }} )</p>
                             </div>
                             <div class="col-4">
                                 <p class="color-theme font-700">Subtotal de venta</p>
