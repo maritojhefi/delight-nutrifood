@@ -62,15 +62,16 @@ class UsersPlanesExport implements WithMultipleSheets, WithStyles,WithColumnWidt
                     if($det['PLATO']==$menu->vegetariano)$tipoSegundo='VEGGIE';
                     $coleccion->push([
                         
-                       
                         'NOMBRE'=>$lista->name,
-                        'ENSALADA'=>1,
                         'SOPA'=>$sopaCustom,
+                        
                         'PLATO'=>$tipoSegundo,
                         'CARBOHIDRATO'=>$det['CARBOHIDRATO'],
-                        'JUGO'=>1,
+                        
                         'ENVIO'=>$det['ENVIO'],
+                        'ENSALADA'=>1,
                         'EMPAQUE'=>$det['EMPAQUE'],
+                        'JUGO'=>1,
                         'ESTADO'=>$lista->estado
                     ]);
                 }
@@ -80,13 +81,15 @@ class UsersPlanesExport implements WithMultipleSheets, WithStyles,WithColumnWidt
                        
                         
                         'NOMBRE'=>$lista->name,
-                        'ENSALADA'=>'',
+                        
                         'SOPA'=>'',
                         'PLATO'=>'',
                         'CARBOHIDRATO'=>'',
-                        'JUGO'=>'',
+                        
                         'ENVIO'=>'',
+                        'ENSALADA'=>'',
                         'EMPAQUE'=>'',
+                        'JUGO'=>'',
                         'ESTADO'=>$lista->estado
                     ]);
                 }
@@ -127,31 +130,32 @@ class UsersPlanesExport implements WithMultipleSheets, WithStyles,WithColumnWidt
                     if($det['PLATO']==$menu->vegetariano)$tipoSegundo='VEGGIE';
                     $coleccion->push([
                         
-                        'PLAN'=>$lista->nombre,
                         'NOMBRE'=>$lista->name,
-                        'ENSALADA'=>1,
                         'SOPA'=>$sopaCustom,
+                        
                         'PLATO'=>$tipoSegundo,
                         'CARBOHIDRATO'=>$det['CARBOHIDRATO'],
-                        'JUGO'=>1,
+                        
                         'ENVIO'=>$det['ENVIO'],
+                        'ENSALADA'=>1,
                         'EMPAQUE'=>$det['EMPAQUE'],
+                        'JUGO'=>1,
                         'ESTADO'=>$lista->estado
                     ]);
                 }
                 else
                 {
                     $coleccion->push([
-                        'ID'=>$lista->id,
-                        'PLAN'=>$lista->nombre,
                         'NOMBRE'=>$lista->name,
-                        'ENSALADA'=>'',
+                        
                         'SOPA'=>'',
                         'PLATO'=>'',
                         'CARBOHIDRATO'=>'',
-                        'JUGO'=>'',
+                        
                         'ENVIO'=>'',
+                        'ENSALADA'=>'',
                         'EMPAQUE'=>'',
+                        'JUGO'=>'',
                         'ESTADO'=>$lista->estado
                     ]);
                 }

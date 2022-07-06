@@ -40,13 +40,16 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings, WithStyl
             
            
             'Nombre',
-            'Ensalada',
             'Sopa',
+            
+            
             'Platos',
             'Carbohidratos',
-            'Jugo',
+            
             'Envio',
+            'Ensalada',
             'Empaque',
+            'Jugo',
             'Estado'
            
         ];
@@ -83,13 +86,15 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings, WithStyl
                         
                        
                         'NOMBRE'=>$lista->name,
-                        'ENSALADA'=>1,
                         'SOPA'=>$sopaCustom,
+                        
                         'PLATO'=>$tipoSegundo,
                         'CARBOHIDRATO'=>$det['CARBOHIDRATO'],
-                        'JUGO'=>1,
+                        
                         'ENVIO'=>$det['ENVIO'],
+                        'ENSALADA'=>1,
                         'EMPAQUE'=>$det['EMPAQUE'],
+                        'JUGO'=>1,
                         'ESTADO'=>$lista->estado
                     ]);
                 }
@@ -99,13 +104,15 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings, WithStyl
                         
                        
                         'NOMBRE'=>$lista->name,
-                        'ENSALADA'=>'',
+                        
                         'SOPA'=>'',
                         'PLATO'=>'',
                         'CARBOHIDRATO'=>'',
-                        'JUGO'=>'',
+                        
                         'ENVIO'=>'',
+                        'ENSALADA'=>'',
                         'EMPAQUE'=>'',
+                        'JUGO'=>'',
                         'ESTADO'=>$lista->estado
                     ]);
                 }
