@@ -74,7 +74,7 @@
                                     @foreach ($array as $nombre=>$cantidad)
                                     @if ($nombre!='')
                                     <span
-                                    class="badge badge-pill badge-primary light">{{$nombre}}:{{$cantidad}}</span><br>
+                                    class="badge badge-pill badge-primary light">{{Str::limit($nombre,'15')}}:{{$cantidad}}</span><br>
                                     @endif
                                    
                                     @endforeach</th>
