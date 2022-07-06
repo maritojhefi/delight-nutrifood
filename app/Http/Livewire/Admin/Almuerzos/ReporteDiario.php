@@ -27,10 +27,10 @@ class ReporteDiario extends Component
         } 
         else if ($this->estadoBuscador == 'SEGUNDO')
         {
-            $this->estadoBuscador = "CARBOHIDRATO";
+            $this->estadoBuscador = "CARBO";
             $this->estadoColor="warning";
         } 
-        else if ($this->estadoBuscador == 'CARBOHIDRATO')
+        else if ($this->estadoBuscador == 'CARBO')
         {
             $this->estadoBuscador = "ESTADO";
             $this->estadoColor="primary";
@@ -225,7 +225,7 @@ class ReporteDiario extends Component
                         return false !== stristr($item['PLATO'], $search);
                     });
                     break;
-                case 'CARBOHIDRATO':
+                case 'CARBO':
                     $coleccion = $coleccion->filter(function ($item) use ($search) {
                         // replace stristr with your choice of matching function
         
