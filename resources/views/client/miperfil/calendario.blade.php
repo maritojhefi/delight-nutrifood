@@ -250,7 +250,7 @@
         </div>
     </div>
 
-    <div id="toast-finalizado" class="toast toast-tiny toast-top bg-orange-dark fade hide" data-bs-delay="2000" data-bs-autohide="true"><i class="fa fa-exclamation"></i> Este dia ya pasó...</div>
+    <div id="toast-finalizado" class="toast toast-tiny toast-top bg-orange-dark fade hide" data-bs-delay="2000" data-bs-autohide="true"><i class="fa fa-exclamation"></i> Dia finalizado...</div>
     <div id="toast-permiso" class="toast toast-tiny toast-top bg-magenta-dark fade hide" data-bs-delay="2000" data-bs-autohide="true"><i class="fa fa-date"></i> Dia de permiso!</div>
 
     {{-- <div class="m-3" >
