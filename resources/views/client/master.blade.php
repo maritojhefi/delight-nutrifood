@@ -18,7 +18,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_mint.css') }}">
     @stack('header')
     
-    {{-- @laravelPWA --}}
+    @laravelPWA
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
