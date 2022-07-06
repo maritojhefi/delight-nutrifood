@@ -51,7 +51,7 @@ class UsersPlanesExport implements WithMultipleSheets, WithStyles,WithColumnWidt
                 {
                     $det=collect(json_decode($detalle,true));
                     $sopaCustom='';
-                    $det['SOPA']==''?$sopaCustom='Sin Sopa':$sopaCustom=$det['SOPA'];
+                    $det['SOPA']==''?$sopaCustom='0':$sopaCustom='1';
 
                     $saberDia=WhatsappAPIHelper::saber_dia($this->fechaSeleccionada);
                     $menu=Almuerzo::where('dia',$saberDia)->first();
@@ -66,7 +66,7 @@ class UsersPlanesExport implements WithMultipleSheets, WithStyles,WithColumnWidt
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>1,
                         'SOPA'=>$sopaCustom,
-                        'PLATO'=>$det['PLATO'],
+                        'PLATO'=>$tipoSegundo,
                         'CARBOHIDRATO'=>$det['CARBOHIDRATO'],
                         'JUGO'=>1,
                         'ENVIO'=>$det['ENVIO'],

@@ -69,7 +69,7 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings, WithStyl
                 {
                     $det=collect(json_decode($detalle,true));
                     $sopaCustom='';
-                    $det['SOPA']==''?$sopaCustom='Sin Sopa':$sopaCustom=$det['SOPA'];
+                    $det['SOPA']==''?$sopaCustom='0':$sopaCustom='1';
 
                     $saberDia=WhatsappAPIHelper::saber_dia($this->fechaSeleccionada);
                     $menu=Almuerzo::where('dia',$saberDia)->first();
@@ -85,7 +85,7 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings, WithStyl
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>1,
                         'SOPA'=>$sopaCustom,
-                        'PLATO'=>$det['PLATO'],
+                        'PLATO'=>$tipoSegundo,
                         'CARBOHIDRATO'=>$det['CARBOHIDRATO'],
                         'JUGO'=>1,
                         'ENVIO'=>$det['ENVIO'],
