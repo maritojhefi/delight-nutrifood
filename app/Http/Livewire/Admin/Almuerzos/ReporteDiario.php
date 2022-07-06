@@ -198,10 +198,11 @@ class ReporteDiario extends Component
         $total->push([
 
             'sopa' => $coleccion->pluck('SOPA')->countBy(),
-            //'ensalada'=>$coleccion->pluck('ENSALADA')->countBy(),
+            
             'plato' => $coleccion->pluck('PLATO')->countBy(),
             'carbohidrato' => $coleccion->pluck('CARBOHIDRATO')->countBy(),
-            //'jugo'=>$coleccion->pluck('JUGO')->countBy(),
+            'ensalada'=>$coleccion->pluck('ENSALADA')->countBy(),
+            'jugo'=>$coleccion->pluck('JUGO')->countBy(),
 
             'empaque' => $coleccion->pluck('EMPAQUE')->countBy(),
             'envio' => $coleccion->pluck('ENVIO')->countBy()
