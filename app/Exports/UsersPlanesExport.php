@@ -110,7 +110,11 @@ class UsersPlanesExport implements WithMultipleSheets, WithStyles,WithColumnWidt
         ->get();            
             foreach($pens as $lista)
             {
-                $det=collect(json_decode($detalle,true));
+                //dd($lista);
+                $detalle=$lista->detalle;
+                if($detalle!=null)
+                {
+                    $det=collect(json_decode($detalle,true));
                     $sopaCustom='';
                     $det['SOPA']==''?$sopaCustom='0':$sopaCustom='1';
 
