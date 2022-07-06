@@ -33,10 +33,11 @@
                             <th>#</th>
                             <th>Nombre</th>
                             <th>Sopa</th>
-                            {{-- <th>Ensalada</th> --}}
+                            
                             <th>Plato</th>
                             <th>Carbohidrato</th>
-                            {{-- <th>Jugo</th> --}}
+                            <th>Ensalada</th>
+                            <th>Jugo</th>
                             <th>Empaque</th>
                             <th>Envio</th>
                             <th>Plan</th>
@@ -52,10 +53,11 @@
                             <td style="padding:5px">{{Str::limit($lista['NOMBRE'],20)}}</td>
 
                             <td style="padding:5px">{{$lista['SOPA']!=""?'SI':''}}</td>
-                            {{-- <td style="padding:5px">{{$lista['ENSALADA']!=""?'SI':''}}</td> --}}
+                            
                             <td style="padding:5px">{{$lista['PLATO']}}</td>
                             <td style="padding:5px">{{Str::limit($lista['CARBOHIDRATO'],20)}}</td>
-                            {{-- <td style="padding:5px">{{$lista['JUGO']!=""?'SI':''}}</td> --}}
+                            <td style="padding:5px">{{Str::limit($lista['ENSALADA']!=""?'SI':'',15)}}</td>
+                            <td style="padding:5px">{{sTR::limit($lista['JUGO']!=""?'SI':'',15)}}</td>
                             <td style="padding:5px">{{$lista['EMPAQUE']}}</td>
                             <td style="padding:5px">{{$lista['ENVIO']}}</td>
                             <td style="padding:5px">{{Str::limit($lista['PLAN'],20)}}</td>
