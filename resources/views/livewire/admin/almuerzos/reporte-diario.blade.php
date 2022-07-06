@@ -50,7 +50,7 @@
                         <tr class="{{$lista['ESTADO']=='finalizado'?'table-success':'' }}{{$lista['ESTADO']=='permiso'?'table-warning':''}}" style="padding:5px">
                             <td style="padding:5px">{{$loop->iteration}}</td>
                             
-                            <td style="padding:5px">{{Str::limit($lista['NOMBRE'],20)}}</td>
+                            <td style="padding:5px"><a href="{{route('detalleplan',[$lista['USER_ID'],$lista['PLAN_ID']])}}">{{Str::limit($lista['NOMBRE'],20)}}</a></td>
 
                             <td style="padding:5px">{{$lista['SOPA']!=""?'SI':''}}</td>
                             

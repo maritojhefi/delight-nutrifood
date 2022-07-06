@@ -174,7 +174,9 @@ class ReporteDiario extends Component
                     'ENVIO' => $det['ENVIO'],
                     'EMPAQUE' => $det['EMPAQUE'],
                     'ESTADO' => $lista->estado,
-                    'PLAN' => $lista->nombre
+                    'PLAN' => $lista->nombre,
+                    'PLAN_ID'=>$lista->plane_id,
+                    'USER_ID'=>$lista->user_id
                 ]);
             } else {
                 $coleccion->push([
@@ -188,7 +190,9 @@ class ReporteDiario extends Component
                     'ENVIO' => '',
                     'EMPAQUE' => '',
                     'ESTADO' => $lista->estado,
-                    'PLAN' => $lista->nombre
+                    'PLAN' => $lista->nombre,
+                    'PLAN_ID'=>$lista->plane_id,
+                    'USER_ID'=>$lista->user_id
                 ]);
             }
         }
