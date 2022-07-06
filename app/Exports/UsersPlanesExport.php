@@ -62,7 +62,7 @@ class UsersPlanesExport implements WithMultipleSheets, WithStyles,WithColumnWidt
                     if($det['PLATO']==$menu->vegetariano)$tipoSegundo='VEGGIE';
                     $coleccion->push([
                         
-                        'PLAN'=>$lista->nombre,
+                       
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>1,
                         'SOPA'=>$sopaCustom,
@@ -78,7 +78,7 @@ class UsersPlanesExport implements WithMultipleSheets, WithStyles,WithColumnWidt
                 {
                     $coleccion->push([
                        
-                        'PLAN'=>$lista->nombre,
+                        
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>'',
                         'SOPA'=>'',

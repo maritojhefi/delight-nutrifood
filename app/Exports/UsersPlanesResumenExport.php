@@ -38,7 +38,7 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings, WithStyl
         return [
             
             
-            'Plan',
+           
             'Nombre',
             'Ensalada',
             'Sopa',
@@ -81,7 +81,7 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings, WithStyl
                     
                     $coleccion->push([
                         
-                        'PLAN'=>$lista->nombre,
+                       
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>1,
                         'SOPA'=>$sopaCustom,
@@ -97,7 +97,7 @@ class UsersPlanesResumenExport implements FromCollection, WithHeadings, WithStyl
                 {
                     $coleccion->push([
                         
-                        'PLAN'=>$lista->nombre,
+                       
                         'NOMBRE'=>$lista->name,
                         'ENSALADA'=>'',
                         'SOPA'=>'',
