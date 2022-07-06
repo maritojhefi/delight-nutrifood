@@ -30,7 +30,8 @@ class UsersPlanesExport implements WithMultipleSheets, WithStyles,WithColumnWidt
             'A' => 30,
             'B' => 30,   
             'E' => 25, 
-            'F' => 25,          
+            'F' => 25,  
+            'H'=>25        
         ];
     }
     public function collection()
