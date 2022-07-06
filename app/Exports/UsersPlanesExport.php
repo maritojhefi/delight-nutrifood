@@ -110,22 +110,26 @@ class UsersPlanesExport implements WithMultipleSheets, WithStyles,WithColumnWidt
         ->get();            
             foreach($pens as $lista)
             {
-                //dd($lista);
-                $detalle=$lista->detalle;
-                if($detalle!=null)
-                {
-                    $det=collect(json_decode($detalle,true));
+                $det=collect(json_decode($detalle,true));
                     $sopaCustom='';
-                    $det['SOPA']==''?$sopaCustom='Sin Sopa':$sopaCustom=$det['SOPA'];
+                    $det['SOPA']==''?$sopaCustom='0':$sopaCustom='1';
+
+                    $saberDia=WhatsappAPIHelper::saber_dia($this->fechaSeleccionada);
+                    $menu=Almuerzo::where('dia',$saberDia)->first();
+                    $tipoSegundo='';
+                    $tipoCarbo='';
+                    if($det['PLATO']==$menu->ejecutivo)$tipoSegundo='EJECUTIVO';
+                    if($det['PLATO']==$menu->dieta)$tipoSegundo='DIETA';
+                    if($det['PLATO']==$menu->vegetariano)$tipoSegundo='VEGGIE';
                     $coleccion->push([
-                        'ID'=>$lista->id,
+                        
                         'PLAN'=>$lista->nombre,
                         'NOMBRE'=>$lista->name,
-                        'ENSALADA'=>$det['ENSALADA'],
+                        'ENSALADA'=>1,
                         'SOPA'=>$sopaCustom,
-                        'PLATO'=>$det['PLATO'],
+                        'PLATO'=>$tipoSegundo,
                         'CARBOHIDRATO'=>$det['CARBOHIDRATO'],
-                        'JUGO'=>$det['JUGO'],
+                        'JUGO'=>1,
                         'ENVIO'=>$det['ENVIO'],
                         'EMPAQUE'=>$det['EMPAQUE'],
                         'ESTADO'=>$lista->estado
