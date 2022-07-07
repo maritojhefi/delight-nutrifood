@@ -69,14 +69,7 @@
                                 <p class="text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="input-style has-borders no-icon mb-4">
-                            <input type="date" name="nacimiento" id="form6" value="{{ old('nacimiento', $usuario->nacimiento) }}" max="2010-01-01" min="1950-01-01" class="form-control">
-                            
-                            @error('nacimiento')
-                                <i class="fa fa-times  invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
-                            </div>
+                        
                         
 
                         <input type="hidden" value="{{ $usuario->id }}" name="idUsuario">

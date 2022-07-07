@@ -180,7 +180,7 @@ class MiperfilController extends Controller
         $request->validate([    
         'email' => 'required|email|unique:users,email,'.$request->idUsuario,
         'direccion' => 'required|min:15',
-        'nacimiento'=>'required|date',
+        
         'telf'=>'required|size:8|unique:users,telf,'.$request->idUsuario,
         'latitud'=>'required|string|min:10',
         'longitud'=>'required|string|min:10',
