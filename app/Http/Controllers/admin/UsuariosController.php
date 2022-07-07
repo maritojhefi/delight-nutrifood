@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 
 class UsuariosController extends Controller
 {
+    
     public function editarPlanUsuario($plan, $usuario){
         $plan=Plane::find((int)$plan);
         $usuario=User::find((int)$usuario);

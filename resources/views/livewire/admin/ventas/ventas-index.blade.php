@@ -602,7 +602,7 @@
                                                     <div class="media-body ml-1">
                                                         <p class="mb-0 fs-12">Ultima fecha</p>
                                                         @php
-                                                            $ultimaFecha = $item->last();
+                                                            $ultimaFecha = $item->sortBy('pivot.start')->last();
                                                         @endphp
                                                         <h5 class="mb-0   fs-22">
                                                             @if ($ultimaFecha)

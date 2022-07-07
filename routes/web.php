@@ -120,6 +120,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('/miperfil', \App\Http\Livewire\Admin\Usuarios\PerfilUsuario::class)->name('usuario.perfil');
         Route::get('/pensionados', \App\Http\Livewire\Admin\Usuarios\Pensionados::class)->name('pensionados');
         Route::get('/planes', \App\Http\Livewire\Admin\Usuarios\Planes::class)->name('planes');
+        Route::get('/planes/expirar', \App\Http\Livewire\Admin\Usuarios\PlanesPorExpirar::class)->name('planes.expirar');
         Route::get('/personal', \App\Http\Livewire\Admin\Usuarios\Personal::class)->name('personal');
         Route::get('/crear/plan', \App\Http\Livewire\Admin\Usuarios\CrearPlan::class)->name('crear.plan');
         Route::get('plan/{id}/{planid}', [App\Http\Controllers\admin\UsuariosController::class, 'editarPlanUsuario'])->name('calendario.usuario');
@@ -131,6 +132,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('/quitarpermiso/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'quitarpermiso']);
         Route::get('/editar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'editar']);
         Route::get('/borrar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'borrar']);
+        
 
         Route::get('/mostrar/{idplan}/{iduser}', [App\Http\Controllers\admin\UsuariosController::class, 'mostrar']);
 
