@@ -69,7 +69,7 @@
                                 <p class="text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="input-style has-borders hnoas-icon input-style-always-active mb-4">
+                        <div class="input-style has-borders no-icon mb-4">
                             <input type="date" name="nacimiento" id="form6" value="{{ old('nacimiento', $usuario->nacimiento) }}" max="2010-01-01" min="1950-01-01" class="form-control validate-text">
                             <label for="form6" class="color-highlight">Fecha Nacimiento</label>
                             @error('nacimiento')
