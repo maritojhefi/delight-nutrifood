@@ -3,7 +3,7 @@
     @auth
         <x-cabecera-pagina titulo="Mi Perfil" cabecera="bordeado" />
         <div class="card card-style preload-img entered loaded" data-src="{{ asset('images/imagen4.jpg') }}"
-            data-card-height="450" style="height: 450px; background-image: url(&quot;{{ asset('images/imagen4.jpg') }}&quot;);"
+            data-card-height="450" style="height: 450px; background-image: url(&quot;{{ asset('imagenes/delight/21.jpeg') }}&quot;);"
             data-ll-status="loaded">
             <div class="card-bottom ms-3 ">
                 <h1 class="font-40 line-height-xl ">{{ auth()->user()->name }}</h1>
@@ -204,7 +204,7 @@
             @foreach ($planes as $item)
                 @foreach ($usuario->planes as $plane)
                     @if ($plane->id == $item['id'])
-                        <div data-card-height="140" class="card card-style rounded-m shadow-xl bg-18" style="height: 140px; background-image:url('{{asset('imagenes/delight/21.jpeg')}}')">
+                        <div data-card-height="140" class="card card-style rounded-m shadow-xl bg-18" style="height: 140px; background-image:url('{{asset('imagenes/delight/9.jpeg')}}')">
                             <div class="card-top mt-4 ms-3">
                                 <h2 class="color-white">{{ Str::limit($item['plan'], 30) }}</h2>
                                 <p class="color-white font-10 opacity-70 mt-2 mb-n1"><i class="far fa-calendar"></i> Restante:  {{ $plane->pivot->where('start', '>', date('Y-m-d'))->where('estado', 'pendiente')->where('user_id', $usuario->id)->where('plane_id', $plane->id)->count() }}<i

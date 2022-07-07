@@ -37,7 +37,8 @@ class User extends Authenticatable
         'role_id',
         'telf',
         'latitud',
-        'longitud'
+        'longitud',
+        'foto'
     ];
 
     /**

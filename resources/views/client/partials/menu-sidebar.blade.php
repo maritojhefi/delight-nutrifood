@@ -5,8 +5,17 @@
     <a href="#" class="close-menu border-right-0"><i class="fa font-12 color-red-dark fa-times"></i></a>
 </div>
 <div class="menu-logo text-center">
+    @guest
     <a href="#"><img class="rounded-circle bg-highlight" width="80" src="{{ asset('user.png') }}"></a>
+
+    @endguest
     @auth
+    @if (auth()->user()->foto)
+   
+    <a href="#"><img class="rounded-circle bg-highlight" width="80" src="{{ asset('imagenes/perfil/'.auth()->user()->foto) }}"></a>
+    @else
+    <a href="#"><img class="rounded-circle bg-highlight" width="80" src="{{ asset('user.png') }}"></a>
+    @endif
         <h1 class="pt-3 font-800 font-28 text-uppercase">{{ Str::words(auth()->user()->name, 1, '') }}</h1>
     @endauth
     @guest

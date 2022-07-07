@@ -9,6 +9,7 @@ use App\Models\Almuerzo;
 use App\Helpers\CreateList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Intervention\Image\Facades\Image;
 
 class MiperfilController extends Controller
 {
@@ -190,5 +191,32 @@ class MiperfilController extends Controller
         $usuario->fill($request->all());
         $usuario->save();
         return back()->with('success','Gracias! Ya tienes tu perfil completo y actualizado');
+    }
+    public function subirFoto(Request $request)
+    {
+        $request->validate([
+            'foto'=>'required|mimes:jpeg,bmp,png,gif|max:10240'
+        ]);
+        $user=User::find(auth()->user()->id);
+        if($user->foto)
+        {
+            $filename=$user->foto;
+        }
+        else
+        {
+            $filename= time().".". $request->foto->extension();
+        }
+        //$this->foto->move(public_path('imagenes'),$filename);
+        $request->foto->storeAs('perfil',$filename, 'public_images');
+          //comprimir la foto
+        $img = Image::make('imagenes/perfil/'.$filename);
+        $img->resize(320, null, function ($constraint) {
+         $constraint->aspectRatio();
+        });
+         $img->rotate(0);
+        $img->save('imagenes/productos/'.$filename);
+        $user->foto=$filename;
+        $user->save();
+        return back()->with('actualizado','Se actualizo tu foto de perfil!');
     }
 }

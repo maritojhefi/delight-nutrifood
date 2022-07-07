@@ -84,6 +84,7 @@ Route::prefix('/miperfil')->middleware('auth','revisarPerfil')->group(function (
     Route::get('/calendario/{plan}/{usuario}', [App\Http\Controllers\MiperfilController::class, 'calendario'])->name('calendario.cliente');
     Route::post('/personalizardia', [App\Http\Controllers\MiperfilController::class, 'personalizardia'])->name('personalizardia');
     Route::get('/editardia/{idpivot}', [App\Http\Controllers\MiperfilController::class, 'editardia'])->name('editardia');
+    Route::post('/subirfoto', [App\Http\Controllers\MiperfilController::class, 'subirFoto'])->name('subirfoto.perfil');
 
 });
 Route::get('perfil/editar', [App\Http\Controllers\MiperfilController::class, 'revisarPerfil'])->middleware('auth')->name('llenarDatosPerfil');
