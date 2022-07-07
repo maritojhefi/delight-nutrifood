@@ -1,4 +1,4 @@
-@extends('client.mastersinfooter')
+@extends('client.masterSinFooter')
 @section('content')
     <x-cabecera-pagina titulo="Identificate" cabecera="bordeado" />
 
