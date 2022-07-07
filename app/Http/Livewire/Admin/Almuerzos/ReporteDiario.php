@@ -8,6 +8,7 @@ use App\Models\Plane;
 use Livewire\Component;
 use App\Models\Almuerzo;
 use App\Exports\UsersPlanesExport;
+use App\Helpers\GlobalHelper;
 use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -134,7 +135,7 @@ class ReporteDiario extends Component
     public function render()
     {
         $usuarios = User::has('planes')->get();
-        $coleccion = collect();
+        
         $fecha = date('Y-m-d');
         if ($this->cambioFecha == false) {
             $this->fechaSeleccionada = Carbon::now()->format('Y-m-d');
@@ -146,57 +147,7 @@ class ReporteDiario extends Component
             ->whereDate('plane_user.start', $this->fechaSeleccionada)
             ->where('plane_user.title','!=','feriado')
             ->get();            //dd($pens);
-        foreach ($pens as $lista) {
-            //dd($lista);
-            $detalle = $lista->detalle;
-            if ($detalle != null) {
-                $det = collect(json_decode($detalle, true));
-                $sopaCustom = '';
-                $det['SOPA'] == '' ? $sopaCustom = 'Sin Sopa' : $sopaCustom = $det['SOPA'];
-
-                $saberDia = WhatsappAPIHelper::saber_dia($this->fechaSeleccionada);
-                $menu = Almuerzo::where('dia', $saberDia)->first();
-                $tipoSegundo = '';
-                $tipoCarbo = '';
-                if ($det['PLATO'] == $menu->ejecutivo) $tipoSegundo = 'EJECUTIVO';
-                if ($det['PLATO'] == $menu->dieta) $tipoSegundo = 'DIETA';
-                if ($det['PLATO'] == $menu->vegetariano) $tipoSegundo = 'VEGGIE';
-
-
-                $coleccion->push([
-                    'ID' => $lista->id,
-                    'NOMBRE' => $lista->name,
-                    'ENSALADA' => $det['ENSALADA'],
-                    'SOPA' => $det['SOPA'],
-                    'PLATO' => $tipoSegundo,
-                    'CARBOHIDRATO' => $det['CARBOHIDRATO'],
-                    'JUGO' => $det['JUGO'],
-                    'ENVIO' => $det['ENVIO'],
-                    'EMPAQUE' => $det['EMPAQUE'],
-                    'ESTADO' => $lista->estado,
-                    'PLAN' => $lista->nombre,
-                    'PLAN_ID'=>$lista->plane_id,
-                    'USER_ID'=>$lista->user_id
-                ]);
-            } else {
-                $coleccion->push([
-                    'ID' => $lista->id,
-                    'NOMBRE' => $lista->name,
-                    'ENSALADA' => '',
-                    'SOPA' => '',
-                    'PLATO' => '',
-                    'CARBOHIDRATO' => '',
-                    'JUGO' => '',
-                    'ENVIO' => '',
-                    'EMPAQUE' => '',
-                    'ESTADO' => $lista->estado,
-                    'PLAN' => $lista->nombre,
-                    'PLAN_ID'=>$lista->plane_id,
-                    'USER_ID'=>$lista->user_id
-                ]);
-            }
-        }
-        $coleccion=$coleccion->sortBy(['ENVIO','asc']);
+        $coleccion=GlobalHelper::armarColeccionReporteDiarioVista($pens,$this->fechaSeleccionada);
         $this->reporte = $coleccion;
         $total = collect();
         $total->push([
@@ -248,14 +199,6 @@ class ReporteDiario extends Component
                     # code...
                     break;
             }
-           // dd($coleccion);
-
-            
-
-           
-
-
-            
         }
         //dd($coleccion);
         return view('livewire.admin.almuerzos.reporte-diario', compact('usuarios', 'coleccion', 'total'))

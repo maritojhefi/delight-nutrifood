@@ -212,20 +212,20 @@ class AdminTicketsHelper
                     break;
                 case '3':
                     if ($numero == "1") {
-                        $despacho = 'Para Mesa';
+                        $despacho = Plane::ENVIO1;
                     }
                     if ($numero == "2") {
-                        $despacho = 'Para llevar(Paso a recoger)';
+                        $despacho = Plane::ENVIO2;
                     }
                     if ($numero == "3") {
-                        $despacho = 'Delivery';
+                        $despacho = Plane::ENVIO3;
                     }
                     $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id', $usuario->idUser)->where('estado', 'pendiente')->first();
                     $array = json_decode($datosPlan->detalle);
                     $array->ENVIO = $despacho;
                     //dd($array->ENVIO);
                     DB::table('whatsapp_plan_almuerzos')->where('id', $usuario->idwhatsapp)->update(['paso_metodo_envio' => true]);
-                    if ($array->ENVIO != 'Para Mesa') {
+                    if ($array->ENVIO != Plane::ENVIO1) {
                         AdminTicketsHelper::enviarMensajeConMenu($usuario, $paso, $menuDiaActual);
                         DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => json_encode($array)]);
                     } else {

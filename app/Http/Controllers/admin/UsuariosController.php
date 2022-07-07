@@ -47,9 +47,9 @@ class UsuariosController extends Controller
                  'carbohidrato_2'=>$menusemanal->carbohidrato_2,
                  'carbohidrato_3'=>$menusemanal->carbohidrato_3,
                  'jugo'=>$menusemanal->jugo,
-                 'envio1'=>'Para Mesa',
-                 'envio2'=>'Para llevar(Paso a recoger)',
-                 'envio3'=>'Delivery',
+                 'envio1'=>Plane::ENVIO1,
+                 'envio2'=>Plane::ENVIO2,
+                 'envio3'=>Plane::ENVIO3,
                  'empaque1'=>'Vianda',
                  'empaque2'=>'Empaque Bio(apto/microondas)',
                             ]);
