@@ -28,7 +28,8 @@
                     then(
                         (respuesta) => {
                             if (respuesta.data.estado == "finalizado") {
-                                if (confirm('Se encuentra finalizado, desea cambiar a disponible?')) {
+                                if (confirm(
+                                    'Se encuentra finalizado, desea cambiar a disponible?')) {
 
                                     axios.get('{{ $path }}/admin/usuarios/quitarpermiso/' +
                                         respuesta.data.id).
@@ -84,6 +85,23 @@
                                         }
                                     })
                                 }
+                            } else if (respuesta.data.title == "feriado") {
+                                if (confirm('El feriado se eliminara para todos')) {
+
+                                    axios.get('{{ $path }}/admin/usuarios/borrar/' +
+                                        respuesta.data.id).
+                                    then(
+                                        (respuesta) => {
+                                            calendar.refetchEvents();
+                                        }
+                                    ).
+                                    catch(error => {
+                                        if (error.response) {
+                                            console.log(error.response.data);
+                                        }
+                                    })
+                                }
+
                             }
 
                         }

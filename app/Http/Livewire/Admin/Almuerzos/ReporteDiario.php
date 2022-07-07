@@ -196,7 +196,7 @@ class ReporteDiario extends Component
                 ]);
             }
         }
-
+        $coleccion=$coleccion->sortBy(['ENVIO','asc']);
         $this->reporte = $coleccion;
         $total = collect();
         $total->push([
