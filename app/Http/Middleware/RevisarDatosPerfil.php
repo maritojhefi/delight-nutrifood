@@ -18,7 +18,7 @@ class RevisarDatosPerfil
     public function handle(Request $request, Closure $next)
     {
         $usuario=User::find(auth()->user()->id);
-        if($usuario->latitud==null || $usuario->telf==null || $usuario->direccion==null || $usuario->nacimiento==null)
+        if($usuario->latitud==null || $usuario->telf==null || $usuario->direccion==null)
         {
             return redirect(route('llenarDatosPerfil'));
         }
