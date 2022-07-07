@@ -2,7 +2,7 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Table Striped</h4>
+                <h4 class="card-title">Reporte de Planes expirados/por expirar</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
