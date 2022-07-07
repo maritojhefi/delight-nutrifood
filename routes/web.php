@@ -122,6 +122,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('/planes', \App\Http\Livewire\Admin\Usuarios\Planes::class)->name('planes');
         Route::get('/personal', \App\Http\Livewire\Admin\Usuarios\Personal::class)->name('personal');
         Route::get('/crear/plan', \App\Http\Livewire\Admin\Usuarios\CrearPlan::class)->name('crear.plan');
+        Route::get('plan/{id}/{planid}', [App\Http\Controllers\admin\UsuariosController::class, 'editarPlanUsuario'])->name('calendario.usuario');
+
         Route::get('detalleplan/{id}/{planid}', [App\Http\Controllers\admin\UsuariosController::class, 'detalleplan'])->name('detalleplan');
         Route::post('/agregarplan', [App\Http\Controllers\admin\UsuariosController::class, 'agregar']);
         Route::post('/feriado', [App\Http\Controllers\admin\UsuariosController::class, 'feriado']);

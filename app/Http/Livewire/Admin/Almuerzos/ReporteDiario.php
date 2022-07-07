@@ -144,7 +144,7 @@ class ReporteDiario extends Component
             ->leftjoin('users', 'users.id', 'plane_user.user_id')
             ->leftjoin('planes', 'planes.id', 'plane_user.plane_id')
             ->whereDate('plane_user.start', $this->fechaSeleccionada)
-            //->where('planes.editable',1)
+            ->where('plane_user.title','!=','feriado')
             ->get();            //dd($pens);
         foreach ($pens as $lista) {
             //dd($lista);
