@@ -21,8 +21,8 @@
                         <tbody>
                             @foreach ($coleccion as $usuario)
                             <tr>
-                                
-                                <td>{{Str::limit($usuario['nombre'],30,'')}}</td>
+                                <td><a href="{{route('detalleplan',[$usuario['user_id'],$usuario['plan_id']])}}">{{Str::limit($usuario['nombre'],30,'')}}</a>
+                                </td>
                                 <td><span class="badge badge-{{$usuario['cantidadRestante']>0?'success':'danger'}}">{{$usuario['cantidadRestante']>0?'Vigente':'Expirado'}}</span>
                                 </td>
                                 

@@ -21,7 +21,9 @@ class PlanesPorExpirar extends Component
                     'nombre' => $cliente->name,
                     'plan' => $nombre,
                     'cantidadRestante' => $cantidadRestante,
-                    'ultimoDia' => $ultimo
+                    'ultimoDia' => $ultimo,
+                    'plan_id'=>$ultimaFecha->pivot->plane_id,
+                    'user_id'=>$cliente->id
                 ]);
             }
         }
