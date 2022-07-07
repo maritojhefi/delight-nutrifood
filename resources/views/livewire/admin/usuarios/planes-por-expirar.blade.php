@@ -22,13 +22,13 @@
                             @foreach ($coleccion as $usuario)
                             <tr>
                                 
-                                <td>{{Str::limit($usuario['nombre'],20,'')}}</td>
+                                <td>{{Str::limit($usuario['nombre'],30,'')}}</td>
                                 <td><span class="badge badge-{{$usuario['cantidadRestante']>0?'success':'danger'}}">{{$usuario['cantidadRestante']>0?'Vigente':'Expirado'}}</span>
                                 </td>
                                 
                                 <th class="color-primary">{{$usuario['cantidadRestante']}}</th>
                                 <td>{{$usuario['ultimoDia']}}</td>
-                                <td>{{Str::limit($usuario['plan'],20,'')}}</td>
+                                <td>{{Str::limit($usuario['plan'],30,'')}}</td>
                             </tr>
                             @endforeach
                             
