@@ -88,7 +88,7 @@ class UsersPlanesTotalExport implements FromCollection//, WithStyles//, WithHead
            
             
         }
-        dd($resumen);
+        //dd($resumen);
         //dd($total);
         return $resumen;
     }
