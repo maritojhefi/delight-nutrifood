@@ -44,7 +44,8 @@ class UsersPlanesTotalExport implements FromCollection//, WithStyles//, WithHead
             
             'plato'=>$coleccion->pluck('PLATO')->countBy(),
             'carbohidrato'=>$coleccion->pluck('CARBOHIDRATO')->countBy(),
-            
+            'jugo'=>$coleccion->pluck('JUGO')->countBy(),
+            'ensalada'=>$coleccion->pluck('ENSALADA')->countBy(),
             
             'empaque'=>$coleccion->pluck('EMPAQUE')->countBy(),
             'envio'=>$coleccion->pluck('ENVIO')->countBy()
