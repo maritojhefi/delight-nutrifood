@@ -60,7 +60,7 @@ class UsersPlanesExport implements WithMultipleSheets, WithStyles, WithColumnWid
             ->get();
         $coleccion=GlobalHelper::armarColeccionReporteDiario($pens,$this->fechaSeleccionada);
         $this->coleccion = $coleccion;
-        $sheets = [new UsersPlanesResumenExport($this->fechaSeleccionada), new UsersPlanesTotalExport($this->coleccion)];
+        $sheets = [new UsersPlanesResumenExport($this->fechaSeleccionada), new UsersPlanesTotalExport($this->coleccion,$this->fechaSeleccionada)];
 
 
 
