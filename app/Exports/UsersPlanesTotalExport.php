@@ -74,7 +74,7 @@ class UsersPlanesTotalExport implements FromCollection//, WithStyles//, WithHead
                     {
                     
                         $resumen->push([
-                            $nombre=> ' : '.$key
+                            $nombre=> $nombre.' : '.$key
                           ]);
                           $cont++;
                     }
