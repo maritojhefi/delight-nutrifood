@@ -1,49 +1,4 @@
-<div class="row">
-
-    @empty($cajaactiva)
-        <div class="col-xl-4 col-lg-12 col-xxl-6 col-sm-12">
-            <div class="row" style="margin: 0px">
-                <div class="card">
-                    <div class="card">
-                        <div class="card-header">
-                            Listado de cajas
-                        </div>
-                        <div class="card-body">
-                            @foreach ($cajas as $item)
-                                <div class="media pb-3 border-bottom mb-3 align-items-center">
-                                    <a href="#" wire:click='buscarCaja({{ $item->id }})'>
-                                        <div class="media-image me-2">
-                                            <img src="{{ asset('images/delight_logo.jpg') }}" alt="">
-                                        </div>
-                                        <div class="media-body">
-                                            <h6 class="fs-16 mb-0">{{ $item->created_at->format('d-M-Y') }} <span
-                                                    class="badge badge-primary badge-xxs">{{ $item->sucursale->nombre }}</span>
-                                            </h6>
-                                            <div class="d-flex">
-                                                <a href="#" wire:click='buscarCaja({{ $item->id }})'
-                                                    class="fs-14 me-auto text-secondary"><span
-                                                        class="fs-14 me-auto text-secondary"><i
-                                                            class="fa fa-ticket me-1"></i>Ver Detalle</span></a>
-                                                <span
-                                                    class="fs-14 text-nowrap ">{{ $item->ventas->sum('total') - $item->ventas->sum('saldo') - $item->ventas->sum('descuento') }}
-                                                    Bs</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                    {{ $cajas->links() }}
-                </div>
-            </div>
-        </div>
-
-
-    @endempty
-
-    @isset($cajaactiva)
-        @php
+@php
             $balanceSaldo = $cajaactiva->saldos->where('es_deuda', false)->sum('monto');
         @endphp
         <div class="col-xl-8 col-lg-12 col-xxl-5 col-sm-12">
@@ -132,7 +87,7 @@
 
             </div>
         </div>
-        
+
         <div class="col-xl-4 col-lg-12 col-xxl-7 col-sm-12">
             <div class="card overflow-hidden">
                 <div class="card">
@@ -350,7 +305,6 @@
             </div>
         </div>
         @isset($ventasHoy)
-        
             <div class="modal fade" id="modalDetalle" style="display: none;" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
@@ -434,52 +388,3 @@
 
             </div>
         @endisset
-    @endisset
-
-    @isset($cajaactiva)
-        <div class="modal fade" id="modalSaldos" style="display: none;" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-
-                        <h4>Reporte de saldos para esta caja ({{ $balanceSaldo }} Bs)</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="table-responsive">
-                            <table class="table table-responsive-md">
-                                <thead>
-                                    <tr>
-                                        <th><strong>Usuario</strong></th>
-                                        <th><strong>Monto</strong></th>
-                                        <th><strong>Estado</strong></th>
-                                        <th><strong>Cajero</strong></th>
-                                        <th><strong>Detalle</strong></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($cajaactiva->saldos as $item)
-                                        <tr>
-                                            <td>{{ Str::limit($item->usuario->name, 25) }}</td>
-                                            <td>{{ $item->monto }} Bs</td>
-                                            <td class="{{ $item->es_deuda ? 'text-danger' : 'text-success' }}">
-                                                {{ $item->es_deuda ? 'DEUDA' : 'A FAVOR DE CLIENTE' }}</td>
-                                            <td>{{ Str::limit($item->atendidoPor->name, 25) }}</td>
-                                            <td>{{ Str::limit($item->detalle, 30) }}</td>
-                                        </tr>
-                                    @endforeach
-                                    <tr>
-                                        <th>TOTAL</th>
-                                        <th>{{ $balanceSaldo }} Bs</th>
-
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endisset
-</div>

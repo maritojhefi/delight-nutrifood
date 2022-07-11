@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Route;
 use Rawilk\Printing\Facades\Printing;
 use App\Http\Livewire\Client\Inicio\Index;
@@ -15,7 +16,9 @@ use App\Http\Livewire\Client\Inicio\Index;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+Route::get('/asd', function () {
+    dd(Crypt::decrypt('eyJpdiI6Ijc1bXZ6Vmt2YnZwSGZkOHdIeXR2Mnc9PSIsInZhbHVlIjoiWXB5TFJRcFQybEhjQlhqSU5jRnRkdz09IiwibWFjIjoiMmI1Y2ZkNTgzYjNkNWYyYWQ5M2QzZTE3ZjYyZDQ5ZDE2ZjBkOTc2ZTEyYmRjYTIxZjE2NzVmMGYxNDRkNDc2MSIsInRhZyI6IiJ9'));
+});
 
 Route::get('/cliente', function () {
     return view('client.ajustes.index');

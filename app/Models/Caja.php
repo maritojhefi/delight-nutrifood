@@ -22,4 +22,8 @@ class Caja extends Model
     {
         return $this->hasMany(Historial_venta::class);
     }
+    public function saldos()
+    {
+        return $this->hasMany(Saldo::class,'caja_id');
+    }
 }
