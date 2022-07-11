@@ -52,7 +52,10 @@
                                 </x-input-create>
                             @endempty
                             @isset($cajaactiva)
-                                <div class="widget-stat card bg-danger">
+                                @php
+                                    $balanceSaldo = $cajaactiva->saldos->where('es_deuda', false)->sum('monto');
+                                @endphp
+                                <div class="widget-stat card bg-primary">
                                     <a href="#" data-bs-toggle="modal" data-bs-target="#modalVentas">
                                         <div class="card-body  p-4">
                                             <div class="media">
@@ -68,25 +71,27 @@
                                     </a>
                                 </div>
                                 <div class="widget-stat card">
-                                    <div class="card-body p-4">
-                                        <div class="media ai-icon">
-                                            <span class="me-3 bgl-primary text-primary">
-                                                <!-- <i class="ti-user"></i> -->
-                                                <svg id="icon-customers" xmlns="http://www.w3.org/2000/svg" width="30"
-                                                    height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                                    class="feather feather-user">
-                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                                    <circle cx="12" cy="7" r="4"></circle>
-                                                </svg>
-                                            </span>
-                                            <div class="media-body">
-                                                <p class="mb-1">Otorgados a clientes</p>
-                                                <h4 class="mb-0">{{ $ventasHoy->sum('puntos') }}</h4>
-                                                <span class="badge badge-primary">Puntos</span>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#modalSaldos">
+                                        <div class="card-body p-4">
+                                            <div class="media ai-icon">
+                                                <span class="me-3 bgl-primary text-primary">
+                                                    <!-- <i class="ti-user"></i> -->
+                                                    <svg id="icon-customers" xmlns="http://www.w3.org/2000/svg" width="30"
+                                                        height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                        class="feather feather-user">
+                                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                        <circle cx="12" cy="7" r="4"></circle>
+                                                    </svg>
+                                                </span>
+                                                <div class="media-body">
+                                                    <p class="mb-1">Balance de saldos</p>
+                                                    <h4 class="mb-0">{{ $cajaactiva->saldos->count() }}</h4>
+                                                    <span class="badge badge-primary">Registros</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
 
                                 <div class="widget-stat card">
@@ -104,9 +109,9 @@
                                                     </svg>
                                                 </span>
                                                 <div class="media-body">
-                                                    <p class="mb-1">Ventas de hoy</p>
+                                                    <p class="mb-1">Ingresos</p>
                                                     <h4 class="mb-0">
-                                                        {{ $ventasHoy->sum('total') - $ventasHoy->sum('descuento') - $ventasHoy->sum('saldo') }}
+                                                        {{ $ventasHoy->sum('total') - $ventasHoy->sum('descuento') - $ventasHoy->sum('saldo') + $balanceSaldo }}
                                                     </h4>
                                                     <span class="badge badge-danger">BS</span>
                                                 </div>
@@ -134,7 +139,7 @@
                 <div class="card overflow-hidden">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Detalle de caja</h4><span class="badge badge-pill badge-primary">Total items:
+                            <h4 class="card-title">Productos vendidos</h4><span class="badge badge-pill badge-primary">Total items:
                                 {{ $lista->count() }}</span>
                         </div>
                         <div class="card-body">
@@ -345,7 +350,12 @@
         </div>
     </div>
 
-    @isset($ventasHoy)
+    
+    @isset($cajaactiva)
+        @php
+            $balanceSaldo = $cajaactiva->saldos->where('es_deuda', false)->sum('monto');
+        @endphp
+        @isset($ventasHoy)
         <div class="modal fade" id="modalDetalle" style="display: none;" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -404,14 +414,18 @@
                                     <h3 class="mb-1 text-primary">{{ $ventasHoy->sum('saldo') }} Bs</h3>
                                     <span>Saldos acumulados</span>
                                 </div>
-                                
+
                             </div>
                             <div class="row">
+                                <div class="col-4 pt-3 pb-3 border-end">
+                                    <h3 class="mb-1 text-primary">{{ $balanceSaldo }} Bs</h3>
+                                    <span>Saldos pagados</span>
+                                </div>
                                 <div class="col-4 pt-3 pb-3 border-end">
                                 </div>
                                 <div class="col-4 pt-3 pb-3 border-end">
                                     <h3 class="mb-1 text-primary">
-                                        {{ $ventasHoy->sum('total') - $ventasHoy->sum('descuento') - $ventasHoy->sum('saldo') }}
+                                        {{ $ventasHoy->sum('total') - $ventasHoy->sum('descuento') - $ventasHoy->sum('saldo') + $balanceSaldo }}
                                         Bs</h3>
                                     <span>Total con descuentos/saldos</span>
                                 </div>
@@ -425,6 +439,50 @@
 
         </div>
     @endisset
+        <div class="modal fade" id="modalSaldos" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
 
+                        <h4>Reporte de saldos para esta caja ({{ $balanceSaldo }} Bs)</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table table-responsive-md">
+                                <thead>
+                                    <tr>
+                                        <th><strong>Usuario</strong></th>
+                                        <th><strong>Monto</strong></th>
+                                        <th><strong>Estado</strong></th>
+                                        <th><strong>Cajero</strong></th>
+                                        <th><strong>Detalle</strong></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($cajaactiva->saldos as $item)
+                                        <tr>
+                                            <td>{{ Str::limit($item->usuario->name, 25) }}</td>
+                                            <td>{{ $item->monto }} Bs</td>
+                                            <td class="{{ $item->es_deuda ? 'text-danger' : 'text-success' }}">
+                                                {{ $item->es_deuda ? 'DEUDA' : 'A FAVOR DE CLIENTE' }}</td>
+                                            <td>{{ Str::limit($item->atendidoPor->name, 25) }}</td>
+                                            <td>{{ Str::limit($item->detalle, 30) }}</td>
+                                        </tr>
+                                    @endforeach
+                                    <tr>
+                                        <th>TOTAL</th>
+                                        <th>{{ $balanceSaldo }} Bs</th>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endisset
 
 </div>

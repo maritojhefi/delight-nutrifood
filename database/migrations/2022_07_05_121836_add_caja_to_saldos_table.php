@@ -16,9 +16,10 @@ class AddCajaToSaldosTable extends Migration
         Schema::table('saldos', function (Blueprint $table) {
             //$table->dropColumn('historial_venta_id');
             $table->text('detalle')->nullable();
+            $table->integer('historial_ventas_id')->nullable();
             $table->integer('caja_id')->nullable();
             //$table->integer('historial_venta_id')->nullable();
-            $table->integer('historial_venta_id_key')->nullable()->change();
+            //$table->integer('historial_venta_id_key')->nullable()->change();
            
         });
     }
@@ -33,6 +34,7 @@ class AddCajaToSaldosTable extends Migration
         Schema::table('saldos', function (Blueprint $table) {
             $table->dropColumn('detalle');
             $table->dropColumn('caja_id');
+            $table->dropColumn('historial_ventas_id');
         });
     }
 }

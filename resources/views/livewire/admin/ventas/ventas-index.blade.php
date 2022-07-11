@@ -95,7 +95,7 @@
             </a>
             @if ($cuenta->cliente)
                 <a href="#" data-bs-toggle="modal" data-bs-target="#planesusuario"><span
-                        class="badge light badge-success">{{ Str::limit($cuenta->cliente->name,15,'...') }}</span></a>
+                        class="badge light badge-success">{{ Str::limit($cuenta->cliente->name, 15, '...') }}</span></a>
             @else
                 <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span
                         class="badge light badge-danger">Sin usuario</span></a>
@@ -574,24 +574,85 @@
 
 
 <div wire:ignore.self class="modal fade" id="planesusuario">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            @isset($cuenta->cliente->planes)
-                <div class="modal-header">
-                    <h5 class="modal-title">Saldo : {{$cuenta->cliente->saldo}} Bs </h5>
-                    <a href="#" wire:click="verSaldo" class="btn btn-xxs btn-warning">Descontar saldo</a>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+<div class="modal-dialog">
+    <div class="modal-content">
+        @isset($cuenta->cliente)
+            <div class="modal-header">
+                <h5 class="modal-title col-5">Saldo : {{ $cuenta->cliente->saldo }} Bs </h5>
+                <a href="#" wire:click="verSaldo" 
+                    class="btn btn-xxs btn-warning col-5">{{ $verVistaSaldo ? 'Ver Planes' : 'Descontar Saldo' }}</a>
+                    <button type="button" class="btn-close col-2" data-bs-dismiss="modal">
                     </button>
-                </div>
-                <div class="modal-body">
+            </div>
+            <div class="modal-body">
+                @if ($verVistaSaldo)
+                    <div class="card m-0 ">
+                        <div class="card-body">
+                            <div class="mb-3 row">
+                                <label class="col-lg-4 col-form-label" for="validationCustom01">Monto (Bs)
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-lg-6">
+                                    <input type="number" class="form-control @error($montoSaldo) is-invalid @enderror" step="any" wire:model.lazy="montoSaldo"
+                                         placeholder="Ingrese el monto que paga el cliente" required="">
+                                        
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-lg-4 col-form-label" for="validationCustom02">Detalle <span
+                                        class="text-danger">*</span>
+                                </label>
+                                <div class="col-lg-6">
+                                    <textarea  class="form-control @error($detalleSaldo) is-invalid @enderror"   cols="30" rows="10" wire:model.lazy="detalleSaldo"></textarea>
+                                    
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button class="btn btn-success" wire:click="registrarSaldo">Registrar</button>
+                            </div>
+                        </div>
+                        <h4>Registro de saldos:{{$cuenta->cliente->saldos->count()}}</h4>
+                        <ul class="list-group mt-3 " style="overflow-y: auto;max-height:300px;overflow-x: hidden">
+                            @foreach ($cuenta->cliente->saldos->sortByDesc('created_at') as $saldo)
+                            @if ($saldo->es_deuda)
+                            <li class="list-group-item d-flex justify-content-between active">
+                                <div class="text-white">
+                                    <h6 class="my-0 text-white">DEUDA POR COMPRA</h6>
+                                    <small>{{$saldo->created_at->format('d-M')}}<a href="#" class="badge badge-warning badge-xs">{{ App\Helpers\WhatsappAPIHelper::timeago($saldo->created_at) }}</a></small>
+                                </div>
+                                <span class="text-white">{{$saldo->monto}} Bs</span>
+                            </li>
+                            @else
+                            <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                <div>
+                                    <h6 class="my-0">PAGO A FAVOR DEL CLIENTE</h6>
+                                    <small class="text-muted">{{$saldo->created_at->format('d-M')}} <a href="#" class="badge badge-warning badge-xs">{{ App\Helpers\WhatsappAPIHelper::timeago($saldo->created_at) }}</a></small><br>
+                                    <small class="text-muted">{{Str::limit($saldo->detalle,25)}}</small>
+                                </div>
+                                <span class="text-muted">{{$saldo->monto}} Bs</span>
+                            </li>
+                            @endif
+                            @endforeach
+                            
+                        </ul>
+                        <ul class="list-group mt-3 ">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Saldo </span>
+                                <strong>{{$cuenta->cliente->saldo}} Bs</strong>
+                            </li>
+                        </ul>
+                        
 
+
+                    </div>
+                @else
                     @foreach ($cuenta->cliente->planes->groupBy('nombre') as $nombre => $item)
                         <div class="card m-0 ">
                             <div class="card-body px-4 py-3 py-lg-2">
                                 <div class="row align-items-center">
                                     <div class="col-xl-3 col-xxl-12 col-lg-12 my-2">
-                                        <strong class="mb-0 fs-14">{{ Str::limit($nombre,20,'') }}</strong> <a
-                                            href="{{ route('detalleplan', [ $cuenta->cliente->id,$item[0]->id]) }}"
+                                        <strong class="mb-0 fs-14">{{ Str::limit($nombre, 20, '') }}</strong> <a
+                                            href="{{ route('detalleplan', [$cuenta->cliente->id, $item[0]->id]) }}"
                                             class="badge badge-info">Ir <i class="fa fa-arrow-right"></i></a>
                                     </div>
                                     <div class="col-xl-7 col-xxl-12 col-lg-12">
@@ -606,11 +667,11 @@
                                                         @endphp
                                                         <h5 class="mb-0   fs-22">
                                                             @if ($ultimaFecha)
-                                                            {{ date_format(date_create($ultimaFecha->pivot->start), 'd-M') }}
+                                                                {{ date_format(date_create($ultimaFecha->pivot->start), 'd-M') }}
                                                             @else
-                                                            N/A
+                                                                N/A
                                                             @endif
-                                                            
+
                                                         </h5>
                                                     </div>
                                                 </div>
@@ -654,61 +715,63 @@
                             </div>
                         </div>
                     @endforeach
+                @endif
 
 
-                </div>
+
+            </div>
 
 
-            @endisset
-        </div>
+        @endisset
     </div>
+</div>
 </div>
 
 <div wire:ignore.self class="modal fade" id="modalNuevoCliente">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                Creando nuevo cliente <button type="button" class="btn-close" data-bs-dismiss="modal">
-                </button>
-            </div>
-            <div class="modal-body">
-                <x-input-create-custom-function funcion="crearCliente" boton="Crear Cliente" :lista="[
-                    'Nombre' => ['name', 'text'],
-                    'Correo' => ['email', 'email'],
-                    'Nacimiento' => ['cumpleano', 'date', '(opcional)'],
-                    'Direccion' => ['direccion', 'text', '(opcional)'],
-                    'Contraseña' => ['password', 'password'],
-                ]">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            Creando nuevo cliente <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
+        </div>
+        <div class="modal-body">
+            <x-input-create-custom-function funcion="crearCliente" boton="Crear Cliente" :lista="[
+                'Nombre' => ['name', 'text'],
+                'Correo' => ['email', 'email'],
+                'Nacimiento' => ['cumpleano', 'date', '(opcional)'],
+                'Direccion' => ['direccion', 'text', '(opcional)'],
+                'Contraseña' => ['password', 'password'],
+            ]">
 
-                </x-input-create-custom-function>
-            </div>
+            </x-input-create-custom-function>
         </div>
     </div>
 </div>
+</div>
 
 <div wire:ignore.self class="modal fade" id="modalClientes">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                Cambiar Usuario para esta cuenta
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            Cambiar Usuario para esta cuenta
+        </div>
+        <div class="modal-body">
+            <div class="mb-3 col-md-6 mt-2">
+                <input type="text" class="form-control  form-control-sm" placeholder="Buscar Usuario"
+                    wire:model.debounce.1000ms='user'>
             </div>
-            <div class="modal-body">
-                <div class="mb-3 col-md-6 mt-2">
-                    <input type="text" class="form-control  form-control-sm" placeholder="Buscar Usuario"
-                        wire:model.debounce.1000ms='user'>
-                </div>
-                <span class="badge light badge-info" wire:loading wire:target='user'> Cargando...
-                </span>
+            <span class="badge light badge-info" wire:loading wire:target='user'> Cargando...
+            </span>
 
-                @foreach ($usuarios as $item)
-                    <a href="#" class="m-2"
-                        wire:click="cambiarClienteACuenta({{ $item->id }})"><span
-                            class="badge light badge-primary"> {{ $item->name }} <i
-                                class="fa fa-check"></i></span></a>
-                @endforeach
-            </div>
+            @foreach ($usuarios as $item)
+                <a href="#" class="m-2"
+                    wire:click="cambiarClienteACuenta({{ $item->id }})"><span
+                        class="badge light badge-primary"> {{ $item->name }} <i
+                            class="fa fa-check"></i></span></a>
+            @endforeach
         </div>
     </div>
+</div>
 </div>
 
 
