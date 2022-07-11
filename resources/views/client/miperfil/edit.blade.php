@@ -4,11 +4,26 @@
 
 
     @if (!session('success'))
+        @if (session('actualizado'))
+            <div class="alert me-3 ms-3 rounded-s bg-green-dark " role="alert">
+                <span class="alert-icon"><i class="fa fa-check font-18"></i></span>
+                <h4 class="text-uppercase color-white">Hecho!</h4>
+                <strong class="alert-icon-text">Se actualizo correctamente su foto de perfil.</strong>
+
+                <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert"
+                    aria-label="Close">×</button>
+            </div>
+        @endif
+
         <div class="card card-style">
             <div class="content">
                 <div class="d-flex">
-                    <div>
+                <div>
+                        @if ($usuario->foto)
+                        <img src="{{ asset('imagenes/perfil/'.$usuario->foto) }}" width="50" class="me-3 bg-highlight rounded-xl">
+                        @else
                         <img src="{{ asset('user.png') }}" width="50" class="me-3 bg-highlight rounded-xl">
+                        @endif
                     </div>
                     <div>
                         <h1 class="mb-0 pt-1">{{ auth()->user()->name }}</h1>
@@ -69,16 +84,8 @@
                                 <p class="text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
-                            <input type="date" class="form-control" name="nacimiento"
-                                value="{{ old('nacimiento', $usuario->nacimiento) }}">
-                            <label for="form1" class="color-highlight font-400 font-13">Fecha Nacimiento</label>
 
-                            @error('nacimiento')
-                                <i class="fa fa-times  invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
-                        </div>
+
 
                         <input type="hidden" value="{{ $usuario->id }}" name="idUsuario">
                         <input type="hidden" id="latitud" name="latitud">
@@ -91,16 +98,44 @@
                 </form>
             </div>
         </div>
+        <div class="card card-style">
+            <div class="content mb-0">
+                <h4>Foto de perfil</h4>
+                <p>
+                    Personaliza tu perfil, nos ayudara a conocerte mejor!
+                </p>
+                <form action="{{ route('subirfoto.perfil') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="file-data pb-5">
+                        <input type="file" id="file-upload" class="upload-file bg-highlight shadow-s rounded-s "
+                            accept="image/*" name="foto">
+                        <p class="upload-file-text color-white">Subir Foto</p>
+                    </div>
+                    @error('foto')
+                        <p class="text-danger">{{ $message }}</p>
+                    @enderror
+                    <div class="list-group list-custom-large upload-file-data disabled">
+                        <img id="image-data" src="images/empty.png" class="img-fluid"
+                            style="width:100%; display:block; height:300px">
+
+                        <button type="submit"
+                            class="btn btn-3d btn-m btn-full mb-3 mt-3 rounded-xl text-uppercase font-900 shadow-s  border-blue-dark bg-blue-light">Guardar</button>
+
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+
 
         <div id="errorMapa" class="displayNone">
-           
-
-
             <div class="card card-style  round-medium " style="height: 380px;">
                 <img src="{{ asset('errorMapa.png') }}" class="card-image " style="height: 430px;">
                 <div class="card-bottom ms-3 mb-2">
                     <h2 class="font-700 color-white">Concede el permiso</h2>
-                    <p class="color-white mt-n2 mb-0">Haz click en el icono del candado en la parte de la url de tu navegador, permite el acceso y
+                    <p class="color-white mt-n2 mb-0">Haz click en el icono del candado en la parte de la url de tu
+                        navegador, permite el acceso y
                         recarga la pagina!</p>
                 </div>
                 <div class="card-overlay bg-black opacity-30"></div>
@@ -121,7 +156,7 @@
     @else
         <div data-card-height="200" class="card card-style preload-img entered loaded"
             data-src="{{ asset('delight_logo.jpg') }}"
-            style="height: 200px; background-image: url({{ asset('images/imagen4.jpg') }});" data-ll-status="loaded">
+            style="height: 200px; background-image: url({{ asset('imagenes/delight/2.jpeg') }});" data-ll-status="loaded">
             <div class="card-top pt-4 ms-3 me-3">
                 <h2 class="color-white font-600">Completaste tu perfil!</h2>
                 <p class="mt-n2 color-white">Ya podemos usar todas las funciones contigo! Pronto las descubriras</p>
@@ -134,7 +169,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card-overlay bg-highlight opacity-80"></div>
+            <div class="card-overlay bg-dark opacity-70"></div>
         </div>
         <a href="{{ route('miperfil') }}"
             class="btn btn-m btn-full m-3 rounded-xl text-uppercase font-900 shadow-s bg-green-dark">Ir a mi perfil</a>
@@ -209,8 +244,8 @@
                     if (err.code == err.TIMEOUT)
                         alert("Se ha superado el tiempo de espera");
                     if (err.code == err.PERMISSION_DENIED)
-                    toastError.show();
-                        $("#errorMapa").removeClass("displayNone")
+                        toastError.show();
+                    $("#errorMapa").removeClass("displayNone")
                     $("#todoBien").addClass("displayNone")
                     if (err.code == err.POSITION_UNAVAILABLE)
                         alert("El dispositivo no pudo recuperar la posición actual");

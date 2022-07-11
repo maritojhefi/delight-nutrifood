@@ -2,7 +2,9 @@
 
 namespace App\Exports;
 
+use App\Helpers\GlobalHelper;
 use App\Models\User;
+use App\Models\Plane;
 use App\Models\Almuerzo;
 use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
@@ -13,110 +15,55 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class UsersPlanesResumenExport implements FromCollection, WithHeadings, WithStyles,WithColumnWidths
+class UsersPlanesResumenExport implements FromCollection, WithHeadings, WithStyles, WithColumnWidths
 {
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public $fechaSeleccionada;
     public $coleccion;
     public function __construct($fechaSeleccionada)
     {
-            $this->fechaSeleccionada=$fechaSeleccionada;
+        $this->fechaSeleccionada = $fechaSeleccionada;
     }
     public function columnWidths(): array
     {
         return [
             'A' => 30,
-            'B' => 30, 
-            'E' => 25, 
-            'F' => 25,            
+            'B' => 5,
+            'C' => 15,
+            'F' => 5,
+            'H' => 5,
+            'D' => 20
         ];
     }
     public function headings(): array
     {
         return [
-            
-            
-            'Plan',
             'Nombre',
-            'Ensalada',
             'Sopa',
             'Platos',
             'Carbohidratos',
-            'Jugo',
             'Envio',
+            'Ensalada',
             'Empaque',
+            'Jugo',
             'Estado'
-           
+
         ];
     }
     public function collection()
     {
-        $coleccion=collect();
-        $pens=DB::table('plane_user')->select('plane_user.*','users.name','planes.editable','planes.nombre')
-        ->leftjoin('users','users.id','plane_user.user_id')
-        ->leftjoin('planes','planes.id','plane_user.plane_id')
-        ->whereDate('plane_user.start',$this->fechaSeleccionada)
-        //->where('planes.editable',1)
-        ->get();   
-           
-            foreach($pens as $lista)
-            {
-                //dd($lista);
-                $detalle=$lista->detalle;
-                if($detalle!=null)
-                {
-                    $det=collect(json_decode($detalle,true));
-                    $sopaCustom='';
-                    $det['SOPA']==''?$sopaCustom='Sin Sopa':$sopaCustom=$det['SOPA'];
+        $pens = DB::table('plane_user')->select('plane_user.*', 'users.name', 'planes.editable', 'planes.nombre')
+            ->leftjoin('users', 'users.id', 'plane_user.user_id')
+            ->leftjoin('planes', 'planes.id', 'plane_user.plane_id')
+            ->whereDate('plane_user.start', $this->fechaSeleccionada)
+            //->where('planes.editable',1)
+            ->get();
 
-                    $saberDia=WhatsappAPIHelper::saber_dia($this->fechaSeleccionada);
-                    $menu=Almuerzo::where('dia',$saberDia)->first();
-                    $tipoSegundo='';
-                    $tipoCarbo='';
-                    if($det['PLATO']==$menu->ejecutivo)$tipoSegundo='EJECUTIVO';
-                    if($det['PLATO']==$menu->dieta)$tipoSegundo='DIETA';
-                    if($det['PLATO']==$menu->vegetariano)$tipoSegundo='VEGGIE';
-                    
-                    $coleccion->push([
-                        
-                        'PLAN'=>$lista->nombre,
-                        'NOMBRE'=>$lista->name,
-                        'ENSALADA'=>1,
-                        'SOPA'=>$sopaCustom,
-                        'PLATO'=>$det['PLATO'],
-                        'CARBOHIDRATO'=>$det['CARBOHIDRATO'],
-                        'JUGO'=>1,
-                        'ENVIO'=>$det['ENVIO'],
-                        'EMPAQUE'=>$det['EMPAQUE'],
-                        'ESTADO'=>$lista->estado
-                    ]);
-                }
-                else
-                {
-                    $coleccion->push([
-                        
-                        'PLAN'=>$lista->nombre,
-                        'NOMBRE'=>$lista->name,
-                        'ENSALADA'=>'',
-                        'SOPA'=>'',
-                        'PLATO'=>'',
-                        'CARBOHIDRATO'=>'',
-                        'JUGO'=>'',
-                        'ENVIO'=>'',
-                        'EMPAQUE'=>'',
-                        'ESTADO'=>$lista->estado
-                    ]);
-                }
-                
-                
-                
-                
-            }
-            
-       $this->coleccion=$coleccion;
-       return $coleccion;
+        $coleccion=GlobalHelper::armarColeccionReporteDiario($pens,$this->fechaSeleccionada);
+        $this->coleccion = $coleccion;
+        return $coleccion;
     }
     public function styles(Worksheet $sheet)
     {

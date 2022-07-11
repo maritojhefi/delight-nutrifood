@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Plane;
+use App\Models\Almuerzo;
 use Illuminate\Http\Request;
 use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +13,54 @@ use App\Http\Controllers\Controller;
 
 class UsuariosController extends Controller
 {
+    
+    public function editarPlanUsuario($plan, $usuario){
+        $plan=Plane::find((int)$plan);
+        $usuario=User::find((int)$usuario);
+       // dd($usuario);
+       $coleccion=collect();
+       $fechaactual=Carbon::now()->format('y-m-d');
+       $fechalimite=date("y-m-d", strtotime("next sunday"));
+      //dd($fechalimite);
+       $array=array();
+       $lunes=false;
+       $planes=$usuario->planesPendientes->where('id',$plan->id)->sortBy(function($col) {return $col;});
+       
+       $menusemanal="";
+       foreach($planes as $dias){
+           
+            if(date('y-m-d', strtotime($dias->pivot->start))<=$fechalimite && date('y-m-d', strtotime($dias->pivot->start))>=$fechaactual)
+            {
+            
+             $menusemanal=Almuerzo::where('dia',WhatsappAPIHelper::saber_dia($dias->pivot->start))->first();  
+         
+             $coleccion->push([
+                 'detalle'=>$dias->pivot->detalle,
+                 'dia'=>WhatsappAPIHelper::saber_dia($dias->pivot->start),
+                 'id'=>$dias->pivot->id,
+                 'fecha'=>date('d-M', strtotime($dias->pivot->start)),
+                 'sopa'=>$menusemanal->sopa,
+                 'ensalada'=>$menusemanal->ensalada,
+                 'ejecutivo'=>$menusemanal->ejecutivo,
+                 'dieta'=>$menusemanal->dieta,
+                 'vegetariano'=>$menusemanal->vegetariano,
+                 'carbohidrato_1'=>$menusemanal->carbohidrato_1,
+                 'carbohidrato_2'=>$menusemanal->carbohidrato_2,
+                 'carbohidrato_3'=>$menusemanal->carbohidrato_3,
+                 'jugo'=>$menusemanal->jugo,
+                 'envio1'=>Plane::ENVIO1,
+                 'envio2'=>Plane::ENVIO2,
+                 'envio3'=>Plane::ENVIO3,
+                 'empaque1'=>'Vianda',
+                 'empaque2'=>'Empaque Bio(apto/microondas)',
+                            ]);
+             
+            }
+           
+       }
+      
+        return view('client.miperfil.calendario',compact('plan','usuario','coleccion','menusemanal'));
+    }
     public function saldo()
     {
         $usuario=User::find(auth()->user()->id);

@@ -53,7 +53,8 @@
                     'Reporte Diario' => 'almuerzos.reporte',
                     'Reporte Semanal' => 'reporte.semana',
                     'Planes' => 'crear.plan',
-                    'Agregar Plan a Usuario' => 'planes'
+                    'Agregar Plan a Usuario' => 'planes',
+                    'Planes por expirar' => 'planes.expirar'
                 ]">
                     <i class="flaticon-022-copy"></i>
                 </x-sidebar-elements>

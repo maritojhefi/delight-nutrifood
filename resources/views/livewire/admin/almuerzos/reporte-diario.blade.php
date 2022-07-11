@@ -3,16 +3,24 @@
     
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Reporte de fecha {{(date_format(date_create($fechaSeleccionada), 'd-M'))}}
+            <h4 class="card-title">Fecha {{(date_format(date_create($fechaSeleccionada), 'd-M'))}}
                 <button class="btn btn-xs btn-info"  data-toggle="modal" data-target="#exampleModal">Finalizar todos</button></h4> 
             
-            <div class="col-3"><div  class="d-flex justify-content-center">
+            <div class="col-2"><div  class="d-flex justify-content-center">
                 <div wire:loading class="spinner-border" role="status">
                   <span class="sr-only">Loading...</span>
                 </div>
               </div></div>
-            <div class="col-sm-6 col-md-4 col-lg-3"><input type="date" class="form-control" wire:model="fechaSeleccionada" wire:change="cambioDeFecha"></div>
+              <div class="col-sm-4 col-md-4 col-lg-3">
+                <div class="input-group input-{{$estadoColor}}">
+                    <a href="#" wire:click="cambiarEstadoBuscador" class="input-group-text">{{$estadoBuscador}}</a>
+                    <input type="text" class="form-control"  wire:model.debounce.500ms="search">
+                </div>
+              </div>
+              
             
+            <div class="col-sm-4 col-md-4 col-lg-3"><input type="date" class="form-control" wire:model="fechaSeleccionada" wire:change="cambioDeFecha"></div>
+
             {{-- <a href="#" wire:click="cambiarDisponibilidad"
                 data-bs-toggle="modal" data-bs-target="#modalDisponibilidad"><span
                     class="badge badge-pill badge-primary">Cambiar Disponibilidad</span></a> --}}
@@ -25,10 +33,11 @@
                             <th>#</th>
                             <th>Nombre</th>
                             <th>Sopa</th>
-                            {{-- <th>Ensalada</th> --}}
+                            
                             <th>Plato</th>
                             <th>Carbohidrato</th>
-                            {{-- <th>Jugo</th> --}}
+                            <th>Ensalada</th>
+                            <th>Jugo</th>
                             <th>Empaque</th>
                             <th>Envio</th>
                             <th>Plan</th>
@@ -41,13 +50,14 @@
                         <tr class="{{$lista['ESTADO']=='finalizado'?'table-success':'' }}{{$lista['ESTADO']=='permiso'?'table-warning':''}}" style="padding:5px">
                             <td style="padding:5px">{{$loop->iteration}}</td>
                             
-                            <td style="padding:5px">{{Str::limit($lista['NOMBRE'],20)}}</td>
+                            <td style="padding:5px"><a href="{{route('detalleplan',[$lista['USER_ID'],$lista['PLAN_ID']])}}">{{Str::limit($lista['NOMBRE'],20)}}</a></td>
 
                             <td style="padding:5px">{{$lista['SOPA']!=""?'SI':''}}</td>
-                            {{-- <td style="padding:5px">{{$lista['ENSALADA']!=""?'SI':''}}</td> --}}
+                            
                             <td style="padding:5px">{{$lista['PLATO']}}</td>
-                            <td style="padding:5px">{{$lista['CARBOHIDRATO']}}</td>
-                            {{-- <td style="padding:5px">{{$lista['JUGO']!=""?'SI':''}}</td> --}}
+                            <td style="padding:5px">{{Str::limit($lista['CARBOHIDRATO'],20)}}</td>
+                            <td style="padding:5px">{{Str::limit($lista['ENSALADA']!=""?'SI':'',15)}}</td>
+                            <td style="padding:5px">{{sTR::limit($lista['JUGO']!=""?'SI':'',15)}}</td>
                             <td style="padding:5px">{{$lista['EMPAQUE']}}</td>
                             <td style="padding:5px">{{$lista['ENVIO']}}</td>
                             <td style="padding:5px">{{Str::limit($lista['PLAN'],20)}}</td>
@@ -74,7 +84,7 @@
                                     @foreach ($array as $nombre=>$cantidad)
                                     @if ($nombre!='')
                                     <span
-                                    class="badge badge-pill badge-primary light">{{$nombre}}:{{$cantidad}}</span><br>
+                                    class="badge badge-pill badge-primary light">{{Str::limit($nombre,'15')}}:{{$cantidad}}</span><br>
                                     @endif
                                    
                                     @endforeach</th>
@@ -88,7 +98,7 @@
                    
                 </table>
                 <div  class="d-flex justify-content-center">
-                    <h4>Planes para este dia:{{$coleccion->count()}}</h4>
+                    <h4>{{$search?'Encontrados':'Planes para este dia'}} : {{$coleccion->count()}}</h4>
                     <a href="#" wire:click="exportarexcel" class="badge badge-success pill light">Exportar</a>
                 </div>
             </div>

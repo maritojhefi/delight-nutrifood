@@ -34,32 +34,32 @@
                             @csrf
                             <div class="mb-3 col-md-6">
                                 <label class="form-label">Nombre</label>
-                                <input type="text" class="form-control" name="nombre" value="{{ $usuario->name }}"
+                                <input type="text" class="form-control form-control-sm" name="nombre" value="{{ $usuario->name }}"
                                     id="nombre" readonly>
                             </div>
 
-                            <input type="hidden" class="form-control" name="idplan" value="{{ $plan->id }}"
+                            <input type="hidden" class="form-control form-control-sm" name="idplan" value="{{ $plan->id }}"
                                 id="idplan">
-                            <input type="hidden" class="form-control" name="iduser" value="{{ $usuario->id }}"
+                            <input type="hidden" class="form-control form-control-sm" name="iduser" value="{{ $usuario->id }}"
                                 id="iduser">
 
                             <div class="mb-3 col-md-6">
                                 <label class="form-label">Plan</label>
-                                <input type="text" class="form-control" name="plan" placeholder="Plan" id="plan"
+                                <input type="text" class="form-control form-control-sm" name="plan" placeholder="Plan" id="plan"
                                     value="{{ $plan->nombre }}" readonly>
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label class="form-label">Inicio</label>
-                                <input type="date" class="form-control" name="start" placeholder="Fecha Inicio" id="start"
+                                <input type="date" class="form-control form-control-sm" name="start" placeholder="Fecha Inicio" id="start"
                                     readonly>
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label>Fin</label>
-                                <input type="date" class="form-control" name="end" placeholder="Fecha Final" id="end">
+                                <input type="date" class="form-control form-control-sm" name="end" placeholder="Fecha Final" id="end">
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label>Personalizado</label>
-                                <input type="number" class="form-control" name="dias" placeholder="Agregar mas dias" id="dias">
+                                <input type="number" class="form-control form-control-sm" name="dias" placeholder="Agregar mas dias" id="dias">
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label></label>
@@ -97,24 +97,24 @@
                         <input type="hidden" name="id" id="id">
                         <div class="mb-3 col-md-6">
                             <label>Evento</label>
-                            <input type="text" class="form-control" name="title" id="title" readonly>
+                            <input type="text" class="form-control form-control-sm" name="title" id="title" readonly>
                         </div>
                         
                         <div class="mb-3 col-md-6">
                             <label>Segundo</label>
-                            <input type="text" class="form-control" id="segundo" readonly>
+                            <input type="text" class="form-control form-control-sm" id="segundo" readonly>
                         </div>
                         <div class="mb-3 col-md-6">
                             <label>Carbohidrato</label>
-                            <input type="text" class="form-control" id="carbo" readonly>
+                            <input type="text" class="form-control form-control-sm" id="carbo" readonly>
                         </div>
                         <div class="mb-3 col-md-6">
                             <label>Tipo Envio</label>
-                            <input type="text" class="form-control" id="envio" readonly>
+                            <input type="text" class="form-control form-control-sm" id="envio" readonly>
                         </div>
                         <div class="mb-3 col-md-6">
                             <label>Tipo Empaque</label>
-                           <input type="text" class="form-control" id="empaque" readonly>
+                           <input type="text" class="form-control form-control-sm" id="empaque" readonly>
                         </div>
                     </form>
 

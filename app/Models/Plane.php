@@ -18,6 +18,10 @@ class Plane extends Model
     const ESTADOPENDIENTE="pendiente";
     const ESTADOFERIADO="feriado";
     const ESTADOFINALIZADO="finalizado";
+
+    const ENVIO1="Para Mesa";
+    const ENVIO2="Para llevar(Paso a recoger)";
+    const ENVIO3="Delivery";
     use HasFactory;
     protected $fillable = [
         'nombre','producto_id','detalle','editable','sopa','segundo','ensalada','carbohidrato','jugo'

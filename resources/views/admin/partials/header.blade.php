@@ -160,7 +160,12 @@
                                 <span class="fs-16 font-w600 ">{{auth()->user()->name}}</span>
                                 <small class="text-end fs-14 font-w400">{{auth()->user()->role->nombre}}</small>
                             </div>
-                            <img src="{{asset('user.png')}}" width="20" alt=""/>
+                            @if (auth()->user()->foto)
+                            <img src="{{ asset('imagenes/perfil/'.auth()->user()->foto) }}" width="20" >
+                            @else
+                            <img src="{{ asset('user.png') }}" width="20">
+                            @endif
+                            
                         </a>
                         <div class="dropdown-menu dropdown-menu-end">
                             <a href="{{route('usuario.perfil')}}" class="dropdown-item ai-icon">

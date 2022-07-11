@@ -9,6 +9,7 @@ use App\Models\Almuerzo;
 use App\Helpers\CreateList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Intervention\Image\Facades\Image;
 
 class MiperfilController extends Controller
 {
@@ -63,9 +64,9 @@ class MiperfilController extends Controller
                  'carbohidrato_2'=>$menusemanal->carbohidrato_2,
                  'carbohidrato_3'=>$menusemanal->carbohidrato_3,
                  'jugo'=>$menusemanal->jugo,
-                 'envio1'=>'Para Mesa',
-                 'envio2'=>'Para llevar(Paso a recoger)',
-                 'envio3'=>'Delivery',
+                 'envio1'=>Plane::ENVIO1,
+                 'envio2'=>Plane::ENVIO2,
+                 'envio3'=>Plane::ENVIO3,
                  'empaque1'=>'Vianda',
                  'empaque2'=>'Empaque Bio(apto/microondas)',
                             ]);
@@ -180,7 +181,7 @@ class MiperfilController extends Controller
         $request->validate([    
         'email' => 'required|email|unique:users,email,'.$request->idUsuario,
         'direccion' => 'required|min:15',
-        'nacimiento'=>'required|date',
+        
         'telf'=>'required|size:8|unique:users,telf,'.$request->idUsuario,
         'latitud'=>'required|string|min:10',
         'longitud'=>'required|string|min:10',
@@ -190,5 +191,32 @@ class MiperfilController extends Controller
         $usuario->fill($request->all());
         $usuario->save();
         return back()->with('success','Gracias! Ya tienes tu perfil completo y actualizado');
+    }
+    public function subirFoto(Request $request)
+    {
+        $request->validate([
+            'foto'=>'required|mimes:jpeg,bmp,png,gif|max:10240'
+        ]);
+        $user=User::find(auth()->user()->id);
+        if($user->foto)
+        {
+            $filename=$user->foto;
+        }
+        else
+        {
+            $filename= time().".". $request->foto->extension();
+        }
+        //$this->foto->move(public_path('imagenes'),$filename);
+        $request->foto->storeAs('perfil',$filename, 'public_images');
+          //comprimir la foto
+        $img = Image::make('imagenes/perfil/'.$filename);
+        $img->resize(320, null, function ($constraint) {
+         $constraint->aspectRatio();
+        });
+         $img->rotate(0);
+        $img->save('imagenes/productos/'.$filename);
+        $user->foto=$filename;
+        $user->save();
+        return back()->with('actualizado','Se actualizo tu foto de perfil!');
     }
 }
