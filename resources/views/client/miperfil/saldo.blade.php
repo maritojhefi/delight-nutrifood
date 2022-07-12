@@ -5,7 +5,7 @@
         <div class="content mb-2">
             <h4>Resumen detallado</h4>
             <p>
-                
+
                 Registros de saldos a continuacion:
             </p>
             <table class="table table-borderless text-center rounded-sm shadow-l" style="overflow: hidden;">
@@ -40,159 +40,165 @@
 
                         </tr>
                     @endforeach
-                        <tr>
-                            <th>TOTAL</th>
-                            <td></td>
-                            <th class="color-{{ $usuario->saldo>0 ? 'red' : 'green' }}-dark">{{$usuario->saldo}} Bs</th>
-                        </tr>
+                    <tr>
+                        <th>TOTAL</th>
+                        <td></td>
+                        <th class="color-{{ $usuario->saldo > 0 ? 'red' : 'green' }}-dark">{{ $usuario->saldo }} Bs</th>
+                    </tr>
 
                 </tbody>
             </table>
         </div>
     </div>
-    @foreach ($usuario->saldos as $item)
-    
-    <div class="modal fade" id="modalSaldo{{ $item->id }}" tabindex="-1" aria-labelledby="modalSaldo"
-        aria-hidden="true" style="display: none;">
-        <div class="modal-dialog">
-            @if($item->venta)
-            <div class="card card-style">
-                <div class="content">
-                    <div class="d-flex">
-                        <div>
-                            <h1>Informacion general</h1>
-                            <p class="font-600 color-highlight mt-n3">Venta registrada</p>
+    @push('scripts')
+        @foreach ($usuario->saldos as $item)
+            <div class="modal fade" id="modalSaldo{{ $item->id }}" tabindex="-1" aria-labelledby="modalSaldo"
+                aria-hidden="true" style="display: none;">
+                <div class="modal-dialog">
+                    @if ($item->venta)
+                        <div class="card card-style">
+                            <div class="content">
+                                <div class="d-flex">
+                                    <div>
+                                        <h1>Informacion general</h1>
+                                        <p class="font-600 color-highlight mt-n3">Venta registrada</p>
+                                    </div>
+                                    <div class="ms-auto">
+                                        <img src="{{ asset('delight_logo.jpg') }}" width="40">
+                                    </div>
+                                </div>
+                                <div class="divider mt-3 mb-3"></div>
+                                <div class="row mb-0">
+                                    <div class="col-4">
+                                        <p class="color-theme font-700">Fecha</p>
+                                    </div>
+                                    <div class="col-8">
+                                        <p class="font-400"><strong>{{ $item->created_at->format('d-M') }}</strong> (
+                                            {{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }} )</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p class="color-theme font-700">Subtotal de venta</p>
+                                    </div>
+                                    <div class="col-8">
+                                        <p class="font-400">{{ $item->venta->total }} Bs</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p class="color-theme font-700">Descuento</p>
+                                    </div>
+                                    <div class="col-8">
+                                        <p class="font-400">{{ $item->venta->descuento }} Bs</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p class="color-theme font-700">A saldo</p>
+                                    </div>
+                                    <div class="col-8">
+                                        <p class="font-400">{{ $item->venta->saldo }} Bs</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p class="color-theme font-700">Total pagado</p>
+                                    </div>
+                                    <div class="col-8">
+                                        <p class="font-400">
+                                            <strong>{{ $item->venta->total - $item->venta->descuento - $item->venta->saldo }}
+                                                Bs</strong>
+                                        </p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p class="color-theme font-700">Atendido por</p>
+                                    </div>
+                                    <div class="col-8">
+                                        <p class="font-400">{{ $item->venta->usuario->name }}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="ms-auto">
-                            <img src="{{asset('delight_logo.jpg')}}" width="40">
+                        <div class="card card-style">
+                            <div class="content">
+                                <h4 class="mb-n1">Detalle</h4>
+                                <p>
+                                    Detalle de los items de esta venta:
+                                </p>
+                                <div class="row mb-0">
+                                    @foreach ($item->venta->productos->groupBy('nombre') as $detalle)
+                                        <div class="col-3">
+                                            <p class="color-theme font-700">{{ Str::limit($detalle[0]->nombre, 15) }}</p>
+                                        </div>
+                                        <div class="col-3">
+                                            <p class="font-400">
+                                                @foreach ($detalle as $pivot)
+                                                    {{ $pivot->pivot->cantidad }}
+                                                @break
+                                            @endforeach unidades
+                                        </p>
+                                    </div>
+                                    @if ($detalle[0]->descuento != null && $detalle[0]->descuento < $detalle[0]->precio)
+                                        <div class="col-3">
+                                            <p class="font-400">{{ $detalle->sum('descuento') }} Bs c/u</p>
+                                        </div>
+                                        <div class="col-3">
+                                            <p class="font-400">
+                                                {{ $detalle[0]->pivot->cantidad * $detalle->sum('descuento') }} Bs</p>
+                                        </div>
+                                    @else
+                                        <div class="col-3">
+                                            <p class="font-400">{{ $detalle->sum('precio') }} Bs c/u</p>
+                                        </div>
+                                        <div class="col-3">
+                                            <p class="font-400">
+                                                {{ $detalle[0]->pivot->cantidad * $detalle->sum('precio') }}
+                                                Bs</p>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+
                         </div>
                     </div>
-                    <div class="divider mt-3 mb-3"></div>
-                    <div class="row mb-0">
-                        <div class="col-4">
-                            <p class="color-theme font-700">Fecha</p>
-                        </div>
-                        <div class="col-8">
-                            <p class="font-400"><strong>{{$item->created_at->format('d-M')}}</strong> ( {{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }} )</p>
-                        </div>
-                        <div class="col-4">
-                            <p class="color-theme font-700">Subtotal de venta</p>
-                        </div>
-                        <div class="col-8">
-                            <p class="font-400">{{$item->venta->total}} Bs</p>
-                        </div>
-                        <div class="col-4">
-                            <p class="color-theme font-700">Descuento</p>
-                        </div>
-                        <div class="col-8">
-                            <p class="font-400">{{$item->venta->descuento}} Bs</p>
-                        </div>
-                        <div class="col-4">
-                            <p class="color-theme font-700">A saldo</p>
-                        </div>
-                        <div class="col-8">
-                            <p class="font-400">{{$item->venta->saldo}} Bs</p>
-                        </div>
-                        <div class="col-4">
-                            <p class="color-theme font-700">Total pagado</p>
-                        </div>
-                        <div class="col-8">
-                            <p class="font-400"><strong>{{$item->venta->total-$item->venta->descuento-$item->venta->saldo}} Bs</strong></p>
-                        </div>
-                        <div class="col-4">
-                            <p class="color-theme font-700">Atendido por</p>
-                        </div>
-                        <div class="col-8">
-                            <p class="font-400">{{$item->venta->usuario->name}}</p>
+                @else
+                    <div class="card card-style">
+                        <div class="content">
+                            <div class="d-flex">
+                                <div>
+                                    <h1>Informacion general</h1>
+                                    <p class="font-600 color-highlight mt-n3">Pago registrado</p>
+                                </div>
+                                <div class="ms-auto">
+                                    <img src="{{ asset('delight_logo.jpg') }}" width="40">
+                                </div>
+                            </div>
+                            <div class="divider mt-3 mb-3"></div>
+                            <div class="row mb-0">
+                                <div class="col-4">
+                                    <p class="color-theme font-700">Fecha</p>
+                                </div>
+                                <div class="col-8">
+                                    <p class="font-400"><strong>{{ $item->created_at->format('d-M') }}</strong> (
+                                        {{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }} )</p>
+                                </div>
+                                <div class="col-4">
+                                    <p class="color-theme font-700">Monto total</p>
+                                </div>
+                                <div class="col-8">
+                                    <p class="font-400"><strong>{{ $item->monto }} Bs</p>
+                                </div>
+                                <div class="col-4">
+                                    <p class="color-theme font-700">Detalle</p>
+                                </div>
+                                <div class="col-8">
+                                    <p class="font-400"><strong>{{ $item->detalle }} Bs</p>
+                                </div>
+                                <div class="col-4">
+                                    <p class="color-theme font-700">Atendido por</p>
+                                </div>
+                                <div class="col-8">
+                                    <p class="font-400"><strong>{{ $item->atendidoPor->name }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                @endif
             </div>
-            <div class="card card-style">
-                <div class="content">
-                    <h4 class="mb-n1">Detalle</h4>
-                    <p>
-                        Detalle de los items de esta venta:
-                    </p>
-                    <div class="row mb-0">
-                        @foreach ($item->venta->productos->groupBy('nombre') as $detalle)
-                        
-                        <div class="col-3">
-                            <p class="color-theme font-700">{{Str::limit($detalle[0]->nombre,15)}}</p>
-                        </div>
-                        <div class="col-3">
-                            <p class="font-400">@foreach ($detalle as $pivot)
-                                {{$pivot->pivot->cantidad}}
-                                @break
-                            @endforeach unidades</p>
-                        </div>
-                        @if ($detalle[0]->descuento!=null && $detalle[0]->descuento<$detalle[0]->precio)
-                        <div class="col-3">
-                            <p class="font-400">{{$detalle->sum('descuento')}} Bs c/u</p>
-                        </div>
-                        <div class="col-3">
-                            <p class="font-400">{{$detalle[0]->pivot->cantidad*$detalle->sum('descuento')}} Bs</p>
-                        </div>
-                        @else
-                        <div class="col-3">
-                            <p class="font-400">{{$detalle->sum('precio')}} Bs c/u</p>
-                        </div>
-                        <div class="col-3">
-                            <p class="font-400">{{$detalle[0]->pivot->cantidad*$detalle->sum('precio')}} Bs</p>
-                        </div>
-                        @endif
-                        
-                        @endforeach
-                        
-                        
-                    </div>
-                </div>
-            </div>
-            @else
-            <div class="card card-style">
-                <div class="content">
-                    <div class="d-flex">
-                        <div>
-                            <h1>Informacion general</h1>
-                            <p class="font-600 color-highlight mt-n3">Pago registrado</p>
-                        </div>
-                        <div class="ms-auto">
-                            <img src="{{asset('delight_logo.jpg')}}" width="40">
-                        </div>
-                    </div>
-                    <div class="divider mt-3 mb-3"></div>
-                    <div class="row mb-0">
-                        <div class="col-4">
-                            <p class="color-theme font-700">Fecha</p>
-                        </div>
-                        <div class="col-8">
-                            <p class="font-400"><strong>{{$item->created_at->format('d-M')}}</strong> ( {{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }} )</p>
-                        </div>
-                        <div class="col-4">
-                            <p class="color-theme font-700">Monto total</p>
-                        </div>
-                        <div class="col-8">
-                            <p class="font-400"><strong>{{$item->monto }} Bs</p>
-                        </div>
-                        <div class="col-4">
-                            <p class="color-theme font-700">Detalle</p>
-                        </div>
-                        <div class="col-8">
-                            <p class="font-400"><strong>{{$item->detalle }} Bs</p>
-                        </div>
-                        <div class="col-4">
-                            <p class="color-theme font-700">Atendido por</p>
-                        </div>
-                        <div class="col-8">
-                            <p class="font-400"><strong>{{$item->atendidoPor->name }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endif
         </div>
-    </div>
-    
-        
     @endforeach
+@endpush
 @endsection
