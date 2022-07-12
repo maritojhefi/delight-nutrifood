@@ -11,10 +11,10 @@
             <table class="table table-borderless text-center rounded-sm shadow-l" style="overflow: hidden;">
                 <thead>
                     <tr class="bg-gray-light">
-                        <th scope="col" class="color-theme py-3 font-14">Detalle</th>
-                        <th scope="col" class="color-theme py-3 font-14">Fecha</th>
-                        <th scope="col" class="color-theme py-3 font-14">Monto</th>
-                        <th scope="col" class="color-theme py-3 font-14">Estado</th>
+                        <th style="width:5%"  class="color-theme py-3 font-14">Ver</th>
+                        <th style="width:35%" class="color-theme py-3 font-14">Fecha</th>
+                        <th style="width:20%" class="color-theme py-3 font-14">Monto</th>
+                        <th style="width:40%"  class="color-theme py-3 font-14">Estado</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -23,16 +23,16 @@
                             <td><a href="#" data-bs-toggle="modal"
                                     data-bs-target="#modalSaldo{{ $item->id }}"><span
                                         class="fa-fw select-all fas"></span></a></td>
-                            <th scope="row">
-                                {{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }}</th>
-                            <td class="color-{{ $item->es_deuda ? 'red' : 'green' }}-dark">{{ $item->monto }} Bs</td>
+                            <td scope="row">
+                                {{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }}</td>
+                            <th class="color-{{ $item->es_deuda ? 'red' : 'green' }}-dark">{{ $item->monto }} Bs</th>
                             @if ($item->es_deuda)
                                 <td>
                                     <mark class="highlight ps-2 font-12 pe-2 bg-red-dark">DEUDA <strong>-</strong></mark> <i
                                         class="fa fa-arrow-right rotate-135 color-red-dark"></i>
                                 </td>
                             @else
-                                <td>
+                                <td >
                                     <mark class="highlight ps-2 font-12 pe-2 bg-green-dark">A FAVOR
                                         <strong>+</strong></mark> <i class="fa fa-arrow-up rotate-45 color-green-dark"></i>
                                 </td>
