@@ -91,7 +91,7 @@
     <div id="toast-loading" class="toast toast-tiny toast-top bg-blue-dark fade hide" data-bs-delay="1500"
             data-bs-autohide="true"><i class="fa fa-sync fa-spin me-3"></i>Actualizado!</div>
     @include('client.partials.modalredes')
-
+    @stack('modals')
     <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('scripts/custom.js') }}"></script>
     
