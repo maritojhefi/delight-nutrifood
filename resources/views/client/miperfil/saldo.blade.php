@@ -12,8 +12,8 @@
                 <thead>
                     <tr class="bg-gray-light">
                         <th style="width:5%"  class="color-theme py-3 font-14">Ver</th>
-                        <th style="width:35%" class="color-theme py-3 font-14">Fecha</th>
-                        <th style="width:20%" class="color-theme py-3 font-14">Monto</th>
+                        <th style="width:40%" class="color-theme py-3 font-14">Fecha</th>
+                        <th style="width:15%" class="color-theme py-3 font-14">Monto</th>
                         <th style="width:40%"  class="color-theme py-3 font-14">Estado</th>
                     </tr>
                 </thead>
