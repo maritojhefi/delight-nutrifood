@@ -23,7 +23,7 @@
                                     alt="img">
                             </div>
                             <div class="align-self-center">
-                                <span class="color-theme font-10 d-block mb-0">{{Str::limit($item->nombre,30,'...')  }}</span>
+                                <span class="color-theme font-15 d-block mb-0">{{Str::limit($item->nombre,35,'...')  }}</span>
                             </div>
                             <div class="ms-auto text-center align-self-center pe-2">
                                 <h5 class="line-height-xs font-16 font-600 mb-0">{{ $item->precio }} Bs<sup
