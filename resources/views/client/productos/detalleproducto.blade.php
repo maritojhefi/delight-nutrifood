@@ -4,7 +4,7 @@
     <div class="card card-style">
         <div class="card bg-13" data-card-height="250" style="height: 250px;background-image:url('{{asset($producto->pathAttachment())}}')">
             <div class="card-bottom pb-4 ps-3">
-                <h1 class="font-26 text-white">
+                <h1 class="font-20 text-white">
                     @foreach ($nombrearray as $item)
                         {{  Str::limit($item,20) }}
                         <br>
@@ -12,12 +12,12 @@
                 </h1>
             </div>
             <div class="card-bottom pb-4 pe-3">
-                <h1 class="font-30 text-end mb-3">{{ $producto->descuento ? $producto->descuento : $producto->precio }} Bs <br><sup
+                <h1 class="font-20 text-end mb-3 text-white">{{ $producto->descuento ? $producto->descuento : $producto->precio }} Bs <br><sup
                         class="font-400 font-17 opacity-50">({{ $producto->medicion }})</sup></h1>
                 <span
                     class="badge bg-dark color-white px-2 py-1 mt-n1 text-uppercase d-block float-end">{{ $producto->descuento ? 'En descuento' : 'Sin promocion' }}</span>
             </div>
-            <div class="card-overlay bg-gradient-fade rounded-0"></div>
+            <div class="card-overlay bg-gradient opacity-70 rounded-0"></div>
         </div>
         <div class="content mt-n2">
             <div class="row">
