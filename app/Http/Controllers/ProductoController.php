@@ -12,7 +12,7 @@ class ProductoController extends Controller
 {
     public function index(){
         
-        if (session()->missing('productos')) {
+        if (session()->missing('producstos')) {
             $productos=Producto::all();
             session(['productos' => $productos]);
         }

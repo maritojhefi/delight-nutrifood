@@ -2,7 +2,7 @@
 @section('content')
     <x-cabecera-pagina titulo="{{ Str::limit($producto->nombre,20) }}" cabecera="bordeado" />
     <div class="card card-style">
-        <div class="card bg-13" data-card-height="250" style="height: 250px;">
+        <div class="card bg-13" data-card-height="250" style="height: 250px;background-image:url('{{asset($producto->pathAttachment())}}')">
             <div class="card-bottom pb-4 ps-3">
                 <h1 class="font-26">
                     @foreach ($nombrearray as $item)
@@ -47,7 +47,7 @@
                     </div>
                     <div>
                         <p class="font-10 mb-n2">Puntos por la compra</p>
-                        <p class="font-12 color-theme font-700">{{ $producto->puntos }}</p>
+                        <p class="font-12 color-theme font-700">{{ $producto->puntos==null?'0':$producto->puntos }} Pts</p>
                     </div>
 
                 </div>

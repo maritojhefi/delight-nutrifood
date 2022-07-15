@@ -36,7 +36,15 @@ class Producto extends Model
         return $this->belongsTo(Subcategoria::class);
     }
     public function pathAttachment(){
-        return "imagenes/productos/".$this->imagen;
+        if($this->imagen==null)
+        {
+            return 'delight_logo.jpg';
+        }
+        else
+        {
+            return "imagenes/productos/".$this->imagen;
+        }
+        
     }
     public function setPrecioAttribute($value)
     {
