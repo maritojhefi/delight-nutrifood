@@ -1,21 +1,21 @@
 <div class="menu-header">
-    <!--  <a href="#" data-toggle-theme="" class="border-right-0"><i class="fa font-12 color-yellow-dark fa-lightbulb"></i></a> -->
-    <!-- <a href="#" data-menu="menu-highlights" class="border-right-0"><i class="fa font-12 color-green-dark fa-brush"></i></a> -->
-    <!--  <a href="{{ route('ajustes') }}" class="border-right-0"><i class="fa font-12 color-blue-dark fa-cog"></i></a> -->
-    <a href="#" class="close-menu border-right-0"><i class="fa font-12 color-red-dark fa-times"></i></a>
+    {{-- <a href="#" data-toggle-theme="" class="border-right-0"><i class="fa font-12 color-yellow-dark fa-lightbulb"></i></a> --}}
+    {{-- <a href="#" data-menu="menu-highlights" class="border-right-0"><i class="fa font-12 color-blue-dark fa-brush"></i></a> --}}
+    <a href="#" onclick="reinstalarPWA()" class="border-right-0"><i class="fa font-15 color-green-dark fa-smile"></i></a>
+    <a href="#" class="close-menu border-right-0"><i class="fa font-15 color-red-dark fa-times"></i></a>
 </div>
 <div class="menu-logo text-center">
     @guest
-    <a href="#"><img class="rounded-circle bg-highlight" width="80" src="{{ asset('user.png') }}"></a>
+        <a href="#"><img class="rounded-circle bg-highlight" width="80" src="{{ asset('user.png') }}"></a>
 
     @endguest
     @auth
-    @if (auth()->user()->foto)
-   
-    <a href="#"><img class="rounded-circle bg-highlight" width="80" src="{{ asset('imagenes/perfil/'.auth()->user()->foto) }}"></a>
-    @else
-    <a href="#"><img class="rounded-circle bg-highlight" width="80" src="{{ asset('user.png') }}"></a>
-    @endif
+        @if (auth()->user()->foto)
+            <a href="#"><img class="rounded-circle bg-highlight" width="80"
+                    src="{{ asset('imagenes/perfil/' . auth()->user()->foto) }}"></a>
+        @else
+            <a href="#"><img class="rounded-circle bg-highlight" width="80" src="{{ asset('user.png') }}"></a>
+        @endif
         <h1 class="pt-3 font-800 font-28 text-uppercase">{{ Str::words(auth()->user()->name, 1, '') }}</h1>
     @endauth
     @guest
@@ -25,7 +25,7 @@
 </div>
 <div class="menu-items mb-4">
     <h5 class="text-uppercase opacity-20 font-12 pl-3">Menu</h5>
-    <a id="nav-welcome" href="{{route('menusemanal')}}">
+    <a id="nav-welcome" href="{{ route('menusemanal') }}">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             class="feather feather-home" data-feather-line="1" data-feather-size="16" data-feather-color="blue-dark"
@@ -153,3 +153,17 @@
     <p class="mb-0 pt-3 font-10 opacity-30">Delight-Nutrifood <span class="copyright-year"></span> by Macrobyte</p>
 
 </div>
+
+@push('scripts')
+    <script>
+        function reinstalarPWA() {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for (let registration of registrations) {
+                    registration.unregister()
+                }
+            });
+
+            location.reload(true);
+        }
+    </script>
+@endpush
