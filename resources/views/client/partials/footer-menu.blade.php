@@ -57,8 +57,8 @@
         <span class="color-white">Inicio</span>
     </a>
     <a href="{{ route('productos') }}" class="{{ request()->is('productos' . '*') ? 'active-nav' : '' }} ">
-        <i class="fa fa-file color-white"></i>
-        <span class="color-white">Productos</span>
+        <i class="fa fa-gem font-16 color-white"></i>
+        <span class="color-white">Eco-Tienda</span>
     </a>
     <!--  <a href="{{ route('ajustes') }}" class="{{ request()->is('ajustes' . '*') ? 'active-nav' : '' }} ">
             <i data-feather="settings" data-feather-line="1" data-feather-size="21" data-feather-color="dark-dark" data-feather-bg="gray-fade-light"></i>
