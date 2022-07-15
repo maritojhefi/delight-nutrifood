@@ -6,7 +6,7 @@ var filesToCache = [
     '/scripts/bootstrap.min.js',
     '/scripts/custom.js',
     '/inicio/menusemanal',
-    '/miperfil',
+
     '/promociones',
     '/productos',
     '/images/icons/icon-72x72.png',
