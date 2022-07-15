@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-    <x-cabecera-pagina titulo="{{ Str::limit($producto->nombre,20) }}" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Detalles del Producto" cabecera="bordeado" />
     <div class="card card-style">
         <div class="card bg-13" data-card-height="250" style="height: 250px;background-image:url('{{asset($producto->pathAttachment())}}')">
             <div class="card-bottom pb-4 ps-3">
