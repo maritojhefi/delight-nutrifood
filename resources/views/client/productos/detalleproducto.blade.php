@@ -12,7 +12,7 @@
                 </h1>
             </div>
             <div class="card-bottom pb-4 pe-3">
-                <h1 class="font-30 text-end mb-3">{{ $producto->descuento ? $producto->descuento : $producto->precio }} Bs<sup
+                <h1 class="font-30 text-end mb-3">{{ $producto->descuento ? $producto->descuento : $producto->precio }} Bs <br><sup
                         class="font-400 font-17 opacity-50">({{ $producto->medicion }})</sup></h1>
                 <span
                     class="badge bg-highlight color-white px-2 py-1 mt-n1 text-uppercase d-block float-end">{{ $producto->descuento ? 'En descuento' : 'Sin promocion' }}</span>
