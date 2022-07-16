@@ -22,6 +22,7 @@ class ProductoController extends Controller
     public function detalleproducto($id){
        $producto=Producto::find($id);
        $nombrearray=Str::of($producto->nombre)->explode(' ');
+       //dd($nombrearray);
        return view('client.productos.detalleproducto',compact('producto','nombrearray'));
 
     }

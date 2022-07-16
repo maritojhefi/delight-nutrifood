@@ -4,12 +4,12 @@
     <div class="card card-style">
         <div class="card bg-13" data-card-height="250" style="height: 250px;background-image:url('{{asset($producto->pathAttachment())}}')">
             <div class="card-bottom pb-4 ps-3">
-                <h1 class="font-20 text-white">
-                    @foreach ($nombrearray as $item)
-                        {{  Str::limit($item,20) }}
-                        <br>
-                    @endforeach
-                </h1>
+                <h3 class="font-20 text-white">
+                    
+                        {{  Str::limit($producto->nombre,25) }}
+                        
+                  
+                </h3>
             </div>
             <div class="card-bottom pb-4 pe-3">
                 <h1 class="font-20 text-end mb-3 text-white">{{ $producto->descuento ? $producto->descuento : $producto->precio }} Bs <br><sup
