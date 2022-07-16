@@ -2,17 +2,19 @@
 @section('content')
     <x-cabecera-pagina titulo="Detalles del Producto" cabecera="bordeado" />
     <div class="card card-style">
-        <div class="card bg-13" data-card-height="250" style="height: 250px;background-image:url('{{asset($producto->pathAttachment())}}')">
+        <div class="card bg-13" data-card-height="250"
+            style="height: 250px;background-image:url('{{ asset($producto->pathAttachment()) }}')">
             <div class="card-bottom pb-4 ps-3">
                 <h3 class="font-20 text-white">
-                    
-                        {!!  wordwrap($producto->nombre, 20, "<br />\n") !!}
-                        
-                  
+
+                    {!! wordwrap($producto->nombre, 20, "<br />\n") !!}
+
+
                 </h3>
             </div>
             <div class="card-bottom pb-4 pe-3">
-                <h1 class="font-20 text-end mb-3 text-white">{{ $producto->descuento ? $producto->descuento : $producto->precio }} Bs <br><sup
+                <h1 class="font-20 text-end mb-3 text-white">
+                    {{ $producto->descuento ? $producto->descuento : $producto->precio }} Bs <br><sup
                         class="font-400 font-17 opacity-50">({{ $producto->medicion }})</sup></h1>
                 <span
                     class="badge bg-dark color-white px-2 py-1 mt-n1 text-uppercase d-block float-end">{{ $producto->descuento ? 'En descuento' : 'Sin promocion' }}</span>
@@ -34,20 +36,44 @@
                     <div>
                         <p class="font-10 mb-n2">Stock</p>
                         <p class="font-12 color-theme font-700">
-                            @if ($producto->sucursale->count() != 0)
-                                @foreach ($producto->sucursale as $item)
-                                    {{ $item->nombre }} : {{ $item->pivot->cantidad }} <br>
-                                @endforeach
+                            @if ($producto->contable)
+                                @if ($producto->sucursale->count() != 0)
+                                    {{-- @foreach ($producto->sucursale->groupBy('nombre') as $nombre=>$item)
+                                    
+                                        {{ $nombre }} : {{ $item->sum('pivot.cantidad') }} <br>
+                                    @endforeach --}}
+                                    <a href="#" class="chip chip-small bg-gray-light mt-2">
+                                        <i class="fa fa-check bg-green-dark"></i>
+                                        <strong class="color-black font-400">Disponible</strong>
+                                        </a>
+                                @else
+                                <a href="#" class="chip chip-small bg-gray-light mt-2">
+                                    <i class="fa fa-times bg-red-dark"></i>
+                                    <strong class="color-black font-400">Agotado</strong>
+                                    </a>
+                                @endif
                             @else
-                                Agotado
+                            @if ($producto->estado=='activo')
+                            <a href="#" class="chip chip-small bg-gray-light mt-2">
+                                <i class="fa fa-check bg-green-dark"></i>
+                                <strong class="color-black font-400">Disponible</strong>
+                                </a>
+                            @else
+                            <a href="#" class="chip chip-small bg-gray-light mt-2">
+                                <i class="fa fa-times bg-red-dark"></i>
+                                <strong class="color-black font-400">Agotado</strong>
+                                </a>
+                            @endif  
                             @endif
+
 
 
                         </p>
                     </div>
                     <div>
                         <p class="font-10 mb-n2">Puntos por la compra</p>
-                        <p class="font-12 color-theme font-700">{{ $producto->puntos==null?'0':$producto->puntos }} Pts</p>
+                        <p class="font-12 color-theme font-700">{{ $producto->puntos == null ? '0' : $producto->puntos }} Pts
+                        </p>
                     </div>
 
                 </div>
