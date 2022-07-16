@@ -180,7 +180,7 @@
     @endauth
     <div class="card card-style mb-0" style="">
         <div class="card mb-0 bg-0" data-card-height="570"
-            style="height: 570px;background-image:url({{ asset('imagenes/almuerzo/' . $almuerzos[0]->foto) }}">
+            style="height: 570px;background-image:url({{ asset('imagenes/delight/2.jpeg') }}">
             <div class="card-bottom text-center">
                 <h1 class="color-white font-26 font-700">Disfruta de todas tus comidas</h1>
                 <p class="font-14 color-white px-4 pb-3 opacity-60">

@@ -1,8 +1,9 @@
 <div class="menu-header">
     {{-- <a href="#" data-toggle-theme="" class="border-right-0"><i class="fa font-12 color-yellow-dark fa-lightbulb"></i></a> --}}
-    {{-- <a href="#" data-menu="menu-highlights" class="border-right-0"><i class="fa font-12 color-blue-dark fa-brush"></i></a> --}}
+    <a href="#" class=" pwa-install border-right-0"><i class="fa font-12 color-blue-dark fa-brush"></i></a>
     <a href="#" onclick="reinstalarPWA()" class="border-right-0"><i class="fa font-15 color-green-dark fa-smile"></i></a>
     <a href="#" class="close-menu border-right-0"><i class="fa font-15 color-red-dark fa-times"></i></a>
+    
 </div>
 <div class="menu-logo text-center">
     @guest
