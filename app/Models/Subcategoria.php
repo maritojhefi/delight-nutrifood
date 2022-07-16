@@ -13,7 +13,7 @@ class Subcategoria extends Model
     use HasFactory;
     
     protected $fillable = [
-        'nombre','descripcion','categoria_id'
+        'nombre','descripcion','categoria_id','foto'
        
     ];
     public function categoria()
@@ -27,5 +27,16 @@ class Subcategoria extends Model
     public function adicionales()
     {
         return $this->belongsToMany(Adicionale::class);
+    }
+    public function rutaFoto(){
+        if($this->foto==null)
+        {
+            return 'imagenes/delight/2.jpeg';
+        }
+        else
+        {
+            return "imagenes/subcategorias/".$this->foto;
+        }
+        
     }
 }

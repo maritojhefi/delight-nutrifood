@@ -23,7 +23,8 @@
                                     alt="img">
                             </div>
                             <div class="align-self-center">
-                                <span class="color-theme font-15 d-block mb-0">{{Str::limit(ucfirst(strtolower($item->nombre) ),35,'...')  }}</span>
+                                <span
+                                    class="color-theme font-15 d-block mb-0">{{ Str::limit(ucfirst(strtolower($item->nombre)), 35, '...') }}</span>
                             </div>
                             <div class="ms-auto text-center align-self-center pe-2">
                                 <h5 class="line-height-xs font-16 font-600 mb-0">{{ $item->precio }} Bs<sup
@@ -47,6 +48,83 @@
             </div>
         </div>
     </div>
-    
-    
+    <div class="splide double-slider slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"
+        id="double-slider-1a" style="visibility: visible;">
+        <div class="splide__track" id="double-slider-1a-track">
+            <div class="splide__list" id="double-slider-1a-list"
+                style="transform: translate(-1162px, 0px); transition: transform 400ms cubic-bezier(0.42, 0.65, 0.27, 0.99) 0s;">
+                @foreach ($subcategorias as $item)
+                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 166px;">
+                        <a href="#" class="mx-3">
+                            <div class="card card-style me-0 mb-0"
+                                style="background-image: url('{{ asset($item->rutaFoto()) }}'); height: 250px;"
+                                data-card-height="250">
+                                <div class="card-bottom p-2 px-3">
+                                    <h4 class="color-white">{{ $item->nombre }}</h4>
+                                </div>
+                                <div class="card-overlay bg-gradient opacity-80"></div>
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
+
+
+            </div>
+        </div>
+        <ul class="splide__pagination">
+            <li><button class="splide__pagination__page" type="button"
+                    aria-controls="double-slider-1a-slide01 double-slider-1a-slide02" aria-label="Go to page 1"></button>
+            </li>
+            <li><button class="splide__pagination__page" type="button"
+                    aria-controls="double-slider-1a-slide03 double-slider-1a-slide04" aria-label="Go to page 2"></button>
+            </li>
+            <li><button class="splide__pagination__page is-active" type="button"
+                    aria-controls="double-slider-1a-slide04 double-slider-1a-slide05" aria-label="Go to page 3"
+                    aria-current="true"></button></li>
+        </ul>
+    </div>
+
+    <div class="d-flex px-3 mb-2">
+        <h4 class="mb-2 font-600">Productos en descuento!</h4>
+    </div>
+    <div class="splide single-slider slider-no-dots slider-no-arrows visible-slider splide--loop splide--ltr splide--draggable is-active"
+        id="single-slider-3" style="visibility: visible;">
+        <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button"
+                aria-controls="single-slider-3-track" aria-label="Go to last slide"><svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 40 40" width="40" height="40">
+                    <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
+                </svg></button><button class="splide__arrow splide__arrow--next" type="button"
+                aria-controls="single-slider-3-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 40 40" width="40" height="40">
+                    <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
+                </svg></button></div>
+        <div class="splide__track" id="single-slider-3-track">
+            <div class="splide__list" id="single-slider-3-list" style="transform: translateX(-664px);">
+                @foreach ($enDescuento as $item)
+                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 332px;">
+                        <div class="card card-style">
+                            <img src="{{asset($item->pathAttachment())}}" alt="img" class="img-fluid">
+                            <div class="content mt-3">
+                                <h2 class="font-17">{{$item->nombre}} <span class="float-end"><del>{{$item->precio}} </del>{{$item->descuento}} Bs</span></h2>
+                                <p class="mb-3">
+                                   {{$item->descripcion}}
+                                </p>
+                                <a href="#"
+                                    class="btn btn-s rounded-s text-uppercase bg-blue-dark font-700 btn-full">Añadir al carrito</a>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+
+            </div>
+        </div>
+        <ul class="splide__pagination">
+            <li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-3-slide01"
+                    aria-label="Go to slide 1" aria-current="true"></button></li>
+            <li><button class="splide__pagination__page" type="button" aria-controls="single-slider-3-slide02"
+                    aria-label="Go to slide 2"></button></li>
+            <li><button class="splide__pagination__page" type="button" aria-controls="single-slider-3-slide03"
+                    aria-label="Go to slide 3"></button></li>
+        </ul>
+    </div>
 @endsection

@@ -38,7 +38,7 @@ class Producto extends Model
     public function pathAttachment(){
         if($this->imagen==null)
         {
-            return 'delight_logo.jpg';
+            return 'imagenes/delight/1.jpeg';
         }
         else
         {
