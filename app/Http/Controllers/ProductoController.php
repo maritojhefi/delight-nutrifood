@@ -19,8 +19,9 @@ class ProductoController extends Controller
             session(['productos' => $productos]);
         }
         $subcategorias=Subcategoria::all();
-        $enDescuento=$productos->where('descuento','!=',null);
-        return view('client.productos.index',compact('subcategorias','enDescuento'));
+        $enDescuento=$productos->where('descuento','!=',null)->where('descuento','!=',0);
+        $conMasPuntos=$productos->where('puntos','!=',null)->where('puntos','!=',0);
+        return view('client.productos.index',compact('subcategorias','enDescuento','conMasPuntos'));
     }
     public function detalleproducto($id){
        $producto=Producto::find($id);

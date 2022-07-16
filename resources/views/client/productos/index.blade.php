@@ -83,29 +83,33 @@
                     aria-current="true"></button></li>
         </ul>
     </div>
-    @isset($enDescuento)
+    @if ($enDescuento->count() > 0)
         <div class="d-flex px-3 mb-2">
             <h4 class="mb-2 font-600">Productos en descuento!</h4>
         </div>
         <div class="splide single-slider slider-no-dots slider-no-arrows visible-slider splide--loop splide--ltr splide--draggable is-active"
             id="single-slider-3" style="visibility: visible;">
             <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button"
-                    aria-controls="single-slider-3-track" aria-label="Go to last slide"><svg xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 40 40" width="40" height="40">
-                        <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
+                    aria-controls="single-slider-3-track" aria-label="Go to last slide"><svg
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+                        <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z">
+                        </path>
                     </svg></button><button class="splide__arrow splide__arrow--next" type="button"
                     aria-controls="single-slider-3-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 40 40" width="40" height="40">
-                        <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
+                        <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z">
+                        </path>
                     </svg></button></div>
             <div class="splide__track" id="single-slider-3-track">
                 <div class="splide__list" id="single-slider-3-list" style="transform: translateX(-664px);">
                     @foreach ($enDescuento as $item)
-                        <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 332px;">
+                        <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1"
+                            style="width: 332px;">
                             <div class="card card-style">
                                 <img src="{{ asset($item->pathAttachment()) }}" alt="img" class="img-fluid">
                                 <div class="content mt-3">
-                                    <h2 class="font-17">{{ $item->nombre }} <span class="float-end"><del>{{ $item->precio }}
+                                    <h2 class="font-17">{{ $item->nombre }} <span
+                                            class="float-end"><del>{{ $item->precio }}
                                             </del>{{ $item->descuento }} Bs</span></h2>
                                     <p class="mb-3">
                                         {{ $item->descripcion }}
@@ -121,14 +125,53 @@
                 </div>
             </div>
             <ul class="splide__pagination">
-                <li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-3-slide01"
-                        aria-label="Go to slide 1" aria-current="true"></button></li>
+                <li><button class="splide__pagination__page is-active" type="button"
+                        aria-controls="single-slider-3-slide01" aria-label="Go to slide 1" aria-current="true"></button>
+                </li>
                 <li><button class="splide__pagination__page" type="button" aria-controls="single-slider-3-slide02"
                         aria-label="Go to slide 2"></button></li>
                 <li><button class="splide__pagination__page" type="button" aria-controls="single-slider-3-slide03"
                         aria-label="Go to slide 3"></button></li>
             </ul>
         </div>
-    @endisset
+    @endif
+    @if ($conMasPuntos->count() > 0)
+        
+    <div class="card preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
+        style="background-image: url(&quot;images/pictures/20s.jpg&quot;);">
+        <div class="card-body">
+            <h4 class="color-white pt-3 font-24">Gana Puntos!</h4>
+            <p class="color-white pt-1">
+                Mientras mas puntos, mas premios!
+            </p>
+            <div class="card card-style bg-transparent m-0 shadow-0">
+                <div class="row mb-0">
+                    @foreach ($conMasPuntos as $item)
+                        <div class="col-6 ps-2">
+                            <a href="#" class="card card-style mx-0 mb-3" data-menu="menu-product">
+                                <img src="{{ asset($item->pathAttachment()) }}" alt="img" width="100"
+                                    class="mx-auto mt-2">
+                                <div class="p-2">
+                                    <h4 class="mb-0 font-600">{{ Str::limit($item->nombre, 20) }}</h4>
+                                    <p class="mb-0 font-11 mt-n1">Acumula puntos por su compra!</p>
+                                </div>
+                                <div class="divider mb-0"></div>
+                                <h5 class="py-3 pb-2 px-2 font-13 font-600">
+                                    {{$item->descuento?$item->descuento:$item->precio}} Bs
+                                    <span
+                                        class="bg-blue-dark font-11 px-2 font-600 rounded-xs shadow-xxl float-end">{{ $item->puntos }}
+                                        Pts</span>
+                                </h5>
+                            </a>
+                        </div>
+                    @endforeach
 
+                </div>
+            </div>
+        </div>
+        <div class="card-overlay bg-highlight opacity-90"></div>
+        <div class="card-overlay dark-mode-tint"></div>
+    </div>
+    
+    @endif
 @endsection
