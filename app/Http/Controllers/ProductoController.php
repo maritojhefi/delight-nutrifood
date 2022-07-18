@@ -18,9 +18,10 @@ class ProductoController extends Controller
             $productos=Producto::where('estado','activo')->get();
             session(['productos' => $productos]);
         }
-        $subcategorias=Subcategoria::all();
-        $enDescuento=$productos->where('descuento','!=',null)->where('descuento','!=',0);
-        $conMasPuntos=$productos->where('puntos','!=',null)->where('puntos','!=',0);
+        $subcategorias=Subcategoria::inRandomOrder()->get();
+        $enDescuento=$productos->where('descuento','!=',null)->where('descuento','!=',0)->shuffle();
+        //dd($enDescuento);
+        $conMasPuntos=$productos->where('puntos','!=',null)->where('puntos','!=',0)->shuffle();
         return view('client.productos.index',compact('subcategorias','enDescuento','conMasPuntos'));
     }
     public function detalleproducto($id){
