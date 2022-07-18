@@ -57,7 +57,8 @@ class StockProductos extends Component
             'type'=>'success',
             'message'=>"Se agregaron ".$this->cantidad." productos de ".$this->prodlisto->nombre
         ]);
-        $this->reset(['prodlisto','cantidad','fecha_venc']);
+        $this->reset(['cantidad','fecha_venc']);
+        $this->prodlisto=Producto::find($this->prodlisto->id);
        
     }
     public function render()
