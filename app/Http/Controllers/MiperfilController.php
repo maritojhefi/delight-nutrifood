@@ -84,7 +84,7 @@ class MiperfilController extends Controller
         return $fecha;
     }
     public function personalizardia(Request $request){
-        //dd($request);
+        dd($request);
        
         $plan=Plane::find($request->plan);
         $plato='plato'.$request->id;
