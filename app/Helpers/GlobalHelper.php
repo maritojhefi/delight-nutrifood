@@ -31,6 +31,8 @@ class GlobalHelper {
             $det['PLATO']=str_replace(' ','',$det['PLATO']);
             
             $menu->ejecutivo = str_replace(' ','',$menu->ejecutivo);
+            $menu->dieta = str_replace(' ','',$menu->dieta);
+            $menu->vegetariano = str_replace(' ','',$menu->vegetariano);
 
             if ($det['PLATO'] == $menu->ejecutivo) $tipoSegundo = 'EJECUTIVO';
             if ($det['PLATO'] == $menu->dieta) $tipoSegundo = 'DIETA';
@@ -89,6 +91,8 @@ class GlobalHelper {
             $det['PLATO']=str_replace(' ','',$det['PLATO']);
             
             $menu->ejecutivo = str_replace(' ','',$menu->ejecutivo);
+            $menu->dieta = str_replace(' ','',$menu->dieta);
+            $menu->vegetariano = str_replace(' ','',$menu->vegetariano);
 
             if ($det['PLATO'] == $menu->ejecutivo) $tipoSegundo = 'EJECUTIVO';
             if ($det['PLATO'] == $menu->dieta) $tipoSegundo = 'DIETA';
