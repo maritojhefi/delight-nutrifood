@@ -18,6 +18,8 @@ class StockProductos extends Component
     public $prodlisto;
     public $cantidad,$fecha_venc;
     public $stock;
+
+    protected $queryString = ['search'];
    
     protected $rules = [
         'cantidad' => 'required|integer',
@@ -26,6 +28,16 @@ class StockProductos extends Component
         
     ];
  
+    // public function mount($id=null,$sucursal=null)
+    // {
+    //     if($id || $sucursal)
+    //     {
+    //         $this->prodlisto = Producto::find($id);
+    //         $this->sucursal = $sucursal;
+    //         dd($this->sucursal);
+    //     }
+        
+    // }
     public function seleccionar(Producto $prod)
     {
         $this->prodlisto=$prod;

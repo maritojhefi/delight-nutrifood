@@ -36,8 +36,9 @@
                                 <tr>
 
                                     <td>
-                                        <div class="d-flex align-items-center"><strong>{{ $item->nombre }}</strong>
-                                        </div>
+                                        <a href="{{route('sucursal.stock')}}"><div class="d-flex align-items-center"><strong>{{ $item->nombre }}</strong>
+                                        </div></a>
+                                        
                                     </td>
 
                                     <td>{{ $item->cantidad }}</td>
