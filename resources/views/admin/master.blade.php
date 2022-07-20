@@ -136,6 +136,11 @@
             content.select();
             document.execCommand('copy');
         })
+
+        window.addEventListener('cerrarModal', ({detail: {id}}) => {
+            $('#'+id).modal('hide');
+            console.log(id);
+        })
     </script>
 
 @stack('scripts')

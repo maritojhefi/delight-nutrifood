@@ -3,7 +3,7 @@
         <div class="card">
             <div class="card-header row">
                 <div class="col">
-                    <h4 class="card-title">Lista de Productos</h4>
+                    <h4 class="card-title">Productos por expirar</h4>
                 </div>
                 <div class="col-2"><div  class="d-flex justify-content-center">
                     <div wire:loading class="spinner-border" role="status">

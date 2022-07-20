@@ -36,6 +36,21 @@ class StockProductos extends Component
 
         $this->stock=$registro->pluck('cantidad')->sum();
     }
+    public function eliminarStock($id)
+    {
+        //dd($id);
+        DB::table('producto_sucursale')->where('id',$id)->delete();
+        $this->prodlisto=Producto::find($this->prodlisto->id);
+        $this->dispatchBrowserEvent('alert',[
+            'type'=>'success',
+            'message'=>"Se borro este registro de stock!"
+        ]);
+        // $this->dispatchBrowserEvent('cerrarModal',[
+        //     'id'=>'modalEliminar'.$id
+            
+        // ]);
+        
+    }
     public function submit()
     {
         $this->validate();

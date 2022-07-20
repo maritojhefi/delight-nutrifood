@@ -15,8 +15,25 @@
                             @else
                             <span class="badge badge-xs pill badge-success">Vigente! {{Carbon\Carbon::parse($item->pivot->fecha_venc)->diffInDays()  }} dias restantes</span>
                             @endif
-                            
-                            </li>
+                            <a href="#" data-toggle="modal" data-target="#modalEliminar{{$item->pivot->id}}"><span class="fa fa-trash "></span></a>
+                        </li>
+                        <div wire:ignore.self class="modal fade"  aria-hidden="true" tabindex="-1" role="dialog" id="modalEliminar{{$item->pivot->id}}">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Estas seguro?</h5>
+                                  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                
+                                <div class="modal-footer">
+                                  <button type="button" wire:click="eliminarStock({{$item->pivot->id}})" data-dismiss="modal" aria-label="Close" class="btn btn-danger">Confirmar</button>
+                                  
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                     @endforeach
                     </ul>
                    
