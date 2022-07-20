@@ -349,6 +349,7 @@
                 $("form").on("keyup change", function(e) {
                     data = []
                     var idForm = $(this).attr('id')
+                    
                     if (document.getElementById('carb' + idForm)) {
                         data.push('carb' + idForm)
                     }
@@ -358,7 +359,7 @@
                     if (document.getElementById('envio' + idForm)) {
                         data.push('envio' + idForm)
                     }
-                    if (document.getElementById('empaque' + idForm)) {
+                    if (document.getElementById('empaque' + idForm) && !document.getElementById('pamesa')) {
                         data.push('empaque' + idForm)
                     }
                     
@@ -367,12 +368,14 @@
                        console.log(data[i])
                         if ($("input[name='" + data[i] + "']:checked").val())
                         {
+                            console.log($("input[name='" + data[i] + "']:checked").val())
                             cont++
                         }
                         
                     }
-                    if(document.getElementById('pamesa'))
+                    if(document.getElementById('pamesa') && !document.getElementById('empaque' + idForm))
                     {
+                        console.log(document.getElementById('pamesa'))
                         cont++
                     }
                     if(cont==data.length)
