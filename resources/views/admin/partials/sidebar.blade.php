@@ -35,6 +35,7 @@
                 'Subcategorias' => 'producto.subcategoria',
                 'Adicionales' => 'producto.adicionales',
                 'Agregar adicional a subcategoria' => 'producto.agregar.adicional',
+                'Productos por Expirar' => 'producto.expiracion',
             ]">
                 <i class="flaticon-043-menu"></i>
             </x-sidebar-elements>
