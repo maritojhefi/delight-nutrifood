@@ -27,9 +27,11 @@ class GlobalHelper {
             $menu = Almuerzo::where('dia', $saberDia)->first();
             $tipoSegundo = '';
             $tipoEnvio = '';
+
             $det['PLATO']=str_replace(' ','',$det['PLATO']);
             
             $menu->ejecutivo = str_replace(' ','',$menu->ejecutivo);
+
             if ($det['PLATO'] == $menu->ejecutivo) $tipoSegundo = 'EJECUTIVO';
             if ($det['PLATO'] == $menu->dieta) $tipoSegundo = 'DIETA';
             if ($det['PLATO'] == $menu->vegetariano) $tipoSegundo = 'VEGGIE';
@@ -83,9 +85,11 @@ class GlobalHelper {
             $menu = Almuerzo::where('dia', $saberDia)->first();
             $tipoSegundo = '';
             $tipoEnvio = '';
+
             $det['PLATO']=str_replace(' ','',$det['PLATO']);
             
             $menu->ejecutivo = str_replace(' ','',$menu->ejecutivo);
+
             if ($det['PLATO'] == $menu->ejecutivo) $tipoSegundo = 'EJECUTIVO';
             if ($det['PLATO'] == $menu->dieta) $tipoSegundo = 'DIETA';
             if ($det['PLATO'] == $menu->vegetariano) $tipoSegundo = 'VEGGIE';
