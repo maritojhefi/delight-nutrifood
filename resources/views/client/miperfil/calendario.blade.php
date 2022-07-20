@@ -45,11 +45,12 @@
                             style="">
                             <div class="p-2">
                                 @if ($lista['detalle'] == null || $lista['detalle'] == '')
-                                    <form action="{{ route('personalizardia') }}" method="POST">
+                                    <form action="{{ route('personalizardia') }}" id="{{ $lista['id'] }}"
+                                        method="POST">
                                         @csrf
                                         <div class="row">
                                             @if ($plan->segundo)
-                                                <div class="col-12 mb-3">
+                                                <div class="col-12 mb-3" id="plato{{ $lista['id'] }}">
                                                     <i class="fa fa-star color-yellow-dark"></i> <strong>Elija su
                                                         plato</strong>
                                                     <div class="fac fac-radio fac-default"><span></span>
@@ -80,7 +81,7 @@
                                                 </div>
                                             @endif
                                             @if ($plan->carbohidrato)
-                                                <div class="col-12">
+                                                <div class="col-12" id="carb{{ $lista['id'] }}">
                                                     <i class="fa fa-star color-yellow-dark"></i> <strong>Elija su
                                                         carbohidrato</strong>
                                                     <div class="fac fac-radio fac-default"><span></span>
@@ -116,30 +117,34 @@
 
                                         </div>
                                         <div class="row">
-                                            <div class="col-6">
+                                            <div class="col-6" id="envio{{ $lista['id'] }}">
                                                 <i class="fa fa-map-marker font-16 color-red-dark"></i> <strong>Tipo de
                                                     envio</strong>
-                                                <div class="fac fac-radio fac-default"><span></span>
-                                                    <input id="box7-fac-radio{{ $lista['id'] }}" type="radio"
-                                                        name="envio{{ $lista['id'] }}" value="{{ $lista['envio1'] }}">
+                                                <div class="fac fac-radio fac-default mesa"><span></span>
+                                                    <input id="box7-fac-radio{{ $lista['id'] }}" type="radio" data-id="{{ $lista['id'] }}"
+                                                        class="mesa" name="envio{{ $lista['id'] }}"
+                                                        value="{{ $lista['envio1'] }}">
                                                     <label
                                                         for="box7-fac-radio{{ $lista['id'] }}">{{ $lista['envio1'] }}</label>
                                                 </div>
                                                 <div class="fac fac-radio fac-default"><span></span>
-                                                    <input id="box8-fac-radio{{ $lista['id'] }}" type="radio"
-                                                        name="envio{{ $lista['id'] }}" value="{{ $lista['envio2'] }}">
+                                                    <input id="box8-fac-radio{{ $lista['id'] }}" type="radio" data-id="{{ $lista['id'] }}"
+                                                        class="otro" name="envio{{ $lista['id'] }}"
+                                                        value="{{ $lista['envio2'] }}">
                                                     <label
                                                         for="box8-fac-radio{{ $lista['id'] }}">{{ $lista['envio2'] }}</label>
                                                 </div>
                                                 <div class="fac fac-radio fac-default"><span></span>
-                                                    <input id="box9-fac-radio{{ $lista['id'] }}" type="radio"
-                                                        name="envio{{ $lista['id'] }}" value="{{ $lista['envio3'] }}">
+                                                    <input id="box9-fac-radio{{ $lista['id'] }}" type="radio" data-id="{{ $lista['id'] }}"
+                                                        class="otro" name="envio{{ $lista['id'] }}"
+                                                        value="{{ $lista['envio3'] }}">
                                                     <label
                                                         for="box9-fac-radio{{ $lista['id'] }}">{{ $lista['envio3'] }}</label>
                                                 </div>
 
                                             </div>
-                                            <div class="col-6">
+
+                                            <div class="col-6 empaques d-none" id="empaque{{ $lista['id'] }}">
                                                 <i class="fa fa-edit font-16 color-red-dark"></i> <strong>Tipo de
                                                     empaque</strong>
                                                 <div class="fac fac-radio fac-default"><span></span>
@@ -156,7 +161,7 @@
                                                     <label
                                                         for="box11-fac-radio{{ $lista['id'] }}">{{ $lista['empaque2'] }}</label>
                                                 </div>
-                                                <div class="fac fac-radio fac-default"><span></span>
+                                                <div class="fac fac-radio fac-default d-none"><span></span>
                                                     <input id="box12-fac-radio{{ $lista['id'] }}" type="radio"
                                                         name="empaque{{ $lista['id'] }}" value="Ninguno">
                                                     <label for="box12-fac-radio{{ $lista['id'] }}">Ninguno(si es para
@@ -165,6 +170,8 @@
 
 
                                             </div>
+                                            <div class="box7-fac-radio{{ $lista['id'] }}"
+                                                id="empaque{{ $lista['id'] }}"></div>
                                         </div>
                                         <div class="row mb-0">
                                             @if ($plan->sopa)
@@ -202,7 +209,7 @@
 
 
                                             <div class="col">
-                                                <button type="submit"
+                                                <button type="submit" disabled
                                                     class="btn btn-m btn-full mb-3 rounded-xs text-uppercase font-900 shadow-s bg-mint-dark">Guardar
                                                     {{ $lista['dia'] }}</button>
                                             </div>
@@ -215,7 +222,8 @@
                                             @if ($valor != '')
                                                 <li><i class="fa fa-check color-green-dark"></i>{{ $plato }} :
                                                     <label for=""
-                                                        class="font-700 mb-0">{{ $valor }}</label> </li>
+                                                        class="font-700 mb-0">{{ $valor }}</label>
+                                                </li>
                                             @endif
                                         @endforeach
                                     </ul>
@@ -308,6 +316,84 @@
             </div>
         </div>
     @endpush
+    @push('scripts')
+        <script>
+            $(document).ready(function() {
+                //set initial state.
+                //$('#textbox1').val(this.checked);
 
+                $('.otro').change(function() {
+                    if (this.checked) {
+                        $('.empaques').removeClass('d-none');
+                        $('.empaques :input').prop('disabled',false);
+                        $("#pamesa").remove();
+                    }
+                });
+                $('.mesa').change(function() {
+                    if (this.checked) {
+                        var idData=$(this).attr("data-id")
+                        
+                        $('.empaques').addClass('d-none');
+                        $('.empaques :input').prop('disabled',true);
+                        //$('#empaque'+idData).remove();
+                        var input = document.createElement("input");
+                        
+                        input.setAttribute("type", "hidden");
+                        input.setAttribute("id", "pamesa");
+                        input.setAttribute("name", "empaque"+idData);
+                        input.setAttribute("value", "Ninguno");
+                        $('.' + $(this).attr('id')).append(input);
+                    }
+                });
+
+                $("form").on("keyup change", function(e) {
+                    data = []
+                    var idForm = $(this).attr('id')
+                    if (document.getElementById('carb' + idForm)) {
+                        data.push('carb' + idForm)
+                    }
+                    if (document.getElementById('plato' + idForm)) {
+                        data.push('plato' + idForm)
+                    }
+                    if (document.getElementById('envio' + idForm)) {
+                        data.push('envio' + idForm)
+                    }
+                    if (document.getElementById('empaque' + idForm)) {
+                        data.push('empaque' + idForm)
+                    }
+                    
+                    var cont=0;
+                    for (var i = 0; i < data.length; i++) {
+                       console.log(data[i])
+                        if ($("input[name='" + data[i] + "']:checked").val())
+                        {
+                            cont++
+                        }
+                        
+                    }
+                    if(document.getElementById('pamesa'))
+                    {
+                        cont++
+                    }
+                    if(cont==data.length)
+                    {
+                        $(this).find('button').prop('disabled', false);
+                    }
+                    else
+                    {
+                        $(this).find('button').prop('disabled', true);
+                    }
+                     console.log(cont);
+                    // if ($("input[name='carb" + idForm + "']:checked").val() && $("input[name='plato" + idForm +
+                    //         "']:checked").val() && $("input[name='envio" + idForm + "']:checked").val()) {
+                    //     $(this).find('button').prop('disabled', false);
+                    // } else {
+
+                    // }
+
+                })
+            });
+        </script>
+    @endpush
 
 @endsection
