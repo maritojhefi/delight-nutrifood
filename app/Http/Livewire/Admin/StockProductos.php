@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class StockProductos extends Component
 {
-    public $sucursal;
+    public $sucursal=1;
     public $search;
     public $prodlisto;
     public $cantidad,$fecha_venc;
