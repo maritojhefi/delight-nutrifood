@@ -12,6 +12,10 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class OtroController extends Controller
 {
+    public function marcarAsistencia(Request $request)
+    {
+        dd($request);
+    }
     public function importar(Request $request)
     {
         
