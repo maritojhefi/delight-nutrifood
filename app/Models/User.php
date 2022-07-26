@@ -129,6 +129,10 @@ class User extends Authenticatable
         return $this->hasMany(Saldo::class);
 
     }
-    
+    public function contrato()
+    {
+        return $this->hasOne(Contrato::class);
+
+    }
    
 }

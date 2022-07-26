@@ -43,7 +43,7 @@
                 <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="[
                     'Listar Usuarios' => 'usuario.listar',
                     'Roles' => 'usuario.roles',
-                    
+                    'Empleos'=>'usuario.empleo',
                     
                     'Asistencia' => 'usuario.asistencia',
                 ]">

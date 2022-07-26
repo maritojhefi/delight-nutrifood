@@ -1,13 +1,28 @@
-@extends('admin.master')
+@extends('client.master')
 @section('content')
-    <form action="{{ route('registrar.asistencia') }}" method="post" id="myform">
-        @csrf
-        <input type="hidden" id="latitud" name="latitud">
-        <input type="hidden" id="longitud" name="longitud">
-
-    </form>
-
-    Delight Derechos reservados
+    <x-cabecera-pagina titulo="Hola!" cabecera="bordeado" />
+    
+    <div class="card card-style text-center">
+        <form action="{{ route('registrar.asistencia') }}" method="post" id="myform">
+            @csrf
+            <input type="hidden" id="latitud" name="latitud">
+            <input type="hidden" id="longitud" name="longitud">
+           
+        </form>
+        <div class="content py-5">
+            
+            <img src="{{asset('cargando.gif')}}" alt="">
+            <h1 class="fa-5x pt-5 pb-2">Espera!</h1>
+            <h4 class="text-uppercase pb-3">Registrando la hora!</h4>
+            <p class="boxed-text-l">
+                 Delight by Macrobyte
+            </p>
+            <div class="row mb-0">
+               
+            </div>
+        </div>
+    </div>
+    
 @endsection
 
 @push('header')
@@ -15,14 +30,15 @@
 @endpush
 @push('scripts')
     <script>
-        window.onload = function() {
+        console.log('hola')
+        $( document ).ready(function() {
 
-
+            
             navigator.geolocation.getCurrentPosition(function(location) {
                     console.log(location.coords.latitude);
                     console.log(location.coords.longitude);
                     console.log(getDistanceFromLatLonInKm(location.coords.latitude, location.coords.longitude));
-                    if (getDistanceFromLatLonInKm(location.coords.latitude, location.coords.longitude) < 1) {
+                    if (getDistanceFromLatLonInKm(location.coords.latitude, location.coords.longitude) < 3.5) {
                         console.log(getDistanceFromLatLonInKm(location.coords.latitude, location.coords.longitude))
                         var submit = false;
 
@@ -31,7 +47,7 @@
                             $('#latitud').val(location.coords.latitude);
                             $('#longitud').val(location.coords.longitude);
                             $("#myform").submit(); // if you want            
-                        }, 1000);
+                        }, 2000);
 
                         console.log($("#myform"))
                     } else {
@@ -72,6 +88,6 @@
                 if (err.code == err.POSITION_UNAVAILABLE)
                     alert("El dispositivo no pudo recuperar la posición actual");
             }
-        };
+        });
     </script>
 @endpush

@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-xl-8 col-lg-12 col-xxl-5 col-sm-12">
+    <div class="col-xl-4 col-lg-12 col-xxl-5 col-sm-12">
         <div class="row">
             <div class="card">
                 <div class="card-header">
@@ -31,7 +31,7 @@
             
         </div>
     </div>
-    <div class="col-xl-4 col-lg-12 col-xxl-7 col-sm-12">
+    <div class="col-xl-8 col-lg-12 col-xxl-7 col-sm-12">
         <div class="card overflow-hidden">
             <div class="card">
                 <div class="card-header">

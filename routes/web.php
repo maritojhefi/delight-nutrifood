@@ -126,6 +126,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('/planes', \App\Http\Livewire\Admin\Usuarios\Planes::class)->name('planes');
         Route::get('/planes/expirar', \App\Http\Livewire\Admin\Usuarios\PlanesPorExpirar::class)->name('planes.expirar');
         Route::get('/personal', \App\Http\Livewire\Admin\Usuarios\Personal::class)->name('personal');
+        Route::get('/empleos', \App\Http\Livewire\Admin\Usuarios\EmpleoCreate::class)->name('usuario.empleo');
         Route::get('/crear/plan', \App\Http\Livewire\Admin\Usuarios\CrearPlan::class)->name('crear.plan');
         Route::get('plan/{id}/{planid}', [App\Http\Controllers\admin\UsuariosController::class, 'editarPlanUsuario'])->name('calendario.usuario');
 
@@ -181,6 +182,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::post('registrar/asistencia', [App\Http\Controllers\admin\OtroController::class, 'marcarAsistencia'])->name('registrar.asistencia');
         Route::get('/marcado', function () {return view('admin.otros.marcado');})->name('marcado');
         Route::get('/whatsapp/tickets', \App\Http\Livewire\Admin\WhatsappTicket::class)->name('whatsapp.index');
+        Route::get('/noEsEmpleado', function(){return view('admin.otros.no-es-empleado');})->name('noEsEmpleado');
+        Route::get('/registrado/exitosamente/{diferencia}', function($diferencia){return view('admin.otros.marcado-exitosamente',compact('diferencia'));})->name('marcacion.entrada');
+        Route::get('/registrado/salida/{diferencia}', function($diferencia){return view('admin.otros.marcado-exitosamente-salida',compact('diferencia'));})->name('marcacion.salida');
 
 
      });
