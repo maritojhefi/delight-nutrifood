@@ -104,13 +104,13 @@
                 <div class="splide__list" id="single-slider-3-list" style="transform: translateX(-664px);">
                     @foreach ($enDescuento as $item)
                         <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1"
-                            style="width: 332px;max-heigth:332px">
+                            style="width: 332px;">
                             <div class="card card-style">
-                                <img src="{{ asset($item->pathAttachment()) }}" alt="img" class="img-fluid">
+                                <img src="{{ asset($item->pathAttachment()) }}" alt="img" style="max-height:332px" class="img-fluid">
                                 <div class="content mt-3">
-                                    <h2 class="font-17">{{ $item->nombre }} <span
-                                            class="float-end"><del>{{ $item->precio }}
-                                            </del>{{ $item->descuento }} Bs</span></h2>
+                                    <h2 class="font-17">{{ $item->nombre }} <small
+                                            class="float-end">
+                                            <del>{{ $item->precio }}</del>{{ $item->descuento }} Bs</small></h2>
                                     <p class="mb-3">
                                         {{ $item->descripcion }}
                                     </p>
