@@ -110,7 +110,7 @@
                                 <div class="content mt-3">
                                     <h2 class="font-17">{{ $item->nombre }} <small
                                             class="float-end">
-                                            <del>{{ $item->precio }}</del>{{ $item->descuento }} Bs</small></h2>
+                                            <del class="">{{ $item->precio }}</del><span class="highlight ps-2 font-12 pe-2 bg-blue-dark">{{ $item->descuento }} Bs</span> </small></h2>
                                     <p class="mb-3">
                                         {{ $item->descripcion }}
                                     </p>
