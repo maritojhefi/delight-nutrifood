@@ -7,7 +7,7 @@
             <div class="card-bottom pb-4 ps-3">
                 <h3 class="font-20 text-white">
 
-                    {!! wordwrap($producto->nombre, 20, "<br />\n") !!}
+                    {!! wordwrap($producto->nombre(), 20, "<br />\n") !!}
 
 
                 </h3>
@@ -25,7 +25,7 @@
             <div class="row">
                 <div class="col-6">
                     <p class="line-height-m">
-                        {{ $producto->detalle }}
+                        {{ $producto->detalle() }}
                     </p>
                 </div>
                 <div class="col-6">
@@ -111,7 +111,7 @@
                     <img src="{{ asset($item->pathAttachment()) }}" class="rounded-sm" width="55">
                 </div>
                 <div class="ps-3">
-                    <h4>{{Str::limit($item->nombre,25)}}</h4>
+                    <h4>{{Str::limit($item->nombre(),25)}}</h4>
                     <a href="{{route('detalleproducto',$item->id)}}"><span class="badge bg-green-dark font-700 font-11 text-uppercase">Ver producto</span></a>
                     <a href="#"><span class="badge bg-magenta-dark font-700 font-11 text-uppercase">Añadir <i class="fa fa-shopping-cart"></i></span></a>
                 </div>

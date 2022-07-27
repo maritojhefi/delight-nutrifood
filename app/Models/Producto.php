@@ -46,6 +46,14 @@ class Producto extends Model
         }
         
     }
+    public function detalle(){
+        
+            return ucfirst(strtolower($this->detalle)); 
+    }
+    public function nombre(){
+        
+            return ucfirst(strtolower($this->nombre)); 
+    }
     public function setPrecioAttribute($value)
     {
         

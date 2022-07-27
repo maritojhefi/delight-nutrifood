@@ -116,10 +116,10 @@
                             <div class="card-bottom p-3 m-2 rounded-m bg-white">
                                 <a href="#">
                                     <h1 class="font-14 line-height-m font-700 mb-0">
-                                        {{Str::limit($item->nombre,50)}}
+                                        {{Str::limit($item->nombre(),50)}}
                                     </h1>
                                     <p class="mb-0">
-                                        {{Str::limit($item->detalle,60)}}
+                                        {{Str::limit($item->detalle(),60)}}
                                     </p>
                                 </a>
                                 <div class="d-flex pt-3">
@@ -165,7 +165,7 @@
                                     <img src="{{ asset($item->pathAttachment()) }}" alt="img" width="100"
                                         class="mx-auto mt-2">
                                     <div class="p-2">
-                                        <h4 class="mb-0 font-600">{{ Str::limit($item->nombre, 20) }}</h4>
+                                        <h4 class="mb-0 font-600">{{ Str::limit($item->nombre(), 20) }}</h4>
                                         <p class="mb-0 font-11 mt-n1">Acumula puntos por su compra!</p>
                                     </div>
                                     <div class="divider mb-0"></div>
