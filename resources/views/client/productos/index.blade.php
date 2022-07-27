@@ -106,7 +106,7 @@
                         <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1"
                             style="width: 332px;">
                             <div class="card card-style">
-                                <img src="{{ asset($item->pathAttachment()) }}" alt="img" style="max-height:332px" class="img-fluid">
+                                <img src="{{ asset($item->pathAttachment()) }}" alt="img" style="max-height:232px" class="img-fluid">
                                 <div class="content mt-3">
                                     <h2 class="font-17">{{ $item->nombre }} <small
                                             class="float-end">
