@@ -17,7 +17,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('fonts/css/fontawesome-all.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_mint.css') }}">
     @stack('header')
-    
+
     @laravelPWA
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -53,7 +53,7 @@
         }
     </style>
 
-    
+
 </head>
 
 <body id="margen" class="theme-light">
@@ -89,15 +89,41 @@
         </div>
     </div>
     <div id="toast-loading" class="toast toast-tiny toast-top bg-blue-dark fade hide" data-bs-delay="1500"
-            data-bs-autohide="true"><i class="fa fa-sync fa-spin me-3"></i>Actualizado!</div>
+        data-bs-autohide="true"><i class="fa fa-sync fa-spin me-3"></i>Actualizado!</div>
+
+    <div id="toast-carrito" class="toast toast-tiny toast-top bg-green-dark hide" data-bs-delay="3000"
+        data-bs-autohide="true"><i class="fa fa-check  me-3"></i>Añadido!</div>
+
     @include('client.partials.modalredes')
     @stack('modals')
     <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('scripts/custom.js') }}"></script>
-    
+
     <script>
-        $( "h1" ).click(function() {
-            console.log('asd');
+        $(document).ready(function() {
+            var baseUrl = '{{ env('APP_URL') }}';
+            $.ajaxSetup({
+                beforeSend: function(xhr, options) {
+                    options.url = baseUrl + options.url;
+                }
+            })
+            $(".carrito").click(function() {
+
+                $.ajax({
+                    method: "get",
+                    url: "/productos/add/carrito/" + $(this).attr('id'),
+                    success: function(result) {
+                        if (result == 'logout') {
+                            window.location.href = "{{ route('login') }}";
+                        } else {
+                            var toaster = document.getElementById('toast-carrito');
+                            cart = new bootstrap.Toast(toaster);
+                            cart.show()
+                        }
+                    }
+                })
+
+            });
         });
     </script>
     <script>
@@ -115,8 +141,8 @@
             })
         }
     </script>
-    
-   
+
+
     @stack('scripts')
 
 

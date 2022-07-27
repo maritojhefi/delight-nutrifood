@@ -124,11 +124,11 @@
                                 </a>
                                 <div class="d-flex pt-3">
                                     <div class="align-self-center">
-                                        <strong class="font-800 font-22 color-theme"><small class="text-secondary"><del>{{$item->descuento}}</del></small><span > {{$item->precio}} Bs</span> </strong>
+                                        <strong class="font-800 font-22 color-theme"><small class="text-secondary"><del>{{$item->precio}}</del></small><span > {{$item->descuento}} Bs</span> </strong>
                                     </div>
                                     <div class="align-self-center ms-auto">
                                         <a href="#"
-                                            class="btn-s rounded-s btn bg-highlight font-700 text-uppercase mb-1">Añadir <i class="fa fa-shopping-cart"></i></a>
+                                            class="btn-s rounded-s btn bg-highlight font-700 text-uppercase mb-1 carrito" id="{{$item->id}}">Añadir <i class="fa fa-shopping-cart"></i></a>
                                     </div>
                                 </div>
                             </div>

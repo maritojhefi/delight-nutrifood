@@ -17,7 +17,7 @@
                 <div class="ps-3">
                     <h6>{{$item->nombre()}}</h6>
                     </a>
-                    <a href="#"><span class="badge bg-red-dark font-700 font-11 text-uppercase">Añadir <i class="fa fa-shopping-cart"></i></span></a>
+                    <a href="#"><span class="badge bg-red-dark font-700 font-11 text-uppercase carrito" id="{{$item->id}}">Añadir <i class="fa fa-shopping-cart"></i></span></a>
                 </div>
                 <div class="ms-auto">
                     <h1 class="font-20">{{$item->precio()}} Bs</h1>

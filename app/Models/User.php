@@ -79,6 +79,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Venta::class,'cliente_id');
     }
+    public function addCarrito()
+    {
+        return $this->belongsToMany(Producto::class)
+        ->withPivot('cantidad');;
+    }
     public function historial_ventas()
     {
         return $this->hasMany(Historial_venta::class,'cliente_id');

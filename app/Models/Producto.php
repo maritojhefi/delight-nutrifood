@@ -16,73 +16,73 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Producto extends Model
 {
-   
+
     use HasFactory;
     protected $fillable = [
-        'nombre','subcategoria_id','precio','imagen','detalle','codigoBarra','descuento','puntos','medicion','contable','observacion'
-       
+        'nombre', 'subcategoria_id', 'precio', 'imagen', 'detalle', 'codigoBarra', 'descuento', 'puntos', 'medicion', 'contable', 'observacion'
+
     ];
-  
+
     public function sucursale()
     {
-        
+
         return $this->belongsToMany(Sucursale::class)
-        ->withPivot('sucursale_id','cantidad','id','fecha_venc')
-        ->wherePivot('cantidad','!=',0);
+            ->withPivot('sucursale_id', 'cantidad', 'id', 'fecha_venc')
+            ->wherePivot('cantidad', '!=', 0);
     }
-   
+
     public function subcategoria()
     {
         return $this->belongsTo(Subcategoria::class);
     }
-    public function pathAttachment(){
-        if($this->imagen==null)
-        {
+    public function pathAttachment()
+    {
+        if ($this->imagen == null) {
             return 'imagenes/delight/1.jpeg';
+        } else {
+            return "imagenes/productos/" . $this->imagen;
         }
-        else
-        {
-            return "imagenes/productos/".$this->imagen;
-        }
-        
     }
-    public function detalle(){
-        
-            return ucfirst(strtolower($this->detalle)); 
+    public function detalle()
+    {
+
+        return ucfirst(strtolower($this->detalle));
     }
-    public function nombre(){
-        
-            return ucfirst(strtolower($this->nombre)); 
+    public function nombre()
+    {
+
+        return ucfirst(strtolower($this->nombre));
     }
-    public function precio(){
-        if($this->descuento!=0 || $this->descuento!=null)
-        {
-            return $this->descuento; 
+    public function precio()
+    {
+        if ($this->descuento != 0 || $this->descuento != null) {
+            return $this->descuento;
+        } else {
+            return $this->precio;
         }
-        else
-        {
-            return $this->precio; 
-        }
-        
-}
+    }
     public function setPrecioAttribute($value)
     {
-        
-        $this->attributes['precio'] = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT,FILTER_FLAG_ALLOW_FRACTION);
+
+        $this->attributes['precio'] = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     }
     public function setMedicionAttribute($value)
     {
-        $this->attributes['medicion'] = $this->attributes['precio']>1?'unidad':'gramo';
+        $this->attributes['medicion'] = $this->attributes['precio'] > 1 ? 'unidad' : 'gramo';
+    }
+    public function addCarrito()
+    {
+        return $this->belongsToMany(User::class);
     }
     public function ventas()
     {
         return $this->belongsToMany(Venta::class)
-        ->withPivot('cantidad','adicionales','observacion');
+            ->withPivot('cantidad', 'adicionales', 'observacion');
     }
     public function historialVentas()
     {
         return $this->belongsToMany(Historial_venta::class)
-        ->withPivot('cantidad','adicionales');
+            ->withPivot('cantidad', 'adicionales');
     }
     public function tags()
     {

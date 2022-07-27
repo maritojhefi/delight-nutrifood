@@ -95,7 +95,7 @@
                 </div>
             </div> --}}
 
-            <a href="#" class="btn btn-full bg-highlight btn-l rounded-sm text-uppercase font-800">Añadir al
+            <a href="#" class="btn btn-full bg-highlight btn-l rounded-sm text-uppercase font-800 carrito" id="{{$producto->id}}">Añadir al
                 carrito</a>
         </div>
     </div>
@@ -114,7 +114,7 @@
                     <div class="ps-3">
                         <h4>{{ Str::limit($item->nombre(), 25) }}</h4>
                         </a>
-                        <a href="#"><span class="badge bg-magenta-dark font-700 font-11 text-uppercase">Añadir <i
+                        <a href="#"><span class="badge bg-magenta-dark font-700 font-11 text-uppercase carrito" id="{{$item->id}}">Añadir <i
                                     class="fa fa-shopping-cart"></i></span></a>
                     </div>
                     <div class="ms-auto">
