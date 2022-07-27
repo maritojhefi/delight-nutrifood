@@ -115,11 +115,11 @@
                             </div>
                             <div class="card-bottom p-3 m-2 rounded-m bg-white">
                                 <a href="#">
-                                    <h1 class="font-18 line-height-m font-700 mb-0">
-                                        {{Str::limit($item->nombre,25)}}
+                                    <h1 class="font-14 line-height-m font-700 mb-0">
+                                        {{Str::limit($item->nombre,35)}}
                                     </h1>
                                     <p class="mb-0">
-                                        {{Str::limit($item->descripcion,35)}}
+                                        {{Str::limit($item->detalle,45)}}
                                     </p>
                                 </a>
                                 <div class="d-flex pt-3">
