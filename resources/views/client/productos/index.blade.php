@@ -87,56 +87,64 @@
         <div class="d-flex px-3 mb-2">
             <h4 class="mb-2 font-600">Productos en descuento!</h4>
         </div>
-        <div class="splide single-slider slider-no-dots slider-no-arrows visible-slider splide--loop splide--ltr splide--draggable is-active"
-            id="single-slider-3" style="visibility: visible;">
+      
+
+        <div class="splide single-slider slider-no-arrows slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"
+            id="single-slider-2" style="visibility: visible;">
             <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button"
-                    aria-controls="single-slider-3-track" aria-label="Go to last slide"><svg
+                    aria-controls="single-slider-2-track" aria-label="Previous slide"><svg
                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
                         <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z">
                         </path>
                     </svg></button><button class="splide__arrow splide__arrow--next" type="button"
-                    aria-controls="single-slider-3-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 40 40" width="40" height="40">
+                    aria-controls="single-slider-2-track" aria-label="Go to first slide"><svg
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
                         <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z">
                         </path>
                     </svg></button></div>
-            <div class="splide__track" id="single-slider-3-track">
-                <div class="splide__list" id="single-slider-3-list" style="transform: translateX(-664px);">
+            <div class="splide__track" id="single-slider-2-track">
+                <div class="splide__list" id="single-slider-2-list" style="transform: translateX(-1328px);">
                     @foreach ($enDescuento as $item)
-                        <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1"
-                            style="width: 332px;">
-                            <div class="card card-style">
-                                <img src="{{ asset($item->pathAttachment()) }}" alt="img" style="max-height:232px" class="img-fluid">
-                                <div class="content mt-3">
-                                    <h2 class="font-17">{{ $item->nombre }} <small
-                                            class="float-end">
-                                            <del class="">{{ $item->precio }}</del><span class="highlight ps-2 font-12 pe-2 bg-blue-dark">{{ $item->descuento }} Bs</span> </small></h2>
-                                    <p class="mb-3">
-                                        {{ $item->descripcion }}
+                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1"
+                        style="width: 332px;">
+                        <div data-card-height="400" class="card mx-3 rounded-m shadow-l"
+                            style="background-image: url({{ asset($item->pathAttachment()) }}); height: 400px;">
+                            <div class="card-top">
+                                <a href="#" class="bg-theme color-theme rounded-sm icon icon-xs float-end m-3"><i
+                                        class="far fa-shopping-bag font-12"></i></a>
+                            </div>
+                            <div class="card-bottom p-3 m-2 rounded-m bg-white">
+                                <a href="#">
+                                    <h1 class="font-18 line-height-m font-700 mb-0">
+                                        {{Str::limit($item->nombre,25)}}
+                                    </h1>
+                                    <p class="mb-0">
+                                        {{Str::limit($item->descripcion,35)}}
                                     </p>
-                                    <div class="row">
-                                        <div class="col-6"><a href="{{ route('detalleproducto', $item->id) }}"
-                                            class="btn btn-s rounded-s text-uppercase bg-green-dark font-700 btn-full">Ver producto</a></div>
-                                        <div class="col-6"><a href="#"
-                                            class="btn btn-s rounded-s text-uppercase bg-magenta-dark font-700 btn-full">Añadir al
-                                            carrito</a></div>
+                                </a>
+                                <div class="d-flex pt-3">
+                                    <div class="align-self-center">
+                                        <strong class="font-800 font-22 color-theme"><small class="text-secondary"><del>{{$item->descuento}}</del></small><span > {{$item->precio}} Bs</span> </strong>
                                     </div>
-                                    
+                                    <div class="align-self-center ms-auto">
+                                        <a href="#"
+                                            class="btn-s rounded-s btn bg-highlight font-700 text-uppercase mb-1">Añadir <i class="fa fa-shopping-cart"></i></a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
                     @endforeach
-
                 </div>
             </div>
             <ul class="splide__pagination">
-                <li><button class="splide__pagination__page is-active" type="button"
-                        aria-controls="single-slider-3-slide01" aria-label="Go to slide 1" aria-current="true"></button>
-                </li>
-                <li><button class="splide__pagination__page" type="button" aria-controls="single-slider-3-slide02"
+                <li><button class="splide__pagination__page" type="button" aria-controls="single-slider-2-slide01"
+                        aria-label="Go to slide 1"></button></li>
+                <li><button class="splide__pagination__page" type="button" aria-controls="single-slider-2-slide02"
                         aria-label="Go to slide 2"></button></li>
-                <li><button class="splide__pagination__page" type="button" aria-controls="single-slider-3-slide03"
-                        aria-label="Go to slide 3"></button></li>
+                <li><button class="splide__pagination__page is-active" type="button"
+                        aria-controls="single-slider-2-slide03" aria-label="Go to slide 3" aria-current="true"></button>
+                </li>
             </ul>
         </div>
     @endif
@@ -152,7 +160,8 @@
                     <div class="row mb-0">
                         @foreach ($conMasPuntos as $item)
                             <div class="col-6 ps-2">
-                                <a href="{{ route('detalleproducto', $item->id) }}" class="card card-style mx-0 mb-3" data-menu="menu-product">
+                                <a href="{{ route('detalleproducto', $item->id) }}" class="card card-style mx-0 mb-3"
+                                    data-menu="menu-product">
                                     <img src="{{ asset($item->pathAttachment()) }}" alt="img" width="100"
                                         class="mx-auto mt-2">
                                     <div class="p-2">
