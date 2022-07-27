@@ -30,7 +30,7 @@ class TiendaComponent extends Component
             $this->foto->storeAs('galeria',$filename, 'public_images');
               //comprimir la foto
             $img = Image::make('imagenes/galeria/'.$filename);
-            $img->resize(320, null, function ($constraint) {
+            $img->resize(720, null, function ($constraint) {
              $constraint->aspectRatio();
             });
              $img->rotate(0);
