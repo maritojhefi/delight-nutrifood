@@ -8,7 +8,7 @@
         <div class="content mt-2">
             <div class="search-box bg-theme color-theme rounded-m shadow-l">
                 <i class="fa fa-search"></i>
-                <input type="text" class="border-0" placeholder="Que estas buscando?" data-search="">
+                <input type="text" class="border-0" placeholder="Que producto buscas hoy?" data-search="">
                 <a href="#" class="clear-search disabled mt-0"><i class="fa fa-times color-red-dark"></i></a>
             </div>
             <div class="search-results disabled-search-list mt-3">

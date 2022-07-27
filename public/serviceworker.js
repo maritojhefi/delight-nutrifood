@@ -7,7 +7,7 @@ var filesToCache = [
     '/scripts/custom.js',
     '/inicio/menusemanal',
 
-    '/promociones',
+    '/novedades',
     //'/productos',
     '/images/icons/icon-72x72.png',
     '/images/icons/icon-96x96.png',

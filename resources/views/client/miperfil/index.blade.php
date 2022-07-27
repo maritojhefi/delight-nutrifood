@@ -281,7 +281,7 @@
                     <div class="card-overlay bg-black opacity-60"></div>
                 </div>
             </a>
-            <a href="{{ route('promociones') }}">
+            <a href="{{ route('novedades') }}">
                 <div class="card card-style bg-14 mb-2" data-card-height="135"
                     style="height: 135px;background-image:url({{ asset('imagenes/delight/22.jpeg') }})">
                     <div class="card-bottom p-3">
