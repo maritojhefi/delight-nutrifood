@@ -24,7 +24,7 @@ class ProductoController extends Controller
             $productos=Producto::where('estado','activo')->get();
             session(['productos' => $productos]);
         }
-        $subcategorias=Subcategoria::inRandomOrder()->get();
+        $subcategorias=Subcategoria::has('productos')->inRandomOrder()->get();
         $enDescuento=$productos->where('descuento','!=',null)->where('descuento','!=',0)->shuffle();
         //dd($enDescuento);
         $conMasPuntos=$productos->where('puntos','!=',null)->where('puntos','!=',0)->shuffle();

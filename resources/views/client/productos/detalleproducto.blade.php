@@ -94,7 +94,7 @@
 
                 </div>
             </div> --}}
-           
+
             <a href="#" class="btn btn-full bg-highlight btn-l rounded-sm text-uppercase font-800">Añadir al
                 carrito</a>
         </div>
@@ -103,26 +103,28 @@
     <div class="card card-style">
         <div class="content">
             <h4>Productos relacionados</h4>
-          
+
             <div class="divider mt-3 mb-3"></div>
             @foreach ($producto->subcategoria->productos->shuffle()->take(5) as $item)
-            <div class="d-flex">
-                <div>
-                    <img src="{{ asset($item->pathAttachment()) }}" class="rounded-sm" width="55">
+                <div class="d-flex">
+                    <div>
+                        <a href="{{ route('detalleproducto', $item->id) }}">
+                            <img src="{{ asset($item->pathAttachment()) }}" class="rounded-sm" width="55">
+                    </div>
+                    <div class="ps-3">
+                        <h4>{{ Str::limit($item->nombre(), 25) }}</h4>
+                        <span class="badge bg-green-dark font-700 font-11 text-uppercase">Ver producto</span></a>
+                        <a href="#"><span class="badge bg-magenta-dark font-700 font-11 text-uppercase">Añadir <i
+                                    class="fa fa-shopping-cart"></i></span></a>
+                    </div>
+                    <div class="ms-auto">
+                        <h1 class="font-20">{{ $item->descuento ? $item->descuento : $item->precio }} Bs</h1>
+                    </div>
                 </div>
-                <div class="ps-3">
-                    <h4>{{Str::limit($item->nombre(),25)}}</h4>
-                    <a href="{{route('detalleproducto',$item->id)}}"><span class="badge bg-green-dark font-700 font-11 text-uppercase">Ver producto</span></a>
-                    <a href="#"><span class="badge bg-magenta-dark font-700 font-11 text-uppercase">Añadir <i class="fa fa-shopping-cart"></i></span></a>
-                </div>
-                <div class="ms-auto">
-                    <h1 class="font-20">{{$item->descuento?$item->descuento:$item->precio}} Bs</h1>
-                </div>
-            </div>
-            <div class="divider mt-3 mb-3"></div>
+                <div class="divider mt-3 mb-3"></div>
             @endforeach
-            
-            
+
+
         </div>
     </div>
 @endsection
