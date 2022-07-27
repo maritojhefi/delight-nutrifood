@@ -112,8 +112,8 @@
                 </div>
                 <div class="ps-3">
                     <h4>{{Str::limit($item->nombre,25)}}</h4>
-                    <span class="badge bg-green-dark font-700 font-11 text-uppercase">Ver producto</span>
-                    
+                    <a href="{{route('detalleproducto',$item->id)}}"><span class="badge bg-green-dark font-700 font-11 text-uppercase">Ver producto</span></a>
+                    <a href="#"><span class="badge bg-magenta-dark font-700 font-11 text-uppercase">Añadir <i class="fa fa-shopping-cart"></i></span></a>
                 </div>
                 <div class="ms-auto">
                     <h1 class="font-20">{{$item->descuento?$item->descuento:$item->precio}} Bs</h1>

@@ -116,10 +116,10 @@
                             <div class="card-bottom p-3 m-2 rounded-m bg-white">
                                 <a href="#">
                                     <h1 class="font-14 line-height-m font-700 mb-0">
-                                        {{Str::limit($item->nombre,35)}}
+                                        {{Str::limit($item->nombre,50)}}
                                     </h1>
                                     <p class="mb-0">
-                                        {{Str::limit($item->detalle,45)}}
+                                        {{Str::limit($item->detalle,60)}}
                                     </p>
                                 </a>
                                 <div class="d-flex pt-3">
@@ -150,7 +150,7 @@
     @endif
     @if ($conMasPuntos->count() > 0)
         <div class="card preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
-            style="background-image: url(&quot;images/pictures/20s.jpg&quot;);">
+            style="background-image: url({{asset('imagenes/delight/8.jpeg')}});">
             <div class="card-body">
                 <h4 class="color-white pt-3 font-24">Gana Puntos!</h4>
                 <p class="color-white pt-1">

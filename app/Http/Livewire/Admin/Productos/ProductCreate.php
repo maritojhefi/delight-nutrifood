@@ -96,7 +96,7 @@ class ProductCreate extends Component
             $this->imagen->storeAs('productos',$filename, 'public_images');
               //comprimir la foto
             $img = Image::make('imagenes/productos/'.$filename);
-            $img->resize(320, null, function ($constraint) {
+            $img->resize(480, null, function ($constraint) {
              $constraint->aspectRatio();
             });
              $img->rotate(0);
