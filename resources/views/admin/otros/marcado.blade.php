@@ -2,7 +2,7 @@
 @section('content')
     <x-cabecera-pagina titulo="Hola!" cabecera="bordeado" />
     
-    <div class="card card-style text-center">
+    <div class="card card-style text-center" id="close">
         <form action="{{ route('registrar.asistencia') }}" method="post" id="myform">
             @csrf
             <input type="hidden" id="latitud" name="latitud">
@@ -12,8 +12,9 @@
         <div class="content py-5">
             
             <img src="{{asset('cargando.gif')}}" alt="">
-            <h1 class="fa-5x pt-5 pb-2">Espera!</h1>
-            <h4 class="text-uppercase pb-3">Registrando la hora!</h4>
+            <h3 class="fa-5x pt-5 pb-2">Espera!</h3>
+            <br>
+            <h5 class="text-uppercase pb-3 mt-3">Registrando la hora!</h5>
             <p class="boxed-text-l">
                  Delight by Macrobyte
             </p>
@@ -22,7 +23,22 @@
             </div>
         </div>
     </div>
-    
+    <div class="card card-style text-center d-none" id="tooFar">
+        
+        <div class="content py-5">
+            
+            <img src="{{asset('map.gif')}}" alt="">
+            <h3 class="fa-5x pt-5 pb-2">Estas lejos!</h3>
+            <br>
+            <h5 class="text-uppercase pb-3 mt-3">Debes estar mas cerca para registrar!</h5>
+            <p class="boxed-text-l" id="textoCustom">
+                 Delight by Macrobyte
+            </p>
+            <div class="row mb-0">
+               
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('header')
@@ -38,7 +54,7 @@
                     console.log(location.coords.latitude);
                     console.log(location.coords.longitude);
                     console.log(getDistanceFromLatLonInKm(location.coords.latitude, location.coords.longitude));
-                    if (getDistanceFromLatLonInKm(location.coords.latitude, location.coords.longitude) < 3.5) {
+                    if (getDistanceFromLatLonInKm(location.coords.latitude, location.coords.longitude) < 0.3) {
                         console.log(getDistanceFromLatLonInKm(location.coords.latitude, location.coords.longitude))
                         var submit = false;
 
@@ -51,8 +67,10 @@
 
                         console.log($("#myform"))
                     } else {
-                        console.log(getDistanceFromLatLonInKm(location.coords.latitude, location.coords.longitude))
-                        alert('no puedes registrar porque estas muy lejos')
+                        console.log()
+                        $('#tooFar').removeClass('d-none');
+                        $('#close').addClass('d-none');
+                        $('#textoCustom').html('Estas a '+(getDistanceFromLatLonInKm(location.coords.latitude, location.coords.longitude).toFixed(2)*1000)+' metros de Delight')
                     }
 
                     function getDistanceFromLatLonInKm(lat2, lon2) {
