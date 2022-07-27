@@ -25,16 +25,16 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // \App\Models\User::factory(10)->create();
-        $this->call(SucursalSeeder::class);
-        $this->call(CategoriaSeeder::class);
-        $this->call(SubcategoriaSeeder::class);
-        $this->call(RoleSeeder::class);
-        $this->call(UserSeeder::class);
-        //$this->call(ProductoSeeder::class);
-        $this->call(AdicionalesSeeder::class);
-        $this->call(AlmuerzosSeeder::class);
+        // $this->call(SucursalSeeder::class);
+        // $this->call(CategoriaSeeder::class);
+        // $this->call(SubcategoriaSeeder::class);
+        // $this->call(RoleSeeder::class);
+        // $this->call(UserSeeder::class);
+        // $this->call(ProductoSeeder::class);
+        // $this->call(AdicionalesSeeder::class);
+        // $this->call(AlmuerzosSeeder::class);
         //Producto::factory(100)->create();
         //User::factory(100)->create();
-        
+        $this->call(SwitchPlanSeeder::class);
     }
 }
