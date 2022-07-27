@@ -48,9 +48,9 @@
         <i class="fa fa-heart color-white">
         </i><span class="color-white">Mi Perfil</span>
     </a>
-    <a href="{{ route('promociones') }}" class="{{ request()->is('promociones' . '*') ? 'active-nav' : '' }} ">
+    <a href="{{ route('novedades') }}" class="{{ request()->is('novedades' . '*') ? 'active-nav' : '' }} ">
         <i class="fa fa-plus fas color-white"></i>
-        <span class="color-white">Promociones</span>
+        <span class="color-white">Novedades</span>
     </a>
     <a href="{{ route('menusemanal') }}" class="{{ request()->is('inicio' . '*') ? 'active-nav' : '' }} ">
         <i class="fa fa-home color-white"></i>
@@ -59,6 +59,10 @@
     <a href="{{ route('productos') }}" class="{{ request()->is('productos' . '*') ? 'active-nav' : '' }} ">
         <i class="fa fa-gem font-16 color-white"></i>
         <span class="color-white">Eco-Tienda</span>
+    </a>
+    <a href="{{ route('carrito') }}" class="{{ request()->is('carrito' . '*') ? 'active-nav' : '' }} ">
+        <i class="fa fa-shopping-cart font-16 color-white"></i>
+        <span class="color-white">Mi carrito</span>
     </a>
     <!--  <a href="{{ route('ajustes') }}" class="{{ request()->is('ajustes' . '*') ? 'active-nav' : '' }} ">
             <i data-feather="settings" data-feather-line="1" data-feather-size="21" data-feather-color="dark-dark" data-feather-bg="gray-fade-light"></i>

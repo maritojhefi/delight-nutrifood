@@ -69,12 +69,18 @@ Route::prefix('/productos')->group(function () {
 
 });
 //promociones
-Route::prefix('/promociones')->group(function () {
+Route::prefix('/novedades')->group(function () {
    
-    Route::get('', [App\Http\Controllers\PromocionesController::class, 'index'])->name('promociones');
+    Route::get('', [App\Http\Controllers\PromocionesController::class, 'index'])->name('novedades');
     
  
 
+
+});
+Route::prefix('/carrito')->group(function () {
+   
+    Route::get('', [App\Http\Controllers\CarritoController::class, 'index'])->name('carrito');
+    
 
 });
 //perfil

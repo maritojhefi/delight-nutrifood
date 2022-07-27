@@ -38,32 +38,32 @@
                         <p class="font-12 color-theme font-700">
                             @if ($producto->contable)
                                 @if ($producto->sucursale->count() != 0)
-                                    {{-- @foreach ($producto->sucursale->groupBy('nombre') as $nombre=>$item)
+                                    {{-- @foreach ($producto->sucursale->groupBy('nombre') as $nombre => $item)
                                     
                                         {{ $nombre }} : {{ $item->sum('pivot.cantidad') }} <br>
                                     @endforeach --}}
                                     <a href="#" class="chip chip-small bg-gray-light mt-2">
                                         <i class="fa fa-check bg-green-dark"></i>
                                         <strong class="color-black font-400">Disponible</strong>
-                                        </a>
+                                    </a>
                                 @else
-                                <a href="#" class="chip chip-small bg-gray-light mt-2">
-                                    <i class="fa fa-times bg-red-dark"></i>
-                                    <strong class="color-black font-400">Agotado</strong>
+                                    <a href="#" class="chip chip-small bg-gray-light mt-2">
+                                        <i class="fa fa-times bg-red-dark"></i>
+                                        <strong class="color-black font-400">Agotado</strong>
                                     </a>
                                 @endif
                             @else
-                            @if ($producto->estado=='activo')
-                            <a href="#" class="chip chip-small bg-gray-light mt-2">
-                                <i class="fa fa-check bg-green-dark"></i>
-                                <strong class="color-black font-400">Disponible</strong>
-                                </a>
-                            @else
-                            <a href="#" class="chip chip-small bg-gray-light mt-2">
-                                <i class="fa fa-times bg-red-dark"></i>
-                                <strong class="color-black font-400">Agotado</strong>
-                                </a>
-                            @endif  
+                                @if ($producto->estado == 'activo')
+                                    <a href="#" class="chip chip-small bg-gray-light mt-2">
+                                        <i class="fa fa-check bg-green-dark"></i>
+                                        <strong class="color-black font-400">Disponible</strong>
+                                    </a>
+                                @else
+                                    <a href="#" class="chip chip-small bg-gray-light mt-2">
+                                        <i class="fa fa-times bg-red-dark"></i>
+                                        <strong class="color-black font-400">Agotado</strong>
+                                    </a>
+                                @endif
                             @endif
 
 
@@ -72,14 +72,15 @@
                     </div>
                     <div>
                         <p class="font-10 mb-n2">Puntos por la compra</p>
-                        <p class="font-12 color-theme font-700">{{ $producto->puntos == null ? '0' : $producto->puntos }} Pts
+                        <p class="font-12 color-theme font-700">{{ $producto->puntos == null ? '0' : $producto->puntos }}
+                            Pts
                         </p>
                     </div>
 
                 </div>
             </div>
             <div class="divider mt-4 mb-2"></div>
-            <div class="d-flex">
+            {{-- <div class="d-flex">
                 <div>
                     <p class="mb-n1 font-10">Puntuacion &amp; Comentarios</p>
                     <h6 class="float-start">4.9</h6>
@@ -92,9 +93,36 @@
                 <div class="ms-auto">
 
                 </div>
+            </div> --}}
+           
+            <a href="#" class="btn btn-full bg-highlight btn-l rounded-sm text-uppercase font-800">Añadir al
+                carrito</a>
+        </div>
+    </div>
+
+    <div class="card card-style">
+        <div class="content">
+            <h4>Productos relacionados</h4>
+          
+            <div class="divider mt-3 mb-3"></div>
+            @foreach ($producto->subcategoria->productos->shuffle()->take(5) as $item)
+            <div class="d-flex">
+                <div>
+                    <img src="{{ asset($item->pathAttachment()) }}" class="rounded-sm" width="55">
+                </div>
+                <div class="ps-3">
+                    <h4>{{Str::limit($item->nombre,25)}}</h4>
+                    <span class="badge bg-green-dark font-700 font-11 text-uppercase">Ver producto</span>
+                    
+                </div>
+                <div class="ms-auto">
+                    <h1 class="font-20">{{$item->descuento?$item->descuento:$item->precio}} Bs</h1>
+                </div>
             </div>
-            <div class="divider mt-3"></div>
-            <a href="#" class="btn btn-full bg-highlight btn-l rounded-sm text-uppercase font-800">Comprar ahora</a>
+            <div class="divider mt-3 mb-3"></div>
+            @endforeach
+            
+            
         </div>
     </div>
 @endsection

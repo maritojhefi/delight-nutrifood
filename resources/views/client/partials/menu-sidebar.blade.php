@@ -58,8 +58,8 @@
         <span>Eco-Tienda</span>
         <i class="fa fa-circle"></i>
     </a>
-    <a id="nav-media" href="{{ route('promociones') }}"
-        class="{{ request()->is('promociones' . '*') ? 'nav-item-active' : '' }} ">
+    <a id="nav-media" href="{{ route('novedades') }}"
+        class="{{ request()->is('novedades' . '*') ? 'nav-item-active' : '' }} ">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             class="feather feather-image" data-feather-line="1" data-feather-size="16"
@@ -70,7 +70,7 @@
             <circle cx="8.5" cy="8.5" r="1.5"></circle>
             <polyline points="21 15 16 10 5 21"></polyline>
         </svg>
-        <span>Promociones</span>
+        <span>Novedades</span>
         <i class="fa fa-circle"></i>
     </a>
 

@@ -104,7 +104,7 @@
                 <div class="splide__list" id="single-slider-3-list" style="transform: translateX(-664px);">
                     @foreach ($enDescuento as $item)
                         <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1"
-                            style="width: 332px;">
+                            style="width: 332px;max-heigth:332px">
                             <div class="card card-style">
                                 <img src="{{ asset($item->pathAttachment()) }}" alt="img" class="img-fluid">
                                 <div class="content mt-3">
@@ -114,9 +114,14 @@
                                     <p class="mb-3">
                                         {{ $item->descripcion }}
                                     </p>
-                                    <a href="#"
-                                        class="btn btn-s rounded-s text-uppercase bg-blue-dark font-700 btn-full">Añadir al
-                                        carrito</a>
+                                    <div class="row">
+                                        <div class="col-6"><a href="{{ route('detalleproducto', $item->id) }}"
+                                            class="btn btn-s rounded-s text-uppercase bg-green-dark font-700 btn-full">Ver producto</a></div>
+                                        <div class="col-6"><a href="#"
+                                            class="btn btn-s rounded-s text-uppercase bg-magenta-dark font-700 btn-full">Añadir al
+                                            carrito</a></div>
+                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -136,42 +141,40 @@
         </div>
     @endif
     @if ($conMasPuntos->count() > 0)
-        
-    <div class="card preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
-        style="background-image: url(&quot;images/pictures/20s.jpg&quot;);">
-        <div class="card-body">
-            <h4 class="color-white pt-3 font-24">Gana Puntos!</h4>
-            <p class="color-white pt-1">
-                Mientras mas puntos, mas premios!
-            </p>
-            <div class="card card-style bg-transparent m-0 shadow-0">
-                <div class="row mb-0">
-                    @foreach ($conMasPuntos as $item)
-                        <div class="col-6 ps-2">
-                            <a href="#" class="card card-style mx-0 mb-3" data-menu="menu-product">
-                                <img src="{{ asset($item->pathAttachment()) }}" alt="img" width="100"
-                                    class="mx-auto mt-2">
-                                <div class="p-2">
-                                    <h4 class="mb-0 font-600">{{ Str::limit($item->nombre, 20) }}</h4>
-                                    <p class="mb-0 font-11 mt-n1">Acumula puntos por su compra!</p>
-                                </div>
-                                <div class="divider mb-0"></div>
-                                <h5 class="py-3 pb-2 px-2 font-13 font-600">
-                                    {{$item->descuento?$item->descuento:$item->precio}} Bs
-                                    <span
-                                        class="bg-blue-dark font-11 px-2 font-600 rounded-xs shadow-xxl float-end">{{ $item->puntos }}
-                                        Pts</span>
-                                </h5>
-                            </a>
-                        </div>
-                    @endforeach
+        <div class="card preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
+            style="background-image: url(&quot;images/pictures/20s.jpg&quot;);">
+            <div class="card-body">
+                <h4 class="color-white pt-3 font-24">Gana Puntos!</h4>
+                <p class="color-white pt-1">
+                    Mientras mas puntos, mas premios!
+                </p>
+                <div class="card card-style bg-transparent m-0 shadow-0">
+                    <div class="row mb-0">
+                        @foreach ($conMasPuntos as $item)
+                            <div class="col-6 ps-2">
+                                <a href="{{ route('detalleproducto', $item->id) }}" class="card card-style mx-0 mb-3" data-menu="menu-product">
+                                    <img src="{{ asset($item->pathAttachment()) }}" alt="img" width="100"
+                                        class="mx-auto mt-2">
+                                    <div class="p-2">
+                                        <h4 class="mb-0 font-600">{{ Str::limit($item->nombre, 20) }}</h4>
+                                        <p class="mb-0 font-11 mt-n1">Acumula puntos por su compra!</p>
+                                    </div>
+                                    <div class="divider mb-0"></div>
+                                    <h5 class="py-3 pb-2 px-2 font-13 font-600">
+                                        {{ $item->descuento ? $item->descuento : $item->precio }} Bs
+                                        <span
+                                            class="bg-blue-dark font-11 px-2 font-600 rounded-xs shadow-xxl float-end">{{ $item->puntos }}
+                                            Pts</span>
+                                    </h5>
+                                </a>
+                            </div>
+                        @endforeach
 
+                    </div>
                 </div>
             </div>
+            <div class="card-overlay bg-highlight opacity-90"></div>
+            <div class="card-overlay dark-mode-tint"></div>
         </div>
-        <div class="card-overlay bg-highlight opacity-90"></div>
-        <div class="card-overlay dark-mode-tint"></div>
-    </div>
-    
     @endif
 @endsection
