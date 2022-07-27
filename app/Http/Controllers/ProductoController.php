@@ -12,6 +12,12 @@ use Illuminate\Http\Request;
 
 class ProductoController extends Controller
 {
+    public function detallesubcategoria($id)
+    {
+        $subcategoria=Subcategoria::find($id);
+       
+       return view('client.productos.detallesubcategoria',compact('subcategoria'));
+    }
     public function index(){
         
         if (session()->missing('producstos')) {

@@ -55,7 +55,7 @@
                 style="transform: translate(-1162px, 0px); transition: transform 400ms cubic-bezier(0.42, 0.65, 0.27, 0.99) 0s;">
                 @foreach ($subcategorias as $item)
                     <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 166px;">
-                        <a href="#" class="mx-3">
+                        <a href="{{route('listar.productos.subcategoria',$item->id)}}" class="mx-3">
                             <div class="card card-style me-0 mb-0"
                                 style="background-image: url('{{ asset($item->rutaFoto()) }}'); height: 250px;"
                                 data-card-height="250">

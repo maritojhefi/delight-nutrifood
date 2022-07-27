@@ -54,6 +54,17 @@ class Producto extends Model
         
             return ucfirst(strtolower($this->nombre)); 
     }
+    public function precio(){
+        if($this->descuento!=0 || $this->descuento!=null)
+        {
+            return $this->descuento; 
+        }
+        else
+        {
+            return $this->precio; 
+        }
+        
+}
     public function setPrecioAttribute($value)
     {
         
