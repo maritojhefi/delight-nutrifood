@@ -12,7 +12,7 @@
         <div class="content py-5">
             
             <img src="{{asset('cargando.gif')}}" alt="">
-            <h3 class="fa-5x pt-5 pb-2">Espera!</h3>
+            <h2 class="">Espera!</h2>
             <br>
             <h5 class="text-uppercase pb-3 mt-3">Registrando la hora!</h5>
             <p class="boxed-text-l">
@@ -28,7 +28,7 @@
         <div class="content py-5">
             
             <img src="{{asset('map.gif')}}" alt="">
-            <h3 class="fa-5x pt-5 pb-2">Estas lejos!</h3>
+            <h3 class="">Estas lejos!</h3>
             <br>
             <h5 class="text-uppercase pb-3 mt-3">Debes estar mas cerca para registrar!</h5>
             <p class="boxed-text-l" id="textoCustom">
