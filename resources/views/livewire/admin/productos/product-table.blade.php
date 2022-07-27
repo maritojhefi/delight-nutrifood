@@ -81,11 +81,11 @@
                         </div>
 
 
-                        <div class="modal fade" id="modalgrande{{$item->id}}">
+                        <div wire:ignore.self class="modal fade" id="modalgrande{{$item->id}}">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title">Lotes dentro de cada sucursal para "{{$item->nombre}}"</h5>
+                                        <h5 class="modal-title">Lotes existentes:{{$item->nombre}}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal">
                                         </button>
                                     </div>
@@ -109,7 +109,18 @@
                                        @endif
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Cerrar</button>
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <input type="number" class="form-control" wire:model="cantidadStock" placeholder="">
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="date" class="form-control" wire:model="fechaStock">
+                                            </div>
+                                            <div class="col-4">
+                                                <button wire:click="guardarStock({{$item->id}})" class="btn btn-sm btn-success">Agregar stock</button>
+                                            </div>
+                                           
+                                        </div>
                                        
                                     </div>
                                 </div>

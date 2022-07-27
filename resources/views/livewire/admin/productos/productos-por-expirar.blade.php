@@ -5,13 +5,15 @@
                 <div class="col">
                     <h4 class="card-title">Productos por expirar</h4>
                 </div>
-                <div class="col-2"><div  class="d-flex justify-content-center">
-                    <div wire:loading class="spinner-border" role="status">
-                      <span class="sr-only">Loading...</span>
+                <div class="col-2">
+                    <div class="d-flex justify-content-center">
+                        <div wire:loading class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
                     </div>
-                  </div></div>
-                <div class="col"> <input type="text" class="form-control form-control-sm" placeholder="Buscar producto"
-                        wire:model.debounce.750ms="search"></div>
+                </div>
+                <div class="col"> <input type="text" class="form-control form-control-sm"
+                        placeholder="Buscar producto" wire:model.debounce.750ms="search"></div>
 
             </div>
 
@@ -21,59 +23,87 @@
                         <thead>
                             <tr>
 
-
+                                <th></th>
                                 <th><strong>Nombre</strong></th>
                                 <th><strong>Restantes/lote</strong></th>
                                 <th><strong>Estado</strong></th>
-                                
+
                                 <th><strong>Fecha Vencimiento</strong></th>
-                               
+
 
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($productos as $item)
                                 <tr>
-
+                                    <td><a href="#" data-bs-toggle="modal" data-bs-target="#modal" wire:click="seleccionar({{$item->id}})"><i class="fa fa-edit"></i></a></td>
                                     <td>
-                                        <a href="{{route('sucursal.stock')}}"><div class="d-flex align-items-center"><strong>{{ $item->nombre }}</strong>
-                                        </div></a>
-                                        
+                                        <a href="{{ route('sucursal.stock') }}">
+                                            <div class="d-flex align-items-center"><strong>{{ Str::limit($item->nombre,25) }} </strong>
+                                                @if ($item->descuento)
+                                                <del class="badge badge-danger">{{$item->precio}}</del><span class="badge badge-success">{{$item->descuento}} Bs</span>
+                                                    @else
+                                                    <span class="badge badge-success">{{$item->precio}} Bs</span>
+                                                @endif
+                                            </div>
+                                        </a>
+
                                     </td>
 
                                     <td>{{ $item->cantidad }}</td>
                                     <td><span class="w-space-no">
                                             @if (Carbon\Carbon::now()->startOfDay()->gte($item->fecha_venc) == true)
-                                                <span class="badge badge-danger">expirado (Hace {{Carbon\Carbon::parse($item->fecha_venc)->diffInDays()}} dias)</span>
+                                                <span class="badge badge-danger">expirado (Hace
+                                                    {{ Carbon\Carbon::parse($item->fecha_venc)->diffInDays() }}
+                                                    dias)</span>
                                             @else
-                                                <span class="badge badge-info">vigente (Quedan {{Carbon\Carbon::parse($item->fecha_venc)->diffInDays()}} dias)</span>
+                                                <span class="badge badge-info">vigente (Quedan
+                                                    {{ Carbon\Carbon::parse($item->fecha_venc)->diffInDays() }}
+                                                    dias)</span>
                                             @endif
 
 
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="badge badge-warning">{{date_format(date_create($item->fecha_venc),'d-M-y')}}</span>
+                                        <span
+                                            class="badge badge-warning">{{ date_format(date_create($item->fecha_venc), 'd-M-y') }}</span>
                                     </td>
 
 
 
-                                   
-                                </tr>
 
-                                
+                                </tr>
                             @endforeach
 
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div class="row  mx-auto">
-
-            </div>
-            <div class="row  mx-auto">
-
+            
+        </div>
+    </div>
+    
+    <div wire:ignore.self class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true" id="modal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                @isset($seleccionado)
+                <div class="modal-header">
+                    <h5 class="modal-title">Editando descuento de {{$seleccionado->nombre}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="number" step="any" wire:model.lazy="nuevoPrecio" class="form-control" placeholder="Ingrese el precio con descuento">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-sm light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal" wire:click="cambiar('{{ $seleccionado->id }}')">Aceptar</button>
+                </div>  
+                @endisset
+                
             </div>
         </div>
     </div>
+    
 </div>

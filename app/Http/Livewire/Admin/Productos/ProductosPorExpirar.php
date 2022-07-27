@@ -8,7 +8,22 @@ use Illuminate\Support\Facades\DB;
 
 class ProductosPorExpirar extends Component
 {
-    public $search;
+    public $search,$seleccionado,$nuevoPrecio;
+    public function seleccionar(Producto $producto)
+    {
+        $this->seleccionado=$producto;
+        $this->nuevoPrecio=$this->seleccionado->descuento;
+    }
+    public function cambiar()
+    {
+        $this->seleccionado->descuento=$this->nuevoPrecio;
+        $this->seleccionado->save();
+        $this->dispatchBrowserEvent('alert',[
+            'type'=>'success',
+            'message'=>"Se cambio el precio de descuento correctamente"
+        ]);
+        $this->reset('nuevoPrecio');
+    }
     public function render()
     {
         //$productos=Producto::has('sucursale')->has('producto_sucursale')->orderBy('fecha_venc','desc')->paginate(10);

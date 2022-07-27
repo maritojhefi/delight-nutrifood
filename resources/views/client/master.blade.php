@@ -91,7 +91,7 @@
     <div id="toast-loading" class="toast toast-tiny toast-top bg-blue-dark fade hide" data-bs-delay="1500"
         data-bs-autohide="true"><i class="fa fa-sync fa-spin me-3"></i>Actualizado!</div>
 
-    <div id="toast-carrito" class="toast toast-tiny toast-top bg-green-dark hide" data-bs-delay="3000"
+    <div id="toast-carrito" class="toast toast-tiny toast-top bg-green-dark hide" data-bs-delay="1000"
         data-bs-autohide="true"><i class="fa fa-check  me-3"></i>Añadido!</div>
 
     @include('client.partials.modalredes')
