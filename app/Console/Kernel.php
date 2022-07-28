@@ -32,6 +32,9 @@ class Kernel extends ConsoleKernel
         ->dailyAt('01:00')->appendOutputTo($filePath);
         $schedule->command('plan:diario')
         ->hourly()->appendOutputTo($filePath);
+        $schedule->command('finalizarPlanTodos:diario')->timezone('America/La_Paz')
+        ->dailyAt('10:00')->appendOutputTo($filePath);
+        
         // $schedule->command('inspire')->hourly();
         /*$schedule->call(function () {
            
