@@ -86,16 +86,12 @@ class ProductTable extends Component
         {
             if ($this->productoEdit->imagen != null || $this->productoEdit->imagen != "") {
                 $this->validate([
-                    'imagen' => 'mimes:jpg,jpeg,png|max:5120',
+                    'imagen' => 'mimes:jpg,jpeg,png,gif|max:5120',
     
                 ]);
-    
-                $filename = $this->productoEdit->imagen;
-                
-               
-            } else {
-                $filename = time() . "." . $this->imagen->extension();
-            }
+                Storage::disk('public_images')->delete('productos/'.$this->productoEdit->imagen);  
+            } 
+            $filename = time() . "." . $this->imagen->extension();
             $this->imagen->storeAs('productos', $filename, 'public_images');
             //comprimir la foto
             $img = Image::make('imagenes/productos/' . $filename);
