@@ -6,6 +6,7 @@
             let formBasic = document.getElementById("formBasic");
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
+                height: 'auto',
                 initialView: 'dayGridMonth',
                 locale: "es",
                 hiddenDays: [0],
