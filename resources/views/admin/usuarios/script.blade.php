@@ -9,7 +9,7 @@
                 height: 'auto',
                 initialView: 'dayGridMonth',
                 locale: "es",
-                // hiddenDays: [0],
+                hiddenDays: [0],
                 selectable: true,
                 //eventContent: { html: '<i>some html</i>' },
                 events: "{{ $path }}/admin/usuarios/mostrar/" + {{ $plan->id }} + "/" +
