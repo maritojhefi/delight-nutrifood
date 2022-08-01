@@ -193,7 +193,6 @@ class UsuariosController extends Controller
 
         $dias = $this->getDiasHabiles($request->start, $request->end, []);
         $contador = 0;
-        $dias=['2022-08-07'];
         foreach ($dias as $dia) {
             $siexiste = DB::table('plane_user')->where('start', $dia)->where('title', 'feriado')->get();
             if ($siexiste->count() != 0) {
