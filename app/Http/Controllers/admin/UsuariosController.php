@@ -27,42 +27,38 @@ class UsuariosController extends Controller
        $planes=$usuario->planesPendientes->where('id',$plan->id)->sortBy(function($col) {return $col;});
        
        $menusemanal="";
-       $array=collect();
-       
        foreach($planes as $dias){
            
             if(date('y-m-d', strtotime($dias->pivot->start))<=$fechalimite && date('y-m-d', strtotime($dias->pivot->start))>=$fechaactual)
             {
             
-             $menusemanal=Almuerzo::where('dia',WhatsappAPIHelper::saber_dia($dias->pivot->start))->first();
-             
-             $array->push([WhatsappAPIHelper::saber_dia($dias->pivot->start)=>$menusemanal]);  
-               
-            //  $coleccion->push([
-            //      'detalle'=>$dias->pivot->detalle,
-            //      'dia'=>WhatsappAPIHelper::saber_dia($dias->pivot->start),
-            //      'id'=>$dias->pivot->id,
-            //      'fecha'=>date('d-M', strtotime($dias->pivot->start)),
-            //      'sopa'=>$menusemanal->sopa,
-            //      'ensalada'=>$menusemanal->ensalada,
-            //      'ejecutivo'=>$menusemanal->ejecutivo,
-            //      'dieta'=>$menusemanal->dieta,
-            //      'vegetariano'=>$menusemanal->vegetariano,
-            //      'carbohidrato_1'=>$menusemanal->carbohidrato_1,
-            //      'carbohidrato_2'=>$menusemanal->carbohidrato_2,
-            //      'carbohidrato_3'=>$menusemanal->carbohidrato_3,
-            //      'jugo'=>$menusemanal->jugo,
-            //      'envio1'=>Plane::ENVIO1,
-            //      'envio2'=>Plane::ENVIO2,
-            //      'envio3'=>Plane::ENVIO3,
-            //      'empaque1'=>'Vianda',
-            //      'empaque2'=>'Empaque Bio(apto/microondas)',
-            //                 ]);
+             $menusemanal=Almuerzo::where('dia',WhatsappAPIHelper::saber_dia($dias->pivot->start))->first();  
+         
+             $coleccion->push([
+                 'detalle'=>$dias->pivot->detalle,
+                 'dia'=>WhatsappAPIHelper::saber_dia($dias->pivot->start),
+                 'id'=>$dias->pivot->id,
+                 'fecha'=>date('d-M', strtotime($dias->pivot->start)),
+                 'sopa'=>$menusemanal->sopa,
+                 'ensalada'=>$menusemanal->ensalada,
+                 'ejecutivo'=>$menusemanal->ejecutivo,
+                 'dieta'=>$menusemanal->dieta,
+                 'vegetariano'=>$menusemanal->vegetariano,
+                 'carbohidrato_1'=>$menusemanal->carbohidrato_1,
+                 'carbohidrato_2'=>$menusemanal->carbohidrato_2,
+                 'carbohidrato_3'=>$menusemanal->carbohidrato_3,
+                 'jugo'=>$menusemanal->jugo,
+                 'envio1'=>Plane::ENVIO1,
+                 'envio2'=>Plane::ENVIO2,
+                 'envio3'=>Plane::ENVIO3,
+                 'empaque1'=>'Vianda',
+                 'empaque2'=>'Empaque Bio(apto/microondas)',
+                            ]);
              
             }
            
        }
-       dd($array);
+      
         return view('client.miperfil.calendario',compact('plan','usuario','coleccion','menusemanal'));
     }
     public function saldo()
