@@ -57,7 +57,7 @@ class UsuariosController extends Controller
             //      'empaque2'=>'Empaque Bio(apto/microondas)',
             //                 ]);
              
-            // }
+            }
            
        }
        dd($array);
