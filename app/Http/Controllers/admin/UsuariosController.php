@@ -34,7 +34,7 @@ class UsuariosController extends Controller
             
              $menusemanal=Almuerzo::where('dia',WhatsappAPIHelper::saber_dia($dias->pivot->start))->first();
              $array=collect();
-             $array->push($menusemanal->sopa);  
+             $array->push($menusemanal->sopa?$menusemanal->sopa:'nada');  
                
             //  $coleccion->push([
             //      'detalle'=>$dias->pivot->detalle,
