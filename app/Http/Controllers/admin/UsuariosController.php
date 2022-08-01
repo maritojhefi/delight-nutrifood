@@ -27,14 +27,15 @@ class UsuariosController extends Controller
        $planes=$usuario->planesPendientes->where('id',$plan->id)->sortBy(function($col) {return $col;});
        
        $menusemanal="";
+       $array=collect();
        foreach($planes as $dias){
            
             if(date('y-m-d', strtotime($dias->pivot->start))<=$fechalimite && date('y-m-d', strtotime($dias->pivot->start))>=$fechaactual)
             {
             
              $menusemanal=Almuerzo::where('dia',WhatsappAPIHelper::saber_dia($dias->pivot->start))->first();
-             $array=collect();
-             $array->push($menusemanal->sopa?$menusemanal->sopa:'nada');  
+             
+             $array->push(isset($menusemanal->sopa)?$menusemanal->sopa:'nada');  
                
             //  $coleccion->push([
             //      'detalle'=>$dias->pivot->detalle,
