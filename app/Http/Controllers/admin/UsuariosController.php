@@ -28,6 +28,7 @@ class UsuariosController extends Controller
        
        $menusemanal="";
        $array=collect();
+       
        foreach($planes as $dias){
            
             if(date('y-m-d', strtotime($dias->pivot->start))<=$fechalimite && date('y-m-d', strtotime($dias->pivot->start))>=$fechaactual)
@@ -35,7 +36,7 @@ class UsuariosController extends Controller
             
              $menusemanal=Almuerzo::where('dia',WhatsappAPIHelper::saber_dia($dias->pivot->start))->first();
              
-             $array->push(isset($menusemanal->sopa)?$menusemanal->sopa:'nada');  
+             $array->push($menusemanal);  
                
             //  $coleccion->push([
             //      'detalle'=>$dias->pivot->detalle,

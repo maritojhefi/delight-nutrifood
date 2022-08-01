@@ -196,6 +196,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
 
 
      });
+
+     Route::get('/actualizar/manual', function(){
+        DB::table('almuerzos')->where('dia','Sabado')->update(['sopa','Sopa de chanca']);
+     });
 });
 
 
