@@ -49,8 +49,8 @@
                                 </a><br>
                                 <small class="my-0">Registros totales :</small>
                                 <small class="text-muted">{{$item['cantidad']}}</small><br>
-                                <button class="btn btn-danger btn-xs" data-bs-toggle="modal"
-                                    data-bs-target="#modal{{$item['id']}}">Eliminar plan</button>
+                                {{-- <button class="btn btn-danger btn-xs" data-bs-toggle="modal"
+                                    data-bs-target="#modal{{$item['id']}}">Eliminar plan</button> --}}
                             </div>
 
 

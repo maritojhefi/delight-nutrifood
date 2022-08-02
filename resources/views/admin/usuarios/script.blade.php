@@ -30,7 +30,7 @@
                         (respuesta) => {
                             if (respuesta.data.estado == "finalizado") {
                                 if (confirm(
-                                    'Se encuentra finalizado, desea cambiar a disponible?')) {
+                                        'Se encuentra finalizado, desea cambiar a disponible?')) {
 
                                     axios.get('{{ $path }}/admin/usuarios/quitarpermiso/' +
                                         respuesta.data.id).
@@ -46,6 +46,29 @@
                                             console.log(error.response.data);
                                         }
                                     })
+                                } else {
+                                    if (confirm(
+                                            'Desea archivar este plan y los dias anteriores?')) {
+                                        if (confirm(
+                                                'Esta seguro? No se puede revertir esta accion')) {
+                                            axios.get(
+                                                '{{ $path }}/admin/usuarios/archivar/'+respuesta.data.id).
+                                            then(
+                                                (respuesta) => {
+                                                    calendar.refetchEvents();
+                                                    $("#modalcalendar").modal('hide');
+                                                }
+                                            ).
+                                            catch(error => {
+                                                if (error.response) {
+                                                    console.log(error.response.data);
+                                                }
+                                            })
+                                            alert(
+                                                'Se archivaron todos los registros encontrados para este usuario')
+                                        }
+                                    }
+
                                 }
                             } else if (respuesta.data.estado == "pendiente") {
                                 formBasic.title.value = respuesta.data.title;
@@ -145,7 +168,27 @@
                     }
                 })
             });
+            document.getElementById("btnArchivar").addEventListener("click", function() {
+                const datos = new FormData(formulario);
+                console.log(datos);
+                console.log(formulario.nombre.value);
+                var alert = confirm("Se archivaran los planes de la fecha seleccionada y los anteriores");
+                if (alert == true) {
+                    axios.post('{{ $path }}/admin/usuarios/archivar', datos).
+                    then(
+                        (respuesta) => {
+                            calendar.refetchEvents();
+                            $("#modalcalendar").modal('hide');
+                        }
+                    ).
+                    catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data);
+                        }
+                    })
+                }
 
+            });
             document.getElementById("btnEliminar").addEventListener("click", function() {
                 const datos = new FormData(formulario);
 

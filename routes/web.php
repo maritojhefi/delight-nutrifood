@@ -141,6 +141,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('detalleplan/{id}/{planid}', [App\Http\Controllers\admin\UsuariosController::class, 'detalleplan'])->name('detalleplan');
         Route::post('/agregarplan', [App\Http\Controllers\admin\UsuariosController::class, 'agregar']);
         Route::post('/feriado', [App\Http\Controllers\admin\UsuariosController::class, 'feriado']);
+        Route::get('/archivar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'archivar']);
         Route::get('/permiso/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'permiso']);
         Route::get('/quitarpermiso/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'quitarpermiso']);
         Route::get('/editar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'editar']);
@@ -197,9 +198,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
 
      });
 
-     Route::get('/actualizar/manual', function(){
-        DB::table('almuerzos')->where('dia','Sabado')->update(['sopa','Sopa de chanca']);
-     });
+     
 });
 
 

@@ -95,6 +95,11 @@ class UsuariosController extends Controller
 
         
     }
+    public function archivar($id)
+    {
+       $registro= DB::table('plane_user')->select('plane_user.*')->where('id', $id)->first();
+       dd($registro);
+    }
     public function agregar(Request $request)
     {
        
