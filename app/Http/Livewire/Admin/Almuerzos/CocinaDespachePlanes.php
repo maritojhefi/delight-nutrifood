@@ -153,8 +153,8 @@ class CocinaDespachePlanes extends Component
             
             'plato' => $coleccion->pluck('PLATO')->countBy(),
             'carbohidrato' => $coleccion->pluck('CARBOHIDRATO')->countBy(),
-            'ensalada'=>$coleccion->pluck('ENSALADA')->countBy(),
-            'jugo'=>$coleccion->pluck('JUGO')->countBy(),
+            // 'ensalada'=>$coleccion->pluck('ENSALADA')->countBy(),
+            // 'jugo'=>$coleccion->pluck('JUGO')->countBy(),
 
             'empaque' => $coleccion->pluck('EMPAQUE')->countBy(),
             'envio' => $coleccion->pluck('ENVIO')->countBy()
