@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\admin;
 
+use App\Helpers\GlobalHelper;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Plane;
@@ -256,26 +257,57 @@ class UsuariosController extends Controller
         }
         return $fechaParaAgregar;
     }
-    public function permiso($id)
+    public function permiso($id,$todos)
     {
         $evento = DB::table('plane_user')->where('id', $id)->first();
-
+        $coincidentes=DB::table('plane_user')->where('plane_id', $evento->plane_id)->where('user_id',$evento->user_id)->where('start',$evento->start)->where('estado',Plane::ESTADOPENDIENTE)->get();
+        if($coincidentes->count()>1 && $todos==0)
+        {
+            return 'varios';
+        }
+        
         $extraerUltimo = DB::table('plane_user')
             ->where('user_id', $evento->user_id)
             ->where('plane_id', $evento->plane_id)
             ->where('title', '!=', 'feriado')
             ->orderBy('start', 'DESC')
             ->first();
-         $fechaParaAgregar=$this->diaSiguienteAlUltimo($extraerUltimo->start); 
-         DB::table('plane_user')->insert([
-
-            'start' => $fechaParaAgregar,
-            'end' => $fechaParaAgregar,
-            'title' => $evento->title,
-            'plane_id' => $evento->plane_id,
-            'user_id' => $evento->user_id
-        ]);  
-        $evento = DB::table('plane_user')->where('id', $id)->update(['estado' => Plane::ESTADOPERMISO, 'color' => Plane::COLORPERMISO,'detalle'=>null]);
+         $fechaParaAgregar=$this->diaSiguienteAlUltimo($extraerUltimo->start);
+         $saberDia=WhatsappAPIHelper::saber_dia($fechaParaAgregar);
+         if($saberDia=="Domingo")
+         {
+            $fechaParaAgregar=Carbon::parse($fechaParaAgregar)->addDay();
+         }
+         //dd($saberDia);
+         if($todos==1)
+         {
+            foreach($coincidentes as $plan)
+            {
+               DB::table('plane_user')->insert([
+   
+                   'start' => $fechaParaAgregar,
+                   'end' => $fechaParaAgregar,
+                   'title' => $plan->title,
+                   'plane_id' => $plan->plane_id,
+                   'user_id' => $plan->user_id
+               ]);  
+               $evento = DB::table('plane_user')->where('id', $plan->id)->update(['estado' => Plane::ESTADOPERMISO, 'color' => Plane::COLORPERMISO,'detalle'=>null]);
+            } 
+         }
+         else if($todos==2 || $todos==0)
+         {
+            DB::table('plane_user')->insert([
+   
+                'start' => $fechaParaAgregar,
+                'end' => $fechaParaAgregar,
+                'title' => $evento->title,
+                'plane_id' => $evento->plane_id,
+                'user_id' => $evento->user_id
+            ]);  
+            $evento = DB::table('plane_user')->where('id', $id)->update(['estado' => Plane::ESTADOPERMISO, 'color' => Plane::COLORPERMISO,'detalle'=>null]);
+         }
+         
+         
         return response()->json($evento);
     }
     public function quitarpermiso($id)

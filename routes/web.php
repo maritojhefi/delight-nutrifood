@@ -88,7 +88,7 @@ Route::prefix('/carrito')->group(function () {
 //perfil
 Route::prefix('/miperfil')->middleware('auth','revisarPerfil')->group(function () {
     Route::get('/mostrar/{idplan}/{iduser}', [App\Http\Controllers\admin\UsuariosController::class, 'mostrar']);
-    Route::get('/permiso/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'permiso']);
+    Route::get('/permiso/{id}/{todos}', [App\Http\Controllers\admin\UsuariosController::class, 'permiso']);
     Route::get('/editar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'editar']);
     Route::get('/saldo/usuario', [App\Http\Controllers\admin\UsuariosController::class, 'saldo'])->name('usuario.saldo');
     Route::get('', [App\Http\Controllers\MiperfilController::class, 'index'])->name('miperfil');
@@ -142,7 +142,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::post('/agregarplan', [App\Http\Controllers\admin\UsuariosController::class, 'agregar']);
         Route::post('/feriado', [App\Http\Controllers\admin\UsuariosController::class, 'feriado']);
         Route::get('/archivar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'archivar']);
-        Route::get('/permiso/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'permiso']);
+        Route::get('/permiso/{id}/{todos}', [App\Http\Controllers\admin\UsuariosController::class, 'permiso']);
         Route::get('/quitarpermiso/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'quitarpermiso']);
         Route::get('/editar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'editar']);
         Route::get('/borrar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'borrar']);

@@ -7,14 +7,13 @@
 @push('scripts')
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
-        
         document.addEventListener('DOMContentLoaded', function() {
 
             let formulario = document.getElementById("form-cal");
             let formBasic = document.getElementById("formBasic");
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                height:'auto',
+                height: 'auto',
                 initialView: 'dayGridMonth',
                 locale: "es",
                 hiddenDays: [0],
@@ -45,7 +44,7 @@
                                 var toastID = document.getElementById('toast-permiso');
                                 toastID = new bootstrap.Toast(toastID);
                                 toastID.show();
-                            }else if (respuesta.data.estado == "archivado") {
+                            } else if (respuesta.data.estado == "archivado") {
                                 var toastID = document.getElementById('toast-archivado');
                                 toastID = new bootstrap.Toast(toastID);
                                 toastID.show();
@@ -86,16 +85,22 @@
             document.getElementById("btnPermiso").addEventListener("click", function() {
 
                 console.log('escuchando');
-                axios.get('{{ $path }}/miperfil/permiso/' + formBasic.id.value).
+                axios.get('{{ $path }}/miperfil/permiso/' + formBasic.id.value + '/0').
                 then(
                     (respuesta) => {
-                        calendar.refetchEvents();
-                        const asd = setTimeout(resetear, 100);
-                        const dsad = setTimeout(resetear, 300);
-                        const asfdfd = setTimeout(resetear, 500);
-                        const asfdffd = setTimeout(resetear, 1000);
-                        $("#basicModal").modal('hide');
-                        location.reload();
+                        if (respuesta.data == "varios") {
+                            $("#basicModal").modal('hide');
+                            $("#modalPermiso").modal('show');
+                        } else {
+                            calendar.refetchEvents();
+                            const asd = setTimeout(resetear, 100);
+                            const dsad = setTimeout(resetear, 300);
+                            const asfdfd = setTimeout(resetear, 500);
+                            const asfdffd = setTimeout(resetear, 1000);
+                            $("#basicModal").modal('hide');
+                           
+                        }
+
 
                     }
                 ).
@@ -110,7 +115,72 @@
                 })
             });
 
+            document.getElementById("btnPermisoUno").addEventListener("click", function() {
 
+                console.log('escuchando');
+                axios.get('{{ $path }}/miperfil/permiso/' + formBasic.id.value + '/2').
+                then(
+                    (respuesta) => {
+                        if (respuesta.data == "varios") {
+                            $("#basicModal").modal('hide');
+                            $("#modalPermiso").modal('show');
+                        } else {
+                            calendar.refetchEvents();
+                            const asd = setTimeout(resetear, 100);
+                            const dsad = setTimeout(resetear, 300);
+                            const asfdfd = setTimeout(resetear, 500);
+                            const asfdffd = setTimeout(resetear, 1000);
+                            $("#basicModal").modal('hide');
+                            $("#modalPermiso").modal('hide');
+
+                        }
+
+
+                    }
+                ).
+                catch(error => {
+                    if (error.response) {
+                        console.log(error.response.data);
+                        const asd = setTimeout(resetear, 100);
+                        const dsad = setTimeout(resetear, 300);
+                        const asfdfd = setTimeout(resetear, 500);
+                        const asfdfdd = setTimeout(resetear, 1000);
+                    }
+                })
+            });
+
+            document.getElementById("btnPermisoTodos").addEventListener("click", function() {
+
+                console.log('escuchando');
+                axios.get('{{ $path }}/miperfil/permiso/' + formBasic.id.value + '/1').
+                then(
+                    (respuesta) => {
+                        if (respuesta.data == "varios") {
+                            $("#basicModal").modal('hide');
+                            $("#modalPermiso").modal('show');
+                        } else {
+                            calendar.refetchEvents();
+                            const asd = setTimeout(resetear, 100);
+                            const dsad = setTimeout(resetear, 300);
+                            const asfdfd = setTimeout(resetear, 500);
+                            const asfdffd = setTimeout(resetear, 1000);
+                            $("#basicModal").modal('hide');
+                            $("#modalPermiso").modal('hide');
+                        }
+
+
+                    }
+                ).
+                catch(error => {
+                    if (error.response) {
+                        console.log(error.response.data);
+                        const asd = setTimeout(resetear, 100);
+                        const dsad = setTimeout(resetear, 300);
+                        const asfdfd = setTimeout(resetear, 500);
+                        const asfdfdd = setTimeout(resetear, 1000);
+                    }
+                })
+            });
         });
     </script>
 @endpush

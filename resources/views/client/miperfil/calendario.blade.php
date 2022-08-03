@@ -313,6 +313,37 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="modalPermiso" data-bs-backdrop="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content" style="border-radius: 15px;box-shadow: 1px 1px 1px 1px teal;">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Se encontro mas de un plan para este dia</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <span>Si selecciona "todos", se otorgara el permiso a los planes de este dia, los mismos pasaran a un dia despues de la ultima fecha que tenga en este plan</span>
+                        <form action="" id="formPermiso">
+                            <input type="hidden" name="id" id="id">
+
+                        </form>
+
+                    </div>
+                    <div class="modal-footer">
+
+                        <button type="button"
+                            class="btn btn-xxs mb-3 rounded-s text-uppercase font-900 shadow-s border-green-dark  bg-green-light"
+                            id="btnPermisoUno">Solo 1 permiso <span class="btn-icon-end"><i class="fa fa-check"></i></span>
+                        </button>
+                        <button type="button"
+                            class="btn btn-xxs mb-3 rounded-s text-uppercase font-900 shadow-s border-mint-dark  bg-mint-light"
+                            id="btnPermisoTodos">Permiso para todos <span class="btn-icon-end"><i class="fa fa-check"></i></span>
+                        </button>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
     @endpush
     @push('scripts')
         <script>

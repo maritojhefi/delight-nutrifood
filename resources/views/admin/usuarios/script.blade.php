@@ -55,9 +55,10 @@
                                             then(
                                                 (respuesta) => {
                                                     calendar.refetchEvents();
-                                                    
+
                                                     alert(
-                                                        'Se archivaron todos los registros encontrados para este usuario')
+                                                        'Se archivaron todos los registros encontrados para este usuario'
+                                                    )
                                                 }
                                             ).
                                             catch(error => {
@@ -215,15 +216,55 @@
                 const datos = new FormData(formulario);
 
 
-                axios.get('{{ $path }}/admin/usuarios/permiso/' + formBasic.id.value).
+                axios.get('{{ $path }}/admin/usuarios/permiso/' + formBasic.id.value + '/0').
                 then(
                     (respuesta) => {
-                        calendar.refetchEvents();
-                        $("#basicModal").modal('hide');
+                        //console.log(respuesta.data)
+                        if (respuesta.data == "varios") {
+                            
+                            if (confirm(
+                                    'Se encontro mas de 1 plan para este dia, desea poner permiso a todos?'
+                                )) {
+                                axios.get('{{ $path }}/admin/usuarios/permiso/' + formBasic.id
+                                    .value + '/1').
+                                then(
+                                    (respuesta) => {
+                                        console.log(respuesta)
+                                        calendar.refetchEvents();
+                                        alert('Se otorgo el permiso a todos los planes coincidentes para este dia!')
 
+                                    }
+                                ).
+                                catch(error => {
+                                    if (error.response) {
+                                        console.log(error.response.data);
+                                    }
+                                })
+                            }
+                            else
+                            {
+                                axios.get('{{ $path }}/admin/usuarios/permiso/' + formBasic.id
+                                    .value + '/2').
+                                then(
+                                    (respuesta) => {
+                                        console.log(respuesta)
+                                        calendar.refetchEvents();
+                                        alert('Se otorgo el permiso solo para el plan solicitado!')
+
+                                    }
+                                ).
+                                catch(error => {
+                                    if (error.response) {
+                                        console.log(error.response.data);
+                                    }
+                                })
+                            }
+                        } else {
+                            calendar.refetchEvents();
+                            $("#basicModal").modal('hide');
+                        }
                     }
-                ).
-                catch(error => {
+                ).catch(error => {
                     if (error.response) {
                         console.log(error.response.data);
                     }
