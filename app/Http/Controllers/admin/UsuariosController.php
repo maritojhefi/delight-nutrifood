@@ -98,7 +98,8 @@ class UsuariosController extends Controller
     public function archivar($id)
     {
        $registro= DB::table('plane_user')->select('plane_user.*')->where('id', $id)->first();
-       dd($registro);
+       DB::table('plane_user')->where('plane_id',$registro->plane_id)->where('user_id',$registro->user_id)->where('estado',Plane::ESTADOFINALIZADO)->whereDate('start','<',Carbon::parse($registro->start)->addDay())->update(['estado'=>Plane::ESTADOARCHIVADO,'color'=>Plane::COLORARCHIVADO]);
+       return 'exito';
     }
     public function agregar(Request $request)
     {

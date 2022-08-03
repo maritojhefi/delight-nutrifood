@@ -45,8 +45,10 @@
                                 var toastID = document.getElementById('toast-permiso');
                                 toastID = new bootstrap.Toast(toastID);
                                 toastID.show();
-
-
+                            }else if (respuesta.data.estado == "archivado") {
+                                var toastID = document.getElementById('toast-archivado');
+                                toastID = new bootstrap.Toast(toastID);
+                                toastID.show();
                             }
 
                         }
@@ -93,6 +95,7 @@
                         const asfdfd = setTimeout(resetear, 500);
                         const asfdffd = setTimeout(resetear, 1000);
                         $("#basicModal").modal('hide');
+                        location.reload();
 
                     }
                 ).

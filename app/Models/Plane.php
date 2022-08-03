@@ -13,12 +13,14 @@ class Plane extends Model
     const COLORPENDIENTE="#20C995";
     const COLORFERIADO="#c01222"; 
     const COLORFINALIZADO="#F7843A";
-    
+    const COLORARCHIVADO="#B0B5B9";
+
     const ESTADOPERMISO="permiso";
     const ESTADOPENDIENTE="pendiente";
     const ESTADOFERIADO="feriado";
     const ESTADOFINALIZADO="finalizado";
-
+    const ESTADOARCHIVADO="archivado";
+    
     const ENVIO1="Para Mesa";
     const ENVIO2="Para llevar(Paso a recoger)";
     const ENVIO3="Delivery";

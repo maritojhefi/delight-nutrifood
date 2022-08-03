@@ -208,7 +208,7 @@
                             <div class="card-top mt-4 ms-3">
                                 <h2 class="color-white">{{ Str::limit($item['plan'], 30) }}</h2>
                                 <p class="color-white font-10 opacity-70 mt-2 mb-n1"><i class="far fa-calendar"></i> Restante:  {{ $plane->pivot->where('start', '>', date('Y-m-d'))->where('estado', 'pendiente')->where('user_id', $usuario->id)->where('plane_id', $plane->id)->count() }}<i
-                                        class="ms-3 fa fa-hashtag"></i> Total: {{$plane->pivot->where('plane_id',$plane->id)->where('user_id', $usuario->id)->where('estado','!=', 'permiso')->count()}}<i class="ms-3 fa fa-user"></i> Permisos:{{ $plane->pivot->where('estado', 'permiso')->where('user_id', $usuario->id)->where('plane_id', $plane->id)->count() }}</p>
+                                        class="ms-3 fa fa-hashtag"></i> Total: {{$plane->pivot->where('plane_id',$plane->id)->where('user_id', $usuario->id)->where('estado','!=', 'permiso')->where('estado','!=', 'archivado')->count()}}<i class="ms-3 fa fa-user"></i> Permisos:{{ $plane->pivot->where('estado', 'permiso')->where('user_id', $usuario->id)->where('plane_id', $plane->id)->count() }}</p>
                                 <p class="color-white font-10 opacity-70"><i class="fa fa-map-marker-alt"></i> Sucursal Central</p>
 
                             </div>

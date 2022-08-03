@@ -45,8 +45,7 @@
                             style="">
                             <div class="p-2">
                                 @if ($lista['detalle'] == null || $lista['detalle'] == '')
-                                    <form action="{{ route('personalizardia') }}" id="{{ $lista['id'] }}"
-                                        method="POST">
+                                    <form action="{{ route('personalizardia') }}" id="{{ $lista['id'] }}" method="POST">
                                         @csrf
                                         <div class="row">
                                             @if ($plan->segundo)
@@ -63,8 +62,7 @@
                                                     </div>
                                                     <div class="fac fac-radio fac-default"><span></span>
                                                         <input id="box2-fac-radio{{ $lista['id'] }}" type="radio"
-                                                            name="plato{{ $lista['id'] }}"
-                                                            value="{{ $lista['dieta'] }}">
+                                                            name="plato{{ $lista['id'] }}" value="{{ $lista['dieta'] }}">
                                                         <label for="box2-fac-radio{{ $lista['id'] }}"><mark
                                                                 class="highlight ps-2 font-12 pe-2 bg-magenta-dark mr-2">Dieta</mark>
                                                             {{ $lista['dieta'] }} </label>
@@ -121,23 +119,23 @@
                                                 <i class="fa fa-map-marker font-16 color-red-dark"></i> <strong>Tipo de
                                                     envio</strong>
                                                 <div class="fac fac-radio fac-default mesa"><span></span>
-                                                    <input id="box7-fac-radio{{ $lista['id'] }}" type="radio" data-id="{{ $lista['id'] }}"
-                                                        class="mesa" name="envio{{ $lista['id'] }}"
-                                                        value="{{ $lista['envio1'] }}">
+                                                    <input id="box7-fac-radio{{ $lista['id'] }}" type="radio"
+                                                        data-id="{{ $lista['id'] }}" class="mesa"
+                                                        name="envio{{ $lista['id'] }}" value="{{ $lista['envio1'] }}">
                                                     <label
                                                         for="box7-fac-radio{{ $lista['id'] }}">{{ $lista['envio1'] }}</label>
                                                 </div>
                                                 <div class="fac fac-radio fac-default"><span></span>
-                                                    <input id="box8-fac-radio{{ $lista['id'] }}" type="radio" data-id="{{ $lista['id'] }}"
-                                                        class="otro" name="envio{{ $lista['id'] }}"
-                                                        value="{{ $lista['envio2'] }}">
+                                                    <input id="box8-fac-radio{{ $lista['id'] }}" type="radio"
+                                                        data-id="{{ $lista['id'] }}" class="otro"
+                                                        name="envio{{ $lista['id'] }}" value="{{ $lista['envio2'] }}">
                                                     <label
                                                         for="box8-fac-radio{{ $lista['id'] }}">{{ $lista['envio2'] }}</label>
                                                 </div>
                                                 <div class="fac fac-radio fac-default"><span></span>
-                                                    <input id="box9-fac-radio{{ $lista['id'] }}" type="radio" data-id="{{ $lista['id'] }}"
-                                                        class="otro" name="envio{{ $lista['id'] }}"
-                                                        value="{{ $lista['envio3'] }}">
+                                                    <input id="box9-fac-radio{{ $lista['id'] }}" type="radio"
+                                                        data-id="{{ $lista['id'] }}" class="otro"
+                                                        name="envio{{ $lista['id'] }}" value="{{ $lista['envio3'] }}">
                                                     <label
                                                         for="box9-fac-radio{{ $lista['id'] }}">{{ $lista['envio3'] }}</label>
                                                 </div>
@@ -190,8 +188,7 @@
                                                 <p class="col-6 mb-3 text-end  font-900 mb-0">
                                                     {{ $lista['ensalada'] }}
                                                 </p>
-                                                <input type="hidden" value="{{ $lista['ensalada'] }}"
-                                                    name="ensalada">
+                                                <input type="hidden" value="{{ $lista['ensalada'] }}" name="ensalada">
                                             @endif
                                             @if ($plan->jugo)
                                                 <h4 class="col-6 font-500 font-13"> <i
@@ -279,7 +276,8 @@
             data-bs-autohide="true"><i class="fa fa-exclamation"></i> Dia finalizado...</div>
         <div id="toast-permiso" class="toast toast-tiny toast-top bg-magenta-dark fade hide" data-bs-delay="2000"
             data-bs-autohide="true"><i class="fa fa-date"></i> Dia de permiso!</div>
-
+        <div id="toast-archivado" class="toast toast-tiny toast-top bg-gray-dark fade hide" data-bs-delay="3000"
+            data-bs-autohide="true"><i class="fa fa-date"></i> Registro archivado!</div>
 
         <div class="card card-style bg-18" data-card-height="150" style="height: 150px;">
             <div class="card-center ms-3">
@@ -325,22 +323,22 @@
                 $('.otro').change(function() {
                     if (this.checked) {
                         $('.empaques').removeClass('d-none');
-                        $('.empaques :input').prop('disabled',false);
+                        $('.empaques :input').prop('disabled', false);
                         $("#pamesa").remove();
                     }
                 });
                 $('.mesa').change(function() {
                     if (this.checked) {
-                        var idData=$(this).attr("data-id")
-                        
+                        var idData = $(this).attr("data-id")
+
                         $('.empaques').addClass('d-none');
-                        $('.empaques :input').prop('disabled',true);
+                        $('.empaques :input').prop('disabled', true);
                         //$('#empaque'+idData).remove();
                         var input = document.createElement("input");
-                        
+
                         input.setAttribute("type", "hidden");
                         input.setAttribute("id", "pamesa");
-                        input.setAttribute("name", "empaque"+idData);
+                        input.setAttribute("name", "empaque" + idData);
                         input.setAttribute("value", "Ninguno");
                         $('.' + $(this).attr('id')).append(input);
                     }
@@ -349,7 +347,7 @@
                 $("form").on("keyup change", function(e) {
                     data = []
                     var idForm = $(this).attr('id')
-                    
+
                     if (document.getElementById('carb' + idForm)) {
                         data.push('carb' + idForm)
                     }
@@ -362,31 +360,26 @@
                     if (document.getElementById('empaque' + idForm) && !document.getElementById('pamesa')) {
                         data.push('empaque' + idForm)
                     }
-                    
-                    var cont=0;
+
+                    var cont = 0;
                     for (var i = 0; i < data.length; i++) {
-                       console.log(data[i])
-                        if ($("input[name='" + data[i] + "']:checked").val())
-                        {
+                        console.log(data[i])
+                        if ($("input[name='" + data[i] + "']:checked").val()) {
                             console.log($("input[name='" + data[i] + "']:checked").val())
                             cont++
                         }
-                        
+
                     }
-                    if(document.getElementById('pamesa') && !document.getElementById('empaque' + idForm))
-                    {
+                    if (document.getElementById('pamesa') && !document.getElementById('empaque' + idForm)) {
                         console.log(document.getElementById('pamesa'))
                         cont++
                     }
-                    if(cont==data.length)
-                    {
+                    if (cont == data.length) {
                         $(this).find('button').prop('disabled', false);
-                    }
-                    else
-                    {
+                    } else {
                         $(this).find('button').prop('disabled', true);
                     }
-                     console.log(cont);
+                    console.log(cont);
                     // if ($("input[name='carb" + idForm + "']:checked").val() && $("input[name='plato" + idForm +
                     //         "']:checked").val() && $("input[name='envio" + idForm + "']:checked").val()) {
                     //     $(this).find('button').prop('disabled', false);

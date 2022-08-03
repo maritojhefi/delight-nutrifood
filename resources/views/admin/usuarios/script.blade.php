@@ -37,8 +37,6 @@
                                     then(
                                         (respuesta) => {
                                             calendar.refetchEvents();
-
-
                                         }
                                     ).
                                     catch(error => {
@@ -52,11 +50,14 @@
                                         if (confirm(
                                                 'Esta seguro? No se puede revertir esta accion')) {
                                             axios.get(
-                                                '{{ $path }}/admin/usuarios/archivar/'+respuesta.data.id).
+                                                '{{ $path }}/admin/usuarios/archivar/' +
+                                                respuesta.data.id).
                                             then(
                                                 (respuesta) => {
                                                     calendar.refetchEvents();
-                                                    $("#modalcalendar").modal('hide');
+                                                    
+                                                    alert(
+                                                        'Se archivaron todos los registros encontrados para este usuario')
                                                 }
                                             ).
                                             catch(error => {
@@ -64,8 +65,7 @@
                                                     console.log(error.response.data);
                                                 }
                                             })
-                                            alert(
-                                                'Se archivaron todos los registros encontrados para este usuario')
+
                                         }
                                     }
 
@@ -168,27 +168,27 @@
                     }
                 })
             });
-            document.getElementById("btnArchivar").addEventListener("click", function() {
-                const datos = new FormData(formulario);
-                console.log(datos);
-                console.log(formulario.nombre.value);
-                var alert = confirm("Se archivaran los planes de la fecha seleccionada y los anteriores");
-                if (alert == true) {
-                    axios.post('{{ $path }}/admin/usuarios/archivar', datos).
-                    then(
-                        (respuesta) => {
-                            calendar.refetchEvents();
-                            $("#modalcalendar").modal('hide');
-                        }
-                    ).
-                    catch(error => {
-                        if (error.response) {
-                            console.log(error.response.data);
-                        }
-                    })
-                }
+            // document.getElementById("btnArchivar").addEventListener("click", function() {
+            //     const datos = new FormData(formulario);
+            //     console.log(datos);
+            //     console.log(formulario.nombre.value);
+            //     var alert = confirm("Se archivaran los planes de la fecha seleccionada y los anteriores");
+            //     if (alert == true) {
+            //         axios.post('{{ $path }}/admin/usuarios/archivar', datos).
+            //         then(
+            //             (respuesta) => {
+            //                 calendar.refetchEvents();
+            //                 $("#modalcalendar").modal('hide');
+            //             }
+            //         ).
+            //         catch(error => {
+            //             if (error.response) {
+            //                 console.log(error.response.data);
+            //             }
+            //         })
+            //     }
 
-            });
+            // });
             document.getElementById("btnEliminar").addEventListener("click", function() {
                 const datos = new FormData(formulario);
 
@@ -230,7 +230,7 @@
                 })
             });
 
-            document.getElementById("btnFeriado").addEventListener("click", function() {
+            document.getElementById("btnFeriadoNuevo").addEventListener("click", function() {
                 const datos = new FormData(formulario);
                 var alert = confirm("Estas seguro? Se moveran los planes coincidentes con esta fecha");
                 $("#modalcalendar").modal('hide');
