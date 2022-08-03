@@ -20,10 +20,13 @@ class Plane extends Model
     const ESTADOFERIADO="feriado";
     const ESTADOFINALIZADO="finalizado";
     const ESTADOARCHIVADO="archivado";
-    
+
     const ENVIO1="Para Mesa";
     const ENVIO2="Para llevar(Paso a recoger)";
     const ENVIO3="Delivery";
+
+    const COCINAESPERA="espera";
+    const COCINADESPACHADO="despachado";
     use HasFactory;
     protected $fillable = [
         'nombre','producto_id','detalle','editable','sopa','segundo','ensalada','carbohidrato','jugo'
