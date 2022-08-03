@@ -16,6 +16,15 @@
         rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('fonts/css/fontawesome-all.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_mint.css') }}">
+    <script>
+        var blurred = false;
+        window.onblur = function() {
+            blurred = true;
+        };
+        window.onfocus = function() {
+            blurred && (location.reload());
+        };
+    </script>
     @stack('header')
 
     @laravelPWA
