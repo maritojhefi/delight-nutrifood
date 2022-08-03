@@ -61,15 +61,15 @@ class VentasIndex extends Component
             'es_deuda' => false,
             'monto' => $this->montoSaldo,
             'user_id' => $this->cuenta->cliente->id,
-            'atendido_por'=>auth()->user()->id
+            'atendido_por' => auth()->user()->id
         ]);
-        DB::table('users')->where('id',$this->cuenta->cliente->id)->decrement('saldo',$this->montoSaldo);
+        DB::table('users')->where('id', $this->cuenta->cliente->id)->decrement('saldo', $this->montoSaldo);
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
             'message' => "Se edito el saldo a favor de este cliente!"
         ]);
         $this->reset('montoSaldo', 'detalleSaldo');
-        $this->cuenta=Venta::find($this->cuenta->id);
+        $this->cuenta = Venta::find($this->cuenta->id);
     }
     public function verSaldo()
     {
@@ -609,7 +609,7 @@ class VentasIndex extends Component
                         'caja_id' => $cajaactiva->id,
                         'monto' => $this->valorSaldo,
                         'es_deuda' => true,
-                        'atendido_por'=>auth()->user()->id
+                        'atendido_por' => auth()->user()->id
                     ]);
                     DB::table('users')->where('id', $this->cuenta->cliente_id)->increment('saldo', $this->valorSaldo);
                 }
@@ -687,16 +687,28 @@ class VentasIndex extends Component
             }
             $printer->text("--------\n");
             $printer->setTextSize(1, 1);
+
             $printer->text("Subtotal: " . $this->cuenta->total . "\n");
             $printer->text("Descuento: " . $this->cuenta->descuento . "\n");
-            $printer->feed(1);
-            $printer->setTextSize(1, 2);
-            $printer->text("TOTAL: Bs " . $this->cuenta->total - $this->cuenta->descuento . "\n");
-            $printer->feed(1);
-            $printer->setTextSize(1, 1);
-            $printer->text("Gracias por tu compra, vuelve pronto!\n");
-            $printer->feed(1);
+            if ($this->valorSaldo != null && $this->valorSaldo != 0) {
+                $printer->text("Saldo: " . $this->valorSaldo . "\n");
+                $printer->feed(1);
+                $printer->setTextSize(1, 2);
+                $printer->text("TOTAL: Bs " . $this->cuenta->total - $this->cuenta->descuento - $this->valorSaldo. "\n");
+                $printer->feed(1);
+            } else {
+                $printer->feed(1);
+                $printer->setTextSize(1, 2);
+                $printer->text("TOTAL: Bs " . $this->cuenta->total - $this->cuenta->descuento . "\n");
+                $printer->feed(1);
+            }
+
+
             $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->setTextSize(1, 1);
+            $printer->text("Gracias por tu compra\n");
+            $printer->text("Vuelve pronto!\n");
+            $printer->feed(1);
             $printer->text(date("Y-m-d H:i:s") . "\n");
             $printer->feed(3);
             $respuesta = CustomPrint::imprimir($printer, $this->cuenta->sucursale->id_impresora);
