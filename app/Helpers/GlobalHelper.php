@@ -112,6 +112,7 @@ class GlobalHelper {
                 'ENVIO' => $tipoEnvio,
                 'EMPAQUE' => $det['EMPAQUE'],
                 'ESTADO' => $lista->estado,
+                'COCINA' => $lista->cocina,
                 'PLAN' => $lista->nombre,
                 'PLAN_ID'=>$lista->plane_id,
                 'USER_ID'=>$lista->user_id
@@ -128,6 +129,7 @@ class GlobalHelper {
                 'ENVIO' => 'd) N/A',
                 'EMPAQUE' => '',
                 'ESTADO' => $lista->estado,
+                'COCINA' => $lista->cocina,
                 'PLAN' => $lista->nombre,
                 'PLAN_ID'=>$lista->plane_id,
                 'USER_ID'=>$lista->user_id

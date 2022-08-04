@@ -6,7 +6,10 @@ use Carbon\Carbon;
 use App\Models\User;
 use Livewire\Component;
 use App\Helpers\GlobalHelper;
+use App\Exports\UsersPlanesExport;
+use App\Models\Plane;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CocinaDespachePlanes extends Component
 {
@@ -49,83 +52,14 @@ class CocinaDespachePlanes extends Component
     {
         $this->cambioFecha = true;
     }
-    public function cambiarEstadoPlato($variable)
+   
+    public function confirmarDespacho($id)
     {
-        switch ($variable) {
-            case 'ejecutivo_estado':
-                $this->menuHoy->ejecutivo_estado = $this->menuHoy->ejecutivo_estado == true ? false : true;
-                $this->menuHoy->save();
-                break;
-            case 'dieta_estado':
-                $this->menuHoy->dieta_estado = $this->menuHoy->dieta_estado == true ? false : true;
-                $this->menuHoy->save();
-                break;
-            case 'vegetariano_estado':
-                $this->menuHoy->vegetariano_estado = $this->menuHoy->vegetariano_estado == true ? false : true;
-                $this->menuHoy->save();
-                break;
-            case 'carbohidrato_1_estado':
-                $this->menuHoy->carbohidrato_1_estado = $this->menuHoy->carbohidrato_1_estado == true ? false : true;
-                $this->menuHoy->save();
-                break;
-            case 'carbohidrato_2_estado':
-                $this->menuHoy->carbohidrato_2_estado = $this->menuHoy->carbohidrato_2_estado == true ? false : true;
-                $this->menuHoy->save();
-                break;
-            case 'carbohidrato_3_estado':
-                $this->menuHoy->carbohidrato_3_estado = $this->menuHoy->carbohidrato_3_estado == true ? false : true;
-                $this->menuHoy->save();
-                break;
-
-            default:
-                # code...
-                break;
-        }
+        //dd($id);
+        DB::table('plane_user')->where('id',$id)->update(['cocina'=>Plane::COCINADESPACHADO]);
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
-            'message' => "Se actualizo correctamente!"
-        ]);
-    }
-    public function finalizarTodos()
-    {
-        DB::table('plane_user')->whereDate('start', $this->fechaSeleccionada)->where('estado', Plane::ESTADOPENDIENTE)->update(['estado' => Plane::ESTADOFINALIZADO, 'color' => Plane::COLORFINALIZADO]);
-        $this->dispatchBrowserEvent('alert', [
-            'type' => 'success',
-            'message' => "Se finalizaron todos los registros para el dia seleccionado!"
-        ]);
-    }
-    public function cambiarDisponibilidad()
-    {
-        $fecha = date('Y-m-d');
-        $resultado = $this->saber_dia($fecha);
-        $this->menuHoy = Almuerzo::where('dia', $resultado)->first();
-    }
-    public function cambiarEstado($id)
-    {
-        DB::table('plane_user')->where('id', $id)->update(['estado' => Plane::ESTADOFINALIZADO, 'color' => Plane::COLORFINALIZADO]);
-        $this->dispatchBrowserEvent('alert', [
-            'type' => 'success',
-            'message' => "Se despacho este pedido!"
-        ]);
-    }
-    public function exportarexcel()
-    {
-        $data = $this->reporte;
-        // Excel::create('metricas-visitas-y-consultas-propiedades-experto-', function ($excel) use ($data) {
-        //     $excel->sheet('Hoja1', function ($sheet) use ($data) {
-        //         $sheet->fromArray($data, null, 'A1', true);
-        //     });
-        // }, 'UTF-8')->export('xlsx');
-        return Excel::download(new UsersPlanesExport($this->fechaSeleccionada), 'reporte-diario-' . $this->fechaSeleccionada . '.xlsx');
-    }
-
-
-    public function cambiarAPendiente($id)
-    {
-        DB::table('plane_user')->where('id', $id)->update(['estado' => Plane::ESTADOPENDIENTE, 'color' => Plane::COLORPENDIENTE]);
-        $this->dispatchBrowserEvent('alert', [
-            'type' => 'warning',
-            'message' => "Este pedido vuelve a estar pendiente"
+            'message' => "Se despacho este plan!"
         ]);
     }
     public function render()
@@ -145,19 +79,32 @@ class CocinaDespachePlanes extends Component
             ->where('plane_user.title','!=','feriado')
             ->get();            //dd($pens);
         $coleccion=GlobalHelper::armarColeccionReporteDiarioVista($pens,$this->fechaSeleccionada);
+        $coleccionEspera=$coleccion->where('COCINA','espera');
+        $coleccionDespachado=$coleccion->where('COCINA','despachado');
         $this->reporte = $coleccion;
-        $total = collect();
-        $total->push([
+        $totalEspera = collect();
+        $totalEspera->push([
 
-            'sopa' => $coleccion->pluck('SOPA')->countBy(),
-            
-            'plato' => $coleccion->pluck('PLATO')->countBy(),
-            'carbohidrato' => $coleccion->pluck('CARBOHIDRATO')->countBy(),
+            'sopa' => $coleccionEspera->pluck('SOPA')->countBy(),
+            'plato' => $coleccionEspera->pluck('PLATO')->countBy(),
+            'carbohidrato' => $coleccionEspera->pluck('CARBOHIDRATO')->countBy(),
             // 'ensalada'=>$coleccion->pluck('ENSALADA')->countBy(),
             // 'jugo'=>$coleccion->pluck('JUGO')->countBy(),
 
-            'empaque' => $coleccion->pluck('EMPAQUE')->countBy(),
-            'envio' => $coleccion->pluck('ENVIO')->countBy()
+            'empaque' => $coleccionEspera->pluck('EMPAQUE')->countBy(),
+            'envio' => $coleccionEspera->pluck('ENVIO')->countBy()
+        ]);
+        $totalDespachado = collect();
+        $totalDespachado->push([
+
+            'sopa' => $coleccionDespachado->pluck('SOPA')->countBy(),
+            'plato' => $coleccionDespachado->pluck('PLATO')->countBy(),
+            'carbohidrato' => $coleccionDespachado->pluck('CARBOHIDRATO')->countBy(),
+            // 'ensalada'=>$coleccion->pluck('ENSALADA')->countBy(),
+            // 'jugo'=>$coleccion->pluck('JUGO')->countBy(),
+
+            'empaque' => $coleccionDespachado->pluck('EMPAQUE')->countBy(),
+            'envio' => $coleccionDespachado->pluck('ENVIO')->countBy()
         ]);
         //dd($total);
         if ($this->search != null || $this->search != '') {
@@ -199,7 +146,7 @@ class CocinaDespachePlanes extends Component
         }
         //dd($coleccion);
         
-        return view('livewire.admin.almuerzos.cocina-despache-planes',compact('usuarios', 'coleccion', 'total'))
+        return view('livewire.admin.almuerzos.cocina-despache-planes',compact('usuarios', 'coleccion', 'totalEspera','totalDespachado'))
             ->extends('admin.master')
             ->section('content');
     }
