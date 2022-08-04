@@ -50,7 +50,7 @@
 
                                     </td>
 
-                                    <td>{{ $item->cantidad }}</td>
+                                    <td><a href="#" data-bs-toggle="modal" data-bs-target="#modalCantidad{{$item->folioStock}}">{{ $item->cantidad }}</a></td>
                                     <td><span class="w-space-no">
                                             @if (Carbon\Carbon::now()->startOfDay()->gte($item->fecha_venc) == true)
                                                 <span class="badge badge-danger">expirado (Hace
@@ -66,14 +66,64 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <span
-                                            class="badge badge-warning">{{ date_format(date_create($item->fecha_venc), 'd-M-y') }}</span>
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalFecha{{$item->folioStock}}"> <span
+                                            class="badge badge-warning">{{ date_format(date_create($item->fecha_venc), 'd-M-y') }}</span></a>
                                     </td>
+                                    <td>
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalEliminar{{$item->folioStock}}"> <i class="fa fa-trash"></i></a>
+                                    </td>
+                                    <div  wire:ignore.self  class="modal fade" id="modalCantidad{{$item->folioStock}}" >
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Editar la cantidad</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body"><input type="number" class="form-control" wire:model.lazy="cantidad"></div>
+                                                <div class="modal-footer">
+                                                    
+                                                    <button type="button" class="btn btn-success" wire:click="actualizarCantidad({{$item->folioStock}})" data-bs-dismiss="modal">Guardar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
+                                    <div wire:ignore.self class="modal fade" id="modalFecha{{$item->folioStock}}" >
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Editar la fecha de vencimiento</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body"><input type="date" class="form-control" wire:model.lazy="fecha"></div>
+                                                <div class="modal-footer">
+                                                    
+                                                    <button type="button" class="btn btn-success" wire:click="actualizarFecha({{$item->folioStock}})" data-bs-dismiss="modal">Guardar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-
-
+                                    <div wire:ignore.self class="modal fade" id="modalEliminar{{$item->folioStock}}" >
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Esta seguro de eliminar este stock?</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                                    </button>
+                                                </div>
+                                                
+                                                <div class="modal-footer">
+                                                    
+                                                    <button type="button" class="btn btn-danger" wire:click="eliminarStock({{$item->folioStock}})" data-bs-dismiss="modal">Eliminar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </tr>
+                                
                             @endforeach
 
                         </tbody>

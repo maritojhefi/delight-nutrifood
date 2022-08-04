@@ -11,9 +11,10 @@
                             'Nombre'=>['name','text'],
                             'Correo'=>['email','email'],
                             'Telefono'=>['telf','number'],
+                            'Codigo Pais'=>['codigo_pais','text'],
                             'Nacimiento'=>['cumpleano','date','(opcional)'],
                             'Direccion'=>['direccion','text','(opcional)'],
-                            'Contraseña'=>['password','password'],
+                            'Contraseña'=>['password','password']
                            
                               ])">
                             <x-slot name="otrosinputs">
@@ -149,6 +150,7 @@
                         'Nombre'=>['nameE','text'],
                         'Correo'=>['emailE','email'],
                         'Telefono'=>['telfE','number'],
+                        'Codigo Pais'=>['codigo_paisE','text'],
                         'Nacimiento'=>['cumpleanoE','date'],
                         'Direccion'=>['direccionE','text'],
                         'Contraseña'=>['passwordE','password']

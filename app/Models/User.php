@@ -38,7 +38,8 @@ class User extends Authenticatable
         'telf',
         'latitud',
         'longitud',
-        'foto'
+        'foto',
+        'codigo_pais'
     ];
 
     /**

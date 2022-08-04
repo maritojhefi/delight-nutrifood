@@ -12,8 +12,8 @@ class UserIndex extends Component
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
     public $searchUser, $userEdit;
-    public $name, $email, $password, $search, $password_confirmation, $rol, $cumpleano, $direccion,$telf;
-    public $nameE, $emailE, $passwordE, $passwordE_confirmation, $cumpleanoE, $direccionE ,$rolE, $telfE;
+    public $name, $email, $password, $search, $password_confirmation, $rol=4, $cumpleano, $direccion,$telf,$codigo_pais="+591";
+    public $nameE, $emailE, $passwordE, $passwordE_confirmation, $cumpleanoE, $direccionE ,$rolE, $telfE,$codigo_paisE;
     
     public function updatingSearchUser()
     {
@@ -24,8 +24,8 @@ class UserIndex extends Component
         'email' => 'required|email|unique:users,email',
         'password' => 'required|min:8|confirmed',
         'rol'=>'required|integer',
-        'telf'=>'required|size:8|unique:users,telf'
-       
+        'telf'=>'required|min:8|unique:users,telf',
+        'codigo_pais'=>'required'
     ];
     public function updated($propertyName)
     {
@@ -42,6 +42,7 @@ class UserIndex extends Component
         $this->rolE=$user->role_id;
         $this->cumpleanoE=$user->nacimiento;
         $this->direccionE=$user->direccion;
+        $this->codigo_paisE=$user->codigo_pais;
         $this->reset('passwordE_confirmation');
     }
 
@@ -62,13 +63,15 @@ class UserIndex extends Component
     {
         $this->validate([
             'nameE' => 'required|min:5|unique:users,name,'.$this->userEdit->id,
-            'telfE' => 'required|size:8|unique:users,telf,'.$this->userEdit->id,
+            'telfE' => 'required|min:8|unique:users,telf,'.$this->userEdit->id,
             'emailE' => 'required|email|unique:users,email,'.$this->userEdit->id,
+            'codigo_paisE' => 'required',
             
         ]);
         $this->userEdit->name=$this->nameE;
         $this->userEdit->email=$this->emailE;
         $this->userEdit->telf=$this->telfE;
+        $this->userEdit->codigo_pais=$this->codigo_paisE;
         if($this->passwordE!=null || $this->passwordE!='')
         {
             $this->validate([
@@ -99,7 +102,8 @@ class UserIndex extends Component
             'role_id'=> $this->rol,
             'nacimiento'=>$this->cumpleano,
             'direccion'=>$this->direccion,
-            'telf'=>$this->telf
+            'telf'=>$this->telf,
+            'codigo_pais'=>$this->codigo_pais
             
         ]);
          $this->dispatchBrowserEvent('alert',[
