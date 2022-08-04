@@ -3,13 +3,16 @@
         <ul class="metismenu" id="menu">
             @if (auth()->user()->role->nombre == 'cocina')
                 <x-sidebar-elements titulo="Cocina" linkglobal="cocina" :lista="[
+                     'Despachar pedidos' => 'reporte.cocina',
                     'Agregar stock' => 'sucursal.stock',
-                    'Personalizar dias' => 'almuerzos.listar',
+                    
                     'Reporte Diario' => 'almuerzos.reporte',
-                    'Reporte Semanal' => 'reporte.semana',
+                    'Reporte Semanal' => 'reporte.semana'
+                   
                 ]">
                     <i class="flaticon-025-dashboard"></i>
                 </x-sidebar-elements>
+
             @endif
 
             @if (auth()->user()->role->nombre == 'admin')

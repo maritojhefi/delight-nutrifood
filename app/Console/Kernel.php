@@ -34,6 +34,9 @@ class Kernel extends ConsoleKernel
         ->hourly()->appendOutputTo($filePath);
         $schedule->command('finalizarPlanTodos:diario')->timezone('America/La_Paz')
         ->dailyAt('10:00')->appendOutputTo($filePath);
+        $schedule->command('whatsapp:enviarMenu')
+        ->everyMinute()->appendOutputTo($filePath);
+        
         
         // $schedule->command('inspire')->hourly();
         /*$schedule->call(function () {

@@ -53,6 +53,7 @@ class EnviarPlanDiaAlmuerzoCommand extends Command
             ->leftjoin('planes', 'planes.id', 'plane_user.plane_id')
             ->where('estado', 'pendiente')
             ->where('plane_user.detalle',null)
+            ->where('users.name','Mario Cotave')//para pruebas
             ->whereDate('start', $fechaManana)->get();
 
         //dd($clientesConPlan->groupBy('user_id'));

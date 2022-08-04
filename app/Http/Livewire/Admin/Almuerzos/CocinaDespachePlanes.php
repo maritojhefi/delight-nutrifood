@@ -32,14 +32,10 @@ class CocinaDespachePlanes extends Component
         } 
         else if ($this->estadoBuscador == 'CARBO')
         {
-            $this->estadoBuscador = "ESTADO";
-            $this->estadoColor="primary";
-        } 
-        else if ($this->estadoBuscador == 'ESTADO')
-        {
             $this->estadoBuscador = "NOMBRE";
             $this->estadoColor="success";
-        }
+        } 
+       
         //dd($this->estadoBuscador);
     }
     public function saber_dia($nombredia)

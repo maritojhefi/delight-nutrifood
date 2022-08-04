@@ -17,12 +17,6 @@
                     <span class="sr-only">Loading...</span>
                 </div>
             </div>
-
-
-
-
-
-
             {{-- <a href="#" wire:click="cambiarDisponibilidad"
                 data-bs-toggle="modal" data-bs-target="#modalDisponibilidad"><span
                     class="badge badge-pill badge-primary">Cambiar Disponibilidad</span></a> --}}
