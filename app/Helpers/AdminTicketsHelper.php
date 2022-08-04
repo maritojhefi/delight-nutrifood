@@ -204,7 +204,7 @@ class AdminTicketsHelper
                         $carbo = $menuDiaActual->carbohidrato_3;
                     }
 
-                    $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id', $usuario->idUser)->where('estado', 'pendiente')->first();
+                    $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id', $usuario->idUser)->where('estado', Plane::ESTADODESARROLLO)->first();
                     $array = json_decode($datosPlan->detalle);
                     $array->CARBOHIDRATO = $carbo;
                     DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => json_encode($array)]);
@@ -221,7 +221,7 @@ class AdminTicketsHelper
                     if ($numero == "3") {
                         $despacho = Plane::ENVIO3;
                     }
-                    $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id', $usuario->idUser)->where('estado', 'pendiente')->first();
+                    $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id', $usuario->idUser)->where('estado', Plane::ESTADODESARROLLO)->first();
                     $array = json_decode($datosPlan->detalle);
                     $array->ENVIO = $despacho;
                     //dd($array->ENVIO);
@@ -231,12 +231,12 @@ class AdminTicketsHelper
                         DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => json_encode($array)]);
                     } else {
                         DB::table('whatsapp_plan_almuerzos')->where('id', $usuario->idwhatsapp)->update(['paso_metodo_empaque' => true]);
-                        DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => json_encode($array), 'estado' => Plane::ESTADOFINALIZADO,'color'=>Plane::COLORFINALIZADO]);
+                        DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => json_encode($array), 'estado' => Plane::ESTADOPENDIENTE,'color'=>Plane::COLORPENDIENTE]);
                         AdminTicketsHelper::enviarMensajeConMenu($usuario, '4', $menuDiaActual);
                     }
                     break;
                 case '4':
-                    $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id', $usuario->idUser)->where('estado', 'pendiente')->first();
+                    $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id', $usuario->idUser)->where('estado', Plane::ESTADODESARROLLO)->first();
                     
                     $array = json_decode($datosPlan->detalle);
 
