@@ -187,9 +187,9 @@ class AdminTicketsHelper
                         'ENVIO' => '',
                         'EMPAQUE' => '',
                     );
-                    $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id', $usuario->idUser)->where('estado', 'pendiente')->first();
+                    $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id', $usuario->idUser)->where('estado', Plane::ESTADOPENDIENTE)->first();
 
-                    DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => $array,'estado',Plane::ESTADODESARROLLO,'color'=>Plane::COLORDESARROLLO]);
+                    DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => $array,'estado'=>Plane::ESTADODESARROLLO,'color'=>Plane::COLORDESARROLLO]);
                     DB::table('whatsapp_plan_almuerzos')->where('id', $usuario->idwhatsapp)->update(['paso_segundo' => true]);
                     AdminTicketsHelper::enviarMensajeConMenu($usuario, $paso, $menuDiaActual);
                     break;
