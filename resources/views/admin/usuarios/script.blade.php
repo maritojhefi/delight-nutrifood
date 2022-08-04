@@ -91,7 +91,25 @@
 
                                 formBasic.id.value = respuesta.data.id;
                                 $("#basicModal").modal('show');
-                            } else if (respuesta.data.estado == "permiso") {
+                            }else if (respuesta.data.estado == "desarrollo") {
+                                
+                                if (confirm(
+                                        'Se encuentra en desarrollo con whatsapp, desea eliminar este registro?')) {
+
+                                    axios.get('{{ $path }}/admin/usuarios/borrar/' + respuesta.data.id).
+                                    then(
+                                        (respuesta) => {
+                                            calendar.refetchEvents();
+                                        }
+                                    ).
+                                    catch(error => {
+                                        if (error.response) {
+                                            console.log(error.response.data);
+                                        }
+                                    })
+                                }
+                            }
+                             else if (respuesta.data.estado == "permiso") {
 
                                 if (confirm('Desea quitar el permiso?')) {
 
