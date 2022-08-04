@@ -51,6 +51,11 @@ Route::post('/pruebas/webhook', function (Request $request) {
     ]);
 });
 
+Route::get('/pruebas/mensaje', function () {
+$respuesta=    WhatsappAPIHelper::enviarTemplate('delight_cantidad_planes_dia', ['Jueves',1], '+59175140175', 'es');
+dd($respuesta);
+    
+});
 
 
 Route::post('/circuito/delight/planes', function (Request $request) {

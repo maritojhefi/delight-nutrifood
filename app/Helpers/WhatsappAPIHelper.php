@@ -71,7 +71,7 @@ class WhatsappAPIHelper
                 'Content-Type' => 'application/json'
             ],
             'body' => '{
-                "to": "' . $destinatario . '",
+                "to": "+591' . $destinatario . '",
                 "type": "hsm",
                 
                 "channelId": "' . env('MESSAGEBIRD_CHANNEL') . '",
