@@ -27,7 +27,7 @@
                     <thead style="padding:5px">
                         <tr>
                             <th>#</th>
-                            <th>Nombre</th>
+                            <th class="width:50%">Nombre</th>
                             <th>Sopa</th>
 
                             <th>Plato</th>
