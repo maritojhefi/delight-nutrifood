@@ -5,6 +5,13 @@
             <span>Fecha {{ date_format(date_create($fechaSeleccionada), 'd-M') }} </span>
 
             <h4>Planes por despachar</h4>
+            <div class="col-sm-6 col-md-3 col-lg-5">
+                <div class="input-group input-{{ $estadoColor }}">
+                    <a href="#" wire:click="cambiarEstadoBuscador" class="input-group-text">{{ $estadoBuscador }}</a>
+                    <input type="text" class="form-control" wire:model.debounce.500ms="search">
+                </div>
+            </div>
+
             <div class="d-flex justify-content-center">
                 <div wire:loading class="spinner-border" role="status">
                     <span class="sr-only">Loading...</span>
