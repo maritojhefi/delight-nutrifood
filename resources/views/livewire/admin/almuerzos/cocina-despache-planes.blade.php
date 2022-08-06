@@ -27,14 +27,14 @@
                     <thead style="padding:5px">
                         <tr>
                             <th>#</th>
-                            <th style="width:50%">Nombre</th>
-                            <th>Sopa</th>
+                            <th style="width:30%">Nombre</th>
+                            <th style="width:5%">Sopa</th>
 
-                            <th>Plato</th>
-                            <th>Carbohidrato</th>
+                            <th style="width:15%">Plato</th>
+                            <th style="width:20%">Carbohidrato</th>
 
-                            <th>Empaque</th>
-                            <th>Envio</th>
+                            <th style="width:15%">Empaque</th>
+                            <th style="width:15%">Envio</th>
 
 
                         </tr>
@@ -46,18 +46,18 @@
 
                                 <td style="padding:5px">{{ $loop->iteration }}</td>
 
-                                <td style="padding:5px"> <a href="#" data-toggle="modal"
-                                        data-target="#modalCocina{{ $lista['ID'] }}">{{ Str::limit($lista['NOMBRE'], 20) }}
-                                    </a>
+                                <td style="padding:5px"><small><a href="#" data-toggle="modal"
+                                            data-target="#modalCocina{{ $lista['ID'] }}">{{ Str::limit($lista['NOMBRE'], 25) }}
+                                        </a></small>
                                 </td>
 
-                                <td style="padding:5px">{{ $lista['SOPA'] != '' ? 'SI' : '' }}</td>
+                                <td style="padding:5px"><small>{{ $lista['SOPA'] != '' ? 'SI' : '' }}</small></td>
 
-                                <td style="padding:5px">{{ $lista['PLATO'] }}</td>
-                                <td style="padding:5px">{{ Str::limit($lista['CARBOHIDRATO'], 20) }}</td>
+                                <td style="padding:5px"><small>{{ $lista['PLATO'] }}</small></td>
+                                <td style="padding:5px"><small>{{ Str::limit($lista['CARBOHIDRATO'], 20) }}</small></td>
 
-                                <td style="padding:5px">{{ $lista['EMPAQUE'] }}</td>
-                                <td style="padding:5px">{{ $lista['ENVIO'] }}</td>
+                                <td style="padding:5px"><small>{{ Str::limit($lista['EMPAQUE'], 15) }}</small></td>
+                                <td style="padding:5px"><small>{{ Str::limit($lista['ENVIO'], 15) }}</small></td>
 
 
 
@@ -89,13 +89,16 @@
                         <tr>
                             <td></td>
                             <td></td>
-
+                            @php
+                                $colores = collect(['warning', 'success', 'danger', 'primary', 'secondary','dark','info','dark']);
+                            @endphp
                             @foreach ($totalEspera[0] as $producto => $array)
                                 <th><small>
+
                                         @foreach ($array as $nombre => $cantidad)
-                                            @if ($nombre != '')
-                                                <span
-                                                    class="badge badge-pill badge-primary light">{{ Str::limit($nombre, '15') }}:{{ $cantidad }}</span><br>
+                                            @if ($nombre != '' && $nombre != 'sin carbohidrato' && $nombre != 'Ninguno')
+                                                <strong
+                                                    class="badge badge-lg badge-{{ $colores->random() }} ">{{ Str::limit($nombre, '15') }}:{{ $cantidad }}</strong><br>
                                             @endif
                                         @endforeach
                                 </th>
@@ -180,9 +183,9 @@
                             @foreach ($totalDespachado[0] as $producto => $array)
                                 <th><small>
                                         @foreach ($array as $nombre => $cantidad)
-                                            @if ($nombre != '')
+                                        @if ($nombre != '' && $nombre != 'sin carbohidrato' && $nombre != 'Ninguno')
                                                 <span
-                                                    class="badge badge-pill badge-primary light">{{ Str::limit($nombre, '15') }}:{{ $cantidad }}</span><br>
+                                                    class="badge badge-pill badge-lg badge-{{$colores->random()}}">{{ Str::limit($nombre, '15') }}:{{ $cantidad }}</span><br>
                                             @endif
                                         @endforeach
                                 </th>

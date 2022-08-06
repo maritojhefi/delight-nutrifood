@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Plane;
 use App\Models\Almuerzo;
 use App\Helpers\CreateList;
+use App\Models\SwitchPlane;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
@@ -43,6 +44,7 @@ class MiperfilController extends Controller
        $planes=$usuario->planesPendientes->where('id',$plan->id)->sortBy(function($col) {return $col;});
        //dd($planes);
        $menusemanal="";
+       $estadoMenu=SwitchPlane::find(1);
        foreach($planes as $dias){
            
             if(date('y-m-d', strtotime($dias->pivot->start))<=$fechalimite && date('y-m-d', strtotime($dias->pivot->start))>=$fechaactual)
@@ -75,7 +77,7 @@ class MiperfilController extends Controller
            
        }
        
-        return view('client.miperfil.calendario',compact('plan','usuario','coleccion','menusemanal'));
+        return view('client.miperfil.calendario',compact('plan','usuario','coleccion','menusemanal','estadoMenu'));
     }
     public function saber_dia($nombredia) {
         
@@ -85,7 +87,11 @@ class MiperfilController extends Controller
     }
     public function personalizardia(Request $request){
         
-       
+        $switcher=SwitchPlane::find(1);
+        if($switcher->activo==false)
+        {
+            return back()->with('error','El menu se encuentra cerrado!');
+        }
         $plan=Plane::find($request->plan);
         $plato='plato'.$request->id;
         $carbohidrato='carb'.$request->id;

@@ -27,17 +27,22 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $filePath='public/logs.txt';
+        $logGeneral='public/logs.txt';
+        $logsAdmin='public/logsAdmin.txt';
+        $logsMenu='public/logsMenuWhatsapp.txt';
         $schedule->command('apertura:diaria')
-        ->dailyAt('01:00')->appendOutputTo($filePath);
+        ->dailyAt('01:00')->appendOutputTo($logGeneral);
         $schedule->command('plan:diario')
-        ->hourly()->appendOutputTo($filePath);
+        ->hourly()->appendOutputTo($logGeneral);
         $schedule->command('finalizarPlanTodos:diario')->timezone('America/La_Paz')
-        ->dailyAt('10:00')->appendOutputTo($filePath);
+        ->dailyAt('10:00')->appendOutputTo($logGeneral);
         $schedule->command('whatsapp:enviarMenu')
-        ->everyTwoMinutes()->appendOutputTo($filePath);
-
-
+        ->twiceDaily(18, 20)->appendOutputTo($logsMenu);
+        $schedule->command('whatsapp:enviarMenuManana')
+        ->dailyAt('08:00')->appendOutputTo($logsMenu);
+        $schedule->command('bloquear:menu')
+        ->weeklyOn(6, '15:00')->appendOutputTo($logsAdmin);
+       
         // $schedule->command('whatsapp:enviarMenu')
         // ->everyThirtyMinutes()->appendOutputTo($filePath);
         

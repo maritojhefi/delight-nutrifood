@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Admin\Almuerzos;
 
 use Livewire\Component;
 use App\Models\Almuerzo;
+use App\Models\SwitchPlane;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
@@ -13,7 +14,7 @@ class Personalizar extends Component
 {
     use WithFileUploads;
     public $sopa, $ensalada, $imagen, $ejecutivo, $dieta, $vegetariano, $carbohidrato_1, $carbohidrato_2, $carbohidrato_3, $jugo;
-    public $seleccionado;
+    public $seleccionado, $switcher;
     protected $rules = [
         'sopa' => 'required',
         'ensalada'  => 'required|min:5',
@@ -26,6 +27,19 @@ class Personalizar extends Component
         'jugo' => 'required|min:4'
 
     ];
+    public function cambiarMenu()
+    {
+        if ($this->switcher->activo == true) {
+            $this->switcher->activo = false;
+        } else {
+            $this->switcher->activo = true;
+        }
+        $this->switcher->save();
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => "Se cambio el estado del menu para los usuarios!"
+        ]);
+    }
     public function cambiarAFoto()
     {
         $this->reset('seleccionado');
@@ -35,12 +49,12 @@ class Personalizar extends Component
         $this->validate([
             'imagen' => 'required|mimes:jpeg,bmp,png,jpg|max:5120'
         ]);
-        $nombreFotoAntigua=Almuerzo::find(1);
-        Storage::disk('public_images')->delete('almuerzo/'.$nombreFotoAntigua->foto);
+        $nombreFotoAntigua = Almuerzo::find(1);
+        Storage::disk('public_images')->delete('almuerzo/' . $nombreFotoAntigua->foto);
         $filename = time() . "." . $this->imagen->extension();
         //$this->imagen->move(public_path('imagenes'),$filename);
         $this->imagen->storeAs('almuerzo', $filename, 'public_images');
-        
+
         DB::table('almuerzos')->update(['foto' => $filename]);
 
         $this->dispatchBrowserEvent('alert', [
@@ -99,9 +113,10 @@ class Personalizar extends Component
     }
     public function render()
     {
-        
+        $switcher = SwitchPlane::find(1);
+        $this->switcher = $switcher;
         $almuerzos = Almuerzo::all();
-        return view('livewire.admin.almuerzos.personalizar', compact('almuerzos'))
+        return view('livewire.admin.almuerzos.personalizar', compact('almuerzos', 'switcher'))
             ->extends('admin.master')
             ->section('content');
     }

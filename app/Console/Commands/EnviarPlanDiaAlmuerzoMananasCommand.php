@@ -3,29 +3,28 @@
 namespace App\Console\Commands;
 
 use Carbon\Carbon;
-use App\Models\User;
 use App\Models\Almuerzo;
+use App\Models\SwitchPlane;
 use Illuminate\Console\Command;
 use App\Helpers\WhatsappAPIHelper;
-use App\Models\SwitchPlane;
 use Illuminate\Support\Facades\DB;
 use App\Models\WhatsappPlanAlmuerzo;
 
-class EnviarPlanDiaAlmuerzoCommand extends Command
+class EnviarPlanDiaAlmuerzoMananasCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'whatsapp:enviarMenu';
+    protected $signature = 'whatsapp:enviarMenuManana';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Envia a los clientes con plan un mensaje de whatsapp para elegir lo que desean';
+    protected $description = 'Envia el menu solo en la manana a los clientes';
 
     /**
      * Create a new command instance.
@@ -47,7 +46,7 @@ class EnviarPlanDiaAlmuerzoCommand extends Command
         $switcher=SwitchPlane::find(1);
         if($switcher->activo==true)
         {
-            $fechaManana = Carbon::parse(Carbon::now()->addDays(1))->format('Y-m-d');
+            $fechaHoy = Carbon::parse(Carbon::now())->format('Y-m-d');
 
             $clientesConPlan = DB::table('plane_user')->select(
                 'plane_user.*',
@@ -60,10 +59,10 @@ class EnviarPlanDiaAlmuerzoCommand extends Command
                 ->where('planes.editable', true)
                 ->where('plane_user.detalle',null)
                 //->where('users.name','Mario Cotave')//para pruebas
-                ->whereDate('start', $fechaManana)->get();
+                ->whereDate('start', $fechaHoy)->get();
     
             //dd($clientesConPlan->groupBy('user_id'));
-            $diaPlan = WhatsappAPIHelper::saber_dia($fechaManana);
+            $diaPlan = WhatsappAPIHelper::saber_dia($fechaHoy);
     
             $menuDiaActual = Almuerzo::where('dia', $diaPlan)->first();
             $clientesConPlanAgrupado = $clientesConPlan->groupBy('user_id');
