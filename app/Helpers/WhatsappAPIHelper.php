@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use App\Models\WhatsappHistorial;
+use App\Models\WhatsappLog;
 use GuzzleHttp\Client;
 
 
@@ -91,6 +93,21 @@ class WhatsappAPIHelper
 
         ]);
         $devolucion = json_decode($respuesta->getBody()->getContents());
+        try {
+            WhatsappHistorial::create([
+                'tipo'=>'template normal',
+                'destino'=>$destinatario,
+                'contenido'=>$arrayParametros,
+                'template'=>$nombreTemplate
+            ]);
+        } catch (\Throwable $th) {
+            
+            WhatsappLog::create([
+                'log'=>$th->getMessage(),
+                'titulo'=>'error al crear log'
+            ]);
+        }
+       
         //WhatsappAPIHelper::historialConversacion($devolucion->id);
         //dd($devolucion);
         return $devolucion;
@@ -148,6 +165,21 @@ class WhatsappAPIHelper
 
         ]);
         $devolucion = json_decode($respuesta->getBody()->getContents());
+
+        try {
+            WhatsappHistorial::create([
+                'tipo'=>$tipo,
+                'destino'=>$destinatario,
+                'contenido'=>$arrayParametros,
+                'template'=>$nombreTemplate
+            ]);
+        } catch (\Throwable $th) {
+            
+            WhatsappLog::create([
+                'log'=>$th->getMessage(),
+                'titulo'=>'error al crear log'
+            ]);
+        }
         //WhatsappAPIHelper::historialConversacion($devolucion->id);
         //dd($devolucion);
         return $devolucion;
@@ -181,6 +213,20 @@ class WhatsappAPIHelper
                 }'
         ]);
         $devolucion = json_decode($respuesta->getBody()->getContents());
+        try {
+            WhatsappHistorial::create([
+                'tipo'=>$tipo,
+                'destino'=>$idConversacion,
+                'contenido'=>WhatsappAPIHelper::armarBodyMensaje($tipo,$contenido,$caption),
+                'template'=>'ninguno'
+            ]);
+        } catch (\Throwable $th) {
+            
+            WhatsappLog::create([
+                'log'=>$th->getMessage(),
+                'titulo'=>'error al crear log'
+            ]);
+        }
         return $devolucion;
         //dd(WhatsappAPIHelper::historialConversacion($idConversacion));
     }
@@ -253,6 +299,8 @@ class WhatsappAPIHelper
             }';
                 break;
         }
+
+        
         return $textoContenido;
     }
 }
