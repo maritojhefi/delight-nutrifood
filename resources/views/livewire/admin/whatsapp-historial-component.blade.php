@@ -22,7 +22,7 @@
                                 @foreach ($whatsapps as $item)
                                 <tr>
                                     <td><span class="badge light badge-info">{{$item->destino}}</span></td>
-                                    <td>{{$item->contenido}}</td>
+                                    <td>{{Str::limit($item->contenido,'20')}}</td>
                                     <td>{{$item->template}}</td>
                                     <td><span class="badge light badge-warning">{{$item->tipo}}</span></td>
                                    

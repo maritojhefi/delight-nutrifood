@@ -7,6 +7,7 @@ use App\Models\WhatsappHistorial;
 
 class WhatsappHistorialComponent extends Component
 {
+    protected $paginationTheme = 'bootstrap';
     public function render()
     {
         $whatsapps = WhatsappHistorial::paginate(10);
