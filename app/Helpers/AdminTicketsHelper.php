@@ -145,7 +145,7 @@ class AdminTicketsHelper
                 WhatsappAPIHelper::enviarTemplate('delight_empaque', ['*1* Vianda   *2* Eco-Empaque Delight', 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
                 break;
             case '4':
-                try {
+                
                 $actualizarTicket = DB::table('whatsapp_plan_almuerzos')->where('cliente_id', $usuario->idUser)->first();
                 //dd($actualizarTicket->id);
                 //$fechaManana = Carbon::parse(Carbon::now()->addDays(1))->format('Y-m-d');
@@ -172,12 +172,7 @@ class AdminTicketsHelper
                         //Artisan::command('whatsapp:enviarMenu');
                         // dd($devolucion);
                     }
-                } catch (\Throwable $th) {
-                    WhatsappLog::create([
-                        'log'=>$th->getMessage(),
-                        'titulo'=>'error al enviar pedido listo'
-                    ]);
-                }
+               
                 
                 break;
             default:
