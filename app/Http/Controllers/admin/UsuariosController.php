@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\admin;
 
-use App\Helpers\GlobalHelper;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Plane;
 use App\Models\Almuerzo;
+use App\Models\SwitchPlane;
 use Illuminate\Http\Request;
+use App\Helpers\GlobalHelper;
 use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -26,7 +27,7 @@ class UsuariosController extends Controller
        $array=array();
        $lunes=false;
        $planes=$usuario->planesPendientes->where('id',$plan->id)->sortBy(function($col) {return $col;});
-       
+       $estadoMenu=SwitchPlane::find(1);
        $menusemanal="";
        foreach($planes as $dias){
            
@@ -60,7 +61,7 @@ class UsuariosController extends Controller
            
        }
       
-        return view('client.miperfil.calendario',compact('plan','usuario','coleccion','menusemanal'));
+        return view('client.miperfil.calendario',compact('plan','usuario','coleccion','menusemanal','estadoMenu'));
     }
     public function saldo()
     {
