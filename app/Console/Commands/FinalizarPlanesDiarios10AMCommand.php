@@ -40,7 +40,10 @@ class FinalizarPlanesDiarios10AMCommand extends Command
      */
     public function handle()
     {
-        DB::table('plane_user')->whereDate('start', Carbon::today())->where('estado', Plane::ESTADOPENDIENTE)->orWhere('estado',Plane::ESTADODESARROLLO)->update(['estado' => Plane::ESTADOFINALIZADO, 'color' => Plane::COLORFINALIZADO,'detalle'=>null]);
+        DB::table('plane_user')->whereDate('start', Carbon::today())->where('estado', Plane::ESTADODESARROLLO)->update(['estado' => Plane::ESTADOFINALIZADO, 'color' => Plane::COLORFINALIZADO,'detalle'=>null]);
+
+        DB::table('plane_user')->whereDate('start', Carbon::today())->where('estado', Plane::ESTADOPENDIENTE)->update(['estado' => Plane::ESTADOFINALIZADO, 'color' => Plane::COLORFINALIZADO]);
+
         DB::table('whatsapp_plan_almuerzos')->delete();
         $this->info('Se finalizaron los registros del dia: '.date('d-M-Y'));
 
