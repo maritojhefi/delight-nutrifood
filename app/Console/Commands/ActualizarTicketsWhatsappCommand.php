@@ -42,7 +42,7 @@ class ActualizarTicketsWhatsappCommand extends Command
      */
     public function handle()
     {
-        $fechaManana = Carbon::parse(Carbon::now())->format('Y-m-d');
+        $fechaManana = Carbon::parse(Carbon::now()->addDay())->format('Y-m-d');
 
         $clientesConPlan = DB::table('plane_user')->select(
             'plane_user.*',
@@ -55,7 +55,7 @@ class ActualizarTicketsWhatsappCommand extends Command
             ->where('users.name', 'Mario Cotave')
             ->where('planes.editable', true)
             ->where('plane_user.detalle', null)
-            //->where('users.name','Mario Cotave')//para pruebas
+            ->where('users.name','Mario Cotave')//para pruebas
             ->whereDate('start', $fechaManana)->get();
 
         //dd($clientesConPlan->groupBy('user_id'));
