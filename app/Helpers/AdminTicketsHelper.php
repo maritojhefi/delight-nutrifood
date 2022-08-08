@@ -255,7 +255,7 @@ class AdminTicketsHelper
                     if ($numero == "3") {
                         $despacho = Plane::ENVIO3;
                     }
-                    $datosPlan = DB::table('plane_user')->where('start', $fechaPlan)->where('user_id', $usuario->idUser)->where('estado', Plane::ESTADODESARROLLO)->first();
+                    $datosPlan = DB::table('plane_user')->where('start', $fechaPlan)->where('user_id', $usuario->idUser)->where('whatsapp', false)->where('estado', Plane::ESTADODESARROLLO)->first();
                     $array = json_decode($datosPlan->detalle);
                     $array->ENVIO = $despacho;
                     //dd($array->ENVIO);
