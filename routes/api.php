@@ -86,7 +86,7 @@ Route::post('/circuito/delight/planes', function (Request $request) {
                 preg_match_all('!\d+!', $contenido, $matches); //matches es un array que obtiene numeros dentro del cuerpo del mensaje recibido
                 if (count($matches[0]) > 0) {
                     foreach ($matches[0] as $numero) {
-                        if (date('H') <= 23 && date('H') >= 18)
+                        if (date('H') <= 23 && date('H') >= 11)
                         {
                             AdminTicketsHelper::calcular($numeroOrigen,$numero,$idConversacion,'noche');
                         }
