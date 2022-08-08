@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Plane;
 use GuzzleHttp\Client;
 use App\Models\Almuerzo;
+use App\Models\WhatsappLog;
 use Illuminate\Support\Facades\DB;
 use App\Models\WhatsappPlanAlmuerzo;
 use Illuminate\Support\Facades\Artisan;
@@ -144,7 +145,7 @@ class AdminTicketsHelper
                 WhatsappAPIHelper::enviarTemplate('delight_empaque', ['*1* Vianda   *2* Eco-Empaque Delight', 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
                 break;
             case '4':
-
+                try {
                 $actualizarTicket = DB::table('whatsapp_plan_almuerzos')->where('cliente_id', $usuario->idUser)->first();
                 //dd($actualizarTicket->id);
                 //$fechaManana = Carbon::parse(Carbon::now()->addDays(1))->format('Y-m-d');
@@ -158,7 +159,7 @@ class AdminTicketsHelper
                     $devolucion = WhatsappAPIHelper::enviarTemplate('delight_pedido_listo', [$diaPlan, $detalle->SOPA, $detalle->PLATO . '(' . $detalle->CARBOHIDRATO . ')', 'Carbohidrato: *' . $detalle->CARBOHIDRATO . '*', 'Metodo: *' . $detalle->ENVIO . '*', 'Ingresa a tu perfil en nuestra pagina para personalizar toda tu semana o contactate con nosotros!'], $usuario->telf, 'es');
                     //dd($devolucion);
                 }
-                try {
+                
                     if ($actualizarTicket->cantidad == 1) {
                         DB::table('whatsapp_plan_almuerzos')->where('id', $actualizarTicket->id)->delete();
                         //dd($actualizarTicket);
@@ -172,7 +173,10 @@ class AdminTicketsHelper
                         // dd($devolucion);
                     }
                 } catch (\Throwable $th) {
-                    //throw $th;
+                    WhatsappLog::create([
+                        'log'=>$th->getMessage(),
+                        'titulo'=>'error al enviar pedido listo'
+                    ]);
                 }
                 
                 break;

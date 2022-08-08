@@ -39,6 +39,55 @@
                            
 
                         </table>
+                        
+                    </div>
+                    <div class="row  mx-auto">
+                        <div class="col">{{$tickets->links()}}</div>
+                    </div>
+                    <div class="row  mx-auto">
+                        <div class="col">Mostrando {{$tickets->count()}} de {{$tickets->total()}} registros</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="row">
+                <div class="card">
+                    <div class="card-header">
+                        Errores en envio
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table table-responsive-md">
+                            <thead>
+                                <tr>
+                                    <th>Titulo</th>
+                                    <th>Log</th>
+                                   
+                                </tr>
+                                
+                            </thead>
+                            <tbody>
+                               
+                                    @foreach ($logs as $log)
+                                    <tr>
+                                    <td>{{$log->titulo}}</td>
+                                    <td>{{Str::limit($log->log,50)}}</td>
+                                    
+                                </tr>
+                                    @endforeach
+                                
+                            </tbody>
+                           
+
+                        </table>
+                        
+                    </div>
+                    <div class="row  mx-auto">
+                        <div class="col">{{$logs->links()}}</div>
+                    </div>
+                    <div class="row  mx-auto">
+                        <div class="col">Mostrando {{$logs->count()}} de {{$logs->total()}} registros</div>
                     </div>
                 </div>
             </div>
