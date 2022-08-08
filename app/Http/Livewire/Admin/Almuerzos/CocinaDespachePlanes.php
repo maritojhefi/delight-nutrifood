@@ -73,6 +73,7 @@ class CocinaDespachePlanes extends Component
             ->leftjoin('planes', 'planes.id', 'plane_user.plane_id')
             ->whereDate('plane_user.start', $this->fechaSeleccionada)
             ->where('plane_user.title','!=','feriado')
+            ->where('plane_user.detalle','!=',null)
             ->whereIn('plane_user.estado',[Plane::ESTADOFINALIZADO,Plane::ESTADOPENDIENTE])
             ->get();            //dd($pens);
         $coleccion=GlobalHelper::armarColeccionReporteDiarioVista($pens,$this->fechaSeleccionada);
