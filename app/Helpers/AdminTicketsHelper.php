@@ -168,7 +168,21 @@ class AdminTicketsHelper
                         DB::table('whatsapp_plan_almuerzos')->where('id', $actualizarTicket->id)->decrement('cantidad');
                         DB::table('whatsapp_plan_almuerzos')->where('id', $actualizarTicket->id)->update(['paso_segundo' => 0, 'paso_carbohidrato' => 0, 'paso_metodo_envio' => 0, 'paso_metodo_empaque' => 0]);
                         $devolucion =  WhatsappAPIHelper::enviarTemplate('delight_cantidad_planes_dia', [$diaPlan, $actualizarTicket->cantidad - 1], $usuario->telf, 'es');
-                        WhatsappAPIHelper::enviarTemplate('delight_planes', [$diaPlan, $menuDiaActual->ejecutivo, $menuDiaActual->dieta, $menuDiaActual->vegetariano, 'Pedir permiso'], $usuario->telf, 'es');
+                        WhatsappAPIHelper::enviarTemplateMultimedia(
+                            'delight_planes',
+                            [
+                                $usuario->name,
+                                $diaPlan,
+                                $menuDiaActual->ejecutivo . '(ejecutivo)',
+                                $menuDiaActual->dieta . '(dieta)',
+                                $menuDiaActual->vegetariano . '(veggie)',
+                                'Pedir Permiso'
+                            ],
+                            asset('imagenes/almuerzo/'.$menuDiaActual->foto),
+                            'image',
+                            $usuario->telf,
+                            'es'
+                        );
                         //Artisan::command('whatsapp:enviarMenu');
                         // dd($devolucion);
                     }
