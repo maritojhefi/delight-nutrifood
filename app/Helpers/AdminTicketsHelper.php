@@ -48,8 +48,10 @@ class AdminTicketsHelper
             )
                 ->leftjoin('whatsapp_plan_almuerzos', 'whatsapp_plan_almuerzos.cliente_id', 'users.id')
                 ->leftjoin('plane_user', 'plane_user.user_id', 'users.id')
+                ->leftjoin('planes', 'planes.id', 'plane_user.plane_id')
                 ->where('users.telf', $telefono)
                 ->where('plane_user.start', $fechaManana)
+                ->where('planes.editable', true)
                 ->whereIn('plane_user.estado', ['desarrollo','pendiente'])
                 ->first();
 
