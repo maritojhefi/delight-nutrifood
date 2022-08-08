@@ -50,7 +50,7 @@ class AdminTicketsHelper
                 ->leftjoin('plane_user', 'plane_user.user_id', 'users.id')
                 ->where('users.telf', $telefono)
                 ->where('plane_user.start', $fechaManana)
-                ->where('plane_user.estado', 'pendiente')
+                ->where('plane_user.estado', 'desarrollo')
                 ->first();
 
             if ($buscarUsuario) {
