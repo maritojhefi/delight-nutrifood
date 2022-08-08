@@ -12,4 +12,8 @@ class WhatsappHistorial extends Model
         'destino','contenido','template','tipo'
        
     ];
+    public function usuario()
+    {
+        return $this->belongsTo(User::class,'destino','telf');
+    }
 }
