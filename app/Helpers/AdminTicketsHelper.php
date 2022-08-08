@@ -99,7 +99,7 @@ class AdminTicketsHelper
                     }
                 } else {
 
-                    $devlucion = WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola! No te encuentras registrado en ningun plan, probablemente se modifico tu plan o no te encuentras registrado en ninguno, contactate con soporte para mas informacion!');
+                    $devlucion = WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola! No tienes planes pendientes para mañana, probablemente se modifico tu plan o no te encuentras registrado en ninguno, ingresa a tu perfil aqui para mas detalles! https://delight-nutrifood.com/miperfil');
                     // dd($devlucion);
                 }
             } else {
@@ -177,9 +177,10 @@ class AdminTicketsHelper
                     } else if ($numero == "3") {
                         $segundo = $menuDiaActual->vegetariano;
                     }
-
+                    $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id', $usuario->idUser)->where('estado', Plane::ESTADOPENDIENTE)->first();
+                    $plan=Plane::find($datosPlan->plane_id);
                     $array = array(
-                        'SOPA' => $menuDiaActual->sopa,
+                        'SOPA' => $plan->sopa?$menuDiaActual->sopa:'',
                         'PLATO' => $segundo,
                         'ENSALADA' => $menuDiaActual->ensalada,
                         'CARBOHIDRATO' => '',
@@ -187,7 +188,7 @@ class AdminTicketsHelper
                         'ENVIO' => '',
                         'EMPAQUE' => '',
                     );
-                    $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id', $usuario->idUser)->where('estado', Plane::ESTADOPENDIENTE)->first();
+                    
 
                     DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => $array,'estado'=>Plane::ESTADODESARROLLO,'color'=>Plane::COLORDESARROLLO]);
                     DB::table('whatsapp_plan_almuerzos')->where('id', $usuario->idwhatsapp)->update(['paso_segundo' => true]);

@@ -79,7 +79,7 @@ Route::post('/circuito/delight/planes', function (Request $request) {
                         break;
                     }
                 } else {
-                    WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Marca una respuesta correcta');
+                    WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola!, soy Delia, tu asistente virtual y estoy aprendiendo de a poco para serte cada vez mas util! Si estas dentro de un plan te ayudare a programar tus menus...');
                 }
             } else {
                 WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Para interactuar con el asistente solo puedes responder con mensajes de texto');
