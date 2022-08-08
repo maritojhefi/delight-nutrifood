@@ -59,7 +59,7 @@ class EnviarPlanDiaAlmuerzoCommand extends Command
                 ->where('estado', 'pendiente')
                 ->where('planes.editable', true)
                 ->where('plane_user.detalle',null)
-                //->where('users.name','Mario Cotave')//para pruebas
+                ->where('users.name','Mario Cotave')//para pruebas
                 ->whereDate('start', $fechaManana)->get();
     
             //dd($clientesConPlan->groupBy('user_id'));
