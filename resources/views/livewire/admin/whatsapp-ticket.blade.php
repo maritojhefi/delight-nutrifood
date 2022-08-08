@@ -72,7 +72,7 @@
                                     @foreach ($logs as $log)
                                     <tr>
                                     <td>{{$log->titulo}}</td>
-                                    <td>{{Str::limit($log->log,50)}}</td>
+                                    <td>{{Str::limit($log->log,200)}}</td>
                                     
                                 </tr>
                                     @endforeach
