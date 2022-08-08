@@ -50,7 +50,7 @@ class AdminTicketsHelper
                 ->leftjoin('plane_user', 'plane_user.user_id', 'users.id')
                 ->where('users.telf', $telefono)
                 ->where('plane_user.start', $fechaManana)
-                ->where('plane_user.estado', 'desarrollo')
+                ->whereIn('plane_user.estado', ['desarrollo','pendiente'])
                 ->first();
 
             if ($buscarUsuario) {
@@ -103,10 +103,10 @@ class AdminTicketsHelper
                     // dd($devlucion);
                 }
             } else {
-                WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola! No te encuentras registrado en ningun plan, probablemente se modifico tu plan o no te encuentras registrado en ninguno, contactate con soporte para mas informacion!');
+                WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola! No tienes planes pendientes para mañana, probablemente se modifico tu plan o no te encuentras registrado en ninguno, ingresa a tu perfil aqui para mas detalles! https://delight-nutrifood.com/miperfil');
             }
         } else {
-            WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'No marcaste una respuesta correcta');
+            WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'No marcaste una respuesta correcta, vuelve a intentarlo');
         }
     }
 
