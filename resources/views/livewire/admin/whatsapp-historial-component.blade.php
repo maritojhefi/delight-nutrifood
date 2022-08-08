@@ -23,7 +23,7 @@
                             <tbody>
                                 @foreach ($whatsapps as $item)
                                 <tr>
-                                    <td>{{$item->usuario->name}}</td>
+                                    <td>{{$item->usuario?$item->usuario->name:'N/A'}}</td>
                                     <td><span class="badge light badge-info">{{$item->destino}}</span></td>
                                     <td>{{Str::limit($item->contenido,'20')}}</td>
                                     <td>{{$item->template}}</td>
