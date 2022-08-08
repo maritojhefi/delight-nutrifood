@@ -13,11 +13,11 @@
                                     <th><strong>Nombre</strong></th>
 
                                     <th><strong>Numero</strong></th>
-                                    <th><strong>Contenido</strong></th>
+                                    <th><strong>Fecha</strong></th>
                                     <th><strong>Template</strong></th>
                                     <th><strong>Tipo</strong></th>
-                                    <th><strong></strong></th>
-                                    <th></th>
+                                    <th><strong>Contenido</strong></th>
+                                    
                                 </tr>
                             </thead>
                             <tbody>
@@ -25,10 +25,10 @@
                                 <tr>
                                     <td>{{$item->usuario?$item->usuario->name:'N/A'}}</td>
                                     <td><span class="badge light badge-info">{{$item->destino}}</span></td>
-                                    <td>{{Str::limit($item->contenido,'20')}}</td>
+                                    <td>{{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }}</td>
                                     <td>{{$item->template}}</td>
                                     <td><span class="badge light badge-warning">{{$item->tipo}}</span></td>
-                                   
+                                    <td>{{Str::limit($item->contenido,'20')}}</td>
                                    
                                 </tr>
                                 
