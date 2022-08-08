@@ -12,7 +12,7 @@
           <label class="col-sm-4 col-form-label">{{$titulo}}</label>
           <div class="col-sm-8">
             <div class=" input-group" >
-          <input type="{{$variables[1]}}"  wire:model.debounce.1000ms="{{$variables[0]}}" placeholder="@isset($variables[2]){{$variables[2]}} @endisset" min="0" step=".01" class=" form-control  @error($variables[0]) is-invalid @enderror">
+          <input type="{{$variables[1]}}"  wire:model.debounce.1000ms="{{$variables[0]}}" placeholder="@isset($variables[2]){{$variables[2]}} @endisset" min="0" step="any" class=" form-control  @error($variables[0]) is-invalid @enderror">
           <small class="input-group-text">Bs</small>
         </div>
           @error($variables[0]) <small class="error">{{ $message }}</small> @enderror
