@@ -27,7 +27,7 @@
                                     @php
                                         $array=json_decode($ticket->detalle)
                                     @endphp
-                                    <td>{{$ticket->name}}</td>
+                                    <td><a href="{{ route('detalleplan', [$ticket->user_id, $ticket->plane_id]) }}"></a>{{$ticket->name}}</td>
                                     <td>{{$ticket->telf}}</td>
                                     <td>{{$array->PLATO}}</td>
                                     <td>{{$array->CARBOHIDRATO}}</td>
@@ -76,7 +76,7 @@
                                     @php
                                         $array=json_decode($ticket->detalle)
                                     @endphp
-                                    <td>{{$ticket->name}}</td>
+                                    <td><a href="{{ route('detalleplan', [$ticket->user_id, $ticket->plane_id]) }}"></a>{{$ticket->name}}</td>
                                     <td>{{$ticket->telf}}</td>
                                     <td>{{$array->PLATO}}</td>
                                     <td>{{$array->CARBOHIDRATO}}</td>

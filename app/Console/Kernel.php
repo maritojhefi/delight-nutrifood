@@ -38,11 +38,14 @@ class Kernel extends ConsoleKernel
         ->dailyAt('10:00')->appendOutputTo($logGeneral);
         $schedule->command('whatsapp:enviarMenu')
         ->twiceDaily(18, 20)->appendOutputTo($logsMenu);
-        $schedule->command('whatsapp:enviarMenuManana')
-        ->dailyAt('08:00')->appendOutputTo($logsMenu);
+        // $schedule->command('whatsapp:enviarMenuManana')
+        // ->dailyAt('08:00')->appendOutputTo($logsMenu);
         $schedule->command('bloquear:menu')
         ->weeklyOn(6, '15:00')->appendOutputTo($logsAdmin);
-       
+
+        $schedule->command('actualizar:tickets')
+        ->everyFiveMinutes();
+        
         // $schedule->command('whatsapp:enviarMenu')
         // ->everyThirtyMinutes()->appendOutputTo($filePath);
         
