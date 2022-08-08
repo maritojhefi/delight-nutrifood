@@ -3,7 +3,7 @@
         <div class="card overflow-hidden">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Listado de Subwhatsapps</h4>
+                    <h4 class="card-title">Reporte de mensajes enviados</h4>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

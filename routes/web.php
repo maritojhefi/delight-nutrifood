@@ -173,6 +173,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('/reporte', \App\Http\Livewire\Admin\Almuerzos\ReporteDiario::class)->name('almuerzos.reporte');
         Route::get('/reporte/semana', \App\Http\Livewire\Admin\Almuerzos\ReporteSemanal::class)->name('reporte.semana');
         Route::get('/reporte/cocina', \App\Http\Livewire\Admin\Almuerzos\CocinaDespachePlanes::class)->name('reporte.cocina');
+        Route::get('/reporte/whatsapp', \App\Http\Livewire\Admin\WhatsappReporteDesarrolloComponent::class)->name('reporte.whatsapp');
     });
     Route::prefix('/perifericos')->group(function () {
    

@@ -234,7 +234,7 @@ class AdminTicketsHelper
                         AdminTicketsHelper::enviarMensajeConMenu($usuario, $paso, $menuDiaActual);
                         DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => json_encode($array)]);
                     } else {
-                        $array->EMPAQUE='ninguno';
+                        $array->EMPAQUE='Ninguno';
                         DB::table('whatsapp_plan_almuerzos')->where('id', $usuario->idwhatsapp)->update(['paso_metodo_empaque' => true]);
                         AdminTicketsHelper::enviarMensajeConMenu($usuario, '4', $menuDiaActual);
                         DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => json_encode($array), 'estado' => Plane::ESTADOPENDIENTE,'color'=>Plane::COLORPENDIENTE,'whatsapp'=>true]);
