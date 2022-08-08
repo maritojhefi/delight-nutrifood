@@ -192,6 +192,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::post('registrar/asistencia', [App\Http\Controllers\admin\OtroController::class, 'marcarAsistencia'])->name('registrar.asistencia');
         Route::get('/marcado', function () {return view('admin.otros.marcado');})->name('marcado');
         Route::get('/whatsapp/tickets', \App\Http\Livewire\Admin\WhatsappTicket::class)->name('whatsapp.index');
+        Route::get('/whatsapp/historial', \App\Http\Livewire\Admin\WhatsappHistorialComponent::class)->name('whatsapp.historial');
         Route::get('/noEsEmpleado', function(){return view('admin.otros.no-es-empleado');})->name('noEsEmpleado');
         Route::get('/registrado/exitosamente/{diferencia}', function($diferencia){return view('admin.otros.marcado-exitosamente',compact('diferencia'));})->name('marcacion.entrada');
         Route::get('/registrado/salida/{diferencia}', function($diferencia){return view('admin.otros.marcado-exitosamente-salida',compact('diferencia'));})->name('marcacion.salida');

@@ -74,7 +74,7 @@
 
 
 
-                <x-sidebar-elements titulo="Otros" linkglobal="admin/otros" :lista="['Importar excel' => 'importar.index',
+                <x-sidebar-elements titulo="Otros" linkglobal="admin/otros" :lista="['Importar excel' => 'importar.index','Historial enviados'=>'whatsapp.historial',
                 'Tickets whatsapp' => 'whatsapp.index']">
                     <i class="flaticon-022-copy"></i>
                 </x-sidebar-elements>
