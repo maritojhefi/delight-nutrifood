@@ -52,8 +52,19 @@ Route::post('/pruebas/webhook', function (Request $request) {
 });
 
 Route::get('/pruebas/mensaje', function () {
-$respuesta=    WhatsappAPIHelper::enviarTemplate('delight_cantidad_planes_dia', ['Jueves',1], '+59175140175', 'es');
-dd($respuesta);
+    if (date('H') <= 23 && date('H') >= 18)
+    {
+       dd('noche');
+    }
+    else if (date('H') < 10)
+    {
+        dd('dia');
+    }
+    else
+    {
+        dd(date('H')); //WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola! estas fuera del horario de atencion virtual, intentalo mas tarde!');
+
+    }
     
 });
 
@@ -79,7 +90,7 @@ Route::post('/circuito/delight/planes', function (Request $request) {
                         {
                             AdminTicketsHelper::calcular($numeroOrigen,$numero,$idConversacion,'noche');
                         }
-                        else if (date('H') > 23 && date('H') < 10)
+                        else if (date('H') < 10)
                         {
                             AdminTicketsHelper::calcular($numeroOrigen,$numero,$idConversacion,'dia');
                         }
