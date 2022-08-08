@@ -31,11 +31,19 @@ class AdminTicketsHelper
         }
         return $fechaParaAgregar;
     }
-    public static function calcular($telefono, $numero, $idConversacion)
+    public static function calcular($telefono, $numero, $idConversacion,$turno)
     {
 
         if ($numero == "3" || $numero == "2" || $numero == "1" || $numero == "0") {
-            $fechaManana = Carbon::parse(Carbon::now()->addDays(1))->format('Y-m-d');
+            if($turno=='noche')
+            {
+                $fechaPlan = Carbon::parse(Carbon::now()->addDays(1))->format('Y-m-d');
+            }
+            else if($turno=='dia')
+            {
+                $fechaPlan = Carbon::parse(Carbon::now())->format('Y-m-d');
+            }
+            
             $buscarUsuario = DB::table('users')->select(
                 'users.id as idUser',
                 'users.*',
@@ -50,7 +58,7 @@ class AdminTicketsHelper
                 ->leftjoin('plane_user', 'plane_user.user_id', 'users.id')
                 ->leftjoin('planes', 'planes.id', 'plane_user.plane_id')
                 ->where('users.telf', $telefono)
-                ->where('plane_user.start', $fechaManana)
+                ->where('plane_user.start', $fechaPlan)
                 ->where('planes.editable', true)
                 ->where('plane_user.whatsapp', false)
                 ->whereIn('plane_user.estado', ['desarrollo', 'pendiente'])
@@ -61,13 +69,13 @@ class AdminTicketsHelper
                     //dd($buscarUsuario->idwhatsapp);
                     if ($numero != '0') {
                         if ($buscarUsuario->paso_segundo == false) {
-                            AdminTicketsHelper::seleccionarMenu($buscarUsuario, $numero, 1);
+                            AdminTicketsHelper::seleccionarMenu($buscarUsuario, $numero, 1,$fechaPlan);
                         } elseif ($buscarUsuario->paso_carbohidrato == false) {
-                            AdminTicketsHelper::seleccionarMenu($buscarUsuario, $numero, 2);
+                            AdminTicketsHelper::seleccionarMenu($buscarUsuario, $numero, 2,$fechaPlan);
                         } elseif ($buscarUsuario->paso_metodo_envio == false) {
-                            AdminTicketsHelper::seleccionarMenu($buscarUsuario, $numero, 3);
+                            AdminTicketsHelper::seleccionarMenu($buscarUsuario, $numero, 3,$fechaPlan);
                         } elseif ($buscarUsuario->paso_metodo_empaque == false) {
-                            AdminTicketsHelper::seleccionarMenu($buscarUsuario, $numero, 4);
+                            AdminTicketsHelper::seleccionarMenu($buscarUsuario, $numero, 4,$fechaPlan);
                         }
                     } else {
                         //dd($buscarUsuario->plane_id);
@@ -168,12 +176,12 @@ class AdminTicketsHelper
                 break;
         }
     }
-    public static function seleccionarMenu($usuario, $numero, $paso)
+    public static function seleccionarMenu($usuario, $numero, $paso,$fechaPlan)
     {
         //dd($usuario);
         if ($numero != '0') {
-            $fechaManana = Carbon::parse(Carbon::now()->addDays(1))->format('Y-m-d');
-            $diaPlan = WhatsappAPIHelper::saber_dia($fechaManana);
+            //$fechaManana = Carbon::parse(Carbon::now()->addDays(1))->format('Y-m-d');
+            $diaPlan = WhatsappAPIHelper::saber_dia($fechaPlan);
             $menuDiaActual = Almuerzo::where('dia', $diaPlan)->first();
             switch ($paso) {
                 case '1':
@@ -184,7 +192,7 @@ class AdminTicketsHelper
                     } else if ($numero == "3") {
                         $segundo = $menuDiaActual->vegetariano;
                     }
-                    $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id', $usuario->idUser)->where('whatsapp', false)->where('estado', Plane::ESTADOPENDIENTE)->first();
+                    $datosPlan = DB::table('plane_user')->where('start', $fechaPlan)->where('user_id', $usuario->idUser)->where('whatsapp', false)->where('estado', Plane::ESTADOPENDIENTE)->first();
                     $plan = Plane::find($datosPlan->plane_id);
                     $array = array(
                         'SOPA' => $plan->sopa ? $menuDiaActual->sopa : '',
@@ -212,7 +220,7 @@ class AdminTicketsHelper
                         $carbo = $menuDiaActual->carbohidrato_3;
                     }
 
-                    $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id', $usuario->idUser)->where('whatsapp', false)->where('estado', Plane::ESTADODESARROLLO)->first();
+                    $datosPlan = DB::table('plane_user')->where('start', $fechaPlan)->where('user_id', $usuario->idUser)->where('whatsapp', false)->where('estado', Plane::ESTADODESARROLLO)->first();
                     $array = json_decode($datosPlan->detalle);
                     $array->CARBOHIDRATO = $carbo;
                     DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => json_encode($array)]);
@@ -229,7 +237,7 @@ class AdminTicketsHelper
                     if ($numero == "3") {
                         $despacho = Plane::ENVIO3;
                     }
-                    $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id', $usuario->idUser)->where('estado', Plane::ESTADODESARROLLO)->first();
+                    $datosPlan = DB::table('plane_user')->where('start', $fechaPlan)->where('user_id', $usuario->idUser)->where('estado', Plane::ESTADODESARROLLO)->first();
                     $array = json_decode($datosPlan->detalle);
                     $array->ENVIO = $despacho;
                     //dd($array->ENVIO);
@@ -245,7 +253,7 @@ class AdminTicketsHelper
                     }
                     break;
                 case '4':
-                    $datosPlan = DB::table('plane_user')->where('start', $fechaManana)->where('user_id', $usuario->idUser)->where('whatsapp', false)->where('estado', Plane::ESTADODESARROLLO)->first();
+                    $datosPlan = DB::table('plane_user')->where('start', $fechaPlan)->where('user_id', $usuario->idUser)->where('whatsapp', false)->where('estado', Plane::ESTADODESARROLLO)->first();
 
                     $array = json_decode($datosPlan->detalle);
 
