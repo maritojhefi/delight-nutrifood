@@ -63,6 +63,7 @@
                                 <tr>
                                     <th>Titulo</th>
                                     <th>Log</th>
+                                    <th>Fecha</th>
                                    
                                 </tr>
                                 
@@ -73,6 +74,7 @@
                                     <tr>
                                     <td>{{$log->titulo}}</td>
                                     <td>{{Str::limit($log->log,200)}}</td>
+                                    <td>{{ App\Helpers\WhatsappAPIHelper::timeago($log->created_at) }}</td>
                                     
                                 </tr>
                                     @endforeach
