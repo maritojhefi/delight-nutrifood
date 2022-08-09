@@ -11,7 +11,7 @@
                             <thead>
                                 <tr>
                                     <th><strong>Nombre</strong></th>
-
+                                    <th><strong>Fecha</strong></th>
                                     <th><strong>Numero</strong></th>
                                     <th><strong>Segundo</strong></th>
                                     <th><strong>Carbohidrato</strong></th>
@@ -28,6 +28,7 @@
                                         $array=json_decode($ticket->detalle)
                                     @endphp
                                     <td><a href="{{ route('detalleplan', [$ticket->user_id, $ticket->plane_id]) }}">{{$ticket->name}}</a></td>
+                                    <td>{{$ticket->start}}</td>
                                     <td>{{$ticket->telf}}</td>
                                     <td>{{$array->PLATO}}</td>
                                     <td>{{$array->CARBOHIDRATO}}</td>
@@ -60,7 +61,7 @@
                             <thead>
                                 <tr>
                                     <th><strong>Nombre</strong></th>
-
+                                    <th><strong>Fecha</strong></th>
                                     <th><strong>Numero</strong></th>
                                     <th><strong>Segundo</strong></th>
                                     <th><strong>Carbohidrato</strong></th>
@@ -77,6 +78,7 @@
                                         $array=json_decode($ticket->detalle)
                                     @endphp
                                     <td><a href="{{ route('detalleplan', [$ticket->user_id, $ticket->plane_id]) }}">{{$ticket->name}}</a></td>
+                                    <td>{{$ticket->start}}</td>
                                     <td>{{$ticket->telf}}</td>
                                     <td>{{$array->PLATO}}</td>
                                     <td>{{$array->CARBOHIDRATO}}</td>

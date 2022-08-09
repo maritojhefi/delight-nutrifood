@@ -54,6 +54,7 @@ class MiperfilController extends Controller
          
              $coleccion->push([
                  'detalle'=>$dias->pivot->detalle,
+                 'estado'=>$dias->pivot->estado,
                  'dia'=>$this->saber_dia($dias->pivot->start),
                  'id'=>$dias->pivot->id,
                  'fecha'=>date('d-M', strtotime($dias->pivot->start)),

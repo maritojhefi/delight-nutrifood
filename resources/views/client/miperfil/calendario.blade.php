@@ -25,18 +25,23 @@
                     @foreach ($coleccion as $lista)
                         <div class="card card-style">
                             <div
-                                class="list-group list-custom-small list-icon-0 bg-{{ $lista['detalle'] == null ? 'mint' : 'green' }}-dark ps-3 pe-4 ">
+                                class="list-group list-custom-small list-icon-0 bg-@if($lista['detalle'] == null && $lista['estado']=='pendiente'){{'mint'}}@elseif($lista['estado']=='desarrollo'){{'yellow'}}@else{{'green'}}@endif-dark ps-3 pe-4 ">
                                 <a data-bs-toggle="collapse" class="no-effect collapsed" href="#collapse-7{{ $lista['id'] }}"
                                     aria-expanded="false">
 
-                                    @if ($lista['detalle'] == null || $lista['detalle'] == '')
+                                    @if ($lista['detalle'] == null && $lista['estado']=='pendiente')
                                         <i class="fas fa-user-edit color-white"></i>
                                         <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                    @elseif($lista['estado']=='desarrollo')
+                                    <i class="fab fa-whatsapp color-white"></i>
+                                    <span class="font-14 color-white">{{ $lista['dia'] }}</span>
+                                    <label for="" class="text-magenta text-white">
+                                        (En desarrollo por whatsapp!)</label>
                                     @else
-                                        <i class="fas fa-save color-white"></i>
-                                        <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
-                                        <label for="" class="text-magenta text-white">
-                                            Guardado!</label>
+                                    <i class="fas fa-save color-white"></i>
+                                    <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                    <label for="" class="text-magenta text-white">
+                                        Guardado!</label>
                                     @endif
                                     <i class="fa fa-angle-down color-white"></i>
                                 </a>
@@ -44,7 +49,7 @@
                             <div class="ps-2 pe-4 collapse" id="collapse-7{{ $lista['id'] }}" data-bs-parent="#accordion-3"
                                 style="">
                                 <div class="p-2">
-                                    @if ($lista['detalle'] == null || $lista['detalle'] == '')
+                                    @if ($lista['detalle'] == null && $lista['estado']=='pendiente')
                                         <form action="{{ route('personalizardia') }}" id="{{ $lista['id'] }}"
                                             method="POST">
                                             @csrf
@@ -220,7 +225,9 @@
                                             </div>
 
                                         </form>
-                                    @else
+                                        @elseif($lista['estado']=='desarrollo')
+                                        Ve a tu whatsapp para terminar de programar este plan!
+                                        @else
                                         <ul class="icon-list">
                                             @foreach (json_decode($lista['detalle'], true) as $plato => $valor)
                                                 @if ($valor != '')
@@ -297,6 +304,8 @@
             data-bs-autohide="true"><i class="fa fa-date"></i> Dia de permiso!</div>
         <div id="toast-archivado" class="toast toast-tiny toast-top bg-gray-dark fade hide" data-bs-delay="3000"
             data-bs-autohide="true"><i class="fa fa-date"></i> Registro archivado!</div>
+            <div id="toast-whatsapp" class="toast toast-tiny toast-top bg-yellow-dark fade hide" data-bs-delay="3000"
+            data-bs-autohide="true"><i class="fab fa-whatsapp"></i> En desarrollo!</div>
 
         <div class="card card-style bg-18" data-card-height="150" style="height: 150px;">
             <div class="card-center ms-3">

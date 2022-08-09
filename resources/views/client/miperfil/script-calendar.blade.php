@@ -34,7 +34,13 @@
                                 var toastID = document.getElementById('toast-finalizado');
                                 toastID = new bootstrap.Toast(toastID);
                                 toastID.show();
-                            } else if (respuesta.data.estado == "pendiente" && respuesta.data
+                            }else if(respuesta.data.estado == "desarrollo")
+                            {
+                                var toastID = document.getElementById('toast-whatsapp');
+                                toastID = new bootstrap.Toast(toastID);
+                                toastID.show();
+                            }
+                             else if (respuesta.data.estado == "pendiente" && respuesta.data
                                 .title !=
                                 "feriado") {
 
