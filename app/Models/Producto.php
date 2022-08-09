@@ -56,10 +56,18 @@ class Producto extends Model
     public function precio()
     {
         if ($this->descuento != 0 || $this->descuento != null) {
-            return $this->descuento;
+            return floatval($this->descuento);
         } else {
-            return $this->precio;
+            return  floatval($this->precio);
         }
+    }
+    public function getPrecioAttribute($value)
+    {
+        return floatval($value);
+    }
+    public function getDescuentoAttribute($value)
+    {
+        return floatval($value);
     }
     public function setPrecioAttribute($value)
     {

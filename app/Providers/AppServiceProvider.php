@@ -7,7 +7,7 @@ use App\Charts\SampleChart;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 use App\Http\Middleware\CheckIfCajaOpen;
-use ConsoleTVs\Charts\Registrar as Charts;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,10 +26,8 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot(Charts $charts)
+    public function boot()
     {
-        $charts->register([
-            \App\Charts\SampleChart::class
-        ]);
+        
     }
 }
