@@ -14,7 +14,7 @@ class Plane extends Model
     const COLORFERIADO="#c01222"; 
     const COLORFINALIZADO="#F7843A";
     const COLORARCHIVADO="#B0B5B9";
-    const COLORDESARROLLO="#DAE233";
+    const COLORDESARROLLO="#F6CD42";
 
     const ESTADOPERMISO="permiso";
     const ESTADOPENDIENTE="pendiente";
