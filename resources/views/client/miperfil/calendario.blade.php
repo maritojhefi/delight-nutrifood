@@ -35,8 +35,8 @@
                                     @elseif($lista['estado']=='desarrollo')
                                     <i class="fab fa-whatsapp color-white"></i>
                                     <span class="font-14 color-white">{{ $lista['dia'] }}</span>
-                                    <label for="" class="text-magenta text-white">
-                                        (En desarrollo por whatsapp!)</label>
+                                    <small for="" class="text-magenta text-white">
+                                        (En desarrollo por whatsapp)</small>
                                     @else
                                     <i class="fas fa-save color-white"></i>
                                     <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
