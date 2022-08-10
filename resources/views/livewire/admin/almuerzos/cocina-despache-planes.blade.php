@@ -21,10 +21,30 @@
                 data-bs-toggle="modal" data-bs-target="#modalDisponibilidad"><span
                     class="badge badge-pill badge-primary">Cambiar Disponibilidad</span></a> --}}
         </div>
-        <div class="card-body">
+        <div class="">
             <div class="table-responsive " style="padding:5px">
                 <table class=" table  table-responsive-sm">
                     <thead style="padding:5px">
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            @php
+                                $colores = collect(['warning', 'success', 'danger', 'primary', 'secondary', 'dark', 'info', 'dark']);
+                            @endphp
+                            @foreach ($totalEspera[0] as $producto => $array)
+                                <th><small>
+
+                                        @foreach ($array as $nombre => $cantidad)
+                                            @if ($nombre != '' && $nombre != 'sin carbohidrato' && $nombre != 'Ninguno')
+                                                <strong
+                                                    class="badge badge-lg badge-{{ $colores->random() }} ">{{ Str::limit($nombre, '15') }}:{{ $cantidad }}</strong><br>
+                                            @endif
+                                        @endforeach
+                                </th>
+                            @endforeach
+                            </small>
+
+                        </tr>
                         <tr>
                             <th>#</th>
                             <th style="width:30%">Nombre</th>
@@ -41,6 +61,7 @@
                     </thead>
 
                     <tbody style="padding:5px">
+                        
                         @foreach ($coleccion->where('COCINA', 'espera') as $lista)
                             <tr style="padding:5px"
                                 class="@if ($lista['ENVIO'] == 'a.- Delivery') {{ 'table-primary' }}@elseif($lista['ENVIO'] == 'b.- Para llevar(Paso a recoger)'){{ 'table-warning' }}@elseif($lista['ENVIO'] == 'c.- Para Mesa'){{ 'table-info' }} @endif">
@@ -88,26 +109,7 @@
                                 </div>
                             </div>
                         @endforeach
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            @php
-                                $colores = collect(['warning', 'success', 'danger', 'primary', 'secondary', 'dark', 'info', 'dark']);
-                            @endphp
-                            @foreach ($totalEspera[0] as $producto => $array)
-                                <th><small>
-
-                                        @foreach ($array as $nombre => $cantidad)
-                                            @if ($nombre != '' && $nombre != 'sin carbohidrato' && $nombre != 'Ninguno')
-                                                <strong
-                                                    class="badge badge-lg badge-{{ $colores->random() }} ">{{ Str::limit($nombre, '15') }}:{{ $cantidad }}</strong><br>
-                                            @endif
-                                        @endforeach
-                                </th>
-                            @endforeach
-                            </small>
-
-                        </tr>
+                        
 
 
                     </tbody>
