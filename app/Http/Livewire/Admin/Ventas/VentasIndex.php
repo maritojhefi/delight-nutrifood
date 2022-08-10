@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Caja;
 use App\Models\User;
 use App\Models\Plane;
+use App\Models\Saldo;
 use App\Models\Venta;
 use Livewire\Component;
 use App\Models\Producto;
@@ -17,10 +18,10 @@ use Illuminate\Support\Str;
 use App\Helpers\CustomPrint;
 use Mike42\Escpos\EscposImage;
 use App\Models\Historial_venta;
-use App\Models\Saldo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 class VentasIndex extends Component
@@ -653,6 +654,7 @@ class VentasIndex extends Component
     public function imprimir()
     {
 
+        QrCode::format('png')->size(250)->generate('https://delight-nutrifood.com/miperfil', public_path().'/qrcode.png');
         if ($this->cuenta->sucursale->id_impresora) {
 
             $nombre_impresora = "POS-582";
@@ -660,9 +662,9 @@ class VentasIndex extends Component
             $printer = new Printer($connector);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $printer->setTextSize(1, 2);
-            $printer->text("DELIGHT" . "\n");
-            /*$img = EscposImage::load("public/delight_logo.jpg",false);
-            $printer -> graphics($img);*/
+            //$printer->text("DELIGHT" . "\n");
+            $img = EscposImage::load(public_path("delight_logo.jpg"));
+            $printer->bitImageColumnFormat($img);
             $printer->setTextSize(1, 1);
             $printer->text("Nutri-Food/Eco-Tienda" . "\n");
             $printer->feed(1);
@@ -702,9 +704,10 @@ class VentasIndex extends Component
                 $printer->text("TOTAL: Bs " . $this->cuenta->total - $this->cuenta->descuento . "\n");
                 $printer->feed(1);
             }
-
-
             $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $img = EscposImage::load(public_path("qrcode.png"));
+            $printer->bitImageColumnFormat($img);
+            
             $printer->setTextSize(1, 1);
             $printer->text("Gracias por tu compra\n");
             $printer->text("Vuelve pronto!\n");
