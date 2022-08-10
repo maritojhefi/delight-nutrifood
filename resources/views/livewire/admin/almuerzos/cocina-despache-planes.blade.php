@@ -29,7 +29,7 @@
                             <td></td>
                             <td></td>
                             @php
-                                $colores = collect(['warning', 'success', 'danger', 'primary', 'secondary', 'dark', 'info', 'dark']);
+                                $colores = collect(['warning', 'success', 'danger', 'primary', 'secondary', 'info', 'dark']);
                             @endphp
                             @foreach ($totalEspera[0] as $producto => $array)
                                 <th><small>
@@ -64,7 +64,7 @@
 
                         @foreach ($coleccion->where('COCINA', 'espera') as $lista)
                             <tr style="padding:5px"
-                                class="@if ($lista['ENVIO'] == 'a.- Delivery') {{ 'table-primary' }}@elseif($lista['ENVIO'] == 'b.- Para llevar(Paso a recoger)'){{ 'table-secondary' }}@elseif($lista['ENVIO'] == 'c.- Para Mesa'){{ 'table-info' }} @endif">
+                                class="@if ($lista['ENVIO'] == 'a.- Delivery') {{ 'table-primary' }}@elseif($lista['ENVIO'] == 'b.- Para llevar(Paso a recoger)'){{ 'table-info' }}@elseif($lista['ENVIO'] == 'c.- Para Mesa'){{ 'table-success' }} @endif">
 
                                 <td style="padding:5px">{{ $loop->iteration }}</td>
 
