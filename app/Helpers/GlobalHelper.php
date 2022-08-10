@@ -97,9 +97,9 @@ class GlobalHelper {
             if ($det['PLATO'] == $menu->ejecutivo) $tipoSegundo = 'EJECUTIVO';
             if ($det['PLATO'] == $menu->dieta) $tipoSegundo = 'DIETA';
             if ($det['PLATO'] == $menu->vegetariano) $tipoSegundo = 'VEGGIE';
-            if ($det['ENVIO'] == Plane::ENVIO1) $tipoEnvio = 'c) '.Plane::ENVIO1;
-            if ($det['ENVIO'] == Plane::ENVIO2) $tipoEnvio = 'b) '.Plane::ENVIO2;
-            if ($det['ENVIO'] == Plane::ENVIO3) $tipoEnvio = 'a) '.Plane::ENVIO3;
+            if ($det['ENVIO'] == Plane::ENVIO1) $tipoEnvio = 'c.- '.Plane::ENVIO1;
+            if ($det['ENVIO'] == Plane::ENVIO2) $tipoEnvio = 'b.- '.Plane::ENVIO2;
+            if ($det['ENVIO'] == Plane::ENVIO3) $tipoEnvio = 'a.- '.Plane::ENVIO3;
 
             $coleccion->push([
                 'ID' => $lista->id,

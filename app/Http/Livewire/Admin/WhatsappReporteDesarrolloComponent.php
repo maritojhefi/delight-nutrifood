@@ -33,6 +33,7 @@ class WhatsappReporteDesarrolloComponent extends Component
         })
         ->leftJoin('users','users.id','plane_user.user_id')
         ->leftJoin('planes','planes.id','plane_user.plane_id')
+        ->orderBy('plane_user.start','desc')
         ->get();
        // dd($reporte);
         return view('livewire.admin.whatsapp-reporte-desarrollo-component',compact('reporte','reporteFinalizados'))

@@ -23,7 +23,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive " style="padding:5px">
-                <table class=" table table-striped table-responsive-sm">
+                <table class=" table  table-responsive-sm">
                     <thead style="padding:5px">
                         <tr>
                             <th>#</th>
@@ -42,7 +42,8 @@
 
                     <tbody style="padding:5px">
                         @foreach ($coleccion->where('COCINA', 'espera') as $lista)
-                            <tr class="" style="padding:5px">
+                            <tr style="padding:5px"
+                                class="@if ($lista['ENVIO'] == 'a.- Delivery') {{ 'table-primary' }}@elseif($lista['ENVIO'] == 'b.- Para llevar(Paso a recoger)'){{ 'table-warning' }}@elseif($lista['ENVIO'] == 'c.- Para Mesa'){{ 'table-info' }} @endif">
 
                                 <td style="padding:5px">{{ $loop->iteration }}</td>
 
@@ -54,7 +55,8 @@
                                 <td style="padding:5px"><small>{{ $lista['SOPA'] != '' ? 'SI' : '' }}</small></td>
 
                                 <td style="padding:5px"><small>{{ $lista['PLATO'] }}</small></td>
-                                <td style="padding:5px"><small>{{ Str::limit($lista['CARBOHIDRATO'], 20) }}</small></td>
+                                <td style="padding:5px"><small>{{ Str::limit($lista['CARBOHIDRATO'], 20) }}</small>
+                                </td>
 
                                 <td style="padding:5px"><small>{{ Str::limit($lista['EMPAQUE'], 15) }}</small></td>
                                 <td style="padding:5px"><small>{{ Str::limit($lista['ENVIO'], 15) }}</small></td>
@@ -90,7 +92,7 @@
                             <td></td>
                             <td></td>
                             @php
-                                $colores = collect(['warning', 'success', 'danger', 'primary', 'secondary','dark','info','dark']);
+                                $colores = collect(['warning', 'success', 'danger', 'primary', 'secondary', 'dark', 'info', 'dark']);
                             @endphp
                             @foreach ($totalEspera[0] as $producto => $array)
                                 <th><small>
@@ -183,9 +185,9 @@
                             @foreach ($totalDespachado[0] as $producto => $array)
                                 <th><small>
                                         @foreach ($array as $nombre => $cantidad)
-                                        @if ($nombre != '' && $nombre != 'sin carbohidrato' && $nombre != 'Ninguno')
+                                            @if ($nombre != '' && $nombre != 'sin carbohidrato' && $nombre != 'Ninguno')
                                                 <span
-                                                    class="badge badge-pill badge-lg badge-{{$colores->random()}}">{{ Str::limit($nombre, '15') }}:{{ $cantidad }}</span><br>
+                                                    class="badge badge-pill badge-lg badge-{{ $colores->random() }}">{{ Str::limit($nombre, '15') }}:{{ $cantidad }}</span><br>
                                             @endif
                                         @endforeach
                                 </th>
