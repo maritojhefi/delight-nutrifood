@@ -61,10 +61,10 @@
                     </thead>
 
                     <tbody style="padding:5px">
-                        
+
                         @foreach ($coleccion->where('COCINA', 'espera') as $lista)
                             <tr style="padding:5px"
-                                class="@if ($lista['ENVIO'] == 'a.- Delivery') {{ 'table-primary' }}@elseif($lista['ENVIO'] == 'b.- Para llevar(Paso a recoger)'){{ 'table-warning' }}@elseif($lista['ENVIO'] == 'c.- Para Mesa'){{ 'table-info' }} @endif">
+                                class="@if ($lista['ENVIO'] == 'a.- Delivery') {{ 'table-primary' }}@elseif($lista['ENVIO'] == 'b.- Para llevar(Paso a recoger)'){{ 'table-secondary' }}@elseif($lista['ENVIO'] == 'c.- Para Mesa'){{ 'table-info' }} @endif">
 
                                 <td style="padding:5px">{{ $loop->iteration }}</td>
 
@@ -109,7 +109,7 @@
                                 </div>
                             </div>
                         @endforeach
-                        
+
 
 
                     </tbody>
