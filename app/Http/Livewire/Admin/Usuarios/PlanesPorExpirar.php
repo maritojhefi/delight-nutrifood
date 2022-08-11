@@ -13,7 +13,7 @@ class PlanesPorExpirar extends Component
         $coleccion = collect();
         foreach ($usuarios as $cliente) {
             foreach ($cliente->planes->groupBy('nombre') as $nombre => $item) {
-                if($item->where('pivot.estado', 'pendiente')->count()==0 && $item->where('pivot.estado', 'finalizado')->count()!=0)
+                if($item->where('pivot.estado', 'finalizado')->count()!=0)
                 {
                     $ultimaFecha = $item->sortBy('pivot.start')->last();
                     $ultimo = date_format(date_create($ultimaFecha->pivot->start), 'd-M');
