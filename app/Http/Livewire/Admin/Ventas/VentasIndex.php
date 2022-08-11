@@ -713,7 +713,7 @@ class VentasIndex extends Component
                 $printer->text("Saldo agregado: " . floatval($this->valorSaldo) . " Bs\n");
                 $printer->feed(1);
                 $printer->setTextSize(1, 2);
-                $printer->text("TOTAL: Bs " . $this->subtotal - $this->cuenta->descuento - $this->valorSaldo - $this->descuentoProductos. "\n");
+                $printer->text("TOTAL PAGADO: Bs " . $this->subtotal - $this->cuenta->descuento - $this->valorSaldo - $this->descuentoProductos. "\n");
                 $printer->feed(1);
             } else {
                 $printer->feed(1);
