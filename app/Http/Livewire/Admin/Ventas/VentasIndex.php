@@ -705,11 +705,12 @@ class VentasIndex extends Component
             $printer->text("--------\n");
             $printer->setTextSize(1, 1);
 
-            $printer->text("Subtotal: " . floatval($this->subtotal) . "Bs\n");
-            $printer->text("Descuento por productos: " . floatval($this->descuentoProductos) . "Bs\n");
-            $printer->text("Otros descuentos: " . floatval($this->cuenta->descuento) . "Bs\n");
+            $printer->text("Subtotal: " . floatval($this->subtotal) . " Bs\n");
+            $printer->text("Descuento por productos: " . floatval($this->descuentoProductos) . " Bs\n");
+            $printer->text("Otros descuentos: " . floatval($this->cuenta->descuento) . " Bs\n");
             if ($this->valorSaldo != null && $this->valorSaldo != 0) {
-                $printer->text("Saldo: " . floatval($this->valorSaldo) . "Bs\n");
+                $printer->feed(1);
+                $printer->text("Saldo agregado: " . floatval($this->valorSaldo) . " Bs\n");
                 $printer->feed(1);
                 $printer->setTextSize(1, 2);
                 $printer->text("TOTAL: Bs " . $this->subtotal - $this->cuenta->descuento - $this->valorSaldo - $this->descuentoProductos. "\n");
@@ -717,7 +718,7 @@ class VentasIndex extends Component
             } else {
                 $printer->feed(1);
                 $printer->setTextSize(1, 2);
-                $printer->text("TOTAL: Bs " . $this->subtotal - $this->cuenta->descuento -$this->descuentoProductos. "\n");
+                $printer->text("TOTAL PAGADO: Bs " . $this->subtotal - $this->cuenta->descuento -$this->descuentoProductos. "\n");
                 $printer->feed(1);
             }
             $printer->setJustification(Printer::JUSTIFY_CENTER);
