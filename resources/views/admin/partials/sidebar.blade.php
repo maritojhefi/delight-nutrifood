@@ -6,8 +6,7 @@
                      'Despachar pedidos' => 'reporte.cocina',
                     'Agregar stock' => 'sucursal.stock',
                     
-                    'Reporte Diario' => 'almuerzos.reporte',
-                    'Reporte Semanal' => 'reporte.semana'
+                    
                    
                 ]">
                     <i class="flaticon-025-dashboard"></i>
