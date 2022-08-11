@@ -89,7 +89,7 @@ class GlobalHelper {
             $tipoEnvio = '';
 
             $det['PLATO']=str_replace(' ','',$det['PLATO']);
-            $det['SOPA']=str_replace(' ','',$det['SOPA']);
+            $det['SOPA']=trim($det['SOPA']);
             $menu->ejecutivo = str_replace(' ','',$menu->ejecutivo);
             $menu->dieta = str_replace(' ','',$menu->dieta);
             $menu->vegetariano = str_replace(' ','',$menu->vegetariano);
