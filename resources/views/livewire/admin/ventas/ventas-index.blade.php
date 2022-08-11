@@ -296,9 +296,13 @@
             <strong>{{ $cuenta->total }} Bs</strong>
 
         </li>
-
         <li class="list-group-item d-flex justify-content-between">
-            <small>Descuento</small>
+            <small>Descuento Productos</small>
+            <strong>{{ $descuentoProductos }} Bs</strong>
+
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+            <small>Descuento Manual</small>
 
             <div x-data="{ open: false }">
                 <button @click="open = ! open" class="badge badge-xs light badge-secondary">Editar</button>
@@ -317,7 +321,7 @@
 
         <li class="list-group-item d-flex justify-content-between">
             <span>Total a pagar</span>
-            <strong>{{ $cuenta->total - $cuenta->descuento }} Bs/{{ $cuenta->puntos }} pts</strong>
+            <strong>{{ $cuenta->total - $cuenta->descuento -$descuentoProductos}} Bs/<small>{{ $cuenta->puntos }} pts</small></strong>
 
         </li>
     </ul>
@@ -327,7 +331,7 @@
 
     @if ($cuenta->total != 0)
         <div class="row m-2">
-            <button class="btn btn-xs light btn-warning" data-bs-toggle="modal" data-bs-target="#basicModal"
+            <button class="btn btn-xs btn-warning" data-bs-toggle="modal" data-bs-target="#basicModal"
                 wire:click="actualizarSaldo">Cobrar
                 Cuenta</button>
 
@@ -348,6 +352,13 @@
 
                                 </div>
                                 <span class="text-muted">{{ $cuenta->total }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                <div>
+                                    <h6 class="my-0">Descuento por Productos</h6>
+
+                                </div>
+                                <span class="text-muted">{{ $descuentoProductos }}</span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between lh-condensed">
                                 <div>
@@ -431,14 +442,26 @@
                                     </label>
                                 </div>
                                 @if ($saldo == true)
+                                <div class="row">
+                                    <div id="saldo" class="col-4">
+                                        <div class="input-group input-group-sm mb-3 input-success">
+                                            <span class="input-group-text">Bs</span>
+                                            <input type="number" wire:model.debounce.500ms="saldoRestante" wire:change="controlarEntrante"
+                                                class="form-control">
+                                        </div>
+
+                                    </div>
                                     <div id="saldo" class="col-4">
                                         <div class="input-group input-group-sm mb-3 input-info">
-                                            <span class="input-group-text">Bs</span>
-                                            <input type="number" wire:model.lazy="valorSaldo"
+                                            <span class="input-group-text">Saldo</span>
+                                            <input type="number" wire:model.debounce.500ms="valorSaldo"
                                                 wire:change="controlarSaldo" class="form-control">
                                         </div>
 
                                     </div>
+                                    
+                                </div>
+                                    
                                     @if ($saldoRestante == 0)
                                         <div class="alert alert-success notification">
                                             <p class="notificaiton-title mb-2"><strong>Correcto!</strong> Se agregara

@@ -44,6 +44,7 @@ class VentasIndex extends Component
     public $name, $cumpleano, $email, $direccion, $password, $password_confirmation;
     public $saldo, $valorSaldo = 0, $deshabilitarBancos = false, $saldoRestante = 0, $verVistaSaldo = false;
     public $montoSaldo, $detalleSaldo;
+    public $descuentoProductos;
     protected $rules = [
         'sucursal' => 'required|integer',
     ];
@@ -92,6 +93,19 @@ class VentasIndex extends Component
             $this->deshabilitarBancos = false;
             $this->saldoRestante = 0;
         }
+    }
+    public function controlarEntrante()
+    {
+        if ($this->saldoRestante > $this->cuenta->total - $this->cuenta->descuento)
+        {
+            $this->saldoRestante = $this->cuenta->total - $this->cuenta->descuento;
+            $this->valorSaldo=$this->cuenta->total-$this->cuenta->descuento-$this->saldoRestante;
+        }
+        else
+        {
+            $this->valorSaldo=$this->cuenta->total-$this->cuenta->descuento-$this->saldoRestante;
+        }
+       
     }
     public function controlarSaldo()
     {
@@ -270,11 +284,12 @@ class VentasIndex extends Component
         $this->listacuenta = $resultado[0];
         DB::table('ventas')
             ->where('id', $cuenta->id)
-            ->update(['total' => $resultado[1], 'puntos' => $resultado[3]]);
+            ->update(['total' => $resultado[1]-$resultado[4], 'puntos' => $resultado[3]]);
 
 
         $this->cuenta->total = $resultado[1];
         $this->cuenta->puntos = $resultado[3];
+        $this->descuentoProductos = $resultado[4];
         $this->itemsCuenta = $resultado[2];
         $this->reset(['adicionales', 'productoapuntado']);
         $this->saldo = false;
@@ -654,7 +669,7 @@ class VentasIndex extends Component
     public function imprimir()
     {
 
-        QrCode::format('png')->size(250)->generate('https://delight-nutrifood.com/miperfil', public_path().'/qrcode.png');
+        QrCode::format('png')->size(150)->generate('https://delight-nutrifood.com/miperfil', public_path().'/qrcode.png');
         if ($this->cuenta->sucursale->id_impresora) {
 
             $nombre_impresora = "POS-582";
@@ -685,18 +700,19 @@ class VentasIndex extends Component
                     $printer->text($list['cantidad'] . "x " . $list['nombre'] . "(" . $list['precio'] . " c/u)" . "\n");
                 }
                 $printer->setJustification(Printer::JUSTIFY_RIGHT);
-                $printer->text(' Bs ' . $list['subtotal'] . "\n");
+                $printer->text(' Bs ' . floatval($list['subtotal']) . "\n");
             }
             $printer->text("--------\n");
             $printer->setTextSize(1, 1);
 
-            $printer->text("Subtotal: " . $this->cuenta->total . "\n");
-            $printer->text("Descuento: " . $this->cuenta->descuento . "\n");
+            $printer->text("Subtotal: " . floatval($this->cuenta->total) . "Bs\n");
+            $printer->text("Descuento por productos: " . floatval($this->descuentoProductos) . "Bs\n");
+            $printer->text("Otros descuentos: " . floatval($this->cuenta->descuento) . "Bs\n");
             if ($this->valorSaldo != null && $this->valorSaldo != 0) {
-                $printer->text("Saldo: " . $this->valorSaldo . "\n");
+                $printer->text("Saldo: " . floatval($this->valorSaldo) . "Bs\n");
                 $printer->feed(1);
                 $printer->setTextSize(1, 2);
-                $printer->text("TOTAL: Bs " . $this->cuenta->total - $this->cuenta->descuento - $this->valorSaldo. "\n");
+                $printer->text("TOTAL: Bs " . $this->cuenta->total - $this->cuenta->descuento - $this->valorSaldo - $this->descuentoProductos. "\n");
                 $printer->feed(1);
             } else {
                 $printer->feed(1);
@@ -709,6 +725,8 @@ class VentasIndex extends Component
             $printer->bitImageColumnFormat($img);
             
             $printer->setTextSize(1, 1);
+            $printer->text("Ingresa a nuestra plataforma!\n");
+            $printer->feed(1);
             $printer->text("Gracias por tu compra\n");
             $printer->text("Vuelve pronto!\n");
             $printer->feed(1);
