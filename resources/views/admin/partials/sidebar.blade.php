@@ -4,7 +4,7 @@
             @if (auth()->user()->role->nombre == 'cocina')
                 <x-sidebar-elements titulo="Cocina" linkglobal="cocina" :lista="[
                      'Despachar pedidos' => 'reporte.cocina',
-                    'Agregar stock' => 'sucursal.stock',
+                    'Agregar stock' => 'sucursal.stock'
                     
                     
                    
