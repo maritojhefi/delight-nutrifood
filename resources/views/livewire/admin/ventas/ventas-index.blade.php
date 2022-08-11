@@ -293,7 +293,7 @@
     <ul class="list-group mb-3 border border-primary">
         <li class="list-group-item d-flex justify-content-between">
             <small>Subtotal</small>
-            <strong>{{ $cuenta->total }} Bs</strong>
+            <strong>{{ $subtotal }} Bs</strong>
 
         </li>
         <li class="list-group-item d-flex justify-content-between">
@@ -321,7 +321,7 @@
 
         <li class="list-group-item d-flex justify-content-between">
             <span>Total a pagar</span>
-            <strong>{{ $cuenta->total - $cuenta->descuento -$descuentoProductos}} Bs/<small>{{ $cuenta->puntos }} pts</small></strong>
+            <strong>{{ $subtotal - $cuenta->descuento -$descuentoProductos}} Bs/<small>{{ $cuenta->puntos }} pts</small></strong>
 
         </li>
     </ul>
@@ -329,7 +329,7 @@
 
 
 
-    @if ($cuenta->total != 0)
+    @if ($subtotal != 0)
         <div class="row m-2">
             <button class="btn btn-xs btn-warning" data-bs-toggle="modal" data-bs-target="#basicModal"
                 wire:click="actualizarSaldo">Cobrar
@@ -351,7 +351,7 @@
                                     <h6 class="my-0">Subtotal</h6>
 
                                 </div>
-                                <span class="text-muted">{{ $cuenta->total }}</span>
+                                <span class="text-muted">{{ $subtotal }}</span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between lh-condensed">
                                 <div>
@@ -380,7 +380,7 @@
 
                             <li class="list-group-item d-flex justify-content-between active">
                                 <span>Total (BS)</span>
-                                <strong>{{ $cuenta->total - $cuenta->descuento }}</strong>
+                                <strong>{{ $subtotal - $cuenta->descuento -$descuentoProductos}}</strong>
                             </li>
                         </ul>
                         <span class="badge light badge-warning">Tipo de pago: </span>
@@ -465,7 +465,7 @@
                                     @if ($saldoRestante == 0)
                                         <div class="alert alert-success notification">
                                             <p class="notificaiton-title mb-2"><strong>Correcto!</strong> Se agregara
-                                                el total de <strong>{{ $cuenta->total - $cuenta->descuento }}
+                                                el total de <strong>{{ $subtotal - $cuenta->descuento -$descuentoProductos}}
                                                     Bs</strong>
                                                 al saldo por cobrar de <strong>{{ $cuenta->cliente->name }}!</strong>
                                             </p>

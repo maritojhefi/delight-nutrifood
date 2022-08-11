@@ -44,7 +44,7 @@ class VentasIndex extends Component
     public $name, $cumpleano, $email, $direccion, $password, $password_confirmation;
     public $saldo, $valorSaldo = 0, $deshabilitarBancos = false, $saldoRestante = 0, $verVistaSaldo = false;
     public $montoSaldo, $detalleSaldo;
-    public $descuentoProductos;
+    public $descuentoProductos,$subtotal;
     protected $rules = [
         'sucursal' => 'required|integer',
     ];
@@ -84,7 +84,7 @@ class VentasIndex extends Component
     public function actualizarSaldo()
     {
         if ($this->saldo) {
-            $this->valorSaldo = $this->cuenta->total - $this->cuenta->descuento;
+            $this->valorSaldo = $this->subtotal - $this->cuenta->descuento-$this->descuentoProductos;
             $this->tipocobro = 'efectivo';
             $this->emit('cambiarCheck');
             $this->deshabilitarBancos = true;
@@ -96,22 +96,22 @@ class VentasIndex extends Component
     }
     public function controlarEntrante()
     {
-        if ($this->saldoRestante > $this->cuenta->total - $this->cuenta->descuento)
+        if ($this->saldoRestante > $this->subtotal - $this->cuenta->descuento-$this->descuentoProductos)
         {
-            $this->saldoRestante = $this->cuenta->total - $this->cuenta->descuento;
-            $this->valorSaldo=$this->cuenta->total-$this->cuenta->descuento-$this->saldoRestante;
+            $this->saldoRestante = $this->subtotal - $this->cuenta->descuento-$this->descuentoProductos;
+            $this->valorSaldo=$this->subtotal-$this->cuenta->descuento-$this->descuentoProductos-$this->saldoRestante;
         }
         else
         {
-            $this->valorSaldo=$this->cuenta->total-$this->cuenta->descuento-$this->saldoRestante;
+            $this->valorSaldo=$this->subtotal-$this->cuenta->descuento-$this->descuentoProductos-$this->saldoRestante;
         }
        
     }
     public function controlarSaldo()
     {
-        if ($this->valorSaldo > $this->cuenta->total - $this->cuenta->descuento) {
+        if ($this->valorSaldo > $this->subtotal - $this->cuenta->descuento-$this->descuentoProductos) {
 
-            $this->valorSaldo = $this->cuenta->total - $this->cuenta->descuento;
+            $this->valorSaldo = $this->subtotal - $this->cuenta->descuento-$this->descuentoProductos;
             $this->tipocobro = false;
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'error',
@@ -119,9 +119,9 @@ class VentasIndex extends Component
             ]);
         } else {
             $this->deshabilitarBancos = false;
-            $this->saldoRestante = ($this->cuenta->total - $this->cuenta->descuento) - $this->valorSaldo;
+            $this->saldoRestante = ($this->subtotal - $this->cuenta->descuento-$this->descuentoProductos) - $this->valorSaldo;
         }
-        if ($this->valorSaldo == $this->cuenta->total - $this->cuenta->descuento) {
+        if ($this->valorSaldo == $this->subtotal - $this->cuenta->descuento-$this->descuentoProductos) {
             $this->tipocobro = 'efectivo';
             $this->emit('cambiarCheck');
             $this->deshabilitarBancos = true;
@@ -287,7 +287,7 @@ class VentasIndex extends Component
             ->update(['total' => $resultado[1]-$resultado[4], 'puntos' => $resultado[3]]);
 
 
-        $this->cuenta->total = $resultado[1];
+        $this->subtotal = $resultado[1];
         $this->cuenta->puntos = $resultado[3];
         $this->descuentoProductos = $resultado[4];
         $this->itemsCuenta = $resultado[2];
@@ -322,7 +322,7 @@ class VentasIndex extends Component
             DB::table('ventas')
                 ->where('id', $this->cuenta->id)
                 ->update(['total' => $resultado[1]]);
-            $this->cuenta->total = $resultado[1];
+            $this->subtotal = $resultado[1];
             $this->cuenta->puntos = $resultado[3];
             $this->itemsCuenta = $resultado[2];
         }
@@ -598,14 +598,14 @@ class VentasIndex extends Component
         if ($cajaactiva != null) {
             if ($cajaactiva->estado == "abierto") {
 
-                DB::table('cajas')->where('id', $cajaactiva->id)->increment('acumulado', ($this->cuenta->total - $this->cuenta->descuento - $this->cuenta->saldo));
+                DB::table('cajas')->where('id', $cajaactiva->id)->increment('acumulado', ($this->subtotal - $this->cuenta->descuento - $this->cuenta->saldo-$this->descuentoProductos));
                 $cuenta = Venta::find($this->cuenta->id);
                 $cuentaguardada = Historial_venta::create([
                     'caja_id' => $cajaactiva->id,
                     'usuario_id' => auth()->user()->id,
                     'sucursale_id' => $this->cuenta->sucursale_id,
                     'cliente_id' => $this->cuenta->cliente_id,
-                    'total' => $this->cuenta->total,
+                    'total' => $this->subtotal-$this->descuentoProductos,
                     'puntos' => $this->cuenta->puntos,
                     'descuento' => $this->cuenta->descuento,
                     'tipo' => $this->tipocobro,
@@ -705,19 +705,19 @@ class VentasIndex extends Component
             $printer->text("--------\n");
             $printer->setTextSize(1, 1);
 
-            $printer->text("Subtotal: " . floatval($this->cuenta->total) . "Bs\n");
+            $printer->text("Subtotal: " . floatval($this->subtotal) . "Bs\n");
             $printer->text("Descuento por productos: " . floatval($this->descuentoProductos) . "Bs\n");
             $printer->text("Otros descuentos: " . floatval($this->cuenta->descuento) . "Bs\n");
             if ($this->valorSaldo != null && $this->valorSaldo != 0) {
                 $printer->text("Saldo: " . floatval($this->valorSaldo) . "Bs\n");
                 $printer->feed(1);
                 $printer->setTextSize(1, 2);
-                $printer->text("TOTAL: Bs " . $this->cuenta->total - $this->cuenta->descuento - $this->valorSaldo - $this->descuentoProductos. "\n");
+                $printer->text("TOTAL: Bs " . $this->subtotal - $this->cuenta->descuento - $this->valorSaldo - $this->descuentoProductos. "\n");
                 $printer->feed(1);
             } else {
                 $printer->feed(1);
                 $printer->setTextSize(1, 2);
-                $printer->text("TOTAL: Bs " . $this->cuenta->total - $this->cuenta->descuento . "\n");
+                $printer->text("TOTAL: Bs " . $this->subtotal - $this->cuenta->descuento -$this->descuentoProductos. "\n");
                 $printer->feed(1);
             }
             $printer->setJustification(Printer::JUSTIFY_CENTER);
