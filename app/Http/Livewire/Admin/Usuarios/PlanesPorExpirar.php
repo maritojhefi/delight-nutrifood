@@ -13,18 +13,21 @@ class PlanesPorExpirar extends Component
         $coleccion = collect();
         foreach ($usuarios as $cliente) {
             foreach ($cliente->planes->groupBy('nombre') as $nombre => $item) {
-
-                $ultimaFecha = $item->sortBy('pivot.start')->last();
-                $ultimo = date_format(date_create($ultimaFecha->pivot->start), 'd-M');
-                $cantidadRestante = $item->where('pivot.start', '>', date('Y-m-d'))->where('pivot.estado', 'pendiente')->count();
-                $coleccion->push([
-                    'nombre' => $cliente->name,
-                    'plan' => $nombre,
-                    'cantidadRestante' => $cantidadRestante,
-                    'ultimoDia' => $ultimo,
-                    'plan_id'=>$ultimaFecha->pivot->plane_id,
-                    'user_id'=>$cliente->id
-                ]);
+                if($item->where('pivot.estado', 'pendiente')->count()==0 && $item->where('pivot.estado', 'finalizado')->count()!=0)
+                {
+                    $ultimaFecha = $item->sortBy('pivot.start')->last();
+                    $ultimo = date_format(date_create($ultimaFecha->pivot->start), 'd-M');
+                    $cantidadRestante = $item->where('pivot.start', '>', date('Y-m-d'))->where('pivot.estado', 'pendiente')->count();
+                    $coleccion->push([
+                        'nombre' => $cliente->name,
+                        'plan' => $nombre,
+                        'cantidadRestante' => $cantidadRestante,
+                        'ultimoDia' => $ultimo,
+                        'plan_id'=>$ultimaFecha->pivot->plane_id,
+                        'user_id'=>$cliente->id
+                    ]);
+                }
+                
             }
         }
         $coleccion=$coleccion->sortBy('cantidadRestante');
