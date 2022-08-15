@@ -4,12 +4,12 @@
             <div class="card-header">
                 <h4 class="card-title">Reporte de Planes expirados/por expirar</h4>
             </div>
-            <div class="col-sm-6 col-md-3 col-lg-5">
+            {{-- <div class="col-sm-6 col-md-3 col-lg-5">
                 <div class="input-group input-{{ $estadoColor }}">
                     <a href="#" wire:click="cambiarEstadoBuscador" class="input-group-text">{{ $estadoBuscador }}</a>
                     <input type="text" class="form-control" wire:model.debounce.500ms="search">
                 </div>
-            </div>
+            </div> --}}
 
             <div class="d-flex justify-content-center">
                 <div wire:loading class="spinner-border" role="status">

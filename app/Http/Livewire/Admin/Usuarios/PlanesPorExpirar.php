@@ -7,6 +7,7 @@ use Livewire\Component;
 
 class PlanesPorExpirar extends Component
 {
+    
     public function render()
     {
         $usuarios = User::has('planes')->get();
