@@ -166,7 +166,7 @@ class MiperfilController extends Controller
         $dia=DB::table('plane_user')->where('id',$idpivot)->first();
            if($dia->estado=="pendiente")
            {
-            DB::table('plane_user')->where('id',$idpivot)->update(['detalle'=>null]);
+            DB::table('plane_user')->where('id',$idpivot)->update(['detalle'=>null,'whatsapp'=>false]);
             return back()->with('success','Ya puede editar este dia!');
            }
            else
