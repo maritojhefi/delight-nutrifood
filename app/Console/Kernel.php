@@ -43,8 +43,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('bloquear:menu')
         ->weeklyOn(6, '15:00')->appendOutputTo($logsAdmin);
 
-        // $schedule->command('actualizar:tickets')
-        // ->everyMinute();
+        $schedule->command('actualizar:tickets')
+        ->everyMinute();
         
         // $schedule->command('whatsapp:enviarMenu')
         // ->everyThirtyMinutes()->appendOutputTo($filePath);
