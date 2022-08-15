@@ -86,7 +86,7 @@ Route::prefix('/carrito')->group(function () {
 
 });
 //perfil
-Route::prefix('/miperfil')->middleware('auth','revisarPerfil')->group(function () {
+Route::prefix('/miperfil')->middleware('auth')->group(function () {
     Route::get('/mostrar/{idplan}/{iduser}', [App\Http\Controllers\admin\UsuariosController::class, 'mostrar']);
     Route::get('/permiso/{id}/{todos}', [App\Http\Controllers\admin\UsuariosController::class, 'permiso']);
     Route::get('/editar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'editar']);

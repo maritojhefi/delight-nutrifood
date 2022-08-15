@@ -86,7 +86,7 @@ Route::post('/circuito/delight/planes', function (Request $request) {
                 preg_match_all('!\d+!', $contenido, $matches); //matches es un array que obtiene numeros dentro del cuerpo del mensaje recibido
                 if (count($matches[0]) > 0) {
                     foreach ($matches[0] as $numero) {
-                        if (date('H') <= 23 && date('H') >= 11)
+                        if (date('H') <= 23 && date('H') >= 18)
                         {
                             AdminTicketsHelper::calcular($numeroOrigen,$numero,$idConversacion,'noche');
                         }
@@ -103,7 +103,7 @@ Route::post('/circuito/delight/planes', function (Request $request) {
                         break;
                     }
                 } else {
-                    WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola!, soy Delia, tu asistente virtual y estoy aprendiendo de a poco para serte cada vez mas util! Si estas dentro de un plan te ayudare a programar tus menus...');
+                    WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Solo puedes responder con numeros que correspondan a una de las opciones propuestas...');
                 }
             } else {
                 WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Para interactuar con el asistente solo puedes responder con mensajes de texto');

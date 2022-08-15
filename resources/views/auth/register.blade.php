@@ -82,8 +82,8 @@
 
                         </div>
                         <button type="submit"
-                            class="btn btn-m mt-2 mb-4 btn-full btn-block bg-green-dark rounded-sm text-uppercase font-900">Iniciar
-                            Sesion</button>
+                            class="btn btn-m mt-2 mb-4 btn-full btn-block bg-green-dark rounded-sm text-uppercase font-900">Registrar
+                            Cuenta</button>
 
 
                         <div class="row">
