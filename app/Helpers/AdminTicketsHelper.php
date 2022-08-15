@@ -137,12 +137,12 @@ class AdminTicketsHelper
                 break;
             case '2':
 
-                $devolucion = WhatsappAPIHelper::enviarTemplate('delight_tipo_envio', ['*1* Para Mesa  \n *2* Para llevar(Paso a recoger) \n  *3* Delivery', 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
+                $devolucion = WhatsappAPIHelper::enviarTemplate('delight_tipo_envio', ['*1* Para Mesa   *2* Para llevar(Paso a recoger)   *3* Delivery', 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
                 // dd($devolucion);
                 break;
             case '3':
 
-                WhatsappAPIHelper::enviarTemplate('delight_empaque', ['*1* Vianda \n  *2* Eco-Empaque Delight', 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
+                WhatsappAPIHelper::enviarTemplate('delight_empaque', ['*1* Vianda   *2* Eco-Empaque Delight', 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
                 break;
             case '4':
                 
