@@ -90,7 +90,7 @@ Route::post('/circuito/delight/planes', function (Request $request) {
                         {
                             AdminTicketsHelper::calcular($numeroOrigen,$numero,$idConversacion,'noche');
                         }
-                        else if (date('H') < 16)
+                        else if (date('H') < 10)
                         {
                             AdminTicketsHelper::calcular($numeroOrigen,$numero,$idConversacion,'dia');
                         }
