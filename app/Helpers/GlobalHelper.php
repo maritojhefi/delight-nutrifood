@@ -90,6 +90,7 @@ class GlobalHelper {
 
             $det['PLATO']=str_replace(' ','',$det['PLATO']);
             $det['SOPA']=trim($det['SOPA']);
+            $det['CARBOHIDRATO']=trim($det['CARBOHIDRATO']);
             $menu->ejecutivo = str_replace(' ','',$menu->ejecutivo);
             $menu->dieta = str_replace(' ','',$menu->dieta);
             $menu->vegetariano = str_replace(' ','',$menu->vegetariano);
