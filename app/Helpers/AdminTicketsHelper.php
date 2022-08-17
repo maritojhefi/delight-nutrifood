@@ -156,7 +156,7 @@ class AdminTicketsHelper
                     $devolucion = WhatsappAPIHelper::enviarTemplate('delight_pedido_listo', [$diaPlan, $detalle->SOPA==''?'Sin sopa':$detalle->SOPA, $detalle->PLATO . '(' . $detalle->CARBOHIDRATO . ')', 'Carbohidrato: *' . $detalle->CARBOHIDRATO . '*', 'Metodo: *' . $detalle->ENVIO . '* ' . ' Empaque: *' . $detalle->EMPAQUE . '*', 'Ingresa a tu perfil en nuestra pagina para personalizar toda tu semana o contactate con nosotros!'], $usuario->telf, 'es');
                     //dd($devolucion);
                 } else {
-                    $devolucion = WhatsappAPIHelper::enviarTemplate('delight_pedido_listo', [$diaPlan, $detalle->SOPA==''?'Sin sopa':$detalle->SOPA, $detalle->PLATO . '(' . $detalle->CARBOHIDRATO . ')', 'Carbohidrato: *' . $detalle->CARBOHIDRATO . '*', 'Metodo: *' . $detalle->ENVIO . '*', 'Ingresa a tu perfil en nuestra pagina para personalizar toda tu semana o contactate con nosotros!'], $usuario->telf, 'es');
+                    $devolucion = WhatsappAPIHelper::enviarTemplate('delight_pedido_listo', [$diaPlan, $detalle->SOPA==''?'Sin sopa':$detalle->SOPA, $detalle->PLATO . '(' . $detalle->CARBOHIDRATO . ')', 'Carbohidrato: *' . $detalle->CARBOHIDRATO . '*', 'Metodo: ' . $detalle->ENVIO . '', 'Ingresa a tu perfil en nuestra pagina para personalizar toda tu semana o contactate con nosotros!'], $usuario->telf, 'es');
                     //dd($devolucion);
                 }
                 
