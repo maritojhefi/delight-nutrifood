@@ -156,7 +156,7 @@ class AdminTicketsHelper
                     $devolucion = WhatsappAPIHelper::enviarTemplate('delight_pedido_listo', [$diaPlan, $detalle->SOPA==''?'Sin sopa':$detalle->SOPA, $detalle->PLATO . '(' . $detalle->CARBOHIDRATO . ')', 'Carbohidrato: *' . $detalle->CARBOHIDRATO . '*', 'Metodo: *' . $detalle->ENVIO . '* ' . ' Empaque: *' . $detalle->EMPAQUE . '*', 'Ingresa a tu perfil en nuestra pagina para personalizar toda tu semana o contactate con nosotros!'], $usuario->telf, 'es');
                     //dd($devolucion);
                 } else {
-                    $devolucion = WhatsappAPIHelper::enviarTemplate('delight_pedido_listo', [$diaPlan, $detalle->SOPA==''?'Sin sopa':$detalle->SOPA, $detalle->PLATO . '(' . $detalle->CARBOHIDRATO . ')', 'Carbohidrato: *' . $detalle->CARBOHIDRATO . '*', 'Metodo: ' . $detalle->ENVIO . '', 'Ingresa a tu perfil en nuestra pagina para personalizar toda tu semana o contactate con nosotros!'], $usuario->telf, 'es');
+                    $devolucion = WhatsappAPIHelper::enviarTemplate('delight_pedido_listo', [$diaPlan, $detalle->SOPA==''?'Sin sopa':$detalle->SOPA, $detalle->PLATO . '(' . $detalle->CARBOHIDRATO . ')', 'Carbohidrato: *' . $detalle->CARBOHIDRATO . '*', 'Metodo: *' . $detalle->ENVIO . '*', 'Ingresa a tu perfil en nuestra pagina para personalizar toda tu semana o contactate con nosotros!'], $usuario->telf, 'es');
                     //dd($devolucion);
                 }
                 
@@ -261,13 +261,13 @@ class AdminTicketsHelper
                     //dd($array->ENVIO);
                     DB::table('whatsapp_plan_almuerzos')->where('id', $usuario->idwhatsapp)->update(['paso_metodo_envio' => true]);
                     if ($array->ENVIO != Plane::ENVIO1) {
-                        AdminTicketsHelper::enviarMensajeConMenu($usuario, $paso, $menuDiaActual,$fechaPlan);
                         DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => json_encode($array)]);
+                        AdminTicketsHelper::enviarMensajeConMenu($usuario, $paso, $menuDiaActual,$fechaPlan);
                     } else {
                         $array->EMPAQUE = 'Ninguno';
                         DB::table('whatsapp_plan_almuerzos')->where('id', $usuario->idwhatsapp)->update(['paso_metodo_empaque' => true]);
-                        AdminTicketsHelper::enviarMensajeConMenu($usuario, '4', $menuDiaActual,$fechaPlan);
                         DB::table('plane_user')->where('id', $datosPlan->id)->update(['detalle' => json_encode($array), 'estado' => Plane::ESTADOPENDIENTE, 'color' => Plane::COLORPENDIENTE, 'whatsapp' => true]);
+                        AdminTicketsHelper::enviarMensajeConMenu($usuario, '4', $menuDiaActual,$fechaPlan);
                     }
                     break;
                 case '4':
