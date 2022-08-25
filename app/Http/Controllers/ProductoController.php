@@ -21,7 +21,7 @@ class ProductoController extends Controller
     public function index(){
         
         if (session()->missing('producstos')) {
-            $productos=Producto::select()
+            $productos=Producto::select('productos.*')
             ->leftjoin('subcategorias','subcategorias.id','productos.subcategoria_id')
             ->leftjoin('categorias','categorias.id','subcategorias.categoria_id')
             ->where('productos.estado','activo')
