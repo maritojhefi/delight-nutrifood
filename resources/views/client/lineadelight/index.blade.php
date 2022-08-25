@@ -10,7 +10,7 @@
                 @php
                     $productoRandom=$productos->random();
                 @endphp
-                <input type="text" class="border-0" placeholder="Ejm: {{$productoRandom->nombre}}" data-search="">
+                <input type="text" class="border-0" placeholder="Busca por ejm: {{$productoRandom->nombre}}" data-search="">
                 <a href="#" class="clear-search disabled mt-0"><i class="fa fa-times color-red-dark"></i></a>
             </div>
             <div class="search-results disabled-search-list mt-3">
