@@ -1,13 +1,16 @@
 @extends('client.master')
 @section('content')
-    <x-cabecera-pagina titulo="Novedades" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Linea Delight!" cabecera="bordeado" />
 
 
     <div class="card card-style bg-transparent mx-0 mb-n2 mt-n3 shadow-0">
         <div class="content mt-2">
             <div class="search-box bg-theme color-theme rounded-m shadow-l">
                 <i class="fa fa-search"></i>
-                <input type="text" class="border-0" placeholder="Que producto buscas hoy?" data-search="">
+                @php
+                    $productoRandom=$productos->random();
+                @endphp
+                <input type="text" class="border-0" placeholder="Ejm: {{$productoRandom}}" data-search="">
                 <a href="#" class="clear-search disabled mt-0"><i class="fa fa-times color-red-dark"></i></a>
             </div>
             <div class="search-results disabled-search-list mt-3">
