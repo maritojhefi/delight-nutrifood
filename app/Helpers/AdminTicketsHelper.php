@@ -44,7 +44,7 @@ class AdminTicketsHelper
             {
                 $fechaPlan = Carbon::parse(Carbon::now())->format('Y-m-d');
             }
-            
+            $diaPlan=WhatsappAPIHelper::saber_dia($fechaPlan);
             $buscarUsuario = DB::table('users')->select(
                 'users.id as idUser',
                 'users.*',
@@ -115,14 +115,14 @@ class AdminTicketsHelper
                     }
                 } else {
 
-                    $devlucion = WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola! No tienes planes pendientes para mañana, probablemente se modifico tu plan o no te encuentras registrado en ninguno, ingresa a tu perfil aqui para mas detalles! https://delight-nutrifood.com/miperfil');
+                    $devlucion = WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola! No tienes planes pendientes para el dia '.$diaPlan.', probablemente se modifico tu plan o no te encuentras registrado en ninguno, ingresa a tu perfil aqui para mas detalles! https://delight-nutrifood.com/miperfil');
                     // dd($devlucion);
                 }
             } else {
-                WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola! No tienes planes pendientes para mañana, probablemente se modifico tu plan o no te encuentras registrado en ninguno, ingresa a tu perfil aqui para mas detalles! https://delight-nutrifood.com/miperfil');
+                WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola! No tienes planes pendientes para el dia '.$diaPlan.', probablemente se modifico tu plan o no te encuentras registrado en ninguno, ingresa a tu perfil aqui para mas detalles! https://delight-nutrifood.com/miperfil');
             }
         } else {
-            WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'No marcaste una respuesta correcta, vuelve a intentarlo');
+            WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'No marcaste una opcion correcta, vuelve a intentarlo');
         }
     }
 
@@ -210,6 +210,8 @@ class AdminTicketsHelper
                         $segundo = $menuDiaActual->dieta;
                     } else if ($numero == "3") {
                         $segundo = $menuDiaActual->vegetariano;
+                    } else if($numero == "4")  {
+                        $segundo = "Ninguno";
                     }
                     $datosPlan = DB::table('plane_user')->where('start', $fechaPlan)->where('user_id', $usuario->idUser)->where('whatsapp', false)->where('estado', Plane::ESTADOPENDIENTE)->first();
                     $plan = Plane::find($datosPlan->plane_id);
