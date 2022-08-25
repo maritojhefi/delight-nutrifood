@@ -9,6 +9,6 @@ class PromocionesController extends Controller
 {
     public function index(){
         $planes=Plane::all();
-        return view('client.promociones.index',compact('planes'));
+        return view('client.lineadelight.index',compact('planes'));
     }
 }

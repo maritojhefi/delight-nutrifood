@@ -58,7 +58,7 @@
         <span>Eco-Tienda</span>
         <i class="fa fa-circle"></i>
     </a>
-    <a id="nav-media" href="{{ route('novedades') }}"
+    <a id="nav-media" href="{{ route('linea.delight') }}"
         class="{{ request()->is('lineadelight' . '*') ? 'nav-item-active' : '' }} ">
         <i class="fa fa-leaf font-16 color-green-dark"></i>
         <span>Linea Delight!</span>

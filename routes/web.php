@@ -73,7 +73,7 @@ Route::prefix('/productos')->group(function () {
 //promociones
 Route::prefix('/lineadelight')->group(function () {
    
-    Route::get('', [App\Http\Controllers\PromocionesController::class, 'index'])->name('novedades');
+    Route::get('', [App\Http\Controllers\LineaDelightController::class, 'index'])->name('linea.delight');
     
  
 

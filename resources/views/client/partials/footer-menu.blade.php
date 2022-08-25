@@ -48,7 +48,7 @@
         <i class="fa fa-heart color-white">
         </i><span class="color-white">Mi Perfil</span>
     </a>
-    <a href="{{ route('novedades') }}" class="{{ request()->is('lineadelight' . '*') ? 'active-nav' : '' }} cargando">
+    <a href="{{ route('linea.delight') }}" class="{{ request()->is('lineadelight' . '*') ? 'active-nav' : '' }} cargando">
         <i class="fa fa-leaf font-16 color-white"></i>
         <span class="color-white">Linea Delight!</span>
     </a>
