@@ -13,7 +13,7 @@
             <div class="search-results disabled-search-list mt-3">
                 <div class="card card-style mx-0 px-2 p-0 mb-0">
 
-                    @foreach (session('productos') as $item)
+                    @foreach ($productos as $item)
                         <a href="{{ route('detalleproducto', $item->id) }}" class="d-flex py-2"
                             data-filter-item="{{ Str::of($item->nombre)->lower() }}"
                             data-filter-name="{{ Str::of($item->nombre)->lower() }}">
