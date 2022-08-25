@@ -5,9 +5,6 @@ var filesToCache = [
     '/styles/highlights/highlight_mint.css',
     '/scripts/bootstrap.min.js',
     '/scripts/custom.js',
-    '/inicio/menusemanal',
-
-    '/novedades',
     //'/productos',
     '/images/icons/icon-72x72.png',
     '/images/icons/icon-96x96.png',

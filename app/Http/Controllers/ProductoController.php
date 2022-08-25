@@ -21,13 +21,18 @@ class ProductoController extends Controller
     public function index(){
         
         if (session()->missing('producstos')) {
-            $productos=Producto::where('estado','activo')->get();
+            $productos=Producto::select()
+            ->leftjoin('subcategorias','subcategorias.id','productos.subcategoria_id')
+            ->leftjoin('categorias','categorias.id','subcategorias.categoria_id')
+            ->where('productos.estado','activo')
+            ->where('categorias.nombre','ECO-TIENDA')
+            ->get();
             session(['productos' => $productos]);
         }
-        $subcategorias=Subcategoria::has('productos')->inRandomOrder()->get();
+        $subcategorias=Subcategoria::has('productos')->where('categoria_id',1)->inRandomOrder()->get();
         $enDescuento=$productos->where('descuento','!=',null)->where('descuento','!=',0)->shuffle();
         //dd($enDescuento);
-        $conMasPuntos=$productos->where('puntos','!=',null)->where('puntos','!=',0)->shuffle();
+        $conMasPuntos=$productos->where('puntos','!=',null)->where('puntos','!=',0)->shuffle()->take(10);
         return view('client.productos.index',compact('subcategorias','enDescuento','conMasPuntos'));
     }
     public function detalleproducto($id){
@@ -39,8 +44,9 @@ class ProductoController extends Controller
     }
     public function menusemanal()
     {
+        $subcategorias=Subcategoria::has('productos')->inRandomOrder()->get();
         $almuerzos=Almuerzo::all();
         $galeria=GaleriaFotos::all();
-        return view('client.productos.menusemanal',compact('galeria','almuerzos'));
+        return view('client.productos.menusemanal',compact('galeria','almuerzos','subcategorias'));
     }
 }

@@ -48,12 +48,12 @@
         <i class="fa fa-heart color-white">
         </i><span class="color-white">Mi Perfil</span>
     </a>
-    <a href="{{ route('novedades') }}" class="{{ request()->is('novedades' . '*') ? 'active-nav' : '' }} cargando">
-        <i class="fa fa-plus fas color-white"></i>
-        <span class="color-white">Novedades</span>
+    <a href="{{ route('novedades') }}" class="{{ request()->is('lineadelight' . '*') ? 'active-nav' : '' }} cargando">
+        <i class="fa fa-leaf font-16 color-white"></i>
+        <span class="color-white">Linea Delight!</span>
     </a>
     <a href="{{ route('menusemanal') }}" class="{{ request()->is('inicio' . '*') ? 'active-nav' : '' }} cargando">
-        <i class="fa fa-home color-white"></i>
+        <i class="fa fa-home font-16 color-white"></i>
         <span class="color-white">Inicio</span>
     </a>
     <a href="{{ route('productos') }}" class="{{ request()->is('productos' . '*') ? 'active-nav' : '' }} cargando">

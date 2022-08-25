@@ -59,18 +59,9 @@
         <i class="fa fa-circle"></i>
     </a>
     <a id="nav-media" href="{{ route('novedades') }}"
-        class="{{ request()->is('novedades' . '*') ? 'nav-item-active' : '' }} ">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            class="feather feather-image" data-feather-line="1" data-feather-size="16"
-            data-feather-color="green-dark" data-feather-bg="green-fade-light"
-            style="stroke-width: 1; width: 16px; height: 16px;">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2">
-            </rect>
-            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-            <polyline points="21 15 16 10 5 21"></polyline>
-        </svg>
-        <span>Novedades</span>
+        class="{{ request()->is('lineadelight' . '*') ? 'nav-item-active' : '' }} ">
+        <i class="fa fa-leaf font-16 color-green-dark"></i>
+        <span>Linea Delight!</span>
         <i class="fa fa-circle"></i>
     </a>
 
