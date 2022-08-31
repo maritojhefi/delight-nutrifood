@@ -112,6 +112,102 @@ class WhatsappAPIHelper
         //dd($devolucion);
         return $devolucion;
     }
+    public static function enviarTemplatePersonalizado(string $nombreTemplate,string $tipoHeader, array $parametrosHeader, string $tipoBody, array $parametrosBody, $destinatario, string $idioma ,$parametrosButton)
+    {
+        $cliente = new Client();
+        $arrayParametrosHeader = '';
+        $arrayParametrosBody = '';
+        $arrayParametrosButton = '';
+        $stringButton='';
+
+        if($parametrosButton)
+        {
+            
+
+            foreach ($parametrosHeader as $parametro) {
+                $arrayParametrosButton = $arrayParametrosButton . '{"type": text,"text":"' . $parametro . '"},';
+            }
+            $arrayParametrosButton = substr($arrayParametrosButton, 0, -1);
+
+            $stringButton=',
+            {
+                "type": "button",
+                "sub_type": "url",
+                "parameters": [
+                    '.$arrayParametrosButton.'
+                ]
+            }';
+        }
+        if ($parametrosHeader) {
+            foreach ($parametrosHeader as $parametro) {
+                $arrayParametrosHeader = $arrayParametrosHeader . '{"type": "'.$tipoHeader.'","'.$tipoHeader.'":"' . $parametro . '"},';
+            }
+            $arrayParametrosHeader = substr($arrayParametrosHeader, 0, -1);
+        }
+        if ($parametrosBody) {
+            foreach ($parametrosBody as $parametro) {
+                $arrayParametrosBody = $arrayParametrosBody . '{"type": "'.$tipoBody.'","'.$tipoBody.'":"' . $parametro . '"},';
+            }
+            $arrayParametrosBody = substr($arrayParametrosBody, 0, -1);
+        }
+        $body='{
+            "to": "'.$destinatario.'",
+            "type": "hsm",
+            "channelId": "a95418f8-9490-4e57-bf64-bc11a48061a0",
+            "content": {
+                "hsm": {
+                    "namespace": "e5d38e32_c51a_4df5_837c_3c3bbba1a747",
+                    "templateName": "'.$nombreTemplate.'",
+                    "language": {
+                        "policy": "deterministic",
+                        "code": "'.$idioma.'"
+                    },
+                    "components": [
+                        {
+                            "type": "header",
+                            "parameters": [
+                                '.$arrayParametrosHeader.'
+                            ]
+                        },
+                        {
+                            "type": "body",
+                            "parameters": [
+                                '.$arrayParametrosBody.'
+                            ]
+                        }'.$stringButton.'
+                    ]
+                }
+            }
+        }';
+
+        $respuesta = $cliente->request('POST', 'https://conversations.messagebird.com/v1/conversations/start', [
+            'headers' => [
+                'Authorization' =>  'AccessKey ' . env('MESSAGEBIRD_KEY'),
+                'Content-Type' => 'application/json'
+            ],
+            'body' => $body
+
+        ]);
+        $devolucion = json_decode($respuesta->getBody()->getContents());
+
+        try {
+            WhatsappHistorial::create([
+                'tipo'=>$tipoBody,
+                'destino'=>$destinatario,
+                'contenido'=>$arrayParametrosBody,
+                'template'=>$nombreTemplate
+            ]);
+        } catch (\Throwable $th) {
+            
+            WhatsappLog::create([
+                'log'=>$th->getMessage(),
+                'titulo'=>'error al crear log'
+            ]);
+        }
+        //WhatsappAPIHelper::historialConversacion($devolucion->id);
+        //dd($devolucion);
+        return $devolucion;
+    }
     public static function enviarTemplateMultimedia(string $nombreTemplate, array $parametros, string $linkMultimedia, string $tipo, $destinatario, string $idioma)
     {
         $cliente = new Client();

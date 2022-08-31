@@ -28,6 +28,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/pruebas', function (Request $request) {
 
+    WhatsappAPIHelper::enviarTemplatePersonalizado('delight_vencimiento_plan','text',['Mario'],'text',['4','almuerzo'],'75140175','es',[]);
+
+
     // $clientesConPlan = DB::table('plane_user')->select(
     //     'plane_user.*',
     //     'users.name',
@@ -38,7 +41,7 @@ Route::get('/pruebas', function (Request $request) {
     //     ->where('plane_user.detalle',null)
     //     ->whereDate('start', '2022-06-23')->get();
     //     dd($clientesConPlan);
-    AdminTicketsHelper::calcular('75140175','0','0c3982f00ec0416081a7b98e5d294e59','dia');
+    //AdminTicketsHelper::calcular('75140175','0','0c3982f00ec0416081a7b98e5d294e59','dia');
 });
 Route::post('/pruebas/webhook', function (Request $request) {
 

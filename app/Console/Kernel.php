@@ -42,6 +42,8 @@ class Kernel extends ConsoleKernel
         ->dailyAt('08:00')->appendOutputTo($logsMenu);
         $schedule->command('bloquear:menu')
         ->weeklyOn(6, '15:00')->appendOutputTo($logsAdmin);
+        $schedule->command('notificar:planExpirado')
+        ->dailyAt('11:00')->appendOutputTo($logsAdmin);
 
         // $schedule->command('actualizar:tickets')
         // ->everyMinute();
