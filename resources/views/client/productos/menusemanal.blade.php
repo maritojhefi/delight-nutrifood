@@ -106,82 +106,95 @@
                 Nuestros menus cambian cada semana y tenemos varias opciones!
             </p>
         </div>
+        @php
+            $diaActual=false;
+        @endphp
         <div class="accordion mb-2" id="accordion-3">
             @foreach ($almuerzos as $almuerzo)
-                <div data-card-height="90" class="card card-style bg-25 mb-0 rounded-s m-3 {{App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d'))==$almuerzo->dia?'gradient-border':''}}"
-                    style="height: 90px;background-image:url({{ asset('imagenes/delight/21.jpeg') }}">
-                    @if (App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d'))==$almuerzo->dia)
-                    <div class="card-top"><i class="fa fa-sun color-yellow-dark fa-3x float-end me-3 mt-3"></i></div>
-                    @endif
-                    
-                    <div class="card-center">
-                        <button class="btn accordion-btn collapsed" data-bs-toggle="collapse"
-                            data-bs-target="#collapse{{ $almuerzo->id }}" aria-expanded="false">
-                            <h4 class="text-center color-white text-uppercase">{{ $almuerzo->dia }}</h4>
-                            <p class="text-center color-white opacity-70 mb-0 mt-n2">Descubre el menu para este dia</p>
-                        </button>
-                    </div>
-                    <div class="card-overlay rounded-s bg-black opacity-70"></div>
+            @php
+                
+                if(App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d'))==$almuerzo->dia)
+                {
+                    $diaActual=true;
+                }
+            @endphp
+            @if ($diaActual)
+            <div data-card-height="90" class="card card-style bg-25 mb-0 rounded-s m-3 {{App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d'))==$almuerzo->dia?'gradient-border':''}}"
+                style="height: 90px;background-image:url({{ asset('imagenes/delight/21.jpeg') }}">
+                @if (App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d'))==$almuerzo->dia)
+                <div class="card-top"><i class="fa fa-sun color-yellow-dark fa-3x float-end me-3 mt-3"></i></div>
+                @endif
+                
+                <div class="card-center">
+                    <button class="btn accordion-btn collapsed" data-bs-toggle="collapse"
+                        data-bs-target="#collapse{{ $almuerzo->id }}" aria-expanded="false">
+                        <h4 class="text-center color-white text-uppercase">{{ $almuerzo->dia }}</h4>
+                        <p class="text-center color-white opacity-70 mb-0 mt-n2">Descubre el menu para este dia</p>
+                    </button>
                 </div>
-                <div id="collapse{{ $almuerzo->id }}" class="collapse" data-bs-parent="#accordion-3" style="">
-                    <div class="content">
-                        <h4 class="mb-n1">{{ $almuerzo->dia }}</h4>
+                <div class="card-overlay rounded-s bg-black opacity-70"></div>
+            </div>
+            <div id="collapse{{ $almuerzo->id }}" class="collapse" data-bs-parent="#accordion-3" style="">
+                <div class="content">
+                    <h4 class="mb-n1">{{ $almuerzo->dia }}</h4>
+                    <div class="divider mb-3"></div>
+                    <div class="row mb-0">
+                        <div class="col-5">
+                            <p class="color-theme font-700">Sopa</p>
+                        </div>
+                        <div class="col-7">
+                            <p class="font-400">{{ $almuerzo->sopa }}</p>
+                        </div>
                         <div class="divider mb-3"></div>
-                        <div class="row mb-0">
-                            <div class="col-5">
-                                <p class="color-theme font-700">Sopa</p>
-                            </div>
-                            <div class="col-7">
-                                <p class="font-400">{{ $almuerzo->sopa }}</p>
-                            </div>
-                            <div class="divider mb-3"></div>
-                            <div class="col-5">
-                                <p class="color-theme font-700">Segundo Ejecutivo</p>
-                            </div>
-                            <div class="col-7">
-                                <p class="font-400">{{ $almuerzo->ejecutivo }}</p>
-                            </div>
-                            <div class="col-5">
-                                <p class="color-theme font-700">Segundo Dieta</p>
-                            </div>
-                            <div class="col-7">
-                                <p class="font-400">{{ $almuerzo->dieta }}</p>
-                            </div>
-                            <div class="col-5">
-                                <p class="color-theme font-700">Segundo Veggie</p>
-                            </div>
-                            <div class="col-7">
-                                <p class="font-400">{{ $almuerzo->vegetariano }}</p>
-                            </div>
-                            <div class="divider mb-3"></div>
-                            <div class="col-5">
-                                <p class="color-theme font-700">Carbohidrato 1</p>
-                            </div>
-                            <div class="col-7">
-                                <p class="font-400">{{ $almuerzo->carbohidrato_1 }}</p>
-                            </div>
-                            <div class="col-5">
-                                <p class="color-theme font-700">Carbohidrato 2</p>
-                            </div>
-                            <div class="col-7">
-                                <p class="font-400">{{ $almuerzo->carbohidrato_2 }}</p>
-                            </div>
-                            <div class="col-5">
-                                <p class="color-theme font-700">Carbohidrato 3</p>
-                            </div>
-                            <div class="col-7">
-                                <p class="font-400">{{ $almuerzo->carbohidrato_3 }}</p>
-                            </div>
-                            <div class="divider mb-3"></div>
-                            <div class="col-5">
-                                <p class="color-theme font-700">Jugo</p>
-                            </div>
-                            <div class="col-7">
-                                <p class="font-400">{{ $almuerzo->jugo }}</p>
-                            </div>
+                        <div class="col-5">
+                            <p class="color-theme font-700">Segundo Ejecutivo</p>
+                        </div>
+                        <div class="col-7">
+                            <p class="font-400">{{ $almuerzo->ejecutivo }}</p>
+                        </div>
+                        <div class="col-5">
+                            <p class="color-theme font-700">Segundo Dieta</p>
+                        </div>
+                        <div class="col-7">
+                            <p class="font-400">{{ $almuerzo->dieta }}</p>
+                        </div>
+                        <div class="col-5">
+                            <p class="color-theme font-700">Segundo Veggie</p>
+                        </div>
+                        <div class="col-7">
+                            <p class="font-400">{{ $almuerzo->vegetariano }}</p>
+                        </div>
+                        <div class="divider mb-3"></div>
+                        <div class="col-5">
+                            <p class="color-theme font-700">Carbohidrato 1</p>
+                        </div>
+                        <div class="col-7">
+                            <p class="font-400">{{ $almuerzo->carbohidrato_1 }}</p>
+                        </div>
+                        <div class="col-5">
+                            <p class="color-theme font-700">Carbohidrato 2</p>
+                        </div>
+                        <div class="col-7">
+                            <p class="font-400">{{ $almuerzo->carbohidrato_2 }}</p>
+                        </div>
+                        <div class="col-5">
+                            <p class="color-theme font-700">Carbohidrato 3</p>
+                        </div>
+                        <div class="col-7">
+                            <p class="font-400">{{ $almuerzo->carbohidrato_3 }}</p>
+                        </div>
+                        <div class="divider mb-3"></div>
+                        <div class="col-5">
+                            <p class="color-theme font-700">Jugo</p>
+                        </div>
+                        <div class="col-7">
+                            <p class="font-400">{{ $almuerzo->jugo }}</p>
                         </div>
                     </div>
                 </div>
+            </div>
+            @endif
+                
             @endforeach
 
 
