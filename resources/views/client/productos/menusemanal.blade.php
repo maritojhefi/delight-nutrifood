@@ -1,4 +1,45 @@
 @extends('client.master')
+
+@push('header')
+    <style>
+        .gradient-border {
+            --borderWidth: 3px;
+            background: #1D1F20;
+            position: relative;
+            border-radius: var(--borderWidth);
+        }
+
+        .gradient-border:after {
+            content: '';
+            position: absolute;
+            top: calc(-1 * var(--borderWidth));
+            left: calc(-1 * var(--borderWidth));
+            height: calc(100% + var(--borderWidth) * 2);
+            width: calc(100% + var(--borderWidth) * 2);
+            background: linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82);
+            border-radius: calc(2 * var(--borderWidth));
+            z-index: -1;
+            animation: animatedgradient 3s ease alternate infinite;
+            background-size: 300% 300%;
+        }
+
+
+        @keyframes animatedgradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        
+    </style>
+@endpush
 @section('content')
     <x-cabecera-pagina titulo="Bienvenidos a Delight" cabecera="bordeado" />
 
@@ -16,12 +57,12 @@
         <div class="splide__track" id="single-slider-2-track">
             <div class="splide__list" id="single-slider-2-list" style="transform: translateX(-1146px);">
                 @foreach ($galeria as $foto)
-                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 382px;">
+                    <div class="splide__slide splide__slide--clone " aria-hidden="true" tabindex="-1"
+                        style="width: 382px;">
                         <div data-card-height="300" class="card bg-28 mx-3 rounded-l shadow-l"
                             style="height: 300px;background-image:url({{ asset('imagenes/galeria/' . $foto->foto) }})">
                             <div class="card-top">
-                                <span
-                                    class="badge bg-red-dark text-uppercase p-2 rounded-s m-4">{{ $foto->titulo }}</span>
+                                <span class="badge bg-red-dark text-uppercase p-2 rounded-s m-4">{{ $foto->titulo }}</span>
                             </div>
                             <div class="card-top">
                                 <a href="#" class="bg-theme color-theme rounded-sm icon icon-xs float-end m-3"><i
@@ -67,8 +108,12 @@
         </div>
         <div class="accordion mb-2" id="accordion-3">
             @foreach ($almuerzos as $almuerzo)
-                <div data-card-height="90" class="card card-style bg-25 mb-0 rounded-s m-3"
+                <div data-card-height="90" class="card card-style bg-25 mb-0 rounded-s m-3 {{App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d'))==$almuerzo->dia?'gradient-border':''}}"
                     style="height: 90px;background-image:url({{ asset('imagenes/delight/21.jpeg') }}">
+                    @if (App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d'))==$almuerzo->dia)
+                    <div class="card-top"><i class="fa fa-sun color-yellow-dark fa-3x float-end me-3 mt-3"></i></div>
+                    @endif
+                    
                     <div class="card-center">
                         <button class="btn accordion-btn collapsed" data-bs-toggle="collapse"
                             data-bs-target="#collapse{{ $almuerzo->id }}" aria-expanded="false">
@@ -143,17 +188,17 @@
         </div>
     </div>
     @auth
-        
+
 
 
         <div data-card-height="140" class="card card-style round-medium shadow-huge top-30"
             style="height: 140px;background-image:url('{{ asset('imagenes/delight/4.jpeg') }}')">
             <div class="card-top mt-3 ms-3">
-                <h2 class="color-white pt-3 pb-3">{{ Str::limit(auth()->user()->name,25) }}</h2>
+                <h2 class="color-white pt-3 pb-3">{{ Str::limit(auth()->user()->name, 25) }}</h2>
 
             </div>
             <div class="card-top mt-3 me-3">
-                <a href="{{route('miperfil')}}"
+                <a href="{{ route('miperfil') }}"
                     class="float-end bg-white color-black btn btn-s rounded-xl font-900 mt-2 text-uppercase font-11">Ir a mi
                     perfil</a>
             </div>
