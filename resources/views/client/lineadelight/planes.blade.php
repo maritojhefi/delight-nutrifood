@@ -23,6 +23,7 @@
     @foreach ($subcategoria->productos as $producto)
     
         <div class="card card-style gradient-pink"  style="background-image:url({{ asset($producto->pathAttachment()) }})">
+            <div class="card-overlay bg-dark opacity-80"></div>
             <div class="content pb-3 pt-3">
                 <h3 class="mb-1 color-white font-700">{{$producto->nombre()}}</h3>
                 <p class="color-white opacity-80">
@@ -30,7 +31,7 @@
                 </p>
                 <a href="#" class="btn btn-s shadow-l bg-white color-black font-900 carrito" id="{{$producto->id}}">Lo quiero!</a>
             </div>
-            <div class="card-overlay bg-dark opacity-80"></div>
+            
         </div>
     @endforeach
     @include('client.lineadelight.include-planes-modal')
