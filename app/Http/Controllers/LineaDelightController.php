@@ -29,6 +29,8 @@ class LineaDelightController extends Controller
     public function categoriaPlanes()
     {
         $subcategoria=Subcategoria::find(1);
+
+        dd($subcategoria);
         return view('client.lineadelight.planes',compact('subcategoria'));
     }
 }

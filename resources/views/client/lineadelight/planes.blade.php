@@ -21,6 +21,7 @@
     </a>
 
     @foreach ($subcategoria->productos() as $item)
+    
         <div class="card card-style gradient-pink">
             <div class="content pb-3 pt-3">
                 <h3 class="mb-1 color-white font-700">Gradient Card</h3>
