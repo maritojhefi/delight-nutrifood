@@ -3,14 +3,16 @@
     <x-cabecera-pagina titulo="Linea Delight!" cabecera="bordeado" />
 
 
+
     <div class="card card-style bg-transparent mx-0 mb-n2 mt-n3 shadow-0">
         <div class="content mt-2">
             <div class="search-box bg-theme color-theme rounded-m shadow-l">
                 <i class="fa fa-search"></i>
                 @php
-                    $productoRandom=$productos->random();
+                    $productoRandom = $productos->random();
                 @endphp
-                <input type="text" class="border-0" placeholder="Busca por ejm: {{$productoRandom->nombre}}" data-search="">
+                <input type="text" class="border-0" placeholder="Busca por ejm: {{ $productoRandom->nombre }}"
+                    data-search="">
                 <a href="#" class="clear-search disabled mt-0"><i class="fa fa-times color-red-dark"></i></a>
             </div>
             <div class="search-results disabled-search-list mt-3">
@@ -50,6 +52,8 @@
             </div>
         </div>
     </div>
+
+
     <div class="splide double-slider slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"
         id="double-slider-1a" style="visibility: visible;">
         <div class="splide__track" id="double-slider-1a-track">
@@ -57,7 +61,7 @@
                 style="transform: translate(-1162px, 0px); transition: transform 400ms cubic-bezier(0.42, 0.65, 0.27, 0.99) 0s;">
                 @foreach ($subcategorias as $item)
                     <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 166px;">
-                        <a href="{{route('listar.productos.subcategoria',$item->id)}}" class="mx-3">
+                        <a href="{{ route('listar.productos.subcategoria', $item->id) }}" class="mx-3">
                             <div class="card card-style me-0 mb-0"
                                 style="background-image: url('{{ asset($item->rutaFoto()) }}'); height: 250px;"
                                 data-card-height="250">
@@ -85,11 +89,34 @@
                     aria-current="true"></button></li>
         </ul>
     </div>
+
+    <div data-card-height="140" class="card card-style round-medium shadow-huge top-30"
+        style="height: 140px;background-image:url('{{ asset('imagenes/delight/2.jpeg') }}')">
+        <div class="card-top mt-3 ms-3">
+            <h2 class="color-white pt-3 pb-3">Planes Saludables!</h2>
+
+        </div>
+        <div class="card-top mt-3 me-3">
+            <a href="{{ route('categoria.planes') }}"
+                class="float-end bg-white color-black btn btn-s rounded-xl font-900 mt-2 text-uppercase font-11">Ver
+                planes</a>
+        </div>
+
+        <div class="card-bottom ms-3 mb-3">
+            <i class="fa fa-heart font-25 color-white"></i>
+        </div>
+        <div class="card-bottom mb-n3 ps-5 ms-4">
+            <h5 class="font-13 color-white mb-n1">Encuentra uno para ti!</h5>
+            <p class="color-white font-10 opacity-70">Delight by Macrobyte</p>
+        </div>
+
+        <div class="card-overlay bg-gradient opacity-80"></div>
+    </div>
     @if ($enDescuento->count() > 0)
         <div class="d-flex px-3 mb-2">
             <h4 class="mb-2 font-600">Productos en descuento!</h4>
         </div>
-      
+
 
         <div class="splide single-slider slider-no-arrows slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"
             id="single-slider-2" style="visibility: visible;">
@@ -107,35 +134,39 @@
             <div class="splide__track" id="single-slider-2-track">
                 <div class="splide__list" id="single-slider-2-list" style="transform: translateX(-1328px);">
                     @foreach ($enDescuento as $item)
-                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1"
-                        style="width: 332px;">
-                        <div data-card-height="400" class="card mx-3 rounded-m shadow-l"
-                            style="background-image: url({{ asset($item->pathAttachment()) }}); height: 400px;">
-                            <div class="card-top">
-                                <a href="#" class="bg-theme color-theme rounded-sm icon icon-xs float-end m-3"><i
-                                        class="far fa-shopping-bag font-12"></i></a>
-                            </div>
-                            <div class="card-bottom p-3 m-2 rounded-m bg-white">
-                                <a href="#">
-                                    <h1 class="font-14 line-height-m font-700 mb-0">
-                                        {{Str::limit($item->nombre(),50)}}
-                                    </h1>
-                                    <p class="mb-0">
-                                        {{Str::limit($item->detalle(),60)}}
-                                    </p>
-                                </a>
-                                <div class="d-flex pt-3">
-                                    <div class="align-self-center">
-                                        <strong class="font-800 font-22 color-theme"><small class="text-secondary"><del>{{$item->precio}}</del></small><span > {{$item->descuento}} Bs</span> </strong>
-                                    </div>
-                                    <div class="align-self-center ms-auto">
-                                        <a href="#"
-                                            class="btn-s rounded-s btn bg-highlight font-700 text-uppercase mb-1 carrito" id="{{$item->id}}">Añadir <i class="fa fa-shopping-cart"></i></a>
+                        <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1"
+                            style="width: 332px;">
+                            <div data-card-height="400" class="card mx-3 rounded-m shadow-l"
+                                style="background-image: url({{ asset($item->pathAttachment()) }}); height: 400px;">
+                                <div class="card-top">
+                                    <a href="#"
+                                        class="bg-theme color-theme rounded-sm icon icon-xs float-end m-3"><i
+                                            class="far fa-shopping-bag font-12"></i></a>
+                                </div>
+                                <div class="card-bottom p-3 m-2 rounded-m bg-white">
+                                    <a href="#">
+                                        <h1 class="font-14 line-height-m font-700 mb-0">
+                                            {{ Str::limit($item->nombre(), 50) }}
+                                        </h1>
+                                        <p class="mb-0">
+                                            {{ Str::limit($item->detalle(), 60) }}
+                                        </p>
+                                    </a>
+                                    <div class="d-flex pt-3">
+                                        <div class="align-self-center">
+                                            <strong class="font-800 font-22 color-theme"><small
+                                                    class="text-secondary"><del>{{ $item->precio }}</del></small><span>
+                                                    {{ $item->descuento }} Bs</span> </strong>
+                                        </div>
+                                        <div class="align-self-center ms-auto">
+                                            <a href="#"
+                                                class="btn-s rounded-s btn bg-highlight font-700 text-uppercase mb-1 carrito"
+                                                id="{{ $item->id }}">Añadir <i class="fa fa-shopping-cart"></i></a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                     @endforeach
                 </div>
             </div>
@@ -152,7 +183,7 @@
     @endif
     @if ($conMasPuntos->count() > 0)
         <div class="card preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
-            style="background-image: url({{asset('imagenes/delight/8.jpeg')}});">
+            style="background-image: url({{ asset('imagenes/delight/8.jpeg') }});">
             <div class="card-body">
                 <h4 class="color-white pt-3 font-24">Gana Puntos!</h4>
                 <p class="color-white pt-1">

@@ -74,7 +74,7 @@ Route::prefix('/productos')->group(function () {
 Route::prefix('/lineadelight')->group(function () {
    
     Route::get('', [App\Http\Controllers\LineaDelightController::class, 'index'])->name('linea.delight');
-    
+    Route::get('/categoria/planes', [App\Http\Controllers\LineaDelightController::class, 'categoriaPlanes'])->name('categoria.planes');
  
 
 

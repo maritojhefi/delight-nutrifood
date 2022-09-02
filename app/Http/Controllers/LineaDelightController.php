@@ -26,4 +26,9 @@ class LineaDelightController extends Controller
         return view('client.lineadelight.index', compact('subcategorias', 'enDescuento', 'conMasPuntos','productos'));
         
     }
+    public function categoriaPlanes()
+    {
+        $subcategoria=Subcategoria::find(1);
+        return view('client.lineadelight.planes',compact('subcategoria'));
+    }
 }
