@@ -3,7 +3,7 @@
     <x-cabecera-pagina titulo="Planes Delight" cabecera="bordeado" />
     <a href="#" data-menu="menu-tips-1">
         <div class="card card-style bg-11" data-card-height="175"
-            style="height: 175px;background-image:url({{ asset('imagenes/delight/gifpulse6.gif') }})">
+            style="height: 175px;background-image:url({{ asset('imagenes/delight/gifpulse7.gif') }})">
             <div class="card-center">
                 <div class="row mb-0">
                     <div class="col-10">
@@ -19,16 +19,16 @@
             <div class="card-overlay bg-dark opacity-80"></div>
         </div>
     </a>
-
-    @foreach ($subcategoria->productos() as $item)
     
-        <div class="card card-style gradient-pink">
+    @foreach ($subcategoria->productos as $producto)
+    
+        <div class="card card-style gradient-pink"  style="background-image:url({{ asset('imagenes/delight/gifpulse7.gif') }})">
             <div class="content pb-3 pt-3">
-                <h3 class="mb-1 color-white font-700">Gradient Card</h3>
+                <h3 class="mb-1 color-white font-700">{{$producto->nombre()}}</h3>
                 <p class="color-white opacity-80">
-                    This box is a solid color. You can set it to the page highlight or set any color from the pack.
+                    {{$producto->detalle}}
                 </p>
-                <a href="#" class="btn btn-s shadow-l bg-white color-black font-900">AWESOME</a>
+                <a href="#" class="btn btn-s shadow-l bg-white color-black font-900 carrito" id="{{$producto->id}}">Lo quiero!</a>
             </div>
         </div>
     @endforeach

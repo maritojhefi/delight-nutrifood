@@ -30,7 +30,7 @@ class LineaDelightController extends Controller
     {
         $subcategoria=Subcategoria::find(1);
 
-        dd($subcategoria->productos());
+        //dd($subcategoria->productos());
         return view('client.lineadelight.planes',compact('subcategoria'));
     }
 }
