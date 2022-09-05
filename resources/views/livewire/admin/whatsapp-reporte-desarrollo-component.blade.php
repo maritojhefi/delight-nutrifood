@@ -30,7 +30,7 @@
                                     <td><a href="{{ route('detalleplan', [$ticket->user_id, $ticket->plane_id]) }}">{{$ticket->name}}</a></td>
                                     <td>{{$ticket->start}}</td>
                                     <td>{{$ticket->telf}}</td>
-                                    <td>{{$array->PLATO}}</td>
+                                    <td>{{$array->PLATO?$array->PLATO:''}}</td>
                                     <td>{{$array->CARBOHIDRATO}}</td>
                                     <td>{{$array->ENVIO}}</td>
                                     <td>{{$array->EMPAQUE}}</td>
@@ -80,7 +80,7 @@
                                     <td><a href="{{ route('detalleplan', [$ticket->user_id, $ticket->plane_id]) }}">{{$ticket->name}}</a></td>
                                     <td>{{$ticket->start}}</td>
                                     <td>{{$ticket->telf}}</td>
-                                    <td>{{$array->PLATO}}</td>
+                                    <td>{{$array->PLATO?$array->PLATO:''}}</td>
                                     <td>{{$array->CARBOHIDRATO}}</td>
                                     <td>{{$array->ENVIO}}</td>
                                     <td>{{$array->EMPAQUE}}</td>

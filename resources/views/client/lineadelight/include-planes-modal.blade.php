@@ -1,5 +1,5 @@
 @push('modals')
-    <div id="menu-tips-1" class="menu menu-box-modal menu-box-detached rounded-l" data-menu-width="360"
+    <div id="menu-tips-1" class="menu menu-box-modal menu-box-detached rounded-l"  data-menu-width="360"
         data-menu-effect="menu-over">
         <div class="card header-card shape-rounded" data-card-height="200">
 
