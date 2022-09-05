@@ -31,9 +31,9 @@
                                     <td>{{$ticket->start}}</td>
                                     <td>{{$ticket->telf}}</td>
                                     <td>{{isset($array->PLATO)?$array->PLATO:''}}</td>
-                                    <td>{{$array->CARBOHIDRATO}}</td>
-                                    <td>{{$array->ENVIO}}</td>
-                                    <td>{{$array->EMPAQUE}}</td>
+                                    <td>{{isset($array->CARBOHIDRATO)?$array->CARBOHIDRATO:''}}</td>
+                                    <td>{{isset($array->ENVIO)?$array->ENVIO:''}}</td>
+                                    <td>{{isset($array->EMPAQUE)?$array->EMPAQUE:''}}</td>
                                     <td><span class="btn btn-{{$ticket->whatsapp?'success':'snapchat'}} btn-sm">{{$ticket->whatsapp?'Finalizado':'En desarrollo'}}</span></td>
                                 </tr>
                                 
@@ -80,10 +80,11 @@
                                     <td><a href="{{ route('detalleplan', [$ticket->user_id, $ticket->plane_id]) }}">{{$ticket->name}}</a></td>
                                     <td>{{$ticket->start}}</td>
                                     <td>{{$ticket->telf}}</td>
+                                    
                                     <td>{{isset($array->PLATO)?$array->PLATO:''}}</td>
-                                    <td>{{$array->CARBOHIDRATO}}</td>
-                                    <td>{{$array->ENVIO}}</td>
-                                    <td>{{$array->EMPAQUE}}</td>
+                                    <td>{{isset($array->CARBOHIDRATO)?$array->CARBOHIDRATO:''}}</td>
+                                    <td>{{isset($array->ENVIO)?$array->ENVIO:''}}</td>
+                                    <td>{{isset($array->EMPAQUE)?$array->EMPAQUE:''}}</td>
                                     <td><span class="btn btn-{{$ticket->whatsapp?'success':'snapchat'}} btn-sm">{{$ticket->whatsapp?'Finalizado':'En desarrollo'}}</span></td>
                                 </tr>
                                 
