@@ -376,8 +376,8 @@
         <div class="card header-card shape-rounded" data-card-height="200">
 
             <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset('imagenes/delight/6.jpeg') }}"
-                data-ll-status="loaded" style="background-image: url({{ asset('imagenes/delight/6.jpeg') }});"></div>
+            <div class="card-bg preload-img entered loaded" data-src="{{ asset('imagenes/delight/1.jpeg') }}"
+                data-ll-status="loaded" style="background-image: url({{ asset('imagenes/delight/1.jpeg') }});"></div>
         </div>
         <div class="mt-3 pt-1 pb-1">
             <h1 class="text-center">
