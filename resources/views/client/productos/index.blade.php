@@ -114,7 +114,7 @@
                                         class="far fa-shopping-bag font-12"></i></a>
                             </div>
                             <div class="card-bottom p-3 m-2 rounded-m bg-white">
-                                <a href="#">
+                                <a href="{{route('detalleproducto',$item->id)}}">
                                     <h1 class="font-14 line-height-m font-700 mb-0">
                                         {{Str::limit($item->nombre(),50)}}
                                     </h1>
