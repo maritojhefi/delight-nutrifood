@@ -22,27 +22,27 @@
     
     @foreach ($subcategoria->productos as $producto)
     
-        <a href="#" class="carrito" id="{{$producto->id}}">
-            <div data-card-height="240" class="card card-style round-medium shadow-huge top-30" style="background-image:url({{ asset($producto->pathAttachment()) }})">
-                <div class="card-top mt-3 ms-3">
-                    <h2 class="color-white pt-3 pb-3">{{$producto->nombre()}}</h2>
         
-                </div>
-               
-        
-                <div class="card-bottom ms-3 mb-3">
-                    <i class="fa fa-heart font-25 color-white"></i>
-                </div>
-                <div class="card-bottom mb-n3 ps-5 ms-4">
-                    <h5 class="font-13 color-white mb-n1">Disponible!</h5>
-                    <p class="color-white font-10 opacity-70">{{$producto->detalle}}</p>
-                </div>
-        
-                <div class="card-overlay bg-gradient opacity-80"></div>
-            </div>
-        </a>
 
-        
+        <div data-card-height="220" class="card card-style round-medium shadow-huge top-30" style="background-image:url({{ asset($producto->pathAttachment()) }})">
+            <div class="card-top mt-3 ms-3">
+                <h2 class="color-white pt-3 pb-3">{{$producto->nombre()}}</h2>
+    
+            </div>
+            <div class="card-top mt-3 me-3">
+                <a href="#" class="float-end bg-white color-black btn btn-s rounded-xl font-900 mt-2 text-uppercase font-11 carrito" id="{{$producto->id}}">Lo quiero!</a>
+            </div>
+    
+            <div class="card-bottom ms-3 mb-3">
+                <i class="fa fa-heart font-25 color-white"></i>
+            </div>
+            <div class="card-bottom mb-n3 ps-5 ms-4">
+                <h5 class="font-13 color-white mb-n1">Disponible!</h5>
+                <p class="color-white font-10 opacity-70">{{$producto->detalle}}</p>
+            </div>
+    
+            <div class="card-overlay bg-gradient opacity-80"></div>
+        </div>
     @endforeach
     @include('client.lineadelight.include-planes-modal')
 @endsection
