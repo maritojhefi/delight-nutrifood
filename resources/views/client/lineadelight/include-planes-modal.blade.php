@@ -371,9 +371,9 @@
             </div>
         </div>
     </div>
-    <div id="menu-tips-9" class="menu menu-box-modal menu-box-detached rounded-m" data-menu-height="360"
+    <div id="menu-tips-9" class="menu menu-box-modal menu-box-detached rounded-m" 
         data-menu-width="340" data-menu-effect="menu-over">
-        <div class="card header-card shape-rounded" data-card-height="200">
+        <div class="card header-card shape-rounded">
 
             <div class="card-overlay dark-mode-tint"></div>
             <div class="card-bg preload-img entered loaded" data-src="{{ asset('imagenes/delight/21.jpeg') }}"
@@ -397,7 +397,7 @@
         </div>
         <div class="card card-style">
             <p class="boxed-text-xl pt-3 mb-3">
-                LOS PUNTOS ANTERIORES VAN A FAVOR DE PRESERVAR UNA BUENA ORGANIZACION ADMINISTRATIVA DE NUESTROS CLIENTES, PARA OFRECER LA MEJOR ATENCION Y CALIDAD EN NUESTROS PRODUCTOS,
+                LOS PUNTOS ANTERIORES ESTAN ENFOCADOS A FAVOR DE PRESERVAR UNA BUENA ORGANIZACION ADMINISTRATIVA Y PARA OFRECER LA MEJOR ATENCION Y CALIDAD EN CADA UNO DE NUESTROS PRODUCTOS,
             <STRONG>DELIGHT, NUTRIENDO TUS HABITOS!</STRONG> </p>
         </div>
         <a href="#"
