@@ -26,7 +26,7 @@
 
         <div data-card-height="220" class="card card-style round-medium shadow-huge top-30" style="background-image:url({{ asset($producto->pathAttachment()) }})">
             <div class="card-top mt-3 ms-3">
-                <h2 class="color-white pt-3 pb-3">{{$producto->nombre()}}</h2>
+                <h2 class="color-white pt-3 pb-3">{!! wordwrap($producto->nombre(), 20, "<br />\n") !!}</h2>
     
             </div>
             <div class="card-top mt-3 me-3">
