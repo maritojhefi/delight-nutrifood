@@ -373,7 +373,7 @@
     </div>
     <div id="menu-tips-9" class="menu menu-box-modal menu-box-detached rounded-m" 
         data-menu-width="340" data-menu-effect="menu-over">
-        <div class="card header-card shape-rounded">
+        <div class="card header-card shape-rounded" data-card-height="200">
 
             <div class="card-overlay dark-mode-tint"></div>
             <div class="card-bg preload-img entered loaded" data-src="{{ asset('imagenes/delight/6.jpeg') }}"
