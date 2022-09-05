@@ -397,8 +397,8 @@
         </div>
         <div class="card card-style">
             <p class="boxed-text-xl pt-3 mb-3">
-                Azures is powered by a gorgeous color scheme that you can edit with ease and add your own custom feel to it!
-                It's super simple! </p>
+                LOS PUNTOS ANTERIORES VAN A FAVOR DE PRESERVAR UNA BUENA ORGANIZACION ADMINISTRATIVA DE NUESTROS CLIENTES, PARA OFRECER LA MEJOR ATENCION Y CALIDAD EN NUESTROS PRODUCTOS,
+            <STRONG>DELIGHT, NUTRIENDO TUS HABITOS!</STRONG> </p>
         </div>
         <a href="#"
             class="close-menu btn btn-m btn-margins rounded-sm btn-full shadow-l bg-highlight text-uppercase font-900">Entiendo!</a>
