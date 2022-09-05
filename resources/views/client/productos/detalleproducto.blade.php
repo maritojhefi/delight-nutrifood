@@ -17,7 +17,7 @@
                     {{ $producto->descuento ? $producto->descuento : $producto->precio }} Bs <br><sup
                         class="font-400 font-17 opacity-50">({{ $producto->medicion }})</sup></h1>
                 <span
-                    class="badge bg-dark color-white px-2 py-1 mt-n1 text-uppercase d-block float-end">{{ $producto->descuento ? 'En descuento' : 'Sin promocion' }}</span>
+                    class="badge {{$producto->descuento ?'bg-danger':'bg-dark'}} color-white px-2 py-1 mt-n1 text-uppercase d-block float-end">{{ $producto->descuento ? 'En descuento' : 'Sin promocion' }}</span>
             </div>
             <div class="card-overlay bg-gradient opacity-70 rounded-0"></div>
         </div>
