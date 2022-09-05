@@ -23,7 +23,7 @@
     @foreach ($subcategoria->productos as $producto)
     
         <a href="#" class="carrito" id="{{$producto->id}}">
-            <div data-card-height="140" class="card card-style round-medium shadow-huge top-30" style="height: 140px;background-image:url({{ asset($producto->pathAttachment()) }})">
+            <div data-card-height="140" class="card card-style round-medium shadow-huge top-30" style="background-image:url({{ asset($producto->pathAttachment()) }})">
                 <div class="card-top mt-3 ms-3">
                     <h2 class="color-white pt-3 pb-3">{{$producto->nombre()}}</h2>
         
