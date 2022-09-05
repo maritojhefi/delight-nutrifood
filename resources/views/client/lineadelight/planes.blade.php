@@ -33,7 +33,7 @@
                 <div class="card-bottom ms-3 mb-3">
                     <i class="fa fa-heart font-25 color-white"></i>
                 </div>
-                <div class="card-bottom mb-n3 ps-5 ms-4">
+                <div class="card-bottom mt-3">
                     <h5 class="font-13 color-white mb-n1">Disponible!</h5>
                     <p class="color-white font-10 opacity-70">{{$producto->detalle}}</p>
                 </div>
