@@ -104,7 +104,9 @@
                             const asfdfd = setTimeout(resetear, 500);
                             const asfdffd = setTimeout(resetear, 1000);
                             $("#basicModal").modal('hide');
-                           
+                            var toastID = document.getElementById('permiso-aceptado');
+                                toastID = new bootstrap.Toast(toastID);
+                                toastID.show();
                         }
 
 
@@ -138,7 +140,9 @@
                             const asfdffd = setTimeout(resetear, 1000);
                             $("#basicModal").modal('hide');
                             $("#modalPermiso").modal('hide');
-
+                            var toastID = document.getElementById('permiso-aceptado');
+                                toastID = new bootstrap.Toast(toastID);
+                                toastID.show();
                         }
 
 
@@ -172,6 +176,9 @@
                             const asfdffd = setTimeout(resetear, 1000);
                             $("#basicModal").modal('hide');
                             $("#modalPermiso").modal('hide');
+                            var toastID = document.getElementById('permiso-aceptado');
+                                toastID = new bootstrap.Toast(toastID);
+                                toastID.show();
                         }
 
 

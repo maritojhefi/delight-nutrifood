@@ -319,12 +319,12 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content" style="border-radius: 15px;box-shadow: 1px 1px 1px 1px teal;">
                     <div class="modal-header">
-                        <h5 class="modal-title">Pedir permiso</h5>
+                        <h5 class="modal-title">Esta seguro? Esta accion no se puede revertir</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal">
                         </button>
                     </div>
                     <div class="modal-body">
-                        <span>Esta seguro? Esta accion no se puede revertir</span>
+                        <span>El plan seleccionado pasara a un dia despues del ultimo plan encontrado</span>
                         <form action="" id="formBasic">
                             <input type="hidden" name="id" id="id">
 
@@ -374,6 +374,9 @@
                 </div>
             </div>
         </div>
+
+        <div id="permiso-aceptado" class="snackbar-toast bg-magenta-dark color-white fade hide" data-delay="3000"
+        data-autohide="true"><i class="fa fa-shopping-cart me-3"></i>Tu permiso fue aceptado!</div>
     @endpush
     @push('scripts')
         <script>

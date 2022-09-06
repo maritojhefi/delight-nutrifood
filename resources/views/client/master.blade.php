@@ -103,7 +103,8 @@
     <div id="toast-carrito" class="toast toast-tiny toast-top bg-green-dark hide" data-bs-delay="1000"
         data-bs-autohide="true"><i class="fa fa-check  me-3"></i>Añadido!</div>
 
-        <div id="saved-to-favorites" class="snackbar-toast bg-green-dark color-white fade hide" data-delay="3000" data-autohide="true"><i class="fa fa-shopping-cart me-3"></i>Añadido al carrito!</div>
+    <div id="saved-to-favorites" class="snackbar-toast bg-green-dark color-white fade hide" data-delay="3000"
+        data-autohide="true"><i class="fa fa-shopping-cart me-3"></i>Añadido al carrito!</div>
     @include('client.partials.modalredes')
     @stack('modals')
     <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}"></script>
