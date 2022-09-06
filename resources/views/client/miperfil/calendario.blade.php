@@ -335,7 +335,7 @@
 
                         <button type="button"
                             class="btn btn-xxs mb-3 rounded-s text-uppercase font-900 shadow-s border-magenta-dark  bg-magenta-light"
-                            id="btnPermiso">Confirmar <span class="btn-icon-end"><i class="fa fa-calendar"></i></span>
+                            id="btnPermiso">Confirmar Permiso<span class="btn-icon-end"><i class="fa fa-calendar"></i></span>
                         </button>
                     </div>
                 </div>
