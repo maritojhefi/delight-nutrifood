@@ -14,7 +14,7 @@ class AddTipoToSaldosTable extends Migration
     public function up()
     {
         Schema::table('saldos', function (Blueprint $table) {
-            //
+            $table->string('tipo')->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ class AddTipoToSaldosTable extends Migration
     public function down()
     {
         Schema::table('saldos', function (Blueprint $table) {
-            //
+            $table->dropColumn('tipo');
         });
     }
 }

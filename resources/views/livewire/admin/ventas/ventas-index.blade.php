@@ -622,6 +622,21 @@
                                 </div>
                             </div>
                             <div class="mb-3 row">
+                                <label class="col-lg-4 col-form-label" for="validationCustom01">Metodo
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-lg-6">
+                                   <select name="" id="" wire:model="tipoSaldo" class="form-control @error($tipoSaldo) is-invalid @enderror">
+                                        <option value="efectivo">Efectivo</option>
+                                        <option value="tarjeta">Tarjeta</option>
+                                        <option value="banco-sol">Banco Sol</option>
+                                        <option value="banco-bisa">Banco Bisa</option>
+                                        <option value="banco-mercantil">Banco Mercantil</option>
+                                   </select>
+                                        
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
                                 <label class="col-lg-4 col-form-label" for="validationCustom02">Detalle <span
                                         class="text-danger">*</span>
                                 </label>

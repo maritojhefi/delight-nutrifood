@@ -43,7 +43,7 @@ class VentasIndex extends Component
     //variables para crear Cliente
     public $name, $cumpleano, $email, $direccion, $password, $password_confirmation;
     public $saldo, $valorSaldo = 0, $deshabilitarBancos = false, $saldoRestante = 0, $verVistaSaldo = false;
-    public $montoSaldo, $detalleSaldo;
+    public $montoSaldo, $detalleSaldo,$tipoSaldo;
     public $descuentoProductos,$subtotal;
     protected $rules = [
         'sucursal' => 'required|integer',
@@ -51,8 +51,9 @@ class VentasIndex extends Component
     public function registrarSaldo()
     {
         $this->validate([
+            'tipoSaldo'=>'required',
             'montoSaldo' => 'required|numeric|min:0',
-            'detalleSaldo' => 'required|min:10'
+            'detalleSaldo' => 'required'
         ]);
         $cajaactiva = Caja::where('sucursale_id', $this->cuenta->sucursale->id)->whereDate('created_at', Carbon::today())->first();
 
@@ -70,7 +71,7 @@ class VentasIndex extends Component
             'type' => 'success',
             'message' => "Se edito el saldo a favor de este cliente!"
         ]);
-        $this->reset('montoSaldo', 'detalleSaldo');
+        $this->reset('montoSaldo', 'detalleSaldo','tipoSaldo');
         $this->cuenta = Venta::find($this->cuenta->id);
     }
     public function verSaldo()
