@@ -72,7 +72,7 @@ class CajaDiaria extends Component
             $coleccion=collect();
             $personalizado=collect();
             $ventas=Historial_venta::where('caja_id',$this->cajaactiva->id)->get();
-            $saldos=Saldo::where('caja_id',$this->cajaactiva->id)->get();
+            $saldos=Saldo::where('caja_id',$this->cajaactiva->id)->where('es_deuda',false)->get();
             $this->saldosHoy=$saldos;
             $this->ventasHoy=$ventas;
              foreach($ventas as $list)

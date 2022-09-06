@@ -36,7 +36,7 @@ class Reportes extends Component
             $coleccion=collect();
             $personalizado=collect();
             $ventas=Historial_venta::where('caja_id',$caja->id)->get();
-            $saldos=Saldo::where('caja_id',$caja->id)->get();
+            $saldos=Saldo::where('caja_id',$caja->id)->where('es_deuda',false)->get();
             $this->ventasHoy=$ventas;
             $this->saldosHoy=$saldos;
              foreach($ventas as $list)
