@@ -14,7 +14,7 @@ class AddTipoToSaldosTable extends Migration
     public function up()
     {
         Schema::table('saldos', function (Blueprint $table) {
-            $table->string('tipo')->nullable();
+            $table->string('tipo')->nullable()->default('efectivo');
         });
     }
 

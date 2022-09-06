@@ -64,7 +64,8 @@ class VentasIndex extends Component
             'es_deuda' => false,
             'monto' => $this->montoSaldo,
             'user_id' => $this->cuenta->cliente->id,
-            'atendido_por' => auth()->user()->id
+            'atendido_por' => auth()->user()->id,
+            'tipo'=>$this->tipoSaldo
         ]);
         DB::table('users')->where('id', $this->cuenta->cliente->id)->decrement('saldo', $this->montoSaldo);
         $this->dispatchBrowserEvent('alert', [
