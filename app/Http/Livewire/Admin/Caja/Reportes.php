@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Admin\Caja;
 
 use Charts;
 use App\Models\Caja;
+use App\Models\Saldo;
 use Livewire\Component;
 use App\Models\Producto;
 use Chartisan\PHP\Chartisan;
@@ -19,7 +20,7 @@ class Reportes extends Component
    
     protected $paginationTheme = 'bootstrap';
     
-    public $ventasHoy, $resumen, $lista, $cajaactiva,$reporteGeneral=true;
+    public $ventasHoy,$saldosHoy, $resumen, $lista, $cajaactiva,$reporteGeneral=true;
 
     public function resetCaja()
     {
@@ -35,7 +36,9 @@ class Reportes extends Component
             $coleccion=collect();
             $personalizado=collect();
             $ventas=Historial_venta::where('caja_id',$caja->id)->get();
+            $saldos=Saldo::where('caja_id',$caja->id)->get();
             $this->ventasHoy=$ventas;
+            $this->saldosHoy=$saldos;
              foreach($ventas as $list)
                  {
                     if($list->productos!=null)

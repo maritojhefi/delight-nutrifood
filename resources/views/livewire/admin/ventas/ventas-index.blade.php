@@ -658,7 +658,8 @@
                                     <h6 class="my-0 text-white">DEUDA POR COMPRA</h6>
                                     <small>{{$saldo->created_at->format('d-M')}}<a href="#" class="badge badge-warning badge-xs">{{ App\Helpers\WhatsappAPIHelper::timeago($saldo->created_at) }}</a></small>
                                 </div>
-                                <span class="text-white">{{$saldo->monto}} Bs</span>
+                                <span class="text-white">{{$saldo->monto}} Bs <a href="#" wire:click="imprimirSaldo({{$saldo->id}})" class="badge badge-warning"><i class="fa fa-print"></i></a></span>
+                                
                             </li>
                             @else
                             <li class="list-group-item d-flex justify-content-between lh-condensed">
@@ -667,7 +668,8 @@
                                     <small class="text-muted">{{$saldo->created_at->format('d-M')}} <a href="#" class="badge badge-warning badge-xs">{{ App\Helpers\WhatsappAPIHelper::timeago($saldo->created_at) }}</a></small><br>
                                     <small class="text-muted">{{Str::limit($saldo->detalle,25)}}</small>
                                 </div>
-                                <span class="text-muted">{{$saldo->monto}} Bs</span>
+                                <span class="text-muted">{{$saldo->monto}} Bs <a href="#" wire:click="imprimirSaldo({{$saldo->id}})" class="badge badge-primary"><i class="fa fa-print"></i></a></span>
+                                
                             </li>
                             @endif
                             @endforeach

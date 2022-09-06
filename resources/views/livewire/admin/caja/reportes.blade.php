@@ -366,31 +366,31 @@
                                     <li class="list-group-item d-flex px-0 justify-content-between">
                                         <strong>En efectivo</strong>
                                         <span
-                                            class="mb-0">{{ $ventasHoy->where('tipo', 'efectivo')->sum('total') - $ventasHoy->where('tipo', 'efectivo')->sum('saldo') - $ventasHoy->where('tipo', 'efectivo')->sum('descuento') }}
+                                            class="mb-0">{{$saldosHoy->where('tipo','efectivo')->sum('monto') + $ventasHoy->where('tipo', 'efectivo')->sum('total') - $ventasHoy->where('tipo', 'efectivo')->sum('saldo') - $ventasHoy->where('tipo', 'efectivo')->sum('descuento') }}
                                             Bs</span>
                                     </li>
                                     <li class="list-group-item d-flex px-0 justify-content-between">
                                         <strong>Tarjeta</strong>
                                         <span
-                                            class="mb-0">{{ $ventasHoy->where('tipo', 'tarjeta')->sum('total') - $ventasHoy->where('tipo', 'tarjeta')->sum('saldo') - $ventasHoy->where('tipo', 'tarjeta')->sum('descuento') }}
+                                            class="mb-0">{{$saldosHoy->where('tipo','tarjeta')->sum('monto') + $ventasHoy->where('tipo', 'tarjeta')->sum('total') - $ventasHoy->where('tipo', 'tarjeta')->sum('saldo') - $ventasHoy->where('tipo', 'tarjeta')->sum('descuento') }}
                                             Bs</span>
                                     </li>
                                     <li class="list-group-item d-flex px-0 justify-content-between">
                                         <strong>Banco Bisa</strong>
                                         <span
-                                            class="mb-0">{{ $ventasHoy->where('tipo', 'banco-bisa')->sum('total') - $ventasHoy->where('tipo', 'banco-bisa')->sum('saldo') - $ventasHoy->where('tipo', 'banco-bisa')->sum('descuento') }}
+                                            class="mb-0">{{$saldosHoy->where('tipo','banco-bisa')->sum('monto') + $ventasHoy->where('tipo', 'banco-bisa')->sum('total') - $ventasHoy->where('tipo', 'banco-bisa')->sum('saldo') - $ventasHoy->where('tipo', 'banco-bisa')->sum('descuento') }}
                                             Bs</span>
                                     </li>
                                     <li class="list-group-item d-flex px-0 justify-content-between">
                                         <strong>Banco Mercantil</strong>
                                         <span
-                                            class="mb-0">{{ $ventasHoy->where('tipo', 'banco-mercantil')->sum('total') - $ventasHoy->where('tipo', 'banco-mercantil')->sum('saldo') - $ventasHoy->where('tipo', 'banco-mercantil')->sum('descuento') }}
+                                            class="mb-0">{{$saldosHoy->where('tipo','banco-mercantil')->sum('monto') + $ventasHoy->where('tipo', 'banco-mercantil')->sum('total') - $ventasHoy->where('tipo', 'banco-mercantil')->sum('saldo') - $ventasHoy->where('tipo', 'banco-mercantil')->sum('descuento') }}
                                             Bs</span>
                                     </li>
                                     <li class="list-group-item d-flex px-0 justify-content-between">
                                         <strong>Banco Sol</strong>
                                         <span
-                                            class="mb-0">{{ $ventasHoy->where('tipo', 'banco-sol')->sum('total') - $ventasHoy->where('tipo', 'banco-sol')->sum('saldo') - $ventasHoy->where('tipo', 'banco-sol')->sum('descuento') }}
+                                            class="mb-0">{{$saldosHoy->where('tipo','banco-sol')->sum('monto') + $ventasHoy->where('tipo', 'banco-sol')->sum('total') - $ventasHoy->where('tipo', 'banco-sol')->sum('saldo') - $ventasHoy->where('tipo', 'banco-sol')->sum('descuento') }}
                                             Bs</span>
                                     </li>
                                 </ul>
@@ -455,6 +455,7 @@
                                         <th><strong>Monto</strong></th>
                                         <th><strong>Estado</strong></th>
                                         <th><strong>Cajero</strong></th>
+                                        <th><strong>Metodo</strong></th>
                                         <th><strong>Detalle</strong></th>
                                     </tr>
                                 </thead>
@@ -466,6 +467,7 @@
                                             <td class="{{ $item->es_deuda ? 'text-danger' : 'text-success' }}">
                                                 {{ $item->es_deuda ? 'DEUDA' : 'A FAVOR DE CLIENTE' }}</td>
                                             <td>{{ Str::limit($item->atendidoPor->name, 25) }}</td>
+                                            <td>{{ Str::limit($item->tipo, 25) }}</td>
                                             <td>{{ Str::limit($item->detalle, 30) }}</td>
                                         </tr>
                                     @endforeach

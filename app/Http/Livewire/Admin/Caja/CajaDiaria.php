@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Admin\Caja;
 
 use Carbon\Carbon;
 use App\Models\Caja;
+use App\Models\Saldo;
 use Livewire\Component;
 use App\Models\Producto;
 use App\Models\Sucursale;
@@ -11,7 +12,7 @@ use App\Models\Historial_venta;
 
 class CajaDiaria extends Component
 {
-    public $entrada ,$estadoCaja, $lista, $resumen, $sucursalSeleccionada, $cajaactiva, $ventasHoy,$reporteGeneral=true;
+    public $entrada ,$estadoCaja, $lista, $resumen, $sucursalSeleccionada, $cajaactiva, $ventasHoy,$saldosHoy,$reporteGeneral=true;
     
     public function cambiarReporte()
     {
@@ -71,6 +72,8 @@ class CajaDiaria extends Component
             $coleccion=collect();
             $personalizado=collect();
             $ventas=Historial_venta::where('caja_id',$this->cajaactiva->id)->get();
+            $saldos=Saldo::where('caja_id',$this->cajaactiva->id)->get();
+            $this->saldosHoy=$saldos;
             $this->ventasHoy=$ventas;
              foreach($ventas as $list)
                  {

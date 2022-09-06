@@ -43,15 +43,89 @@ class VentasIndex extends Component
     //variables para crear Cliente
     public $name, $cumpleano, $email, $direccion, $password, $password_confirmation;
     public $saldo, $valorSaldo = 0, $deshabilitarBancos = false, $saldoRestante = 0, $verVistaSaldo = false;
-    public $montoSaldo, $detalleSaldo,$tipoSaldo;
-    public $descuentoProductos,$subtotal;
+    public $montoSaldo, $detalleSaldo, $tipoSaldo;
+    public $descuentoProductos, $subtotal;
     protected $rules = [
         'sucursal' => 'required|integer',
     ];
+    public function imprimirSaldo(Saldo $saldo)
+    {
+        if ($this->cuenta->sucursale->id_impresora) {
+
+            $nombre_impresora = "POS-582";
+            $connector = new WindowsPrintConnector($nombre_impresora);
+            $printer = new Printer($connector);
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->setTextSize(1, 2);
+            //$printer->text("DELIGHT" . "\n");
+            $img = EscposImage::load(public_path("delight_logo.jpg"));
+            $printer->bitImageColumnFormat($img);
+            $printer->setTextSize(1, 1);
+            $printer->text("Nutri-Food/Eco-Tienda" . "\n");
+            $printer->feed(1);
+            $printer->text("'NUTRIENDO HABITOS!'" . "\n");
+            $printer->feed(1);
+            $printer->text("Contacto : 78227629" . "\n" . "Campero e/15 de abril y Madrid" . "\n");
+            if (isset($this->cuenta->cliente->name)) {
+                $printer->text("Cliente: " . Str::limit($this->cuenta->cliente->name, '20', '') . "\n");
+            }
+            $printer->setTextSize(2, 2);
+            $printer->text("--------------\n");
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->setTextSize(1, 2);
+
+            $printer->text("Monto: " . floatval($saldo->monto) . " Bs\n");
+            $printer->feed(1);
+            $printer->text($saldo->es_deuda?'A saldo pendiente del cliente':'A favor del cliente'. " \n");
+            $printer->feed(1);
+            if($saldo->detalle)
+            {
+                $printer->text("Detalle: " . $saldo->detalle. "\n");
+            }
+            
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->feed(2);
+            $printer->setTextSize(2, 2);
+            $printer->text("TOTAL PAGADO"."\n"." Bs " . $saldo->monto."\n");
+            $printer->feed(1);
+            $printer->setTextSize(1, 1);
+
+            $printer->text("--------\n");
+            
+            $img = EscposImage::load(public_path("qrcode.png"));
+            $printer->bitImageColumnFormat($img);
+
+            $printer->setTextSize(1, 1);
+            $printer->text("Ingresa a nuestra plataforma!\n");
+            $printer->feed(1);
+            $printer->text("Gracias por tu compra\n");
+            $printer->text("Vuelve pronto!\n");
+            $printer->feed(1);
+            $printer->text(date("Y-m-d H:i:s") . "\n");
+            $printer->feed(3);
+            $respuesta = CustomPrint::imprimir($printer, $this->cuenta->sucursale->id_impresora);
+            if ($respuesta == true) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'success',
+                    'message' => "Se imprimio el recibo correctamente"
+                ]);
+            } else if ($respuesta == false) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => "La impresora no esta conectada"
+                ]);
+            }
+        } else {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "La sucursal no tiene una impresora activa"
+            ]);
+        }
+    }
     public function registrarSaldo()
     {
         $this->validate([
-            'tipoSaldo'=>'required',
+            'tipoSaldo' => 'required',
             'montoSaldo' => 'required|numeric|min:0',
             'detalleSaldo' => 'required'
         ]);
@@ -65,14 +139,14 @@ class VentasIndex extends Component
             'monto' => $this->montoSaldo,
             'user_id' => $this->cuenta->cliente->id,
             'atendido_por' => auth()->user()->id,
-            'tipo'=>$this->tipoSaldo
+            'tipo' => $this->tipoSaldo
         ]);
         DB::table('users')->where('id', $this->cuenta->cliente->id)->decrement('saldo', $this->montoSaldo);
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
             'message' => "Se edito el saldo a favor de este cliente!"
         ]);
-        $this->reset('montoSaldo', 'detalleSaldo','tipoSaldo');
+        $this->reset('montoSaldo', 'detalleSaldo', 'tipoSaldo');
         $this->cuenta = Venta::find($this->cuenta->id);
     }
     public function verSaldo()
@@ -86,7 +160,7 @@ class VentasIndex extends Component
     public function actualizarSaldo()
     {
         if ($this->saldo) {
-            $this->valorSaldo = $this->subtotal - $this->cuenta->descuento-$this->descuentoProductos;
+            $this->valorSaldo = $this->subtotal - $this->cuenta->descuento - $this->descuentoProductos;
             $this->tipocobro = 'efectivo';
             $this->emit('cambiarCheck');
             $this->deshabilitarBancos = true;
@@ -98,22 +172,18 @@ class VentasIndex extends Component
     }
     public function controlarEntrante()
     {
-        if ($this->saldoRestante > $this->subtotal - $this->cuenta->descuento-$this->descuentoProductos)
-        {
-            $this->saldoRestante = $this->subtotal - $this->cuenta->descuento-$this->descuentoProductos;
-            $this->valorSaldo=$this->subtotal-$this->cuenta->descuento-$this->descuentoProductos-$this->saldoRestante;
+        if ($this->saldoRestante > $this->subtotal - $this->cuenta->descuento - $this->descuentoProductos) {
+            $this->saldoRestante = $this->subtotal - $this->cuenta->descuento - $this->descuentoProductos;
+            $this->valorSaldo = $this->subtotal - $this->cuenta->descuento - $this->descuentoProductos - $this->saldoRestante;
+        } else {
+            $this->valorSaldo = $this->subtotal - $this->cuenta->descuento - $this->descuentoProductos - $this->saldoRestante;
         }
-        else
-        {
-            $this->valorSaldo=$this->subtotal-$this->cuenta->descuento-$this->descuentoProductos-$this->saldoRestante;
-        }
-       
     }
     public function controlarSaldo()
     {
-        if ($this->valorSaldo > $this->subtotal - $this->cuenta->descuento-$this->descuentoProductos) {
+        if ($this->valorSaldo > $this->subtotal - $this->cuenta->descuento - $this->descuentoProductos) {
 
-            $this->valorSaldo = $this->subtotal - $this->cuenta->descuento-$this->descuentoProductos;
+            $this->valorSaldo = $this->subtotal - $this->cuenta->descuento - $this->descuentoProductos;
             $this->tipocobro = false;
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'error',
@@ -121,9 +191,9 @@ class VentasIndex extends Component
             ]);
         } else {
             $this->deshabilitarBancos = false;
-            $this->saldoRestante = ($this->subtotal - $this->cuenta->descuento-$this->descuentoProductos) - $this->valorSaldo;
+            $this->saldoRestante = ($this->subtotal - $this->cuenta->descuento - $this->descuentoProductos) - $this->valorSaldo;
         }
-        if ($this->valorSaldo == $this->subtotal - $this->cuenta->descuento-$this->descuentoProductos) {
+        if ($this->valorSaldo == $this->subtotal - $this->cuenta->descuento - $this->descuentoProductos) {
             $this->tipocobro = 'efectivo';
             $this->emit('cambiarCheck');
             $this->deshabilitarBancos = true;
@@ -286,7 +356,7 @@ class VentasIndex extends Component
         $this->listacuenta = $resultado[0];
         DB::table('ventas')
             ->where('id', $cuenta->id)
-            ->update(['total' => $resultado[1]-$resultado[4], 'puntos' => $resultado[3]]);
+            ->update(['total' => $resultado[1] - $resultado[4], 'puntos' => $resultado[3]]);
 
 
         $this->subtotal = $resultado[1];
@@ -600,14 +670,14 @@ class VentasIndex extends Component
         if ($cajaactiva != null) {
             if ($cajaactiva->estado == "abierto") {
 
-                DB::table('cajas')->where('id', $cajaactiva->id)->increment('acumulado', ($this->subtotal - $this->cuenta->descuento - $this->cuenta->saldo-$this->descuentoProductos));
+                DB::table('cajas')->where('id', $cajaactiva->id)->increment('acumulado', ($this->subtotal - $this->cuenta->descuento - $this->cuenta->saldo - $this->descuentoProductos));
                 $cuenta = Venta::find($this->cuenta->id);
                 $cuentaguardada = Historial_venta::create([
                     'caja_id' => $cajaactiva->id,
                     'usuario_id' => auth()->user()->id,
                     'sucursale_id' => $this->cuenta->sucursale_id,
                     'cliente_id' => $this->cuenta->cliente_id,
-                    'total' => $this->subtotal-$this->descuentoProductos,
+                    'total' => $this->subtotal - $this->descuentoProductos,
                     'puntos' => $this->cuenta->puntos,
                     'descuento' => $this->cuenta->descuento,
                     'tipo' => $this->tipocobro,
@@ -671,7 +741,7 @@ class VentasIndex extends Component
     public function imprimir()
     {
 
-        QrCode::format('png')->size(150)->generate('https://delight-nutrifood.com/miperfil', public_path().'/qrcode.png');
+        QrCode::format('png')->size(150)->generate('https://delight-nutrifood.com/miperfil', public_path() . '/qrcode.png');
         if ($this->cuenta->sucursale->id_impresora) {
 
             $nombre_impresora = "POS-582";
@@ -715,18 +785,18 @@ class VentasIndex extends Component
                 $printer->text("Saldo agregado: " . floatval($this->valorSaldo) . " Bs\n");
                 $printer->feed(1);
                 $printer->setTextSize(1, 2);
-                $printer->text("TOTAL PAGADO: Bs " . $this->subtotal - $this->cuenta->descuento - $this->valorSaldo - $this->descuentoProductos. "\n");
+                $printer->text("TOTAL PAGADO: Bs " . $this->subtotal - $this->cuenta->descuento - $this->valorSaldo - $this->descuentoProductos . "\n");
                 $printer->feed(1);
             } else {
                 $printer->feed(1);
                 $printer->setTextSize(1, 2);
-                $printer->text("TOTAL PAGADO: Bs " . $this->subtotal - $this->cuenta->descuento -$this->descuentoProductos. "\n");
+                $printer->text("TOTAL PAGADO: Bs " . $this->subtotal - $this->cuenta->descuento - $this->descuentoProductos . "\n");
                 $printer->feed(1);
             }
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $img = EscposImage::load(public_path("qrcode.png"));
             $printer->bitImageColumnFormat($img);
-            
+
             $printer->setTextSize(1, 1);
             $printer->text("Ingresa a nuestra plataforma!\n");
             $printer->feed(1);
