@@ -80,6 +80,7 @@ class VentasIndex extends Component
             $printer->feed(1);
             if($saldo->detalle)
             {
+                $printer->setTextSize(1, 1);
                 $printer->text("Detalle: " . $saldo->detalle. "\n");
             }
             
