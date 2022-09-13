@@ -119,7 +119,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="row  mx-auto">
+                <div class="row  mx-auto responsive">
                     <div class="col">{{$usuarios->links()}}</div>
                 </div>
                 <div class="row  mx-auto">
