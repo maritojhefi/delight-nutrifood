@@ -127,7 +127,7 @@ class ProductTable extends Component
     }
     public function render()
     {
-        $productos = Producto::where('nombre', 'LIKE', '%' . $this->buscar . '%')->orWhere('estado', $this->buscar)->orderBy('created_at', 'desc')->paginate(5);
+        $productos = Producto::where('nombre', 'LIKE', '%' . $this->buscar . '%')->orWhere('estado', $this->buscar)->orderBy('created_at', 'desc')->paginate(8);
         return view('livewire.admin.productos.product-table', compact('productos'));
     }
 
