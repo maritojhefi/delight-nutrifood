@@ -142,7 +142,7 @@ class UserIndex extends Component
         }
         else
         {
-            $usuarios=User::paginate(5);
+            $usuarios=User::paginate(8);
         }
         
         $roles=Role::all();
