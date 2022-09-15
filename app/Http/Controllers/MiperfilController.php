@@ -26,7 +26,7 @@ class MiperfilController extends Controller
             
         }
         $fotoMenu=Almuerzo::find(1);
-        event(new CocinaPedidoEvent('actualizar')); 
+        //event(new CocinaPedidoEvent('actualizar')); 
         return view('client.miperfil.index',compact('usuario','planes','fotoMenu'));
     }
     public function calendario(Plane $plan, User $usuario){
