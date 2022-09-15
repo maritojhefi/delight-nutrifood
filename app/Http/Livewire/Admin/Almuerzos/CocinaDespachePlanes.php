@@ -18,6 +18,15 @@ class CocinaDespachePlanes extends Component
     public $search;
     public $estadoBuscador = "NOMBRE",$estadoColor="success";
 
+    protected $listeners = ['echo:pedido-cocina,CocinaPedidoEvent' => 'mensaje'];
+
+    public function mensaje()
+    {
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => "Alguien entro a su perfil"
+        ]);
+    }
     public function cambiarEstadoBuscador()
     {
         if ($this->estadoBuscador == 'NOMBRE')

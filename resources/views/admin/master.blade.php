@@ -22,6 +22,10 @@
 	
 	<!-- Style css -->
     <link href="{{asset('css/style.css')}}" rel="stylesheet">
+    <script>
+		window.PUSHER_APP_KEY = '{{ config('broadcasting.connections.pusher.key') }}';
+		window.APP_DEBUG = {{ config('app.debug') ? 'true' : 'false' }};
+	</script>
     <script src="{{asset('js/app.js')}}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment.min.js"></script>
     <link href="{{asset('vendor/lightgallery/css/lightgallery.min.css')}}" rel="stylesheet">

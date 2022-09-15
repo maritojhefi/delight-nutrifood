@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CocinaPedidoEvent;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Plane;
@@ -25,7 +26,7 @@ class MiperfilController extends Controller
             
         }
         $fotoMenu=Almuerzo::find(1);
-       
+        event(new CocinaPedidoEvent('actualizar')); 
         return view('client.miperfil.index',compact('usuario','planes','fotoMenu'));
     }
     public function calendario(Plane $plan, User $usuario){

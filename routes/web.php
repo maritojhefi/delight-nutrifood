@@ -79,7 +79,7 @@ Route::prefix('/lineadelight')->group(function () {
 
 
 });
-Route::prefix('/carrito')->group(function () {
+Route::prefix('/carrito')->middleware('auth')->group(function () {
    
     Route::get('', [App\Http\Controllers\CarritoController::class, 'index'])->name('carrito');
     
