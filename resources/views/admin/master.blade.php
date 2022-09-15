@@ -27,6 +27,7 @@
 		window.APP_DEBUG = {{ config('app.debug') ? 'true' : 'false' }};
 	</script>
     <script src="{{asset('js/app.js')}}"></script>
+    <script src="{{asset('js/app2.js')}}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment.min.js"></script>
     <link href="{{asset('vendor/lightgallery/css/lightgallery.min.css')}}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.css">
