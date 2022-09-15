@@ -46,7 +46,7 @@ class ProductoController extends Controller
     {
         $subcategorias=Subcategoria::has('productos')->inRandomOrder()->get();
         $almuerzos=Almuerzo::all();
-        $galeria=GaleriaFotos::inRandomOrder()->all();
+        $galeria=GaleriaFotos::inRandomOrder()->get();
         return view('client.productos.menusemanal',compact('galeria','almuerzos','subcategorias'));
     }
 }
