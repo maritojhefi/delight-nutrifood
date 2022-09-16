@@ -35,6 +35,6 @@ class DatabaseSeeder extends Seeder
         // $this->call(AlmuerzosSeeder::class);
         //Producto::factory(100)->create();
         //User::factory(100)->create();
-        $this->call(SwitchPlanSeeder::class);
+        //$this->call(SwitchPlanSeeder::class);
     }
 }

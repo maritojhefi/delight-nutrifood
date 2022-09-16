@@ -22,7 +22,7 @@ class ProductoFactory extends Factory
     public function definition()
     {
         return [
-            'nombre' => $this->faker->word,
+            'nombre' => $this->faker->unique()->word,
             'precio' => $this->faker->numberBetween($min = 10, $max = 1000),
             'detalle' =>  $this->faker->text,
             'subcategoria_id' => $this->faker->numberBetween($min = 1, $max = 5),

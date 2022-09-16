@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Admin\Ventas;
 
+use App\Events\CocinaPedidoEvent;
 use Carbon\Carbon;
 use App\Models\Caja;
 use App\Models\User;
@@ -16,6 +17,7 @@ use Mike42\Escpos\Printer;
 use App\Helpers\CreateList;
 use Illuminate\Support\Str;
 use App\Helpers\CustomPrint;
+use App\Http\Livewire\Admin\PedidosRealtimeComponent;
 use Mike42\Escpos\EscposImage;
 use App\Models\Historial_venta;
 use Illuminate\Support\Facades\DB;
@@ -48,6 +50,10 @@ class VentasIndex extends Component
     protected $rules = [
         'sucursal' => 'required|integer',
     ];
+    public function imprimirCocina()
+    {
+        event(new CocinaPedidoEvent('Se actualizo la lista'));
+    }
     public function imprimirSaldo(Saldo $saldo)
     {
         if ($this->cuenta->sucursale->id_impresora) {
@@ -595,6 +601,11 @@ class VentasIndex extends Component
             'type' => 'success',
             'message' => "Se elimino 1 " . $producto->nombre . " de esta venta"
         ]);
+        if($producto->subcategoria->categoria->nombre!='ECO-TIENDA')//revisa si es de cocina/panaderia el producto para que actualice en la vista de cocina
+        {
+            event(new CocinaPedidoEvent("Se actualizo la mesa ".$this->cuenta->id));
+        }
+        
     }
 
     public function eliminarproducto(Producto $producto)
@@ -611,6 +622,10 @@ class VentasIndex extends Component
             'type' => 'success',
             'message' => "Se elimino a " . $producto->nombre . " de esta venta"
         ]);
+        if($producto->subcategoria->categoria->nombre!='ECO-TIENDA')//revisa si es de cocina/panaderia el producto para que actualice en la vista de cocina
+        {
+            event(new CocinaPedidoEvent("Se actualizo la mesa ".$this->cuenta->id));
+        }
     }
 
     public function seleccionar(Venta $venta)
@@ -626,6 +641,7 @@ class VentasIndex extends Component
 
     public function eliminar(Venta $venta)
     {
+        
         $venta->delete();
         $this->dispatchBrowserEvent('alert', [
             'type' => 'warning',
@@ -636,6 +652,7 @@ class VentasIndex extends Component
                 $this->reset();
             }
         }
+        
     }
     public function agregardesdeplan($user, $plan, $producto)
     {

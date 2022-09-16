@@ -1,5 +1,7 @@
 <div>
+    @livewire('admin.pedidos-realtime-component')
     <div class="card">
+        
         <div class="card-header">
 
             <span>Fecha {{ date_format(date_create($fechaSeleccionada), 'd-M') }} </span>
