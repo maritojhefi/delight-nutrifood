@@ -4,10 +4,11 @@ namespace App\Http\Livewire\Admin\Almuerzos;
 
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Plane;
 use Livewire\Component;
+use App\Models\Almuerzo;
 use App\Helpers\GlobalHelper;
 use App\Exports\UsersPlanesExport;
-use App\Models\Plane;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -18,7 +19,49 @@ class CocinaDespachePlanes extends Component
     public $search;
     public $estadoBuscador = "NOMBRE",$estadoColor="success";
 
-    
+    public function cambiarEstadoPlato($variable)
+    {
+        switch ($variable) {
+            case 'ejecutivo_estado':
+                $this->menuHoy->ejecutivo_estado = $this->menuHoy->ejecutivo_estado == true ? false : true;
+                $this->menuHoy->save();
+                break;
+            case 'dieta_estado':
+                $this->menuHoy->dieta_estado = $this->menuHoy->dieta_estado == true ? false : true;
+                $this->menuHoy->save();
+                break;
+            case 'vegetariano_estado':
+                $this->menuHoy->vegetariano_estado = $this->menuHoy->vegetariano_estado == true ? false : true;
+                $this->menuHoy->save();
+                break;
+            case 'carbohidrato_1_estado':
+                $this->menuHoy->carbohidrato_1_estado = $this->menuHoy->carbohidrato_1_estado == true ? false : true;
+                $this->menuHoy->save();
+                break;
+            case 'carbohidrato_2_estado':
+                $this->menuHoy->carbohidrato_2_estado = $this->menuHoy->carbohidrato_2_estado == true ? false : true;
+                $this->menuHoy->save();
+                break;
+            case 'carbohidrato_3_estado':
+                $this->menuHoy->carbohidrato_3_estado = $this->menuHoy->carbohidrato_3_estado == true ? false : true;
+                $this->menuHoy->save();
+                break;
+
+            default:
+                # code...
+                break;
+        }
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => "Se actualizo correctamente!"
+        ]);
+    }
+    public function cambiarDisponibilidad()
+    {
+        $fecha = date('Y-m-d');
+        $resultado = $this->saber_dia($fecha);
+        $this->menuHoy = Almuerzo::where('dia', $resultado)->first();
+    }
     public function cambiarEstadoBuscador()
     {
         if ($this->estadoBuscador == 'NOMBRE')

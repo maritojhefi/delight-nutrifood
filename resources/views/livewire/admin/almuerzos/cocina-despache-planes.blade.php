@@ -3,25 +3,35 @@
     <div class="card">
         
         <div class="card-header">
-
-            <span>Fecha {{ date_format(date_create($fechaSeleccionada), 'd-M') }} </span>
-
-            <h4>Planes por despachar</h4>
-            <div class="col-sm-6 col-md-3 col-lg-5">
-                <div class="input-group input-{{ $estadoColor }}">
-                    <a href="#" wire:click="cambiarEstadoBuscador" class="input-group-text">{{ $estadoBuscador }}</a>
-                    <input type="text" class="form-control" wire:model.debounce.500ms="search">
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="#" wire:click="cambiarDisponibilidad"
+                    data-bs-toggle="modal" data-bs-target="#modalDisponibilidad"><span
+                        class="badge badge-pill badge-primary">Disponibilidad</span></a>
+                </div>
+                <div class="col-sm-6">
+                    <span>Fecha {{ date_format(date_create($fechaSeleccionada), 'd-M') }} </span>
+                </div>
+                <div class="col-sm-6">
+                    <h4>Planes por despachar</h4>
+                </div>
+                <div class="col-sm-6">
+                    <div class="col-sm-6 col-md-3 col-lg-5">
+                        <div class="input-group input-{{ $estadoColor }}">
+                            <a href="#" wire:click="cambiarEstadoBuscador" class="input-group-text">{{ $estadoBuscador }}</a>
+                            <input type="text" class="form-control" wire:model.debounce.500ms="search">
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <div class="d-flex justify-content-center">
+                    <div wire:loading class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
                 </div>
             </div>
-
-            <div class="d-flex justify-content-center">
-                <div wire:loading class="spinner-border" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-            {{-- <a href="#" wire:click="cambiarDisponibilidad"
-                data-bs-toggle="modal" data-bs-target="#modalDisponibilidad"><span
-                    class="badge badge-pill badge-primary">Cambiar Disponibilidad</span></a> --}}
+           
         </div>
         <div class="">
             <div class="table-responsive " style="padding:5px">
@@ -215,6 +225,69 @@
 
 
 
+    <div wire:ignore.self class="modal fade" id="modalDisponibilidad">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Menu de Hoy</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @isset($menuHoy)
+                        <div class="row m-2">
+                            <div class="col"><span class="badge badge-pill badge-primary">{{ $menuHoy->ejecutivo }}
+                                </span>
+                            </div>
+                            <a href="#" wire:click="cambiarEstadoPlato('ejecutivo_estado')" class="col"><span
+                                    class="badge badge-pill badge-{{ $menuHoy->ejecutivo_estado == 1 ? 'success' : 'danger' }}">{{ $menuHoy->ejecutivo_estado == 1 ? 'Disponible' : 'Agotado' }}</span>
+                            </a>
+                        </div>
+                        <div class="row m-2">
+                            <div class="col"> <span class="badge badge-pill badge-primary">{{ $menuHoy->dieta }} </span>
+                            </div>
+                            <a href="#" wire:click="cambiarEstadoPlato('dieta_estado')" class="col"><span
+                                    class="badge badge-pill badge-{{ $menuHoy->dieta_estado == 1 ? 'success' : 'danger' }}">{{ $menuHoy->dieta_estado == 1 ? 'Disponible' : 'Agotado' }}</span>
+                            </a>
+                        </div>
+                        <div class="row m-2">
+                            <div class="col"><span class="badge badge-pill badge-primary">{{ $menuHoy->vegetariano }}
+                                </span>
+                            </div>
+                            <a href="#" wire:click="cambiarEstadoPlato('vegetariano_estado')" class="col"><span
+                                    class="badge badge-pill badge-{{ $menuHoy->vegetariano_estado == 1 ? 'success' : 'danger' }}">{{ $menuHoy->vegetariano_estado == 1 ? 'Disponible' : 'Agotado' }}</span>
+                            </a>
+                        </div>
+                        <div class="row m-2">
+                            <div class="col"><span class="badge badge-pill badge-primary">{{ $menuHoy->carbohidrato_1 }}
+                                </span></div>
+                            <a href="#" wire:click="cambiarEstadoPlato('carbohidrato_1_estado')" class="col"><span
+                                    class="badge badge-pill badge-{{ $menuHoy->carbohidrato_1_estado == 1 ? 'success' : 'danger' }}">{{ $menuHoy->carbohidrato_1_estado == 1 ? 'Disponible' : 'Agotado' }}</span>
+                            </a>
+                        </div>
+                        <div class="row m-2">
+                            <div class="col"><span
+                                    class="badge badge-pill badge-primary">{{ $menuHoy->carbohidrato_2 }}
+                                </span></div>
+                            <a href="#" wire:click="cambiarEstadoPlato('carbohidrato_2_estado')"
+                                class="col"><span
+                                    class="badge badge-pill badge-{{ $menuHoy->carbohidrato_2_estado == 1 ? 'success' : 'danger' }}">{{ $menuHoy->carbohidrato_2_estado == 1 ? 'Disponible' : 'Agotado' }}</span>
+                            </a>
+                        </div>
+                        <div class="row m-2">
+                            <div class="col"><span
+                                    class="badge badge-pill badge-primary">{{ $menuHoy->carbohidrato_3 }}
+                                </span></div>
+                            <a href="#" wire:click="cambiarEstadoPlato('carbohidrato_3_estado')"
+                                class="col"><span
+                                    class="badge badge-pill badge-{{ $menuHoy->carbohidrato_3_estado == 1 ? 'success' : 'danger' }}">{{ $menuHoy->carbohidrato_3_estado == 1 ? 'Disponible' : 'Agotado' }}</span>
+                            </a>
+                        </div>
+                    @endisset
+                </div>
 
+            </div>
+        </div>
+    </div>
 
 </div>

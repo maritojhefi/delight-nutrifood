@@ -15,7 +15,10 @@ use Intervention\Image\Facades\Image;
 
 class MiperfilController extends Controller
 {
-
+    public function menu()
+    {
+        return view('client.miperfil.menu');
+    }
     public function index(){
         $usuario='';
         $planes='';

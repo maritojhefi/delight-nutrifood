@@ -1,7 +1,7 @@
 @extends('client.master')
 @section('content')
     @auth
-        <x-cabecera-pagina titulo="Mi Perfil" cabecera="bordeado" />
+        <x-cabecera-pagina titulo="Mis Planes" cabecera="bordeado" />
         <div class="card card-style preload-img entered loaded" data-src="{{ asset('images/imagen4.jpg') }}"
             data-card-height="450" style="height: 450px; background-image: url(&quot;{{ asset('imagenes/delight/21.jpeg') }}&quot;);"
             data-ll-status="loaded">
@@ -226,7 +226,7 @@
         @endforeach
     @endisset
 
-    <div class="card card-style p-3">
+    {{-- <div class="card card-style p-3">
         <div class="row text-center row-cols-3 mb-n4">
 
             <a class="col mb-4" data-gallery="gallery-1" href="{{ asset('imagenes/almuerzo/' . $fotoMenu->foto) }}"
@@ -296,55 +296,6 @@
 
 
         </div>
-    </div>
+    </div> --}}
 @endauth
-
-@guest
-    <x-cabecera-pagina titulo="Inicia Sesion" cabecera="bordeado" />
-
-    <div class="card card-style">
-        <form action="{{ route('login') }}" method="POST">
-            @csrf
-            <div class="content mt-2 mb-0">
-                <div class="input-style no-borders has-icon validate-field mb-4">
-                    <i class="fa fa-user"></i>
-                    <input type="email" class="form-control validate-name" id="form1a" name="email"
-                        value="{{ old('email') }}" placeholder="Correo">
-                    <label for="form1a" class="color-blue-dark font-10 mt-1">Correo</label>
-                    <i class="fa fa-times disabled invalid color-red-dark"></i>
-                    <i class="fa fa-check disabled valid color-green-dark"></i>
-                    <em>(requerido)</em>
-                </div>
-                <div class="input-style no-borders has-icon validate-field mb-4">
-                    <i class="fa fa-lock"></i>
-                    <input type="password" class="form-control validate-password" name="password" id="form3a"
-                        placeholder="Contraseña">
-                    <label for="form3a" class="color-blue-dark font-10 mt-1">Contraseña</label>
-                    <i class="fa fa-times disabled invalid color-red-dark"></i>
-                    <i class="fa fa-check disabled valid color-green-dark"></i>
-                    <em>(requerido)</em>
-                </div>
-                <button type="submit"
-                    class="btn btn-m mt-2 mb-4 btn-full bg-green-dark rounded-sm text-uppercase font-900">Inicia
-                    Sesion</button>
-                @if ($errors->any())
-                    <mark class="highlight ps-2 font-12 pe-2 bg-red-dark">Ingrese los datos correctamente</mark>
-                @endif
-
-                <div class="divider"></div>
-                {{-- <a href="#" class="btn btn-icon btn-m btn-full shadow-l bg-facebook text-uppercase font-900 text-start"><i
-                    class="fab fa-facebook-f text-center"></i>Loguea con Facebook</a>
-            <a href="#"
-                class="btn btn-icon btn-m mt-2 btn-full shadow-l bg-google text-uppercase font-900 text-start"><i
-                    class="fab fa-google text-center"></i>Loguea con Google</a> --}}
-                <div class="divider mt-4 mb-3"></div>
-                <div class="d-flex">
-                    <div class="w-50 font-11 pb-2 color-theme opacity-60 pb-3 text-start"><a
-                            href="{{ route('register') }}" class="color-theme">Crear una cuenta</a></div>
-                </div>
-            </div>
-        </form>
-    </div>
-
-@endguest
 @endsection

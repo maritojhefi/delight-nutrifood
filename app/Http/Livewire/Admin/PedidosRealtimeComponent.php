@@ -17,6 +17,7 @@ class PedidosRealtimeComponent extends Component
             'type' => 'warning',
             'message' => "".$mensaje['message']
         ]);
+        $this->emit('notificacionCocina', 'tono');
     }
     public function render()
     {

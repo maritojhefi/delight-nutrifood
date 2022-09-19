@@ -85,17 +85,25 @@ Route::prefix('/carrito')->middleware('auth')->group(function () {
     
 
 });
+
+Route::prefix('/ventas')->middleware('auth')->group(function () {
+   
+    Route::get('', [App\Http\Controllers\VentasCocinaController::class, 'index'])->name('ventas.cocina.pedido');
+    
+
+});
 //perfil
 Route::prefix('/miperfil')->middleware('auth')->group(function () {
     Route::get('/mostrar/{idplan}/{iduser}', [App\Http\Controllers\admin\UsuariosController::class, 'mostrar']);
     Route::get('/permiso/{id}/{todos}', [App\Http\Controllers\admin\UsuariosController::class, 'permiso']);
     Route::get('/editar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'editar']);
     Route::get('/saldo/usuario', [App\Http\Controllers\admin\UsuariosController::class, 'saldo'])->name('usuario.saldo');
-    Route::get('', [App\Http\Controllers\MiperfilController::class, 'index'])->name('miperfil');
+    Route::get('', [App\Http\Controllers\MiperfilController::class, 'menu'])->name('miperfil');
     Route::get('/calendario/{plan}/{usuario}', [App\Http\Controllers\MiperfilController::class, 'calendario'])->name('calendario.cliente');
     Route::post('/personalizardia', [App\Http\Controllers\MiperfilController::class, 'personalizardia'])->name('personalizardia');
     Route::get('/editardia/{idpivot}', [App\Http\Controllers\MiperfilController::class, 'editardia'])->name('editardia');
     Route::post('/subirfoto', [App\Http\Controllers\MiperfilController::class, 'subirFoto'])->name('subirfoto.perfil');
+    Route::get('/misplanes', [App\Http\Controllers\MiperfilController::class, 'index'])->name('misplanes');
 
 });
 Route::get('perfil/editar', [App\Http\Controllers\MiperfilController::class, 'revisarPerfil'])->middleware('auth')->name('llenarDatosPerfil');
@@ -204,4 +212,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
      
 });
 
+Route::get('/construccion', function(){
+    return view('client.page-construccion');
 
+})->name('construccion');

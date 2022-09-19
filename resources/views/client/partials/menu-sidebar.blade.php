@@ -104,6 +104,11 @@
                 <i class="fa fa-circle"></i>
             </a>
         
+            <a id="nav-media" href="{{ route('ventas.cocina.pedido') }}" class="">
+                <i class="fa fa-leaf font-16 color-yellow-dark fa fa-list"></i>
+                <span>Pedidos</span>
+                <i class="fa fa-circle"></i>
+            </a>
         @elseif(auth()->user()->role_id == 3)
         <a id="nav-media" href="{{ route('reporte.cocina') }}" class="">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
