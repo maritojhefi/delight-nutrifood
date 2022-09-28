@@ -121,6 +121,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
     Route::prefix('/tienda')->group(function () {
    
         Route::get('galeria', \App\Http\Livewire\Admin\TiendaComponent::class)->name('tienda.galeria');
+        Route::get('novedades', \App\Http\Livewire\Admin\NovedadesVideosComponent::class)->name('tienda.novedades');
+        Route::get('tutoriales', \App\Http\Livewire\Admin\TutorialesComponent::class)->name('tienda.tutoriales');
     
     });
     Route::prefix('/productos')->group(function () {

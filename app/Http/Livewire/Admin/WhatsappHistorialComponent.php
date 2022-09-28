@@ -15,6 +15,6 @@ class WhatsappHistorialComponent extends Component
         $whatsapps = WhatsappHistorial::orderBy('created_at','desc')->paginate(10);
         return view('livewire.admin.whatsapp-historial-component', compact('whatsapps'))
             ->extends('admin.master')
-            ->section('content');;
+            ->section('content');
     }
 }

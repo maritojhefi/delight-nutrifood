@@ -52,11 +52,13 @@ class EnviarPlanDiaAlmuerzoCommand extends Command
             $clientesConPlan = DB::table('plane_user')->select(
                 'plane_user.*',
                 'users.name',
+                'users.whatsapp_plan',
                 'planes.nombre',
                 'planes.editable'
             )->leftjoin('users', 'users.id', 'plane_user.user_id')
                 ->leftjoin('planes', 'planes.id', 'plane_user.plane_id')
                 ->where('estado', 'pendiente')
+                ->where('users.whatsapp_plan', true)//revisa si esta activo el envio de mensajes del cliente
                 ->where('planes.editable', true)
                 ->where('plane_user.detalle',null)
                 //->where('users.name','Mario Cotave')//para pruebas
