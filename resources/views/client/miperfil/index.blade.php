@@ -95,7 +95,7 @@
                     </h1>
                     <h4 class="color-theme font-600">Tutoriales</h4>
                     <p class="mt-n2 font-11 color-highlight mb-3">
-                        Aprende a usar nuestro sistema web!
+                        Eres nuevo? Esto te sirve!
                     </p>
                     <p class="font-10 opacity-30 mb-1">Click para ver</p>
                 </div>
