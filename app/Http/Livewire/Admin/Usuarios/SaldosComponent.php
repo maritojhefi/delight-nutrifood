@@ -12,11 +12,11 @@ class SaldosComponent extends Component
     public function render()
     {
         if ($this->search) {
-            $usuarios=User::has('saldos')->where('name','LIKE','%'.$this->search.'%')->get();
+            $usuarios=User::has('saldos')->where('name','LIKE','%'.$this->search.'%')->where('saldo','!=',0)->get();
         }
         else
         {
-            $usuarios=User::has('saldos')->get();
+            $usuarios=User::has('saldos')->where('saldo','!=',0)->get();
         }
         
         return view('livewire.admin.usuarios.saldos-component',compact('usuarios'))
