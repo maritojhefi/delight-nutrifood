@@ -29,8 +29,8 @@
                         </div>
                         <div class="card-center me-3">
                             <a href="{{ route('calendario.cliente', [$item['id'], $usuario->id]) }}"
-                                class="float-end bg-highlight btn btn-xs text-uppercase font-900 rounded-xl font-11">Ver
-                                detalle</a>
+                                class="float-end bg-highlight btn btn-xs text-uppercase font-900 rounded-xl font-11">Administrar
+                                </a>
                         </div>
                         <div class="card-overlay bg-black opacity-60"></div>
                     </div>
