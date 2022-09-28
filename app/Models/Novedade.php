@@ -14,6 +14,6 @@ class Novedade extends Model
     ];
     public function getFotoAttribute($value)
     {
-        return 'imagenes/noticias/'.$value;
+        return '/imagenes/noticias/'.$value;
     }
 }

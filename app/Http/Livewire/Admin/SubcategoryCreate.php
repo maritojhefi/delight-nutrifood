@@ -8,6 +8,7 @@ use App\Models\Subcategoria;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class SubcategoryCreate extends Component
 {
@@ -99,11 +100,10 @@ class SubcategoryCreate extends Component
     }
 
     public function eliminar(Subcategoria $subcat)
-    {
-
-
+    {  
         try {
             $subcat->delete();
+            Storage::disk('public_images')->delete('subcategorias/'.$subcat->foto);
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'warning',
                 'message' => "Subcategoria: " . $subcat->nombre . " eliminada"
@@ -111,7 +111,7 @@ class SubcategoryCreate extends Component
         } catch (\Throwable $th) {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'warning',
-                'message' => "No se puede eliminar este registro porque esta vinculado a otros"
+                'message' => "No se puede eliminar este registro"
             ]);
         }
     }

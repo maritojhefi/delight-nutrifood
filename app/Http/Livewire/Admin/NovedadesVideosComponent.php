@@ -7,6 +7,7 @@ use App\Models\Novedade;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class NovedadesVideosComponent extends Component
 {
@@ -17,6 +18,13 @@ class NovedadesVideosComponent extends Component
     public $search;
     public function delete(Novedade $noticia)
     {
+        
+        
+        try {
+            Storage::disk('public_path')->delete($noticia->foto);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
         $noticia->delete();
         $this->dispatchBrowserEvent('alert', [
             'type' => 'warning',
