@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\CocinaPedidoEvent;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Plane;
 use App\Models\Almuerzo;
 use App\Helpers\CreateList;
 use App\Models\SwitchPlane;
+use App\Models\Subcategoria;
 use Illuminate\Http\Request;
+use App\Events\CocinaPedidoEvent;
 use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
 
@@ -18,6 +19,16 @@ class MiperfilController extends Controller
     public function menu()
     {
         return view('client.miperfil.menu');
+    }
+    public function misPlanes()
+    {
+        if(auth()->user()!=null)
+        {
+            $usuario=User::find(auth()->user()->id);
+            $planes=CreateList::crearlistaplan($usuario->id);
+            $subcategoria=Subcategoria::find(1);
+        } 
+        return view('client.miperfil.planes',compact('planes','usuario','subcategoria'));
     }
     public function index(){
         $usuario='';

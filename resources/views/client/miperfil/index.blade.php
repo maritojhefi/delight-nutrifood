@@ -1,9 +1,9 @@
 @extends('client.master')
 @section('content')
     @auth
-        <x-cabecera-pagina titulo="Mis Planes" cabecera="bordeado" />
-        <div class="card card-style preload-img entered loaded" data-src="{{ asset('images/imagen4.jpg') }}"
-            data-card-height="450" style="height: 450px; background-image: url(&quot;{{ asset('imagenes/delight/21.jpeg') }}&quot;);"
+        <x-cabecera-pagina titulo="Hola!" cabecera="bordeado" />
+        <div class="card card-style preload-img entered loaded" data-src="{{ asset('images/imagen4.jpg') }}" data-card-height="450"
+            style="height: 450px; background-image: url(&quot;{{ asset('imagenes/delight/21.jpeg') }}&quot;);"
             data-ll-status="loaded">
             <div class="card-bottom ms-3 ">
                 <h1 class="font-40 line-height-xl ">{{ auth()->user()->name }}</h1>
@@ -48,167 +48,94 @@
 
             </div>
         </div>
-        {{-- <div class="splide single-slider slider-no-arrows slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"
-            id="single-slider-3" style="visibility: visible;">
-            <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button"
-                    aria-controls="single-slider-3-track" aria-label="Previous slide"><svg xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 40 40" width="40" height="40">
-                        <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
-                    </svg></button><button class="splide__arrow splide__arrow--next" type="button"
-                    aria-controls="single-slider-3-track" aria-label="Go to first slide"><svg xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 40 40" width="40" height="40">
-                        <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
-                    </svg></button></div>
-            <div class="splide__track" id="single-slider-3-track">
-                <div class="splide__list" id="single-slider-3-list" style="transform: translateX(-1528px);">
-                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 382px;">
-                        <div class="card rounded-m mx-3 bg-red-dark">
-                            <div class="content m-2">
-                                <div class="d-flex">
-                                    <div class="pe-3">
-                                        <img src="images/pictures/28s.jpg" width="85" class="rounded-m">
-                                    </div>
-                                    <div class="ms-auto">
-                                        <span class="color-white font-10 mb-n1 d-block opacity-50">John Doe</span>
-                                        <h4 class="color-white font-15 font-500">Google plans to release a new Plane this year.
-                                        </h4>
-                                        <strong class="font-10 opacity-30 font-300 mt-n2 mb-n1 d-block">Jun 25, <span
-                                                class="copyright-year"></span></strong>
-                                    </div>
-                                </div>
-                            </div>
+
+     
+
+        <div class="row text-center mb-0">
+            <a href="{{ route('misplanes') }}" class="col-6 pe-2">
+                <div class="card card-style me-0 mb-3">
+                    <h1 class="center-text pt-3 mt-3 mb-3">
+                        <i class="fa fa-crown color-brown-dark font-50"></i>
+                    </h1>
+                    <h4 class="color-theme font-600">Mis Planes</h4>
+                    <p class="mt-n2 font-11 color-highlight mb-3">
+                        Planes suscritos
+                    </p>
+                    <p class="font-10 opacity-30 mb-1">Click para ver</p>
+                </div>
+            </a>
+            <a href="{{ route('usuario.saldo') }}" class="col-6 ps-2">
+                <div class="card card-style ms-0 mb-3">
+                    <h1 class="center-text pt-3 mt-3 mb-3">
+                        <i class="fa fa-wallet color-gray-dark font-50"></i>
+                    </h1>
+                    <h4 class="color-theme font-600">Mi Saldo</h4>
+                    <p class="mt-n2 font-11 color-highlight mb-3">
+                        Balance de saldos
+                    </p>
+                    <p class="font-10 opacity-30 mb-1">Click para ver</p>
+                </div>
+            </a>
+            <a href="{{ route('carrito') }}" class="col-6 pe-2">
+                <div class="card card-style me-0 mb-3">
+                    <h1 class="center-text pt-3 mt-3 mb-3">
+                        <i class="fa fa-shopping-cart color-teal-light font-50"></i>
+                    </h1>
+                    <h4 class="color-theme font-600">Mi carrito</h4>
+                    <p class="mt-n2 font-11 color-highlight mb-3">
+                        For your Birdy
+                    </p>
+                    <p class="font-10 opacity-30 mb-1">Click para ver</p>
+                </div>
+            </a>
+            <a href="{{ route('construccion') }}" class="col-6 ps-2">
+                <div class="card card-style ms-0 mb-3">
+                    <h1 class="center-text pt-3 mt-3 mb-3">
+                        <i class="fa fa-video color-blue-light font-50"></i>
+                    </h1>
+                    <h4 class="color-theme font-600">Tutoriales</h4>
+                    <p class="mt-n2 font-11 color-highlight mb-3">
+                        Aprende a usar nuestro sistema web!
+                    </p>
+                    <p class="font-10 opacity-30 mb-1">Click para ver</p>
+                </div>
+            </a>
+            <a href="{{ route('construccion') }}" class="col-12">
+                <div class="card card-style mb-3">
+                    <div class="d-flex py-3 my-1">
+                        <div class="align-self-center px-3">
+                            <i class="fa fa-handshake color-mint-dark font-35 ps-2 pe-1"></i>
                         </div>
-                    </div>
-                    <div class="splide__slide splide__slide--clone" style="width: 382px;">
-                        <div class="card rounded-m mx-3 bg-green-dark">
-                            <div class="content m-2">
-                                <div class="d-flex">
-                                    <div class="pe-3">
-                                        <img src="images/pictures/28s.jpg" width="85" class="rounded-m">
-                                    </div>
-                                    <div class="ms-auto">
-                                        <span class="color-white font-10 mb-n1 d-block opacity-50">John Doe</span>
-                                        <h4 class="color-white font-15 font-500">New fuel derived from your Facebook likes.</h4>
-                                        <strong class="font-10 opacity-30 font-300 mt-n2 mb-n1 d-block">Jun 25, <span
-                                                class="copyright-year"></span></strong>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="align-self-center">
+                            <h4 class="text-start color-theme font-600 font-17">Asistente virtual</h4>
+                            <p class="text-start mt-n2 font-11 color-highlight mb-0">
+                                Activar/desactivar los mensajes automaticos
+                            </p>
                         </div>
-                    </div>
-                    <div class="splide__slide" id="single-slider-3-slide01" aria-hidden="true" tabindex="-1"
-                        style="width: 382px;">
-                        <div class="card rounded-m mx-3 bg-blue-dark">
-                            <div class="content m-2">
-                                <div class="d-flex">
-                                    <div class="pe-3">
-                                        <img src="images/pictures/28s.jpg" width="85" class="rounded-m">
-                                    </div>
-                                    <div class="ms-auto">
-                                        <span class="color-white font-10 mb-n1 d-block opacity-50">John Doe</span>
-                                        <h4 class="color-white font-15 font-500">Apple rumoured to release a Car next year.</h4>
-                                        <strong class="font-10 opacity-30 font-300 mt-n2 mb-n1 d-block">Jun 25, <span
-                                                class="copyright-year"></span></strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="splide__slide" id="single-slider-3-slide02" style="width: 382px;" aria-hidden="true"
-                        tabindex="-1">
-                        <div class="card rounded-m mx-3 bg-red-dark">
-                            <div class="content m-2">
-                                <div class="d-flex">
-                                    <div class="pe-3">
-                                        <img src="images/pictures/28s.jpg" width="85" class="rounded-m">
-                                    </div>
-                                    <div class="ms-auto">
-                                        <span class="color-white font-10 mb-n1 d-block opacity-50">John Doe</span>
-                                        <h4 class="color-white font-15 font-500">Google plans to release a new Plane this year.
-                                        </h4>
-                                        <strong class="font-10 opacity-30 font-300 mt-n2 mb-n1 d-block">Jun 25, <span
-                                                class="copyright-year"></span></strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="splide__slide is-active is-visible" id="single-slider-3-slide03" style="width: 382px;"
-                        aria-hidden="false" tabindex="0">
-                        <div class="card rounded-m mx-3 bg-green-dark">
-                            <div class="content m-2">
-                                <div class="d-flex">
-                                    <div class="pe-3">
-                                        <img src="images/pictures/28s.jpg" width="85" class="rounded-m">
-                                    </div>
-                                    <div class="ms-auto">
-                                        <span class="color-white font-10 mb-n1 d-block opacity-50">John Doe</span>
-                                        <h4 class="color-white font-15 font-500">New fuel derived from your Facebook likes.
-                                        </h4>
-                                        <strong class="font-10 opacity-30 font-300 mt-n2 mb-n1 d-block">Jun 25, <span
-                                                class="copyright-year"></span></strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="splide__slide splide__slide--clone" style="width: 382px;">
-                        <div class="card rounded-m mx-3 bg-blue-dark">
-                            <div class="content m-2">
-                                <div class="d-flex">
-                                    <div class="pe-3">
-                                        <img src="images/pictures/28s.jpg" width="85" class="rounded-m">
-                                    </div>
-                                    <div class="ms-auto">
-                                        <span class="color-white font-10 mb-n1 d-block opacity-50">John Doe</span>
-                                        <h4 class="color-white font-15 font-500">Apple rumoured to release a Car next year.
-                                        </h4>
-                                        <strong class="font-10 opacity-30 font-300 mt-n2 mb-n1 d-block">Jun 25, <span
-                                                class="copyright-year"></span></strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="splide__slide splide__slide--clone" style="width: 382px;">
-                        <div class="card rounded-m mx-3 bg-red-dark">
-                            <div class="content m-2">
-                                <div class="d-flex">
-                                    <div class="pe-3">
-                                        <img src="images/pictures/28s.jpg" width="85" class="rounded-m">
-                                    </div>
-                                    <div class="ms-auto">
-                                        <span class="color-white font-10 mb-n1 d-block opacity-50">John Doe</span>
-                                        <h4 class="color-white font-15 font-500">Google plans to release a new Plane this year.
-                                        </h4>
-                                        <strong class="font-10 opacity-30 font-300 mt-n2 mb-n1 d-block">Jun 25, <span
-                                                class="copyright-year"></span></strong>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="align-self-center ms-auto pe-4">
+                            <i class="fa fa-arrow-right opacity-30"></i>
                         </div>
                     </div>
                 </div>
-            </div>
-            <ul class="splide__pagination">
-                <li><button class="splide__pagination__page" type="button" aria-controls="single-slider-3-slide01"
-                        aria-label="Go to slide 1"></button></li>
-                <li><button class="splide__pagination__page" type="button" aria-controls="single-slider-3-slide02"
-                        aria-label="Go to slide 2"></button></li>
-                <li><button class="splide__pagination__page is-active" type="button" aria-controls="single-slider-3-slide03"
-                        aria-label="Go to slide 3" aria-current="true"></button></li>
-            </ul>
-        </div> --}}
+            </a>
+            
+        </div>
 
-        @isset($planes)
+        {{-- @isset($planes)
             @foreach ($planes as $item)
                 @foreach ($usuario->planes as $plane)
                     @if ($plane->id == $item['id'])
-                        <div data-card-height="140" class="card card-style rounded-m shadow-xl bg-18" style="height: 140px; background-image:url('{{asset('imagenes/delight/9.jpeg')}}')">
+                        <div data-card-height="140" class="card card-style rounded-m shadow-xl bg-18"
+                            style="height: 140px; background-image:url('{{ asset('imagenes/delight/9.jpeg') }}')">
                             <div class="card-top mt-4 ms-3">
                                 <h2 class="color-white">{{ Str::limit($item['plan'], 30) }}</h2>
-                                <p class="color-white font-10 opacity-70 mt-2 mb-n1"><i class="far fa-calendar"></i> Restante:  {{ $plane->pivot->where('start', '>', date('Y-m-d'))->where('estado', 'pendiente')->where('user_id', $usuario->id)->where('plane_id', $plane->id)->count() }}<i
-                                        class="ms-3 fa fa-hashtag"></i> Total: {{$plane->pivot->where('plane_id',$plane->id)->where('user_id', $usuario->id)->where('estado','!=', 'permiso')->where('estado','!=', 'archivado')->count()}}<i class="ms-3 fa fa-user"></i> Permisos:{{ $plane->pivot->where('estado', 'permiso')->where('user_id', $usuario->id)->where('plane_id', $plane->id)->count() }}</p>
+                                <p class="color-white font-10 opacity-70 mt-2 mb-n1"><i class="far fa-calendar"></i> Restante:
+                                    {{ $plane->pivot->where('start', '>', date('Y-m-d'))->where('estado', 'pendiente')->where('user_id', $usuario->id)->where('plane_id', $plane->id)->count() }}<i
+                                        class="ms-3 fa fa-hashtag"></i> Total:
+                                    {{ $plane->pivot->where('plane_id', $plane->id)->where('user_id', $usuario->id)->where('estado', '!=', 'permiso')->where('estado', '!=', 'archivado')->count() }}<i
+                                        class="ms-3 fa fa-user"></i>
+                                    Permisos:{{ $plane->pivot->where('estado', 'permiso')->where('user_id', $usuario->id)->where('plane_id', $plane->id)->count() }}
+                                </p>
                                 <p class="color-white font-10 opacity-70"><i class="fa fa-map-marker-alt"></i> Sucursal Central</p>
 
                             </div>
@@ -219,13 +146,11 @@
                             </div>
                             <div class="card-overlay bg-black opacity-60"></div>
                         </div>
-                        @break
-                    @endif
-                
+                    @break
+                @endif
             @endforeach
         @endforeach
-    @endisset
-
+    @endisset --}}
     {{-- <div class="card card-style p-3">
         <div class="row text-center row-cols-3 mb-n4">
 
