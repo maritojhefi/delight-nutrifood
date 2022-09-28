@@ -83,7 +83,7 @@
                     </h1>
                     <h4 class="color-theme font-600">Mi carrito</h4>
                     <p class="mt-n2 font-11 color-highlight mb-3">
-                        For your Birdy
+                        Tus favoritos!
                     </p>
                     <p class="font-10 opacity-30 mb-1">Click para ver</p>
                 </div>
