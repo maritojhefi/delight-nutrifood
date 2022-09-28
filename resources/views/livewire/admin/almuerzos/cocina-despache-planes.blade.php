@@ -235,8 +235,18 @@
                 </div>
                 <div class="modal-body">
                     @isset($menuHoy)
+                   
                         <div class="row m-2">
-                            <div class="col"><span class="badge badge-pill badge-primary">{{ $menuHoy->ejecutivo }}
+                           
+                            <div class="col-md-2">
+                                @if ($menuHoy->ejecutivo_estado)
+                                <input type="number" wire:model.lazy="ejecutivo_cant" wire:change="cambiarCantidad('ejecutivo_cant')" class="form-control form-control-sm " style="padding: 0px;height:12px" >
+                                @endif
+                            </div> 
+                            
+                                                      
+                            <div class="col">  
+                                <span class="badge badge-pill badge-primary">{{ $menuHoy->ejecutivo }}
                                 </span>
                             </div>
                             <a href="#" wire:click="cambiarEstadoPlato('ejecutivo_estado')" class="col"><span
@@ -244,6 +254,13 @@
                             </a>
                         </div>
                         <div class="row m-2">
+                            
+                            <div class="col-md-2">
+                                @if ($menuHoy->dieta_estado)
+                                <input type="number" wire:model.debounce.1500ms="dieta_cant" wire:change="cambiarCantidad('dieta_cant')" class="form-control form-control-sm " style="padding: 0px;height:12px" value="{{$menuHoy->dieta_cant}}">
+                                @endif
+                            </div>  
+                            
                             <div class="col"> <span class="badge badge-pill badge-primary">{{ $menuHoy->dieta }} </span>
                             </div>
                             <a href="#" wire:click="cambiarEstadoPlato('dieta_estado')" class="col"><span
@@ -251,6 +268,13 @@
                             </a>
                         </div>
                         <div class="row m-2">
+                            
+                            <div class="col-md-2">
+                                @if ($menuHoy->vegetariano_estado)
+                                <input type="number" wire:model.debounce.1500ms="vegetariano_cant" wire:change="cambiarCantidad('vegetariano_cant')" class="form-control form-control-sm " style="padding: 0px;height:12px" value="{{$menuHoy->vegetariano_cant}}">
+                                @endif
+                            </div>  
+                            
                             <div class="col"><span class="badge badge-pill badge-primary">{{ $menuHoy->vegetariano }}
                                 </span>
                             </div>
@@ -259,6 +283,13 @@
                             </a>
                         </div>
                         <div class="row m-2">
+                            
+                            <div class="col-md-2">
+                                @if ($menuHoy->carbohidrato_1_estado)
+                                <input type="number" wire:model.debounce.1500ms="carbohidrato_1_cant" wire:change="cambiarCantidad('carbohidrato_1_cant')" class="form-control form-control-sm " style="padding: 0px;height:12px" value="{{$menuHoy->carbohidrato_1_cant}}">
+                                @endif
+                            </div>  
+                            
                             <div class="col"><span class="badge badge-pill badge-primary">{{ $menuHoy->carbohidrato_1 }}
                                 </span></div>
                             <a href="#" wire:click="cambiarEstadoPlato('carbohidrato_1_estado')" class="col"><span
@@ -266,6 +297,13 @@
                             </a>
                         </div>
                         <div class="row m-2">
+                            
+                            <div class="col-md-2">
+                                @if ($menuHoy->carbohidrato_2_estado)
+                                <input type="number" wire:model.debounce.1500ms="carbohidrato_2_cant" wire:change="cambiarCantidad('carbohidrato_2_cant')" class="form-control form-control-sm " style="padding: 0px;height:12px" value="{{$menuHoy->carbohidrato_2_cant}}">
+                                @endif
+                            </div>  
+                           
                             <div class="col"><span
                                     class="badge badge-pill badge-primary">{{ $menuHoy->carbohidrato_2 }}
                                 </span></div>
@@ -275,6 +313,13 @@
                             </a>
                         </div>
                         <div class="row m-2">
+                            
+                            <div class="col-md-2">
+                                @if ($menuHoy->carbohidrato_3_estado)
+                                <input type="number" wire:model.debounce.1500ms="carbohidrato_3_cant" wire:change="cambiarCantidad('carbohidrato_3_cant')" class="form-control form-control-sm " style="padding: 0px;height:12px" value="{{$menuHoy->carbohidrato_3_cant}}">
+                                @endif
+                            </div>  
+                           
                             <div class="col"><span
                                     class="badge badge-pill badge-primary">{{ $menuHoy->carbohidrato_3 }}
                                 </span></div>

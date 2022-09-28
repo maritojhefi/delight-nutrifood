@@ -14,15 +14,15 @@ class AddCantidadesToAlmuerzosTable extends Migration
     public function up()
     {
         Schema::table('almuerzos', function (Blueprint $table) {
-            $table->integer('sopa_cant')->unsigned()->nullable()->after('sopa');
-            $table->integer('ensalada_cant')->unsigned()->nullable()->after('ensalada');
-            $table->integer('ejecutivo_cant')->unsigned()->nullable()->after('ejecutivo');
-            $table->integer('dieta_cant')->unsigned()->nullable()->after('dieta');
-            $table->integer('vegetariano_cant')->unsigned()->nullable()->after('vegetariano');
-            $table->integer('carbohidrato_1_cant')->unsigned()->nullable()->after('carbohidrato_1');
-            $table->integer('carbohidrato_2_cant')->unsigned()->nullable()->after('carbohidrato_2');
-            $table->integer('carbohidrato_3_cant')->unsigned()->nullable()->after('carbohidrato_3');
-            $table->integer('jugo_cant')->unsigned()->nullable()->after('jugo');
+            $table->integer('sopa_cant')->unsigned()->nullable()->after('sopa')->default(0);
+            $table->integer('ensalada_cant')->unsigned()->nullable()->after('ensalada')->default(0);
+            $table->integer('ejecutivo_cant')->unsigned()->nullable()->after('ejecutivo')->default(0);
+            $table->integer('dieta_cant')->unsigned()->nullable()->after('dieta')->default(0);
+            $table->integer('vegetariano_cant')->unsigned()->nullable()->after('vegetariano')->default(0);
+            $table->integer('carbohidrato_1_cant')->unsigned()->nullable()->after('carbohidrato_1')->default(0);
+            $table->integer('carbohidrato_2_cant')->unsigned()->nullable()->after('carbohidrato_2')->default(0);
+            $table->integer('carbohidrato_3_cant')->unsigned()->nullable()->after('carbohidrato_3')->default(0);
+            $table->integer('jugo_cant')->unsigned()->nullable()->after('jugo')->default(0);
         });
     }
 

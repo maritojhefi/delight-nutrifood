@@ -46,7 +46,7 @@
                     'Listar Usuarios' => 'usuario.listar',
                     'Roles' => 'usuario.roles',
                     'Empleos'=>'usuario.empleo',
-                    
+                    'Saldos'=>'usuario.saldos',
                     'Asistencia' => 'usuario.asistencia',
                 ]">
                     <i class="flaticon-045-heart"></i>

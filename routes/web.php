@@ -144,6 +144,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('/personal', \App\Http\Livewire\Admin\Usuarios\Personal::class)->name('personal');
         Route::get('/empleos', \App\Http\Livewire\Admin\Usuarios\EmpleoCreate::class)->name('usuario.empleo');
         Route::get('/crear/plan', \App\Http\Livewire\Admin\Usuarios\CrearPlan::class)->name('crear.plan');
+        Route::get('/saldos/usuarios', \App\Http\Livewire\Admin\Usuarios\SaldosComponent::class)->name('usuario.saldos');
         Route::get('plan/{id}/{planid}', [App\Http\Controllers\admin\UsuariosController::class, 'editarPlanUsuario'])->name('calendario.usuario');
 
         Route::get('detalleplan/{id}/{planid}', [App\Http\Controllers\admin\UsuariosController::class, 'detalleplan'])->name('detalleplan');

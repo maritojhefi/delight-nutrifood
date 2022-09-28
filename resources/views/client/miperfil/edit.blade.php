@@ -36,10 +36,7 @@
             </div>
         </div>
         <div id="todoBien">
-            <div class="card card-style mb-2 map-full" data-card-height="cover-card" style="height: 573px;">
-                <h3 class="m-3 text-center"> Ubique su domicilio detalladamente</h3>
-                <div id="map" style="width:100%;height:600px;"></div>
-            </div>
+            
             <div class="card card-style">
                 <form action="{{ route('guardarPerfilFaltante') }}" method="post">
 
@@ -97,35 +94,40 @@
                         Perfil</button>
                 </form>
             </div>
-        </div>
-        <div class="card card-style">
-            <div class="content mb-0">
-                <h4>Foto de perfil</h4>
-                <p>
-                    Personaliza tu perfil, nos ayudara a conocerte mejor!
-                </p>
-                <form action="{{ route('subirfoto.perfil') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="file-data pb-5">
-                        <input type="file" id="file-upload" class="upload-file bg-highlight shadow-s rounded-s "
-                            accept="image/*" name="foto">
-                        <p class="upload-file-text color-white">Subir Foto</p>
-                    </div>
-                    @error('foto')
-                        <p class="text-danger">{{ $message }}</p>
-                    @enderror
-                    <div class="list-group list-custom-large upload-file-data disabled">
-                        <img id="image-data" src="images/empty.png" class="img-fluid"
-                            style="width:100%; display:block; height:300px">
-
-                        <button type="submit"
-                            class="btn btn-3d btn-m btn-full mb-3 mt-3 rounded-xl text-uppercase font-900 shadow-s  border-blue-dark bg-blue-light">Guardar</button>
-
-                    </div>
-                </form>
-
+            <div class="card card-style mb-2 map-full" data-card-height="cover-card" style="height: 573px;">
+                <h3 class="m-3 text-center"> Ubique su domicilio detalladamente</h3>
+                <div id="map" style="width:100%;height:600px;"></div>
+            </div>
+            <div class="card card-style">
+                <div class="content mb-0">
+                    <h4>Foto de perfil</h4>
+                    <p>
+                        Personaliza tu perfil, nos ayudara a conocerte mejor!
+                    </p>
+                    <form action="{{ route('subirfoto.perfil') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="file-data pb-5">
+                            <input type="file" id="file-upload" class="upload-file bg-highlight shadow-s rounded-s "
+                                accept="image/*" name="foto">
+                            <p class="upload-file-text color-white">Subir Foto</p>
+                        </div>
+                        @error('foto')
+                            <p class="text-danger">{{ $message }}</p>
+                        @enderror
+                        <div class="list-group list-custom-large upload-file-data disabled">
+                            <img id="image-data" src="images/empty.png" class="img-fluid"
+                                style="width:100%; display:block; height:300px">
+    
+                            <button type="submit"
+                                class="btn btn-3d btn-m btn-full mb-3 mt-3 rounded-xl text-uppercase font-900 shadow-s  border-blue-dark bg-blue-light">Guardar</button>
+    
+                        </div>
+                    </form>
+    
+                </div>
             </div>
         </div>
+        
 
 
 

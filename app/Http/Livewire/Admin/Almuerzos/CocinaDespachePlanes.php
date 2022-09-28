@@ -14,11 +14,40 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class CocinaDespachePlanes extends Component
 {
-    public $menuHoy, $reporte;
+    public $menuHoy;
+    public $reporte;
     public $fechaSeleccionada, $cambioFecha = false;
     public $search;
-    public $estadoBuscador = "NOMBRE",$estadoColor="success";
+    public $estadoBuscador = "NOMBRE", $estadoColor = "success";
+    public $dieta_cant, $ejecutivo_cant, $carbohidrato_1_cant, $carbohidrato_2_cant, $carbohidrato_3_cant, $vegetariano_cant;
+    public function cambiarCantidad($variable)
+    {
+        switch ($variable) {
+            case 'dieta_cant':
+                $cantidad=$this->dieta_cant;
+                break;
+            case 'vegetariano_cant':
+                $cantidad=$this->vegetariano_cant;
+                break;
+            case 'ejecutivo_cant':
+                $cantidad=$this->ejecutivo_cant;
+                break;
+            case 'carbohidrato_1_cant':
+                $cantidad=$this->carbohidrato_1_cant;
+                break;
+            case 'carbohidrato_2_cant':
+                $cantidad=$this->carbohidrato_1_cant;
+                break;
+            case 'carbohidrato_3_cant':
+                $cantidad=$this->carbohidrato_1_cant;
+                break;
+            default:
+                # code...
+                break;
+        }
 
+        DB::table('almuerzos')->where('id', $this->menuHoy->id)->update([$variable=>$cantidad]);
+    }
     public function cambiarEstadoPlato($variable)
     {
         switch ($variable) {
@@ -61,25 +90,26 @@ class CocinaDespachePlanes extends Component
         $fecha = date('Y-m-d');
         $resultado = $this->saber_dia($fecha);
         $this->menuHoy = Almuerzo::where('dia', $resultado)->first();
+        $this->ejecutivo_cant = $this->menuHoy->ejecutivo_cant;
+        $this->dieta_cant = $this->menuHoy->dieta_cant;
+        $this->vegetariano_cant = $this->menuHoy->vegetariano_cant;
+        $this->carbohidrato_1_cant = $this->menuHoy->carbohidrato_1_cant;
+        $this->carbohidrato_2_cant = $this->menuHoy->carbohidrato_2_cant;
+        $this->carbohidrato_3_cant = $this->menuHoy->carbohidrato_3_cant;
     }
     public function cambiarEstadoBuscador()
     {
-        if ($this->estadoBuscador == 'NOMBRE')
-        {
+        if ($this->estadoBuscador == 'NOMBRE') {
             $this->estadoBuscador = "SEGUNDO";
-            $this->estadoColor="info";
-        } 
-        else if ($this->estadoBuscador == 'SEGUNDO')
-        {
+            $this->estadoColor = "info";
+        } else if ($this->estadoBuscador == 'SEGUNDO') {
             $this->estadoBuscador = "CARBO";
-            $this->estadoColor="warning";
-        } 
-        else if ($this->estadoBuscador == 'CARBO')
-        {
+            $this->estadoColor = "warning";
+        } else if ($this->estadoBuscador == 'CARBO') {
             $this->estadoBuscador = "NOMBRE";
-            $this->estadoColor="success";
-        } 
-       
+            $this->estadoColor = "success";
+        }
+
         //dd($this->estadoBuscador);
     }
     public function saber_dia($nombredia)
@@ -92,11 +122,11 @@ class CocinaDespachePlanes extends Component
     {
         $this->cambioFecha = true;
     }
-   
+
     public function confirmarDespacho($id)
     {
         //dd($id);
-        DB::table('plane_user')->where('id',$id)->update(['cocina'=>Plane::COCINADESPACHADO]);
+        DB::table('plane_user')->where('id', $id)->update(['cocina' => Plane::COCINADESPACHADO]);
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
             'message' => "Se despacho este plan!"
@@ -106,7 +136,7 @@ class CocinaDespachePlanes extends Component
     {
 
         $usuarios = User::has('planes')->get();
-        
+
         $fecha = date('Y-m-d');
         if ($this->cambioFecha == false) {
             $this->fechaSeleccionada = Carbon::now()->format('Y-m-d');
@@ -116,13 +146,13 @@ class CocinaDespachePlanes extends Component
             ->leftjoin('users', 'users.id', 'plane_user.user_id')
             ->leftjoin('planes', 'planes.id', 'plane_user.plane_id')
             ->whereDate('plane_user.start', $this->fechaSeleccionada)
-            ->where('plane_user.title','!=','feriado')
+            ->where('plane_user.title', '!=', 'feriado')
             //->where('plane_user.detalle','!=',null)
-            ->whereIn('plane_user.estado',[Plane::ESTADOFINALIZADO,Plane::ESTADOPENDIENTE])
+            ->whereIn('plane_user.estado', [Plane::ESTADOFINALIZADO, Plane::ESTADOPENDIENTE])
             ->get();            //dd($pens);
-        $coleccion=GlobalHelper::armarColeccionReporteDiarioVista($pens,$this->fechaSeleccionada);
-        $coleccionEspera=$coleccion->where('COCINA','espera');
-        $coleccionDespachado=$coleccion->where('COCINA','despachado');
+        $coleccion = GlobalHelper::armarColeccionReporteDiarioVista($pens, $this->fechaSeleccionada);
+        $coleccionEspera = $coleccion->where('COCINA', 'espera');
+        $coleccionDespachado = $coleccion->where('COCINA', 'despachado');
         $this->reporte = $coleccion;
         $totalEspera = collect();
         $totalEspera->push([
@@ -155,7 +185,7 @@ class CocinaDespachePlanes extends Component
                 case 'NOMBRE':
                     $coleccion = collect($coleccion)->filter(function ($item) use ($search) {
                         // replace stristr with your choice of matching function
-                        
+
                         return false !== stristr($item['NOMBRE'], $search);
                     });
                     //dd($coleccion);
@@ -163,21 +193,21 @@ class CocinaDespachePlanes extends Component
                 case 'SEGUNDO':
                     $coleccion = $coleccion->filter(function ($item) use ($search) {
                         // replace stristr with your choice of matching function
-        
+
                         return false !== stristr($item['PLATO'], $search);
                     });
                     break;
                 case 'CARBO':
                     $coleccion = $coleccion->filter(function ($item) use ($search) {
                         // replace stristr with your choice of matching function
-        
+
                         return false !== stristr($item['CARBOHIDRATO'], $search);
                     });
                     break;
                 case 'ESTADO':
                     $coleccion = $coleccion->filter(function ($item) use ($search) {
                         // replace stristr with your choice of matching function
-        
+
                         return false !== stristr($item['ESTADO'], $search);
                     });
                     break;
@@ -187,8 +217,8 @@ class CocinaDespachePlanes extends Component
             }
         }
         //dd($coleccion);
-        
-        return view('livewire.admin.almuerzos.cocina-despache-planes',compact('usuarios', 'coleccion', 'totalEspera','totalDespachado'))
+
+        return view('livewire.admin.almuerzos.cocina-despache-planes', compact('usuarios', 'coleccion', 'totalEspera', 'totalDespachado'))
             ->extends('admin.master')
             ->section('content');
     }

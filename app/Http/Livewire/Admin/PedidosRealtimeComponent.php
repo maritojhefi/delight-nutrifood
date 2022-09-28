@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Admin;
 
 use App\Models\Venta;
 use Livewire\Component;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 
 class PedidosRealtimeComponent extends Component
@@ -18,6 +19,19 @@ class PedidosRealtimeComponent extends Component
             'message' => "".$mensaje['message']
         ]);
         $this->emit('notificacionCocina', 'tono');
+    }
+    public function cambiarEstado($id,$estadoActual)
+    {
+        //dd($id);
+        if($estadoActual=='pendiente')
+        {
+            DB::table('producto_venta')->where('id',$id)->update(['estado_actual'=>'despachado']);
+        }
+        else
+        {
+            DB::table('producto_venta')->where('id',$id)->update(['estado_actual'=>'pendiente']);
+        }
+        
     }
     public function render()
     {
