@@ -2,6 +2,14 @@
 @section('content')
     <x-cabecera-pagina titulo="Mis planes" cabecera="bordeado" />
     @isset($planes)
+        <div class="card card-style">
+            <div class="content">
+                <h4 class="font-700">Planes suscritos</h4>
+                <p class="pb-0">
+                  Actualmente estas suscrito en {{$planes->count()}} plan(es):
+                </p>
+            </div>
+        </div>
         @foreach ($planes as $item)
             @foreach ($usuario->planes as $plane)
                 @if ($plane->id == $item['id'])
@@ -30,6 +38,8 @@
             @endif
         @endforeach
     @endforeach
+   
+    <div class="divider bg-mint-dark divider-margins"></div>
 @endisset
 
 <a href="#" data-menu="menu-tips-1">
@@ -51,6 +61,13 @@
     </div>
 </a>
 
+<div class="divider bg-mint-dark divider-margins"></div>
+<div class="card card-style">
+    <div class="content">
+        <h4 class="font-700">Estos son todos nuestros planes:</h4>
+       
+    </div>
+</div>
 @foreach ($subcategoria->productos as $producto)
     <div data-card-height="220" class="card card-style round-medium shadow-huge top-30"
         style="background-image:url({{ asset($producto->pathAttachment()) }})">
