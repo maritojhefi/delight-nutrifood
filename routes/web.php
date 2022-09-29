@@ -92,6 +92,11 @@ Route::prefix('/ventas')->middleware('auth')->group(function () {
     
 
 });
+Route::prefix('/otros')->group(function () {
+   
+    Route::get('/tutoriales', [App\Http\Controllers\OtrosController::class, 'tutorialesIndex'])->name('tutoriales');
+
+});
 //perfil
 Route::prefix('/miperfil')->middleware('auth')->group(function () {
     Route::get('/mostrar/{idplan}/{iduser}', [App\Http\Controllers\admin\UsuariosController::class, 'mostrar']);
@@ -104,6 +109,9 @@ Route::prefix('/miperfil')->middleware('auth')->group(function () {
     Route::get('/editardia/{idpivot}', [App\Http\Controllers\MiperfilController::class, 'editardia'])->name('editardia');
     Route::post('/subirfoto', [App\Http\Controllers\MiperfilController::class, 'subirFoto'])->name('subirfoto.perfil');
     Route::get('/misplanes', [App\Http\Controllers\MiperfilController::class, 'misPlanes'])->name('misplanes');
+    Route::get('/whatsapp/asistente', [App\Http\Controllers\MiperfilController::class, 'revisarWhatsappAsistente']);
+    Route::get('/whatsapp/cambiar/estado', [App\Http\Controllers\MiperfilController::class, 'cambiarEstadoWhatsappAsistente']);
+    
 
 });
 Route::get('perfil/editar', [App\Http\Controllers\MiperfilController::class, 'revisarPerfil'])->middleware('auth')->name('llenarDatosPerfil');

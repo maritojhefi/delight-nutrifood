@@ -25,6 +25,7 @@
             blurred && (location.reload());
         };
     </script>
+    
     @stack('header')
 
     @laravelPWA
@@ -39,7 +40,7 @@
 
         /* Medium devices (landscape tablets, 768px and up) */
         @media only screen and (min-width: 768px) {
-            #margen {
+            .margen {
                 margin-right: 20%;
                 margin-left: 20%;
             }
@@ -47,7 +48,7 @@
 
         /* Large devices (laptops/desktops, 992px and up) */
         @media only screen and (min-width: 992px) {
-            #margen {
+            .margen {
                 margin-right: 30%;
                 margin-left: 30%;
             }
@@ -55,7 +56,7 @@
 
         /* Extra large devices (large laptops and desktops, 1200px and up) */
         @media only screen and (min-width: 1200px) {
-            #margen {
+            .margen {
                 margin-right: 35%;
                 margin-left: 35%
             }
@@ -65,7 +66,7 @@
 
 </head>
 
-<body id="margen" class="theme-light">
+<body id="margen" class="theme-light margen">
     <div id="preloader">
         <div class="spinner-border color-highlight" role="status"></div>
     </div>

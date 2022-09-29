@@ -21,7 +21,7 @@
         </a> -->
     </div> --}}
 
-<div id="footer-bar" class="footer-bar-2 bg-dark-dark mb-1 ms-3 me-3 rounded-s">
+<div id="footer-bar" class="footer-bar-2 bg-dark-dark mb-1 ms-3 me-3 rounded-m margen">
     {{-- <a href="index.html"><i class="fa fa-home color-white"></i><span class="color-white">Home</span></a>
         <a href="index-components.html"><i class="fa fa-star color-white"></i><span class="color-white">Features</span></a>
         <a href="index-pages.html" class="active-nav"><i class="fa fa-heart color-white"></i><span class="color-white">Pages</span></a>
@@ -44,23 +44,23 @@
         </script>
     @endpush
     <a id="uno" href="{{ route('miperfil') }}"
-        class="{{ request()->is('miperfil' . '*') ? 'active-nav' : '' }} cargando">
+        class="{{ request()->is('miperfil' . '*') ? 'active-nav rounded-m' : '' }} cargando">
         <i class="fa fa-heart color-white">
         </i><span class="color-white">Mi Perfil</span>
     </a>
-    <a href="{{ route('linea.delight') }}" class="{{ request()->is('lineadelight' . '*') ? 'active-nav' : '' }} cargando">
+    <a href="{{ route('linea.delight') }}" class="{{ request()->is('lineadelight' . '*') ? 'active-nav rounded-m' : '' }} cargando">
         <i class="fa fa-leaf font-16 color-white"></i>
         <span class="color-white">Linea Delight!</span>
     </a>
-    <a href="{{ route('menusemanal') }}" class="{{ request()->is('inicio' . '*') ? 'active-nav' : '' }} cargando">
+    <a href="{{ route('menusemanal') }}" class="{{ request()->is('inicio' . '*') ? 'active-nav rounded-m' : '' }} cargando">
         <i class="fa fa-home font-16 color-white"></i>
         <span class="color-white">Inicio</span>
     </a>
-    <a href="{{ route('productos') }}" class="{{ request()->is('productos' . '*') ? 'active-nav' : '' }} cargando">
+    <a href="{{ route('productos') }}" class="{{ request()->is('productos' . '*') ? 'active-nav rounded-m' : '' }} cargando">
         <i class="fa fa-gem font-16 color-white"></i>
         <span class="color-white">Eco-Tienda</span>
     </a>
-    <a href="{{ route('carrito') }}" class="{{ request()->is('carrito' . '*') ? 'active-nav' : '' }} cargando">
+    <a href="{{ route('carrito') }}" class="{{ request()->is('carrito' . '*') ? 'active-nav rounded-m' : '' }} cargando">
         <i class="fa fa-shopping-cart font-16 color-white"></i>
         <span class="color-white">Mi carrito</span>
     </a>

@@ -11,8 +11,13 @@ class TutorialesComponent extends Component
     use WithPagination;
     
     protected $paginationTheme = 'bootstrap';
+    public $tipo;
     public $titulo,$descripcion,$url;
     public $search;
+    public function resetTipo()
+    {
+        $this->reset('tipo');
+    }
     public function delete(Tutoriale $tutorial)
     {
         $tutorial->delete();
@@ -21,17 +26,37 @@ class TutorialesComponent extends Component
             'message' => "Se elimino el tutorial"
         ]);
     }
+    public function elegirTipo($tipo)
+    {
+        $this->reset();
+        $this->tipo=$tipo;
+    }
     public function submit()
     {
-        $array=$this->validate([
-            'titulo'=>'required|max:35',
-            'descripcion'=>'required',
-            'url'=>'required|url'
-        ]);
+        if($this->tipo=='youtube')
+        {
+            $array=$this->validate([
+                'titulo'=>'required|max:35',
+                'descripcion'=>'required',
+                'url'=>'required|url',
+                'tipo'=>'required'
+            ]);
+        }
+        else
+        {
+            $this->titulo="Video desde ".$this->tipo;
+            $this->descripcion="Video desde ".$this->tipo;
+            $array=$this->validate([
+                'titulo'=>'required|max:35',
+                'descripcion'=>'required',
+                'url'=>'required',
+                'tipo'=>'required'
+            ]);
+        }
         Tutoriale::create($array);
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
-            'message' => "Se agrego un nuevo tutorial!"
+            'message' => "Se agrego un nuevo video!"
         ]);
         $this->reset();
     }

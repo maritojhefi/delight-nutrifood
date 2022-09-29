@@ -12,10 +12,45 @@ use App\Models\Subcategoria;
 use Illuminate\Http\Request;
 use App\Events\CocinaPedidoEvent;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 
 class MiperfilController extends Controller
 {
+    public function revisarWhatsappAsistente()
+    {
+        if(Auth::check())
+        {
+           return auth()->user()->whatsapp_plan;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public function cambiarEstadoWhatsappAsistente()
+    {
+        if(Auth::check())
+        {
+            $user=User::find(auth()->user()->id);
+            if($user->whatsapp_plan)
+            {
+                $user->whatsapp_plan=false;
+                $user->save();
+                return false;
+            }
+            else
+            {
+                $user->whatsapp_plan=true;
+                $user->save(); 
+                return true;
+            }
+        }
+        else
+        {
+            return null;
+        } 
+    }
     public function menu()
     {
         return view('client.miperfil.menu');

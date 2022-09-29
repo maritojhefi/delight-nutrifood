@@ -1,0 +1,639 @@
+/**
+ * Icomoon vector icons.
+ *
+ * @package fwdupt
+ * @since fwdupt 1.0
+ */
+ 
+ @font-face {
+  font-family: 'fwdicon';
+  src:
+    url('fonts/fwdicon.ttf?hojdd7') format('truetype'),
+    url('fonts/fwdicon.woff?hojdd7') format('woff'),
+    url('fonts/fwdicon.svg?hojdd7#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.icomoon,
+[class^="fwdicon-"]:before,
+[class*=" fwdicon-"]:before {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'fwdicon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.fwdicon-10:before {
+  content: "\e900";
+}
+.fwdicon-AB:before {
+  content: "\e901";
+}
+.fwdicon-author:before {
+  content: "\e902";
+}
+.fwdicon-basket:before {
+  content: "\e903";
+}
+.fwdicon-buffer:before {
+  content: "\e904";
+}
+.fwdicon-calendar:before {
+  content: "\e905";
+}
+.fwdicon-cast:before {
+  content: "\e906";
+}
+.fwdicon-categories:before {
+  content: "\e907";
+}
+.fwdicon-CC:before {
+  content: "\e908";
+}
+.fwdicon-CC-off:before {
+  content: "\e909";
+}
+.fwdicon-clipboard:before {
+  content: "\e90a";
+}
+.fwdicon-close:before {
+  content: "\e90b";
+}
+.fwdicon-comments:before {
+  content: "\e90c";
+}
+.fwdicon-creepy-ghost:before {
+  content: "\e90d";
+}
+.fwdicon-digg:before {
+  content: "\e90e";
+}
+.fwdicon-down:before {
+  content: "\e90f";
+}
+.fwdicon-download:before {
+  content: "\e910";
+}
+.fwdicon-email:before {
+  content: "\e911";
+}
+.fwdicon-embed:before {
+  content: "\e912";
+}
+.fwdicon-facebook:before {
+  content: "\e913";
+}
+.fwdicon-FF-left:before {
+  content: "\e914";
+}
+.fwdicon-FF-right:before {
+  content: "\e915";
+}
+.fwdicon-flash:before {
+  content: "\e916";
+}
+.fwdicon-flikr:before {
+  content: "\e917";
+}
+.fwdicon-fullscreen:before {
+  content: "\e918";
+}
+.fwdicon-full-width:before {
+  content: "\e919";
+}
+.fwdicon-gallery:before {
+  content: "\e91a";
+}
+.fwdicon-gallery-fullscreen:before {
+  content: "\e91b";
+}
+.fwdicon-gallery-minimise:before {
+  content: "\e91c";
+}
+.fwdicon-ghost:before {
+  content: "\e91d";
+}
+.fwdicon-google-plus:before {
+  content: "\e91e";
+}
+.fwdicon-info:before {
+  content: "\e91f";
+}
+.fwdicon-info-off:before {
+  content: "\e920";
+}
+.fwdicon-instagram:before {
+  content: "\e921";
+}
+.fwdicon-left:before {
+  content: "\e922";
+}
+.fwdicon-left-arrow:before {
+  content: "\e923";
+}
+.fwdicon-link:before {
+  content: "\e924";
+}
+.fwdicon-linkedin:before {
+  content: "\e925";
+}
+.fwdicon-loop:before {
+  content: "\e926";
+}
+.fwdicon-love:before {
+  content: "\e927";
+}
+.fwdicon-mail:before {
+  content: "\e928";
+}
+.fwdicon-maps:before {
+  content: "\e929";
+}
+.fwdicon-maximise:before {
+  content: "\e92a";
+}
+.fwdicon-minimise:before {
+  content: "\e92b";
+}
+.fwdicon-minus:before {
+  content: "\e92c";
+}
+.fwdicon-min-width:before {
+  content: "\e92d";
+}
+.fwdicon-music:before {
+  content: "\e92e";
+}
+.fwdicon-normalscreen:before {
+  content: "\e92f";
+}
+.fwdicon-pause:before {
+  content: "\e930";
+}
+.fwdicon-phone:before {
+  content: "\e931";
+}
+.fwdicon-photo:before {
+  content: "\e932";
+}
+.fwdicon-pinterest:before {
+  content: "\e933";
+}
+.fwdicon-play:before {
+  content: "\e934";
+}
+.fwdicon-playlist:before {
+  content: "\e935";
+}
+.fwdicon-playlist-close-sidebar:before {
+  content: "\e936";
+}
+.fwdicon-playlist-sidebar:before {
+  content: "\e937";
+}
+.fwdicon-plus:before {
+  content: "\e938";
+}
+.fwdicon-projects:before {
+  content: "\e939";
+}
+.fwdicon-quote:before {
+  content: "\e93a";
+}
+.fwdicon-quote-thin:before {
+  content: "\e93b";
+}
+.fwdicon-reddit:before {
+  content: "\e93c";
+}
+.fwdicon-reload-3:before {
+  content: "\e93d";
+}
+.fwdicon-reply:before {
+  content: "\e93e";
+}
+.fwdicon-right:before {
+  content: "\e93f";
+}
+.fwdicon-right-arrow:before {
+  content: "\e940";
+}
+.fwdicon-right-arrow-thin:before {
+  content: "\e941";
+}
+.fwdicon-screen-maximise:before {
+  content: "\e942";
+}
+.fwdicon-screen-minimise:before {
+  content: "\e943";
+}
+.fwdicon-search:before {
+  content: "\e944";
+}
+.fwdicon-settings:before {
+  content: "\e945";
+}
+.fwdicon-share:before {
+  content: "\e946";
+}
+.fwdicon-share-off:before {
+  content: "\e947";
+}
+.fwdicon-shuffle:before {
+  content: "\e948";
+}
+.fwdicon-sound:before {
+  content: "\e949";
+}
+.fwdicon-sound-off:before {
+  content: "\e94a";
+}
+.fwdicon-standard-post:before {
+  content: "\e94b";
+}
+.fwdicon-tumblr:before {
+  content: "\e94c";
+}
+.fwdicon-twitter:before {
+  content: "\e94d";
+}
+.fwdicon-uncast:before {
+  content: "\e94e";
+}
+.fwdicon-unlink:before {
+  content: "\e94f";
+}
+.fwdicon-up:before {
+  content: "\e950";
+}
+.fwdicon-video-camera:before {
+  content: "\e951";
+}
+.fwdicon-vimeo:before {
+  content: "\e952";
+}
+.fwdicon-watch-later:before {
+  content: "\e953";
+}
+.fwdicon-youtube:before {
+  content: "\e954";
+}
+
+/* Vector fonts buttons */
+.EVPMainButtonsNormalState{
+	transform: rotate(0.3deg);
+	overflow: visible !important;
+	font-size:20px !important;
+	color:#999 !important;
+}
+
+.EVPMainButtonsSelectedState{
+	transform: rotate(0.3deg);
+	overflow: visible !important;
+	font-size:20px !important;
+	color:#FFF !important;
+}
+
+.fwdevp .fwdicon{
+	font-family: 'fwdicon';
+}
+
+.fwdevp .fwdicon:before{
+	position: relative;
+}
+
+.fwdevp .fwdicon-pause:before{
+	font-size: 19px;
+	top: -1px;
+}
+
+.fwdevp .fwdicon-download:before{
+	top: -1px;
+}
+
+.fwdevp .fwdicon-embed{
+	font-size: 21px;
+}
+
+.fwdevp .fwdicon-sound-off{
+	font-size: 22px;
+}
+
+.fwdevp .fwdicon-sound{
+	font-size: 24px;
+}
+
+.fwdevp .fwdicon-sound-off:before,
+.fwdevp .fwdicon-sound:before{
+	top: 1px;
+}
+
+.fwdevp .fwdicon-fullscreen,
+.fwdevp .fwdicon-normalscreen{
+	font-size: 19px;
+}
+
+
+.EVPLargePlayButtonNormalState{
+	position:absolute;
+	font-size:30px;
+	width:86px;
+	height:59px;
+	cursor: pointer;
+	background-color:#1f1f1f;
+	color:#6a6a6a;
+}
+
+.EVPLargePlayButtonNormalState .table-cell-fwdevp-button{
+	padding:2px 0 0;
+}
+
+.EVPLargePlayButtonSelectedState{
+	position:absolute;
+	font-size:30px;
+	width:80px;
+	height:80px;
+	cursor: pointer;
+	background-color:#1f1f1f;
+	color:#FFF;
+}
+
+.EVPLargePlayButtonSelectedState .table-cell-fwdevp-button{
+	padding:2px 0 0;
+}
+
+.EVPCloseButtonNormalState{
+	overflow: visible;
+	position:absolute;
+	font-size:14px;
+	width:40px;
+	height:39px;
+	cursor: pointer;
+	background-color:#1f1f1f;
+	color:#FFFFFF;
+}
+
+.EVPCloseButtonNormalState .fwdicon-close{
+	position: relative;
+	top: 2px;
+}
+
+.EVPCloseButtonSelectedState{
+	overflow: visible;
+	position:absolute;
+	font-size:14px;
+	width:40px;
+	height:39px;
+	cursor: pointer;
+	background-color:#1f1f1f;
+	color:#FF0000;
+}
+
+.EVPCloseButtonSelectedState .fwdicon-close{
+	position: relative;
+	top: 2px;
+}
+
+.EVPSocialMediaButtonsNormalState{
+	font-size:18px !important;
+	color:#999999 !important;
+	font-weight:100;
+}
+
+.EVPSocialMediaButtonsSelectedState{
+	font-size:18px !important;
+	color:#FFFFFF !important;
+}
+
+.table-fwdevp-button { 
+	display: table; width:100%; height:100%; position:absolute;
+}
+
+.table-cell-fwdevp-button {
+	display: table-cell; width:100%; height: 100%; vertical-align: middle; text-align:center;
+}
+
+/* Autoplay text. */
+.fwdevp-autoplay-text{
+	font: 500 12px Roboto, Arial !important;
+	top: 30px !important;
+	left: 30px !important;
+	border-radius: 14px;
+	line-height: 14px !important;
+	padding: 6px 23px 6px 18px !important;
+	background-color: rgba(0, 0, 0, 0.4);
+	color: #FFFFFF;
+
+	transition: background-color .3s ease-out, color .3s ease-out;
+}
+
+.fwdevp-autoplay-text:hover{
+	color: #000;
+	background-color: rgba(255, 255, 255, 1);
+}
+
+.fwdevp-autoplay-text:hover svg path{
+	fill: #111;
+}
+
+.fwdevp-autoplay-text svg{
+    transform: translate(6px, 2px);
+}
+
+.fwdevp-autoplay-text svg path{
+	transition: all .3s ease-out;
+	fill: #FFFFFF;
+}
+
+
+/* Subtitle. */
+.EVPSubtitle{
+	font: 600 22px Roboto, Arial !important;
+	text-align: center !important;
+	color: #FFFFFF !important;
+	text-shadow: 0px 0px 1px #000000 !important;
+	line-height: 28px !important;
+	margin: 0 20px 20px !important;
+	padding: 0px !important;
+}
+
+.EVPSubtitle.phone{
+	font-size: 16px !important;
+	line-height: 20px !important;
+	margin: 0 10px 10px !important;
+}
+
+.EVPSubtitle.large{
+	font-size: 28px !important;
+	line-height: 38px !important;
+	margin: 0 20px 20px !important;
+}
+
+
+/* Tooltips. */
+.EVP-tooltip-text{
+	font-family: Roboto, Arial !important;
+	padding: 5px 8px 5px !important;
+}
+
+/*Thumbnail preview text. */
+.fwdevp-thubnails-preview-text{
+	font-family: Roboto, Arial !important;
+	padding: 5px 8px 4px !important;
+}
+
+
+/* Annotations */
+.fwdevp-annotation-normal{
+	font-family: Roboto, Arial !important;
+	font-size: 14px !important;
+	font-weight: 300 !important;
+	width: 294px !important;
+	line-height: 16px !important;
+	padding: 18px 22px 16px 25px !important;
+	color: #FFFFFF !important;
+	background-color: rgba(0,0,0,.4) !important;
+}
+
+.fwdevp-annotation-link-normal{
+	font-family: Roboto, Arial !important;
+	font-size: 13px !important;
+	width: 320px !important;
+	font-weight: 300 !important;
+	width: 343px !important;
+	line-height: 16px !important;
+	padding: 18px 22px 16px 25px !important;
+	background-color: rgba(0,0,0,.8) ;
+	color: #FFFFFF ;
+}
+
+.fwdevp-annotation-link-selected{
+	font-family: Roboto, Arial !important;
+	font-size:13px !important;
+	width: 320px !important;
+	font-weight: 300 !important;
+	width: 343px !important;
+	line-height: 16px !important;
+	padding: 18px 22px 16px 25px !important;
+	background-color: #FFFFFF ;
+	color:#000000;
+}
+
+.fwdevp-annotation-js-normal{
+	font-family: Roboto, Arial !important;
+	font-size:13px !important;
+	width: 320px !important;
+	font-weight: 300 !important;
+	width: 343px !important;
+	line-height: 16px !important;
+	padding: 18px 22px 16px 25px !important;
+	background-color: rgba(0,0,0, .4);
+	color: #FFFFFF !important;
+}
+
+.fwdevp-annotation-js-selected{
+	font-family: Roboto, Arial !important;
+	font-size:13px !important;
+	width: 320px !important;
+	font-weight: 300 !important;
+	width: 343px !important;
+	line-height: 16px !important;
+	padding: 18px 22px 16px 25px !important;
+	background-color: #FFFFFF;
+	color:#000000 !important;
+}
+
+.fwdevp-annotation-play-normal{
+	font-family:Arial !important;
+	text-align:center !important;
+	width: 160px !important;
+	padding:10px !important;
+	padding-top:6px !important;
+	padding-bottom:6px !important;
+	line-height:20px !important;
+	border-style: solid !important;
+    border-width: 1px !important;
+	border-color: #999999 !important;
+	border-radius:4px !important;
+	box-shadow: 1px 1px 1px #999999 !important;
+	background: #FFFFFF;
+	color:#000000;
+}
+
+.fwdevp-annotation-play-selected{
+	font-family:Arial !important;
+	text-align:center !important;
+	width: 160px !important;
+	padding:10px !important;
+	padding-top:6px !important;
+	padding-bottom:6px !important;
+	line-height:20px !important;
+	border-style: solid !important;
+    border-width: 1px !important;
+	border-color: #FFFFFF !important;
+	border-radius:4px !important;
+	box-shadow: 1px 1px 1px #999999 !important;
+	background: #000000 ;
+	color :#FFFFFF;
+}
+
+
+/* Logged in window dark. */
+.fwdevp-loggedin-message-dark{
+  font: 400 14px  Arial !important;
+  color: #AAAAAA !important;
+}
+
+.fwdevp-loggedin-message-dark a{
+  background-image: linear-gradient(#FFF calc(100% - 1px), #FFF 1px);
+  background-size: 0% 2px;
+  color: #CCC;
+}
+
+.fwdevp-loggedin-message-dark a:hover{
+  background-size: 100% 2px;
+  color: #FFF;
+}
+
+/* Logged in window white. */
+.fwdevp-loggedin-message-white{
+  font: 400 14px Roboto, Arial !important;
+  color: #6a6a6a !important;
+}
+
+.fwdevp-loggedin-message-white a{
+  background-size: 100% 2px;
+  color: #0099FF;
+}
+
+.fwdevp-display-none:before{
+	display: none !important;
+}
+
+/* Controller. */
+.fwdevp-time,
+.fwdevp-qaulity-button{
+	font: 400 12px Roboto, Arial !important;
+}
+
+/* Advertising. */
+.fwdevp-skip,
+.fwdevp-ads{
+	font-family: Roboto, Arial !important;
+}
+
+/* Password window. */
+.fwdevp-password-title,
+.fwdevp-password-label,
+.fwdevp-password-input{
+	font-family: Roboto, Arial !important;
+}

@@ -9,7 +9,7 @@ class Tutoriale extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'titulo','descripcion','url'
+        'titulo','descripcion','url','tipo'
        
     ];
 }
