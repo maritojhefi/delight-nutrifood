@@ -10,6 +10,7 @@ class OtrosController extends Controller
     public function tutorialesIndex()
     {
         $videos=Tutoriale::all();
+        $videos=$videos->shuffle();
         return view('client.otros.tutoriales',compact('videos'));
     }
 }
