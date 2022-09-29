@@ -18,12 +18,12 @@ class TutorialesComponent extends Component
     {
         $this->reset('tipo');
     }
-    public function delete(Tutoriale $tutorial)
+    public function delete(Tutoriale $video)
     {
-        $tutorial->delete();
+        $video->delete();
         $this->dispatchBrowserEvent('alert', [
             'type' => 'warning',
-            'message' => "Se elimino el tutorial"
+            'message' => "Se elimino el video"
         ]);
     }
     public function elegirTipo($tipo)
