@@ -28,7 +28,7 @@
                 </x-sidebar-elements>
                 <x-sidebar-elements titulo="Nutri-Tips" linkglobal="admin/tienda" :lista="[
                 'Galeria de fotos' => 'tienda.galeria',
-                'Tutoriales' => 'tienda.tutoriales',
+                'Videos' => 'tienda.tutoriales',
                 'Novedades' => 'tienda.novedades']">
                     <i class="fa fa-camera"></i>
                 </x-sidebar-elements>
