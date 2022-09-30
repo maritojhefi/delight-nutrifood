@@ -8,7 +8,7 @@
             <p>
                 Encuentra lo que mas te gusta!
             </p>
-            @foreach ($subcategoria->productos->shuffle() as $item)
+            @foreach ($subcategoria->productos->where('estado','activo')->shuffle() as $item)
             <div class="d-flex">
                 <a href="{{route('detalleproducto',$item->id)}}">
                 <div>
