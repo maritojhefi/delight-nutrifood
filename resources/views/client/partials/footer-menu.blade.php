@@ -27,18 +27,21 @@
         <a href="index-pages.html" class="active-nav"><i class="fa fa-heart color-white"></i><span class="color-white">Pages</span></a>
         <a href="index-search.html"><i class="fa fa-search color-white"></i><span class="color-white">Search</span></a>
         <a href="#" data-menu="menu-settings"><i class="fa fa-cog color-white"></i><span class="color-white">Settings</span></a> --}}
-        <div id="toast-2" class="toast toast-tiny toast-top bg-blue-dark hide" data-bs-delay="3000" data-bs-autohide="true"><i class="fa fa-sync fa-spin me-3"></i>Cargando...</div>
+        <div id="toast-2" class="toast toast-tiny toast-top bg-blue-dark hide" data-bs-delay="3000" data-bs-autohide="true"><i class="fa fa-sync fa-spin me-3"></i>Un momento...</div>
     @push('scripts')
         <script>
             
             window.onload = function() {
 
-                var asd = document.getElementById('toast-2');
-                fd = new bootstrap.Toast(asd);
+                // var asd = document.getElementById('toast-2');
+                // fd = new bootstrap.Toast(asd);
                 $(".cargando").click(function() {
                    // $(this).addClass('disabled');
-                
-                fd.show();
+                   $('.cargando').removeClass('active-nav')
+                   $(this).addClass('active-nav rounded-m')
+                   
+                    $(this).html('<i class="fa fa-sync fa-spin color-white me-3"></i><span class="color-white">Cargando</span>')
+                // fd.show();
             });
 }
         </script>
