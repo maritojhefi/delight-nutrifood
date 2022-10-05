@@ -101,7 +101,7 @@
                 </div>
             </a>
 
-            <a href="#" id="revisarWhatsapp" class="col-12 cargando">
+            <a href="#" id="revisarWhatsapp" class="col-12">
                 <div class="card card-style mb-3">
                     <div class="d-flex py-3 my-1">
                         <div class="align-self-center px-3">
