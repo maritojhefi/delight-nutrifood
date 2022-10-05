@@ -28,7 +28,7 @@
         <a href="index-search.html"><i class="fa fa-search color-white"></i><span class="color-white">Search</span></a>
         <a href="#" data-menu="menu-settings"><i class="fa fa-cog color-white"></i><span class="color-white">Settings</span></a> --}}
     @push('modals')
-    <div id="cargando-footer" class="snackbar-toast bg-orange-dark color-white fade" data-delay="3000"
+    <div id="cargando-footer" class="snackbar-toast bg-orange-dark color-white fade" data-delay="10000"
         data-autohide="true"><i class="fa fa-sync fa-spin color-white"></i> Un momento...</div>
     @endpush
     @push('scripts')
