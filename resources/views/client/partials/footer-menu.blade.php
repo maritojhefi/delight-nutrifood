@@ -39,8 +39,8 @@
                    // $(this).addClass('disabled');
                    $('.cargando').removeClass('active-nav')
                    $(this).addClass('active-nav rounded-m')
-                   
-                    $(this).html('<i class="fa fa-sync fa-spin ont-16 color-white"></i><span class="color-white">Cargando</span>')
+                   var titulo=$(this).children('span').html()
+                    $(this).html('<i class="fa fa-sync fa-spin ont-16 color-white"></i><span class="color-white">'+titulo+'</span>')
                 // fd.show();
             });
 }
