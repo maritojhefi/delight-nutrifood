@@ -36,11 +36,11 @@
             window.onload = function() {
                 var asd = document.getElementById('cargando-footer');
                 fd = new bootstrap.Toast(asd);
-                $('a, button').click(function() {
-                    console.log($(this).attr('type').includes('submit'))
+                $('a').click(function() {
+                   
                 if($($(this)).hasClass( "cargando" )==false)
                 {
-                    if ($(this).attr('href').includes('http') == true || $(this).attr('href').includes('#') != true || $(this).attr('type').includes('submit')) {
+                    if ($(this).attr('href').includes('http') == true || $(this).attr('href').includes('#') != true) {
                     
                     fd.show();
                 }
