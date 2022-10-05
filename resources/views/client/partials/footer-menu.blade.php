@@ -35,7 +35,7 @@
         <script>
             window.onload = function() {
                 $('a').click(function() {
-                if($($(this)).hasClass( "cargando" ))
+                if($($(this)).hasClass( "cargando" )==false)
                 {
                     if ($(this).attr('href').includes('http') == true || $(this).attr('href').includes('#') != true) {
                     var asd = document.getElementById('cargando-footer');
