@@ -138,11 +138,11 @@ class UserIndex extends Component
     {
         if($this->searchUser)
         {
-            $usuarios=User::where('name','LIKE','%'.$this->searchUser.'%')->orWhere('telf','LIKE','%'.$this->searchUser.'%')->orderBy('id','DESC')->paginate(3)->onEachSide(1);
+            $usuarios=User::where('name','LIKE','%'.$this->searchUser.'%')->orWhere('telf','LIKE','%'.$this->searchUser.'%')->orderBy('id','DESC')->paginate(8)->onEachSide(1);
         }
         else
         {
-            $usuarios=User::orderBy('id','DESC')->paginate(3)->onEachSide(1);
+            $usuarios=User::orderBy('id','DESC')->paginate(8)->onEachSide(1);
         }
         
         $roles=Role::all();
