@@ -34,12 +34,14 @@
     @push('scripts')
         <script>
             window.onload = function() {
-                $('a').click(function() {
+                var asd = document.getElementById('cargando-footer');
+                fd = new bootstrap.Toast(asd);
+                $('a, button').click(function() {
+                    console.log($(this).attr('type').includes('submit'))
                 if($($(this)).hasClass( "cargando" )==false)
                 {
-                    if ($(this).attr('href').includes('http') == true || $(this).attr('href').includes('#') != true) {
-                    var asd = document.getElementById('cargando-footer');
-                    fd = new bootstrap.Toast(asd);
+                    if ($(this).attr('href').includes('http') == true || $(this).attr('href').includes('#') != true || $(this).attr('type').includes('submit')) {
+                    
                     fd.show();
                 }
                 }    
@@ -61,28 +63,28 @@
         </script>
     @endpush
     <a id="uno" href="{{ route('miperfil') }}"
-        class="{{ request()->is('miperfil' . '*') ? 'active-nav rounded-m' : '' }} cargando">
-        <i class="fa fa-heart color-white">
+        class="{{ request()->is('miperfil' . '*') ? 'active-nav rounded-m ' : '' }} cargando">
+        <i class="fa fa-heart color-white fa-beat">
         </i><span class="color-white">Mi Perfil</span>
     </a>
     <a href="{{ route('linea.delight') }}"
         class="{{ request()->is('lineadelight' . '*') ? 'active-nav rounded-m' : '' }} cargando">
-        <i class="fa fa-leaf font-16 color-white"></i>
+        <i class="fa fa-leaf font-16 color-white fa-beat"></i>
         <span class="color-white">Linea Delight!</span>
     </a>
     <a href="{{ route('menusemanal') }}"
         class="{{ request()->is('inicio' . '*') ? 'active-nav rounded-m' : '' }} cargando">
-        <i class="fa fa-home font-16 color-white"></i>
+        <i class="fa fa-home font-16 color-white fa-beat"></i>
         <span class="color-white">Inicio</span>
     </a>
     <a href="{{ route('productos') }}"
         class="{{ request()->is('productos' . '*') ? 'active-nav rounded-m' : '' }} cargando">
-        <i class="fa fa-gem font-16 color-white"></i>
+        <i class="fa fa-gem font-16 color-white fa-beat"></i>
         <span class="color-white">Eco-Tienda</span>
     </a>
     <a href="{{ route('carrito') }}"
         class="{{ request()->is('carrito' . '*') ? 'active-nav rounded-m' : '' }} cargando">
-        <i class="fa fa-shopping-cart font-16 color-white"></i>
+        <i class="fa fa-shopping-cart font-16 color-white fa-beat"></i>
         <span class="color-white">Mi carrito</span>
     </a>
     <!--  <a href="{{ route('ajustes') }}" class="{{ request()->is('ajustes' . '*') ? 'active-nav' : '' }} ">
