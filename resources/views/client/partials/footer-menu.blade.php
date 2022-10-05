@@ -40,7 +40,7 @@
                    $('.cargando').removeClass('active-nav')
                    $(this).addClass('active-nav rounded-m')
                    
-                    $(this).html('<i class="fa fa-sync fa-spin color-white me-3"></i><span class="color-white">Cargando</span>')
+                    $(this).html('<i class="fa fa-sync fa-spin ont-16 color-white"></i><span class="color-white">Cargando</span>')
                 // fd.show();
             });
 }
