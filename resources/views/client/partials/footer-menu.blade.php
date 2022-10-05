@@ -35,12 +35,15 @@
         <script>
             window.onload = function() {
                 $('a').click(function() {
-                    
-                if ($(this).attr('href').includes('http') == true || $(this).attr('href').includes('#') != true) {
+                if($($(this)).hasClass( "cargando" ))
+                {
+                    if ($(this).attr('href').includes('http') == true || $(this).attr('href').includes('#') != true) {
                     var asd = document.getElementById('cargando-footer');
                     fd = new bootstrap.Toast(asd);
                     fd.show();
                 }
+                }    
+                
             });
                    
                 
