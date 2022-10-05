@@ -27,23 +27,34 @@
         <a href="index-pages.html" class="active-nav"><i class="fa fa-heart color-white"></i><span class="color-white">Pages</span></a>
         <a href="index-search.html"><i class="fa fa-search color-white"></i><span class="color-white">Search</span></a>
         <a href="#" data-menu="menu-settings"><i class="fa fa-cog color-white"></i><span class="color-white">Settings</span></a> --}}
-        <div id="toast-2" class="toast toast-tiny toast-top bg-blue-dark hide" data-bs-delay="3000" data-bs-autohide="true"><i class="fa fa-sync fa-spin me-3"></i>Un momento...</div>
+    @push('modals')
+    <div id="cargando-footer" class="snackbar-toast bg-orange-dark color-white fade" data-delay="3000"
+        data-autohide="true"><i class="fa fa-sync fa-spin color-white"></i> Un momento...</div>
+    @endpush
     @push('scripts')
         <script>
-            
             window.onload = function() {
-
-                // var asd = document.getElementById('toast-2');
-                // fd = new bootstrap.Toast(asd);
-                $(".cargando").click(function() {
-                   // $(this).addClass('disabled');
-                   $('.cargando').removeClass('active-nav')
-                   $(this).addClass('active-nav rounded-m')
-                   var titulo=$(this).children('span').html()
-                    $(this).html('<i class="fa fa-sync fa-spin ont-16 color-white"></i><span class="color-white">'+titulo+'</span>')
-                // fd.show();
+                $('a').click(function() {
+                    
+                if ($(this).attr('href').includes('http') == true || $(this).attr('href').includes('#') != true) {
+                    var asd = document.getElementById('cargando-footer');
+                    fd = new bootstrap.Toast(asd);
+                    fd.show();
+                }
             });
-}
+                   
+                
+
+                $(".cargando").click(function() {
+                    // $(this).addClass('disabled');
+                    $('.cargando').removeClass('active-nav')
+                    $(this).addClass('active-nav rounded-m')
+                    var titulo = $(this).children('span').html()
+                    $(this).html('<i class="fa fa-sync fa-spin color-white"></i><span class="color-white">' +
+                        titulo + '</span>')
+
+                });
+            }
         </script>
     @endpush
     <a id="uno" href="{{ route('miperfil') }}"
@@ -51,19 +62,23 @@
         <i class="fa fa-heart color-white">
         </i><span class="color-white">Mi Perfil</span>
     </a>
-    <a href="{{ route('linea.delight') }}" class="{{ request()->is('lineadelight' . '*') ? 'active-nav rounded-m' : '' }} cargando">
+    <a href="{{ route('linea.delight') }}"
+        class="{{ request()->is('lineadelight' . '*') ? 'active-nav rounded-m' : '' }} cargando">
         <i class="fa fa-leaf font-16 color-white"></i>
         <span class="color-white">Linea Delight!</span>
     </a>
-    <a href="{{ route('menusemanal') }}" class="{{ request()->is('inicio' . '*') ? 'active-nav rounded-m' : '' }} cargando">
+    <a href="{{ route('menusemanal') }}"
+        class="{{ request()->is('inicio' . '*') ? 'active-nav rounded-m' : '' }} cargando">
         <i class="fa fa-home font-16 color-white"></i>
         <span class="color-white">Inicio</span>
     </a>
-    <a href="{{ route('productos') }}" class="{{ request()->is('productos' . '*') ? 'active-nav rounded-m' : '' }} cargando">
+    <a href="{{ route('productos') }}"
+        class="{{ request()->is('productos' . '*') ? 'active-nav rounded-m' : '' }} cargando">
         <i class="fa fa-gem font-16 color-white"></i>
         <span class="color-white">Eco-Tienda</span>
     </a>
-    <a href="{{ route('carrito') }}" class="{{ request()->is('carrito' . '*') ? 'active-nav rounded-m' : '' }} cargando">
+    <a href="{{ route('carrito') }}"
+        class="{{ request()->is('carrito' . '*') ? 'active-nav rounded-m' : '' }} cargando">
         <i class="fa fa-shopping-cart font-16 color-white"></i>
         <span class="color-white">Mi carrito</span>
     </a>
