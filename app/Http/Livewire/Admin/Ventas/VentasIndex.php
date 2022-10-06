@@ -779,7 +779,7 @@ class VentasIndex extends Component
             if (isset($this->cuenta->cliente->name)) {
                 $printer->text("Cliente: " . Str::limit($this->cuenta->cliente->name, '20', '') . "\n");
             }
-            $printer->text("Metodo de pago : Bisa\n");
+            $printer->text("Metodo de pago : Banco Bisa\n");
             $printer->setTextSize(2, 2);
             $printer->text("--------------\n");
             $printer->setTextSize(1, 1);
