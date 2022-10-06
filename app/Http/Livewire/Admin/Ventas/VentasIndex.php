@@ -779,6 +779,7 @@ class VentasIndex extends Component
             if (isset($this->cuenta->cliente->name)) {
                 $printer->text("Cliente: " . Str::limit($this->cuenta->cliente->name, '20', '') . "\n");
             }
+            $printer->text("Metodo de pago : Bisa\n");
             $printer->setTextSize(2, 2);
             $printer->text("--------------\n");
             $printer->setTextSize(1, 1);
@@ -823,7 +824,7 @@ class VentasIndex extends Component
             $printer->feed(1);
             $printer->text("30-09-2022 12:06:04" . "\n");
 
-            // $printer->text(date("Y-m-d H:i:s") . "\n");
+            //$printer->text(date("Y-m-d H:i:s") . "\n");
             $printer->feed(3);
             $respuesta = CustomPrint::imprimir($printer, $this->cuenta->sucursale->id_impresora);
             if ($respuesta == true) {
