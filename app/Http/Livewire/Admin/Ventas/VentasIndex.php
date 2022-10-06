@@ -821,7 +821,9 @@ class VentasIndex extends Component
             $printer->text("Gracias por tu compra\n");
             $printer->text("Vuelve pronto!\n");
             $printer->feed(1);
-            $printer->text(date("Y-m-d H:i:s") . "\n");
+            $printer->text("30-09-2022 12:06:04" . "\n");
+
+            // $printer->text(date("Y-m-d H:i:s") . "\n");
             $printer->feed(3);
             $respuesta = CustomPrint::imprimir($printer, $this->cuenta->sucursale->id_impresora);
             if ($respuesta == true) {
