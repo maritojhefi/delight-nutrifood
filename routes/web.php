@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Route;
@@ -227,3 +228,6 @@ Route::get('/construccion', function(){
     return view('client.page-construccion');
 
 })->name('construccion');
+Route::get('/prueba/ip', function(Request $request){
+    dd($request->ip());
+});
