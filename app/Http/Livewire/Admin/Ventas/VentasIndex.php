@@ -647,7 +647,7 @@ class VentasIndex extends Component
         $this->saldo = false;
 
         $this->actualizarlista($venta);
-        $this->reset('clienteRecibo','fechaRecibo','checkClienteRecibo','observacionRecibo');
+        $this->reset('clienteRecibo','fechaRecibo','checkClientePersonalizado','observacionRecibo');
     }
 
     public function eliminar(Venta $venta)
