@@ -51,7 +51,7 @@ class CustomPrint {
       }
       
     }
-    public static function imprimirReciboVenta(string $nombreCliente=null,$listaCuenta,$subtotal, $valorSaldo=0,$descuentoProductos=0,$otrosDescuentos=0)
+    public static function imprimirReciboVenta(string $nombreCliente=null,$listaCuenta,$subtotal, $valorSaldo=0,$descuentoProductos=0,$otrosDescuentos=0, $fecha=null,$observacion=null)
     {
       $nombre_impresora = "POS-582";
             $connector = new WindowsPrintConnector($nombre_impresora);
@@ -104,14 +104,25 @@ class CustomPrint {
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $img = EscposImage::load(public_path("qrcode.png"));
             $printer->bitImageColumnFormat($img);
-
             $printer->setTextSize(1, 1);
+            if (isset($observacion)) {
+                $printer->text($observacion."\n");
+                $printer->feed(1);
+            }
+            
             $printer->text("Ingresa a nuestra plataforma!\n");
             $printer->feed(1);
             $printer->text("Gracias por tu compra\n");
             $printer->text("Vuelve pronto!\n");
             $printer->feed(1);
-            $printer->text(date("Y-m-d H:i:s") . "\n");
+            if (isset($fecha)) {
+                $printer->text($fecha . "\n");
+            }
+            else
+            {
+                $printer->text(date("Y-m-d H:i:s") . "\n");
+            }
+            
             $printer->feed(3);
             return $printer;
     }

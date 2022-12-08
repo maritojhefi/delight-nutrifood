@@ -42,6 +42,9 @@ class VentasIndex extends Component
     public $array;
     public $tipocobro;
     public $descuento, $observacion;
+    //variables para recibo
+    public $modoImpresion = false;
+    public $fechaRecibo, $observacionRecibo,$clienteRecibo,$checkClientePersonalizado;
     //variables para crear Cliente
     public $name, $cumpleano, $email, $direccion, $password, $password_confirmation;
     public $saldo, $valorSaldo = 0, $deshabilitarBancos = false, $saldoRestante = 0, $verVistaSaldo = false;
@@ -50,6 +53,15 @@ class VentasIndex extends Component
     protected $rules = [
         'sucursal' => 'required|integer',
     ];
+    public function modalResumen()
+    {
+        $this->modoImpresion = false;
+    }
+    public function modalImpresion()
+    {
+        $this->fechaRecibo=date('Y-m-d');
+        $this->modoImpresion = true;
+    }
     public function imprimirCocina()
     {
         event(new CocinaPedidoEvent('Se actualizo la lista'));
@@ -131,7 +143,7 @@ class VentasIndex extends Component
     public function registrarSaldo()
     {
         $this->validate([
-            'tipoSaldo' => 'required',
+            'tipoSaldo' => 'required|string|min:2',
             'montoSaldo' => 'required|numeric|min:0',
             'detalleSaldo' => 'required'
         ]);
@@ -760,12 +772,14 @@ class VentasIndex extends Component
         if ($this->cuenta->sucursale->id_impresora) {
 
             $recibo = CustomPrint::imprimirReciboVenta(
-                isset($this->cliente->name) ? $this->cliente->name : null,
+                !$this->checkClientePersonalizado ? isset($this->cliente->name)? $this->cliente->name:null: $this->clienteRecibo,
                 $this->listacuenta,
                 $this->subtotal,
                 isset($this->valorSaldo) ? $this->valorSaldo : 0,
                 $this->descuentoProductos,
-                $this->descuento
+                $this->descuento,
+                isset($this->fechaRecibo)?$this->fechaRecibo:null,
+                isset($this->observacionRecibo)?$this->observacionRecibo:null
             );
             $respuesta = CustomPrint::imprimir($recibo, $this->cuenta->sucursale->id_impresora);
             if ($respuesta == true) {
