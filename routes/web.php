@@ -96,6 +96,7 @@ Route::prefix('/ventas')->middleware('auth')->group(function () {
 Route::prefix('/otros')->group(function () {
    
     Route::get('/tutoriales', [App\Http\Controllers\OtrosController::class, 'tutorialesIndex'])->name('tutoriales');
+    Route::get('/cambiarcolor', [App\Http\Controllers\OtrosController::class, 'cambiarColor']);
 
 });
 //perfil

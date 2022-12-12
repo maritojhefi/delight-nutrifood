@@ -44,7 +44,7 @@ class VentasIndex extends Component
     public $descuento, $observacion;
     //variables para recibo
     public $modoImpresion = false;
-    public $fechaRecibo, $observacionRecibo,$clienteRecibo,$checkClientePersonalizado;
+    public $fechaRecibo, $observacionRecibo,$clienteRecibo,$checkClientePersonalizado, $checkMetodoPagoPersonalizado, $metodoRecibo;
     //variables para crear Cliente
     public $name, $cumpleano, $email, $direccion, $password, $password_confirmation;
     public $saldo, $valorSaldo = 0, $deshabilitarBancos = false, $saldoRestante = 0, $verVistaSaldo = false;
@@ -773,14 +773,15 @@ class VentasIndex extends Component
         if ($this->cuenta->sucursale->id_impresora) {
 
             $recibo = CustomPrint::imprimirReciboVenta(
-                !$this->checkClientePersonalizado ? isset($this->cliente->name)? $this->cliente->name:null: $this->clienteRecibo,
+                !$this->checkClientePersonalizado ? isset($this->cliente->name)? Str::limit($this->cliente->name, '20', ''):null: $this->clienteRecibo,
                 $this->listacuenta,
                 $this->subtotal,
                 isset($this->valorSaldo) ? $this->valorSaldo : 0,
                 $this->descuentoProductos,
                 $this->descuento,
                 isset($this->fechaRecibo)?$this->fechaRecibo:null,
-                isset($this->observacionRecibo)?$this->observacionRecibo:null
+                isset($this->observacionRecibo)?$this->observacionRecibo:null,
+                $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo:''
             );
             $respuesta = CustomPrint::imprimir($recibo, $this->cuenta->sucursale->id_impresora);
             if ($respuesta == true) {

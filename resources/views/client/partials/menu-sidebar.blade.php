@@ -1,6 +1,13 @@
 <div class="menu-header">
     {{-- <a href="#" data-toggle-theme="" class="border-right-0"><i class="fa font-12 color-yellow-dark fa-lightbulb"></i></a> --}}
-    <a href="#" class=" pwa-install border-right-0"><i class="fa font-12 color-blue-dark fa-brush"></i></a>
+    <a href="#" class="cambiarColor border-right-0">
+    @if (isset(auth()->user()->color_page) && auth()->user()->color_page=="theme-dark")
+    <i class="fas fa-moon color"></i>
+    @elseif(isset(auth()->user()->color_page) && auth()->user()->color_page=="theme-light")
+    <i class="fas fa-sun color"></i>
+    @else  
+    <i class="fas fa-moon color"></i>
+    @endif</a>
     <a href="#" onclick="reinstalarPWA()" class="border-right-0"><i class="fa font-15 color-green-dark fa-smile"></i></a>
     <a href="#" class="close-menu border-right-0"><i class="fa font-15 color-red-dark fa-times"></i></a>
     
@@ -159,7 +166,8 @@
     <p class="mb-0 pt-3 font-10 opacity-30">Delight-Nutrifood <span class="copyright-year"></span> by Macrobyte</p>
 
 </div>
-
+<div id="toast-sesion" class="toast toast-tiny toast-top bg-gray-dark fade hide" data-bs-delay="3000"
+            data-bs-autohide="true"><i class="fa fa-date"></i> Inicie sesion!</div>
 @push('scripts')
     <script>
         function reinstalarPWA() {
@@ -171,5 +179,36 @@
 
             location.reload(true);
         }
+
+        $(document).ready(function() {
+            $(".cambiarColor").click(function() {
+
+                $.ajax({
+                    method: "get",
+                    url: "/otros/cambiarcolor",
+                   
+                    success: function(result) {
+                        if (result == 'theme-dark') {
+                            $('#margen').removeClass('theme-light');
+                            $('#margen').addClass('theme-dark');
+                            $('.color').removeClass('fa-sun');
+                            $('.color').addClass('fa-moon');
+                        } else if(result == 'theme-light') {
+                            $('#margen').removeClass('theme-dark');
+                            $('#margen').addClass('theme-light');
+                            $('.color').removeClass('fa-moon');
+                            $('.color').addClass('fa-sun');
+                        }
+                        else
+                        {
+                            var toastID = document.getElementById('toast-sesion');
+                                toastID = new bootstrap.Toast(toastID);
+                                toastID.show();
+                        }
+                    }
+                })
+
+            });
+        });
     </script>
 @endpush

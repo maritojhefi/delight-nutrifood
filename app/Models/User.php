@@ -40,7 +40,8 @@ class User extends Authenticatable
         'longitud',
         'foto',
         'codigo_pais',
-        'whatsapp_plan'
+        'whatsapp_plan',
+        'color_page'
     ];
 
     /**

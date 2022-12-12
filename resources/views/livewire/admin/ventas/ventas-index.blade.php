@@ -358,27 +358,48 @@
                                     </div>
                                 </div>
                                 <div class="form-check mb-2">
-                                    <input type="checkbox" class="form-check-input" wire:model="checkClientePersonalizado">
-                                    <label class="form-check-label" for="check1">Agregar Cliente Personalizado</label>
+                                    <input type="checkbox" class="form-check-input"
+                                        wire:model="checkMetodoPagoPersonalizado">
+                                    <label class="form-check-label" for="check1">Agregar Metodo de Pago</label>
                                 </div>
-                                @if ($checkClientePersonalizado)
-                                <div class="mb-3 row">
-                                    <label class="col-sm-3 col-form-label col-form-label-sm">Cliente</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" class="form-control form-control-sm"
-                                            wire:model="clienteRecibo">
+                                @if ($checkMetodoPagoPersonalizado)
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-3 col-form-label col-form-label-sm">Metodo</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control form-control-sm"
+                                                wire:model="metodoRecibo">
+                                        </div>
+
+
                                     </div>
-                                    @isset ($cuenta->cliente)
-                                    <div class="alert alert-warning alert-dismissible fade show text-sm">
-                                        
-                                        <strong>Atencion!</strong> Se reemplazara el nombre de <strong>{{$cuenta->cliente->name}} </strong> por lo añadido a este campo
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="btn-close">
-                                        </button>
-                                    </div>
-                                    @endisset
-                                    
+                                @endif
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input"
+                                        wire:model="checkClientePersonalizado">
+                                    <label class="form-check-label" for="check1">Agregar Cliente
+                                        Personalizado</label>
                                 </div>
 
+                                @if ($checkClientePersonalizado)
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-3 col-form-label col-form-label-sm">Cliente</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control form-control-sm"
+                                                wire:model="clienteRecibo">
+                                        </div>
+                                        @isset($cuenta->cliente)
+                                            <div class="alert alert-warning alert-dismissible fade show text-sm">
+
+                                                <strong>Atencion!</strong> Se reemplazara el nombre de
+                                                <strong>{{ $cuenta->cliente->name }} </strong> por lo añadido a este
+                                                campo
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                    aria-label="btn-close">
+                                                </button>
+                                            </div>
+                                        @endisset
+
+                                    </div>
                                 @endif
                             </div>
                             <div class="modal-footer">
@@ -733,7 +754,8 @@
                                                 <small class="text-muted">{{ $saldo->created_at->format('d-M') }} <a
                                                         href="#"
                                                         class="badge badge-warning badge-xs">{{ App\Helpers\WhatsappAPIHelper::timeago($saldo->created_at) }}</a></small><br>
-                                                <small class="text-muted">{{ Str::limit($saldo->detalle, 25) }}</small>
+                                                <small
+                                                    class="text-muted">{{ Str::limit($saldo->detalle, 25) }}</small>
                                             </div>
                                             <span class="text-muted">{{ $saldo->monto }} Bs <a href="#"
                                                     wire:click="imprimirSaldo({{ $saldo->id }})"

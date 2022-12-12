@@ -37,7 +37,7 @@
 
                         <div class="row">
                             <div class="col-12 pt-3 text-end"><a href="{{ route('register') }}"
-                                    class="color-white opacity-50 font-10">Aun sin cuenta? <strong>Registrate aqui</strong>
+                                    class="color-white opacity-50 font-15">Aun sin cuenta? <strong>Registrate aqui</strong>
                                 </a></div>
                         </div>
                     </form>
