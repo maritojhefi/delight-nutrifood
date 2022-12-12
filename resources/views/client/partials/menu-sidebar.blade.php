@@ -2,9 +2,9 @@
     {{-- <a href="#" data-toggle-theme="" class="border-right-0"><i class="fa font-12 color-yellow-dark fa-lightbulb"></i></a> --}}
     <a href="#" class="cambiarColor border-right-0">
     @if (isset(auth()->user()->color_page) && auth()->user()->color_page=="theme-dark")
-    <i class="fas fa-moon color"></i>
-    @elseif(isset(auth()->user()->color_page) && auth()->user()->color_page=="theme-light")
     <i class="fas fa-sun color"></i>
+    @elseif(isset(auth()->user()->color_page) && auth()->user()->color_page=="theme-light")
+    <i class="fas fa-moon color"></i>
     @else  
     <i class="fas fa-moon color"></i>
     @endif</a>
@@ -191,13 +191,13 @@
                         if (result == 'theme-dark') {
                             $('#margen').removeClass('theme-light');
                             $('#margen').addClass('theme-dark');
-                            $('.color').removeClass('fa-sun');
-                            $('.color').addClass('fa-moon');
+                            $('.color').removeClass('fa-moon');
+                            $('.color').addClass('fa-sun');
                         } else if(result == 'theme-light') {
                             $('#margen').removeClass('theme-dark');
                             $('#margen').addClass('theme-light');
-                            $('.color').removeClass('fa-moon');
-                            $('.color').addClass('fa-sun');
+                            $('.color').removeClass('fa-sun');
+                            $('.color').addClass('fa-moon');
                         }
                         else
                         {
