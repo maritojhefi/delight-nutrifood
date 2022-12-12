@@ -1,16 +1,18 @@
 <div class="menu-header">
     {{-- <a href="#" data-toggle-theme="" class="border-right-0"><i class="fa font-12 color-yellow-dark fa-lightbulb"></i></a> --}}
     <a href="#" class="cambiarColor border-right-0">
-    @if (isset(auth()->user()->color_page) && auth()->user()->color_page=="theme-dark")
-    <i class="fas fa-sun color"></i>
-    @elseif(isset(auth()->user()->color_page) && auth()->user()->color_page=="theme-light")
-    <i class="fas fa-moon color"></i>
-    @else  
-    <i class="fas fa-moon color"></i>
-    @endif</a>
-    <a href="#" onclick="reinstalarPWA()" class="border-right-0"><i class="fa font-15 color-green-dark fa-smile"></i></a>
+        @if (isset(auth()->user()->color_page) && auth()->user()->color_page == 'theme-dark')
+            <i class="fas fa-sun color"></i>
+        @elseif(isset(auth()->user()->color_page) && auth()->user()->color_page == 'theme-light')
+            <i class="fas fa-moon color"></i>
+        @else
+            <i class="fas fa-moon color"></i>
+        @endif
+    </a>
+    <a href="#" onclick="reinstalarPWA()" class="border-right-0"><i
+            class="fa font-15 color-green-dark fa-smile"></i></a>
     <a href="#" class="close-menu border-right-0"><i class="fa font-15 color-red-dark fa-times"></i></a>
-    
+
 </div>
 <div class="menu-logo text-center">
     @guest
@@ -110,26 +112,26 @@
                 <span>Ir al administrador</span>
                 <i class="fa fa-circle"></i>
             </a>
-        
+
             <a id="nav-media" href="{{ route('ventas.cocina.pedido') }}" class="">
                 <i class="fa fa-leaf font-16 color-yellow-dark fa fa-list"></i>
                 <span>Pedidos</span>
                 <i class="fa fa-circle"></i>
             </a>
         @elseif(auth()->user()->role_id == 3)
-        <a id="nav-media" href="{{ route('reporte.cocina') }}" class="">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round" class="feather feather-hexagon" data-feather-line="1" data-feather-size="16"
-                data-feather-color="magenta-dark" data-feather-bg="magenta-fade-light"
-                style="stroke-width: 1; width: 16px; height: 16px;">
-                <path
-                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
-                </path>
-            </svg>
-            <span>Ir al administrador</span>
-            <i class="fa fa-circle"></i>
-        </a>
+            <a id="nav-media" href="{{ route('reporte.cocina') }}" class="">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="feather feather-hexagon" data-feather-line="1" data-feather-size="16"
+                    data-feather-color="magenta-dark" data-feather-bg="magenta-fade-light"
+                    style="stroke-width: 1; width: 16px; height: 16px;">
+                    <path
+                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                    </path>
+                </svg>
+                <span>Ir al administrador</span>
+                <i class="fa fa-circle"></i>
+            </a>
         @endif
         <a href="{{ route('logout') }}" class=""
             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -166,8 +168,12 @@
     <p class="mb-0 pt-3 font-10 opacity-30">Delight-Nutrifood <span class="copyright-year"></span> by Macrobyte</p>
 
 </div>
-<div id="toast-sesion" class="toast toast-tiny toast-top bg-gray-dark fade hide" data-bs-delay="3000"
-            data-bs-autohide="true"><i class="fa fa-date"></i> Inicie sesion!</div>
+<div id="toast-sesion2" class="toast toast-tiny toast-top bg-magenta-dark fade hide" data-bs-delay="3000"
+    data-bs-autohide="true"><i class="fa fa-date"></i> Inicie sesion!</div>
+@push('modals')
+    <div id="toast-sesion" class="toast toast-tiny toast-top bg-magenta-dark fade hide" data-bs-delay="3000"
+        data-bs-autohide="true"><i class="fa fa-date"></i> Inicie sesion!</div>
+@endpush
 @push('scripts')
     <script>
         function reinstalarPWA() {
@@ -186,24 +192,25 @@
                 $.ajax({
                     method: "get",
                     url: "/otros/cambiarcolor",
-                   
+
                     success: function(result) {
                         if (result == 'theme-dark') {
                             $('#margen').removeClass('theme-light');
                             $('#margen').addClass('theme-dark');
                             $('.color').removeClass('fa-moon');
                             $('.color').addClass('fa-sun');
-                        } else if(result == 'theme-light') {
+                        } else if (result == 'theme-light') {
                             $('#margen').removeClass('theme-dark');
                             $('#margen').addClass('theme-light');
                             $('.color').removeClass('fa-sun');
                             $('.color').addClass('fa-moon');
-                        }
-                        else
-                        {
+                        } else {
                             var toastID = document.getElementById('toast-sesion');
-                                toastID = new bootstrap.Toast(toastID);
-                                toastID.show();
+                            toastID = new bootstrap.Toast(toastID);
+                            toastID.show();
+                            var toastID = document.getElementById('toast-sesion2');
+                            toastID = new bootstrap.Toast(toastID);
+                            toastID.show();
                         }
                     }
                 })

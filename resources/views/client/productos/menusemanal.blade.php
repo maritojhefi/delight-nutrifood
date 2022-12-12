@@ -96,16 +96,23 @@
         </div>
 
     </div>
-    <div class="card card-style bg-3" data-card-height="175" style="height: 175px;">
+    <a href="#"  class="cambiarColor card card-style bg-3" data-card-height="175" style="height: 175px;background-image:url({{asset('imagenes/delight/1.jpeg')}})">
         <div class="card-top">
-            <i class="fa fa-sun color-yellow-dark fa-3x float-end me-3 mt-3"></i>
+            @if (isset(auth()->user()->color_page) && auth()->user()->color_page == 'theme-dark')
+                <i class="fa fa-sun color-yellow-dark fa-3x float-end me-3 mt-3 color"></i>
+            @elseif(isset(auth()->user()->color_page) && auth()->user()->color_page == 'theme-light')
+                <i class="fa fa-moon color-yellow-dark fa-3x float-end me-3 mt-3 color"></i>
+            @else
+                <i class="fa fa-moon color-yellow-dark fa-3x float-end me-3 mt-3 color"></i>
+            @endif
+
         </div>
         <div class="card-bottom">
             <h1 class="color-white font-700 ms-3 mb-n1">Dia o noche?</h1>
             <p class="color-white opacity-60 ms-3">Tu decides! Haz click para cambiar</p>
         </div>
         <div class="card-overlay bg-black opacity-80"></div>
-    </div>
+    </a>
 
     <div class="card card-style pb-3">
         <div class="content">
@@ -114,14 +121,14 @@
                 <div class="pt-2 mt-1">
                     <h4>Almuerzos Saludables</h4>
                 </div>
-                <div class="ms-auto me-4 pe-2">
+                {{-- <div class="ms-auto me-4 pe-2">
                     <div class="custom-control ios-switch ios-switch-icon">
                         <input type="checkbox" class="ios-input" id="toggle-id-2">
                         <label class="custom-control-label" for="toggle-id-2"></label>
                         <i class="fa fa-sun font-11 color-white"></i>
                         <i class="fa fa-moon font-11 color-white"></i>
                     </div>
-                </div>
+                </div> --}}
             </div>
             <p>
                 Nuestros menus cambian cada semana y tenemos varias opciones!
@@ -143,7 +150,7 @@
                         class="card card-style bg-25 mb-0 rounded-s m-3 {{ App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia ? 'gradient-border' : '' }}"
                         style="height: 90px;background-image:url({{ asset('imagenes/delight/21.jpeg') }}">
                         @if (App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
-                            <div class="card-top"><i class="fa fa-sun color-yellow-dark fa-3x float-end me-3 mt-3"></i>
+                            <div class="card-top"><i class="fa fa-check color-yellow-dark fa-3x float-end me-3 mt-3"></i>
                             </div>
                         @endif
 
