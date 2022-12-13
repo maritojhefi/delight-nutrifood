@@ -130,8 +130,7 @@
                 <h1 class="text-center mt-3 pt-1"><i class="fa fa-3x fa-check-circle color-white shadow-xl rounded-circle"></i></h1>
                 <h1 class="text-center mt-3 font-700 color-white">Activado!</h1>
                 <p class="boxed-text-l color-white opacity-70">
-                    Tienes activado los mensajes automaticos para programar tu plan.<br> En caso de que te encuentres suscrito en
-                    alguno...
+                    Tienes activado los mensajes automaticos para programar tu plan.<br> (Valido para usuarios suscritos a algun plan.)
                 </p>
                 <a href="#"
                     class="close-menu btn btn-m btn-center-m button-s shadow-l rounded-s text-uppercase font-900 bg-white color-green-dark cambiarEstado">Desactivar</a>
@@ -141,8 +140,7 @@
                 <h1 class="text-center mt-3 pt-1"><i class="fa fa-3x fa-times-circle color-white shadow-xl rounded-circle"></i></h1>
                 <h1 class="text-center mt-3 color-white font-700">Desactivado!</h1>
                 <p class="boxed-text-l color-white opacity-70">
-                    No estas habilitad@ para recibir mensajes.<br> Presiona el boton debajo para activar los mensajes automaticos
-                    para programar tu plan!.
+                    No estas habilitad@ para recibir mensajes whatsapp automaticos.<br> Cambia esta configuracion presionando el boton debajo.
                 </p>
                 <a href="#"
                     class="close-menu btn btn-m btn-center-m button-s shadow-l rounded-s text-uppercase font-900 bg-white color-red-dark cambiarEstado">Activar</a>
