@@ -42,61 +42,9 @@
 @section('content')
     <x-cabecera-pagina titulo="Bienvenidos a Delight" cabecera="bordeado" />
 
-    <div class="splide single-slider slider-no-arrows slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"
-        id="single-slider-2" style="visibility: visible;">
-        <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button"
-                aria-controls="single-slider-2-track" aria-label="Previous slide"><svg xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 40 40" width="40" height="40">
-                    <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
-                </svg></button><button class="splide__arrow splide__arrow--next" type="button"
-                aria-controls="single-slider-2-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 40 40" width="40" height="40">
-                    <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
-                </svg></button></div>
-        <div class="splide__track" id="single-slider-2-track">
-            <div class="splide__list" id="single-slider-2-list" style="transform: translateX(-1146px);">
-                @foreach ($galeria as $foto)
-                    <div class="splide__slide splide__slide--clone " aria-hidden="true" tabindex="-1"
-                        style="width: 382px;">
-                        <div data-card-height="300" class="card bg-28 mx-3 rounded-l shadow-l"
-                            style="height: 300px;background-image:url({{ asset('imagenes/galeria/' . $foto->foto) }})">
-                            <div class="card-top">
-                                <span class="badge bg-red-dark text-uppercase p-2 rounded-s m-4">{{ $foto->titulo }}</span>
-                            </div>
-                            <div class="card-top">
-                                <a href="#" class="bg-theme color-theme rounded-sm icon icon-xs float-end m-3"><i
-                                        class="far fa-bookmark font-12"></i></a>
-                            </div>
-                            <div class="card-bottom px-3 mb-3">
-                                <a href="#">
-                                    <h1 class="font-18 line-height-m color-white font-500 mb-0">
-                                        {{ $foto->descripcion }}
-                                    </h1>
-                                </a>
-                                <div class="d-flex pt-3">
-                                    <div class="align-self-center">
-                                        <img src="{{ asset('delight_logo.jpg') }}" width="23" class="rounded-xs me-2">
-                                    </div>
-                                    <div class="align-self-center">
-                                        <a href="#" class="color-white font-14 d-block font-500 opacity-80">by Delight
-                                        </a>
-                                    </div>
-                                    <div class="align-self-center ms-auto">
-                                        <strong class="font-300 color-white opacity-30">Nutriendo tus habitos</strong>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-overlay bg-gradient"></div>
-                        </div>
-                    </div>
-                @endforeach
 
-
-            </div>
-        </div>
-
-    </div>
-    <a href="#"  class="cambiarColor card card-style bg-3" data-card-height="175" style="height: 175px;background-image:url({{asset('imagenes/delight/1.jpeg')}})">
+    <a href="#" class="cambiarColor card card-style bg-3" data-card-height="125"
+        style="background-image:url({{ asset('imagenes/delight/1.jpeg') }})">
         <div class="card-top">
             @if (isset(auth()->user()->color_page) && auth()->user()->color_page == 'theme-dark')
                 <i class="fa fa-sun color-yellow-dark fa-3x float-end me-3 mt-3 color"></i>
@@ -111,7 +59,7 @@
             <h1 class="color-white font-700 ms-3 mb-n1">Dia o noche?</h1>
             <p class="color-white opacity-60 ms-3">Tu decides! Haz click para cambiar</p>
         </div>
-        <div class="card-overlay bg-black opacity-80"></div>
+        <div class="card-overlay bg-black opacity-60"></div>
     </a>
 
     <div class="card card-style pb-3">
@@ -227,6 +175,63 @@
 
 
         </div>
+    </div>
+    <div class="splide single-slider slider-no-arrows slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"
+        id="single-slider-2" style="visibility: visible;">
+        <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button"
+                aria-controls="single-slider-2-track" aria-label="Previous slide"><svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 40 40" width="40" height="40">
+                    <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
+                </svg></button><button class="splide__arrow splide__arrow--next" type="button"
+                aria-controls="single-slider-2-track" aria-label="Next slide"><svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 40 40" width="40" height="40">
+                    <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z"></path>
+                </svg></button></div>
+        <div class="splide__track" id="single-slider-2-track">
+            <div class="splide__list" id="single-slider-2-list" style="transform: translateX(-1146px);">
+                @foreach ($galeria as $foto)
+                    <div class="splide__slide splide__slide--clone " aria-hidden="true" tabindex="-1"
+                        style="width: 382px;">
+                        <div data-card-height="300" class="card bg-28 mx-3 rounded-l shadow-l"
+                            style="height: 300px;background-image:url({{ asset('imagenes/galeria/' . $foto->foto) }})">
+                            <div class="card-top">
+                                <span
+                                    class="badge bg-red-dark text-uppercase p-2 rounded-s m-4">{{ $foto->titulo }}</span>
+                            </div>
+                            <div class="card-top">
+                                <a href="#" class="bg-theme color-theme rounded-sm icon icon-xs float-end m-3"><i
+                                        class="far fa-bookmark font-12"></i></a>
+                            </div>
+                            <div class="card-bottom px-3 mb-3">
+                                <a href="#">
+                                    <h1 class="font-18 line-height-m color-white font-500 mb-0">
+                                        {{ $foto->descripcion }}
+                                    </h1>
+                                </a>
+                                <div class="d-flex pt-3">
+                                    <div class="align-self-center">
+                                        <img src="{{ asset('delight_logo.jpg') }}" width="23"
+                                            class="rounded-xs me-2">
+                                    </div>
+                                    <div class="align-self-center">
+                                        <a href="#" class="color-white font-14 d-block font-500 opacity-80">by
+                                            Delight
+                                        </a>
+                                    </div>
+                                    <div class="align-self-center ms-auto">
+                                        <strong class="font-300 color-white opacity-30">Nutriendo tus habitos</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-overlay bg-gradient"></div>
+                        </div>
+                    </div>
+                @endforeach
+
+
+            </div>
+        </div>
+
     </div>
     @auth
 
