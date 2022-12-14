@@ -60,7 +60,7 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                @foreach ($usuario->saldos as $item)
+                                                @foreach ($usuario->saldos->sortByDesc('created_at') as $item)
                                                     <ul class="list-group mb-3">
                                                         @if ($item->es_deuda)
                                                             <li
