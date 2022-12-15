@@ -775,10 +775,10 @@ class VentasIndex extends Component
             $recibo = CustomPrint::imprimirReciboVenta(
                 !$this->checkClientePersonalizado ? isset($this->cliente->name)? Str::limit($this->cliente->name, '20', ''):null: $this->clienteRecibo,
                 $this->listacuenta,
-                $this->subtotal,
+                $this->cuenta->subtotal,
                 isset($this->valorSaldo) ? $this->valorSaldo : 0,
                 $this->descuentoProductos,
-                $this->descuento,
+                $this->cuenta->descuento,
                 isset($this->fechaRecibo)?$this->fechaRecibo:null,
                 isset($this->observacionRecibo)?$this->observacionRecibo:null,
                 $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo:''
