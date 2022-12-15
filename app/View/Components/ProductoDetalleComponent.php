@@ -11,9 +11,10 @@ class ProductoDetalleComponent extends Component
      *
      * @return void
      */
-    public function __construct()
+    public $producto;
+    public function __construct($producto)
     {
-        //
+        $this->producto = $producto;
     }
 
     /**

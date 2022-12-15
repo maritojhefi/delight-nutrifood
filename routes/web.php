@@ -67,6 +67,9 @@ Route::prefix('/productos')->group(function () {
     Route::get('', [App\Http\Controllers\ProductoController::class, 'index'])->name('productos');
     Route::get('/detalle/{id}', [App\Http\Controllers\ProductoController::class, 'detalleproducto'])->name('detalleproducto');
     Route::get('/subcategoria/{id}', [App\Http\Controllers\ProductoController::class, 'detallesubcategoria'])->name('listar.productos.subcategoria');
+    
+   
+
     Route::get('/add/carrito/{id}', [App\Http\Controllers\CarritoController::class, 'addToCarrito']);
     
 
@@ -76,7 +79,8 @@ Route::prefix('/lineadelight')->group(function () {
    
     Route::get('', [App\Http\Controllers\LineaDelightController::class, 'index'])->name('linea.delight');
     Route::get('/categoria/planes', [App\Http\Controllers\LineaDelightController::class, 'categoriaPlanes'])->name('categoria.planes');
- 
+    Route::get('/lineadelight/{id}', [App\Http\Controllers\ProductoController::class, 'lineadelightsubcategoria'])->name('delight.listar.productos.subcategoria');
+    Route::get('/lineadelight/detalle/{id}', [App\Http\Controllers\ProductoController::class, 'lineadelightproducto'])->name('delight.detalleproducto');
 
 
 });

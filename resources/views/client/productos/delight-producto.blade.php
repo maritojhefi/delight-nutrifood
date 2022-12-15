@@ -1,8 +1,8 @@
 @extends('client.master')
 @section('content')
     <x-cabecera-pagina titulo="Detalles del Producto" cabecera="bordeado" />
-    
     <x-producto-detalle-component :producto="$producto"/>
+
     <div class="card card-style">
         <div class="content">
             <h4>Productos relacionados</h4>
@@ -11,7 +11,7 @@
             @foreach ($producto->subcategoria->productos->shuffle()->take(5) as $item)
                 <div class="d-flex">
                     <div>
-                        <a href="{{ route('detalleproducto', $item->id) }}">
+                        <a href="{{ route('delight.detalleproducto', $item->id) }}">
                             <img src="{{ asset($item->pathAttachment()) }}" class="rounded-sm" width="55">
                     </div>
                     <div class="ps-3">

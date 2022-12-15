@@ -104,7 +104,8 @@
 
 </head>
 
-<body id="margen" class="{{ isset(auth()->user()->color_page) ? auth()->user()->color_page : 'theme-light' }} margen">
+<body id="margen"
+    class="{{ isset(auth()->user()->color_page) ? auth()->user()->color_page : 'theme-light' }} margen">
     <div id="preloader">
         <div class="spinner-border color-highlight" role="status"></div>
     </div>
@@ -146,6 +147,8 @@
         data-autohide="true"><i class="fa fa-shopping-cart me-3"></i>Añadido al carrito!</div>
     @include('client.partials.modalredes')
     @stack('modals')
+    <div id="shared" class="snackbar-toast bg-blue-dark color-white fade hide" data-delay="3000"
+        data-autohide="true"><i class="fa fa-shopping-cart me-3"></i>Link copiado!</div>
     <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('scripts/custom.js') }}"></script>
 
@@ -190,11 +193,20 @@
                 toastID.show();
             })
         }
+        $(document).ready(function() {
+            $(".copiarLink").click(function() {
+                var $temp = $("<input>");
+                $("body").append($temp);
+                $temp.val($(this).attr('ruta')).select();
+                document.execCommand("copy");
+                $temp.remove();
 
-        $(".copiar-link").click(function() {
-            $(this).text().select();
-            document.execCommand('copy');
-        });
+                
+                var toastID = document.getElementById('shared');
+                toastID = new bootstrap.Toast(toastID);
+                toastID.show();
+            });
+        })
     </script>
 
 

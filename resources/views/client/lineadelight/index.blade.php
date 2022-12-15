@@ -19,7 +19,7 @@
                 <div class="card card-style mx-0 px-2 p-0 mb-0">
 
                     @foreach ($productos as $item)
-                        <a href="{{ route('detalleproducto', $item->id) }}" class="d-flex py-2"
+                        <a href="{{ route('delight.detalleproducto', $item->id) }}" class="d-flex py-2"
                             data-filter-item="{{ Str::of($item->nombre)->lower() }}"
                             data-filter-name="{{ Str::of($item->nombre)->lower() }}">
                             <div class="align-self-center">
@@ -61,7 +61,7 @@
                 style="transform: translate(-1162px, 0px); transition: transform 400ms cubic-bezier(0.42, 0.65, 0.27, 0.99) 0s;">
                 @foreach ($subcategorias as $item)
                     <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 166px;">
-                        <a href="{{ route('listar.productos.subcategoria', $item->id) }}" class="mx-3">
+                        <a href="{{ route('delight.listar.productos.subcategoria', $item->id) }}" class="mx-3">
                             <div class="card card-style me-0 mb-0"
                                 style="background-image: url('{{ asset($item->rutaFoto()) }}'); height: 250px;"
                                 data-card-height="250">
@@ -193,7 +193,7 @@
                     <div class="row mb-0">
                         @foreach ($conMasPuntos as $item)
                             <div class="col-6 ps-2">
-                                <a href="{{ route('detalleproducto', $item->id) }}" class="card card-style mx-0 mb-3"
+                                <a href="{{ route('delight.detalleproducto', $item->id) }}" class="card card-style mx-0 mb-3"
                                     data-menu="menu-product">
                                     <img src="{{ asset($item->pathAttachment()) }}" alt="img" width="100"
                                         class="mx-auto mt-2">

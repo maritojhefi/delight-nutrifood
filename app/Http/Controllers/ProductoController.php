@@ -12,6 +12,20 @@ use Illuminate\Http\Request;
 
 class ProductoController extends Controller
 {
+    public function lineadelightsubcategoria($id)
+    {
+        $subcategoria=Subcategoria::find($id);
+       
+        return view('client.productos.delight-subcategoria',compact('subcategoria'));
+    }
+    public function lineadelightproducto($id)
+    {
+        $producto=Producto::find($id);
+        $nombrearray=Str::of($producto->nombre)->explode(' ');
+        //dd($nombrearray);
+        return view('client.productos.delight-producto',compact('producto','nombrearray'));
+ 
+    }
     public function detallesubcategoria($id)
     {
         $subcategoria=Subcategoria::find($id);
