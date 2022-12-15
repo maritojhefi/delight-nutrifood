@@ -773,7 +773,7 @@ class VentasIndex extends Component
         if ($this->cuenta->sucursale->id_impresora) {
 
             $recibo = CustomPrint::imprimirReciboVenta(
-                !$this->checkClientePersonalizado ? isset($this->cliente->name)? Str::limit($this->cliente->name, '20', ''):null: $this->clienteRecibo,
+                !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name)? Str::limit($this->cuenta->cliente->name, '20', ''):null: $this->clienteRecibo,
                 $this->listacuenta,
                 $this->cuenta->total,
                 isset($this->valorSaldo) ? $this->valorSaldo : 0,
