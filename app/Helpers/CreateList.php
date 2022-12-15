@@ -77,7 +77,7 @@ class CreateList
     }
     static function crearListaHistorico(Historial_venta $cuenta)
     {
-        $registro = DB::table('producto_venta')->where('venta_id', $cuenta->id)->get();
+        $registro = DB::table('historial_venta_producto')->where('historial_venta_id', $cuenta->id)->get();
         $cantidadItems = $registro->count();
 
 
