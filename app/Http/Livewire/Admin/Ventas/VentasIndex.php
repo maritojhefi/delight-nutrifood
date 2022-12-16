@@ -45,7 +45,7 @@ class VentasIndex extends Component
     public $descuento, $observacion;
     //variables para recibo
     public $modoImpresion = false;
-    public $fechaRecibo, $observacionRecibo,$clienteRecibo,$checkClientePersonalizado, $checkMetodoPagoPersonalizado, $metodoRecibo;
+    public $fechaRecibo, $observacionRecibo,$clienteRecibo,$checkClientePersonalizado, $checkMetodoPagoPersonalizado, $metodoRecibo,$checkTelefonoPersonalizado,$telefonoRecibo;
     //variables para crear Cliente
     public $name, $cumpleano, $email, $direccion, $password, $password_confirmation;
     public $saldo, $valorSaldo = 0, $deshabilitarBancos = false, $saldoRestante = 0, $verVistaSaldo = false;

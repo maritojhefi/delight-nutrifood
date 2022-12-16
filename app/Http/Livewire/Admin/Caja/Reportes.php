@@ -26,7 +26,7 @@ class Reportes extends Component
     protected $paginationTheme = 'bootstrap';
     
     public $ventasHoy,$saldosHoy, $resumen, $lista, $cajaactiva,$reporteGeneral=true;
-    public $fechaRecibo, $observacionRecibo,$clienteRecibo,$checkClientePersonalizado, $checkMetodoPagoPersonalizado, $metodoRecibo;
+    public $fechaRecibo, $observacionRecibo,$clienteRecibo,$checkClientePersonalizado, $checkMetodoPagoPersonalizado, $metodoRecibo,$checkTelefonoPersonalizado,$telefonoRecibo;
     public $imprimiendo=false,$cuenta,$listacuenta,$descuentoProductos;
 
     public function atras()

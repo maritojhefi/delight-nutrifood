@@ -401,6 +401,26 @@
 
                                     </div>
                                 @endif
+
+                                @if ($checkTelefonoPersonalizado)
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-3 col-form-label col-form-label-sm">Telefono</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control form-control-sm"
+                                                wire:model="telefonoRecibo">
+                                        </div>
+                                       
+                                            <div class="alert alert-info alert-dismissible fade show text-sm">
+
+                                                <strong>Importante!</strong>Este numero no se imprimira, solo se guardara en prospectos dentro del sistema.
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                    aria-label="btn-close">
+                                                </button>
+                                            </div>
+                                        
+
+                                    </div>
+                                @endif
                             </div>
                             <div class="modal-footer">
                                 <button class="btn btn-warning btn-sm" wire:click="modalResumen">Atras</button>
