@@ -13,12 +13,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-6">
+                    {{-- <div class="col-6">
                         <div class="input-group input-info">
                             <a href="#" class="input-group-text">Buscar</a>
                             <input type="text" class="form-control" wire:model.debounce.700ms="search">
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
             <div class="card-body">
