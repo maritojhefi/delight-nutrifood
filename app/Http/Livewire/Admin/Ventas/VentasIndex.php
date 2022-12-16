@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire\Admin\Ventas;
 
-use App\Events\CocinaPedidoEvent;
 use Carbon\Carbon;
 use App\Models\Caja;
 use App\Models\User;
@@ -17,13 +16,15 @@ use Mike42\Escpos\Printer;
 use App\Helpers\CreateList;
 use Illuminate\Support\Str;
 use App\Helpers\CustomPrint;
-use App\Http\Livewire\Admin\PedidosRealtimeComponent;
+use App\Models\ReciboImpreso;
 use Mike42\Escpos\EscposImage;
 use App\Models\Historial_venta;
+use App\Events\CocinaPedidoEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Http\Livewire\Admin\PedidosRealtimeComponent;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 class VentasIndex extends Component
@@ -779,7 +780,7 @@ class VentasIndex extends Component
                 isset($this->valorSaldo) ? $this->valorSaldo : 0,
                 $this->descuentoProductos,
                 $this->cuenta->descuento,
-                isset($this->fechaRecibo)?$this->fechaRecibo:null,
+                isset($this->fechaRecibo)?$this->fechaRecibo:date('d-m-Y H:i:s'),
                 isset($this->observacionRecibo)?$this->observacionRecibo:null,
                 $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo:''
             );
@@ -788,6 +789,14 @@ class VentasIndex extends Component
                 $this->dispatchBrowserEvent('alert', [
                     'type' => 'success',
                     'message' => "Se imprimio el recibo correctamente"
+                ]);
+
+                ReciboImpreso::create([
+                    'observacion' => $this->observacionRecibo,
+                    'cliente' => $this->cuenta->cliente, 
+                    'telefono' => $this->telefonoRecibo,
+                    'fecha' => isset($this->fechaRecibo)?$this->fechaRecibo:date('d-m-Y H:i:s'),
+                    'metodo' => $this->metodoRecibo
                 ]);
             } else if ($respuesta == false) {
                 $this->dispatchBrowserEvent('alert', [

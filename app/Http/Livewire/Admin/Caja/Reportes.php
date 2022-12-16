@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use App\Helpers\CustomPrint;
 use Chartisan\PHP\Chartisan;
 use Livewire\WithPagination;
+use App\Models\ReciboImpreso;
 use Livewire\WithFileUploads;
 use App\Models\Historial_venta;
 use App\Imports\ProductosImport;
@@ -45,7 +46,7 @@ class Reportes extends Component
                 isset($this->valorSaldo) ? $this->valorSaldo : 0,
                 $this->descuentoProductos,
                 $this->cuenta->descuento,
-                isset($this->fechaRecibo)?$this->fechaRecibo:null,
+                isset($this->fechaRecibo)?$this->fechaRecibo:date('d-m-Y H:i:s'),
                 isset($this->observacionRecibo)?$this->observacionRecibo:null,
                 $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo:''
             );
@@ -54,6 +55,14 @@ class Reportes extends Component
                 $this->dispatchBrowserEvent('alert', [
                     'type' => 'success',
                     'message' => "Se imprimio el recibo correctamente"
+                ]);
+                ReciboImpreso::create([
+                    'historial_venta_id' => $this->cuenta->id,
+                    'observacion' => $this->observacionRecibo,
+                    'cliente' => $this->cuenta->cliente, 
+                    'telefono' => $this->telefonoRecibo,
+                    'fecha' => isset($this->fechaRecibo)?$this->fechaRecibo:date('d-m-Y H:i:s'),
+                    'metodo' => $this->metodoRecibo
                 ]);
             } else if ($respuesta == false) {
                 $this->dispatchBrowserEvent('alert', [

@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\ReciboImpreso;
 use Mike42\Escpos\Printer;
 use Illuminate\Support\Str;
 use Mike42\Escpos\EscposImage;
@@ -121,6 +122,8 @@ class CustomPrint
         }
 
         $printer->feed(3);
+
+        
         return $printer;
     }
 }

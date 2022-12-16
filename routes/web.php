@@ -187,9 +187,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth','checkrol']], functio
         Route::get('/stock', \App\Http\Livewire\Admin\StockProductos::class)->name('sucursal.stock');
 
     });
-    Route::prefix('/ventas')->middleware('checkCajaOpen')->group(function () {
+    Route::prefix('/ventas')->group(function () {
    
-        Route::get('/index', \App\Http\Livewire\Admin\Ventas\VentasIndex::class)->name('ventas.listar');
+        Route::get('/index', \App\Http\Livewire\Admin\Ventas\VentasIndex::class)->middleware('checkCajaOpen')->name('ventas.listar');
+        Route::get('/prospectos', \App\Http\Livewire\Admin\Ventas\ProspectosComponent::class)->name('ventas.prospectos');
 
     });
     Route::prefix('/almuerzos')->group(function () {

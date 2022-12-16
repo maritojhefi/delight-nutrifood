@@ -67,7 +67,7 @@
                     <i class="flaticon-022-copy"></i>
                 </x-sidebar-elements>
 
-                <x-sidebar-elements titulo="Ventas" linkglobal="admin/ventas" :lista="['Ventas diarias' => 'ventas.listar']">
+                <x-sidebar-elements titulo="Ventas" linkglobal="admin/ventas" :lista="['Ventas diarias' => 'ventas.listar','Prospectos de Clientes'=>'ventas.prospectos']">
                     <i class="flaticon-013-checkmark"></i>
                 </x-sidebar-elements>
 
