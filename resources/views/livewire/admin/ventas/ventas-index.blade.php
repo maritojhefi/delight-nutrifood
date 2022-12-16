@@ -401,7 +401,11 @@
 
                                     </div>
                                 @endif
-
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input"
+                                        wire:model="checkTelefonoPersonalizado">
+                                    <label class="form-check-label" for="check1">Agregar Telefono</label>
+                                </div>
                                 @if ($checkTelefonoPersonalizado)
                                     <div class="mb-3 row">
                                         <label class="col-sm-3 col-form-label col-form-label-sm">Telefono</label>
