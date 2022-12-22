@@ -146,9 +146,24 @@
     <div id="saved-to-favorites" class="snackbar-toast bg-green-dark color-white fade hide" data-delay="3000"
         data-autohide="true"><i class="fa fa-shopping-cart me-3"></i>Añadido al carrito!</div>
     @include('client.partials.modalredes')
-    @stack('modals')
+
     <div id="shared" class="snackbar-toast bg-blue-dark color-white fade hide" data-delay="3000"
         data-autohide="true"><i class="fa fa-shopping-cart me-3"></i>Link copiado!</div>
+    @auth
+        @php
+            $perfil = auth()->user();
+            $datos = [
+                'nacimiento' => isset($perfil->nacimiento) ? $perfil->nacimiento : null,
+                'direccion' => isset($perfil->direccion) ? $perfil->direccion : null,
+                'foto' => isset($perfil->foto) ? $perfil->foto : null,
+                'latitud' => isset($perfil->latitud) ? $perfil->latitud : null,
+                
+            ];
+            
+        @endphp
+        <x-perfil-incompleto-component :datos="$datos" />
+    @endauth
+    @stack('modals')
     <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('scripts/custom.js') }}"></script>
 
@@ -201,7 +216,7 @@
                 document.execCommand("copy");
                 $temp.remove();
 
-                
+
                 var toastID = document.getElementById('shared');
                 toastID = new bootstrap.Toast(toastID);
                 toastID.show();

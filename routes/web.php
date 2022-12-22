@@ -118,6 +118,8 @@ Route::prefix('/miperfil')->middleware('auth')->group(function () {
     Route::get('/whatsapp/asistente', [App\Http\Controllers\MiperfilController::class, 'revisarWhatsappAsistente']);
     Route::get('/whatsapp/cambiar/estado', [App\Http\Controllers\MiperfilController::class, 'cambiarEstadoWhatsappAsistente']);
     
+    //rutas para completar perfil ajax
+    Route::post('/change/birthday', [App\Http\Controllers\MiperfilController::class, 'actualizarNacimiento']);
 
 });
 Route::get('perfil/editar', [App\Http\Controllers\MiperfilController::class, 'revisarPerfil'])->middleware('auth')->name('llenarDatosPerfil');

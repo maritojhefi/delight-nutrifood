@@ -14,9 +14,27 @@ use App\Events\CocinaPedidoEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Validator;
 
 class MiperfilController extends Controller
 {
+    public function actualizarNacimiento(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            
+            'fecha' => 'required|date',
+        ]);
+        if ($validator->fails()) {
+            return 'fallo';
+        }
+        else
+        {
+            $usuario=User::find(auth()->user()->id);
+            $usuario->nacimiento=$request->fecha;
+            $usuario->save();
+            return 'exito';
+        }
+    }
     public function revisarWhatsappAsistente()
     {
         if(Auth::check())

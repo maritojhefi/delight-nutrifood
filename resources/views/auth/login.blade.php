@@ -1,12 +1,12 @@
 @extends('client.masterSinFooter')
 @section('content')
-    <x-cabecera-pagina titulo="Identificate" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Inicia Sesion" cabecera="bordeado" />
 
     <div class="card card-style bg-24" style="height: 573px;">
         <div class="card-center">
             <div class="ms-5 me-5">
-                <h2 class="text-center color-white font-800 fa-4x">DELIGHT!</h2>
-                <p class="color-highlight font-12 text-center ">Ingresa con tu cuenta!</p>
+                <img src="{{asset('logo2.png')}}" class="img mx-auto d-block " style="width:100px" alt="">
+                <p class="color-highlight font-12 text-center ">Bienvenido a Delight!</p>
                 <div class="mt-2 mb-0">
                     <form action="{{ route('login') }}" method="post">
                         @csrf
@@ -31,7 +31,7 @@
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
                         <button type="submit"
-                            class="btn btn-m mt-2 mb-4 btn-full btn-block bg-green-dark rounded-sm text-uppercase font-900">Iniciar
+                            class="btn btn-m mt-2 mb-4 btn-full btn-block bg-green-dark rounded-sm text-uppercase font-900 loader">Iniciar
                             Sesion</button>
 
 

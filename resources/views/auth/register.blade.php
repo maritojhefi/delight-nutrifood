@@ -1,12 +1,12 @@
 @extends('client.masterSinFooter')
 @section('content')
-    <x-cabecera-pagina titulo="Identificate" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Registrate" cabecera="bordeado" />
 
     <div class="card card-style bg-24" style="height: 750px;max-height: 920px;">
         <div class="card-center">
             <div class="ms-5 me-5">
-                <h2 class="text-center color-white font-800 fa-4x">DELIGHT!</h2>
-                <p class="color-highlight font-12 text-center ">Registrate!</p>
+                <img src="{{asset('logo2.png')}}" class="img mx-auto d-block " style="width:100px" alt="">
+                <p class="color-highlight font-12 text-center ">Bienvenido a Delight!</p>
                 <div class="mt-2 mb-0">
 
                     
@@ -44,7 +44,7 @@
                         @error('telefono')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
-                        <div class="input-style input-transparent no-borders has-icon validate-field">
+                        {{-- <div class="input-style input-transparent no-borders has-icon validate-field">
                             <i class="fa fa-calendar"></i>
                             <input type="date" class="form-control @error('fecha') is-invalid @enderror" id="fecha" placeholder="Nacimiento"
                                 name="fecha" value="{{ old('fecha') }}" required>
@@ -63,7 +63,7 @@
                         </div>
                         @error('direccion')
                             <small class="text-danger">{{ $message }}</small>
-                        @enderror
+                        @enderror --}}
                         <div class="input-style input-transparent no-borders has-icon validate-field mt-4">
                             <i class="fa fa-lock"></i>
                             <input type="password" class="form-control @error('password') is-invalid @enderror" id="form3a"
@@ -82,7 +82,7 @@
 
                         </div>
                         <button type="submit"
-                            class="btn btn-m mt-2 mb-4 btn-full btn-block bg-green-dark rounded-sm text-uppercase font-900">Registrar
+                            class="btn btn-m mt-2 mb-4 btn-full btn-block bg-green-dark rounded-sm text-uppercase font-900 loader">Registrar
                             Cuenta</button>
 
 

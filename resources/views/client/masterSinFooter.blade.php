@@ -10,12 +10,12 @@
 
     <title>Delight</title>
 
-    <link rel="stylesheet" type="text/css" href="{{asset('styles/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('styles/bootstrap.css') }}">
     <link
         href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900|Roboto:300,300i,400,400i,500,500i,700,700i,900,900i&amp;display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{asset('fonts/css/fontawesome-all.min.css')}}">
-    <link rel="stylesheet" type="text/css" href="{{asset('styles/highlights/highlight_mint.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('fonts/css/fontawesome-all.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_mint.css') }}">
     @laravelPWA
     <style>
         /* Extra small devices (phones, 600px and down) */
@@ -49,7 +49,7 @@
         }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-@stack('header')
+    @stack('header')
 </head>
 
 <body id="margen" class="theme-light">
@@ -61,11 +61,11 @@
         <div class="header header-fixed header-auto-show header-logo-app">
             <a href="#" data-back-button class="header-title header-subtitle">Atras</a>
             <a href="#" data-back-button class="header-icon header-icon-1"><i class="fas fa-arrow-left"></i></a>
-            
-         
+
+
             <a href="#" data-menu="menu-main" class="header-icon header-icon-4 "><i class="fas fa-bars"></i></a>
         </div>
-       
+
 
         <div class="page-content">
             @yield('content')
@@ -86,8 +86,8 @@
     </div>
     @include('client.partials.modalredes')
     @stack('modals')
-    <script type="text/javascript" src="{{asset('scripts/bootstrap.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('scripts/custom.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('scripts/custom.js') }}"></script>
     <script>
         function myFunction() {
             var element = document.body;
@@ -102,7 +102,23 @@
                 toastID.show();
             })
         }
-    
+        $(document).ready(function() {
+            $(".loader").click(function() {
+                $(this).html($(this).text() +
+                    ' <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+                )
+
+                setTimeout(function() {
+                    $(".loader").attr('disabled', 'true')
+                }, 100)
+                setTimeout(function() {
+                    $(".loader").prop('disabled', false)
+                    $(".loader").children('span').remove()
+                }, 3000)
+            });
+
+        });
     </script>
+
     @stack('scripts')
 </body>
