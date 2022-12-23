@@ -152,14 +152,18 @@
     @auth
         @php
             $perfil = auth()->user();
-            $datos = [
+            $array = [
                 'nacimiento' => isset($perfil->nacimiento) ? $perfil->nacimiento : null,
-                'direccion' => isset($perfil->direccion) ? $perfil->direccion : null,
-                'foto' => isset($perfil->foto) ? $perfil->foto : null,
-                'latitud' => isset($perfil->latitud) ? $perfil->latitud : null,
+                // 'direccion' => isset($perfil->direccion) ? $perfil->direccion : null,
+                // 'foto' => isset($perfil->foto) ? $perfil->foto : null,
+                // 'latitud' => isset($perfil->latitud) ? $perfil->latitud : null,
                 
             ];
-            
+            $datos=[];
+            foreach ($array as $llave => $valor) {
+                if(!isset($valor))$datos[$llave]=$valor;
+            }
+           
         @endphp
         <x-perfil-incompleto-component :datos="$datos" />
     @endauth

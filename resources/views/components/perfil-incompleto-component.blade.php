@@ -1,9 +1,12 @@
+@if (count($datos)>0)
 <div class="scroll-ad shadow-xl bg-dark-dark">
     <img src="{{ asset('logo2.png') }}" class="shadow-l" alt="img">
     <h1 class="text-uppercase font-800 font-18 color-white">Tu perfil esta incompleto!</h1>
     <em class="font-12">Se vienen funciones interesantes <br>Necesitamos saber mas de ti!</em>
     <a href="#" class="bg-highlight color-white shadow-m " data-menu="menu-perfil-1">Llenar</a>
 </div>
+@endif
+
 
 @push('modals')
     @foreach ($datos as $llave => $valor)
