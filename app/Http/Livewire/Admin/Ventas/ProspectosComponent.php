@@ -2,11 +2,14 @@
 
 namespace App\Http\Livewire\Admin\Ventas;
 
-use App\Models\ReciboImpreso;
 use Livewire\Component;
+use Livewire\WithPagination;
+use App\Models\ReciboImpreso;
 
 class ProspectosComponent extends Component
 {
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
     public function render()
     {
         $prospectos=ReciboImpreso::orderBy('fecha','desc')->paginate(10);
