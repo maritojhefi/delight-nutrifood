@@ -685,7 +685,7 @@
                                 </div>
                                 <div class="col-6">
                                     @if ($item->puntos != 0 && $item->puntos != null)
-                                        <span class="">{{ $item->puntos }}pts</span>
+                                        <small class="">{{ $item->puntos }}pts</small>
                                     @endif
                                     @switch($item->prioridad)
                                         @case(1)
