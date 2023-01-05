@@ -306,9 +306,10 @@
                     <button @click="open = ! open" class="badge badge-xs light badge-secondary">Editar</button>
 
                     <div x-show="open" @click.outside="open = false">
-                        <div class="mb-3 col-md-2">
+                        <div class="col-md-2">
                             <input type="number" class="form-control" wire:model.lazy="descuento"
-                                style="padding: 3px;height:30px;width:80px" value="{{ $item['cantidad'] }}">
+                                style="padding: 3px;height:30px;width:80px;border-style: solid;border-color:rgb(14, 178, 79);
+                                border-width: 1px;" value="{{ $item['cantidad'] }}">
                         </div>
                         <button class="btn btn-xxs btn-warning" wire:click="editardescuento"><i
                                 class="fa fa-check"></i>Guardar</button>
