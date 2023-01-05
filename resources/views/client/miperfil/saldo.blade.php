@@ -114,39 +114,39 @@
                         </div>
                         <div class="card card-style">
                             <div class="content">
-                                <h4 class="mb-n1">Detalle</h4>
+                                <h4 class="mb-n1">Descripcion</h4>
                                 <p>
                                     Detalle de los items de esta venta:
                                 </p>
                                 <div class="row mb-0">
                                     @foreach ($item->venta->productos->groupBy('nombre') as $detalle)
-                                        <div class="col-3">
-                                            <p class="color-theme font-700">{{ Str::limit($detalle[0]->nombre, 15) }}</p>
+                                        <div class="col-4">
+                                            <small class="color-theme font-500">{{ Str::limit($detalle[0]->nombre, 15) }}</small>
                                         </div>
-                                        <div class="col-3">
-                                            <p class="font-400">
+                                        <div class="col-2">
+                                            <small class="font-400">
                                                 @foreach ($detalle as $pivot)
                                                     {{ $pivot->pivot->cantidad }}
                                                 @break
-                                            @endforeach unidades
-                                        </p>
+                                            @endforeach u|gr
+                                        </small>
                                     </div>
                                     @if ($detalle[0]->descuento != null && $detalle[0]->descuento < $detalle[0]->precio)
                                         <div class="col-3">
-                                            <p class="font-400">{{ $detalle->sum('descuento') }} Bs c/u</p>
+                                            <small class="font-400">{{ $detalle->sum('descuento') }} Bs c/u</small>
                                         </div>
                                         <div class="col-3">
-                                            <p class="font-400">
-                                                {{ $detalle[0]->pivot->cantidad * $detalle->sum('descuento') }} Bs</p>
+                                            <small class="font-400">
+                                                {{ $detalle[0]->pivot->cantidad * $detalle->sum('descuento') }} Bs</small>
                                         </div>
                                     @else
                                         <div class="col-3">
-                                            <p class="font-400">{{ $detalle->sum('precio') }} Bs c/u</p>
+                                            <small class="font-400">{{ $detalle->sum('precio') }} Bs c/u</small>
                                         </div>
                                         <div class="col-3">
-                                            <p class="font-400">
+                                            <small class="font-400">
                                                 {{ $detalle[0]->pivot->cantidad * $detalle->sum('precio') }}
-                                                Bs</p>
+                                                Bs</small>
                                         </div>
                                     @endif
                                 @endforeach
