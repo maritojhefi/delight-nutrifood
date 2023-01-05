@@ -309,7 +309,8 @@
                         <div class="col-md-2">
                             <input type="number" class="form-control" wire:model.lazy="descuento"
                                 style="padding: 3px;height:30px;width:80px;border-style: solid;border-color:rgb(14, 178, 79);
-                                border-width: 1px;" value="{{ $item['cantidad'] }}">
+                                border-width: 1px;"
+                                value="{{ $item['cantidad'] }}">
                         </div>
                         <button class="btn btn-xxs btn-warning" wire:click="editardescuento"><i
                                 class="fa fa-check"></i>Guardar</button>
@@ -645,11 +646,10 @@
                             @if ($total == 0 && $item->contable == true)
                                 <del class=" text-muted"><small>{{ Str::limit($item->nombre, 40) }}</small> </del>
                             @else
-                                <div class="row">
+                                <div class="row" wire:click="adicionar('{{ $item->id }}')">
                                     <div class="col-3"><img src="{{ asset($item->pathAttachment()) }}"
                                             alt="" class="me-3 rounded" height="40"></div>
-                                    <div class="col-9"><small
-                                            wire:click="adicionar('{{ $item->id }}')">{{ Str::limit($item->nombre, 40) }}
+                                    <div class="col-9"><small>{{ Str::limit($item->nombre, 40) }}
                                         </small><span class="spinner-border spinner-border-sm text-primary ml-2"
                                             wire:loading wire:target="adicionar({{ $item->id }})" role="status"
                                             aria-hidden="true"></span></div>
