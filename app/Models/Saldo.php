@@ -10,7 +10,7 @@ class Saldo extends Model
     use HasFactory;
 
     protected $fillable = [
-        'historial_venta_id','user_id','monto','es_deuda','detalle','caja_id','historial_ventas_id','atendido_por','tipo'
+        'historial_venta_id','user_id','monto','es_deuda','anulado','detalle','caja_id','historial_ventas_id','atendido_por','tipo'
        
     ];
     public function usuario()

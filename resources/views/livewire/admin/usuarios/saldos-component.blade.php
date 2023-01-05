@@ -14,10 +14,10 @@
                         </div>
                     </div>
                     <div class="col-6">
-                            <div class="input-group input-info">
-                                <a href="#" wire:click="cambiarEstadoBuscador" class="input-group-text">Buscar</a>
-                                <input type="text" class="form-control" wire:model.debounce.700ms="search">
-                            </div>
+                        <div class="input-group input-info">
+                            <a href="#" wire:click="cambiarEstadoBuscador" class="input-group-text">Buscar</a>
+                            <input type="text" class="form-control" wire:model.debounce.700ms="search">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -50,8 +50,8 @@
                                             data-bs-target="#modalSaldos{{ $usuario->id }}" class="badge badge-info"><i
                                                 class=" fa fa-eye"></i></a></td>
                                 </tr>
-                                <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"
-                                    id="modalSaldos{{ $usuario->id }}">
+                                <div wire:ignore.self class="modal fade" tabindex="-1" role="dialog"
+                                    aria-hidden="true" id="modalSaldos{{ $usuario->id }}">
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -69,6 +69,19 @@
                                                                     <h6 class="my-0">Deuda creada a partir de una
                                                                         venta
                                                                         <small>({{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }})</small>
+                                                                        @if ($item->anulado)
+                                                                            <a href="#"
+                                                                                wire:click="anularSaldo('{{ $item->id }}','{{ $usuario->id }}')"
+                                                                                class="badge badge-danger badge-sm"><i
+                                                                                    class="fa fa-close"></i>
+                                                                                Anulado</a>
+                                                                        @else
+                                                                            <a href="#"
+                                                                                wire:click="anularSaldo('{{ $item->id }}','{{ $usuario->id }}')"
+                                                                                class="badge badge-warning badge-sm"><i
+                                                                                    class="fa fa-check"></i>
+                                                                                Activo</a>
+                                                                        @endif
                                                                     </h6>
                                                                     <strong>Detalle productos</strong><br>
                                                                     @foreach ($item->venta->productos as $prod)
@@ -80,6 +93,8 @@
 
                                                                 </div>
                                                                 <span class="text-muted">{{ $item->monto }} Bs</span>
+
+
                                                             </li>
                                                         @else
                                                             <li
@@ -88,6 +103,19 @@
                                                                     <h6 class="my-0 text-white">Saldo creado a favor del
                                                                         cliente
                                                                         <small>({{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }})</small>
+                                                                        @if ($item->anulado)
+                                                                            <a href="#"
+                                                                                wire:click="anularSaldo('{{ $item->id }}','{{ $usuario->id }}')"
+                                                                                class="badge badge-danger badge-sm"><i
+                                                                                    class="fa fa-close"></i>
+                                                                                Anulado</a>
+                                                                        @else
+                                                                            <a href="#"
+                                                                                wire:click="anularSaldo('{{ $item->id }}','{{ $usuario->id }}')"
+                                                                                class="badge badge-warning badge-sm"><i
+                                                                                    class="fa fa-check"></i>
+                                                                                Activo</a>
+                                                                        @endif
                                                                     </h6>
                                                                     <small><strong>Detalle:</strong>
                                                                         {{ $item->detalle }}</small>

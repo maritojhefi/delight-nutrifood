@@ -18,7 +18,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($usuario->saldos->sortByDesc('created_at') as $item)
+                    @foreach ($usuario->saldos->where('anulado',false)->sortByDesc('created_at') as $item)
                         <tr>
                             <td><a href="#" data-bs-toggle="modal"
                                     data-bs-target="#modalSaldo{{ $item->id }}"><span

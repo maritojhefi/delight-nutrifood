@@ -92,8 +92,8 @@
             <a class="btn btn-primary btn-xxs" href="#" wire:loading>
                 <small class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></small>
             </a>
-            
-            
+
+
             @if ($cuenta->cliente)
                 <a href="#" data-bs-toggle="modal" data-bs-target="#planesusuario"><span
                         class="badge light badge-success">{{ Str::limit($cuenta->cliente->name, 15, '...') }}</span></a>
@@ -790,7 +790,9 @@
                                             </div>
                                             <span class="text-white">{{ $saldo->monto }} Bs <a href="#"
                                                     wire:click="imprimirSaldo({{ $saldo->id }})"
-                                                    class="badge badge-warning"><i class="fa fa-print"></i></a></span>
+                                                    class="badge badge-warning"><i class="fa fa-print"></i></a>
+                                                <a href="#" wire:click="anularSaldo({{ $saldo->id }})"
+                                                    class="badge badge-danger"><i class="fa fa-trash"></i></a></span>
 
                                         </li>
                                     @else
@@ -805,8 +807,15 @@
                                             </div>
                                             <span class="text-muted">{{ $saldo->monto }} Bs <a href="#"
                                                     wire:click="imprimirSaldo({{ $saldo->id }})"
-                                                    class="badge badge-primary"><i class="fa fa-print"></i></a></span>
-
+                                                    class="badge badge-primary"><i class="fa fa-print"></i></a>
+                                                    @if ($saldo->anulado)
+                                                    <a href="#" wire:click="anularSaldo({{ $saldo->id }})"
+                                                        class="badge badge-danger"><i class="fa fa-close"></i> Anulado</a>
+                                                    @else
+                                                    <a href="#" wire:click="anularSaldo({{ $saldo->id }})"
+                                                        class="badge badge-warning"><i class="fa fa-check"></i> Activo</a>
+                                                    @endif
+                                                    </span>
                                         </li>
                                     @endif
                                 @endforeach

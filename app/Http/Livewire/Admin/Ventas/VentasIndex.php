@@ -45,7 +45,7 @@ class VentasIndex extends Component
     public $descuento, $observacion;
     //variables para recibo
     public $modoImpresion = false;
-    public $fechaRecibo, $observacionRecibo,$clienteRecibo,$checkClientePersonalizado, $checkMetodoPagoPersonalizado, $metodoRecibo,$checkTelefonoPersonalizado,$telefonoRecibo;
+    public $fechaRecibo, $observacionRecibo, $clienteRecibo, $checkClientePersonalizado, $checkMetodoPagoPersonalizado, $metodoRecibo, $checkTelefonoPersonalizado, $telefonoRecibo;
     //variables para crear Cliente
     public $name, $cumpleano, $email, $direccion, $password, $password_confirmation;
     public $saldo, $valorSaldo = 0, $deshabilitarBancos = false, $saldoRestante = 0, $verVistaSaldo = false;
@@ -60,7 +60,7 @@ class VentasIndex extends Component
     }
     public function modalImpresion()
     {
-        $this->fechaRecibo=date('Y-m-d');
+        $this->fechaRecibo = date('Y-m-d');
         $this->modoImpresion = true;
     }
     public function imprimirCocina()
@@ -648,7 +648,7 @@ class VentasIndex extends Component
         $this->saldo = false;
 
         $this->actualizarlista($venta);
-        $this->reset('clienteRecibo','fechaRecibo','checkClientePersonalizado','modoImpresion','observacionRecibo','checkMetodoPagoPersonalizado', 'metodoRecibo');
+        $this->reset('clienteRecibo', 'fechaRecibo', 'checkClientePersonalizado', 'modoImpresion', 'observacionRecibo', 'checkMetodoPagoPersonalizado', 'metodoRecibo');
     }
 
     public function eliminar(Venta $venta)
@@ -774,15 +774,15 @@ class VentasIndex extends Component
         if ($this->cuenta->sucursale->id_impresora) {
 
             $recibo = CustomPrint::imprimirReciboVenta(
-                !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name)? Str::limit($this->cuenta->cliente->name, '20', ''):null: $this->clienteRecibo,
+                !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null : $this->clienteRecibo,
                 $this->listacuenta,
                 $this->cuenta->total,
                 isset($this->valorSaldo) ? $this->valorSaldo : 0,
                 $this->descuentoProductos,
                 $this->cuenta->descuento,
-                isset($this->fechaRecibo)?$this->fechaRecibo:date('d-m-Y H:i:s'),
-                isset($this->observacionRecibo)?$this->observacionRecibo:null,
-                $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo:''
+                isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
+                isset($this->observacionRecibo) ? $this->observacionRecibo : null,
+                $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo : ''
             );
             $respuesta = CustomPrint::imprimir($recibo, $this->cuenta->sucursale->id_impresora);
             if ($respuesta == true) {
@@ -793,9 +793,9 @@ class VentasIndex extends Component
 
                 ReciboImpreso::create([
                     'observacion' => $this->observacionRecibo,
-                    'cliente' => $this->cuenta->cliente, 
+                    'cliente' => $this->cuenta->cliente,
                     'telefono' => $this->telefonoRecibo,
-                    'fecha' => isset($this->fechaRecibo)?$this->fechaRecibo:date('d-m-Y H:i:s'),
+                    'fecha' => isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
                     'metodo' => $this->metodoRecibo
                 ]);
             } else if ($respuesta == false) {
@@ -811,10 +811,41 @@ class VentasIndex extends Component
             ]);
         }
     }
-    public function cambiarPrioridad(Producto $producto,$prioridad)
+    public function cambiarPrioridad(Producto $producto, $prioridad)
     {
-        $producto->prioridad=$prioridad;
+        $producto->prioridad = $prioridad;
         $producto->save();
+    }
+    public function anularSaldo(Saldo $saldo)
+    {
+        $user = User::find($this->cuenta->cliente->id);
+        if ($saldo->anulado) {
+            if ($saldo->es_deuda) {
+                $user->saldo = $user->saldo + $saldo->monto;
+            } else {
+                $user->saldo = $user->saldo - $saldo->monto;
+            }
+            $saldo->anulado = false;
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => "El saldo vuelve a estar activo!"
+            ]);
+        } else {
+            if ($saldo->es_deuda) {
+                $user->saldo = $user->saldo - $saldo->monto;
+            } else {
+                $user->saldo = $user->saldo + $saldo->monto;
+            }
+            $saldo->anulado = true;
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => "El saldo fue anulado!"
+            ]);
+        }
+        $this->cuenta=Venta::where('cliente_id',$this->cuenta->cliente->id)->first();
+        $user->save();
+        $saldo->save();
+        
     }
     public function render()
     {
@@ -824,7 +855,7 @@ class VentasIndex extends Component
         $this->sucursal = $sucursales->first();
         $productos = Producto::where('estado', '=', 'activo')->where(function (Builder $query) {
             return $query->where('codigoBarra', $this->search)->orWhere('nombre', 'LIKE', '%' . $this->search . '%');
-        })->take(6)->orderBy('prioridad','desc')->get();
+        })->take(6)->orderBy('prioridad', 'desc')->get();
         if ($this->user != null) {
             $usuarios = User::where('name', 'LIKE', '%' . $this->user . '%')->orWhere('email', 'LIKE', '%' . $this->user . '%')->take(3)->get();
         }
