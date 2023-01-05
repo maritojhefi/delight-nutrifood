@@ -645,7 +645,7 @@
                                 <del class=" text-muted"><small>{{ Str::limit($item->nombre, 40) }}</small> </del>
                             @else
                             <img src="{{ asset($item->pathAttachment()) }}" alt=""
-                            class="me-3 rounded" width="50"><small
+                            class="me-3 rounded" height="50"><small
                                     wire:click="adicionar('{{ $item->id }}')">{{ Str::limit($item->nombre, 40) }}
                                 </small><span class="spinner-border spinner-border-sm text-primary ml-2" wire:loading
                                     wire:target="adicionar({{ $item->id }})" role="status"
