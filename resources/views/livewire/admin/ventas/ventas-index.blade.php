@@ -643,9 +643,9 @@
                             wire:target="adicionar({{ $item->id }})" wire:loading.class="border-success"
                             style="padding: 10px">
                             @if ($total == 0 && $item->contable == true)
-                                <del class=" text-muted"><small>{{ Str::limit($item->nombre, 20) }}</small> </del>
+                                <del class=" text-muted"><small>{{ Str::limit($item->nombre, 40) }}</small> </del>
                             @else
-                                <small wire:click="adicionar('{{ $item->id }}')">{{ Str::limit($item->nombre, 20) }} </small><span
+                                <small wire:click="adicionar('{{ $item->id }}')">{{ Str::limit($item->nombre, 40) }} </small><span
                                     class="spinner-border spinner-border-sm text-primary ml-2" wire:loading
                                     wire:target="adicionar({{ $item->id }})" role="status"
                                     aria-hidden="true"></span>
