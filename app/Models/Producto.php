@@ -19,10 +19,12 @@ class Producto extends Model
 
     use HasFactory;
     protected $fillable = [
-        'nombre', 'subcategoria_id', 'precio', 'imagen', 'detalle', 'codigoBarra', 'descuento', 'puntos', 'medicion', 'contable', 'observacion'
+        'nombre', 'subcategoria_id', 'precio', 'imagen', 'detalle', 'codigoBarra', 'descuento', 'puntos', 'medicion', 'contable', 'observacion','prioridad'
 
     ];
-
+    const PRIORIDADBAJA="1";
+    const PRIORIDADALTA="2";
+    const PRIORIDADMEDIA="3";
     public function sucursale()
     {
 

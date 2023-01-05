@@ -811,6 +811,11 @@ class VentasIndex extends Component
             ]);
         }
     }
+    public function cambiarPrioridad(Producto $producto,$prioridad)
+    {
+        $producto->prioridad=$prioridad;
+        $producto->save();
+    }
     public function render()
     {
         $ventas = Venta::orderBy('created_at', 'desc')->get();
@@ -819,7 +824,7 @@ class VentasIndex extends Component
         $this->sucursal = $sucursales->first();
         $productos = Producto::where('estado', '=', 'activo')->where(function (Builder $query) {
             return $query->where('codigoBarra', $this->search)->orWhere('nombre', 'LIKE', '%' . $this->search . '%');
-        })->take(5)->get();
+        })->take(6)->orderBy('prioridad','desc')->get();
         if ($this->user != null) {
             $usuarios = User::where('name', 'LIKE', '%' . $this->user . '%')->orWhere('email', 'LIKE', '%' . $this->user . '%')->take(3)->get();
         }

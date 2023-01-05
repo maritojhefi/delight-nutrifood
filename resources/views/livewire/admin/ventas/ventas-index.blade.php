@@ -413,15 +413,16 @@
                                             <input type="text" class="form-control form-control-sm"
                                                 wire:model="telefonoRecibo">
                                         </div>
-                                       
-                                            <div class="alert alert-info alert-dismissible fade show text-sm">
 
-                                                <strong>Importante!</strong>Este numero no se imprimira, solo se guardara en prospectos dentro del sistema.
-                                                <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                                    aria-label="btn-close">
-                                                </button>
-                                            </div>
-                                        
+                                        <div class="alert alert-info alert-dismissible fade show text-sm">
+
+                                            <strong>Importante!</strong>Este numero no se imprimira, solo se guardara en
+                                            prospectos dentro del sistema.
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                aria-label="btn-close">
+                                            </button>
+                                        </div>
+
 
                                     </div>
                                 @endif
@@ -617,6 +618,9 @@
             <ul class="list-group">
                 <li class="list-group-item active  "><input type="search" wire:model.debounce.750ms="search"
                         class="form-control" placeholder="Busca Productos"></li>
+            </ul>
+            <ul class="list-group" style="overflow-y: auto;max-height:350px;overflow-x: hidden">
+
                 @foreach ($productos as $item)
                     @php
                         $total = 0;
@@ -634,57 +638,65 @@
 
                     <a wire:key="{{ $loop->index }}" href="#"
                         {{ $total == 0 && $item->contable == true ? 'disabled' : ' ' }}
-                        wire:click="adicionar('{{ $item->id }}')">
+                        >
                         <li class="list-group-item {{ $total == 0 && $item->contable == true ? '' : ' border border-primary' }}"
                             wire:target="adicionar({{ $item->id }})" wire:loading.class="border-success"
                             style="padding: 10px">
                             @if ($total == 0 && $item->contable == true)
-                                <del class=" text-muted"> {{ $item->nombre }}</del>
+                                <del class=" text-muted"><small>{{ Str::limit($item->nombre, 20) }}</small> </del>
                             @else
-                                {{ $item->nombre }} <span class="spinner-border spinner-border-sm text-primary ml-2"
-                                    wire:loading wire:target="adicionar({{ $item->id }})" role="status"
+                                <small wire:click="adicionar('{{ $item->id }}')">{{ Str::limit($item->nombre, 20) }} </small><span
+                                    class="spinner-border spinner-border-sm text-primary ml-2" wire:loading
+                                    wire:target="adicionar({{ $item->id }})" role="status"
                                     aria-hidden="true"></span>
                             @endif
-
-
+                            <small>
+                                @if ($item->contable == true)
+                                    @if ($total == 0)
+                                        <span class="badge badge-xs light badge-danger mb-2">Agotado</span>
+                                    @else
+                                        <span wire:click="adicionar('{{ $item->id }}')" class="badge badge-xs light badge-warning mb-2">Stock
+                                            :{{ $total }}</span>
+                                    @endif
+                                @endif
+                            </small>
                             <div class="row">
-                                <div class="col-3">
+                                {{-- <div class="col-3">
                                     <img src="{{ asset($item->pathAttachment()) }}" alt=""
                                         class="me-3 rounded" width="50">
 
-                                </div>
-                                <div class="col-5">
-
-                                    <small>
-                                        @if ($item->contable == true)
-                                            @if ($total == 0)
-                                                <span class="badge badge-danger mb-2">Agotado</span>
-                                            @else
-                                                <span class="badge badge-warning mb-2">Stock
-                                                    :{{ $total }}</span>
-                                            @endif
-                                        @endif
-
-
-                                    </small>
-                                    @if ($item->puntos != 0 && $item->puntos != null)
-                                        <span class="badge light badge-dark">{{ $item->puntos }}pts</span>
-                                    @endif
-                                </div>
-
-                                <div class="col-4">
+                                </div> --}}
+                                <div class="col-6">
                                     @if ($item->descuento != 0)
-                                        <span class="badge badge-xs light badge-success">{{ $item->descuento }}
+                                        <span wire:click="adicionar('{{ $item->id }}')" class="badge badge-xs  badge-primary">{{ $item->descuento }}
                                             Bs</span>
-                                        <del class="badge badge-xs light badge-dark">{{ $item->precio }} Bs</del>
+                                        <del wire:click="adicionar('{{ $item->id }}')" class="badge badge-xs  badge-danger">{{ $item->precio }} Bs</del>
                                     @else
-                                        <span class="badge badge-xs light badge-warning">{{ $item->precio }}
+                                        <span wire:click="adicionar('{{ $item->id }}')" class="badge badge-xs  badge-warning">{{ $item->precio }}
                                             Bs</span>
                                     @endif
+                                </div>
+                                <div class="col-6">
+                                    @if ($item->puntos != 0 && $item->puntos != null)
+                                        <span class="">{{ $item->puntos }}pts</span>
+                                    @endif
+                                    @switch($item->prioridad)
+                                        @case(1)
+                                            <span wire:click="cambiarPrioridad('{{$item->id}}','2')" class="badge badge-xs light badge-dark"><i class="fa fa-high"></i> |</span>
+                                        @break
 
+                                        @case(2)
+                                            <span wire:click="cambiarPrioridad('{{$item->id}}','3')" class="badge badge-xs light badge-info">||</span>
+                                        @break
+
+                                        @case(3)
+                                            <span wire:click="cambiarPrioridad('{{$item->id}}','1')" class="badge badge-xs light badge-success">|||</span>
+                                        @break
+
+                                        @default
+                                    @endswitch
 
                                 </div>
-
                             </div>
                         </li>
                     </a>
