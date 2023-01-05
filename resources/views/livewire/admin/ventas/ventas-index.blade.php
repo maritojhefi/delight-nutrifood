@@ -791,8 +791,14 @@
                                             <span class="text-white">{{ $saldo->monto }} Bs <a href="#"
                                                     wire:click="imprimirSaldo({{ $saldo->id }})"
                                                     class="badge badge-warning"><i class="fa fa-print"></i></a>
-                                                <a href="#" wire:click="anularSaldo({{ $saldo->id }})"
-                                                    class="badge badge-danger"><i class="fa fa-trash"></i></a></span>
+                                                    @if ($saldo->anulado)
+                                                    <a href="#" wire:click="anularSaldo({{ $saldo->id }})"
+                                                        class="badge badge-danger"><i class="fa fa-close"></i> Anulado</a>
+                                                    @else
+                                                    <a href="#" wire:click="anularSaldo({{ $saldo->id }})"
+                                                        class="badge badge-warning"><i class="fa fa-check"></i> Activo</a>
+                                                    @endif
+                                                    </span>
 
                                         </li>
                                     @else
