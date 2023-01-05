@@ -91,8 +91,9 @@
             <small class="m-3 text-muted">Venta #{{ $cuenta->id }}</small> <br>
             <a class="btn btn-primary btn-xxs" href="#" wire:loading>
                 <small class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></small>
-
             </a>
+            
+            
             @if ($cuenta->cliente)
                 <a href="#" data-bs-toggle="modal" data-bs-target="#planesusuario"><span
                         class="badge light badge-success">{{ Str::limit($cuenta->cliente->name, 15, '...') }}</span></a>
@@ -104,6 +105,7 @@
 
             <span class="badge badge-primary badge-pill">{{ $itemsCuenta }}</span>
         </h4>
+        <small>Por: {{ Str::limit($cuenta->usuario->name, 25) }}</small>
         {{-- <div  wire:loading wire:target="seleccionar" wire:target="seleccionar">
             <div class="spinner-border  d-block mx-auto m-3 text-warning" role="status">
                 <span class="sr-only">Loading...</span>
