@@ -121,14 +121,14 @@
                                 <div class="row mb-0">
                                     @foreach ($item->venta->productos->groupBy('nombre') as $detalle)
                                         <div class="col-4">
-                                            <small class="color-theme font-500">{{ Str::limit($detalle[0]->nombre, 15) }}</small>
+                                            <small class="color-theme font-500">{{ Str::limit($detalle[0]->nombre, 25) }}</small>
                                         </div>
                                         <div class="col-2">
                                             <small class="font-400">
                                                 @foreach ($detalle as $pivot)
                                                     {{ $pivot->pivot->cantidad }}
                                                 @break
-                                            @endforeach u|gr
+                                            @endforeach u.
                                         </small>
                                     </div>
                                     @if ($detalle[0]->descuento != null && $detalle[0]->descuento < $detalle[0]->precio)
