@@ -208,15 +208,12 @@
                                     <table class="table table-striped table-responsive-sm">
                                         <thead>
                                             <tr>
-
                                                 <th>Cliente</th>
-
                                                 <th>Metodo</th>
                                                 <th>Puntos</th>
                                                 <th>Subtotal</th>
                                                 <th>A saldo</th>
                                                 <th>Descuento</th>
-
                                                 <th>Total Cobrado</th>
                                                 <th>Detalle</th>
                                                 <th>Usuario</th>
@@ -229,16 +226,33 @@
 
                                                         @if ($item->cliente)
                                                             <td>{{ Str::words($item->cliente->name, 1, '') }} <a
-                                                                    href="#" wire:click="modoImpresion({{$item->id}})"
+                                                                    href="#"
+                                                                    wire:click="modoImpresion({{ $item->id }})"
                                                                     class="badge badge-xs badge-dark"><i
                                                                         class="fa fa-print"></i></a></td>
                                                         @else
-                                                            <td>S/N <a href="#" wire:click="modoImpresion({{$item->id}})"
+                                                            <td>S/N <a href="#"
+                                                                    wire:click="modoImpresion({{ $item->id }})"
                                                                     class="badge badge-xs badge-dark"><i
                                                                         class="fa fa-print"></i></a> </td>
                                                         @endif
 
-                                                        <td><span class="badge badge-warning light">{{ $item->tipo }}</span>
+                                                        <td>
+                                                            @php
+                                                                $metodos=['Efectivo'=>'efectivo','Bisa'=>'banco-bisa','Sol'=>'banco-sol','Mercantil'=>'banco-mercantil','Tarjeta'=>'tarjeta'];
+                                                            @endphp
+                                                                
+                                                                <div class="dropdown">
+                                                                    <button type="button" class="btn btn-warning light sharp"
+                                                                        data-bs-toggle="dropdown">
+                                                                       {{$item->tipo}}
+                                                                    </button>
+                                                                    <a class="dropdown-menu" href="#">
+                                                                        @foreach ($metodos as $titulo=>$valor)
+                                                                        <small class="m-1" style="font-size:12px important!" wire:click="cambiarMetodo('{{$item->id}}','{{$valor}}')">{{$titulo}}</small><br>
+                                                                        @endforeach
+                                                                    </a>
+                                                                </div>
                                                         </td>
                                                         <td>{{ $item->puntos }} pts</td>
                                                         <td class="color-primary">{{ $item->total }} Bs</td>
@@ -282,6 +296,8 @@
                                                             <td>S/N</td>
                                                         @endif
                                                     </tr>
+
+                                                    <!-- Modal -->
                                                 @endforeach
                                                 <tr>
                                                     <td><span class="badge badge-xs badge-info">Resumen</span></td>
@@ -417,29 +433,29 @@
                                 </div>
                             @endif
                             <div class="form-check mb-2">
-                                <input type="checkbox" class="form-check-input"
-                                    wire:model="checkTelefonoPersonalizado">
+                                <input type="checkbox" class="form-check-input" wire:model="checkTelefonoPersonalizado">
                                 <label class="form-check-label" for="check1">Agregar Telefono</label>
                             </div>
                             @if ($checkTelefonoPersonalizado)
-                                    <div class="mb-3 row">
-                                        <label class="col-sm-3 col-form-label col-form-label-sm">Telefono</label>
-                                        <div class="col-sm-9">
-                                            <input type="text" class="form-control form-control-sm"
-                                                wire:model="telefonoRecibo">
-                                        </div>
-                                       
-                                            <div class="alert alert-info alert-dismissible fade show text-sm">
-
-                                                <strong>Importante!</strong>Este numero no se imprimira, solo se guardara en prospectos dentro del sistema.
-                                                <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                                    aria-label="btn-close">
-                                                </button>
-                                            </div>
-                                        
-
+                                <div class="mb-3 row">
+                                    <label class="col-sm-3 col-form-label col-form-label-sm">Telefono</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control form-control-sm"
+                                            wire:model="telefonoRecibo">
                                     </div>
-                                @endif
+
+                                    <div class="alert alert-info alert-dismissible fade show text-sm">
+
+                                        <strong>Importante!</strong>Este numero no se imprimira, solo se guardara en
+                                        prospectos dentro del sistema.
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="btn-close">
+                                        </button>
+                                    </div>
+
+
+                                </div>
+                            @endif
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-warning btn-sm" wire:click="atras">Atras</button>

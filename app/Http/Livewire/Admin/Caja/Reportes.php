@@ -28,6 +28,7 @@ class Reportes extends Component
     public $ventasHoy,$saldosHoy, $resumen, $lista, $cajaactiva,$reporteGeneral=true;
     public $fechaRecibo, $observacionRecibo,$clienteRecibo,$checkClientePersonalizado, $checkMetodoPagoPersonalizado, $metodoRecibo,$checkTelefonoPersonalizado,$telefonoRecibo;
     public $imprimiendo=false,$cuenta,$listacuenta,$descuentoProductos;
+    public $metodo;
 
     public function atras()
     {
@@ -92,6 +93,16 @@ class Reportes extends Component
     public function cambiarReporte()
     {
         $this->reporteGeneral==true?$this->reporteGeneral=false:$this->reporteGeneral=true;
+    }
+    public function cambiarMetodo(Historial_venta $venta,$metodo)
+    {
+        $venta->tipo=$metodo;
+        $venta->save();
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => "Se cambio el metodo de cobro de esta venta a: ".$metodo
+        ]);
+        $this->render();
     }
     public function buscarCaja(Caja $caja)
     {
