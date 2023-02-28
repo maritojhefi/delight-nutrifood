@@ -35,7 +35,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('plan:diario')
         ->hourly()->appendOutputTo($logGeneral);
         $schedule->command('finalizarPlanTodos:diario')->timezone('America/La_Paz')
-        ->dailyAt('11:00')->appendOutputTo($logGeneral);
+        ->dailyAt('10:00')->appendOutputTo($logGeneral);
         $schedule->command('whatsapp:enviarMenu')
         ->twiceDaily(18, 20)->appendOutputTo($logsMenu);
         $schedule->command('whatsapp:enviarMenuManana')
