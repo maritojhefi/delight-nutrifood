@@ -21,8 +21,8 @@
             width: 100%;
             background: #fff;
             max-width: 350px;
-            padding: 25px;
-            margin: 50px auto 0;
+            padding: 0px;
+            margin: 0 auto 0;
             box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
         }
 
@@ -234,6 +234,7 @@
                 </table>
                 <br>
                 <hr>
+                <br>
                 @if (isset($metodo) && $metodo != '')
                     <p>Metodo de pago: {{ $metodo }}</p>
                    
