@@ -143,6 +143,7 @@
     <div class="container">
 
         <div class="receipt_header">
+            {!! '<img src="' . public_path('delight_logo.jpg') . '" />' !!}
             <h1>Recibo de Venta <span>Nutri-Food/Eco-Tienda</span></h1>
             <h2>Direccion: Calle Campero y 15 de abril<span>Contacto : 78227629</span>
                 @if (isset($nombreCliente))
@@ -154,17 +155,15 @@
         <div class="receipt_body">
 
             <div class="date_time_con">
-               
-                    @if (isset($fecha))
+
+                @if (isset($fecha))
                     <div class="date"> {{ $fecha }} </div>
-                   
-                    @else
+                @else
                     <div class="date"> {{ date('Y-m-d') }} </div>
                     <div class="time"> {{ date('H:i:s') }}</div>
-                        
-                    @endif
-               
-               
+                @endif
+
+
             </div>
 
             <div class="items">
@@ -179,16 +178,13 @@
                     <tbody>
 
                         @foreach ($listaCuenta as $list)
+                            <tr>
+                                <td>{{ $list['cantidad'] }}</td>
+                                <td>{{ $list['nombre'] }}</td>
+                                <td>{{ $list['precio'] }}</td>
+                            </tr>
+                        @endforeach
 
-                        <tr>
-                            <td>{{ $list['cantidad'] }}</td>
-                            <td>{{ $list['nombre'] }}</td>
-                            <td>{{ $list['precio'] }}</td>
-                        </tr>
-
-                       
-                    @endforeach
-                       
                     </tbody>
 
                     <tfoot>
@@ -210,25 +206,27 @@
                             <td>Bs {{ number_format($descuentoProductos, 2) }}</td>
                         </tr>
                         @if ($valorSaldo != null && $valorSaldo != 0)
-                        <tr>
-                            <td>Saldo agregado</td>
-                            <td></td>
-                            <td>Bs {{ number_format($valorSaldo, 2) }}</td>
-                        </tr>
+                            <tr>
+                                <td>Saldo agregado</td>
+                                <td></td>
+                                <td>Bs {{ number_format($valorSaldo, 2) }}</td>
+                            </tr>
 
-                        <tr>
-                            <td>TOTAL PAGADO</td>
-                            <td></td>
-                            <td>Bs {{ number_format($subtotal - $otrosDescuentos - $valorSaldo - $descuentoProductos, 2) }}</td>
-                        </tr>
+                            <tr>
+                                <td>TOTAL PAGADO</td>
+                                <td></td>
+                                <td>Bs
+                                    {{ number_format($subtotal - $otrosDescuentos - $valorSaldo - $descuentoProductos, 2) }}
+                                </td>
+                            </tr>
                         @else
-                        <tr>
-                            <td>TOTAL PAGADO</td>
-                            <td></td>
-                            <td>Bs {{ number_format($subtotal - $otrosDescuentos - $descuentoProductos, 2) }}</td>
-                        </tr>
+                            <tr>
+                                <td>TOTAL PAGADO</td>
+                                <td></td>
+                                <td>Bs {{ number_format($subtotal - $otrosDescuentos - $descuentoProductos, 2) }}</td>
+                            </tr>
                         @endif
-                       
+
 
                         <tr>
                             <td>Otros descuentos</td>
@@ -238,13 +236,14 @@
                     </tfoot>
 
                 </table>
-                
-                @if (isset($metodo) && $metodo != "")
+
+                @if (isset($metodo) && $metodo != '')
                     <p>Metodo: {{ $metodo }}</p>
                 @endif
-        
-                <img src="{{ public_path("qrcode.png") }}" />
-        
+                <hr>
+                <center> <img src="{{ public_path('qrcode.png') }}" /></center>
+
+
                 @if (isset($observacion))
                     <p>{{ $observacion }}</p>
                 @endif
@@ -253,7 +252,7 @@
         </div>
 
 
-        <h3>Thank You!</h3>
+        <h3>Gracias por su compra!</h3>
 
     </div>
 
