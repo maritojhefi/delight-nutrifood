@@ -9,6 +9,7 @@ use App\Models\Venta;
 use App\Models\Pensione;
 use App\Models\Traslado;
 use App\Models\Asistencia;
+use Laravel\Scout\Searchable;
 use App\Models\Historial_venta;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
@@ -19,7 +20,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Searchable;
 
     /**
      * The attributes that are mass assignable.
@@ -62,6 +63,16 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => (int) $this->id,
+            'name' => $this->name,
+        ];
+    }
+
+
     public function setPasswordAttribute($value)
     {
         $this->attributes["password"]=Hash::make($value);
