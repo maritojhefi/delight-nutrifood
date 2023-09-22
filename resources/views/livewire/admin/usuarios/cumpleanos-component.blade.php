@@ -27,21 +27,25 @@
                         <thead>
                             <tr>
                                 <th>Nombre</th>
-                                <th>Fecha nacimiento</th>
+                                <th>Rol</th>
+                                <th>Fecha cumpleaño</th>
                                 <th>Dias Restantes</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($usuarios as $usuario)
-                            @php
-                                $fecha=\Carbon\Carbon::now()->addDays($usuario->days_until_birthday);
-                            @endphp
+                                @php
+                                    $fecha = \Carbon\Carbon::now()->addDays($usuario->days_until_birthday);
+                                @endphp
                                 <tr>
                                     <td>{{ $usuario->name }}</td>
-                                    <td><span class="badge badge-success">{{ $usuario->nacimiento }}</span>
-                                        {{App\Helpers\GlobalHelper::fechaFormateada(2,$fecha)}}</td>
+                                    <td><span
+                                            class="badge badge-{{ $usuario->role->colorRol }}">{{ $usuario->role->nombre }}</span>
+                                    </td>
+                                    <td><span class="badge badge-dark">{{ $usuario->nacimiento }}</span>
+                                        {{ App\Helpers\GlobalHelper::fechaFormateada(2, $fecha) }}</td>
                                     <td>{{ $usuario->days_until_birthday }}</td>
-                                   
+
 
                                 </tr>
                             @endforeach
