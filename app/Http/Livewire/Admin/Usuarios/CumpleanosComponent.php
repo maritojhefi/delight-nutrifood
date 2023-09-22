@@ -12,10 +12,11 @@ class CumpleanosComponent extends Component
     {
         $usuarios = User::select('*')
             ->with('role')
+            ->where('nacimiento', '!=', null)
             ->selectRaw('DATEDIFF(CONCAT(YEAR(CURDATE()), "-", MONTH(nacimiento), "-", DAY(nacimiento)), CURDATE()) AS days_until_birthday')
             ->whereRaw('DATE_FORMAT(nacimiento, "%m-%d") >= DATE_FORMAT(CURDATE(), "%m-%d")')
-            ->orderByRaw('DATE_FORMAT(nacimiento, "%m-%d")')
-            ->where('nacimiento', '!=', null);
+            ->orderByRaw('DATE_FORMAT(nacimiento, "%m-%d")');
+            
 
         if ($this->search != null && $this->search != '') {
             $usuarios = $usuarios->where('name', 'LIKE', '%' . $this->search . '%')->orWhereHas('role', function ($query) {
