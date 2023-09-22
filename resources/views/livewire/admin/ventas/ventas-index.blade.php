@@ -1,6 +1,6 @@
 <div class="row">
     <x-card-col4>
-        <div class="">
+        <div class="mb-2">
             <h4 class="card-intro-title p-2 mt-2">Ventas Abiertas</h4>
 
             <div class="">
