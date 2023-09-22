@@ -72,13 +72,20 @@ class VentasIndex extends Component
     }
     public function addUsuarioManual()
     {
-        $this->cuenta->usuario_manual=$this->userManual;
-        $this->cuenta->save();
-        $this->cuenta = Venta::find($this->cuenta->id);
-        $this->dispatchBrowserEvent('alert', [
-            'type' => 'success',
-            'message' => "Hecho!"
-        ]);
+        if ($this->userManual != '') {
+            $this->cuenta->usuario_manual = $this->userManual;
+            $this->cuenta->save();
+            $this->cuenta = Venta::find($this->cuenta->id);
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => "Hecho!"
+            ]);
+        } else {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "Formato Incorrecto"
+            ]);
+        }
     }
     public function imprimirSaldo(Saldo $saldo)
     {
@@ -796,7 +803,7 @@ class VentasIndex extends Component
         ];
 
         $pdf = Pdf::loadView('pdf.recibo-nuevo', $data)->output();
-        return response()->streamDownload(function () use($pdf) {
+        return response()->streamDownload(function () use ($pdf) {
             echo $pdf;
         }, 'venta.pdf');
     }
@@ -875,10 +882,9 @@ class VentasIndex extends Component
                 'message' => "El saldo fue anulado!"
             ]);
         }
-        $this->cuenta=Venta::where('cliente_id',$this->cuenta->cliente->id)->first();
+        $this->cuenta = Venta::where('cliente_id', $this->cuenta->cliente->id)->first();
         $user->save();
         $saldo->save();
-        
     }
     public function render()
     {
