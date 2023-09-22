@@ -235,16 +235,13 @@
                 <br>
                 <hr>
                 @if (isset($metodo) && $metodo != '')
-                    <br>
-                    <hr>
-                    <p>Metodo: {{ $metodo }}</p>
-                    <br>
+                    <p>Metodo de pago: {{ $metodo }}</p>
+                   
                 @endif
                 @if (isset($observacion))
-                    <br>
-                    <hr>
-                    <p>{{ $observacion }}</p>
-                    <br>
+                    
+                    <p>Informacion Adicional: {{ $observacion }}</p>
+                    
                 @endif
 
                 <br>
