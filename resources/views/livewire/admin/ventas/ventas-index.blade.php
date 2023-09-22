@@ -19,7 +19,7 @@
                                 <span class="sr-only">Loading...</span>
                             </div>
                             <small> #{{ $item->id }}</small>
-                           
+
                             @isset($item->cliente)
                                 <span
                                     class="badge badge-xs light badge-dark">{{ Str::limit($item->cliente->name, 15) }}</span>
@@ -105,27 +105,30 @@
                     <a href="#" data-bs-toggle="modal" data-bs-target="#planesusuario"><span
                             class="badge light badge-success">{{ Str::limit($cuenta->cliente->name, 15, '...') }}</span></a>
                 @else
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span
-                            class="badge light badge-danger">Sin usuario</span></a>
+                    @if ($cuenta->usuario_manual)
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span
+                                class="badge light badge-secondary">{{ $cuenta->usuario_manual }}</span></a>
+                    @else
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span
+                                class="badge light badge-danger">Sin usuario</span></a>
+                    @endif
                 @endif
 
 
                 <span class="badge badge-primary badge-pill">{{ $itemsCuenta }}</span>
             </h4>
             <small>Por: {{ Str::limit($cuenta->usuario->name, 25) }}</small>
-            {{-- <div  wire:loading wire:target="seleccionar" wire:target="seleccionar">
-            <div class="spinner-border  d-block mx-auto m-3 text-warning" role="status">
-                <span class="sr-only">Loading...</span>
-              </div>
-        </div> --}}
 
 
             <ul class="list-group mb-3 " style="overflow-y: auto;max-height:300px;overflow-x: hidden" wire:loading.remove
                 wire:target="seleccionar"
-                @isset($cuenta->cliente) @php $time = strtotime($cuenta->cliente->nacimiento);
-            @endphp @if (date('m-d') == date('m-d', $time)) style="background-image:
-            url('{{ asset('images/cumple.gif') }}')" @endif
-        @endisset>
+                @isset($cuenta->cliente) 
+                @php $time = strtotime($cuenta->cliente->nacimiento);
+                @endphp 
+                @if (date('m-d') == date('m-d', $time)) style="background-image:
+                     url('{{ asset('images/cumple.gif') }}')" 
+                @endif
+                @endisset>
 
 
                 @foreach ($listacuenta as $item)
@@ -982,7 +985,8 @@
 
                         <div class="mb-3 col-md-6 mt-2">
                             <label for=""> Añadir Manualmente</label>
-                            <input type="text" class="form-control  form-control-sm" placeholder="Agregar manual" wire:model.lazy="userManual">
+                            <input type="text" class="form-control  form-control-sm" placeholder="Agregar manual"
+                                wire:model.lazy="userManual">
                             <button class="btn btn-success btn-xs" wire:click="addUsuarioManual">Confirmar</button>
                         </div>
                     </div>
