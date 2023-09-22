@@ -36,6 +36,9 @@
                             @foreach ($usuarios as $usuario)
                                 @php
                                     $fecha = \Carbon\Carbon::now()->addDays($usuario->days_until_birthday);
+                                    if ($usuario->days_until_birthday<0) {
+                                        $usuario->days_until_birthday=+365;
+                                    }
                                 @endphp
                                 <tr>
                                     <td>{{ $usuario->name }}</td>
