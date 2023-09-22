@@ -172,16 +172,16 @@
                     <thead>
                         <th>Cantidad</th>
                         <th>Producto</th>
-                        <th>Precio Unitario</th>
+                        <th>Precio</th>
                     </thead>
 
                     <tbody>
 
                         @foreach ($listaCuenta as $list)
                             <tr>
-                                <td>{{ $list['cantidad'] }}</td>
+                                <td><center>{{ $list['cantidad'] }}</center></td>
                                 <td>{{ $list['nombre'] }}</td>
-                                <td>{{ $list['precio'] }}</td>
+                                <td>{{ $list['precio'] }} Bs</td>
                             </tr>
                             <br>
                         @endforeach
