@@ -16,6 +16,7 @@ use Livewire\WithPagination;
 use App\Models\ReciboImpreso;
 use Livewire\WithFileUploads;
 use App\Models\Historial_venta;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Imports\ProductosImport;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -77,6 +78,26 @@ class Reportes extends Component
                 'message' => "La sucursal no tiene una impresora activa"
             ]);
         }
+    }
+    public function descargarPDF()
+    {
+        $data = [
+            // Aquí puedes pasar las variables necesarias para la vista Blade
+            'nombreCliente' => !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : 'Anonimo' : $this->clienteRecibo,
+            'listaCuenta' => $this->listacuenta,
+            'subtotal' => $this->cuenta->total+$this->descuentoProductos,
+            'descuentoProductos' =>  $this->descuentoProductos,
+            'otrosDescuentos' => $this->cuenta->descuento,
+            'valorSaldo' =>  isset($this->valorSaldo) ? $this->valorSaldo : 0,
+            'metodo' =>  $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo : '',
+            'observacion' => isset($this->observacionRecibo) ? $this->observacionRecibo : null,
+            'fecha' => isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
+        ];
+        // dd($data);
+        $pdf = Pdf::loadView('pdf.recibo-nuevo', $data)->output();
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf;
+        }, $data['nombreCliente'].'-'.date('d-m-Y-H:i:s').'.pdf');
     }
     public function modoImpresion(Historial_venta $venta)
     {

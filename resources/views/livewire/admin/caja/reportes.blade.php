@@ -239,20 +239,22 @@
 
                                                         <td>
                                                             @php
-                                                                $metodos=['Efectivo'=>'efectivo','Bisa'=>'banco-bisa','Sol'=>'banco-sol','Mercantil'=>'banco-mercantil','Tarjeta'=>'tarjeta'];
+                                                                $metodos = ['Efectivo' => 'efectivo', 'Bisa' => 'banco-bisa', 'Sol' => 'banco-sol', 'Mercantil' => 'banco-mercantil', 'Tarjeta' => 'tarjeta'];
                                                             @endphp
-                                                                
-                                                                <div class="dropdown">
-                                                                    <button type="button" class="btn btn-warning light sharp"
-                                                                        data-bs-toggle="dropdown">
-                                                                       {{$item->tipo}}
-                                                                    </button>
-                                                                    <a class="dropdown-menu" href="#">
-                                                                        @foreach ($metodos as $titulo=>$valor)
-                                                                        <small class="m-1" style="font-size:12px important!" wire:click="cambiarMetodo('{{$item->id}}','{{$valor}}')">{{$titulo}}</small><br>
-                                                                        @endforeach
-                                                                    </a>
-                                                                </div>
+
+                                                            <div class="dropdown">
+                                                                <button type="button" class="btn btn-warning light sharp"
+                                                                    data-bs-toggle="dropdown">
+                                                                    {{ $item->tipo }}
+                                                                </button>
+                                                                <a class="dropdown-menu" href="#">
+                                                                    @foreach ($metodos as $titulo => $valor)
+                                                                        <small class="m-1"
+                                                                            style="font-size:12px important!"
+                                                                            wire:click="cambiarMetodo('{{ $item->id }}','{{ $valor }}')">{{ $titulo }}</small><br>
+                                                                    @endforeach
+                                                                </a>
+                                                            </div>
                                                         </td>
                                                         <td>{{ $item->puntos }} pts</td>
                                                         <td class="color-primary">{{ $item->total }} Bs</td>
@@ -459,7 +461,9 @@
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-warning btn-sm" wire:click="atras">Atras</button>
-                            <button class="btn btn-success" wire:click="imprimir">Imprimir</button>
+                            <button class="btn btn-info btn-sm" wire:click="descargarPDF">Descargar PDF <i
+                                    class="fa fa-file"></i></button>
+                            <button class="btn btn-success btn-sm" wire:click="imprimir">Imprimir</button>
                         </div>
                     </div>
                 @endif

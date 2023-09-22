@@ -20,7 +20,7 @@
             display: block;
             width: 100%;
             background: #fff;
-            max-width: 350px;
+            max-width: 450px;
             padding: 0px;
             margin: 0 auto 0;
             box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
@@ -170,8 +170,9 @@
                 <table>
 
                     <thead>
-                        <th>Cantidad</th>
-                        <th>Producto</th>
+                        <th style="width:10%">#</th>
+                        <th  style="width:50%">Producto</th>
+                        <th>Unitario</th>
                         <th>Precio</th>
                     </thead>
 
@@ -182,8 +183,9 @@
                                 <td>
                                     <center>{{ $list['cantidad'] }}</center>
                                 </td>
-                                <td>{{ $list['nombre'] }}</td>
-                                <td>{{ $list['precio'] }} Bs</td>
+                                <td><small>{{ $list['nombre'] }}</small></td>
+                                <td><small>{{ $list['precio'] }} Bs</small></td>
+                                <th><small>{{ $list['precio']*$list['cantidad'] }} Bs</small></th>
                             </tr>
                             <br>
                         @endforeach
@@ -192,31 +194,41 @@
 
                     <tfoot>
                         <tr>
+                            <td></td>
                             <td>Subtotal</td>
+                            
                             <td></td>
                             <td>Bs {{ number_format($subtotal, 2) }}</td>
                         </tr>
                         <br>
                         <tr>
+                            <td></td>
                             <td><small>Descuento por productos</small> </td>
+                            
                             <td></td>
                             <td><small>Bs {{ number_format($descuentoProductos, 2) }}</small></td>
                         </tr>
                         
                         <tr>
+                            <td></td>
                             <td><small>Otros descuentos</small></td>
+                           
                             <td></td>
                             <td><small>Bs {{ number_format($otrosDescuentos, 2) }}</small></td>
                         </tr>
                         @if ($valorSaldo != null && $valorSaldo != 0)
                             <tr>
+                                <td></td>
                                 <td>Saldo agregado</td>
+                               
                                 <td></td>
                                 <td>Bs {{ number_format($valorSaldo, 2) }}</td>
                             </tr>
                             <br>
                             <tr>
+                                <td></td>
                                 <td><strong> TOTAL PAGADO</strong></td>
+                               
                                 <td></td>
                                 <td><strong>Bs
                                         {{ number_format($subtotal - $otrosDescuentos - $valorSaldo - $descuentoProductos, 2) }}</strong>
@@ -225,7 +237,9 @@
                         @else
                             <br>
                             <tr>
+                                <td></td>
                                 <td><strong> TOTAL PAGADO</strong></td>
+                                
                                 <td></td>
                                 <td><strong> Bs
                                         {{ number_format($subtotal - $otrosDescuentos - $descuentoProductos, 2) }}</strong>
