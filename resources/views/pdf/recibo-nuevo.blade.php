@@ -170,7 +170,7 @@
                 <table>
 
                     <thead>
-                        <th style="width:10%">#</th>
+                        <th style="width:10%">U.</th>
                         <th  style="width:50%">Producto</th>
                         <th>Unitario</th>
                         <th>Precio</th>
