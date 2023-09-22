@@ -33,10 +33,13 @@
                         </thead>
                         <tbody>
                             @foreach ($usuarios as $usuario)
+                            @php
+                                $fecha=\Carbon\Carbon::now()->addDays($usuario->days_until_birthday);
+                            @endphp
                                 <tr>
                                     <td>{{ $usuario->name }}</td>
                                     <td><span class="badge badge-success">{{ $usuario->nacimiento }}</span>
-                                        {{App\Helpers\GlobalHelper::fechaFormateada(2,$usuario->nacimiento)}}</td>
+                                        {{App\Helpers\GlobalHelper::fechaFormateada(2,$fecha)}}</td>
                                     <td>{{ $usuario->days_until_birthday }}</td>
                                    
 
