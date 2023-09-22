@@ -157,7 +157,7 @@
             <div class="date_time_con">
 
                 @if (isset($fecha))
-                    <div class="date"> {{ $fecha }} </div>
+                    <div class="date">Fecha de venta: {{ $fecha }} </div>
                 @else
                     <div class="date"> {{ date('Y-m-d') }} </div>
                     <div class="time"> {{ date('H:i:s') }}</div>
@@ -233,18 +233,26 @@
 
                 </table>
                 <br>
-                @if (isset($metodo) && $metodo != '')
-                    <p>Metodo: {{ $metodo }}</p>
-                @endif
                 <hr>
+                @if (isset($metodo) && $metodo != '')
+                    <br>
+                    <hr>
+                    <p>Metodo: {{ $metodo }}</p>
+                    <br>
+                @endif
+                @if (isset($observacion))
+                    <br>
+                    <hr>
+                    <p>{{ $observacion }}</p>
+                    <br>
+                @endif
+
                 <br>
                 <br>
                 <center> <img src="{{ public_path('qrcode.png') }}" /></center>
 
 
-                @if (isset($observacion))
-                    <p>{{ $observacion }}</p>
-                @endif
+
             </div>
 
         </div>
