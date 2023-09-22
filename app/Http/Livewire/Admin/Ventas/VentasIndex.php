@@ -20,6 +20,7 @@ use App\Helpers\CustomPrint;
 use App\Models\ReciboImpreso;
 use Mike42\Escpos\EscposImage;
 use App\Models\Historial_venta;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Events\CocinaPedidoEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
@@ -786,13 +787,22 @@ class VentasIndex extends Component
                 $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo : ''
             );
            
-            // Crear una instancia de PDF
-            $pdf = PDF::loadHTML($recibo);
-
-            // Opcional: Personalizar la configuración del PDF (tamaño de página, orientación, etc.)
-
-            // Descargar el PDF o mostrarlo en el navegador
-            return $pdf->download('recibo.pdf');
+            $data = [
+                // Aquí puedes pasar las variables necesarias para la vista Blade
+                'nombreCliente' => !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null : $this->clienteRecibo,
+                'listaCuenta' => $this->listacuenta,
+                'subtotal' =>$this->cuenta->total,
+                'descuentoProductos' =>  $this->descuentoProductos,
+                'otrosDescuentos' => $this->cuenta->descuento,
+                'valorSaldo' =>  isset($this->valorSaldo) ? $this->valorSaldo : 0,
+                'metodo' =>  $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo : '',
+                'observacion' => isset($this->observacionRecibo) ? $this->observacionRecibo : null,
+                'fecha' => isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
+            ];
+        
+            $pdf = Pdf::loadView('pdf.recibo', $data);
+        
+            return $pdf->download('receipt.pdf');
             // $respuesta = CustomPrint::imprimir($recibo, $this->cuenta->sucursale->id_impresora);
             // if ($respuesta == true) {
             //     $this->dispatchBrowserEvent('alert', [
