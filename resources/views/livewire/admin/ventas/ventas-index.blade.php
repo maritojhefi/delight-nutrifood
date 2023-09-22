@@ -52,7 +52,7 @@
 
                         <div x-show="open" @click.outside="open = false">
                             <div class="row">
-                                <div class="mb-3 col-md-6 mt-2">
+                                {{-- <div class="mb-3 col-md-6 mt-2">
                                     <label class="form-label">Sucursal</label>
                                     <select
                                         class="form-control form-control-sm  form-white @error($sucursal) is-invalid @enderror"
@@ -62,24 +62,33 @@
                                             <option value="{{ $id }}">{{ $nombre }}</option>
                                         @endforeach
                                     </select>
-                                </div>
-                                <div class="mb-3 col-md-6 mt-2">
-                                    <label class="form-label">Cliente</label><button data-bs-toggle="modal"
+                                </div> --}}
+                                <div class="mb-3 col-md-12 mt-2">
+                                    <label class="form-label">Buscar cliente</label><button data-bs-toggle="modal"
                                         data-bs-target="#modalNuevoCliente"
-                                        class="badge badge-xs light badge-success"><i class="fa fa-plus"></i></button>
-                                    <input type="text" class="form-control  form-control-sm" placeholder="Opcional"
-                                        wire:model.debounce.1000ms='user'>
+                                        class="badge badge-xs light badge-success float-end">Añadir <i
+                                            class="fa fa-plus"></i></button>
+                                    <input type="text" class="form-control  form-control-sm"
+                                        placeholder="Buscar cliente (Opcional)" wire:model.debounce.1000ms='user'>
+
+                                    <span class="badge light badge-info float-center" wire:loading
+                                        wire:target='user'>Cargando...
+                                    </span>
                                 </div>
-                                <span class="badge light badge-info" wire:loading wire:target='user'> Cargando...
-                                </span>
+
                                 @foreach ($usuarios as $item)
                                     <a href="#" class="m-2"
-                                        wire:click="seleccionarcliente('{{ $item->id }}','{{ $item->name }}')"><span
-                                            class="badge light badge-{{ $item->id == $cliente ? 'warning' : 'primary' }}">
-                                            {{ $item->name }} @if ($item->id == $cliente)
-                                                <i class="fa fa-check"></i>
-                                            @endif
-                                        </span>
+                                        wire:click="seleccionarcliente('{{ $item->id }}','{{ $item->name }}')">
+                                        @if ($item->id == $cliente)
+                                            <strong class="text-success">{{ $item->name }}</strong>
+                                            <strong class="badge light badge-success "><i class="fa fa-check"></i>
+                                            </strong>
+                                        @else
+                                            <small>{{ $item->name }}</small>
+                                            <span class="badge light badge-dark"><i class="fa fa-user-plus"></i>
+                                            </span>
+                                        @endif
+
                                     </a>
                                 @endforeach
                             </div>
@@ -107,7 +116,7 @@
                 @else
                     @if ($cuenta->usuario_manual)
                         <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span
-                                class="badge light badge-secondary">{{ $cuenta->usuario_manual }}</span></a>
+                                class="badge light badge-warning">{{ $cuenta->usuario_manual }}</span></a>
                     @else
                         <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span
                                 class="badge light badge-danger">Sin usuario</span></a>
@@ -118,12 +127,30 @@
                 <span class="badge badge-primary badge-pill">{{ $itemsCuenta }}</span>
             </h4>
             <small>Por: {{ Str::limit($cuenta->usuario->name, 25) }}</small>
-
+            @isset($cuenta->cliente)
+                @php
+                    $time = strtotime($cuenta->cliente->nacimiento);
+                @endphp
+                @if (date('m-d') == date('m-d', $time))
+                    <div class="alert alert-danger alert-sm light alert-alt " style="padding: 10px">
+                    
+                        <a href="#" >
+                            
+                            <small> #6</small>
+                            <span class="badge badge-xs light badge-dark">Jacque</span>
+                            <strong class=" text-white  ">0.00Bs
+                            </strong>
+                        </a>
+                    </div>
+                @endif
+            @endisset
 
             <ul class="list-group mb-3 " style="overflow-y: auto;max-height:300px;overflow-x: hidden" wire:loading.remove
                 wire:target="seleccionar"
                 @isset($cuenta->cliente) 
-                @php $time = strtotime($cuenta->cliente->nacimiento);
+                @php 
+                $time = strtotime($cuenta->cliente->nacimiento);
+                
                 @endphp 
                 @if (date('m-d') == date('m-d', $time)) style="background-image:
                      url('{{ asset('images/cumple.gif') }}')" 
@@ -135,7 +162,6 @@
                     <li class="list-group-item d-flex justify-content-between lh-condensed" style="padding: 15px">
                         <div>
                             <div class="row">
-
                                 <div class="col"><a href="#" data-toggle="modal"
                                         data-target="#modalAdicionales{{ $item['id'] }}"
                                         wire:click="mostraradicionales('{{ $item['id'] }}')">
