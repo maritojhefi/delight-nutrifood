@@ -42,6 +42,8 @@ class VentasIndex extends Component
     public $productoapuntado;
     public $itemseleccionado;
     public $array;
+
+    public $userManual;
     public $tipocobro;
     public $descuento, $observacion;
     //variables para recibo
@@ -66,7 +68,17 @@ class VentasIndex extends Component
     }
     public function imprimirCocina()
     {
-        event(new CocinaPedidoEvent('Se actualizo la lista'));
+        // event(new CocinaPedidoEvent('Se actualizo la lista'));
+    }
+    public function addUsuarioManual()
+    {
+        $this->cuenta->usuario_manual=$this->userManual;
+        $this->cuenta->save();
+        $this->cuenta = Venta::find($this->cuenta->id);
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => "Hecho!"
+        ]);
     }
     public function imprimirSaldo(Saldo $saldo)
     {
@@ -256,6 +268,7 @@ class VentasIndex extends Component
     public function cambiarClienteACuenta(User $cliente)
     {
         $this->cuenta->cliente_id = $cliente->id;
+        $this->cuenta->usuario_manual = null;
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
             'message' => "Se asigno a esta venta el cliente: " . $cliente->name
@@ -616,7 +629,7 @@ class VentasIndex extends Component
         ]);
         if ($producto->subcategoria->categoria->nombre != 'ECO-TIENDA') //revisa si es de cocina/panaderia el producto para que actualice en la vista de cocina
         {
-            event(new CocinaPedidoEvent("Se actualizo la mesa " . $this->cuenta->id));
+            // event(new CocinaPedidoEvent("Se actualizo la mesa " . $this->cuenta->id));
         }
     }
 
@@ -636,7 +649,7 @@ class VentasIndex extends Component
         ]);
         if ($producto->subcategoria->categoria->nombre != 'ECO-TIENDA') //revisa si es de cocina/panaderia el producto para que actualice en la vista de cocina
         {
-            event(new CocinaPedidoEvent("Se actualizo la mesa " . $this->cuenta->id));
+            // event(new CocinaPedidoEvent("Se actualizo la mesa " . $this->cuenta->id));
         }
     }
 
@@ -767,64 +780,63 @@ class VentasIndex extends Component
         $this->cuenta = $cuenta;
         $this->reset('descuento');
     }
+    public function descargarPDF()
+    {
+        $data = [
+            // Aquí puedes pasar las variables necesarias para la vista Blade
+            'nombreCliente' => !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null : $this->clienteRecibo,
+            'listaCuenta' => $this->listacuenta,
+            'subtotal' => $this->cuenta->total,
+            'descuentoProductos' =>  $this->descuentoProductos,
+            'otrosDescuentos' => $this->cuenta->descuento,
+            'valorSaldo' =>  isset($this->valorSaldo) ? $this->valorSaldo : 0,
+            'metodo' =>  $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo : '',
+            'observacion' => isset($this->observacionRecibo) ? $this->observacionRecibo : null,
+            'fecha' => isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
+        ];
 
+        $pdf = Pdf::loadView('pdf.recibo-nuevo', $data)->output();
+        return response()->streamDownload(function () use($pdf) {
+            echo $pdf;
+        }, 'venta.pdf');
+    }
     public function imprimir()
     {
 
         //QrCode::format('png')->size(150)->generate('https://delight-nutrifood.com/miperfil', public_path() . '/qrcode.png');
         if ($this->cuenta->sucursale->id_impresora) {
 
-            // $recibo = CustomPrint::imprimirReciboVenta(
-            //     !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null : $this->clienteRecibo,
-            //     $this->listacuenta,
-            //     $this->cuenta->total,
-            //     isset($this->valorSaldo) ? $this->valorSaldo : 0,
-            //     $this->descuentoProductos,
-            //     $this->cuenta->descuento,
-            //     isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
-            //     isset($this->observacionRecibo) ? $this->observacionRecibo : null,
-            //     $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo : ''
-            // );
+            $recibo = CustomPrint::imprimirReciboVenta(
+                !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null : $this->clienteRecibo,
+                $this->listacuenta,
+                $this->cuenta->total,
+                isset($this->valorSaldo) ? $this->valorSaldo : 0,
+                $this->descuentoProductos,
+                $this->cuenta->descuento,
+                isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
+                isset($this->observacionRecibo) ? $this->observacionRecibo : null,
+                $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo : ''
+            );
+            $respuesta = CustomPrint::imprimir($recibo, $this->cuenta->sucursale->id_impresora);
+            if ($respuesta == true) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'success',
+                    'message' => "Se imprimio el recibo correctamente"
+                ]);
 
-            $data = [
-                // Aquí puedes pasar las variables necesarias para la vista Blade
-                'nombreCliente' => !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null : $this->clienteRecibo,
-                'listaCuenta' => $this->listacuenta,
-                'subtotal' => $this->cuenta->total,
-                'descuentoProductos' =>  $this->descuentoProductos,
-                'otrosDescuentos' => $this->cuenta->descuento,
-                'valorSaldo' =>  isset($this->valorSaldo) ? $this->valorSaldo : 0,
-                'metodo' =>  $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo : '',
-                'observacion' => isset($this->observacionRecibo) ? $this->observacionRecibo : null,
-                'fecha' => isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
-            ];
-
-            $pdf = Pdf::loadView('pdf.recibo-nuevo', $data)->output();
-            return response()->streamDownload(function () use($pdf) {
-                echo $pdf;
-            }, 'venta.pdf');
-            // dd($pdf);
-            // return $pdf->stream();
-            // $respuesta = CustomPrint::imprimir($recibo, $this->cuenta->sucursale->id_impresora);
-            // if ($respuesta == true) {
-            //     $this->dispatchBrowserEvent('alert', [
-            //         'type' => 'success',
-            //         'message' => "Se imprimio el recibo correctamente"
-            //     ]);
-
-            //     ReciboImpreso::create([
-            //         'observacion' => $this->observacionRecibo,
-            //         'cliente' => $this->cuenta->cliente,
-            //         'telefono' => $this->telefonoRecibo,
-            //         'fecha' => isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
-            //         'metodo' => $this->metodoRecibo
-            //     ]);
-            // } else if ($respuesta == false) {
-            //     $this->dispatchBrowserEvent('alert', [
-            //         'type' => 'error',
-            //         'message' => "La impresora no esta conectada"
-            //     ]);
-            // }
+                ReciboImpreso::create([
+                    'observacion' => $this->observacionRecibo,
+                    'cliente' => $this->cuenta->cliente,
+                    'telefono' => $this->telefonoRecibo,
+                    'fecha' => isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
+                    'metodo' => $this->metodoRecibo
+                ]);
+            } else if ($respuesta == false) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => "La impresora no esta conectada"
+                ]);
+            }
         } else {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'warning',
@@ -863,9 +875,10 @@ class VentasIndex extends Component
                 'message' => "El saldo fue anulado!"
             ]);
         }
-        $this->cuenta = Venta::where('cliente_id', $this->cuenta->cliente->id)->first();
+        $this->cuenta=Venta::where('cliente_id',$this->cuenta->cliente->id)->first();
         $user->save();
         $saldo->save();
+        
     }
     public function render()
     {
