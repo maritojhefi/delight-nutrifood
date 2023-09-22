@@ -774,23 +774,23 @@ class VentasIndex extends Component
         //QrCode::format('png')->size(150)->generate('https://delight-nutrifood.com/miperfil', public_path() . '/qrcode.png');
         if ($this->cuenta->sucursale->id_impresora) {
 
-            $recibo = CustomPrint::imprimirReciboVenta(
-                !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null : $this->clienteRecibo,
-                $this->listacuenta,
-                $this->cuenta->total,
-                isset($this->valorSaldo) ? $this->valorSaldo : 0,
-                $this->descuentoProductos,
-                $this->cuenta->descuento,
-                isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
-                isset($this->observacionRecibo) ? $this->observacionRecibo : null,
-                $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo : ''
-            );
-           
+            // $recibo = CustomPrint::imprimirReciboVenta(
+            //     !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null : $this->clienteRecibo,
+            //     $this->listacuenta,
+            //     $this->cuenta->total,
+            //     isset($this->valorSaldo) ? $this->valorSaldo : 0,
+            //     $this->descuentoProductos,
+            //     $this->cuenta->descuento,
+            //     isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
+            //     isset($this->observacionRecibo) ? $this->observacionRecibo : null,
+            //     $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo : ''
+            // );
+
             $data = [
                 // Aquí puedes pasar las variables necesarias para la vista Blade
                 'nombreCliente' => !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null : $this->clienteRecibo,
                 'listaCuenta' => $this->listacuenta,
-                'subtotal' =>$this->cuenta->total,
+                'subtotal' => $this->cuenta->total,
                 'descuentoProductos' =>  $this->descuentoProductos,
                 'otrosDescuentos' => $this->cuenta->descuento,
                 'valorSaldo' =>  isset($this->valorSaldo) ? $this->valorSaldo : 0,
@@ -798,10 +798,13 @@ class VentasIndex extends Component
                 'observacion' => isset($this->observacionRecibo) ? $this->observacionRecibo : null,
                 'fecha' => isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
             ];
-        
-            $pdf = Pdf::loadView('pdf.recibo', $data);
-            
-            return $pdf->stream();
+
+            $pdf = Pdf::loadView('pdf.recibo-nuevo', $data)->output();
+            return response()->streamDownload(function () use($pdf) {
+                echo $pdf;
+            }, 'venta.pdf');
+            // dd($pdf);
+            // return $pdf->stream();
             // $respuesta = CustomPrint::imprimir($recibo, $this->cuenta->sucursale->id_impresora);
             // if ($respuesta == true) {
             //     $this->dispatchBrowserEvent('alert', [
