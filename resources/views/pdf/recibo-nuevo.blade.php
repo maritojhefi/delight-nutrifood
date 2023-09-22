@@ -157,7 +157,7 @@
             <div class="date_time_con">
 
                 @if (isset($fecha))
-                    <div class="date">Fecha de venta: {{ $fecha }} </div>
+                    <div class="date">Fecha de emision: {{ $fecha }} </div>
                 @else
                     <div class="date"> {{ date('Y-m-d') }} </div>
                     <div class="time"> {{ date('H:i:s') }}</div>
