@@ -800,8 +800,8 @@ class VentasIndex extends Component
             ];
         
             $pdf = Pdf::loadView('pdf.recibo', $data);
-        
-            return $pdf->download('receipt.pdf');
+            
+            return $pdf->stream();
             // $respuesta = CustomPrint::imprimir($recibo, $this->cuenta->sucursale->id_impresora);
             // if ($respuesta == true) {
             //     $this->dispatchBrowserEvent('alert', [
