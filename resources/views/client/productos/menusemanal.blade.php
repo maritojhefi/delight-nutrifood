@@ -120,54 +120,133 @@
                                     <p class="color-theme font-700">Sopa</p>
                                 </div>
                                 <div class="col-7">
-                                    <p class="font-400">{{ $almuerzo->sopa }}</p>
+                                    @if (App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                        <p class="font-400">{{ $almuerzo->sopa }} <i
+                                                class="fa fa-check-circle color-green-dark me-2"></i></p>
+                                    @else
+                                        <p class="font-400">{{ $almuerzo->sopa }} </p>
+                                    @endif
+
                                 </div>
                                 <div class="divider mb-3"></div>
                                 <div class="col-5">
                                     <p class="color-theme font-700">Segundo Ejecutivo</p>
                                 </div>
                                 <div class="col-7">
-                                    <p class="font-400">{{ $almuerzo->ejecutivo }}</p>
+                                    @if (
+                                        $almuerzo->ejecutivo_estado &&
+                                            $almuerzo->ejecutivo_cant > 0 &&
+                                            App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                        <p class="font-400">{{ $almuerzo->ejecutivo }} <i
+                                                class="fa fa-check-circle color-green-dark me-2"></i></p>
+                                    @elseif(App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                        <del class="font-400">{{ $almuerzo->ejecutivo }}</del> <i
+                                            class="fa fa-times-circle color-red-dark me-2"></i>
+                                    @else
+                                        <p class="font-400">{{ $almuerzo->ejecutivo }} </p>
+                                    @endif
                                 </div>
                                 <div class="col-5">
                                     <p class="color-theme font-700">Segundo Dieta</p>
                                 </div>
                                 <div class="col-7">
-                                    <p class="font-400">{{ $almuerzo->dieta }}</p>
+                                    @if (
+                                        $almuerzo->dieta_estado &&
+                                            $almuerzo->dieta_cant > 0 &&
+                                            App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                        <p class="font-400">{{ $almuerzo->dieta }} <i
+                                                class="fa fa-check-circle color-green-dark me-2"></i></p>
+                                    @elseif(App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                        <del class="font-400">{{ $almuerzo->dieta }}</del> <i
+                                            class="fa fa-times-circle color-red-dark me-2"></i>
+                                    @else
+                                        <p class="font-400">{{ $almuerzo->dieta }} </p>
+                                    @endif
                                 </div>
                                 <div class="col-5">
                                     <p class="color-theme font-700">Segundo Veggie</p>
                                 </div>
                                 <div class="col-7">
-                                    <p class="font-400">{{ $almuerzo->vegetariano }}</p>
+                                    @if (
+                                        $almuerzo->vegetariano_estado &&
+                                            $almuerzo->vegetariano_cant > 0 &&
+                                            App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                        <p class="font-400">{{ $almuerzo->vegetariano }} <i
+                                                class="fa fa-check-circle color-green-dark me-2"></i></p>
+                                    @elseif(App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                        <del class="font-400">{{ $almuerzo->vegetariano }}</del> <i
+                                            class="fa fa-times-circle color-red-dark me-2"></i>
+                                    @else
+                                        <p class="font-400">{{ $almuerzo->vegetariano }}</p>
+                                    @endif
                                 </div>
                                 <div class="divider mb-3"></div>
                                 <div class="col-5">
                                     <p class="color-theme font-700">Carbohidrato 1</p>
                                 </div>
                                 <div class="col-7">
-                                    <p class="font-400">{{ $almuerzo->carbohidrato_1 }}</p>
+                                    @if (
+                                        $almuerzo->carbohidrato_1_estado &&
+                                            $almuerzo->carbohidrato_1_cant > 0 &&
+                                            App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                        <p class="font-400">{{ $almuerzo->carbohidrato_1 }} <i
+                                                class="fa fa-check-circle color-green-dark me-2"></i></p>
+                                    @elseif(App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                        <del class="font-400">{{ $almuerzo->carbohidrato_1 }}</del> <i
+                                            class="fa fa-times-circle color-red-dark me-2"></i>
+                                    @else
+                                        <p class="font-400">{{ $almuerzo->carbohidrato_1 }}</p>
+                                    @endif
                                 </div>
                                 <div class="col-5">
                                     <p class="color-theme font-700">Carbohidrato 2</p>
                                 </div>
                                 <div class="col-7">
-                                    <p class="font-400">{{ $almuerzo->carbohidrato_2 }}</p>
+                                    @if (
+                                        $almuerzo->carbohidrato_2_estado &&
+                                            $almuerzo->carbohidrato_2_cant > 0 &&
+                                            App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                        <p class="font-400">{{ $almuerzo->carbohidrato_2 }} <i
+                                                class="fa fa-check-circle color-green-dark me-2"></i></p>
+                                    @elseif(App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                        <del class="font-400">{{ $almuerzo->carbohidrato_2 }}</del> <i
+                                            class="fa fa-times-circle color-red-dark me-2"></i>
+                                    @else
+                                        <p class="font-400">{{ $almuerzo->carbohidrato_2 }} </p>
+                                    @endif
                                 </div>
                                 <div class="col-5">
                                     <p class="color-theme font-700">Carbohidrato 3</p>
                                 </div>
                                 <div class="col-7">
-                                    <p class="font-400">{{ $almuerzo->carbohidrato_3 }}</p>
+                                    @if (
+                                        $almuerzo->carbohidrato_3_estado &&
+                                            $almuerzo->carbohidrato_3_cant > 0 &&
+                                            App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                        <p class="font-400">{{ $almuerzo->carbohidrato_3 }} <i
+                                                class="fa fa-check-circle color-green-dark me-2"></i></p>
+                                    @elseif(App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                        <del class="font-400">{{ $almuerzo->carbohidrato_3 }}</del> <i
+                                            class="fa fa-times-circle color-red-dark me-2"></i>
+                                    @else
+                                        <p class="font-400">{{ $almuerzo->carbohidrato_3 }} </p>
+                                    @endif
                                 </div>
                                 <div class="divider mb-3"></div>
                                 <div class="col-5">
-                                    <p class="color-theme font-700">Jugo</p>
+                                    <p class="color-theme font-700">Jugo </p>
                                 </div>
                                 <div class="col-7">
-                                    <p class="font-400">{{ $almuerzo->jugo }}</p>
+                                    @if (App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                        <p class="font-400">{{ $almuerzo->jugo }} <i
+                                                class="fa fa-check-circle color-green-dark me-2"></i></p>
+                                    @else
+                                        <p class="font-400">{{ $almuerzo->jugo }} </p>
+                                    @endif
+
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 @endif
