@@ -123,7 +123,7 @@ class CustomPrint
 
         $printer->feed(3);
 
-        
+        dd($printer);
         return $printer;
     }
 }
