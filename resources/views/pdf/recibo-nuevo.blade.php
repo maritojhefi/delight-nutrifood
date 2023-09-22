@@ -183,6 +183,7 @@
                                 <td>{{ $list['nombre'] }}</td>
                                 <td>{{ $list['precio'] }}</td>
                             </tr>
+                            <br>
                         @endforeach
 
                     </tbody>
