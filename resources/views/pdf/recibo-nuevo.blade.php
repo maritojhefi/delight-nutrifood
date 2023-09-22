@@ -170,7 +170,7 @@
                 <table>
 
                     <thead>
-                        <th>QTY</th>
+                        <th>Cantidad</th>
                         <th>Producto</th>
                         <th>Precio Unitario</th>
                     </thead>
@@ -211,36 +211,34 @@
                                 <td></td>
                                 <td>Bs {{ number_format($valorSaldo, 2) }}</td>
                             </tr>
-
+                            <br>
                             <tr>
-                                <td>TOTAL PAGADO</td>
+                                <td><strong> TOTAL PAGADO</strong></td>
                                 <td></td>
-                                <td>Bs
-                                    {{ number_format($subtotal - $otrosDescuentos - $valorSaldo - $descuentoProductos, 2) }}
+                                <td><strong>Bs
+                                        {{ number_format($subtotal - $otrosDescuentos - $valorSaldo - $descuentoProductos, 2) }}</strong>
                                 </td>
                             </tr>
                         @else
+                            <br>
                             <tr>
-                                <td>TOTAL PAGADO</td>
+                                <td><strong> TOTAL PAGADO</strong></td>
                                 <td></td>
-                                <td>Bs {{ number_format($subtotal - $otrosDescuentos - $descuentoProductos, 2) }}</td>
+                                <td><strong> Bs
+                                        {{ number_format($subtotal - $otrosDescuentos - $descuentoProductos, 2) }}</strong>
+                                </td>
                             </tr>
                         @endif
-
-
-                        <tr>
-                            <td>Otros descuentos</td>
-                            <td></td>
-                            <td>Bs {{ number_format($descuentoProductos, 2) }}</td>
-                        </tr>
                     </tfoot>
 
                 </table>
-
+                <br>
                 @if (isset($metodo) && $metodo != '')
                     <p>Metodo: {{ $metodo }}</p>
                 @endif
                 <hr>
+                <br>
+                <br>
                 <center> <img src="{{ public_path('qrcode.png') }}" /></center>
 
 
