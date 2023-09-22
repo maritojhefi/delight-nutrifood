@@ -51,6 +51,7 @@
                     'Empleos'=>'usuario.empleo',
                     'Saldos'=>'usuario.saldos',
                     'Asistencia' => 'usuario.asistencia',
+                    'Cumpleaños' => 'usuario.cumpleanos',
                 ]">
                     <i class="flaticon-045-heart"></i>
                 </x-sidebar-elements>

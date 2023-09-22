@@ -658,7 +658,7 @@
         </x-card-col4>
 
         <x-card-col4>
-            <div class="basic-list-group m-3">
+            <div class="basic-list-group mt-2 mb-2">
                 <ul class="list-group">
                     <li class="list-group-item active  "><input type="search" wire:model.debounce.750ms="search"
                             class="form-control" placeholder="Busca Productos"></li>

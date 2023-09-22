@@ -179,7 +179,9 @@
 
                         @foreach ($listaCuenta as $list)
                             <tr>
-                                <td><center>{{ $list['cantidad'] }}</center></td>
+                                <td>
+                                    <center>{{ $list['cantidad'] }}</center>
+                                </td>
                                 <td>{{ $list['nombre'] }}</td>
                                 <td>{{ $list['precio'] }} Bs</td>
                             </tr>
@@ -194,17 +196,17 @@
                             <td></td>
                             <td>Bs {{ number_format($subtotal, 2) }}</td>
                         </tr>
-
+                        <br>
                         <tr>
-                            <td>Descuento por productos</td>
+                            <td><small>Descuento por productos</small> </td>
                             <td></td>
-                            <td>Bs {{ number_format($descuentoProductos, 2) }}</td>
+                            <td><small>Bs {{ number_format($descuentoProductos, 2) }}</small></td>
                         </tr>
-
+                        
                         <tr>
-                            <td>Otros descuentos</td>
+                            <td><small>Otros descuentos</small></td>
                             <td></td>
-                            <td>Bs {{ number_format($descuentoProductos, 2) }}</td>
+                            <td><small>Bs {{ number_format($otrosDescuentos, 2) }}</small></td>
                         </tr>
                         @if ($valorSaldo != null && $valorSaldo != 0)
                             <tr>
@@ -238,12 +240,9 @@
                 <br>
                 @if (isset($metodo) && $metodo != '')
                     <p>Metodo de pago: {{ $metodo }}</p>
-                   
                 @endif
                 @if (isset($observacion))
-                    
                     <p>Informacion Adicional: {{ $observacion }}</p>
-                    
                 @endif
 
                 <br>

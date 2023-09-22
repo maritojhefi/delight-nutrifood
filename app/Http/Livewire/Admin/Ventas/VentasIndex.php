@@ -63,7 +63,6 @@ class VentasIndex extends Component
     }
     public function modalImpresion()
     {
-        $this->fechaRecibo = date('Y-m-d');
         $this->modoImpresion = true;
     }
     public function imprimirCocina()
@@ -346,10 +345,7 @@ class VentasIndex extends Component
     public function seleccionarcliente($id, $name)
     {
         $this->cliente = $id;
-        $this->dispatchBrowserEvent('alert', [
-            'type' => 'success',
-            'message' => "Usuario " . $name . " seleccionado"
-        ]);
+       
     }
 
 
@@ -791,9 +787,9 @@ class VentasIndex extends Component
     {
         $data = [
             // Aquí puedes pasar las variables necesarias para la vista Blade
-            'nombreCliente' => !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null : $this->clienteRecibo,
+            'nombreCliente' => !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : 'Anonimo' : $this->clienteRecibo,
             'listaCuenta' => $this->listacuenta,
-            'subtotal' => $this->cuenta->total,
+            'subtotal' => $this->cuenta->total+$this->descuentoProductos,
             'descuentoProductos' =>  $this->descuentoProductos,
             'otrosDescuentos' => $this->cuenta->descuento,
             'valorSaldo' =>  isset($this->valorSaldo) ? $this->valorSaldo : 0,
@@ -801,11 +797,11 @@ class VentasIndex extends Component
             'observacion' => isset($this->observacionRecibo) ? $this->observacionRecibo : null,
             'fecha' => isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
         ];
-
+        // dd($data);
         $pdf = Pdf::loadView('pdf.recibo-nuevo', $data)->output();
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf;
-        }, 'venta.pdf');
+        }, $data['nombreCliente'].'-'.date('d-m-Y-H:i:s').'.pdf');
     }
     public function imprimir()
     {
@@ -816,7 +812,7 @@ class VentasIndex extends Component
             $recibo = CustomPrint::imprimirReciboVenta(
                 !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null : $this->clienteRecibo,
                 $this->listacuenta,
-                $this->cuenta->total,
+                $this->cuenta->total+$this->descuentoProductos,
                 isset($this->valorSaldo) ? $this->valorSaldo : 0,
                 $this->descuentoProductos,
                 $this->cuenta->descuento,
