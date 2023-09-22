@@ -51,6 +51,7 @@ class CustomPrint
         $nombre_impresora = "POS-582";
         $connector = new WindowsPrintConnector($nombre_impresora);
         $printer = new Printer($connector);
+        ob_start();
         $printer->setJustification(Printer::JUSTIFY_CENTER);
         $printer->setTextSize(1, 2);
         $img = EscposImage::load(public_path("delight_logo.jpg"));
@@ -122,8 +123,7 @@ class CustomPrint
         }
 
         $printer->feed(3);
-
-        dd($printer);
-        return $printer;
+        $contenidoRecibo = ob_get_clean();
+        return $contenidoRecibo;
     }
 }

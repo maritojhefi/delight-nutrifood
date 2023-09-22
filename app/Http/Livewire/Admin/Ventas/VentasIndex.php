@@ -10,6 +10,7 @@ use App\Models\Saldo;
 use App\Models\Venta;
 use Livewire\Component;
 use App\Models\Producto;
+use Barryvdh\DomPDF\PDF;
 use App\Models\Sucursale;
 use App\Models\Adicionale;
 use Mike42\Escpos\Printer;
@@ -784,26 +785,34 @@ class VentasIndex extends Component
                 isset($this->observacionRecibo) ? $this->observacionRecibo : null,
                 $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo : ''
             );
-            $respuesta = CustomPrint::imprimir($recibo, $this->cuenta->sucursale->id_impresora);
-            if ($respuesta == true) {
-                $this->dispatchBrowserEvent('alert', [
-                    'type' => 'success',
-                    'message' => "Se imprimio el recibo correctamente"
-                ]);
+           
+            // Crear una instancia de PDF
+            $pdf = PDF::loadHTML($recibo);
 
-                ReciboImpreso::create([
-                    'observacion' => $this->observacionRecibo,
-                    'cliente' => $this->cuenta->cliente,
-                    'telefono' => $this->telefonoRecibo,
-                    'fecha' => isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
-                    'metodo' => $this->metodoRecibo
-                ]);
-            } else if ($respuesta == false) {
-                $this->dispatchBrowserEvent('alert', [
-                    'type' => 'error',
-                    'message' => "La impresora no esta conectada"
-                ]);
-            }
+            // Opcional: Personalizar la configuración del PDF (tamaño de página, orientación, etc.)
+
+            // Descargar el PDF o mostrarlo en el navegador
+            return $pdf->download('recibo.pdf');
+            // $respuesta = CustomPrint::imprimir($recibo, $this->cuenta->sucursale->id_impresora);
+            // if ($respuesta == true) {
+            //     $this->dispatchBrowserEvent('alert', [
+            //         'type' => 'success',
+            //         'message' => "Se imprimio el recibo correctamente"
+            //     ]);
+
+            //     ReciboImpreso::create([
+            //         'observacion' => $this->observacionRecibo,
+            //         'cliente' => $this->cuenta->cliente,
+            //         'telefono' => $this->telefonoRecibo,
+            //         'fecha' => isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
+            //         'metodo' => $this->metodoRecibo
+            //     ]);
+            // } else if ($respuesta == false) {
+            //     $this->dispatchBrowserEvent('alert', [
+            //         'type' => 'error',
+            //         'message' => "La impresora no esta conectada"
+            //     ]);
+            // }
         } else {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'warning',
@@ -842,10 +851,9 @@ class VentasIndex extends Component
                 'message' => "El saldo fue anulado!"
             ]);
         }
-        $this->cuenta=Venta::where('cliente_id',$this->cuenta->cliente->id)->first();
+        $this->cuenta = Venta::where('cliente_id', $this->cuenta->cliente->id)->first();
         $user->save();
         $saldo->save();
-        
     }
     public function render()
     {
