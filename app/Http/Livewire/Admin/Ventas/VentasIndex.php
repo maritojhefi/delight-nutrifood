@@ -10,7 +10,6 @@ use App\Models\Saldo;
 use App\Models\Venta;
 use Livewire\Component;
 use App\Models\Producto;
-use Barryvdh\DomPDF\PDF;
 use App\Models\Sucursale;
 use App\Models\Adicionale;
 use Mike42\Escpos\Printer;
