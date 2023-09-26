@@ -48,7 +48,7 @@
                 <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="[
                     'Listar Usuarios' => 'usuario.listar',
                     'Roles' => 'usuario.roles',
-                    'Empleos'=>'usuario.empleo',
+                    'Colaboradores'=>'usuario.empleo',
                     'Saldos'=>'usuario.saldos',
                     'Asistencia' => 'usuario.asistencia',
                     'Cumpleaños' => 'usuario.cumpleanos',

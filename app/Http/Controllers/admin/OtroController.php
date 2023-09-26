@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\admin;
 
+use App\Helpers\GlobalHelper;
 use Carbon\Carbon;
 use App\Models\Contrato;
 use App\Models\Asistencia;
@@ -17,45 +18,41 @@ class OtroController extends Controller
     public function marcarAsistencia(Request $request)
     {
         $siEsEmpleado = Contrato::where('user_id', auth()->user()->id)->first();
-        if ($siEsEmpleado)
-        {
-            $siExiste=DB::table('contrato_user')->where('user_id',$siEsEmpleado->user_id)->whereDate('created_at',Carbon::today())->where('salida',null)->first();
-            
-            $horaEntrada=Carbon::parse($siEsEmpleado->hora_entrada);
-            $horaSalida=Carbon::parse($siEsEmpleado->hora_salida);
-            $horaActual=Carbon::now();
-            if($siExiste)
-            {
-                $diferencia=$horaSalida->diffInMinutes($horaActual);
-                if($horaActual->gt($horaSalida))
-                {      
-                }
-                else
-                {
-                    $diferencia='-'.$diferencia;
-                }
-                $tiempoTotal=Carbon::parse($siExiste->entrada)->diffInMinutes($horaActual);
-                DB::table('contrato_user')->where('id',$siExiste->id)->update(['tiempo_total'=>$tiempoTotal,'salida'=>Carbon::now(),'diferencia_salida'=>$diferencia]);
-                return redirect(route('marcacion.salida',$diferencia));
-            }
-            else
-            {
-                $diferencia=$horaEntrada->diffInMinutes($horaActual);
-                if($horaActual->gt($horaEntrada))
-                {
-                    $diferencia='-'.$diferencia;
-                }
-                else
-                {
+        if ($siEsEmpleado) {
+            $siExiste = DB::table('contrato_user')->where('user_id', $siEsEmpleado->user_id)->whereDate('created_at', Carbon::today())->where('salida', null)->first();
+            $diaActual = GlobalHelper::saber_dia(Carbon::today());
+            try {
+                $diaMinuscula=strtolower($diaActual);
+                
+                $horaEntrada = Carbon::parse(json_decode($siEsEmpleado->hora_entrada)->$diaMinuscula);
+                $horaSalida = Carbon::parse(json_decode($siEsEmpleado->hora_salida)->$diaMinuscula);
+                // dd($horaEntrada, $horaSalida);
+                $horaActual = Carbon::now();
+                if ($siExiste) {
+                    $diferencia = $horaSalida->diffInMinutes($horaActual);
+                    if ($horaActual->gt($horaSalida)) {
+                    } else {
+                        $diferencia = '-' . $diferencia;
+                    }
+                    $tiempoTotal = Carbon::parse($siExiste->entrada)->diffInMinutes($horaActual);
+                    DB::table('contrato_user')->where('id', $siExiste->id)->update(['tiempo_total' => $tiempoTotal, 'salida' => Carbon::now(), 'diferencia_salida' => $diferencia]);
+                    return redirect(route('marcacion.salida', $diferencia));
+                } else {
+                    $diferencia = $horaEntrada->diffInMinutes($horaActual);
+                    if ($horaActual->gt($horaEntrada)) {
+                        $diferencia = '-' . $diferencia;
+                    } else {
+                    }
+
+                    DB::table('contrato_user')->insert(['entrada' => Carbon::now(), 'diferencia_entrada' => $diferencia, 'contrato_id' => $siEsEmpleado->id, 'user_id' => $siEsEmpleado->user_id, 'created_at' => Carbon::today(), 'updated_at' => Carbon::today()]);
+                    return redirect(route('marcacion.entrada', $diferencia));
                 }
                 
-                DB::table('contrato_user')->insert(['entrada'=>Carbon::now(),'diferencia_entrada'=>$diferencia,'contrato_id'=>$siEsEmpleado->id,'user_id'=>$siEsEmpleado->user_id,'created_at'=>Carbon::today(),'updated_at'=>Carbon::today()]);
-                return redirect(route('marcacion.entrada',$diferencia));
+            } catch (\Throwable $th) {
+                dd($th);
+                return redirect()->route('noEsEmpleado')->with('error','Algo salio mal');
             }
-            
-        } 
-        else 
-        {
+        } else {
             return redirect(route('noEsEmpleado'));
         }
     }

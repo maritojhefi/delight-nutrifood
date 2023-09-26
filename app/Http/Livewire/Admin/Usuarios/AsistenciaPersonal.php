@@ -2,32 +2,34 @@
 
 namespace App\Http\Livewire\Admin\Usuarios;
 
+use App\Charts\EmpleadosChart;
+use App\Charts\SampleChart;
 use Carbon\Carbon;
+use App\Models\User;
 use Livewire\Component;
 use App\Models\Asistencia;
 use Illuminate\Support\Facades\DB;
+use Asantibanez\LivewireCharts\Facades\LivewireCharts;
+use Asantibanez\LivewireCharts\Models\ColumnChartModel;
 
 class AsistenciaPersonal extends Component
 {
-    public $search;
+    public $search, $empleadoSeleccionado, $reporteFin, $reporteInicio;
+    public function seleccionarEmpleado(User $empleado)
+    {
+        $this->empleadoSeleccionado = $empleado;
+    }
     public function render()
     {
-        $asistencias=DB::table('contrato_user')
-        ->select('contrato_user.*','users.name','contratos.hora_entrada','contratos.hora_salida')
-        ->leftjoin('contratos','contratos.id','contrato_user.contrato_id')
-        ->leftjoin('users','users.id','contrato_user.user_id')
-        ->orderBy('contrato_user.created_at','desc')
-        ->get();
-        if($this->search)
-        {
-            $search=$this->search;
-            $asistencias = collect($asistencias)->filter(function ($item) use ($search) {
-                return false !== stristr($item->name, $search);
-            });
-        }
+       
+        // $chart = new EmpleadosChart;
+        // $chart->labels(['One', 'Two', 'Three', 'Four']);
+        // $chart->dataset('My dataset', 'line', [1, 2, 3, 4]);
+        // $chart->dataset('My dataset 2', 'line', [4, 3, 2, 1]);
+        $empleados = User::with('contrato')->has('contrato')->get();
         //dd($asistencias);
-        return view('livewire.admin.usuarios.asistencia-personal',compact('asistencias'))
-        ->extends('admin.master')
-        ->section('content');
+        return view('livewire.admin.usuarios.asistencia-personal', compact('empleados'))
+            ->extends('admin.master')
+            ->section('content');
     }
 }

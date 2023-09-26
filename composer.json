@@ -6,7 +6,9 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
+        "asantibanez/livewire-charts": "*",
         "barryvdh/laravel-dompdf": "^2.0",
+        "consoletvs/charts": "6.*",
         "davejamesmiller/laravel-breadcrumbs": "^5.3",
         "doctrine/dbal": "^3.4",
         "elasticsearch/elasticsearch": "^8.2",

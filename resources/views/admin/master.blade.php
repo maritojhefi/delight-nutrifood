@@ -40,6 +40,7 @@
     
     @livewireStyles
 	@livewireScripts
+    @livewireChartsScripts
    @stack('css')
 </head>
 <body  version="dark">
