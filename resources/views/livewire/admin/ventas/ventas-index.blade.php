@@ -544,13 +544,13 @@
                                             </label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input " {{ $deshabilitarBancos ? 'disabled' : '' }}
+                                            <input class="form-check-input " 
                                                 type="radio" name="gridRadios" wire:model="tipocobro" value="tarjeta">
                                             <label class="form-check-label">
                                                 Tarjeta
                                             </label>
                                         </div>
-                                        <div class="form-check">
+                                        {{-- <div class="form-check">
                                             <input class="form-check-input " {{ $deshabilitarBancos ? 'disabled' : '' }}
                                                 type="radio" name="gridRadios" wire:model="tipocobro"
                                                 value="banco-sol">
@@ -565,13 +565,13 @@
                                             <label class="form-check-label">
                                                 Banco Bisa
                                             </label>
-                                        </div>
+                                        </div> --}}
                                         <div class="form-check disabled">
-                                            <input class="form-check-input " {{ $deshabilitarBancos ? 'disabled' : '' }}
+                                            <input class="form-check-input " 
                                                 type="radio" name="gridRadios" wire:model="tipocobro"
-                                                value="banco-mercantil">
+                                                value="banco-bnb">
                                             <label class="form-check-label">
-                                                Banco Mercantil
+                                                Banco BNB
                                             </label>
                                         </div>
                                         @isset($cuenta->cliente->name)
@@ -797,9 +797,9 @@
                                                 <option value="">Seleccione uno</option>
                                                 <option value="efectivo">Efectivo</option>
                                                 <option value="tarjeta">Tarjeta</option>
-                                                <option value="banco-sol">Banco Sol</option>
-                                                <option value="banco-bisa">Banco Bisa</option>
-                                                <option value="banco-mercantil">Banco Mercantil</option>
+                                                {{-- <option value="banco-sol">Banco Sol</option> --}}
+                                                <option value="banco-bnb">Banco BNB</option>
+                                                {{-- <option value="banco-mercantil">Banco Mercantil</option> --}}
                                             </select>
 
                                         </div>
@@ -986,7 +986,7 @@
     </div>
 
     <div wire:ignore.self class="modal fade" id="modalClientes">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     Enlazar usuario a esta cuenta
@@ -1010,8 +1010,8 @@
                         </div>
 
                         <div class="mb-3 col-md-6 mt-2">
-                            <label for=""> Añadir Manualmente</label>
-                            <input type="text" class="form-control  form-control-sm" placeholder="Agregar manual"
+                            <label for=""> Agregar Referencia</label>
+                            <input type="text" class="form-control  form-control-sm" placeholder="Agregar una referencia auxiliar"
                                 wire:model.lazy="userManual">
                             <button class="btn btn-success btn-xs" wire:click="addUsuarioManual">Confirmar</button>
                         </div>
