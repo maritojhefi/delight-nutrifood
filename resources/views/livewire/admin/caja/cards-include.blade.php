@@ -329,7 +329,7 @@
                                             class="mb-0">{{ $ventasHoy->where('tipo', 'tarjeta')->sum('total') - $ventasHoy->where('tipo', 'tarjeta')->sum('saldo') - $ventasHoy->where('tipo', 'tarjeta')->sum('descuento') }}
                                             Bs</span>
                                     </li>
-                                    {{-- <li class="list-group-item d-flex px-0 justify-content-between">
+                                    <li class="list-group-item d-flex px-0 justify-content-between">
                                         <strong>Banco Bisa</strong>
                                         <span
                                             class="mb-0">{{ $ventasHoy->where('tipo', 'banco-bisa')->sum('total') - $ventasHoy->where('tipo', 'banco-bisa')->sum('saldo') - $ventasHoy->where('tipo', 'banco-bisa')->sum('descuento') }}
@@ -346,7 +346,7 @@
                                         <span
                                             class="mb-0">{{ $ventasHoy->where('tipo', 'banco-sol')->sum('total') - $ventasHoy->where('tipo', 'banco-sol')->sum('saldo') - $ventasHoy->where('tipo', 'banco-sol')->sum('descuento') }}
                                             Bs</span>
-                                    </li> --}}
+                                    </li>
                                     <li class="list-group-item d-flex px-0 justify-content-between">
                                         <strong>Banco BNB</strong>
                                         <span
