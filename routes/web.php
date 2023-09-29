@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PedidosController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
@@ -239,4 +240,8 @@ Route::get('/construccion', function(){
 })->name('construccion');
 Route::get('/prueba/ip', function(Request $request){
     dd($request->ip());
+});
+
+Route::prefix('/pedidos')->group(function () {
+    Route::get('/inicio', [PedidosController::class, 'index']);
 });
