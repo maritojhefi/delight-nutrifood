@@ -550,7 +550,7 @@
                                                 Tarjeta
                                             </label>
                                         </div>
-                                        {{-- <div class="form-check">
+                                        <div class="form-check">
                                             <input class="form-check-input " {{ $deshabilitarBancos ? 'disabled' : '' }}
                                                 type="radio" name="gridRadios" wire:model="tipocobro"
                                                 value="banco-sol">
@@ -558,7 +558,7 @@
                                                 Banco Sol
                                             </label>
                                         </div>
-                                        <div class="form-check disabled">
+                                        {{-- <div class="form-check disabled">
                                             <input class="form-check-input " {{ $deshabilitarBancos ? 'disabled' : '' }}
                                                 type="radio" name="gridRadios" wire:model="tipocobro"
                                                 value="banco-bisa">
