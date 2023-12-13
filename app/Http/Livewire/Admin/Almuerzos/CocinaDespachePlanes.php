@@ -36,10 +36,10 @@ class CocinaDespachePlanes extends Component
                 $cantidad=$this->carbohidrato_1_cant;
                 break;
             case 'carbohidrato_2_cant':
-                $cantidad=$this->carbohidrato_1_cant;
+                $cantidad=$this->carbohidrato_2_cant;
                 break;
             case 'carbohidrato_3_cant':
-                $cantidad=$this->carbohidrato_1_cant;
+                $cantidad=$this->carbohidrato_3_cant;
                 break;
             default:
                 # code...
