@@ -33,6 +33,17 @@ class Personalizar extends Component
             $this->switcher->activo = false;
         } else {
             $this->switcher->activo = true;
+            DB::table('almuerzos')->update([
+                'sopa_estado'=>true,
+                'ensalada_estado'=>true,
+                'ejecutivo_estado'=>true,
+                'dieta_estado'=>true,
+                'vegetariano_estado'=>true,
+                'carbohidrato_1_estado'=>true,
+                'carbohidrato_2_estado'=>true,
+                'carbohidrato_3_estado'=>true,
+                'jugo_estado'=>true,
+            ]);
         }
         $this->switcher->save();
         $this->dispatchBrowserEvent('alert', [
