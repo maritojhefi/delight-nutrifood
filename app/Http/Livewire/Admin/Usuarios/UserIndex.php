@@ -2,10 +2,12 @@
 
 namespace App\Http\Livewire\Admin\Usuarios;
 
+use App\Exports\UsersListExport;
 use App\Models\Role;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserIndex extends Component
 {
@@ -133,6 +135,10 @@ class UserIndex extends Component
     public function updatingSearch()
     {
         $this->resetPage();
+    }
+    public function descargarExcel()
+    {
+        return Excel::download(new UsersListExport(), 'reporte-usuarios.xlsx');
     }
     public function render()
     {

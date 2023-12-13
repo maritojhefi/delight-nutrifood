@@ -18,11 +18,12 @@
         <div class="card card-style">
             <div class="content">
                 <div class="d-flex">
-                <div>
+                    <div>
                         @if ($usuario->foto)
-                        <img src="{{ asset('imagenes/perfil/'.$usuario->foto) }}" width="50" class="me-3 bg-highlight rounded-xl">
+                            <img src="{{ asset('imagenes/perfil/' . $usuario->foto) }}" width="50"
+                                class="me-3 bg-highlight rounded-xl">
                         @else
-                        <img src="{{ asset('user.png') }}" width="50" class="me-3 bg-highlight rounded-xl">
+                            <img src="{{ asset('user.png') }}" width="50" class="me-3 bg-highlight rounded-xl">
                         @endif
                     </div>
                     <div>
@@ -36,7 +37,7 @@
             </div>
         </div>
         <div id="todoBien">
-            
+
             <div class="card card-style">
                 <form action="{{ route('guardarPerfilFaltante') }}" method="post">
 
@@ -64,7 +65,7 @@
                             <input type="text" class="form-control"
                                 placeholder="Ejm: Tomatitas Av. Principal #134 Porton guindo" name="direccion"
                                 value="{{ old('direccion', $usuario->direccion) }}">
-                            <label for="form1" class="color-highlight font-400 font-13">Direccion</label>
+                            <label for="" class="color-highlight font-400 font-13">Direccion</label>
 
                             @error('direccion')
                                 <i class="fa fa-times  invalid color-red-dark"></i>
@@ -74,14 +75,22 @@
                         <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
                             <input type="number" class="form-control" placeholder="" name="telf"
                                 value="{{ old('telf', $usuario->telf) }}">
-                            <label for="form1" class="color-highlight font-400 font-13">Telefono</label>
+                            <label for="" class="color-highlight font-400 font-13">Telefono</label>
 
                             @error('telf')
                                 <i class="fa fa-times  invalid color-red-dark"></i>
                                 <p class="text-danger">{{ $message }}</p>
                             @enderror
                         </div>
+                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                            <input type="password" class="form-control" placeholder="" name="password">
+                            <label for="" class="color-highlight font-400 font-13">Nueva contraseña</label>
 
+                            @error('password')
+                                <i class="fa fa-times  invalid color-red-dark"></i>
+                                <p class="text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
 
 
                         <input type="hidden" value="{{ $usuario->id }}" name="idUsuario">
@@ -117,17 +126,17 @@
                         <div class="list-group list-custom-large upload-file-data disabled">
                             <img id="image-data" src="images/empty.png" class="img-fluid"
                                 style="width:100%; display:block; height:300px">
-    
+
                             <button type="submit"
                                 class="btn btn-3d btn-m btn-full mb-3 mt-3 rounded-xl text-uppercase font-900 shadow-s  border-blue-dark bg-blue-light">Guardar</button>
-    
+
                         </div>
                     </form>
-    
+
                 </div>
             </div>
         </div>
-        
+
 
 
 
@@ -154,11 +163,14 @@
         <div id="toast-3" class="toast toast-tiny toast-top bg-blue-dark fade hide" data-bs-delay="1500"
             data-bs-autohide="true"><i class="fa fa-sync fa-spin me-3"></i>Actualizado!</div>
         <div id="toast-4" class="toast toast-tiny toast-top bg-red-dark fade hide" data-bs-delay="4000"
-            data-bs-autohide="true"><i class="fa fa-times me-3"></i>Active su GPS</div>
+            data-bs-autohide="true">
+            <i class="fa fa-times me-3"></i>Active su GPS
+        </div>
     @else
         <div data-card-height="200" class="card card-style preload-img entered loaded"
             data-src="{{ asset('delight_logo.jpg') }}"
-            style="height: 200px; background-image: url({{ asset('imagenes/delight/2.jpeg') }});" data-ll-status="loaded">
+            style="height: 200px; background-image: url({{ asset('imagenes/delight/2.jpeg') }});"
+            data-ll-status="loaded">
             <div class="card-top pt-4 ms-3 me-3">
                 <h2 class="color-white font-600">Completaste tu perfil!</h2>
                 <p class="mt-n2 color-white">Ya podemos usar todas las funciones contigo! Pronto las descubriras</p>

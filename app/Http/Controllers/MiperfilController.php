@@ -118,7 +118,7 @@ class MiperfilController extends Controller
             {
             
              $menusemanal=Almuerzo::where('dia',$this->saber_dia($dias->pivot->start))->first();  
-         
+            
              $coleccion->push([
                  'detalle'=>$dias->pivot->detalle,
                  'estado'=>$dias->pivot->estado,
@@ -128,11 +128,17 @@ class MiperfilController extends Controller
                  'sopa'=>$menusemanal->sopa,
                  'ensalada'=>$menusemanal->ensalada,
                  'ejecutivo'=>$menusemanal->ejecutivo,
+                 'ejecutivo_estado'=>($menusemanal->ejecutivo_cant > 0 && $menusemanal->ejecutivo_estado) ? true : false,
                  'dieta'=>$menusemanal->dieta,
+                 'dieta_estado'=>($menusemanal->dieta_cant > 0 && $menusemanal->dieta_estado) ? true : false,
                  'vegetariano'=>$menusemanal->vegetariano,
+                 'vegetariano_estado'=>($menusemanal->vegetariano_cant > 0 && $menusemanal->vegetariano_estado) ? true : false,
                  'carbohidrato_1'=>$menusemanal->carbohidrato_1,
+                 'carbohidrato_1_estado'=>($menusemanal->carbohidrato_1_cant > 0 && $menusemanal->carbohidrato_1_estado) ? true : false,
                  'carbohidrato_2'=>$menusemanal->carbohidrato_2,
+                 'carbohidrato_2_estado'=>($menusemanal->carbohidrato_2_cant > 0 && $menusemanal->carbohidrato_2_estado) ? true : false,
                  'carbohidrato_3'=>$menusemanal->carbohidrato_3,
+                 'carbohidrato_3_estado'=>($menusemanal->carbohidrato_3_cant > 0 && $menusemanal->carbohidrato_3_estado) ? true : false,
                  'jugo'=>$menusemanal->jugo,
                  'envio1'=>Plane::ENVIO1,
                  'envio2'=>Plane::ENVIO2,
@@ -255,7 +261,7 @@ class MiperfilController extends Controller
         $request->validate([    
         'email' => 'required|email|unique:users,email,'.$request->idUsuario,
         'direccion' => 'required|min:15',
-        
+        'password' => 'required|string|min:5',
         'telf'=>'required|size:8|unique:users,telf,'.$request->idUsuario,
         'latitud'=>'required|string|min:10',
         'longitud'=>'required|string|min:10',
