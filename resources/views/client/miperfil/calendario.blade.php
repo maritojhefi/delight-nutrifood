@@ -134,7 +134,7 @@ $path = 'https://delight-nutrifood.com';
                                     <input id="box6-fac-radio{{ $lista['id'] }}" type="radio"
                                         @if(!$lista['carbohidrato_3_estado'])disabled @endif
                                         name="carb{{ $lista['id'] }}" value="{{ $lista['carbohidrato_3'] }}">
-                                    <label for="box5-fac-radio{{ $lista['id'] }}">
+                                    <label for="box6-fac-radio{{ $lista['id'] }}">
                                         @if ($lista['carbohidrato_3_estado'])
                                         {{ $lista['carbohidrato_3'] }} <i class="fa fa-check color-green-dark"></i>
                                         @else
