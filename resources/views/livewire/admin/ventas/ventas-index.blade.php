@@ -643,7 +643,7 @@
                                         wire:click="imprimir"><span>Espere...</span></button>
 
 
-                                    <button type="button" class="btn btn-primary" wire:click="cobrar"
+                                    <button type="button" class="btn btn-primary" wire:loading.attr="disabled" wire:click="cobrar"
                                         {{ $tipocobro ? '' : 'disabled' }} data-bs-dismiss="modal">Confirmar y cerrar
                                         venta</button>
                                 </div>
