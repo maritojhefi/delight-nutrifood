@@ -57,6 +57,21 @@ class VentasIndex extends Component
     protected $rules = [
         'sucursal' => 'required|integer',
     ];
+    public function updated($atributo)
+    {
+        // dd($atributo);
+        switch ($atributo) {
+            case 'saldoRestante':
+                $this->controlarEntrante();
+                break;
+            case 'valorSaldo':
+                $this->controlarSaldo();
+                break;
+            default:
+                # code...
+                break;
+        }
+    }
     public function modalResumen()
     {
         $this->modoImpresion = false;
@@ -345,7 +360,6 @@ class VentasIndex extends Component
     public function seleccionarcliente($id, $name)
     {
         $this->cliente = $id;
-       
     }
 
 
@@ -789,7 +803,7 @@ class VentasIndex extends Component
             // Aquí puedes pasar las variables necesarias para la vista Blade
             'nombreCliente' => !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : 'Anonimo' : $this->clienteRecibo,
             'listaCuenta' => $this->listacuenta,
-            'subtotal' => $this->cuenta->total+$this->descuentoProductos,
+            'subtotal' => $this->cuenta->total + $this->descuentoProductos,
             'descuentoProductos' =>  $this->descuentoProductos,
             'otrosDescuentos' => $this->cuenta->descuento,
             'valorSaldo' =>  isset($this->valorSaldo) ? $this->valorSaldo : 0,
@@ -801,7 +815,7 @@ class VentasIndex extends Component
         $pdf = Pdf::loadView('pdf.recibo-nuevo', $data)->output();
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf;
-        }, $data['nombreCliente'].'-'.date('d-m-Y-H:i:s').'.pdf');
+        }, $data['nombreCliente'] . '-' . date('d-m-Y-H:i:s') . '.pdf');
     }
     public function imprimir()
     {
@@ -812,7 +826,7 @@ class VentasIndex extends Component
             $recibo = CustomPrint::imprimirReciboVenta(
                 !$this->checkClientePersonalizado ? isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null : $this->clienteRecibo,
                 $this->listacuenta,
-                $this->cuenta->total+$this->descuentoProductos,
+                $this->cuenta->total + $this->descuentoProductos,
                 isset($this->valorSaldo) ? $this->valorSaldo : 0,
                 $this->descuentoProductos,
                 $this->cuenta->descuento,
