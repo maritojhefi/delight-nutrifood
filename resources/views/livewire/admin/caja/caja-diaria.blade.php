@@ -139,7 +139,8 @@
                 <div class="card overflow-hidden">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Productos vendidos</h4><span class="badge badge-pill badge-primary">Total items:
+                            <h4 class="card-title">Productos vendidos</h4><span class="badge badge-pill badge-primary">Total
+                                items:
                                 {{ $lista->count() }}</span>
                         </div>
                         <div class="card-body">
@@ -250,8 +251,8 @@
                                                                 version="1.1">
                                                                 <g stroke="none" stroke-width="1" fill="none"
                                                                     fill-rule="evenodd">
-                                                                    <rect x="0" y="0" width="24"
-                                                                        height="24"></rect>
+                                                                    <rect x="0" y="0" width="24" height="24">
+                                                                    </rect>
                                                                     <circle fill="#000000" cx="5" cy="12"
                                                                         r="2"></circle>
                                                                     <circle fill="#000000" cx="12" cy="12"
@@ -323,8 +324,29 @@
                                             <td>{{ $item->sum('descuento') }} Bs</td>
 
                                             <td style="background-color: rgb(31, 224, 159)">
-                                                {{ $item->sum('total') - $item->sum('descuento') - $item->sum('saldo') }}
-                                                Bs</td>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        {{ $item->sum('total') - $item->sum('descuento') - $item->sum('saldo') }}
+                                                        Bs</div>
+                                                    <div class="col-6">
+                                                        <div class="dropdown">
+                                                            <button type="button" class="btn btn-success light sharp"
+                                                                data-bs-toggle="dropdown">
+                                                                <i class="fa fa-list"></i>
+                                                            </button>
+                                                            <div class="dropdown-menu">
+                                                                @foreach ($item->groupBy('tipo') as $prod)
+                                                                    {{ $prod->sum('total') }} Bs
+                                                                    <strong>{{ $prod[0]->tipo }}</strong><br>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+
+                                            </td>
                                         </tr>
                                     @endforeach
                                     <tr>
@@ -350,101 +372,101 @@
         </div>
     </div>
 
-    
+
     @isset($cajaactiva)
         @php
             $balanceSaldo = $cajaactiva->saldos->where('es_deuda', false)->sum('monto');
         @endphp
         @isset($ventasHoy)
-        <div class="modal fade" id="modalDetalle" style="display: none;" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Mas Detalles de esta caja</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="card-body pb-0">
-                            <p>Ventas por cada metodo de pago</p>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex px-0 justify-content-between">
-                                    <strong>En efectivo</strong>
-                                    <span
-                                        class="mb-0">{{$saldosHoy->where('tipo','efectivo')->sum('monto') + $ventasHoy->where('tipo', 'efectivo')->sum('total') - $ventasHoy->where('tipo', 'efectivo')->sum('saldo') - $ventasHoy->where('tipo', 'efectivo')->sum('descuento') }}
-                                        Bs</span>
-                                </li>
-                                <li class="list-group-item d-flex px-0 justify-content-between">
-                                    <strong>Tarjeta</strong>
-                                    <span
-                                        class="mb-0">{{$saldosHoy->where('tipo','tarjeta')->sum('monto') + $ventasHoy->where('tipo', 'tarjeta')->sum('total') - $ventasHoy->where('tipo', 'tarjeta')->sum('saldo') - $ventasHoy->where('tipo', 'tarjeta')->sum('descuento') }}
-                                        Bs</span>
-                                </li>
-                                <li class="list-group-item d-flex px-0 justify-content-between">
-                                    <strong>Banco Bisa</strong>
-                                    <span
-                                        class="mb-0">{{$saldosHoy->where('tipo','banco-bisa')->sum('monto') + $ventasHoy->where('tipo', 'banco-bisa')->sum('total') - $ventasHoy->where('tipo', 'banco-bisa')->sum('saldo') - $ventasHoy->where('tipo', 'banco-bisa')->sum('descuento') }}
-                                        Bs</span>
-                                </li>
-                                <li class="list-group-item d-flex px-0 justify-content-between">
-                                    <strong>Banco Mercantil</strong>
-                                    <span
-                                        class="mb-0">{{$saldosHoy->where('tipo','banco-mercantil')->sum('monto') + $ventasHoy->where('tipo', 'banco-mercantil')->sum('total') - $ventasHoy->where('tipo', 'banco-mercantil')->sum('saldo') - $ventasHoy->where('tipo', 'banco-mercantil')->sum('descuento') }}
-                                        Bs</span>
-                                </li>
-                                <li class="list-group-item d-flex px-0 justify-content-between">
-                                    <strong>Banco Sol</strong>
-                                    <span
-                                        class="mb-0">{{$saldosHoy->where('tipo','banco-sol')->sum('monto') + $ventasHoy->where('tipo', 'banco-sol')->sum('total') - $ventasHoy->where('tipo', 'banco-sol')->sum('saldo') - $ventasHoy->where('tipo', 'banco-sol')->sum('descuento') }}
-                                        Bs</span>
-                                </li>
-                                <li class="list-group-item d-flex px-0 justify-content-between">
-                                    <strong>Banco BNB</strong>
-                                    <span
-                                        class="mb-0">{{$saldosHoy->where('tipo','banco-bnb')->sum('monto') + $ventasHoy->where('tipo', 'banco-bnb')->sum('total') - $ventasHoy->where('tipo', 'banco-bnb')->sum('saldo') - $ventasHoy->where('tipo', 'banco-bnb')->sum('descuento') }}
-                                        Bs</span>
-                                </li>
-                            </ul>
+            <div class="modal fade" id="modalDetalle" style="display: none;" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Mas Detalles de esta caja</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal">
+                            </button>
                         </div>
-                        <div class="card-footer pt-0 pb-0 text-center">
-                            <div class="row">
-                                <div class="col-4 pt-3 pb-3 border-end">
-                                    <h3 class="mb-1 text-primary">{{ $ventasHoy->sum('total') }} Bs</h3>
-                                    <span>Total Bruto</span>
-                                </div>
-                                <div class="col-4 pt-3 pb-3 border-end">
-                                    <h3 class="mb-1 text-primary">{{ $ventasHoy->sum('descuento') }} Bs</h3>
-                                    <span>Descuentos acumulados</span>
-                                </div>
-                                <div class="col-4 pt-3 pb-3 border-end">
-                                    <h3 class="mb-1 text-primary">{{ $ventasHoy->sum('saldo') }} Bs</h3>
-                                    <span>Saldos acumulados</span>
-                                </div>
-
+                        <div class="modal-body">
+                            <div class="card-body pb-0">
+                                <p>Ventas por cada metodo de pago</p>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex px-0 justify-content-between">
+                                        <strong>En efectivo</strong>
+                                        <span
+                                            class="mb-0">{{ $saldosHoy->where('tipo', 'efectivo')->sum('monto') + $ventasHoy->where('tipo', 'efectivo')->sum('total') - $ventasHoy->where('tipo', 'efectivo')->sum('saldo') - $ventasHoy->where('tipo', 'efectivo')->sum('descuento') }}
+                                            Bs</span>
+                                    </li>
+                                    <li class="list-group-item d-flex px-0 justify-content-between">
+                                        <strong>Tarjeta</strong>
+                                        <span
+                                            class="mb-0">{{ $saldosHoy->where('tipo', 'tarjeta')->sum('monto') + $ventasHoy->where('tipo', 'tarjeta')->sum('total') - $ventasHoy->where('tipo', 'tarjeta')->sum('saldo') - $ventasHoy->where('tipo', 'tarjeta')->sum('descuento') }}
+                                            Bs</span>
+                                    </li>
+                                    <li class="list-group-item d-flex px-0 justify-content-between">
+                                        <strong>Banco Bisa</strong>
+                                        <span
+                                            class="mb-0">{{ $saldosHoy->where('tipo', 'banco-bisa')->sum('monto') + $ventasHoy->where('tipo', 'banco-bisa')->sum('total') - $ventasHoy->where('tipo', 'banco-bisa')->sum('saldo') - $ventasHoy->where('tipo', 'banco-bisa')->sum('descuento') }}
+                                            Bs</span>
+                                    </li>
+                                    <li class="list-group-item d-flex px-0 justify-content-between">
+                                        <strong>Banco Mercantil</strong>
+                                        <span
+                                            class="mb-0">{{ $saldosHoy->where('tipo', 'banco-mercantil')->sum('monto') + $ventasHoy->where('tipo', 'banco-mercantil')->sum('total') - $ventasHoy->where('tipo', 'banco-mercantil')->sum('saldo') - $ventasHoy->where('tipo', 'banco-mercantil')->sum('descuento') }}
+                                            Bs</span>
+                                    </li>
+                                    <li class="list-group-item d-flex px-0 justify-content-between">
+                                        <strong>Banco Sol</strong>
+                                        <span
+                                            class="mb-0">{{ $saldosHoy->where('tipo', 'banco-sol')->sum('monto') + $ventasHoy->where('tipo', 'banco-sol')->sum('total') - $ventasHoy->where('tipo', 'banco-sol')->sum('saldo') - $ventasHoy->where('tipo', 'banco-sol')->sum('descuento') }}
+                                            Bs</span>
+                                    </li>
+                                    <li class="list-group-item d-flex px-0 justify-content-between">
+                                        <strong>Banco BNB</strong>
+                                        <span
+                                            class="mb-0">{{ $saldosHoy->where('tipo', 'banco-bnb')->sum('monto') + $ventasHoy->where('tipo', 'banco-bnb')->sum('total') - $ventasHoy->where('tipo', 'banco-bnb')->sum('saldo') - $ventasHoy->where('tipo', 'banco-bnb')->sum('descuento') }}
+                                            Bs</span>
+                                    </li>
+                                </ul>
                             </div>
-                            <div class="row">
-                                <div class="col-4 pt-3 pb-3 border-end">
-                                    <h3 class="mb-1 text-primary">{{ $balanceSaldo }} Bs</h3>
-                                    <span>Saldos pagados</span>
-                                </div>
-                                <div class="col-4 pt-3 pb-3 border-end">
-                                </div>
-                                <div class="col-4 pt-3 pb-3 border-end">
-                                    <h3 class="mb-1 text-primary">
-                                        {{ $ventasHoy->sum('total') - $ventasHoy->sum('descuento') - $ventasHoy->sum('saldo') + $balanceSaldo }}
-                                        Bs</h3>
-                                    <span>Total con descuentos/saldos</span>
-                                </div>
+                            <div class="card-footer pt-0 pb-0 text-center">
+                                <div class="row">
+                                    <div class="col-4 pt-3 pb-3 border-end">
+                                        <h3 class="mb-1 text-primary">{{ $ventasHoy->sum('total') }} Bs</h3>
+                                        <span>Total Bruto</span>
+                                    </div>
+                                    <div class="col-4 pt-3 pb-3 border-end">
+                                        <h3 class="mb-1 text-primary">{{ $ventasHoy->sum('descuento') }} Bs</h3>
+                                        <span>Descuentos acumulados</span>
+                                    </div>
+                                    <div class="col-4 pt-3 pb-3 border-end">
+                                        <h3 class="mb-1 text-primary">{{ $ventasHoy->sum('saldo') }} Bs</h3>
+                                        <span>Saldos acumulados</span>
+                                    </div>
 
+                                </div>
+                                <div class="row">
+                                    <div class="col-4 pt-3 pb-3 border-end">
+                                        <h3 class="mb-1 text-primary">{{ $balanceSaldo }} Bs</h3>
+                                        <span>Saldos pagados</span>
+                                    </div>
+                                    <div class="col-4 pt-3 pb-3 border-end">
+                                    </div>
+                                    <div class="col-4 pt-3 pb-3 border-end">
+                                        <h3 class="mb-1 text-primary">
+                                            {{ $ventasHoy->sum('total') - $ventasHoy->sum('descuento') - $ventasHoy->sum('saldo') + $balanceSaldo }}
+                                            Bs</h3>
+                                        <span>Total con descuentos/saldos</span>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
-                    </div>
 
+                    </div>
                 </div>
-            </div>
 
-        </div>
-    @endisset
+            </div>
+        @endisset
         <div class="modal fade" id="modalSaldos" style="display: none;" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">

@@ -240,7 +240,11 @@
                                                         <td>
                                                             @php
                                                                 // $metodos = ['Efectivo' => 'efectivo', 'Bisa' => 'banco-bisa', 'Sol' => 'banco-sol', 'Mercantil' => 'banco-mercantil', 'Tarjeta' => 'tarjeta'];
-                                                                $metodos = ['Efectivo' => 'efectivo', 'BNB' => 'banco-bnb', 'Tarjeta' => 'tarjeta'];
+                                                                $metodos = [
+                                                                    'Efectivo' => 'efectivo',
+                                                                    'BNB' => 'banco-bnb',
+                                                                    'Tarjeta' => 'tarjeta',
+                                                                ];
                                                             @endphp
 
                                                             <div class="dropdown">
@@ -274,8 +278,8 @@
                                                                         version="1.1">
                                                                         <g stroke="none" stroke-width="1" fill="none"
                                                                             fill-rule="evenodd">
-                                                                            <rect x="0" y="0"
-                                                                                width="24" height="24"></rect>
+                                                                            <rect x="0" y="0" width="24" height="24">
+                                                                            </rect>
                                                                             <circle fill="#000000" cx="5"
                                                                                 cy="12" r="2"></circle>
                                                                             <circle fill="#000000" cx="12"
@@ -349,8 +353,27 @@
                                                     <td>{{ $item->sum('descuento') }} Bs</td>
 
                                                     <td style="background-color: rgb(31, 224, 159)">
-                                                        {{ $item->sum('total') - $item->sum('descuento') - $item->sum('saldo') }}
-                                                        Bs</td>
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                {{ $item->sum('total') - $item->sum('descuento') - $item->sum('saldo') }}
+                                                                Bs</div>
+                                                            <div class="col-6">
+                                                                <div class="dropdown">
+                                                                    <button type="button"
+                                                                        class="btn btn-success light sharp"
+                                                                        data-bs-toggle="dropdown">
+                                                                        <i class="fa fa-list"></i>
+                                                                    </button>
+                                                                    <div class="dropdown-menu">
+                                                                        @foreach ($item->groupBy('tipo') as $prod)
+                                                                            {{ $prod->sum('total') }} Bs
+                                                                            <strong>{{ $prod[0]->tipo }}</strong><br>
+                                                                        @endforeach
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                             <tr>
