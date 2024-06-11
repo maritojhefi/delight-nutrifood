@@ -366,7 +366,7 @@
                                                                     </button>
                                                                     <div class="dropdown-menu">
                                                                         @foreach ($item->groupBy('tipo') as $prod)
-                                                                            {{ $prod->sum('total') }} Bs
+                                                                            {{ $prod->sum('total') - $prod->sum('descuento') - $prod->sum('saldo') }} Bs
                                                                             <strong>{{ $prod[0]->tipo }}</strong><br>
                                                                         @endforeach
                                                                     </div>
