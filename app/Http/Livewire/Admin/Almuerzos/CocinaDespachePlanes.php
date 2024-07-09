@@ -90,6 +90,7 @@ class CocinaDespachePlanes extends Component
         $fecha = date('Y-m-d');
         $resultado = $this->saber_dia($fecha);
         $this->menuHoy = Almuerzo::where('dia', $resultado)->first();
+        // dd($this->menuHoy);
         $this->ejecutivo_cant = $this->menuHoy->ejecutivo_cant;
         $this->dieta_cant = $this->menuHoy->dieta_cant;
         $this->vegetariano_cant = $this->menuHoy->vegetariano_cant;

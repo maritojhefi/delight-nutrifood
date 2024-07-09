@@ -210,23 +210,113 @@
                 </div>
                 <div class="modal-body">
                     @isset($menuHoy)
-                        <div class="row m-2">
-                            <div class="col-md-2">
-                                @if ($menuHoy->ejecutivo_estado)
-                                    <input type="number" wire:model.lazy="ejecutivo_cant"
-                                        wire:change="cambiarCantidad('ejecutivo_cant')"
-                                        class="form-control form-control-sm" style="padding: 0px; height: 12px;">
-                                @endif
+                        <div>
+                            <div class="row m-2">
+                                <div class="col-md-2">
+                                    @if ($menuHoy->ejecutivo_estado)
+                                        <input type="number" wire:model.lazy="ejecutivo_cant"
+                                            wire:change="cambiarCantidad('ejecutivo_cant')"
+                                            class="form-control form-control-sm" style="padding: 0px; height: 12px;">
+                                    @endif
+                                </div>
+                                <div class="col">
+                                    <span class="badge badge-pill badge-primary">{{ $menuHoy->ejecutivo }}</span>
+                                </div>
+                                <a href="#" wire:click="cambiarEstadoPlato('ejecutivo_estado')" class="col">
+                                    <span
+                                        class="badge badge-pill badge-{{ $menuHoy->ejecutivo_estado == 1 ? 'success' : 'danger' }}">{{ $menuHoy->ejecutivo_estado == 1 ? 'Disponible' : 'Agotado' }}</span>
+                                </a>
                             </div>
-                            <div class="col">
-                                <span class="badge badge-pill badge-primary">{{ $menuHoy->ejecutivo }}</span>
+
+                            <div class="row m-2">
+                                <div class="col-md-2">
+                                    @if ($menuHoy->dieta_estado)
+                                        <input type="number" wire:model.lazy="dieta_cant"
+                                            wire:change="cambiarCantidad('dieta_cant')"
+                                            class="form-control form-control-sm" style="padding: 0px; height: 12px;">
+                                    @endif
+                                </div>
+                                <div class="col">
+                                    <span class="badge badge-pill badge-primary">{{ $menuHoy->dieta }}</span>
+                                </div>
+                                <a href="#" wire:click="cambiarEstadoPlato('dieta_estado')" class="col">
+                                    <span
+                                        class="badge badge-pill badge-{{ $menuHoy->dieta_estado == 1 ? 'success' : 'danger' }}">{{ $menuHoy->dieta_estado == 1 ? 'Disponible' : 'Agotado' }}</span>
+                                </a>
                             </div>
-                            <a href="#" wire:click="cambiarEstadoPlato('ejecutivo_estado')" class="col">
-                                <span
-                                    class="badge badge-pill badge-{{ $menuHoy->ejecutivo_estado == 1 ? 'success' : 'danger' }}">{{ $menuHoy->ejecutivo_estado == 1 ? 'Disponible' : 'Agotado' }}</span>
-                            </a>
+
+                            <div class="row m-2">
+                                <div class="col-md-2">
+                                    @if ($menuHoy->vegetariano_estado)
+                                        <input type="number" wire:model.lazy="vegetariano_cant"
+                                            wire:change="cambiarCantidad('vegetariano_cant')"
+                                            class="form-control form-control-sm" style="padding: 0px; height: 12px;">
+                                    @endif
+                                </div>
+                                <div class="col">
+                                    <span class="badge badge-pill badge-primary">{{ $menuHoy->vegetariano }}</span>
+                                </div>
+                                <a href="#" wire:click="cambiarEstadoPlato('vegetariano_estado')" class="col">
+                                    <span
+                                        class="badge badge-pill badge-{{ $menuHoy->vegetariano_estado == 1 ? 'success' : 'danger' }}">{{ $menuHoy->vegetariano_estado == 1 ? 'Disponible' : 'Agotado' }}</span>
+                                </a>
+                            </div>
+
+                            <div class="row m-2">
+                                <div class="col-md-2">
+                                    @if ($menuHoy->carbohidrato_1_estado)
+                                        <input type="number" wire:model.lazy="carbohidrato_1_cant"
+                                            wire:change="cambiarCantidad('carbohidrato_1_cant')"
+                                            class="form-control form-control-sm" style="padding: 0px; height: 12px;">
+                                    @endif
+                                </div>
+                                <div class="col">
+                                    <span class="badge badge-pill badge-primary">{{ $menuHoy->carbohidrato_1 }}</span>
+                                </div>
+                                <a href="#" wire:click="cambiarEstadoPlato('carbohidrato_1_estado')"
+                                    class="col">
+                                    <span
+                                        class="badge badge-pill badge-{{ $menuHoy->carbohidrato_1_estado == 1 ? 'success' : 'danger' }}">{{ $menuHoy->carbohidrato_1_estado == 1 ? 'Disponible' : 'Agotado' }}</span>
+                                </a>
+                            </div>
+
+                            <div class="row m-2">
+                                <div class="col-md-2">
+                                    @if ($menuHoy->carbohidrato_2_estado)
+                                        <input type="number" wire:model.lazy="carbohidrato_2_cant"
+                                            wire:change="cambiarCantidad('carbohidrato_2_cant')"
+                                            class="form-control form-control-sm" style="padding: 0px; height: 12px;">
+                                    @endif
+                                </div>
+                                <div class="col">
+                                    <span class="badge badge-pill badge-primary">{{ $menuHoy->carbohidrato_2 }}</span>
+                                </div>
+                                <a href="#" wire:click="cambiarEstadoPlato('carbohidrato_2_estado')"
+                                    class="col">
+                                    <span
+                                        class="badge badge-pill badge-{{ $menuHoy->carbohidrato_2_estado == 1 ? 'success' : 'danger' }}">{{ $menuHoy->carbohidrato_2_estado == 1 ? 'Disponible' : 'Agotado' }}</span>
+                                </a>
+                            </div>
+
+                            <div class="row m-2">
+                                <div class="col-md-2">
+                                    @if ($menuHoy->carbohidrato_3_estado)
+                                        <input type="number" wire:model.lazy="carbohidrato_3_cant"
+                                            wire:change="cambiarCantidad('carbohidrato_3_cant')"
+                                            class="form-control form-control-sm" style="padding: 0px; height: 12px;">
+                                    @endif
+                                </div>
+                                <div class="col">
+                                    <span class="badge badge-pill badge-primary">{{ $menuHoy->carbohidrato_3 }}</span>
+                                </div>
+                                <a href="#" wire:click="cambiarEstadoPlato('carbohidrato_3_estado')"
+                                    class="col">
+                                    <span
+                                        class="badge badge-pill badge-{{ $menuHoy->carbohidrato_3_estado == 1 ? 'success' : 'danger' }}">{{ $menuHoy->carbohidrato_3_estado == 1 ? 'Disponible' : 'Agotado' }}</span>
+                                </a>
+                            </div>
                         </div>
-                        <!-- Repeat similar blocks for other menu items -->
+
                     @endisset
                 </div>
             </div>
