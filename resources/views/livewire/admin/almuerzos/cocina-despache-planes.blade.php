@@ -194,7 +194,7 @@
                             @php
                                 $colores = ['warning', 'success', 'danger', 'primary', 'secondary', 'info', 'dark'];
                                 $totalColores = count($colores);
-                                $cont = 1;
+                                $cont = 0;
                             @endphp
                             @foreach ($totalDespachado[0] as $producto => $array)
                                 <th><small>
@@ -202,17 +202,17 @@
                                             @if ($nombre != '' && $nombre != 'sin carbohidrato' && $nombre != 'Ninguno')
                                                 @php
                                                     // Calcular el índice del color basado en la iteración
-                                                    $colorIndex = ($cont - 1) % $totalColores;
+                                                    $colorIndex = ($cont) % $totalColores;
                                                     $color = $colores[$colorIndex];
                                                 @endphp
                                                 <small
                                                     class="text-{{ $color }}">{{ Str::limit($nombre, 15) }}:{{ $cantidad }}</small><br>
                                             @endif
+                                            @php
+                                                $cont++;
+                                            @endphp
                                         @endforeach
                                     </small></th>
-                                @php
-                                    $cont++;
-                                @endphp
                             @endforeach
 
                         </tr>
