@@ -56,7 +56,7 @@
                                             @if ($nombre != '' && $nombre != 'sin carbohidrato' && $nombre != 'Ninguno')
                                                 @php
                                                     // Calcular el índice del color basado en la iteración
-                                                    $colorIndex = ($contColor) % $totalColores;
+                                                    $colorIndex = $contColor % $totalColores;
                                                     $color = $colores[$colorIndex];
                                                 @endphp
                                                 @if ($cont == 1)
@@ -191,16 +191,30 @@
                         <tr>
                             <td></td>
                             <td></td>
+                            @php
+                                $colores = ['warning', 'success', 'danger', 'primary', 'secondary', 'info', 'dark'];
+                                $totalColores = count($colores);
+                                $cont = 1;
+                            @endphp
                             @foreach ($totalDespachado[0] as $producto => $array)
                                 <th><small>
                                         @foreach ($array as $nombre => $cantidad)
                                             @if ($nombre != '' && $nombre != 'sin carbohidrato' && $nombre != 'Ninguno')
-                                                <span
-                                                    class="badge badge-pill badge-lg badge-{{ $colores->random() }}">{{ Str::limit($nombre, '15') }}:{{ $cantidad }}</span><br>
+                                                @php
+                                                    // Calcular el índice del color basado en la iteración
+                                                    $colorIndex = ($cont - 1) % $totalColores;
+                                                    $color = $colores[$colorIndex];
+                                                @endphp
+                                                <small
+                                                    class="text-{{ $color }}">{{ Str::limit($nombre, 15) }}:{{ $cantidad }}</small><br>
                                             @endif
                                         @endforeach
                                     </small></th>
+                                @php
+                                    $cont++;
+                                @endphp
                             @endforeach
+
                         </tr>
                     </tbody>
                 </table>
