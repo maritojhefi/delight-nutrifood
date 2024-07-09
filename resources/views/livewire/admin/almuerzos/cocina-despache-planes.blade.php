@@ -12,17 +12,23 @@
                 <div class="col-sm-6">
                     <span>Fecha {{ date_format(date_create($fechaSeleccionada), 'd-M') }} </span>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     <h4>Planes por despachar</h4>
                 </div>
-                <div class="col-sm-6">
-                    <div class="col-sm-6 col-md-3 col-lg-5">
-                        <div class="input-group input-{{ $estadoColor }}">
-                            <a href="#" wire:click="cambiarEstadoBuscador"
-                                class="input-group-text">{{ $estadoBuscador }}</a>
-                            <input type="text" class="form-control" wire:model.debounce.500ms="search">
+                <div class="col-sm-8">
+                    <div class="row">
+                        <div class="col-sm-6 col-md-3 col-lg-5">
+                            <div class="input-group input-{{ $estadoColor }}">
+                                <a href="#" wire:click="cambiarEstadoBuscador"
+                                    class="input-group-text">{{ $estadoBuscador }}</a>
+                                <input type="text" class="form-control" wire:model.debounce.500ms="search">
+                            </div>
                         </div>
+                        <div class="col-sm-6 col-md-4 col-lg-4"><input type="date" class="form-control"
+                                wire:model="fechaSeleccionada" wire:change="cambioDeFecha"></div>
                     </div>
+
+
                 </div>
                 <div class="d-flex justify-content-center">
                     <div wire:loading class="spinner-border" role="status">
@@ -32,45 +38,48 @@
             </div>
         </div>
         <div class="">
-            <div class="table-responsive" style="padding:5px">
+            <div class="table-responsive" style="">
                 <table class="table table-responsive-sm" style="table-layout: auto;">
-                    <thead style="padding:5px">
+                    <thead style="">
                         <tr>
                             <td></td>
                             <td></td>
                             @php
-                                $colores = collect([
-                                    'warning',
-                                    'success',
-                                    'danger',
-                                    'primary',
-                                    'secondary',
-                                    'info',
-                                    'dark',
-                                ]);
+                                $colores = ['warning', 'success', 'danger', 'primary', 'secondary', 'info', 'dark'];
+                                $totalColores = count($colores);
                                 $cont = 1;
+                                $contColor = 0;
                             @endphp
                             @foreach ($totalEspera[0] as $producto => $array)
                                 <th><small>
                                         @foreach ($array as $nombre => $cantidad)
                                             @if ($nombre != '' && $nombre != 'sin carbohidrato' && $nombre != 'Ninguno')
+                                                @php
+                                                    // Calcular el índice del color basado en la iteración
+                                                    $colorIndex = ($contColor) % $totalColores;
+                                                    $color = $colores[$colorIndex];
+                                                @endphp
                                                 @if ($cont == 1)
-                                                    <strong
-                                                        class="badge badge-lg badge-{{ $colores->random() }} ">{{ $cantidad }}</strong><br>
+                                                    <small
+                                                        class="text-{{ $color }}">{{ $cantidad }}</small><br>
                                                 @elseif ($cont == 4)
                                                     <strong
-                                                        class="badge badge-lg badge-{{ $colores->random() }} ">{{ Str::limit($nombre, 8) }}:{{ $cantidad }}</strong><br>
+                                                        class="text-{{ $color }}">{{ Str::limit($nombre, 8) }}:{{ $cantidad }}</strong><br>
                                                 @else
                                                     <strong
-                                                        class="badge badge-lg badge-{{ $colores->random() }} ">{{ Str::limit($nombre, 15) }}:{{ $cantidad }}</strong><br>
+                                                        class="text-{{ $color }}">{{ Str::limit($nombre, 15) }}:{{ $cantidad }}</strong><br>
                                                 @endif
                                             @endif
+                                            @php
+                                                $contColor++;
+                                            @endphp
                                         @endforeach
                                     </small></th>
                                 @php
                                     $cont++;
                                 @endphp
                             @endforeach
+
                         </tr>
                         <tr>
                             <th>#</th>
@@ -83,17 +92,17 @@
                             <th>Plan</th>
                         </tr>
                     </thead>
-                    <tbody style="padding:5px">
+                    <tbody style="">
                         @foreach ($coleccion->where('COCINA', 'espera') as $lista)
                             <tr class="
                                 @if ($lista['ENVIO'] == 'a.- Delivery') table-primary
                                 @elseif($lista['ENVIO'] == 'b.- Para llevar(Paso a recoger)') table-info
                                 @elseif($lista['ENVIO'] == 'c.- Para Mesa') table-success @endif"
-                                style="padding:5px">
-                                <td style="padding:5px">{!! $lista['ESTADO'] == 'permiso'
+                                style="">
+                                <td style="">{!! $lista['ESTADO'] == 'permiso'
                                     ? '<a href="javascript:void(0)" class="badge badge-rounded badge-outline-primary">PERMISO</a>'
                                     : $loop->iteration !!}</td>
-                                <td style="padding:5px;"><small>
+                                <td style=";"><small>
                                         @if ($lista['ESTADO'] == 'permiso')
                                             <del>{{ Str::limit($lista['NOMBRE'], 25) }}</del>
                                         @else
@@ -103,12 +112,12 @@
 
                                     </small>
                                 </td>
-                                <td style="padding:5px"><small>{{ $lista['SOPA'] != '' ? 'SI' : '' }}</small></td>
-                                <td style="padding:5px"><small>{{ $lista['PLATO'] }}</small></td>
-                                <td style="padding:5px"><small>{{ Str::limit($lista['CARBOHIDRATO'], 20) }}</small>
+                                <td style=""><small>{{ $lista['SOPA'] != '' ? 'SI' : '' }}</small></td>
+                                <td style=""><small>{{ $lista['PLATO'] }}</small></td>
+                                <td style=""><small>{{ Str::limit($lista['CARBOHIDRATO'], 20) }}</small>
                                 </td>
-                                <td style="padding:5px"><small>{{ Str::limit($lista['EMPAQUE'], 15) }}</small></td>
-                                <td style="padding:5px"><small>{{ Str::limit($lista['ENVIO'], 15) }}</small></td>
+                                <td style=""><small>{{ Str::limit($lista['EMPAQUE'], 15) }}</small></td>
+                                <td style=""><small>{{ Str::limit($lista['ENVIO'], 15) }}</small></td>
                                 <td><small>{{ Str::limit($lista['PLAN'], 25) }}</small></td>
                             </tr>
                             <div wire:ignore.self class="modal fade" id="modalCocina{{ $lista['ID'] }}" tabindex="-1"
@@ -136,7 +145,7 @@
                 </table>
                 <h4>DESPACHADOS</h4>
                 <table class="table table-responsive-sm" style="table-layout: auto;">
-                    <thead style="padding:5px">
+                    <thead style="">
                         <tr>
                             <th>#</th>
                             <th>Nombre</th>
@@ -147,16 +156,16 @@
                             <th>Envio</th>
                         </tr>
                     </thead>
-                    <tbody style="padding:5px">
+                    <tbody style="">
                         @foreach ($coleccion->where('COCINA', 'despachado') as $lista)
-                            <tr class="table-danger" style="padding:5px">
-                                <td style="padding:5px">{{ $loop->iteration }}</td>
-                                <td style="padding:5px">{{ Str::limit($lista['NOMBRE'], 20) }}</td>
-                                <td style="padding:5px">{{ $lista['SOPA'] != '' ? 'SI' : '' }}</td>
-                                <td style="padding:5px">{{ $lista['PLATO'] }}</td>
-                                <td style="padding:5px">{{ Str::limit($lista['CARBOHIDRATO'], 20) }}</td>
-                                <td style="padding:5px">{{ $lista['EMPAQUE'] }}</td>
-                                <td style="padding:5px">{{ $lista['ENVIO'] }}</td>
+                            <tr class="table-danger" style="">
+                                <td style="">{{ $loop->iteration }}</td>
+                                <td style="">{{ Str::limit($lista['NOMBRE'], 20) }}</td>
+                                <td style="">{{ $lista['SOPA'] != '' ? 'SI' : '' }}</td>
+                                <td style="">{{ $lista['PLATO'] }}</td>
+                                <td style="">{{ Str::limit($lista['CARBOHIDRATO'], 20) }}</td>
+                                <td style="">{{ $lista['EMPAQUE'] }}</td>
+                                <td style="">{{ $lista['ENVIO'] }}</td>
                             </tr>
                             <div wire:ignore.self class="modal fade" id="modalCocina{{ $lista['ID'] }}" tabindex="-1"
                                 role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -323,3 +332,29 @@
         </div>
     </div>
 </div>
+@push('css')
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 1px solid #ddd;
+            text-align: center;
+            /* Esto es opcional, solo para mostrar las celdas de la tabla */
+        }
+
+        th {
+            background-color: #f2f2f2;
+            /* Esto es opcional para darle un color de fondo a los encabezados */
+        }
+
+        table {
+            font-size: 15px !important;
+        }
+    </style>
+@endpush
