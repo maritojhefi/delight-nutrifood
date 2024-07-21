@@ -31,9 +31,10 @@ class GlobalHelper
             return 'Hace ' . $diff . ' ' . $strTime[$i] . '(s)';
         }
     }
-    public static function saber_dia($nombredia) {
+    public static function saber_dia($nombredia)
+    {
         //dd(date('N', strtotime($nombredia)));
-        $dias = array('Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado','Domingo');
+        $dias = array('Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo');
         $fecha = $dias[date('N', strtotime($nombredia))];
         return $fecha;
     }
@@ -136,7 +137,7 @@ class GlobalHelper
 
         $coleccion = collect();
         foreach ($pens as $lista) {
-            //dd($lista);
+            // dd($lista);
             $detalle = $lista->detalle;
             if ($detalle != null) {
                 $det = collect(json_decode($detalle, true));
@@ -178,7 +179,7 @@ class GlobalHelper
                     'PLAN_ID' => $lista->plane_id,
                     'USER_ID' => $lista->user_id
                 ]);
-            } else {
+            } else if ($lista->estado == Plane::ESTADOPERMISO) {
                 $coleccion->push([
                     'ID' => $lista->id,
                     'NOMBRE' => $lista->name,
@@ -199,5 +200,17 @@ class GlobalHelper
         }
         $coleccion = $coleccion->sortBy(['ENVIO', 'asc']);
         return $coleccion;
+    }
+    public static function menuDiarioArray($sopa, $plato, $ensalada, $carbohidrato, $jugo, $envio = Plane::ENVIO1, $empaque = 'Ninguno')
+    {
+        return array(
+            'SOPA' => $sopa,
+            'PLATO' => $plato,
+            'ENSALADA' => $ensalada,
+            'CARBOHIDRATO' => $carbohidrato,
+            'JUGO' => $jugo,
+            'ENVIO' => $envio,
+            'EMPAQUE' => $empaque
+        );
     }
 }

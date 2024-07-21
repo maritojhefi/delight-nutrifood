@@ -57,7 +57,7 @@ class CajaDiaria extends Component
     }
     public function buscarCaja()
     {
-        $this->cajaactiva=Caja::where('sucursale_id',$this->sucursalSeleccionada)->whereDate('created_at',Carbon::today())->first();
+        $this->cajaactiva=Caja::where('sucursale_id',$this->sucursalSeleccionada)->whereDate('created_at',Carbon::today()->subDays(15))->first();
        
         if($this->cajaactiva!=null)
         { 
@@ -71,8 +71,16 @@ class CajaDiaria extends Component
             }
             $coleccion=collect();
             $personalizado=collect();
-            $ventas=Historial_venta::where('caja_id',$this->cajaactiva->id)->get();
-            $saldos=Saldo::where('caja_id',$this->cajaactiva->id)->where('es_deuda',false)->where('anulado',false)->get();
+            if (auth()->user()->role->nombre == 'admin') {
+                $ventas=Historial_venta::where('caja_id',$this->cajaactiva->id)->get();
+                $saldos=Saldo::where('caja_id',$this->cajaactiva->id)->where('es_deuda',false)->where('anulado',false)->get();
+            }
+            else
+            {
+                $ventas=Historial_venta::where('caja_id',$this->cajaactiva->id)->where('usuario_id',auth()->id())->get();
+                $saldos=Saldo::where('caja_id',$this->cajaactiva->id)->where('es_deuda',false)->where('atendido_por',auth()->id())->where('anulado',false)->get();
+            }
+           
             $this->saldosHoy=$saldos;
             $this->ventasHoy=$ventas;
              foreach($ventas as $list)

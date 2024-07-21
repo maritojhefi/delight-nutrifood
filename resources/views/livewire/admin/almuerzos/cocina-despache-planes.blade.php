@@ -21,7 +21,7 @@
                             <div class="input-group input-{{ $estadoColor }}">
                                 <a href="#" wire:click="cambiarEstadoBuscador"
                                     class="input-group-text">{{ $estadoBuscador }}</a>
-                                <input type="text" class="form-control" wire:model.debounce.500ms="search">
+                                <input type="text" class="form-control form-control-sm" wire:model.debounce.500ms="search">
                             </div>
                         </div>
                         <div class="col-sm-6 col-md-4 col-lg-4"><input type="date" class="form-control"
@@ -37,6 +37,14 @@
                 </div>
             </div>
         </div>
+        {{-- <div class="row">
+            <div class="col-12">
+                <select class="form-control text-center bg-info text-white">
+                    <option value="">asdasdsa</option>
+                </select>
+            </div>
+           
+        </div> --}}
         <div class="">
             <div class="table-responsive" style="">
                 <table class="table table-responsive-sm" style="table-layout: auto;">
@@ -93,7 +101,7 @@
                         </tr>
                     </thead>
                     <tbody style="">
-                        @foreach ($coleccion->where('COCINA', 'espera') as $lista)
+                        @foreach ($coleccion->whereIn('COCINA', ['espera', 'solo-sopa', 'solo-segundo']) as $lista)
                             <tr class="
                                 @if ($lista['ENVIO'] == 'a.- Delivery') table-primary
                                 @elseif($lista['ENVIO'] == 'b.- Para llevar(Paso a recoger)') table-info
@@ -112,8 +120,22 @@
 
                                     </small>
                                 </td>
-                                <td style=""><small>{{ $lista['SOPA'] != '' ? 'SI' : '' }}</small></td>
-                                <td style=""><small>{{ $lista['PLATO'] }}</small></td>
+                                @if ($lista['COCINA'] == 'solo-sopa')
+                                    <td style=""><small><a href="javascript:void(0)"
+                                                class="badge badge-circle badge-sm badge-success p-1"><i
+                                                    class="fa fa-check"></i></a> </small></td>
+                                @else
+                                    <td style=""><small>{{ $lista['SOPA'] != '' ? 'SI' : '' }}</small></td>
+                                @endif
+
+                                @if ($lista['COCINA'] == 'solo-segundo')
+                                    <td><small><a href="javascript:void(0)"
+                                                class="badge badge-circle badge-sm badge-success p-1"><i
+                                                    class="fa fa-check"></i></a> </small></td>
+                                @else
+                                    <td style=""><small>{{ $lista['PLATO'] }}</small></td>
+                                @endif
+
                                 <td style=""><small>{{ Str::limit($lista['CARBOHIDRATO'], 20) }}</small>
                                 </td>
                                 <td style=""><small>{{ Str::limit($lista['EMPAQUE'], 15) }}</small></td>
@@ -125,17 +147,101 @@
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Despachando pedido para
-                                                {{ $lista['NOMBRE'] }}</h5>
+                                            <h5 class="modal-title" id="exampleModalLabel">
+                                                Plan de: <strong>{{ $lista['NOMBRE'] }}</strong></h5>
                                             <button type="button" class="btn-close" data-dismiss="modal"
                                                 aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
+                                        <div class="modal-body">
+                                            <ul class="list-group mb-3">
+                                                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                                    <div>
+                                                        <h6 class="my-0">{{ $lista['PLAN'] }}</h6>
+                                                        <small class="text-muted">Nombre del plan</small>
+                                                    </div>
+                                                    <span class=""><i class="fa fa-info"></i></span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                                    <div>
+                                                        <h6
+                                                            class="my-0 {{ $lista['SOPA'] != '' ? '' : 'text-danger' }}">
+                                                            {{ $lista['SOPA'] != '' ? $lista['SOPA'] : 'SIN SOPA' }}
+                                                        </h6>
+                                                        <small class="text-muted">Sopa</small>
+                                                    </div>
+                                                    @if ($lista['SOPA'] != '')
+                                                        <span class="">
+                                                            @if ($lista['COCINA'] == 'espera' || $lista['COCINA'] == 'solo-segundo')
+                                                                <a href="#"
+                                                                    wire:click="despacharSopa({{ $lista['ID'] }})"
+                                                                    data-dismiss="modal"><span
+                                                                        class="badge badge-xs  badge-primary">Despachar
+                                                                        sopa</span></a>
+                                                            @else
+                                                                <del class="text-danger"><span
+                                                                        class="text-black">Despachado</span></del>
+                                                            @endif
+                                                        </span>
+                                                    @endif
+
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                                    <div>
+                                                        <h6
+                                                            class="my-0 {{ $lista['PLATO'] != '' ? '' : 'text-danger' }}">
+                                                            {{ $lista['PLATO'] != '' ? $lista['PLATO'] : 'DESCONOCIDO' }}
+                                                        </h6>
+                                                        <small class="text-muted">Segundo</small>
+
+                                                    </div>
+                                                    @if ($lista['PLATO'] != '')
+                                                        <span class="">
+                                                            @if ($lista['COCINA'] == 'espera' || $lista['COCINA'] == 'solo-sopa')
+                                                                <a href="#"
+                                                                    wire:click="despacharSegundo({{ $lista['ID'] }})"
+                                                                    data-dismiss="modal"><span
+                                                                        class="badge badge-xs  badge-primary">
+                                                                        Despachar segundo</span>
+                                                                </a>
+                                                            @else
+                                                                <del class="text-danger"><span
+                                                                        class="text-black">Despachado</span></del>
+                                                            @endif
+                                                        </span>
+                                                    @endif
+                                                </li>
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between lh-condensed">
+                                                    <div>
+                                                        <h6
+                                                            class="my-0 {{ $lista['CARBOHIDRATO'] != '' ? '' : 'text-danger' }}">
+                                                            {{ $lista['CARBOHIDRATO'] != '' ? $lista['CARBOHIDRATO'] : 'SIN CARBOHIDRATO' }}
+                                                        </h6>
+                                                        <small class="text-muted">Carbohidrato</small>
+                                                    </div>
+                                                    <span class=""><i class="fa fa-utensils"></i></span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span>Envio</span>
+                                                    <strong>{{ $lista['ENVIO'] }}</strong>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span>Empaque</span>
+                                                    <strong>{{ $lista['EMPAQUE'] }}</strong>
+                                                </li>
+
+                                            </ul>
+                                        </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-primary"
+                                            <button type="button" class="btn btn-secondary btn-xxs mx-auto"
+                                                wire:click="restablecerPlan({{ $lista['ID'] }})"
+                                                data-dismiss="modal">Restablecer</button>
+                                            <button type="button" class="btn btn-primary btn-sm"
                                                 wire:click="confirmarDespacho({{ $lista['ID'] }})"
-                                                data-dismiss="modal">Confirmar</button>
+                                                data-dismiss="modal">Despachar todo</button>
+
                                         </div>
                                     </div>
                                 </div>
@@ -167,26 +273,6 @@
                                 <td style="">{{ $lista['EMPAQUE'] }}</td>
                                 <td style="">{{ $lista['ENVIO'] }}</td>
                             </tr>
-                            <div wire:ignore.self class="modal fade" id="modalCocina{{ $lista['ID'] }}" tabindex="-1"
-                                role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Despachando pedido para
-                                                {{ $lista['NOMBRE'] }}</h5>
-                                            <button type="button" class="btn-close" data-dismiss="modal"
-                                                aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-primary"
-                                                wire:click="confirmarDespacho({{ $lista['ID'] }})"
-                                                data-dismiss="modal">Confirmar</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         @endforeach
                         <tr>
                             <td></td>
@@ -202,7 +288,7 @@
                                             @if ($nombre != '' && $nombre != 'sin carbohidrato' && $nombre != 'Ninguno')
                                                 @php
                                                     // Calcular el índice del color basado en la iteración
-                                                    $colorIndex = ($cont) % $totalColores;
+                                                    $colorIndex = $cont % $totalColores;
                                                     $color = $colores[$colorIndex];
                                                 @endphp
                                                 <small
