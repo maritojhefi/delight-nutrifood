@@ -904,7 +904,7 @@ class VentasIndex extends Component
         $this->sucursal = $sucursales->first();
         $productos = Producto::where('estado', '=', 'activo')->where(function (Builder $query) {
             return $query->where('codigoBarra', $this->search)->orWhere('nombre', 'LIKE', '%' . $this->search . '%');
-        })->take(6)->orderBy('prioridad', 'desc')->get();
+        })->take(15)->orderBy('prioridad', 'desc')->get();
         if ($this->user != null) {
             $usuarios = User::where('name', 'LIKE', '%' . $this->user . '%')->orWhere('email', 'LIKE', '%' . $this->user . '%')->take(3)->get();
         }

@@ -29,6 +29,8 @@ class Plane extends Model
 
     const COCINAESPERA="espera";
     const COCINADESPACHADO="despachado";
+    const COCINASOLOSOPA="solo-sopa";
+    const COCINASOLOSEGUNDO="solo-segundo";
     use HasFactory;
     protected $fillable = [
         'nombre','producto_id','detalle','editable','sopa','segundo','ensalada','carbohidrato','jugo'

@@ -9,6 +9,7 @@ use Livewire\Component;
 use App\Models\Almuerzo;
 use App\Helpers\GlobalHelper;
 use App\Exports\UsersPlanesExport;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -24,29 +25,29 @@ class CocinaDespachePlanes extends Component
     {
         switch ($variable) {
             case 'dieta_cant':
-                $cantidad=$this->dieta_cant;
+                $cantidad = $this->dieta_cant;
                 break;
             case 'vegetariano_cant':
-                $cantidad=$this->vegetariano_cant;
+                $cantidad = $this->vegetariano_cant;
                 break;
             case 'ejecutivo_cant':
-                $cantidad=$this->ejecutivo_cant;
+                $cantidad = $this->ejecutivo_cant;
                 break;
             case 'carbohidrato_1_cant':
-                $cantidad=$this->carbohidrato_1_cant;
+                $cantidad = $this->carbohidrato_1_cant;
                 break;
             case 'carbohidrato_2_cant':
-                $cantidad=$this->carbohidrato_2_cant;
+                $cantidad = $this->carbohidrato_2_cant;
                 break;
             case 'carbohidrato_3_cant':
-                $cantidad=$this->carbohidrato_3_cant;
+                $cantidad = $this->carbohidrato_3_cant;
                 break;
             default:
                 # code...
                 break;
         }
 
-        DB::table('almuerzos')->where('id', $this->menuHoy->id)->update([$variable=>$cantidad]);
+        DB::table('almuerzos')->where('id', $this->menuHoy->id)->update([$variable => $cantidad]);
     }
     public function cambiarEstadoPlato($variable)
     {
@@ -90,6 +91,7 @@ class CocinaDespachePlanes extends Component
         $fecha = date('Y-m-d');
         $resultado = $this->saber_dia($fecha);
         $this->menuHoy = Almuerzo::where('dia', $resultado)->first();
+        // dd($this->menuHoy);
         $this->ejecutivo_cant = $this->menuHoy->ejecutivo_cant;
         $this->dieta_cant = $this->menuHoy->dieta_cant;
         $this->vegetariano_cant = $this->menuHoy->vegetariano_cant;
@@ -132,6 +134,52 @@ class CocinaDespachePlanes extends Component
             'message' => "Se despacho este plan!"
         ]);
     }
+    public function despacharSopa($id)
+    {
+        // dd($id);
+        $registro = DB::table('plane_user')->where('id', $id)->first();
+        if ($registro->cocina == Plane::COCINASOLOSEGUNDO) {
+            $this->confirmarDespacho($id);
+        } else {
+            DB::table('plane_user')->where('id', $id)->update(['cocina' => Plane::COCINASOLOSOPA]);
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => "Se despacho la sopa de este plan"
+            ]);
+        }
+    }
+    public function despacharSegundo($id)
+    {
+        $registro = DB::table('plane_user')->where('id', $id)->first();
+        $detalle = json_decode($registro->detalle);
+        if ($registro->cocina == Plane::COCINASOLOSOPA || $detalle->SOPA == '') {
+            $this->confirmarDespacho($id);
+        } else {
+            DB::table('plane_user')->where('id', $id)->update(['cocina' => Plane::COCINASOLOSEGUNDO]);
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => "Se despacho el segundo de este plan"
+            ]);
+        }
+    }
+    public function restablecerPlan($id)
+    {
+
+        DB::table('plane_user')->where('id', $id)->update(['cocina' => Plane::COCINAESPERA]);
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => "Se restablecio el plan, ahora se encuentra en espera"
+        ]);
+    }
+    public function restarColecciones(Collection $collectionA, Collection $collectionB): Collection
+    {
+        $result = $collectionA->mapWithKeys(function ($value, $key) use ($collectionB) {
+            $valueB = $collectionB->get($key, 0);
+            return [$key => $value - $valueB];
+        });
+
+        return $result;
+    }
     public function render()
     {
 
@@ -148,23 +196,34 @@ class CocinaDespachePlanes extends Component
             ->whereDate('plane_user.start', $this->fechaSeleccionada)
             ->where('plane_user.title', '!=', 'feriado')
             //->where('plane_user.detalle','!=',null)
-            ->whereIn('plane_user.estado', [Plane::ESTADOFINALIZADO, Plane::ESTADOPENDIENTE])
+            ->whereIn('plane_user.estado', [Plane::ESTADOFINALIZADO, Plane::ESTADOPENDIENTE, Plane::ESTADOPERMISO])
             ->get();            //dd($pens);
+        // Suponiendo que estas funciones ya existen
         $coleccion = GlobalHelper::armarColeccionReporteDiarioVista($pens, $this->fechaSeleccionada);
-        $coleccionEspera = $coleccion->where('COCINA', 'espera');
+        $coleccionEspera = $coleccion->whereIn('COCINA', ['espera', 'solo-sopa', 'solo-segundo']);
+        $coleccionSopa = $coleccion->whereIn('COCINA', ['solo-sopa']);
+        $coleccionSegundo = $coleccion->whereIn('COCINA', ['solo-segundo']);
         $coleccionDespachado = $coleccion->where('COCINA', 'despachado');
         $this->reporte = $coleccion;
         $totalEspera = collect();
+
+        $conteoSopaEspera = $coleccionEspera->pluck('SOPA')->countBy();
+        $conteoSopaSopa = $coleccionSopa->pluck('SOPA')->countBy();
+        $conteoPlatoEspera = $coleccionEspera->pluck('PLATO')->countBy();
+        $conteoPlatoSegundo = $coleccionSegundo->pluck('PLATO')->countBy();
+        $conteoCarbohidratoEspera = $coleccionEspera->pluck('CARBOHIDRATO')->countBy();
+        $conteoCarbohidratoSegundo = $coleccionSegundo->pluck('CARBOHIDRATO')->countBy();
+        $conteoEmpaqueEspera = $coleccionEspera->pluck('EMPAQUE')->countBy();
+        $conteoEmpaqueSegundo = $coleccionSegundo->pluck('EMPAQUE')->countBy();
+        $conteoEnvioEspera = $coleccionEspera->pluck('ENVIO')->countBy();
+        $conteoEnvioSegundo = $coleccionSegundo->pluck('ENVIO')->countBy();
+        // dd($conteoSopaEspera, $conteoSopaSopa);
         $totalEspera->push([
-
-            'sopa' => $coleccionEspera->pluck('SOPA')->countBy(),
-            'plato' => $coleccionEspera->pluck('PLATO')->countBy(),
-            'carbohidrato' => $coleccionEspera->pluck('CARBOHIDRATO')->countBy(),
-            // 'ensalada'=>$coleccion->pluck('ENSALADA')->countBy(),
-            // 'jugo'=>$coleccion->pluck('JUGO')->countBy(),
-
-            'empaque' => $coleccionEspera->pluck('EMPAQUE')->countBy(),
-            'envio' => $coleccionEspera->pluck('ENVIO')->countBy()
+            'sopa' => $this->restarColecciones($conteoSopaEspera, $conteoSopaSopa),
+            'plato' => $this->restarColecciones($conteoPlatoEspera, $conteoPlatoSegundo),
+            'carbohidrato' => $this->restarColecciones($conteoCarbohidratoEspera, $conteoCarbohidratoSegundo),
+            'empaque' => $this->restarColecciones($conteoEmpaqueEspera, $conteoEmpaqueSegundo),
+            'envio' => $this->restarColecciones($conteoEnvioEspera, $conteoEnvioSegundo),
         ]);
         $totalDespachado = collect();
         $totalDespachado->push([

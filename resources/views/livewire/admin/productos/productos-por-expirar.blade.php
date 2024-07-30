@@ -39,7 +39,7 @@
                                     <td><a href="#" data-bs-toggle="modal" data-bs-target="#modal" wire:click="seleccionar({{$item->id}})"><i class="fa fa-edit"></i></a></td>
                                     <td>
                                         <a href="{{ route('sucursal.stock') }}">
-                                            <div class="d-flex align-items-center"><strong>{{ Str::limit($item->nombre,25) }} </strong>
+                                            <div class="d-flex align-items-center"><strong>{{ Str::limit($item->nombre,75) }} </strong>
                                                 @if ($item->descuento)
                                                 <del class="badge badge-danger">{{$item->precio}}</del><span class="badge badge-success">{{$item->descuento}} Bs</span>
                                                     @else

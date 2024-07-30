@@ -63,7 +63,7 @@
                                 <td style="padding:5px">{{ $loop->iteration }}</td>
 
                                 <td style="padding:5px"><a
-                                        href="{{ route('detalleplan', [$lista['USER_ID'], $lista['PLAN_ID']]) }}">{{ Str::limit($lista['NOMBRE'], 20) }}</a>
+                                        href="{{ route('detalleplan', [$lista['USER_ID'], $lista['PLAN_ID']]) }}"><strong>{{ Str::limit($lista['NOMBRE'], 35) }}</strong></a>
                                 </td>
 
                                 <td style="padding:5px">{{ $lista['SOPA'] != '' ? 'SI' : '' }}</td>
@@ -79,13 +79,13 @@
                                     <td style="padding:5px"><button wire:click="cambiarEstado('{{ $lista['ID'] }}')"
                                             wire:loading.attr="disabled"
                                             wire:target="cambiarEstado('{{ $lista['ID'] }}')"
-                                            class="btn btn-info">Pendiente</button></td>
+                                            class="btn btn-info btn-sm">Pendiente</button></td>
                                 @elseif($lista['ESTADO'] == 'finalizado')
                                     <td style="padding:5px"><button
                                             wire:click="cambiarAPendiente('{{ $lista['ID'] }}')"
-                                            class="btn btn-success">Finalizado</button></td>
+                                            class="btn btn-success btn-sm">Finalizado</button></td>
                                 @elseif($lista['ESTADO'] == 'permiso')
-                                    <td style="padding:5px"><button class="btn btn-warning" disabled>Permiso</button>
+                                    <td style="padding:5px"><button class="btn btn-warning btn-sm" disabled>Permiso</button>
                                     </td>
                                 @endif
 
@@ -209,3 +209,29 @@
         </div>
     </div>
 </div>
+@push('css')
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 1px solid #ddd;
+            text-align: center;
+            /* Esto es opcional, solo para mostrar las celdas de la tabla */
+        }
+
+        th {
+            background-color: #f2f2f2;
+            /* Esto es opcional para darle un color de fondo a los encabezados */
+        }
+
+        table {
+            font-size: 12px !important;
+        }
+    </style>
+@endpush

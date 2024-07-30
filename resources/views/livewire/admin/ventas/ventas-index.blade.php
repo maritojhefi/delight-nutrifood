@@ -663,7 +663,7 @@
                     <li class="list-group-item active  "><input type="search" wire:model.debounce.750ms="search"
                             class="form-control" placeholder="Busca Productos"></li>
                 </ul>
-                <ul class="list-group" style="overflow-y: auto;max-height:350px;overflow-x: hidden">
+                <ul class="list-group" style="overflow-y: auto;max-height:450px;overflow-x: hidden">
 
                     @foreach ($productos as $item)
                         @php
