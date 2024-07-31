@@ -179,7 +179,7 @@ class GlobalHelper
                     'PLAN_ID' => $lista->plane_id,
                     'USER_ID' => $lista->user_id
                 ]);
-            } else if ($lista->estado == Plane::ESTADOPERMISO) {
+            } else {
                 $coleccion->push([
                     'ID' => $lista->id,
                     'NOMBRE' => $lista->name,

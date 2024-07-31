@@ -845,7 +845,7 @@ class VentasIndex extends Component
                     'observacion' => $this->observacionRecibo,
                     'cliente' => $this->cuenta->cliente,
                     'telefono' => $this->telefonoRecibo,
-                    'fecha' => isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
+                    'fecha' => isset($this->fechaRecibo) ? Carbon::parse($this->fechaRecibo)->format('Y-m-d H:i:s') : date('Y-m-d H:i:s'),
                     'metodo' => $this->metodoRecibo
                 ]);
             } else if ($respuesta == false) {

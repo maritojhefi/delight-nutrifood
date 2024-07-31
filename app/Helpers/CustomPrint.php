@@ -36,6 +36,7 @@ class CustomPrint
                     }
                 }
             }
+            // dd($stringprinter,$listastring);
             Printing::newPrintTask()
                 ->printer($idprinter)
                 ->content($listastring)
@@ -122,8 +123,9 @@ class CustomPrint
             $printer->text(date("Y-m-d H:i:s") . "\n");
         }
 
+        // dd($printer);
         $printer->feed(3);
         $contenidoRecibo = ob_get_clean();
-        return $contenidoRecibo;
+        return $printer;
     }
 }
