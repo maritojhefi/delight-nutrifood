@@ -41,7 +41,10 @@ class User extends Authenticatable
         'foto',
         'codigo_pais',
         'whatsapp_plan',
-        'color_page'
+        'color_page',
+        'profesion',
+        'direccion_trabajo',
+        'hijos'
     ];
 
     /**
@@ -66,11 +69,11 @@ class User extends Authenticatable
 
     public function setPasswordAttribute($value)
     {
-        $this->attributes["password"]=Hash::make($value);
+        $this->attributes["password"] = Hash::make($value);
     }
     public function setNameAttribute($value)
     {
-        $this->attributes["name"]=strtoupper($value);
+        $this->attributes["name"] = strtoupper($value);
     }
     public function getNameAttribute($value)
     {
@@ -82,68 +85,66 @@ class User extends Authenticatable
     }
     public function ventas()
     {
-        return $this->hasMany(Venta::class,'cliente_id');
+        return $this->hasMany(Venta::class, 'cliente_id');
     }
     public function addCarrito()
     {
         return $this->belongsToMany(Producto::class)
-        ->withPivot('cantidad');;
+            ->withPivot('cantidad');;
     }
     public function historial_ventas()
     {
-        return $this->hasMany(Historial_venta::class,'cliente_id');
+        return $this->hasMany(Historial_venta::class, 'cliente_id');
     }
     public function atencionWhatsapp()
     {
-        return $this->hasOne(WhatsappPlanAlmuerzo::class,'cliente_id');
+        return $this->hasOne(WhatsappPlanAlmuerzo::class, 'cliente_id');
     }
     public function pensione()
     {
         return $this->hasOne(Pensione::class);
     }
-    public function dias(){
+    public function dias()
+    {
         $fecha1 = Carbon::now();
         $fecha2 = date_create($this->fecha_venc);
         $dias = date_diff($fecha1, $fecha2)->format('%R%a');
         return $dias;
     }
-    
+
     public function planes()
     {
         return $this->belongsToMany(Plane::class)
-        ->withPivot('start','end','title','detalle','id','estado');
+            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'estado');
     }
     public function planesPendientes()
     {
         return $this->belongsToMany(Plane::class)
-        ->withPivot('start','end','title','detalle','id','estado')
-        ->wherePivot('estado','pendiente')
-        ->orWherePivot('estado','desarrollo');
+            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'estado')
+            ->wherePivot('estado', 'pendiente')
+            ->orWherePivot('estado', 'desarrollo');
     }
     public function planesHoy($fecha)
     {
         //dd($this->belongsToMany(Plane::class)->wherePivot('start',$fecha));
-        return $this->belongsToMany(Plane::class)->wherePivot('start',$fecha)//->wherePivot('detalle','!=',null)
-        ->withPivot('start','end','title','detalle','id','estado');
+        return $this->belongsToMany(Plane::class)->wherePivot('start', $fecha) //->wherePivot('detalle','!=',null)
+            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'estado');
     }
     public function planesSemana()
     {
-        return $this->belongsToMany(Plane::class)->wherePivotBetween('start',[date("y-m-d", strtotime("last sunday")),date("y-m-d", strtotime("next sunday"))] )
-        ->withPivot('start','end','title','detalle','id');
+        return $this->belongsToMany(Plane::class)->wherePivotBetween('start', [date("y-m-d", strtotime("last sunday")), date("y-m-d", strtotime("next sunday"))])
+            ->withPivot('start', 'end', 'title', 'detalle', 'id');
     }
     public function asistencias()
     {
-        return $this->belongsToMany(Contrato::class)->withPivot('entrada','salida','diferencia_entrada','created_at','diferencia_salida','tiempo_total');
+        return $this->belongsToMany(Contrato::class)->withPivot('entrada', 'salida', 'diferencia_entrada', 'created_at', 'diferencia_salida', 'tiempo_total');
     }
     public function saldos()
     {
         return $this->hasMany(Saldo::class);
-
     }
     public function contrato()
     {
         return $this->hasOne(Contrato::class);
-
     }
-   
 }
