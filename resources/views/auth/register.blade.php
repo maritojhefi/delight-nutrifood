@@ -39,7 +39,7 @@
                             <div class="input-style input-transparent no-borders has-icon">
                                 <i class="fa fa-phone"></i>
                                 <input type="number" class="form-control @error('telefono') is-invalid @enderror"
-                                    id="telefono" placeholder="Teléfono" name="telefono" value="{{ old('telefono') }}"
+                                    id="telefono" placeholder="Teléfono (8 digitos)" name="telefono" value="{{ old('telefono') }}"
                                     required>
                                 <label for="telefono" class="color-blue-dark font-10 mt-1">Teléfono</label>
                                 @error('telefono')
@@ -64,7 +64,7 @@
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
-
+                            <label for="profesion" class="color-white-dark font-10 mt-1">Fecha de nacimiento</label>
                             <div class="input-style input-transparent no-borders has-icon">
                                 <i class="fa fa-calendar"></i>
                                 <div class="row">
