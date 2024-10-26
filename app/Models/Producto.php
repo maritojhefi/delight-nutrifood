@@ -40,7 +40,7 @@ class Producto extends Model
     public function pathAttachment()
     {
         if ($this->imagen == null) {
-            return 'imagenes/delight/1.jpeg';
+            return 'logo2.png';
         } else {
             return "imagenes/productos/" . $this->imagen;
         }

@@ -13,7 +13,7 @@ class Subcategoria extends Model
     use HasFactory;
     
     protected $fillable = [
-        'nombre','descripcion','categoria_id','foto'
+        'nombre','descripcion','categoria_id','foto','interacciones'
        
     ];
     public function categoria()

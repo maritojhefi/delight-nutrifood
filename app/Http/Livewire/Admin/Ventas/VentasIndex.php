@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Http\Livewire\Admin\PedidosRealtimeComponent;
+use App\Models\Subcategoria;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 class VentasIndex extends Component
@@ -54,6 +55,7 @@ class VentasIndex extends Component
     public $saldo, $valorSaldo = 0, $deshabilitarBancos = false, $saldoRestante = 0, $verVistaSaldo = false;
     public $montoSaldo, $detalleSaldo, $tipoSaldo;
     public $descuentoProductos, $subtotal;
+    public $subcategoriaSeleccionada;
     protected $rules = [
         'sucursal' => 'required|integer',
     ];
@@ -66,6 +68,9 @@ class VentasIndex extends Component
                 break;
             case 'valorSaldo':
                 $this->controlarSaldo();
+                break;
+            case 'search':
+                $this->reset('subcategoriaSeleccionada');
                 break;
             default:
                 # code...
@@ -337,20 +342,13 @@ class VentasIndex extends Component
         if ($producto->medicion == "unidad") {
             $adicionales = $producto->subcategoria->adicionales;
             $this->adicionales = $adicionales;
-            foreach ($producto->ventas->where('id', $this->cuenta->id) as $item) {
-                $this->array = json_decode($item->pivot->adicionales, true);
-                /*   foreach($this->array as $lista)
-                {
-                   foreach($lista as $nombre=>$precio)
-                   {
-                       foreach($precio as $item=>$prec)
-                       {
-                           dd($prec);
-                       }
-                   }
-                }*/
+            $venta = DB::table('producto_venta')->where('venta_id', $this->cuenta->id)->where('producto_id', $producto->id)->first();
+            $this->array = json_decode($venta->adicionales, true);
+            if (isset($this->productoapuntado) && $producto->id == $this->productoapuntado->id) {
+                $this->reset('observacion');
+            } else {
+                $this->reset('observacion', 'itemseleccionado');
             }
-            $this->reset('itemseleccionado', 'observacion');
             $this->productoapuntado = $producto;
         } else {
             $this->reset(['adicionales', 'productoapuntado']);
@@ -421,34 +419,63 @@ class VentasIndex extends Component
     public function agregaradicional(Adicionale $adicional, $item)
     {
         //dd($this->productoapuntado);
-        if ($this->productoapuntado->medicion == "unidad") {
+        if (isset($this->itemseleccionado)) {
+            if ($this->productoapuntado->medicion == "unidad") {
 
-            $pivot = DB::table('producto_venta')->where('producto_id', $this->productoapuntado->id)->where('venta_id', $this->cuenta->id)->first();
-            $string = $pivot->adicionales;
-            $array = json_decode($string, true);
-            for ($i = 1; $i <= $item; $i++) {
-                if ($i == $item) {
-                    array_push($array[$i], [$adicional->nombre => $adicional->precio]);
-                    //dd($array[$i]);
+                $pivot = DB::table('producto_venta')->where('producto_id', $this->productoapuntado->id)->where('venta_id', $this->cuenta->id)->first();
+                $string = $pivot->adicionales;
+                $array = json_decode($string, true);
+                for ($i = 1; $i <= $item; $i++) {
+                    if ($i == $item) {
+                        array_push($array[$i], [$adicional->nombre => $adicional->precio]);
+                        //dd($array[$i]);
+                    }
                 }
-            }
-            $lista = json_encode($array);
-            DB::table('producto_venta')->where('producto_id', $this->productoapuntado->id)->where('venta_id', $this->cuenta->id)->update(['adicionales' => $lista]);
-            $this->dispatchBrowserEvent('alert', [
-                'type' => 'success',
-                'message' => "Agregado!"
-            ]);
+                $lista = json_encode($array);
+                DB::table('producto_venta')->where('producto_id', $this->productoapuntado->id)->where('venta_id', $this->cuenta->id)->update(['adicionales' => $lista]);
+                // $this->dispatchBrowserEvent('alert', [
+                //     'type' => 'success',
+                //     'message' => "Agregado!"
+                // ]);
 
-            $resultado = CreateList::crearlista($this->cuenta);
-            $this->listacuenta = $resultado[0];
-            DB::table('ventas')
-                ->where('id', $this->cuenta->id)
-                ->update(['total' => $resultado[1]]);
-            $this->subtotal = $resultado[1];
-            $this->cuenta->puntos = $resultado[3];
-            $this->itemsCuenta = $resultado[2];
+                $resultado = CreateList::crearlista($this->cuenta);
+                $this->listacuenta = $resultado[0];
+                DB::table('ventas')
+                    ->where('id', $this->cuenta->id)
+                    ->update(['total' => $resultado[1]]);
+                $this->subtotal = $resultado[1];
+                $this->cuenta->puntos = $resultado[3];
+                $this->itemsCuenta = $resultado[2];
+            }
+           
+            $this->mostraradicionales($this->productoapuntado);
+        } else {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "Seleccione un item"
+            ]);
         }
     }
+    public function eliminarItem()
+    {
+        $anterior = $this->array;
+        $posicion = $this->itemseleccionado;
+        // Eliminar el elemento en la posición específica
+        unset($this->array[$posicion]);
+        // Reorganizar las claves para que no queden huecos
+        $this->array = array_values($this->array);
+        // Volver a numerar las claves a partir de 1
+        $nuevoArray = array_combine(range(1, count($this->array)), array_values($this->array));
+        // dd($anterior,$this->array);
+        DB::table('producto_venta')->where('producto_id', $this->productoapuntado->id)->where('venta_id', $this->cuenta->id)->update(['adicionales' => $nuevoArray]);
+        DB::table('producto_venta')->where('producto_id', $this->productoapuntado->id)->where('venta_id', $this->cuenta->id)->decrement('cantidad');
+        $producto = $this->productoapuntado;
+        $venta = Venta::find($this->cuenta->id);
+        $this->actualizarlista($venta);
+        $this->mostraradicionales($producto);
+       
+    }
+
     public function actualizarstock(Producto $producto, $operacion, $cant)
     {
         $consulta = DB::table('producto_sucursale')->where('producto_id', $producto->id)->where('sucursale_id', $this->cuenta->sucursale_id)->orderBy('fecha_venc', 'asc')->get();
@@ -896,19 +923,43 @@ class VentasIndex extends Component
         $user->save();
         $saldo->save();
     }
+    public function seleccionarSubcategoria($id)
+    {
+        Subcategoria::find($id)->increment('interacciones');
+        $this->reset('search');
+        $this->subcategoriaSeleccionada = $id;
+        $this->emit('scrollToSubcategoria', $id);
+    }
     public function render()
     {
         $ventas = Venta::orderBy('created_at', 'desc')->get();
         $usuarios = collect();
         $sucursales = Sucursale::pluck('id', 'nombre');
         $this->sucursal = $sucursales->first();
-        $productos = Producto::where('estado', '=', 'activo')->where(function (Builder $query) {
-            return $query->where('codigoBarra', $this->search)->orWhere('nombre', 'LIKE', '%' . $this->search . '%');
-        })->take(15)->orderBy('prioridad', 'desc')->get();
+        $productos = Producto::where('estado', 'activo')
+            ->when($this->search, function (Builder $query) {
+                $query->where(function (Builder $subQuery) {
+                    $subQuery->where('codigoBarra', $this->search)
+                        ->orWhere('nombre', 'LIKE', '%' . $this->search . '%');
+                });
+            })
+            ->when(isset($this->subcategoriaSeleccionada), function (Builder $query) {
+                $query->where('subcategoria_id', $this->subcategoriaSeleccionada);
+            })
+            ->orderBy('prioridad', 'desc')
+            ->take(15)
+            ->get();
+
+        $subcategorias = Subcategoria::when(isset($this->search), function ($query) {
+            $query->where('nombre', 'LIKE', '%' . $this->search . '%');
+        })
+            ->orderBy('interacciones', 'desc')
+            ->get();
+
         if ($this->user != null) {
-            $usuarios = User::where('name', 'LIKE', '%' . $this->user . '%')->orWhere('email', 'LIKE', '%' . $this->user . '%')->take(3)->get();
+            $usuarios = User::where('name', 'LIKE', '%' . $this->user . '%')->orWhere('email', 'LIKE', '%' . $this->user . '%')->take(5)->get();
         }
-        return view('livewire.admin.ventas.ventas-index', compact('ventas', 'sucursales', 'productos', 'usuarios'))
+        return view('livewire.admin.ventas.ventas-index', compact('ventas', 'sucursales', 'subcategorias', 'productos', 'usuarios'))
             ->extends('admin.master')
             ->section('content');
     }
