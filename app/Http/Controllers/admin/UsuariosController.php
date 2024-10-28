@@ -249,6 +249,10 @@ class UsuariosController extends Controller
         $siExisteFeriado = DB::table('plane_user')->where('start', $fechaParaAgregar)->where('title', 'feriado')->first();
         while ($siExisteFeriado) {
             $fechaParaAgregar = Carbon::parse(Carbon::create($fechaParaAgregar)->addDays(1))->format('Y-m-d');
+            if (WhatsappAPIHelper::saber_dia($fechaParaAgregar) == 'Domingo') {
+                $fechaParaAgregar = Carbon::parse(Carbon::create($fechaParaAgregar)->addDays(1))->format('Y-m-d');
+            }
+           
             $siExisteFeriado = DB::table('plane_user')->where('start', $fechaParaAgregar)->where('title', 'feriado')->first();
         }
         return $fechaParaAgregar;
