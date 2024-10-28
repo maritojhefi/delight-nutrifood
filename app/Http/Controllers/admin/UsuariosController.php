@@ -34,12 +34,13 @@ class UsuariosController extends Controller
         $menusemanal = "";
         foreach ($planes as $dias) {
 
+            if (WhatsappAPIHelper::saber_dia($dias->pivot->start) == 'Domingo') {
+                continue;
+            }
             if (date('y-m-d', strtotime($dias->pivot->start)) <= $fechalimite && date('y-m-d', strtotime($dias->pivot->start)) >= $fechaactual) {
 
                 $menusemanal = Almuerzo::where('dia', WhatsappAPIHelper::saber_dia($dias->pivot->start))->first();
-                if (!$menusemanal) {
-                    dd($planes, $menusemanal, $dias->pivot->start);
-                }
+
 
                 $coleccion->push([
                     'detalle' => $dias->pivot->detalle,
