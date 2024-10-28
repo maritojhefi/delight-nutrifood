@@ -15,65 +15,68 @@ use App\Http\Controllers\Controller;
 
 class UsuariosController extends Controller
 {
-    
-    public function editarPlanUsuario($plan, $usuario){
-        $plan=Plane::find((int)$plan);
-        $usuario=User::find((int)$usuario);
-       // dd($usuario);
-       $coleccion=collect();
-       $fechaactual=Carbon::now()->format('y-m-d');
-       $fechalimite=date("y-m-d", strtotime("next sunday"));
-      //dd($fechalimite);
-       $array=array();
-       $lunes=false;
-       $planes=$usuario->planesPendientes->where('id',$plan->id)->sortBy(function($col) {return $col;});
-       $estadoMenu=SwitchPlane::find(1);
-       $menusemanal="";
-       foreach($planes as $dias){
-           
-            if(date('y-m-d', strtotime($dias->pivot->start))<=$fechalimite && date('y-m-d', strtotime($dias->pivot->start))>=$fechaactual)
-            {
-            
-             $menusemanal=Almuerzo::where('dia',WhatsappAPIHelper::saber_dia($dias->pivot->start))->first();  
-            dd($planes,$menusemanal);
-             $coleccion->push([
-                 'detalle'=>$dias->pivot->detalle,
-                 'estado'=>$dias->pivot->estado,
-                 'dia'=>WhatsappAPIHelper::saber_dia($dias->pivot->start),
-                 'id'=>$dias->pivot->id,
-                 'fecha'=>date('d-M', strtotime($dias->pivot->start)),
-                 'sopa'=>$menusemanal->sopa,
-                 'ensalada'=>$menusemanal->ensalada,
-                 'ejecutivo'=>$menusemanal->ejecutivo,
-                 'ejecutivo_estado'=>($menusemanal->ejecutivo_estado) ? true : false,
-                 'dieta'=>$menusemanal->dieta,
-                 'dieta_estado'=>($menusemanal->dieta_estado) ? true : false,
-                 'vegetariano'=>$menusemanal->vegetariano,
-                 'vegetariano_estado'=>($menusemanal->vegetariano_estado) ? true : false,
-                 'carbohidrato_1'=>$menusemanal->carbohidrato_1,
-                 'carbohidrato_1_estado'=>($menusemanal->carbohidrato_1_estado) ? true : false,
-                 'carbohidrato_2'=>$menusemanal->carbohidrato_2,
-                 'carbohidrato_2_estado'=>($menusemanal->carbohidrato_2_estado) ? true : false,
-                 'carbohidrato_3'=>$menusemanal->carbohidrato_3,
-                 'carbohidrato_3_estado'=>($menusemanal->carbohidrato_3_estado) ? true : false,
-                 'jugo'=>$menusemanal->jugo,
-                 'envio1'=>Plane::ENVIO1,
-                 'envio2'=>Plane::ENVIO2,
-                 'envio3'=>Plane::ENVIO3,
-                 'empaque1'=>'Vianda',
-                 'empaque2'=>'Empaque Bio(apto/microondas)',
-                            ]);
-             
+
+    public function editarPlanUsuario($plan, $usuario)
+    {
+        $plan = Plane::find((int)$plan);
+        $usuario = User::find((int)$usuario);
+        // dd($usuario);
+        $coleccion = collect();
+        $fechaactual = Carbon::now()->format('y-m-d');
+        $fechalimite = date("y-m-d", strtotime("next sunday"));
+        //dd($fechalimite);
+        $array = array();
+        $lunes = false;
+        $planes = $usuario->planesPendientes->where('id', $plan->id)->sortBy(function ($col) {
+            return $col;
+        });
+        $estadoMenu = SwitchPlane::find(1);
+        $menusemanal = "";
+        foreach ($planes as $dias) {
+
+            if (date('y-m-d', strtotime($dias->pivot->start)) <= $fechalimite && date('y-m-d', strtotime($dias->pivot->start)) >= $fechaactual) {
+
+                $menusemanal = Almuerzo::where('dia', WhatsappAPIHelper::saber_dia($dias->pivot->start))->first();
+                if (!$menusemanal) {
+                    dd($planes, $menusemanal, $dias->pivot->start);
+                }
+
+                $coleccion->push([
+                    'detalle' => $dias->pivot->detalle,
+                    'estado' => $dias->pivot->estado,
+                    'dia' => WhatsappAPIHelper::saber_dia($dias->pivot->start),
+                    'id' => $dias->pivot->id,
+                    'fecha' => date('d-M', strtotime($dias->pivot->start)),
+                    'sopa' => $menusemanal->sopa,
+                    'ensalada' => $menusemanal->ensalada,
+                    'ejecutivo' => $menusemanal->ejecutivo,
+                    'ejecutivo_estado' => ($menusemanal->ejecutivo_estado) ? true : false,
+                    'dieta' => $menusemanal->dieta,
+                    'dieta_estado' => ($menusemanal->dieta_estado) ? true : false,
+                    'vegetariano' => $menusemanal->vegetariano,
+                    'vegetariano_estado' => ($menusemanal->vegetariano_estado) ? true : false,
+                    'carbohidrato_1' => $menusemanal->carbohidrato_1,
+                    'carbohidrato_1_estado' => ($menusemanal->carbohidrato_1_estado) ? true : false,
+                    'carbohidrato_2' => $menusemanal->carbohidrato_2,
+                    'carbohidrato_2_estado' => ($menusemanal->carbohidrato_2_estado) ? true : false,
+                    'carbohidrato_3' => $menusemanal->carbohidrato_3,
+                    'carbohidrato_3_estado' => ($menusemanal->carbohidrato_3_estado) ? true : false,
+                    'jugo' => $menusemanal->jugo,
+                    'envio1' => Plane::ENVIO1,
+                    'envio2' => Plane::ENVIO2,
+                    'envio3' => Plane::ENVIO3,
+                    'empaque1' => 'Vianda',
+                    'empaque2' => 'Empaque Bio(apto/microondas)',
+                ]);
             }
-           
-       }
-      
-        return view('client.miperfil.calendario',compact('plan','usuario','coleccion','menusemanal','estadoMenu'));
+        }
+
+        return view('client.miperfil.calendario', compact('plan', 'usuario', 'coleccion', 'menusemanal', 'estadoMenu'));
     }
     public function saldo()
     {
-        $usuario=User::find(auth()->user()->id);
-        return view('client.miperfil.saldo',compact('usuario'));
+        $usuario = User::find(auth()->user()->id);
+        return view('client.miperfil.saldo', compact('usuario'));
     }
     public function detalleplan($id, $planid)
     {
@@ -95,24 +98,24 @@ class UsuariosController extends Controller
         // if($evento->detalle==null)
         // {
         //     $evento = DB::table('plane_user')->where('id', $id)->delete();
-           
+
         // }
         // else
         // {
         //     return response()->json('no');
         // }
 
-        
+
     }
     public function archivar($id)
     {
-       $registro= DB::table('plane_user')->select('plane_user.*')->where('id', $id)->first();
-       DB::table('plane_user')->where('plane_id',$registro->plane_id)->where('user_id',$registro->user_id)->where('estado',Plane::ESTADOFINALIZADO)->whereDate('start','<',Carbon::parse($registro->start)->addDay())->update(['estado'=>Plane::ESTADOARCHIVADO,'color'=>Plane::COLORARCHIVADO]);
-       return 'exito';
+        $registro = DB::table('plane_user')->select('plane_user.*')->where('id', $id)->first();
+        DB::table('plane_user')->where('plane_id', $registro->plane_id)->where('user_id', $registro->user_id)->where('estado', Plane::ESTADOFINALIZADO)->whereDate('start', '<', Carbon::parse($registro->start)->addDay())->update(['estado' => Plane::ESTADOARCHIVADO, 'color' => Plane::COLORARCHIVADO]);
+        return 'exito';
     }
     public function agregar(Request $request)
     {
-       
+
         $feriados = DB::table('plane_user')->select('start')->where('title', 'feriado')->get();
         $listafechas = array();
         foreach (json_decode($feriados, true) as $fecha) {
@@ -120,22 +123,18 @@ class UsuariosController extends Controller
                 array_push($listafechas, $fe);
             }
         }
-        $excluirSabados=false;
-        if(isset($request->sabados))
-        {
-            $excluirSabados=true;
+        $excluirSabados = false;
+        if (isset($request->sabados)) {
+            $excluirSabados = true;
         }
-        if($request->dias==null || $request->dias=="" || $request->dias==0)
-        {
+        if ($request->dias == null || $request->dias == "" || $request->dias == 0) {
             $dias = $this->getDiasHabiles($request->start, $request->end, $listafechas);
             foreach ($dias as $dia) {
-                if($excluirSabados)
-                {
+                if ($excluirSabados) {
                     $saberDia = WhatsappAPIHelper::saber_dia($dia);
-                    if($saberDia!="Sabado")
-                    {
+                    if ($saberDia != "Sabado") {
                         DB::table('plane_user')->insert([
-    
+
                             'start' => $dia,
                             'end' => $dia,
                             'title' => $request->plan,
@@ -143,11 +142,9 @@ class UsuariosController extends Controller
                             'user_id' => $request->iduser
                         ]);
                     }
-                }
-                else
-                {
+                } else {
                     DB::table('plane_user')->insert([
-    
+
                         'start' => $dia,
                         'end' => $dia,
                         'title' => $request->plan,
@@ -155,23 +152,18 @@ class UsuariosController extends Controller
                         'user_id' => $request->iduser
                     ]);
                 }
-                
             }
-        }
-        else
-        {
-            $fin=Carbon::parse(Carbon::create($request->start)->addDays($request->dias*2))->format('Y-m-d');
+        } else {
+            $fin = Carbon::parse(Carbon::create($request->start)->addDays($request->dias * 2))->format('Y-m-d');
             $dias = $this->getDiasHabiles($request->start, $fin, $listafechas);
-            $contador=0;
+            $contador = 0;
             //dd($request->start);
             foreach ($dias as $dia) {
-                if($excluirSabados)
-                {
+                if ($excluirSabados) {
                     $saberDia = WhatsappAPIHelper::saber_dia($dia);
-                    if($saberDia!="Sabado")
-                    {
+                    if ($saberDia != "Sabado") {
                         DB::table('plane_user')->insert([
-    
+
                             'start' => $dia,
                             'end' => $dia,
                             'title' => $request->plan,
@@ -180,11 +172,9 @@ class UsuariosController extends Controller
                         ]);
                         $contador++;
                     }
-                }
-                else
-                {
+                } else {
                     DB::table('plane_user')->insert([
-    
+
                         'start' => $dia,
                         'end' => $dia,
                         'title' => $request->plan,
@@ -193,15 +183,12 @@ class UsuariosController extends Controller
                     ]);
                     $contador++;
                 }
-                
-                if($contador==$request->dias)
-                {
+
+                if ($contador == $request->dias) {
                     break;
                 }
             }
-           
         }
-        
     }
     public function feriado(Request $request)
     {
@@ -217,7 +204,7 @@ class UsuariosController extends Controller
                     'start' => $dia,
                     'end' => $dia,
                     'title' => 'feriado',
-                    'estado'=>Plane::ESTADOFERIADO
+                    'estado' => Plane::ESTADOFERIADO
 
                 ]);
             }
@@ -265,57 +252,51 @@ class UsuariosController extends Controller
         }
         return $fechaParaAgregar;
     }
-    public function permiso($id,$todos)
+    public function permiso($id, $todos)
     {
         $evento = DB::table('plane_user')->where('id', $id)->first();
-        $coincidentes=DB::table('plane_user')->where('plane_id', $evento->plane_id)->where('user_id',$evento->user_id)->where('start',$evento->start)->where('estado',Plane::ESTADOPENDIENTE)->get();
-        if($coincidentes->count()>1 && $todos==0)
-        {
+        $coincidentes = DB::table('plane_user')->where('plane_id', $evento->plane_id)->where('user_id', $evento->user_id)->where('start', $evento->start)->where('estado', Plane::ESTADOPENDIENTE)->get();
+        if ($coincidentes->count() > 1 && $todos == 0) {
             return 'varios';
         }
-        
+
         $extraerUltimo = DB::table('plane_user')
             ->where('user_id', $evento->user_id)
             ->where('plane_id', $evento->plane_id)
             ->where('title', '!=', 'feriado')
             ->orderBy('start', 'DESC')
             ->first();
-         $fechaParaAgregar=$this->diaSiguienteAlUltimo($extraerUltimo->start);
-         $saberDia=WhatsappAPIHelper::saber_dia($fechaParaAgregar);
-         if($saberDia=="Domingo")
-         {
-            $fechaParaAgregar=Carbon::parse($fechaParaAgregar)->addDay();
-         }
-         //dd($saberDia);
-         if($todos==1)
-         {
-            foreach($coincidentes as $plan)
-            {
-               DB::table('plane_user')->insert([
-   
-                   'start' => $fechaParaAgregar,
-                   'end' => $fechaParaAgregar,
-                   'title' => $plan->title,
-                   'plane_id' => $plan->plane_id,
-                   'user_id' => $plan->user_id
-               ]);  
-               $evento = DB::table('plane_user')->where('id', $plan->id)->update(['estado' => Plane::ESTADOPERMISO, 'color' => Plane::COLORPERMISO,'detalle'=>null]);
-            } 
-         }
-         else if($todos==2 || $todos==0)
-         {
+        $fechaParaAgregar = $this->diaSiguienteAlUltimo($extraerUltimo->start);
+        $saberDia = WhatsappAPIHelper::saber_dia($fechaParaAgregar);
+        if ($saberDia == "Domingo") {
+            $fechaParaAgregar = Carbon::parse($fechaParaAgregar)->addDay();
+        }
+        //dd($saberDia);
+        if ($todos == 1) {
+            foreach ($coincidentes as $plan) {
+                DB::table('plane_user')->insert([
+
+                    'start' => $fechaParaAgregar,
+                    'end' => $fechaParaAgregar,
+                    'title' => $plan->title,
+                    'plane_id' => $plan->plane_id,
+                    'user_id' => $plan->user_id
+                ]);
+                $evento = DB::table('plane_user')->where('id', $plan->id)->update(['estado' => Plane::ESTADOPERMISO, 'color' => Plane::COLORPERMISO, 'detalle' => null]);
+            }
+        } else if ($todos == 2 || $todos == 0) {
             DB::table('plane_user')->insert([
-   
+
                 'start' => $fechaParaAgregar,
                 'end' => $fechaParaAgregar,
                 'title' => $evento->title,
                 'plane_id' => $evento->plane_id,
                 'user_id' => $evento->user_id
-            ]);  
-            $evento = DB::table('plane_user')->where('id', $id)->update(['estado' => Plane::ESTADOPERMISO, 'color' => Plane::COLORPERMISO,'detalle'=>null]);
-         }
-         
-         
+            ]);
+            $evento = DB::table('plane_user')->where('id', $id)->update(['estado' => Plane::ESTADOPERMISO, 'color' => Plane::COLORPERMISO, 'detalle' => null]);
+        }
+
+
         return response()->json($evento);
     }
     public function quitarpermiso($id)
