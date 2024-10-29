@@ -38,10 +38,7 @@ class UsuariosController extends Controller
                 continue;
             }
             if (date('y-m-d', strtotime($dias->pivot->start)) <= $fechalimite && date('y-m-d', strtotime($dias->pivot->start)) >= $fechaactual) {
-
                 $menusemanal = Almuerzo::where('dia', WhatsappAPIHelper::saber_dia($dias->pivot->start))->first();
-
-
                 $coleccion->push([
                     'detalle' => $dias->pivot->detalle,
                     'estado' => $dias->pivot->estado,
