@@ -1,40 +1,45 @@
 <div>
     @livewire('admin.pedidos-realtime-component')
-    <div class="card">
+    <div class="card col-12 letra12 bordeado">
         <div class="card-header">
-            <div class="row">
-                <div class="col-sm-6">
+            <div class="row ">
+                <div class="col-sm-6 d-flex">
                     <a href="#" wire:click="cambiarDisponibilidad" data-bs-toggle="modal"
                         data-bs-target="#modalDisponibilidad">
                         <span class="badge badge-pill badge-primary">Disponibilidad</span>
                     </a>
+                    <div class="m-1">
+                        <div wire:loading class="spinner-border" style="width: 20px;height:20px" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-sm-6">
-                    <span>Fecha {{ date_format(date_create($fechaSeleccionada), 'd-M') }} </span>
+                    <strong>Viendo fecha : {{ date_format(date_create($fechaSeleccionada), 'd-M') }} </strong>
+
                 </div>
                 <div class="col-sm-4">
-                    <h4>Planes por despachar</h4>
+                    <h4 class="letra12">Planes por despachar</h4>
                 </div>
                 <div class="col-sm-8">
                     <div class="row">
                         <div class="col-sm-6 col-md-3 col-lg-5">
                             <div class="input-group input-{{ $estadoColor }}">
                                 <a href="#" wire:click="cambiarEstadoBuscador"
-                                    class="input-group-text">{{ $estadoBuscador }}</a>
-                                <input type="text" class="form-control form-control-sm" wire:model.debounce.500ms="search">
+                                    class="input-group-text p-0 m-0 letra12"
+                                    style="height: 30px">{{ $estadoBuscador }}</a>
+                                <input type="text" class="form-control form-control-sm p-0 m-0" style="height: 30px"
+                                    wire:model.debounce.500ms="search">
                             </div>
                         </div>
-                        <div class="col-sm-6 col-md-4 col-lg-4"><input type="date" class="form-control"
+                        <div class="col-sm-6 col-md-4 col-lg-4"><input type="date"
+                                class="form-control bordeado p-0 m-0 ps-1" style="height: 30px"
                                 wire:model="fechaSeleccionada" wire:change="cambioDeFecha"></div>
                     </div>
 
 
                 </div>
-                <div class="d-flex justify-content-center">
-                    <div wire:loading class="spinner-border" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
+
             </div>
         </div>
         {{-- <div class="row">
@@ -46,9 +51,9 @@
            
         </div> --}}
         <div class="">
-            <div class="table-responsive" style="">
+            <div class="table-responsive letra14" style="">
                 <table class="table table-responsive-sm" style="table-layout: auto;">
-                    <thead style="">
+                    <th style="">
                         <tr>
                             <td></td>
                             <td></td>
@@ -99,20 +104,20 @@
                             <th>Envio</th>
                             <th>Plan</th>
                         </tr>
-                    </thead>
+                    </th>
                     <tbody style="">
                         @foreach ($coleccion->whereIn('COCINA', ['espera', 'solo-sopa', 'solo-segundo']) as $lista)
                             <tr class="
                                 @if ($lista['ENVIO'] == 'a.- Delivery') table-primary
                                 @elseif($lista['ENVIO'] == 'b.- Para llevar(Paso a recoger)') table-info
                                 @elseif($lista['ENVIO'] == 'c.- Para Mesa') table-success @endif"
-                                style="">
-                                <td style="">{!! $lista['ESTADO'] == 'permiso'
-                                    ? '<a href="javascript:void(0)" class="badge badge-rounded badge-outline-primary">PERMISO</a>'
+                                style="border-color:#211d1d !important">
+                                <td style="border-color:#211d1d !important">{!! $lista['ESTADO'] == 'permiso'
+                                    ? '<a href="javascript:void(0)" class="text-primary"><strong>PERMISO</strong> </a>'
                                     : $loop->iteration !!}</td>
-                                <td style=";"><small>
+                                <td style="border-color:#211d1d !important"><small>
                                         @if ($lista['ESTADO'] == 'permiso')
-                                            <del>{{ Str::limit($lista['NOMBRE'], 25) }}</del>
+                                            <del class="text-muted">{{ Str::limit($lista['NOMBRE'], 25) }}</del>
                                         @else
                                             <a href="#" data-toggle="modal"
                                                 data-target="#modalCocina{{ $lista['ID'] }}">{{ Str::limit($lista['NOMBRE'], 25) }}</a>
@@ -121,113 +126,128 @@
                                     </small>
                                 </td>
                                 @if ($lista['COCINA'] == 'solo-sopa')
-                                    <td style=""><small><a href="javascript:void(0)"
+                                    <td style="border-color:#211d1d !important"><small><a href="javascript:void(0)"
                                                 class="badge badge-circle badge-sm badge-success p-1"><i
                                                     class="fa fa-check"></i></a> </small></td>
                                 @else
-                                    <td style=""><small>{{ $lista['SOPA'] != '' ? 'SI' : '' }}</small></td>
+                                    <td style="border-color:#211d1d !important">
+                                        <small>{{ $lista['SOPA'] != '' ? 'SI' : '' }}</small>
+                                    </td>
                                 @endif
 
                                 @if ($lista['COCINA'] == 'solo-segundo')
-                                    <td><small><a href="javascript:void(0)"
+                                    <td style="border-color:#211d1d !important"><small><a href="javascript:void(0)"
                                                 class="badge badge-circle badge-sm badge-success p-1"><i
                                                     class="fa fa-check"></i></a> </small></td>
                                 @else
-                                    <td style=""><small>{{ $lista['PLATO'] }}</small></td>
+                                    <td style="border-color:#211d1d !important"><small>{{ $lista['PLATO'] }}</small>
+                                    </td>
                                 @endif
 
-                                <td style=""><small>{{ Str::limit($lista['CARBOHIDRATO'], 20) }}</small>
+                                <td style="border-color:#211d1d !important">
+                                    <small>{{ Str::limit($lista['CARBOHIDRATO'], 20) }}</small>
                                 </td>
-                                <td style=""><small>{{ Str::limit($lista['EMPAQUE'], 15) }}</small></td>
-                                <td style=""><small>{{ Str::limit($lista['ENVIO'], 15) }}</small></td>
-                                <td><small>{{ Str::limit($lista['PLAN'], 25) }}</small></td>
+                                <td style="border-color:#211d1d !important">
+                                    <small>{{ Str::limit($lista['EMPAQUE'], 15) }}</small>
+                                </td>
+                                <td style="border-color:#211d1d !important">
+                                    <small>{{ Str::limit($lista['ENVIO'], 15) }}</small>
+                                </td>
+                                <td style="border-color:#211d1d !important">
+                                    <small>{{ Str::limit($lista['PLAN'], 25) }}</small>
+                                </td>
                             </tr>
                             <div wire:ignore.self class="modal fade" id="modalCocina{{ $lista['ID'] }}" tabindex="-1"
                                 role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">
+                                    <div class="modal-content m-0 p-0">
+                                        <div class="modal-header m-0 p-2">
+                                            <h5 class="modal-title mx-auto">
                                                 Plan de: <strong>{{ $lista['NOMBRE'] }}</strong></h5>
                                             <button type="button" class="btn-close" data-dismiss="modal"
                                                 aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
-                                        <div class="modal-body">
-                                            <ul class="list-group mb-3">
-                                                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                        <div class="modal-body m-0 p-0">
+                                            <ul class="list-group  m-0 p-0">
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between lh-condensed py-2">
                                                     <div>
-                                                        <h6 class="my-0">{{ $lista['PLAN'] }}</h6>
                                                         <small class="text-muted">Nombre del plan</small>
                                                     </div>
-                                                    <span class=""><i class="fa fa-info"></i></span>
+                                                    <span class="">
+                                                        <h6 class="my-0">{{ $lista['PLAN'] }}</h6>
+                                                    </span>
                                                 </li>
-                                                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between lh-condensed  py-2">
                                                     <div>
-                                                        <h6
-                                                            class="my-0 {{ $lista['SOPA'] != '' ? '' : 'text-danger' }}">
-                                                            {{ $lista['SOPA'] != '' ? $lista['SOPA'] : 'SIN SOPA' }}
-                                                        </h6>
                                                         <small class="text-muted">Sopa</small>
                                                     </div>
-                                                    @if ($lista['SOPA'] != '')
-                                                        <span class="">
-                                                            @if ($lista['COCINA'] == 'espera' || $lista['COCINA'] == 'solo-segundo')
-                                                                <a href="#"
-                                                                    wire:click="despacharSopa({{ $lista['ID'] }})"
-                                                                    data-dismiss="modal"><span
-                                                                        class="badge badge-xs  badge-primary">Despachar
-                                                                        sopa</span></a>
-                                                            @else
-                                                                <del class="text-danger"><span
-                                                                        class="text-black">Despachado</span></del>
-                                                            @endif
-                                                        </span>
-                                                    @endif
+                                                    <h6 class="my-0 {{ $lista['SOPA'] != '' ? '' : 'text-danger' }}">
+                                                        {{ $lista['SOPA'] != '' ? $lista['SOPA'] : 'SIN SOPA' }}
+                                                        @if ($lista['SOPA'] != '')
+                                                            <span class="letra10 p-2">
+                                                                @if ($lista['COCINA'] == 'espera' || $lista['COCINA'] == 'solo-segundo')
+                                                                    <a href="#"
+                                                                        wire:click="despacharSopa({{ $lista['ID'] }})"
+                                                                        data-dismiss="modal"><span
+                                                                            class="badge badge-xs  badge-primary">Despachar
+                                                                        </span></a>
+                                                                @else
+                                                                    <del class="text-danger"><span
+                                                                            class="text-black">Despachado</span></del>
+                                                                @endif
+                                                            </span>
+                                                        @endif
+                                                    </h6>
+
 
                                                 </li>
-                                                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                                <li
+                                                    class="list-group-item d-flex justify-content-between lh-condensed  py-2">
                                                     <div>
-                                                        <h6
-                                                            class="my-0 {{ $lista['PLATO'] != '' ? '' : 'text-danger' }}">
-                                                            {{ $lista['PLATO'] != '' ? $lista['PLATO'] : 'DESCONOCIDO' }}
-                                                        </h6>
+
                                                         <small class="text-muted">Segundo</small>
 
                                                     </div>
                                                     @if ($lista['PLATO'] != '')
-                                                        <span class="">
-                                                            @if ($lista['COCINA'] == 'espera' || $lista['COCINA'] == 'solo-sopa')
-                                                                <a href="#"
-                                                                    wire:click="despacharSegundo({{ $lista['ID'] }})"
-                                                                    data-dismiss="modal"><span
-                                                                        class="badge badge-xs  badge-primary">
-                                                                        Despachar segundo</span>
-                                                                </a>
-                                                            @else
-                                                                <del class="text-danger"><span
-                                                                        class="text-black">Despachado</span></del>
-                                                            @endif
-                                                        </span>
+                                                        <h6
+                                                            class="my-0 {{ $lista['PLATO'] != '' ? '' : 'text-danger' }}">
+                                                            {{ $lista['PLATO'] != '' ? $lista['PLATO'] : 'DESCONOCIDO' }}
+                                                            <span class="letra10 p-2">
+                                                                @if ($lista['COCINA'] == 'espera' || $lista['COCINA'] == 'solo-sopa')
+                                                                    <a href="#"
+                                                                        wire:click="despacharSegundo({{ $lista['ID'] }})"
+                                                                        data-dismiss="modal"><span
+                                                                            class="badge badge-xs  badge-primary">
+                                                                            Despachar</span>
+                                                                    </a>
+                                                                @else
+                                                                    <del class="text-danger"><span
+                                                                            class="text-black">Despachado</span></del>
+                                                                @endif
+                                                            </span>
+                                                        </h6>
                                                     @endif
                                                 </li>
                                                 <li
-                                                    class="list-group-item d-flex justify-content-between lh-condensed">
+                                                    class="list-group-item d-flex justify-content-between lh-condensed  py-2">
                                                     <div>
-                                                        <h6
-                                                            class="my-0 {{ $lista['CARBOHIDRATO'] != '' ? '' : 'text-danger' }}">
-                                                            {{ $lista['CARBOHIDRATO'] != '' ? $lista['CARBOHIDRATO'] : 'SIN CARBOHIDRATO' }}
-                                                        </h6>
+
                                                         <small class="text-muted">Carbohidrato</small>
                                                     </div>
-                                                    <span class=""><i class="fa fa-utensils"></i></span>
+                                                    <h6
+                                                        class="my-0 {{ $lista['CARBOHIDRATO'] != '' ? '' : 'text-danger' }}">
+                                                        {{ $lista['CARBOHIDRATO'] != '' ? $lista['CARBOHIDRATO'] : 'SIN CARBOHIDRATO' }}
+                                                    </h6>
                                                 </li>
-                                                <li class="list-group-item d-flex justify-content-between">
+                                                <li class="list-group-item d-flex justify-content-between  py-2">
                                                     <span>Envio</span>
                                                     <strong>{{ $lista['ENVIO'] }}</strong>
                                                 </li>
-                                                <li class="list-group-item d-flex justify-content-between">
+                                                <li class="list-group-item d-flex justify-content-between  py-2">
                                                     <span>Empaque</span>
                                                     <strong>{{ $lista['EMPAQUE'] }}</strong>
                                                 </li>
@@ -249,7 +269,8 @@
                         @endforeach
                     </tbody>
                 </table>
-                <h4>DESPACHADOS</h4>
+                <hr>
+                <center style="" class="letra14"><strong>DESPACHADOS</strong></center>
                 <table class="table table-responsive-sm" style="table-layout: auto;">
                     <thead style="">
                         <tr>

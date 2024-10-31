@@ -14,20 +14,20 @@
                                 class="spinner-grow spinner-grow-sm" role="status">
                                 <span class="sr-only">Loading...</span>
                             </div>
-                            <small> #{{ $item->id }}</small>
+                            <small class="letra10"> #{{ $item->id }}</small>
                             <strong
                                 class="@isset($cuenta) {{ $item->id == $cuenta->id ? 'text-white' : '' }} @endisset ">{{ $item->total }}Bs
                             </strong>
                             @isset($item->usuario_manual)
                                 <br>
                                 <span class="p-0 m-0"
-                                    style="font-size:10px;line-height: 10px">{{ Str::limit($item->usuario_manual, 25) }}</span>
+                                    style="font-size:10px;line-height: 10px">{{ Str::limit($item->usuario_manual, 35) }}</span>
                             @endisset
 
                             @isset($item->cliente)
                                 <br>
                                 <span class="p-0 m-0"
-                                    style="font-size:10px;line-height: 10px">{{ Str::limit($item->cliente->name, 25) }}</span>
+                                    style="font-size:10px;line-height: 10px">{{ Str::limit($item->cliente->name, 35) }}</span>
                             @endisset
                         </a>
                         @if ($item->productos->count() == 0)
@@ -115,13 +115,16 @@
 
             @isset($cuenta->cliente)
                 @php
-                    $fechaNacimiento = Carbon\Carbon::parse($cuenta->cliente->nacimiento);
-                    $hoy = Carbon\Carbon::now();
+                    if (isset($cuenta->cliente->nacimiento)) {
+                        $fechaNacimiento = Carbon\Carbon::parse($cuenta->cliente->nacimiento);
+                        $hoy = Carbon\Carbon::now();
 
-                    // Verificar si el mes y el día coinciden
-                    if ($fechaNacimiento->month == $hoy->month && $fechaNacimiento->day == $hoy->day) {
-                        $esCumple = true;
+                        // Verificar si el mes y el día coinciden
+                        if ($fechaNacimiento->month == $hoy->month && $fechaNacimiento->day == $hoy->day) {
+                            $esCumple = true;
+                        }
                     }
+
                 @endphp
             @endisset
             <div {!! $esCumple == true
@@ -774,7 +777,7 @@
                                     @if ($item->contable == true)
                                         <div class="float-end">
                                             <span
-                                                class="badge badge-{{ $total == 0 ? 'danger' : 'success' }} badge-xs badge-pill p-1"
+                                                class="badge badge-{{ $total == 0 ? 'danger' : '' }} badge-xs badge-pill p-1 text-dark letra12"
                                                 style="line-height: 8px">{{ $total }}
                                             </span>
                                         </div>
