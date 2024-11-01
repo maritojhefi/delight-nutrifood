@@ -9,6 +9,5 @@
         @foreach ($lista as $subtitulo=>$ruta)
         <li ><a href="{{route($ruta)}}">{{$subtitulo}}</a></li>
         @endforeach
-        
     </ul>
 </li>

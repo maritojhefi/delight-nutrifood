@@ -21,6 +21,7 @@ use Mike42\Escpos\EscposImage;
 use App\Models\Historial_venta;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Events\CocinaPedidoEvent;
+use App\Helpers\GlobalHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
@@ -389,6 +390,14 @@ class VentasIndex extends Component
 
                     DB::table('producto_venta')->where('producto_id', $idproducto)->where('venta_id', $this->cuenta->id)->update(['adicionales' => $json]);
                 } else if ($registro[0]->cantidad > 0) {
+                    foreach ($json[$cantidad] as $pos => $adic) {
+                        $adicional = Adicionale::where('nombre', key($adic))->first();
+                        if ($adicional) {
+                            $adicional->increment('cantidad');
+                            $adicional->save();
+                            GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
+                        }
+                    }
                     unset($json[$cantidad]);
                     $string = json_encode($json);
                     DB::table('producto_venta')->where('producto_id', $idproducto)->where('venta_id', $this->cuenta->id)->update(['adicionales' => $string]);
@@ -421,33 +430,41 @@ class VentasIndex extends Component
         //dd($this->productoapuntado);
         if (isset($this->itemseleccionado)) {
             if ($this->productoapuntado->medicion == "unidad") {
-
-                $pivot = DB::table('producto_venta')->where('producto_id', $this->productoapuntado->id)->where('venta_id', $this->cuenta->id)->first();
-                $string = $pivot->adicionales;
-                $array = json_decode($string, true);
-                for ($i = 1; $i <= $item; $i++) {
-                    if ($i == $item) {
-                        array_push($array[$i], [$adicional->nombre => $adicional->precio]);
-                        //dd($array[$i]);
+                if ($adicional->contable == true && $adicional->cantidad == 0) {
+                    $this->dispatchBrowserEvent('alert', [
+                        'type' => 'warning',
+                        'message' => "No existe stock para " . $adicional->nombre
+                    ]);
+                } else {
+                    $pivot = DB::table('producto_venta')->where('producto_id', $this->productoapuntado->id)->where('venta_id', $this->cuenta->id)->first();
+                    $string = $pivot->adicionales;
+                    $array = json_decode($string, true);
+                    for ($i = 1; $i <= $item; $i++) {
+                        if ($i == $item) {
+                            array_push($array[$i], [$adicional->nombre => $adicional->precio]);
+                            //dd($array[$i]);
+                        }
                     }
+                    $lista = json_encode($array);
+                    DB::table('producto_venta')->where('producto_id', $this->productoapuntado->id)->where('venta_id', $this->cuenta->id)->update(['adicionales' => $lista]);
+                    // $this->dispatchBrowserEvent('alert', [
+                    //     'type' => 'success',
+                    //     'message' => "Agregado!"
+                    // ]);
+                    GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'reducir');
+                    $adicional->decrement('cantidad');
+                    $adicional->save();
+                    $resultado = CreateList::crearlista($this->cuenta);
+                    $this->listacuenta = $resultado[0];
+                    DB::table('ventas')
+                        ->where('id', $this->cuenta->id)
+                        ->update(['total' => $resultado[1]]);
+                    $this->subtotal = $resultado[1];
+                    $this->cuenta->puntos = $resultado[3];
+                    $this->itemsCuenta = $resultado[2];
                 }
-                $lista = json_encode($array);
-                DB::table('producto_venta')->where('producto_id', $this->productoapuntado->id)->where('venta_id', $this->cuenta->id)->update(['adicionales' => $lista]);
-                // $this->dispatchBrowserEvent('alert', [
-                //     'type' => 'success',
-                //     'message' => "Agregado!"
-                // ]);
-
-                $resultado = CreateList::crearlista($this->cuenta);
-                $this->listacuenta = $resultado[0];
-                DB::table('ventas')
-                    ->where('id', $this->cuenta->id)
-                    ->update(['total' => $resultado[1]]);
-                $this->subtotal = $resultado[1];
-                $this->cuenta->puntos = $resultado[3];
-                $this->itemsCuenta = $resultado[2];
             }
-           
+
             $this->mostraradicionales($this->productoapuntado);
         } else {
             $this->dispatchBrowserEvent('alert', [
@@ -461,19 +478,38 @@ class VentasIndex extends Component
         $anterior = $this->array;
         $posicion = $this->itemseleccionado;
         // Eliminar el elemento en la posición específica
-        unset($this->array[$posicion]);
-        // Reorganizar las claves para que no queden huecos
-        $this->array = array_values($this->array);
-        // Volver a numerar las claves a partir de 1
-        $nuevoArray = array_combine(range(1, count($this->array)), array_values($this->array));
-        // dd($anterior,$this->array);
-        DB::table('producto_venta')->where('producto_id', $this->productoapuntado->id)->where('venta_id', $this->cuenta->id)->update(['adicionales' => $nuevoArray]);
-        DB::table('producto_venta')->where('producto_id', $this->productoapuntado->id)->where('venta_id', $this->cuenta->id)->decrement('cantidad');
-        $producto = $this->productoapuntado;
-        $venta = Venta::find($this->cuenta->id);
-        $this->actualizarlista($venta);
-        $this->mostraradicionales($producto);
-       
+        if (count($this->array) == 1) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "No puede eliminar el unico item disponible"
+            ]);
+        } else {
+            foreach ($this->array[$posicion] as $pos => $adic) {
+                $adicional = Adicionale::where('nombre', key($adic))->first();
+                if ($adicional) {
+                    $adicional->increment('cantidad');
+                    $adicional->save();
+                    GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
+                }
+            }
+            // dd('asasd');
+            unset($this->array[$posicion]);
+            // Reorganizar las claves para que no queden huecos
+            // dd($this->array,$posicion);
+            $this->array = array_values($this->array);
+
+            // Volver a numerar las claves a partir de 1
+            $nuevoArray = array_combine(range(1, count($this->array)), array_values($this->array));
+            // dd($anterior,$this->array);
+
+            DB::table('producto_venta')->where('producto_id', $this->productoapuntado->id)->where('venta_id', $this->cuenta->id)->update(['adicionales' => $nuevoArray]);
+            DB::table('producto_venta')->where('producto_id', $this->productoapuntado->id)->where('venta_id', $this->cuenta->id)->decrement('cantidad');
+
+            $producto = $this->productoapuntado;
+            $venta = Venta::find($this->cuenta->id);
+            $this->actualizarlista($venta);
+            $this->mostraradicionales($producto);
+        }
     }
 
     public function actualizarstock(Producto $producto, $operacion, $cant)
@@ -680,21 +716,36 @@ class VentasIndex extends Component
     public function eliminarproducto(Producto $producto)
     {
         $cuenta = Venta::find($this->cuenta->id);
-        $registro = DB::table('producto_venta')->where('producto_id', $producto->id)->where('venta_id', $cuenta->id)->get()->first();
-        if ($producto->contable == true) {
-            $this->actualizarstock($producto, 'restar', $registro->cantidad);
+        $registro = DB::table('producto_venta')->where('producto_id', $producto->id)->where('venta_id', $cuenta->id)->first();
+        $arrayAdicionales = json_decode($registro->adicionales);
+        // Convierte el objeto en un array
+        $array = (array) $arrayAdicionales;
+        $todoVacio = empty(array_filter($array, function ($item) {
+            return !empty($item); // Filtra los items que no están vacíos
+        }));
+        if ($todoVacio) {
+            if ($producto->contable == true) {
+                $this->actualizarstock($producto, 'restar', $registro->cantidad);
+            }
+            $cuenta->productos()->detach($producto->id);
+    
+            $this->actualizarlista($cuenta);
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => "Se elimino a " . $producto->nombre . " de esta venta"
+            ]);
+            if ($producto->subcategoria->categoria->nombre != 'ECO-TIENDA') //revisa si es de cocina/panaderia el producto para que actualice en la vista de cocina
+            {
+                // event(new CocinaPedidoEvent("Se actualizo la mesa " . $this->cuenta->id));
+            }
+        } else {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "El producto " . $producto->nombre . " tiene adicionales personalizados, eliminelos primero"
+            ]);
         }
-        $cuenta->productos()->detach($producto->id);
 
-        $this->actualizarlista($cuenta);
-        $this->dispatchBrowserEvent('alert', [
-            'type' => 'success',
-            'message' => "Se elimino a " . $producto->nombre . " de esta venta"
-        ]);
-        if ($producto->subcategoria->categoria->nombre != 'ECO-TIENDA') //revisa si es de cocina/panaderia el producto para que actualice en la vista de cocina
-        {
-            // event(new CocinaPedidoEvent("Se actualizo la mesa " . $this->cuenta->id));
-        }
+        
     }
 
     public function seleccionar(Venta $venta)

@@ -285,8 +285,10 @@
                                                                             wire:click="agregaradicional('{{ $item->id }}', '{{ $itemseleccionado }}')"
                                                                             class="list-group-item list-group-item-action p-1"
                                                                             style="border-style: solid;border-color:rgba(14, 178, 80, 0.354);
-                                                            border-width: 1px;font-size:12px"><strong>{{ $item->nombre }}</strong>
-                                                                            ({{ $item->precio }} Bs)
+                                                            border-width: 1px;font-size:12px"><strong
+                                                                                class="letra14">{{ $item->contable ? $item->cantidad : '' }}</strong>
+                                                                            {{ $item->nombre }}
+                                                                            <span class="letra10">({{ $item->precio }} Bs)</span>
                                                                             <span wire:loading
                                                                                 wire:target="agregaradicional('{{ $item->id }}', '{{ $itemseleccionado }}')"
                                                                                 class="spinner-border spinner-border-sm"
@@ -305,7 +307,7 @@
                                                     <div class="col-6">
                                                         <div class="form-group" style="font-size: 12px">
                                                             <span>Agregar observacion para
-                                                                <strong>{{ $item['nombre'] }}</strong></span>
+                                                                <strong>{{ $productoapuntado->nombre }}</strong></span>
                                                             <textarea id="my-textarea" wire:model.defer="observacion" class="form-control"
                                                                 style="border-style: solid;border-color:rgb(14, 178, 79);
                                                             border-width: 1px;border-radius:15px;"

@@ -12,11 +12,19 @@ class Adicionale extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nombre','precio'
-       
+        'nombre',
+        'precio',
+        'cantidad',
+        'contable',
+        'codigo_cocina'
+
     ];
     public function subcategorias()
     {
         return $this->belongsToMany(Subcategoria::class);
+    }
+    public function scopeCocinaAdicionales($query)
+    {
+        return $query->where('codigo_cocina', '!=', null);
     }
 }

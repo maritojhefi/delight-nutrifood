@@ -5,6 +5,7 @@ namespace App\Helpers;
 use Carbon\Carbon;
 use App\Models\Plane;
 use App\Models\Almuerzo;
+use App\Models\Adicionale;
 use App\Helpers\WhatsappAPIHelper;
 use Rawilk\Printing\Facades\Printing;
 
@@ -212,5 +213,85 @@ class GlobalHelper
             'ENVIO' => $envio,
             'EMPAQUE' => $empaque
         );
+    }
+    public static function actualizarCarbosDisponibilidad()
+    {
+        $menuHoy = Almuerzo::hoy()->first();
+        $adicionalesCocina = Adicionale::cocinaAdicionales()->get();
+        // dd($menuHoy, $adicionales);
+        foreach ($adicionalesCocina as $adicional) {
+            switch ($adicional->codigo_cocina) {
+                case 'segundo_ejecutivo':
+                    $adicional->nombre = $menuHoy->ejecutivo;
+                    $adicional->cantidad = $menuHoy->ejecutivo_estado ? $menuHoy->ejecutivo_cant : 0;
+                    break;
+                case 'segundo_dieta':
+                    $adicional->nombre = $menuHoy->dieta;
+                    $adicional->cantidad = $menuHoy->dieta_estado ? $menuHoy->dieta_cant : 0;
+                    break;
+                case 'segundo_veggie':
+                    $adicional->nombre = $menuHoy->vegetariano;
+                    $adicional->cantidad = $menuHoy->vegetariano_estado ? $menuHoy->vegetariano_cant : 0;
+                    break;
+                case 'carbohidrato_1':
+                    $adicional->nombre = $menuHoy->carbohidrato_1;
+                    $adicional->cantidad = $menuHoy->carbohidrato_1_estado ? $menuHoy->carbohidrato_1_cant : 0;
+                    break;
+                case 'carbohidrato_2':
+                    $adicional->nombre = $menuHoy->carbohidrato_2;
+                    $adicional->cantidad = $menuHoy->carbohidrato_2_estado ? $menuHoy->carbohidrato_2_cant : 0;
+                    break;
+                case 'carbohidrato_3':
+                    $adicional->nombre = $menuHoy->carbohidrato_3;
+                    $adicional->cantidad = $menuHoy->carbohidrato_3_estado ? $menuHoy->carbohidrato_3_cant : 0;
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+            $adicional->save();
+        }
+    }
+
+    public static function actualizarMenuCantidadDesdePOS(Adicionale $adicional, $accion = 'reducir')
+    {
+        // Obtén el menú de hoy
+        $menuHoy = Almuerzo::hoy()->first();
+
+        // Verifica si se encontró un menú para hoy
+        if (!$menuHoy) {
+            return;
+        }
+
+        // Determina el método a usar (increment o decrement) en función de la acción
+        $method = ($accion === 'aumentar') ? 'increment' : 'decrement';
+
+        // Actualiza el campo correspondiente basado en el código de cocina
+        switch ($adicional->codigo_cocina) {
+            case 'segundo_ejecutivo':
+                $menuHoy->{$method}('ejecutivo_cant');
+                break;
+            case 'segundo_dieta':
+                $menuHoy->{$method}('dieta_cant');
+                break;
+            case 'segundo_veggie':
+                $menuHoy->{$method}('vegetariano_cant');
+                break;
+            case 'carbohidrato_1':
+                $menuHoy->{$method}('carbohidrato_1_cant');
+                break;
+            case 'carbohidrato_2':
+                $menuHoy->{$method}('carbohidrato_2_cant');
+                break;
+            case 'carbohidrato_3':
+                $menuHoy->{$method}('carbohidrato_3_cant');
+                break;
+            default:
+                // Código desconocido, no hacer nada
+                return;
+        }
+
+        // Guarda los cambios en el menú de hoy
+        $menuHoy->save();
     }
 }

@@ -46,11 +46,12 @@ class CocinaDespachePlanes extends Component
                 # code...
                 break;
         }
-
         DB::table('almuerzos')->where('id', $this->menuHoy->id)->update([$variable => $cantidad]);
+        GlobalHelper::actualizarCarbosDisponibilidad();
     }
     public function cambiarEstadoPlato($variable)
     {
+        
         switch ($variable) {
             case 'ejecutivo_estado':
                 $this->menuHoy->ejecutivo_estado = $this->menuHoy->ejecutivo_estado == true ? false : true;
@@ -81,6 +82,7 @@ class CocinaDespachePlanes extends Component
                 # code...
                 break;
         }
+        GlobalHelper::actualizarCarbosDisponibilidad();
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
             'message' => "Se actualizo correctamente!"
@@ -88,6 +90,7 @@ class CocinaDespachePlanes extends Component
     }
     public function cambiarDisponibilidad()
     {
+        
         $fecha = date('Y-m-d');
         $resultado = $this->saber_dia($fecha);
         $this->menuHoy = Almuerzo::where('dia', $resultado)->first();

@@ -27,30 +27,31 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $logGeneral='public/logs.txt';
-        $logsAdmin='public/logsAdmin.txt';
-        $logsMenu='public/logsMenuWhatsapp.txt';
+        $logGeneral = 'public/logs.txt';
+        $logsAdmin = 'public/logsAdmin.txt';
+        $logsMenu = 'public/logsMenuWhatsapp.txt';
         $schedule->command('apertura:diaria')
-        ->dailyAt('01:00')->appendOutputTo($logGeneral);
+            ->dailyAt('01:00')->appendOutputTo($logGeneral);
         $schedule->command('plan:diario')
-        ->hourly()->appendOutputTo($logGeneral);
+            ->hourly()->appendOutputTo($logGeneral);
         $schedule->command('finalizarPlanTodos:diario')->timezone('America/La_Paz')
-        ->dailyAt('09:00')->appendOutputTo($logGeneral);
+            ->dailyAt('09:00')->appendOutputTo($logGeneral);
         $schedule->command('whatsapp:enviarMenu')
-        ->twiceDaily(18, 20)->appendOutputTo($logsMenu);
+            ->twiceDaily(18, 20)->appendOutputTo($logsMenu);
         $schedule->command('whatsapp:enviarMenuManana')
-        ->dailyAt('08:00')->appendOutputTo($logsMenu);
+            ->dailyAt('08:00')->appendOutputTo($logsMenu);
         $schedule->command('bloquear:menu')
-        ->weeklyOn(6, '15:00')->appendOutputTo($logsAdmin);
+            ->weeklyOn(6, '15:00')->appendOutputTo($logsAdmin);
         $schedule->command('notificar:planExpirado')
-        ->dailyAt('11:00')->appendOutputTo($logsAdmin);
-
+            ->dailyAt('11:00')->appendOutputTo($logsAdmin);
+        $schedule->command('refrescar:adicionales-cocina')
+            ->dailyAt('01:00');
         // $schedule->command('actualizar:tickets')
         // ->everyMinute();
-        
+
         // $schedule->command('whatsapp:enviarMenu')
         // ->everyThirtyMinutes()->appendOutputTo($filePath);
-        
+
         // $schedule->command('inspire')->hourly();
         /*$schedule->call(function () {
            
@@ -64,7 +65,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }
