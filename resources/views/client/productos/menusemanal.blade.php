@@ -88,12 +88,40 @@
         <div class="accordion mb-2" id="accordion-3">
             @foreach ($almuerzos as $almuerzo)
                 @php
-                    
-                    if (App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia) {
+                    $dia = $almuerzo->dia;
+                    $feriado = false;
+                    if (App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $dia) {
                         $diaActual = true;
                     }
+                    if ($diaActual) {
+                        // Convertimos el nombre del día a un formato que Carbon entiende
+                        $diaSemana = match ($dia) {
+                            'Lunes' => 0,
+                            'Martes' => 1,
+                            'Miercoles' => 2,
+                            'Jueves' => 3,
+                            'Viernes' => 4,
+                            'Sabado' => 5,
+                            'Domingo' => 6,
+                            default => null,
+                        };
+                        // Obtener la fecha del inicio de la semana
+                        $fechaInicioSemana = Carbon\Carbon::now()->startOfWeek();
+
+                        // Si es domingo, avanzar al inicio de la próxima semana
+                        if (Carbon\Carbon::now()->isSunday()) {
+                            $fechaInicioSemana = $fechaInicioSemana->addWeek();
+                        }
+
+                        // Obtener la fecha del día específico dentro de la semana actual
+                        $fechaDia = $fechaInicioSemana->copy()->addDays($diaSemana)->format('Y-m-d');
+                        $feriado = DB::table('plane_user')
+                            ->where('start', $fechaDia)
+                            ->where('title', 'feriado')
+                            ->exists();
+                    }
                 @endphp
-                @if ($diaActual)
+                @if ($diaActual && !$feriado)
                     <div data-card-height="90"
                         class="card card-style bg-25 mb-0 rounded-s m-3 {{ App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia ? 'gradient-border' : '' }}"
                         style="height: 90px;background-image:url({{ asset('imagenes/delight/21.jpeg') }}">
@@ -249,6 +277,23 @@
 
                         </div>
                     </div>
+                @elseif($feriado)
+                <div data-card-height="90"
+                class="card card-style bg-25 mb-0 rounded-s m-3 {{ App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia ? 'gradient-border' : '' }}"
+                style="height: 90px;background-image:url({{ asset('imagenes/delight/21.jpeg') }}">
+                @if (App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                    <div class="card-top"><i class="fa fa-check color-yellow-dark fa-3x float-end me-3 mt-3"></i>
+                    </div>
+                @endif
+
+                <div class="card-center">
+                    <button class="btn accordion-btn">
+                        <h4 class="text-center color-red-light text-uppercase">{{ $almuerzo->dia }}</h4>
+                        <p class="text-center color-white opacity-70 mb-0 mt-n2">Dia sin atención</p>
+                    </button>
+                </div>
+                <div class="card-overlay rounded-s bg-black opacity-70"></div>
+            </div>
                 @endif
             @endforeach
 
