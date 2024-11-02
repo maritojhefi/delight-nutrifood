@@ -717,35 +717,48 @@ class VentasIndex extends Component
     {
         $cuenta = Venta::find($this->cuenta->id);
         $registro = DB::table('producto_venta')->where('producto_id', $producto->id)->where('venta_id', $cuenta->id)->first();
-        $arrayAdicionales = json_decode($registro->adicionales);
-        // Convierte el objeto en un array
-        $array = (array) $arrayAdicionales;
-        $todoVacio = empty(array_filter($array, function ($item) {
-            return !empty($item); // Filtra los items que no están vacíos
-        }));
-        if ($todoVacio) {
-            if ($producto->contable == true) {
-                $this->actualizarstock($producto, 'restar', $registro->cantidad);
+        if (isset($registro)) {
+            $arrayAdicionales = json_decode($registro->adicionales);
+
+            if (is_null($arrayAdicionales)) {
+                $todoVacio = true;
+            } else {
+                // Convertir el objeto en un array
+                $array = (array) $arrayAdicionales;
+
+                // Verificar si todos los elementos están vacíos
+                $todoVacio = empty(array_filter($array, function ($item) {
+                    return !empty($item); // Filtra los items que no están vacíos
+                }));
             }
-            $cuenta->productos()->detach($producto->id);
-    
-            $this->actualizarlista($cuenta);
-            $this->dispatchBrowserEvent('alert', [
-                'type' => 'success',
-                'message' => "Se elimino a " . $producto->nombre . " de esta venta"
-            ]);
-            if ($producto->subcategoria->categoria->nombre != 'ECO-TIENDA') //revisa si es de cocina/panaderia el producto para que actualice en la vista de cocina
-            {
-                // event(new CocinaPedidoEvent("Se actualizo la mesa " . $this->cuenta->id));
+
+            if ($todoVacio) {
+                if ($producto->contable == true) {
+                    $this->actualizarstock($producto, 'restar', $registro->cantidad);
+                }
+                $cuenta->productos()->detach($producto->id);
+
+                $this->actualizarlista($cuenta);
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'success',
+                    'message' => "Se elimino a " . $producto->nombre . " de esta venta"
+                ]);
+                if ($producto->subcategoria->categoria->nombre != 'ECO-TIENDA') //revisa si es de cocina/panaderia el producto para que actualice en la vista de cocina
+                {
+                    // event(new CocinaPedidoEvent("Se actualizo la mesa " . $this->cuenta->id));
+                }
+            } else {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'warning',
+                    'message' => "El producto " . $producto->nombre . " tiene adicionales personalizados, eliminelos primero"
+                ]);
             }
         } else {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'warning',
-                'message' => "El producto " . $producto->nombre . " tiene adicionales personalizados, eliminelos primero"
+                'message' => "El producto " . $producto->nombre . " no existe en esta venta"
             ]);
         }
-
-        
     }
 
     public function seleccionar(Venta $venta)

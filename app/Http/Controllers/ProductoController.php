@@ -20,7 +20,7 @@ class ProductoController extends Controller
     }
     public function lineadelightproducto($id)
     {
-        $producto=Producto::find($id);
+        $producto=Producto::findOrFail($id);
         $nombrearray=Str::of($producto->nombre)->explode(' ');
         //dd($nombrearray);
         return view('client.productos.delight-producto',compact('producto','nombrearray'));
@@ -50,7 +50,7 @@ class ProductoController extends Controller
         return view('client.productos.index',compact('subcategorias','enDescuento','conMasPuntos'));
     }
     public function detalleproducto($id){
-       $producto=Producto::find($id);
+       $producto=Producto::findOrFail($id);
        $nombrearray=Str::of($producto->nombre)->explode(' ');
        //dd($nombrearray);
        return view('client.productos.detalleproducto',compact('producto','nombrearray'));

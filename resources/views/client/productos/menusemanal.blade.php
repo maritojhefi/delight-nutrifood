@@ -281,11 +281,7 @@
                     <div data-card-height="90"
                         class="card card-style bg-25 mb-0 rounded-s m-3 {{ App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia ? 'gradient-border' : '' }}"
                         style="height: 90px;background-image:url({{ asset('imagenes/delight/21.jpeg') }}">
-                        @if (App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
-                            <div class="card-top"><i class="fa fa-check color-yellow-dark fa-3x float-end me-3 mt-3"></i>
-                            </div>
-                        @endif
-
+                    
                         <div class="card-center">
                             <button class="btn accordion-btn">
                                 <h4 class="text-center color-red-light text-uppercase">{{ $almuerzo->dia }}</h4>
