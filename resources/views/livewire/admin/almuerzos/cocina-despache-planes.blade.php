@@ -345,7 +345,7 @@
                             <div class="row m-2 letra12">
                                 <div class="col-md-2">
                                     @if ($menuHoy->ejecutivo_estado)
-                                        <input type="number" wire:model.lazy="ejecutivo_cant"
+                                        <input type="number" min="0" wire:model.lazy="ejecutivo_cant"
                                             wire:change="cambiarCantidad('ejecutivo_cant')"
                                             class="form-control form-control-sm bordeado"
                                             style="padding: 5px; height: 12px;">
@@ -363,7 +363,7 @@
                             <div class="row m-2">
                                 <div class="col-md-2">
                                     @if ($menuHoy->dieta_estado)
-                                        <input type="number" wire:model.lazy="dieta_cant"
+                                        <input type="number" min="0" wire:model.lazy="dieta_cant"
                                             wire:change="cambiarCantidad('dieta_cant')"
                                             class="form-control form-control-sm bordeado"
                                             style="padding: 5px; height: 12px;">
@@ -381,7 +381,7 @@
                             <div class="row m-2">
                                 <div class="col-md-2">
                                     @if ($menuHoy->vegetariano_estado)
-                                        <input type="number" wire:model.lazy="vegetariano_cant"
+                                        <input type="number" min="0" wire:model.lazy="vegetariano_cant"
                                             wire:change="cambiarCantidad('vegetariano_cant')"
                                             class="form-control form-control-sm bordeado"
                                             style="padding: 5px; height: 12px;">
@@ -400,7 +400,7 @@
                             <div class="row m-2">
                                 <div class="col-md-2">
                                     @if ($menuHoy->carbohidrato_1_estado)
-                                        <input type="number" wire:model.lazy="carbohidrato_1_cant"
+                                        <input type="number" min="0" wire:model.lazy="carbohidrato_1_cant"
                                             wire:change="cambiarCantidad('carbohidrato_1_cant')"
                                             class="form-control form-control-sm bordeado"
                                             style="padding: 5px; height: 12px;">
@@ -419,7 +419,7 @@
                             <div class="row m-2">
                                 <div class="col-md-2">
                                     @if ($menuHoy->carbohidrato_2_estado)
-                                        <input type="number" wire:model.lazy="carbohidrato_2_cant"
+                                        <input type="number" min="0" wire:model.lazy="carbohidrato_2_cant"
                                             wire:change="cambiarCantidad('carbohidrato_2_cant')"
                                             class="form-control form-control-sm bordeado"
                                             style="padding: 5px; height: 12px;">
@@ -438,7 +438,7 @@
                             <div class="row m-2">
                                 <div class="col-md-2">
                                     @if ($menuHoy->carbohidrato_3_estado)
-                                        <input type="number" wire:model.lazy="carbohidrato_3_cant"
+                                        <input type="number" min="0" wire:model.lazy="carbohidrato_3_cant"
                                             wire:change="cambiarCantidad('carbohidrato_3_cant')"
                                             class="form-control form-control-sm bordeado"
                                             style="padding: 5px; height: 12px;">

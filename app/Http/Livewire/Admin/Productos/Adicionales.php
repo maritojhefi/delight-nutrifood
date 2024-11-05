@@ -51,7 +51,7 @@ class Adicionales extends Component
             'type' => 'success',
             'message' => "Adicional actualizado!!"
         ]);
-        $this->reset('nombre,precio,cantidad');
+        $this->reset('nombre','precio','cantidad');
     }
     public function updated($propertyName)
     {

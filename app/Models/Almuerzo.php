@@ -31,6 +31,9 @@ class Almuerzo extends Model
         'carbohidrato_2_cant',
         'carbohidrato_3_cant',
         'jugo_cant',
+        'ejecutivo_tiene_carbo',
+        'vegetariano_tiene_carbo',
+        'dieta_tiene_carbo'
     ];
 
     public function scopeHoy($query)

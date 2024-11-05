@@ -692,24 +692,26 @@ class VentasIndex extends Component
         }
         $cuenta = Venta::find($this->cuenta->id);
         $registro = DB::table('producto_venta')->where('producto_id', $producto->id)->where('venta_id', $cuenta->id)->get();
-
-        if ($registro[0]->cantidad == 1) {
-            $cuenta->productos()->detach($producto->id);
+        if (isset($registro[0])) {
+            if ($registro[0]->cantidad == 1) {
+                $cuenta->productos()->detach($producto->id);
+            } else {
+                DB::table('producto_venta')
+                    ->where('venta_id', $cuenta->id)
+                    ->where('producto_id', $producto->id)
+                    ->decrement('cantidad', 1);
+            }
+            $this->actualizarlista($cuenta);
+            $this->actualizaradicionales($producto->id, 'restar');
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => "Se elimino 1 " . $producto->nombre . " de esta venta"
+            ]);
         } else {
-            DB::table('producto_venta')
-                ->where('venta_id', $cuenta->id)
-                ->where('producto_id', $producto->id)
-                ->decrement('cantidad', 1);
-        }
-        $this->actualizarlista($cuenta);
-        $this->actualizaradicionales($producto->id, 'restar');
-        $this->dispatchBrowserEvent('alert', [
-            'type' => 'success',
-            'message' => "Se elimino 1 " . $producto->nombre . " de esta venta"
-        ]);
-        if ($producto->subcategoria->categoria->nombre != 'ECO-TIENDA') //revisa si es de cocina/panaderia el producto para que actualice en la vista de cocina
-        {
-            // event(new CocinaPedidoEvent("Se actualizo la mesa " . $this->cuenta->id));
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => "Ocurrio un error al eliminar este producto, intente nuevamente."
+            ]);
         }
     }
 

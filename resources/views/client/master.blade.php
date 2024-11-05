@@ -26,6 +26,13 @@
         };
     </script>
     <style>
+        .bordeado {
+            border-style:dotted;
+            border-color: #37BC9B ;
+            border-width: 2px;
+            /* border-radius: 15px; */
+        }
+
         .fa-beat {
             animation: fa-beat 5s ease infinite;
         }
@@ -157,13 +164,14 @@
                 // 'direccion' => isset($perfil->direccion) ? $perfil->direccion : null,
                 // 'foto' => isset($perfil->foto) ? $perfil->foto : null,
                 // 'latitud' => isset($perfil->latitud) ? $perfil->latitud : null,
-                
             ];
-            $datos=[];
+            $datos = [];
             foreach ($array as $llave => $valor) {
-                if(!isset($valor))$datos[$llave]=$valor;
+                if (!isset($valor)) {
+                    $datos[$llave] = $valor;
+                }
             }
-           
+
         @endphp
         <x-perfil-incompleto-component :datos="$datos" />
     @endauth

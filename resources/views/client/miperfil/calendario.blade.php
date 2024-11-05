@@ -16,13 +16,14 @@ $path = 'https://delight-nutrifood.com';
     @if ($estadoMenu->activo)
     @if ($plan->editable)
     <div class="content text-white">
-        <h4>Personaliza tu menu de esta semana!</h4>
+        <h4>Personaliza tu menú de esta semana!</h4>
         <p>
-            Quedan {{ $coleccion->count() }} dias, personaliza cada uno!
+            Quedan {{ $coleccion->count() }} días, personaliza cada uno!
         </p>
     </div>
     <div class="accordion mt-4" id="accordion-3">
         @foreach ($coleccion as $lista)
+        {{-- @dd($lista) --}}
         <div class="card card-style">
             <div
                 class="list-group list-custom-small list-icon-0 bg-@if($lista['detalle'] == null && $lista['estado']=='pendiente'){{'mint'}}@elseif($lista['estado']=='desarrollo'){{'yellow'}}@else{{'green'}}@endif-dark ps-3 pe-4 ">
@@ -46,22 +47,22 @@ $path = 'https://delight-nutrifood.com';
                     <i class="fa fa-angle-down color-white"></i>
                 </a>
             </div>
-            <div class="ps-2 pe-4 collapse" id="collapse-7{{ $lista['id'] }}" data-bs-parent="#accordion-3" style="">
+            <div class="ps-2 pe-4 collapse bordeado" id="collapse-7{{ $lista['id'] }}" data-bs-parent="#accordion-3" style="">
                 <div class="p-2">
                     @if ($lista['detalle'] == null && $lista['estado']=='pendiente')
                     <form action="{{ route('personalizardia') }}" id="{{ $lista['id'] }}" method="POST">
                         @csrf
-                        <div class="row">
+                        <div class="row mb-0">
                             @if ($plan->segundo)
-                            <div class="col-12 mb-3" id="plato{{ $lista['id'] }}">
+                            <div class="col-12 mb-1" id="plato{{ $lista['id'] }}">
                                 <i class="fa fa-star color-yellow-dark"></i> <strong>Elija su
                                     plato</strong>
                                 <div class="fac fac-radio fac-default" data-group="plato{{ $lista['id'] }}"><span></span>
-                                    <input id="box1-fac-radio{{ $lista['id'] }}" type="radio"
-                                        @if(!$lista['ejecutivo_estado'])disabled @endif name="plato{{ $lista['id'] }}"
-                                        value="{{ $lista['ejecutivo'] }}">
+                                    <input id="box1-fac-radio{{ $lista['id'] }}" type="radio" class="segundos"
+                                        @if(!$lista['ejecutivo_estado'])disabled @endif name="plato{{ $lista['id'] }}" data-id="{{ $lista['id'] }}"
+                                        value="{{ $lista['ejecutivo'] }}" data-carbo="{{$lista['ejecutivo_tiene_carbo']}}">
                                     <label for="box1-fac-radio{{ $lista['id'] }}"><mark
-                                            class="highlight ps-2 font-12 pe-2 bg-magenta-dark mr-2 ">Ejecutivo</mark>
+                                            class="highlight ps-1 font-10 pe-1 bg-magenta-dark mr-2 rounded-m">Ejecutivo</mark>
                                         @if ($lista['ejecutivo_estado'])
                                         {{ $lista['ejecutivo'] }} <i class="fa fa-check color-green-dark"></i>
                                         @else
@@ -71,11 +72,11 @@ $path = 'https://delight-nutrifood.com';
                                     </label>
                                 </div>
                                 <div class="fac fac-radio fac-default" data-group="plato{{ $lista['id'] }}"><span></span>
-                                    <input id="box2-fac-radio{{ $lista['id'] }}" type="radio"
+                                    <input id="box2-fac-radio{{ $lista['id'] }}" type="radio" class="segundos" data-id="{{ $lista['id'] }}"
                                         @if(!$lista['dieta_estado'])disabled @endif name="plato{{ $lista['id'] }}"
-                                        value="{{ $lista['dieta'] }}">
+                                        value="{{ $lista['dieta'] }}" data-carbo="{{$lista['dieta_tiene_carbo']}}">
                                     <label for="box2-fac-radio{{ $lista['id'] }}"><mark
-                                            class="highlight ps-2 font-12 pe-2 bg-magenta-dark mr-2">Dieta</mark>
+                                            class="highlight ps-1 font-10 pe-1 bg-magenta-dark mr-2 rounded-m">Dieta</mark>
                                         @if ($lista['dieta_estado'])
                                         {{ $lista['dieta'] }} <i class="fa fa-check color-green-dark"></i>
                                         @else
@@ -84,11 +85,11 @@ $path = 'https://delight-nutrifood.com';
                                     </label>
                                 </div>
                                 <div class="fac fac-radio fac-default" data-group="plato{{ $lista['id'] }}"><span></span>
-                                    <input id="box3-fac-radio{{ $lista['id'] }}" type="radio"
+                                    <input id="box3-fac-radio{{ $lista['id'] }}" type="radio" class="segundos" data-id="{{ $lista['id'] }}"
                                         @if(!$lista['vegetariano_estado'])disabled @endif name="plato{{ $lista['id'] }}"
-                                        value="{{ $lista['vegetariano'] }}">
+                                        value="{{ $lista['vegetariano'] }}" data-carbo="{{$lista['vegetariano_tiene_carbo']}}">
                                     <label for="box3-fac-radio{{ $lista['id'] }}"><mark
-                                            class="highlight ps-2 font-12 pe-2 bg-magenta-dark mr-2">Veggie</mark>
+                                            class="highlight ps-1 font-10 pe-1 bg-magenta-dark mr-2 rounded-m">Veggie</mark>
                                         @if ($lista['vegetariano_estado'])
                                         {{ $lista['vegetariano'] }} <i class="fa fa-check color-green-dark"></i>
                                         @else
@@ -98,12 +99,14 @@ $path = 'https://delight-nutrifood.com';
                                 </div>
 
                             </div>
+                            <hr>
                             @endif
+                           
                             @if ($plan->carbohidrato)
-                            <div class="col-12" id="carb{{ $lista['id'] }}">
+                            <div class="col-12 mb-1" id="carb{{ $lista['id'] }}">
                                 <i class="fa fa-star color-yellow-dark"></i> <strong>Elija su
                                     carbohidrato</strong>
-                                <div class="fac fac-radio fac-default" data-group="carb{{ $lista['id'] }}"><span></span>
+                                <div class="fac fac-radio fac-default carbos{{$lista['id']}}" data-group="carb{{ $lista['id'] }}"><span></span>
                                     <input id="box4-fac-radio{{ $lista['id'] }}" type="radio"
                                         @if(!$lista['carbohidrato_1_estado'])disabled @endif
                                         name="carb{{ $lista['id'] }}" value="{{ $lista['carbohidrato_1'] }}">
@@ -117,7 +120,7 @@ $path = 'https://delight-nutrifood.com';
 
                                     </label>
                                 </div>
-                                <div class="fac fac-radio fac-default" data-group="carb{{ $lista['id'] }}"><span></span>
+                                <div class="fac fac-radio fac-default carbos{{$lista['id']}}" data-group="carb{{ $lista['id'] }}"><span></span>
                                     <input id="box5-fac-radio{{ $lista['id'] }}" type="radio"
                                         @if(!$lista['carbohidrato_2_estado'])disabled @endif
                                         name="carb{{ $lista['id'] }}" value="{{ $lista['carbohidrato_2'] }}">
@@ -130,7 +133,7 @@ $path = 'https://delight-nutrifood.com';
                                         @endif
                                     </label>
                                 </div>
-                                <div class="fac fac-radio fac-default" data-group="carb{{ $lista['id'] }}"><span></span>
+                                <div class="fac fac-radio fac-default carbos{{$lista['id']}}" data-group="carb{{ $lista['id'] }}"><span></span>
                                     <input id="box6-fac-radio{{ $lista['id'] }}" type="radio"
                                         @if(!$lista['carbohidrato_3_estado'])disabled @endif
                                         name="carb{{ $lista['id'] }}" value="{{ $lista['carbohidrato_3'] }}">
@@ -151,10 +154,12 @@ $path = 'https://delight-nutrifood.com';
                                 </div>
 
                             </div>
+                            <hr>
                             @endif
-
+                            
                         </div>
-                        <div class="row">
+                        
+                        <div class="row mb-0">
                             <div class="col-6" id="envio{{ $lista['id'] }}">
                                 <i class="fa fa-map-marker font-16 color-red-dark"></i> <strong>Tipo de
                                     envio</strong>
@@ -203,6 +208,7 @@ $path = 'https://delight-nutrifood.com';
                             </div>
                             <div class="box7-fac-radio{{ $lista['id'] }}" id="empaque{{ $lista['id'] }}"></div>
                         </div>
+                        <hr>
                         <div class="row mb-0">
                             @if ($plan->sopa)
                             <h4 class="col-6 font-500  font-13"> <i class="fa fa-check color-green-dark"></i>
@@ -419,6 +425,20 @@ $path = 'https://delight-nutrifood.com';
                 $("#pamesa").remove();
             }
         });
+
+        $('.segundos').change(function () {
+        if (this.checked) {
+            if ($(this).attr('data-carbo') == '1') { // Si el segundo seleccionado tiene carbohidrato
+                $('.carbos'+ $(this).attr('data-id')).removeClass('d-none'); // Mostrar elementos con carbohidratos
+                $('#box13-fac-radio' + $(this).attr('data-id')).prop('checked', false); // Marcar el radio button
+            } else {
+                $('.carbos'+ $(this).attr('data-id')).addClass('d-none'); // Ocultar elementos con carbohidratos
+                $('#box13-fac-radio' + $(this).attr('data-id')).prop('checked', true); // Marcar el radio button
+            }
+            }
+        });
+
+
         $('.mesa').change(function () {
             if (this.checked) {
                 var idData = $(this).attr("data-id")
@@ -455,15 +475,15 @@ $path = 'https://delight-nutrifood.com';
 
             var cont = 0;
             for (var i = 0; i < data.length; i++) {
-                console.log(data[i])
+                // console.log(data[i])
                 if ($("input[name='" + data[i] + "']:checked").val()) {
-                    console.log($("input[name='" + data[i] + "']:checked").val())
+                    // console.log($("input[name='" + data[i] + "']:checked").val())
                     cont++
                 }
 
             }
             if (document.getElementById('pamesa') && !document.getElementById('empaque' + idForm)) {
-                console.log(document.getElementById('pamesa'))
+                // console.log(document.getElementById('pamesa'))
                 cont++
             }
             if (cont == data.length) {
@@ -471,7 +491,7 @@ $path = 'https://delight-nutrifood.com';
             } else {
                 $(this).find('button').prop('disabled', true);
             }
-            console.log(cont);
+            // console.log(cont);
             // if ($("input[name='carb" + idForm + "']:checked").val() && $("input[name='plato" + idForm +
             //         "']:checked").val() && $("input[name='envio" + idForm + "']:checked").val()) {
             //     $(this).find('button').prop('disabled', false);

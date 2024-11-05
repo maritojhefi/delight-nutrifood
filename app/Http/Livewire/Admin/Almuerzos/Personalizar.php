@@ -14,6 +14,7 @@ class Personalizar extends Component
 {
     use WithFileUploads;
     public $sopa, $ensalada, $imagen, $ejecutivo, $dieta, $vegetariano, $carbohidrato_1, $carbohidrato_2, $carbohidrato_3, $jugo;
+    public $ejecutivo_tiene_carbo, $vegetariano_tiene_carbo, $dieta_tiene_carbo;
     public $seleccionado, $switcher;
     protected $rules = [
         'sopa' => 'required',
@@ -24,7 +25,10 @@ class Personalizar extends Component
         'carbohidrato_1' => 'required',
         'carbohidrato_2' => 'required',
         'carbohidrato_3' => 'required',
-        'jugo' => 'required|min:4'
+        'jugo' => 'required|min:4',
+        'ejecutivo_tiene_carbo' => 'required|boolean',
+        'vegetariano_tiene_carbo' => 'required|boolean',
+        'dieta_tiene_carbo' => 'required|boolean'
 
     ];
     public function cambiarMenu()
@@ -34,15 +38,19 @@ class Personalizar extends Component
         } else {
             $this->switcher->activo = true;
             DB::table('almuerzos')->update([
-                'sopa_estado'=>true,
-                'ensalada_estado'=>true,
-                'ejecutivo_estado'=>true,
-                'dieta_estado'=>true,
-                'vegetariano_estado'=>true,
-                'carbohidrato_1_estado'=>true,
-                'carbohidrato_2_estado'=>true,
-                'carbohidrato_3_estado'=>true,
-                'jugo_estado'=>true,
+                'sopa_estado' => true,
+                'ensalada_estado' => true,
+                'ejecutivo_estado' => true,
+                'dieta_estado' => true,
+                'vegetariano_estado' => true,
+                'carbohidrato_1_estado' => true,
+                'carbohidrato_2_estado' => true,
+                'carbohidrato_3_estado' => true,
+                'vegetariano_tiene_carbo' => true,
+                'ejecutivo_tiene_carbo' => true,
+                'dieta_tiene_carbo' => true,
+                'jugo_estado' => true,
+
             ]);
         }
         $this->switcher->save();
@@ -90,6 +98,9 @@ class Personalizar extends Component
         $this->carbohidrato_1 = $almuerzo->carbohidrato_1;
         $this->carbohidrato_2 = $almuerzo->carbohidrato_2;
         $this->carbohidrato_3 = $almuerzo->carbohidrato_3;
+        $this->ejecutivo_tiene_carbo = $almuerzo->ejecutivo_tiene_carbo;
+        $this->vegetariano_tiene_carbo = $almuerzo->vegetariano_tiene_carbo;
+        $this->dieta_tiene_carbo = $almuerzo->dieta_tiene_carbo;
         $this->jugo = $almuerzo->jugo;
 
         $this->dispatchBrowserEvent('alert', [
@@ -103,20 +114,10 @@ class Personalizar extends Component
     }
     public function actualizar()
     {
-        $this->validate();
+        $array = $this->validate();
         $almuerzo = Almuerzo::find($this->seleccionado->id);
 
-        $almuerzo->update([
-            'sopa' => $this->sopa,
-            'ensalada' => $this->ensalada,
-            'ejecutivo' => $this->ejecutivo,
-            'dieta' => $this->dieta,
-            'vegetariano' => $this->vegetariano,
-            'carbohidrato_1' => $this->carbohidrato_1,
-            'carbohidrato_2' => $this->carbohidrato_2,
-            'carbohidrato_3' => $this->carbohidrato_3,
-            'jugo' => $this->jugo,
-        ]);
+        $almuerzo->update($array);
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
             'message' => "El dia " . $almuerzo->dia . " fue actualizado!"

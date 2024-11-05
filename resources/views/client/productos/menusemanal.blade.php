@@ -292,8 +292,6 @@
                     </div>
                 @endif
             @endforeach
-
-
         </div>
     </div>
     <div class="splide single-slider slider-no-arrows slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"

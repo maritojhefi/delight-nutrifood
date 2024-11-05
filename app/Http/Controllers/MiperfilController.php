@@ -117,10 +117,13 @@ class MiperfilController extends Controller
                     'sopa' => $menusemanal->sopa,
                     'ensalada' => $menusemanal->ensalada,
                     'ejecutivo' => $menusemanal->ejecutivo,
+                    'ejecutivo_tiene_carbo' => $menusemanal->ejecutivo_tiene_carbo,
                     'ejecutivo_estado' => ($menusemanal->ejecutivo_estado) ? true : false,
                     'dieta' => $menusemanal->dieta,
+                    'dieta_tiene_carbo' => $menusemanal->dieta_tiene_carbo,
                     'dieta_estado' => ($menusemanal->dieta_estado) ? true : false,
                     'vegetariano' => $menusemanal->vegetariano,
+                    'vegetariano_tiene_carbo' => $menusemanal->vegetariano_tiene_carbo,
                     'vegetariano_estado' => ($menusemanal->vegetariano_estado) ? true : false,
                     'carbohidrato_1' => $menusemanal->carbohidrato_1,
                     'carbohidrato_1_estado' => ($menusemanal->carbohidrato_1_estado) ? true : false,
@@ -149,7 +152,7 @@ class MiperfilController extends Controller
     }
     public function personalizardia(Request $request)
     {
-
+        dd($request);
         $switcher = SwitchPlane::find(1);
         if ($switcher->activo == false) {
             return back()->with('error', 'El menu se encuentra cerrado!');
@@ -187,8 +190,8 @@ class MiperfilController extends Controller
             $envio => 'required',
             $empaque => 'required'
         ]);
-        $array = GlobalHelper::menuDiarioArray($varSopa,$varSegundo,$varEnsalada,$varCarbo,$varJugo,$request[$envio],$request[$empaque]);
-        
+        $array = GlobalHelper::menuDiarioArray($varSopa, $varSegundo, $varEnsalada, $varCarbo, $varJugo, $request[$envio], $request[$empaque]);
+
 
         $dia = DB::table('plane_user')->where('id', $request->id)->first();
         if ($dia->estado == "pendiente") {
