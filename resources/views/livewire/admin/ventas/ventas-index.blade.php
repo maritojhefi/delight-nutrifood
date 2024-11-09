@@ -656,11 +656,19 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-primary p-2 my-0 "
-                                            wire:loading.attr="disabled" wire:click="cobrar"
-                                            {{ $tipocobro ? '' : 'disabled' }} data-bs-dismiss="modal">Confirmar y cerrar
-                                            venta</button>
+                                        @if (!$cuenta->pagado)
+                                            <button type="button" class="btn btn-primary p-2 my-0 "
+                                                wire:loading.attr="disabled" wire:click="cobrar"
+                                                {{ $tipocobro ? '' : 'disabled' }}>Marcar como pagado</button>
+                                        @else
+                                            <button type="button" class="btn btn-success p-2 my-0 "
+                                                wire:loading.attr="disabled" wire:click="cerrarVenta"
+                                                data-bs-dismiss="modal">Cerrar venta</button>
+                                        @endif
+
+
                                         <button type="button" class="btn btn-warning btn-sm p-2 my-0"
+                                            {{ $cuenta->pagado ? '' : 'disabled' }}
                                             wire:click="modalImpresion"><span>Imprimir</span></button>
                                         <button wire:loading.remove wire:target='imprimir' type="button"
                                             class="btn btn-info btn-sm p-2 my-0"

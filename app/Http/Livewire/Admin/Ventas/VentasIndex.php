@@ -427,6 +427,13 @@ class VentasIndex extends Component
 
     public function agregaradicional(Adicionale $adicional, $item)
     {
+        if ($this->cuenta->pagado == true) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "La venta ya ha sido pagada, no se puede editar"
+            ]);
+            return false;
+        }
         //dd($this->productoapuntado);
         if (isset($this->itemseleccionado)) {
             if ($this->productoapuntado->medicion == "unidad") {
@@ -475,6 +482,13 @@ class VentasIndex extends Component
     }
     public function eliminarItem()
     {
+        if ($this->cuenta->pagado == true) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "La venta ya ha sido pagada, no se puede editar"
+            ]);
+            return false;
+        }
         $anterior = $this->array;
         $posicion = $this->itemseleccionado;
         // Eliminar el elemento en la posición específica
@@ -573,6 +587,13 @@ class VentasIndex extends Component
 
     public function adicionar(Producto $producto)
     {
+        if ($this->cuenta->pagado == true) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "La venta ya ha sido pagada, no se puede editar"
+            ]);
+            return false;
+        }
         if ($producto->contable == true) {
             $resultado = $this->actualizarstock($producto, 'sumar', 1);
             if ($resultado == null) {
@@ -630,6 +651,13 @@ class VentasIndex extends Component
 
     public function adicionarvarios(Producto $producto)
     {
+        if ($this->cuenta->pagado == true) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "La venta ya ha sido pagada, no se puede editar"
+            ]);
+            return false;
+        }
         if ($this->cantidadespecifica != null) {
             if ($producto->contable == true) {
                 $resultado = $this->actualizarstock($producto, 'sumarvarios', $this->cantidadespecifica);
@@ -687,6 +715,13 @@ class VentasIndex extends Component
 
     public function eliminaruno(Producto $producto)
     {
+        if ($this->cuenta->pagado == true) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "La venta ya ha sido pagada, no se puede editar"
+            ]);
+            return false;
+        }
         if ($producto->contable == true) {
             $this->actualizarstock($producto, 'restar', 1);
         }
@@ -717,6 +752,13 @@ class VentasIndex extends Component
 
     public function eliminarproducto(Producto $producto)
     {
+        if ($this->cuenta->pagado == true) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "La venta ya ha sido pagada, no se puede editar"
+            ]);
+            return false;
+        }
         $cuenta = Venta::find($this->cuenta->id);
         $registro = DB::table('producto_venta')->where('producto_id', $producto->id)->where('venta_id', $cuenta->id)->first();
         if (isset($registro)) {
@@ -817,6 +859,13 @@ class VentasIndex extends Component
 
     public function cobrar()
     {
+        if ($this->cuenta->pagado == true) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "Esta venta ya se encuentra pagada!"
+            ]);
+            return false;
+        }
         $this->validate(['tipocobro' => 'required']);
         $cajaactiva = Caja::where('sucursale_id', $this->cuenta->sucursale->id)->whereDate('created_at', Carbon::today())->first();
 
@@ -857,13 +906,16 @@ class VentasIndex extends Component
                 foreach ($productos as $prod) {
                     $cuentaguardada->productos()->attach($prod->id, ['cantidad' => $prod->pivot->cantidad, 'adicionales' => $prod->pivot->adicionales]);
                 }
-                $cuenta->productos()->detach();
-                $cuenta->delete();
+                $cuenta->pagado = true;
+                $cuenta->save();
+                $this->cuenta = $cuenta;
+                // $cuenta->productos()->detach();
+                // $cuenta->delete();
 
-                $this->reset('cuenta');
+                // $this->reset('cuenta');
                 $this->dispatchBrowserEvent('alert', [
                     'type' => 'success',
-                    'message' => "Venta finalizada!"
+                    'message' => "Esta venta ahora se encuentra pagada!"
                 ]);
             } else {
                 $this->dispatchBrowserEvent('alert', [
@@ -879,6 +931,24 @@ class VentasIndex extends Component
         }
     }
 
+    public function cerrarVenta()
+    {
+        if ($this->cuenta->pagado == true) {
+            $cuenta = Venta::find($this->cuenta->id);
+            $cuenta->productos()->detach();
+            $cuenta->delete();
+            $this->reset('cuenta');
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => "Se finalizó esta venta"
+            ]);
+        } else {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "Primero marque como pagado esta venta"
+            ]);
+        }
+    }
     public function editardescuento()
     {
         DB::table('ventas')->where('id', $this->cuenta->id)->update(['descuento' => $this->descuento]);
