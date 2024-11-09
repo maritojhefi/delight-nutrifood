@@ -152,7 +152,7 @@ class MiperfilController extends Controller
     }
     public function personalizardia(Request $request)
     {
-        dd($request);
+        // dd($request);
         $switcher = SwitchPlane::find(1);
         if ($switcher->activo == false) {
             return back()->with('error', 'El menu se encuentra cerrado!');
