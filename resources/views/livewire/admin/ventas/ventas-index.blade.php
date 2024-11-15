@@ -698,7 +698,7 @@
                 <div class="nav-container" style="overflow-x: auto; white-space: nowrap;">
                     @foreach ($subcategorias as $subcategoria)
                         <a href="#"
-                            class="nav-item m-0 p-0 mb-2 {{ $subcategoriaSeleccionada == $subcategoria->id ? 'selected bg-primary' : '' }}"
+                            class="nav-item m-0 p-0 mb-2 letra14 {{ $subcategoriaSeleccionada == $subcategoria->id ? 'selected bg-primary' : '' }}"
                             role="presentation"
                             style="border-style: solid;border-color:rgb(14, 178, 79);
                             border-width: 1px;border-radius:15px; display: inline-block;"
@@ -735,7 +735,7 @@
 
                     <div class="card-body product-grid-card col-6 col-sm-6 col-md-4 col-lg-4 col-xl-3 col-xxl-3 m-0 p-1"
                         style="border-style: solid;{{ $total == 0 && $item->contable == true ? 'border-color:red;' : 'border-color:rgb(14, 178, 79);' }}
-                        border-width: 1px;border-radius:15px">
+                        border-width: 2px;border-radius:15px">
                         <div class="new-arrival-product m-0 p-0">
                             <div wire:click="adicionar('{{ $item->id }}')" class="new-arrivals-img-contnent mx-auto"
                                 style="width: 100px;height:100px">
@@ -787,7 +787,7 @@
                                     @if ($item->contable == true)
                                         <div class="float-end">
                                             <span
-                                                class="badge badge-{{ $total == 0 ? 'danger' : '' }} badge-xs badge-pill p-1 text-dark letra12"
+                                                class="badge {{ $total == 0 ? 'badge-danger text-white' : 'badge-outline-dark text-dark' }} badge-xs badge-pill p-1  letra14"
                                                 style="line-height: 8px">{{ $total }}
                                             </span>
                                         </div>
