@@ -2,8 +2,8 @@
     <div class="header-content">
         <nav class="navbar navbar-expand">
             <div class="collapse navbar-collapse justify-content-between row">
-                <div class="col-8 ">
-                    <div class="d-none d-sm-none d-md-block">
+                <div class="col-10 ">
+                    {{-- <div class="d-none d-sm-none d-md-block">
                         <div class="row ">
                             <div class="col-3">
                                 @livewire('admin.egresos-component')
@@ -22,15 +22,15 @@
                                     class="btn  btn-sm  btn-outline-warning">Usuarios <i class="fa fa-user"></i></a>
                             </div>
                         </div>
-                    </div>
-
+                    </div> --}}
+                    @livewire('almuerzos-header-realtime-component')
                 </div>
-                <ul class="navbar-nav header-right col-4">
+                <ul class="navbar-nav header-right col-2">
                     <li class="nav-item dropdown header-profile">
                         <a class="nav-link" href="javascript:void(0);" role="button" data-bs-toggle="dropdown">
                             <div class="header-info me-3">
-                                <span class="fs-16 font-w600 ">{{ auth()->user()->name }}</span>
-                                <small class="text-end fs-14 font-w400">{{ auth()->user()->role->nombre }}</small>
+                                <span class="fs-16 font-w600 ">{{ Str::limit(auth()->user()->name,15) }}</span>
+                                <small class="text-start fs-14 font-w400">{{ auth()->user()->role->nombre }}</small>
                             </div>
                             @if (auth()->user()->foto)
                                 <img src="{{ asset('imagenes/perfil/' . auth()->user()->foto) }}" width="20">

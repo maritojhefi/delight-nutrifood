@@ -6,7 +6,7 @@
             <div class="">
 
                 @foreach ($ventas as $item)
-                    <div class="alert alert-{{ $item->productos->count() > 0 ? 'success' : 'danger' }}@isset($cuenta) {{ $item->id == $cuenta->id ? 'solid alert-alt' : '' }} @endisset alert-dismissible fade show p-2 pt-1"
+                    <div class="alert {{ $item->productos->count() > 0 ? 'border-success alert-success' : 'alert-danger border-danger' }}@isset($cuenta) {{ $item->id == $cuenta->id ? 'solid alert-alt bordeado-pulse' : '' }} @endisset p-1 px-2 pb-2"
                         style="line-height: 0px">
                         <a href="#" class="p-0 m-0" style="line-height: 20px"
                             wire:click="seleccionar('{{ $item->id }}')">
@@ -18,24 +18,37 @@
                             <strong
                                 class="@isset($cuenta) {{ $item->id == $cuenta->id ? 'text-white' : '' }} @endisset ">{{ $item->total }}Bs
                             </strong>
+                            @if ($item->productos->count() == 0)
+                                <a href="#" class="float-end badge badge-danger badge-pill py-1 px-2"
+                                    wire:click="eliminar('{{ $item->id }}')">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            @endif
+                            @if ($item->pagado)
+                                <span class="badge badge-dark badge-sm popover-container">Pagado <span
+                                        class="popover-text">Esta venta se encuentra pagada</span></span>
+                            @endif
+                            @if ($item->cocina && !$item->despachado_cocina)
+                                <span class="badge badge-info badge-sm popover-container"><i class="fa fa-send"></i>
+                                    <span class="popover-text">Enviado a cocina</span></span>
+                            @elseif($item->despachado_cocina)
+                                <span class="badge badge-success badge-sm popover-container"><i
+                                        class="fa fa-thumbs-up"></i>
+                                    <span class="popover-text">Venta despachada desde cocina</span></span>
+                            @endif
                             @isset($item->usuario_manual)
                                 <br>
-                                <span class="p-0 m-0"
-                                    style="font-size:10px;line-height: 10px">{{ Str::limit($item->usuario_manual, 35) }}</span>
+                                <strong class="p-0 m-0"
+                                    style="font-size:10px;line-height: 10px">{{ Str::limit($item->usuario_manual, 35) }}</strong>
                             @endisset
 
                             @isset($item->cliente)
                                 <br>
-                                <span class="p-0 m-0"
-                                    style="font-size:10px;line-height: 10px">{{ Str::limit($item->cliente->name, 35) }}</span>
+                                <strong class="p-0 m-0"
+                                    style="font-size:10px;line-height: 10px">{{ Str::limit($item->cliente->name, 35) }}</strong>
                             @endisset
                         </a>
-                        @if ($item->productos->count() == 0)
-                            <a href="#" class="float-end badge badge-danger badge-pill"
-                                wire:click="eliminar('{{ $item->id }}')">
-                                <i class="fa fa-trash"></i>
-                            </a>
-                        @endif
+
                     </div>
                 @endforeach
 
@@ -169,8 +182,8 @@
                 @endif
                 <hr class=" p-0 mt-1 mb-1">
                 @if (count($listacuenta) > 0)
-                    <ul class="list-group" style="overflow-y: auto;max-height:300px;overflow-x: hidden" wire:loading.remove
-                        wire:target="seleccionar">
+                    <ul class="list-group" style="overflow-y: auto;max-height:300px;overflow-x: hidden"
+                        wire:loading.remove wire:target="seleccionar">
                         @foreach ($listacuenta as $item)
                             <li class="list-group-item d-flex justify-content-between lh-condensed m-0 p-1">
                                 <div class="">
@@ -387,9 +400,15 @@
 
                 @if ($subtotal != 0)
                     <div class="row m-2">
-                        <button class="btn btn-xs btn-warning" data-bs-toggle="modal" data-bs-target="#basicModal"
-                            wire:click="actualizarSaldo">Cobrar
-                            Cuenta</button>
+                        @if ($cuenta->pagado)
+                            <button class="btn btn-xs btn-dark light" data-bs-toggle="modal" data-bs-target="#basicModal"
+                                wire:click="actualizarSaldo">Finalizar venta</button>
+                        @else
+                            <button class="btn btn-xs btn-warning" data-bs-toggle="modal" data-bs-target="#basicModal"
+                                wire:click="actualizarSaldo">Cobrar
+                                Cuenta</button>
+                        @endif
+
 
                     </div>
                     <div wire:ignore.self class="modal fade" id="basicModal">
@@ -399,19 +418,20 @@
                                     <div class="modal-header">
                                         Ajustes de Impresion
                                     </div>
-                                    <div class="modal-body">
+                                    <div class="modal-body pb-0 mb-0">
                                         <div class="mb-3 row">
                                             <label class="col-sm-3 col-form-label col-form-label-sm">Observacion</label>
                                             <div class="col-sm-9">
-                                                <textarea class="form-control form-control-sm" wire:model="observacionRecibo"></textarea>
+                                                <textarea class="form-control form-control-sm bordeado" wire:model="observacionRecibo"></textarea>
                                             </div>
                                         </div>
                                         <div class="mb-3 row">
                                             <label class="col-sm-3 col-form-label col-form-label-sm">Fecha
                                                 Personalizada</label>
                                             <div class="col-sm-9">
-                                                <input type="date" class="form-control form-control-sm"
-                                                    wire:model="fechaRecibo">
+                                                <input type="date"
+                                                    class="form-control form-control-sm bordeado m-0 p-0 px-1"
+                                                    style="height: 35px" wire:model="fechaRecibo">
                                             </div>
                                         </div>
                                         <div class="form-check mb-2">
@@ -423,8 +443,9 @@
                                             <div class="mb-3 row">
                                                 <label class="col-sm-3 col-form-label col-form-label-sm">Metodo</label>
                                                 <div class="col-sm-9">
-                                                    <input type="text" class="form-control form-control-sm"
-                                                        wire:model="metodoRecibo">
+                                                    <input type="text"
+                                                        class="form-control form-control-sm bordeado m-0 p-0 px-1"
+                                                        style="height: 35px" wire:model="metodoRecibo">
                                                 </div>
 
 
@@ -441,8 +462,9 @@
                                             <div class="mb-3 row">
                                                 <label class="col-sm-3 col-form-label col-form-label-sm">Cliente</label>
                                                 <div class="col-sm-9">
-                                                    <input type="text" class="form-control form-control-sm"
-                                                        wire:model="clienteRecibo">
+                                                    <input type="text"
+                                                        class="form-control form-control-sm bordeado m-0 p-0 px-1"
+                                                        style="height: 35px" wire:model="clienteRecibo">
                                                 </div>
                                                 @isset($cuenta->cliente)
                                                     <div class="alert alert-warning alert-dismissible fade show text-sm">
@@ -467,11 +489,13 @@
                                             <div class="mb-3 row">
                                                 <label class="col-sm-3 col-form-label col-form-label-sm">Telefono</label>
                                                 <div class="col-sm-9">
-                                                    <input type="text" class="form-control form-control-sm"
-                                                        wire:model="telefonoRecibo">
+                                                    <input type="text"
+                                                        class="form-control form-control-sm bordeado m-0 p-0 px-1"
+                                                        style="height: 35px" wire:model="telefonoRecibo">
                                                 </div>
 
-                                                <div class="alert alert-info alert-dismissible fade show text-sm">
+                                                <div
+                                                    class="letra12 alert alert-info alert-dismissible fade show text-sm mb-0">
 
                                                     <strong>Importante!</strong>Este numero no se imprimira, solo se
                                                     guardara en
@@ -480,16 +504,14 @@
                                                         aria-label="btn-close">
                                                     </button>
                                                 </div>
-
-
                                             </div>
                                         @endif
                                     </div>
                                     <div class="modal-footer">
-                                        <button class="btn btn-warning btn-sm" wire:click="modalResumen">Atras</button>
-                                        <button class="btn btn-info btn-sm" wire:click="descargarPDF">Descargar PDF <i
-                                                class="fa fa-file"></i></button>
-                                        <button class="btn btn-success btn-sm" wire:click="imprimir">Imprimir <i
+                                        <button class="btn btn-dark btn-xxs" wire:click="modalResumen">Atras</button>
+                                        <button class="btn btn-outline-info btn-xxs" wire:click="descargarPDF">Descargar
+                                            PDF <i class="fa fa-file"></i></button>
+                                        <button class="btn btn-outline-success btn-xxs" wire:click="imprimir">Imprimir <i
                                                 class="fa fa-print"></i></button>
 
                                     </div>
@@ -542,115 +564,137 @@
 
                                         <center class="text-muted">Puntos en esta venta: {{ $cuenta->puntos }}</center>
 
-                                        <span class="badge light badge-warning">Tipo de pago: </span>
-                                        @isset($tipocobro)
-                                            <span class="badge light badge-success">{{ $tipocobro }}</span>
-                                        @endisset
 
-                                        @push('scripts')
-                                            <script>
-                                                Livewire.on('cambiarCheck', cambiar => {
-                                                    document.getElementById("check-efectivo").checked = true;
-
-                                                })
-                                            </script>
-                                        @endpush
                                         <div class="content">
-                                            <div class="m-2">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="gridRadios"
-                                                        id="check-efectivo" wire:model="tipocobro" value="efectivo">
-                                                    <label class="form-check-label">
-                                                        Efectivo
-                                                    </label>
+                                            @if ($cuenta->ventaHistorial)
+                                                <div class="card-body py-3">
+                                                    <ul class="d-flex align-items-center mb-2">
+                                                        <li><a href="javascript:void(0);"><i class="fa fa-gear"></i></a>
+                                                        </li>
+                                                        <li><a href="javascript:void(0);" class="ms-2">Estado:</a></li>
+                                                        <li><strong><a href="javascript:void(0);"
+                                                                    class="mx-2">Pagado</a></strong></li>
+                                                    </ul>
+                                                    <ul class="d-flex align-items-center mb-2">
+                                                        <li><a href="javascript:void(0);"><i class="fa fa-money"></i></a>
+                                                        </li>
+                                                        <li><a href="javascript:void(0);" class="ms-2">Metodo de
+                                                                pago:</a></li>
+                                                        <li><strong><a href="javascript:void(0);"
+                                                                    class="mx-2">{{ $cuenta->ventaHistorial->tipo }}</a></strong>
+                                                        </li>
+                                                    </ul>
                                                 </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input " type="radio" name="gridRadios"
-                                                        wire:model="tipocobro" value="tarjeta">
-                                                    <label class="form-check-label">
-                                                        Tarjeta
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input "
-                                                        {{ $deshabilitarBancos ? 'disabled' : '' }} type="radio"
-                                                        name="gridRadios" wire:model="tipocobro" value="banco-sol">
-                                                    <label class="form-check-label">
-                                                        Banco Sol
-                                                    </label>
-                                                </div>
-                                                {{-- <div class="form-check disabled">
-                                        <input class="form-check-input " {{ $deshabilitarBancos ? 'disabled' : '' }}
-                                            type="radio" name="gridRadios" wire:model="tipocobro"
-                                            value="banco-bisa">
-                                        <label class="form-check-label">
-                                            Banco Bisa
-                                        </label>
-                                    </div> --}}
-                                                <div class="form-check disabled">
-                                                    <input class="form-check-input " type="radio" name="gridRadios"
-                                                        wire:model="tipocobro" value="banco-bnb">
-                                                    <label class="form-check-label">
-                                                        Banco BNB
-                                                    </label>
-                                                </div>
-                                            </div>
+                                            @else
+                                                <span class="badge light badge-warning">Tipo de pago: </span>
+                                                @isset($tipocobro)
+                                                    <span class="badge light badge-success">{{ $tipocobro }}</span>
+                                                @endisset
 
-                                            @isset($cuenta->cliente->name)
-                                                <div class="form-check disabled">
-                                                    <input class="form-check-input" type="checkbox" name="checkbox"
-                                                        wire:model="saldo" wire:change="actualizarSaldo">
-                                                    <label class="form-check-label">
-                                                        A deuda
-                                                    </label>
-                                                </div>
-                                                @if ($saldo == true)
-                                                    <div class="row d-flex">
-                                                        <div id="saldo" class="col-4 mx-auto">
-                                                            <div class="input-group input-group-sm mb-3 input-success">
-                                                                <span class="input-group-text">Bs</span>
-                                                                <input type="number"
-                                                                    wire:model.debounce.500ms="saldoRestante"
-                                                                    wire:change="controlarEntrante" class="form-control">
-                                                            </div>
+                                                @push('scripts')
+                                                    <script>
+                                                        Livewire.on('cambiarCheck', cambiar => {
+                                                            document.getElementById("check-efectivo").checked = true;
 
-                                                        </div>
-                                                        <div id="saldo" class="col-4 mx-auto">
-                                                            <div class="input-group input-group-sm mb-3 input-info">
-                                                                <span class="input-group-text">Saldo</span>
-                                                                <input type="number" wire:model.debounce.500ms="valorSaldo"
-                                                                    wire:change="controlarSaldo" class="form-control">
-                                                            </div>
-
-                                                        </div>
-
+                                                        })
+                                                    </script>
+                                                @endpush
+                                                <div class="m-2">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="gridRadios"
+                                                            id="check-efectivo" wire:model="tipocobro" value="efectivo">
+                                                        <label class="form-check-label">
+                                                            Efectivo
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input " type="radio" name="gridRadios"
+                                                            wire:model="tipocobro" value="tarjeta">
+                                                        <label class="form-check-label">
+                                                            Tarjeta
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input "
+                                                            {{ $deshabilitarBancos ? 'disabled' : '' }} type="radio"
+                                                            name="gridRadios" wire:model="tipocobro" value="banco-sol">
+                                                        <label class="form-check-label">
+                                                            Banco Sol
+                                                        </label>
                                                     </div>
 
-                                                    @if ($saldoRestante == 0)
-                                                        <div class="alert alert-success notification p-0 my-0">
-                                                            <p class="notificaiton-title mb-2"><strong>Correcto!</strong> Se
-                                                                agregara
-                                                                el total de
-                                                                <strong>{{ $subtotal - $cuenta->descuento - $descuentoProductos }}
-                                                                    Bs</strong>
-                                                                al saldo por cobrar de
-                                                                <strong>{{ $cuenta->cliente->name }}!</strong>
-                                                            </p>
+                                                    <div class="form-check disabled">
+                                                        <input class="form-check-input " type="radio" name="gridRadios"
+                                                            wire:model="tipocobro" value="banco-bnb">
+                                                        <label class="form-check-label">
+                                                            Banco BNB
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                @isset($cuenta->cliente->name)
+                                                    <div class="form-check disabled">
+                                                        <input class="form-check-input" type="checkbox" name="checkbox"
+                                                            wire:model="saldo" wire:change="actualizarSaldo">
+                                                        <label class="form-check-label">
+                                                            A deuda
+                                                        </label>
+                                                    </div>
+                                                    @if ($saldo == true)
+                                                        <div class="row d-flex">
+                                                            <div id="saldo" class="col-4 mx-auto">
+                                                                <div class="input-group input-group-sm mb-3 input-success">
+                                                                    <span class="input-group-text">Bs</span>
+                                                                    <input type="number"
+                                                                        wire:model.debounce.500ms="saldoRestante"
+                                                                        wire:change="controlarEntrante" class="form-control">
+                                                                </div>
+
+                                                            </div>
+                                                            <div id="saldo" class="col-4 mx-auto">
+                                                                <div class="input-group input-group-sm mb-3 input-info">
+                                                                    <span class="input-group-text">Saldo</span>
+                                                                    <input type="number"
+                                                                        wire:model.debounce.500ms="valorSaldo"
+                                                                        wire:change="controlarSaldo" class="form-control">
+                                                                </div>
+
+                                                            </div>
 
                                                         </div>
-                                                    @elseif($saldoRestante != 0)
-                                                        <div class="alert alert-warning notification p-0 my-0">
-                                                            <p class="notificaiton-title mb-2"><strong>Atencion!</strong> Estas
-                                                                agregando <strong>{{ $valorSaldo }} Bs</strong> al saldo de
-                                                                <strong>{{ $cuenta->cliente->name }}</strong> y cobrando
-                                                                <strong>{{ $saldoRestante }} Bs</strong> por el metodo
-                                                                <strong>"{{ $tipocobro }}"</strong>
-                                                            </p>
 
-                                                        </div>
+                                                        @if ($saldoRestante == 0)
+                                                            <div class="alert alert-success notification p-0 my-0">
+                                                                <p class="notificaiton-title mb-2"><strong>Correcto!</strong>
+                                                                    Se
+                                                                    agregara
+                                                                    el total de
+                                                                    <strong>{{ $subtotal - $cuenta->descuento - $descuentoProductos }}
+                                                                        Bs</strong>
+                                                                    al saldo por cobrar de
+                                                                    <strong>{{ $cuenta->cliente->name }}!</strong>
+                                                                </p>
+
+                                                            </div>
+                                                        @elseif($saldoRestante != 0)
+                                                            <div class="alert alert-warning notification p-0 my-0">
+                                                                <p class="notificaiton-title mb-2"><strong>Atencion!</strong>
+                                                                    Estas
+                                                                    agregando <strong>{{ $valorSaldo }} Bs</strong> al saldo
+                                                                    de
+                                                                    <strong>{{ $cuenta->cliente->name }}</strong> y cobrando
+                                                                    <strong>{{ $saldoRestante }} Bs</strong> por el metodo
+                                                                    <strong>"{{ $tipocobro }}"</strong>
+                                                                </p>
+
+                                                            </div>
+                                                        @endif
                                                     @endif
-                                                @endif
-                                            @endisset
+                                                @endisset
+                                            @endif
+
+
+
+
 
 
                                         </div>
@@ -661,23 +705,30 @@
                                                 wire:loading.attr="disabled" wire:click="cobrar"
                                                 {{ $tipocobro ? '' : 'disabled' }}>Marcar como pagado</button>
                                         @else
-                                            <button type="button" class="btn btn-success p-2 my-0 "
+                                            <button type="button" class="btn btn-dark p-2 my-0 "
                                                 wire:loading.attr="disabled" wire:click="cerrarVenta"
-                                                data-bs-dismiss="modal">Cerrar venta</button>
+                                                data-bs-dismiss="modal">Finalizar y cerrar venta</button>
                                         @endif
 
-
-                                        <button type="button" class="btn btn-warning btn-sm p-2 my-0"
+                                        <button type="button" class="btn btn-outline-warning btn-xxs p-2 my-0"
                                             {{ $cuenta->pagado ? '' : 'disabled' }}
-                                            wire:click="modalImpresion"><span>Imprimir</span></button>
-                                        <button wire:loading.remove wire:target='imprimir' type="button"
-                                            class="btn btn-info btn-sm p-2 my-0"
-                                            wire:click="imprimirCocina"><span>Cocina</span></button>
-                                        <button wire:loading wire:target='imprimir' type="button" disabled
-                                            class="btn btn-warning btn-sm"
-                                            wire:click="imprimir"><span>Espere...</span></button>
-
-
+                                            wire:click="modalImpresion"><span>Imprimir <i
+                                                    class="fa fa-print"></i></span></button>
+                                        @if ($cuenta->cocina && !$cuenta->despachado_cocina)
+                                            <button type="button" disabled
+                                                class="btn btn-info btn-xxs p-2 my-0"><span>Enviado a cocina <i
+                                                        class="fa fa-send"></i></span></button>
+                                        @elseif($cuenta->despachado_cocina)
+                                        
+                                            <button type="button" disabled
+                                                class="btn btn-success btn-xxs p-2 my-0"><span>Despachado <i
+                                                        class="fa fa-thumbs-up"></i></span></button>
+                                        @else
+                                            <button wire:loading.remove wire:target='imprimir' type="button"
+                                                class="btn btn-outline-info btn-xxs p-2 my-0"
+                                                wire:click="imprimirCocina"><span>Enviar a cocina <i
+                                                        class="fa fa-send"></i></span></button>
+                                        @endif
 
                                     </div>
                                 </div>

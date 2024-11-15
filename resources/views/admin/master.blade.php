@@ -43,11 +43,61 @@
     @stack('css')
 
     <style>
+        .swal2-popup {
+            color: #fff !important;
+            /* Fuerza el color del texto */
+            background-color: #585858e3 !important;
+            /* Fondo personalizado */
+            border-radius: 10px;
+            /* Bordes redondeados */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            /* Sombra */
+        }
+
+        .swal2-title,
+        .swal2-content {
+            color: #fff !important;
+            /* Asegura el color blanco para el título y el contenido */
+        }
+
         .bordeado {
             border-style: solid;
-            border-color: rgb(14, 178, 79);
+            border-color: #20c996b3;
             border-width: 1px;
             border-radius: 15px;
+        }
+
+        .bordeado-pulse {
+            border-style: solid;
+            border-color: #20c996b3;
+            border-width: 1px;
+            border-radius: 15px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(32, 201, 150, 0.5);
+            }
+
+            70% {
+                box-shadow: 0 0 10px 10px rgba(32, 201, 150, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(32, 201, 150, 0);
+            }
+        }
+
+        .vertical-hr {
+            width: 2px;
+            /* Grosor de la línea */
+            height: 100px;
+            /* Altura de la línea */
+            background-color: #20c996;
+            /* Color de la línea */
+            margin: 0 auto;
+            /* Centrar si está dentro de un contenedor */
         }
 
         .letra12,
@@ -59,11 +109,40 @@
         .letra14 * {
             font-size: 14px !important;
         }
+
         .letra10,
         .letra10 * {
             font-size: 10px !important;
         }
-       
+
+        .popover-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .popover-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 10px;
+            position: absolute;
+            bottom: 125%;
+            /* Ajusta según la posición deseada */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .popover-container:hover .popover-text {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
 
@@ -145,15 +224,16 @@
     <script>
         const Toast = Swal.mixin({
             toast: true,
-            position: 'top',
+            position: "top",
             showConfirmButton: false,
             showCloseButton: true,
             timer: 5000,
+            background: "#585858e3",
             timerProgressBar: true,
             didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
+                toast.addEventListener("mouseenter", Swal.stopTimer);
+                toast.addEventListener("mouseleave", Swal.resumeTimer);
+            },
         });
 
         window.addEventListener('alert', ({

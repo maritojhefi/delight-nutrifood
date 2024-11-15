@@ -88,6 +88,13 @@ class VentasIndex extends Component
     }
     public function imprimirCocina()
     {
+        $this->cuenta->cocina = true;
+        $this->cuenta->cocina_at = Carbon::now();
+        $this->cuenta->save();
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => "Se envio a cocina!"
+        ]);
         // event(new CocinaPedidoEvent('Se actualizo la lista'));
     }
     public function addUsuarioManual()
@@ -430,7 +437,7 @@ class VentasIndex extends Component
         if ($this->cuenta->pagado == true) {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'warning',
-                'message' => "La venta ya ha sido pagada, no se puede editar"
+                'message' => "La venta ya ha sido pagada, no se puede modificar"
             ]);
             return false;
         }
@@ -485,7 +492,7 @@ class VentasIndex extends Component
         if ($this->cuenta->pagado == true) {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'warning',
-                'message' => "La venta ya ha sido pagada, no se puede editar"
+                'message' => "La venta ya ha sido pagada, no se puede modificar"
             ]);
             return false;
         }
@@ -590,7 +597,7 @@ class VentasIndex extends Component
         if ($this->cuenta->pagado == true) {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'warning',
-                'message' => "La venta ya ha sido pagada, no se puede editar"
+                'message' => "La venta ya ha sido pagada, no se puede modificar"
             ]);
             return false;
         }
@@ -654,7 +661,7 @@ class VentasIndex extends Component
         if ($this->cuenta->pagado == true) {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'warning',
-                'message' => "La venta ya ha sido pagada, no se puede editar"
+                'message' => "La venta ya ha sido pagada, no se puede modificar"
             ]);
             return false;
         }
@@ -718,7 +725,7 @@ class VentasIndex extends Component
         if ($this->cuenta->pagado == true) {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'warning',
-                'message' => "La venta ya ha sido pagada, no se puede editar"
+                'message' => "La venta ya ha sido pagada, no se puede modificar"
             ]);
             return false;
         }
@@ -755,7 +762,7 @@ class VentasIndex extends Component
         if ($this->cuenta->pagado == true) {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'warning',
-                'message' => "La venta ya ha sido pagada, no se puede editar"
+                'message' => "La venta ya ha sido pagada, no se puede modificar"
             ]);
             return false;
         }
@@ -805,8 +812,16 @@ class VentasIndex extends Component
         }
     }
 
-    public function seleccionar(Venta $venta)
+    public function seleccionar($venta)
     {
+        $venta = Venta::find($venta);
+        if (!$venta) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "Esta venta ya no existe"
+            ]);
+            return false;
+        }
         $this->cuenta = $venta;
         $listafiltrada = $venta->productos->pluck('nombre');
         $this->reset('tipocobro');
@@ -885,10 +900,9 @@ class VentasIndex extends Component
                     'tipo' => $this->tipocobro,
                     'saldo' => $this->valorSaldo
                 ]);
-
+              
                 $productos = $cuenta->productos;
                 if ($this->cuenta->cliente_id != null) {
-
                     DB::table('users')->where('id', $this->cuenta->cliente_id)->increment('puntos', $this->cuenta->puntos);
                 }
                 if ($this->valorSaldo > 0) {
@@ -906,8 +920,10 @@ class VentasIndex extends Component
                 foreach ($productos as $prod) {
                     $cuentaguardada->productos()->attach($prod->id, ['cantidad' => $prod->pivot->cantidad, 'adicionales' => $prod->pivot->adicionales]);
                 }
+                $cuenta->historial_venta_id = $cuentaguardada->id;
                 $cuenta->pagado = true;
                 $cuenta->save();
+
                 $this->cuenta = $cuenta;
                 // $cuenta->productos()->detach();
                 // $cuenta->delete();
@@ -933,6 +949,13 @@ class VentasIndex extends Component
 
     public function cerrarVenta()
     {
+        if ($this->cuenta->cocina == true && $this->cuenta->despachado_cocina == false) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => "Aún no se despacho el pedido desde cocina."
+            ]);
+            return false;
+        }
         if ($this->cuenta->pagado == true) {
             $cuenta = Venta::find($this->cuenta->id);
             $cuenta->productos()->detach();
@@ -1068,7 +1091,7 @@ class VentasIndex extends Component
     }
     public function render()
     {
-        $ventas = Venta::orderBy('created_at', 'desc')->get();
+        $ventas = Venta::orderBy('created_at', 'asc')->get();
         $usuarios = collect();
         $sucursales = Sucursale::pluck('id', 'nombre');
         $this->sucursal = $sucursales->first();

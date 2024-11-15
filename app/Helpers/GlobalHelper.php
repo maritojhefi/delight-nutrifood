@@ -294,4 +294,17 @@ class GlobalHelper
         // Guarda los cambios en el menú de hoy
         $menuHoy->save();
     }
+    public static function cantidadColor($cantidad)
+    {
+        switch (true) {
+            case ($cantidad <= 5):
+                return 'danger';
+            case ($cantidad > 5 && $cantidad <= 10):
+                return 'warning';
+            case ($cantidad > 10):
+                return 'primary';
+            default:
+                return 'primary'; // Opcional: para manejar cualquier caso inesperado
+        }
+    }
 }
