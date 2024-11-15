@@ -51,37 +51,55 @@ class CocinaDespachePlanes extends Component
     }
     public function cambiarEstadoPlato($variable)
     {
-        
+
         switch ($variable) {
             case 'ejecutivo_estado':
                 $this->menuHoy->ejecutivo_estado = $this->menuHoy->ejecutivo_estado == true ? false : true;
+                if (!$this->menuHoy->ejecutivo_estado) {
+                    $this->menuHoy->ejecutivo_cant = 0;
+                }
                 $this->menuHoy->save();
                 break;
             case 'dieta_estado':
                 $this->menuHoy->dieta_estado = $this->menuHoy->dieta_estado == true ? false : true;
+                if (!$this->menuHoy->dieta_estado) {
+                    $this->menuHoy->dieta_cant = 0;
+                }
                 $this->menuHoy->save();
                 break;
             case 'vegetariano_estado':
                 $this->menuHoy->vegetariano_estado = $this->menuHoy->vegetariano_estado == true ? false : true;
+                if (!$this->menuHoy->vegetariano_estado) {
+                    $this->menuHoy->vegetariano_cant = 0;
+                }
                 $this->menuHoy->save();
                 break;
             case 'carbohidrato_1_estado':
                 $this->menuHoy->carbohidrato_1_estado = $this->menuHoy->carbohidrato_1_estado == true ? false : true;
+                if (!$this->menuHoy->carbohidrato_1_estado) {
+                    $this->menuHoy->carbohidrato_1_cant = 0;
+                }
                 $this->menuHoy->save();
                 break;
             case 'carbohidrato_2_estado':
                 $this->menuHoy->carbohidrato_2_estado = $this->menuHoy->carbohidrato_2_estado == true ? false : true;
+                if (!$this->menuHoy->carbohidrato_2_estado) {
+                    $this->menuHoy->carbohidrato_2_cant = 0;
+                }
                 $this->menuHoy->save();
                 break;
             case 'carbohidrato_3_estado':
                 $this->menuHoy->carbohidrato_3_estado = $this->menuHoy->carbohidrato_3_estado == true ? false : true;
+                if (!$this->menuHoy->carbohidrato_3_estado) {
+                    $this->menuHoy->carbohidrato_3_cant = 0;
+                }
                 $this->menuHoy->save();
                 break;
-
             default:
-                # code...
+                // Código adicional para casos no manejados
                 break;
         }
+
         GlobalHelper::actualizarCarbosDisponibilidad();
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
@@ -90,7 +108,7 @@ class CocinaDespachePlanes extends Component
     }
     public function cambiarDisponibilidad()
     {
-        
+
         $fecha = date('Y-m-d');
         $resultado = $this->saber_dia($fecha);
         $this->menuHoy = Almuerzo::where('dia', $resultado)->first();
