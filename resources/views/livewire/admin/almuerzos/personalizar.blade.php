@@ -84,96 +84,133 @@
     <div class="col-xl-6">
         @isset($seleccionado)
             <div class="card bordeado">
+
                 <div class="card-header d-block letra14">
-                    <h4 class="card-title">Editando dia <strong> {{ $seleccionado->dia }}</strong></h4>
+                    <h4 class="card-title">Editando dia <strong> {{ $seleccionado->dia }} <button
+                                wire:click="cambiarEstadoDia({{ $seleccionado->id }})"
+                                class="btn btn-xxs py-1 btn-{{ $seleccionado->estado_dia ? 'success' : 'danger' }}">{{ $seleccionado->estado_dia ? 'Activo' : 'Inactivo' }}
+                                <i class="flaticon-075-reload"></i></button></strong>
+                    </h4>
 
                 </div>
-                <div class="card-body py-0 m-0 letra12">
-                    <div class="row">
-                        <hr>
-                        <center><strong>Segundos</strong></center>
-                        <div class="mb-3 col-6">
-                            <label class="form-label">Ejecutivo</label>
-                            <input type="text"
-                                class="form-control bordeado input-default  @error('ejecutivo') is-invalid @enderror"
-                                wire:model.lazy="ejecutivo" style="height: 30px">
-                        </div>
-                        <div class="mb-3 col-6">
-                            <div class="form-check pt-3 custom-checkbox checkbox-info">
-                                <input type="checkbox" class="form-check-input" wire:model="ejecutivo_tiene_carbo"
-                                    id="checkejecutivo" required="">
-                                <label class="form-check-label" for="checkejecutivo">Con carbohidrato a elección?</label>
+                @if ($seleccionado->estado_dia)
+                    <div class="card-body py-0 m-0 letra12">
+                        <div class="row">
+                            <hr>
+                            <center><strong>Segundos</strong></center>
+                            <div class="mb-3 col-6">
+                                <label class="form-label"><strong>Ejecutivo</strong>
+                                    <input type="checkbox" class="form-check-input my-0 ms-2 p-0"
+                                        wire:model="ejecutivo_estado">
+                                </label>
+                                <input type="text" {{ $ejecutivo_estado ? '' : 'disabled' }}
+                                    class="form-control bordeado input-default  @error('ejecutivo') is-invalid @enderror"
+                                    wire:model.lazy="ejecutivo" style="height: 30px">
+                            </div>
+                            <div class="mb-3 col-6">
+                                <div class="form-check pt-4 custom-checkbox checkbox-info">
+                                    <input type="checkbox" class="form-check-input" wire:model="ejecutivo_tiene_carbo"
+                                        id="checkejecutivo" required="">
+                                    <label
+                                        class="form-check-label {{ $ejecutivo_tiene_carbo ? 'text-success' : 'text-danger' }}"
+                                        for="checkejecutivo">{{ $ejecutivo_tiene_carbo ? 'Con ' : 'Sin ' }}
+                                        carbohidrato</label>
+                                </div>
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label class="form-label"><strong>Dieta</strong>
+                                    <input type="checkbox" class="form-check-input my-0 ms-2 p-0" wire:model="dieta_estado">
+                                </label>
+                                <input type="text" {{ $dieta_estado ? '' : 'disabled' }}
+                                    class="form-control bordeado input-default  @error('dieta') is-invalid @enderror"
+                                    wire:model.lazy="dieta" style="height: 30px">
+                            </div>
+                            <div class="mb-3 col-6">
+                                <div class="form-check pt-4 custom-checkbox checkbox-info">
+                                    <input type="checkbox" class="form-check-input" wire:model="dieta_tiene_carbo"
+                                        id="checkdieta" required="">
+                                    <label
+                                        class="form-check-label {{ $dieta_tiene_carbo ? 'text-success' : 'text-danger' }}"
+                                        for="checkdieta">{{ $dieta_tiene_carbo ? 'Con ' : 'Sin ' }} carbohidrato</label>
+                                </div>
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label class="form-label"><strong>Vegetariano</strong>
+                                    <input type="checkbox" class="form-check-input my-0 ms-2 p-0"
+                                        wire:model="vegetariano_estado">
+                                </label>
+                                <input type="text"  {{ $vegetariano_estado ? '' : 'disabled' }}
+                                    class="form-control bordeado input-default  @error('vegetariano') is-invalid @enderror"
+                                    wire:model.lazy="vegetariano" style="height: 30px">
+                            </div>
+                            <div class="mb-3 col-6">
+                                <div class="form-check pt-4 custom-checkbox checkbox-info">
+                                    <input type="checkbox" class="form-check-input" wire:model="vegetariano_tiene_carbo"
+                                        id="checkvegetariano" required="">
+                                    <label
+                                        class="form-check-label {{ $vegetariano_tiene_carbo ? 'text-success' : 'text-danger' }}"
+                                        for="checkvegetariano">{{ $vegetariano_tiene_carbo ? 'Con ' : 'Sin ' }}
+                                        carbohidrato</label>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="mb-3 col-6">
+                                <label class="form-label"><strong>Carbohidrato 1</strong>
+                                    <input type="checkbox" class="form-check-input my-0 ms-2 p-0"
+                                        wire:model="carbohidrato_1_estado">
+                                </label>
+                                <input type="text" {{ $carbohidrato_1_estado ? '' : 'disabled' }}
+                                    class="form-control input-default bordeado @error('carbohidrato_1') is-invalid @enderror"
+                                    wire:model.lazy="carbohidrato_1" style="height: 30px">
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label class="form-label">Sopa</label>
+                                <input type="text"
+                                    class="form-control bordeado input-default  @error('sopa') is-invalid @enderror"
+                                    wire:model.lazy="sopa" style="height: 30px">
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label class="form-label"><strong>Carbohidrato 2</strong>
+                                    <input type="checkbox" class="form-check-input my-0 ms-2 p-0"
+                                        wire:model="carbohidrato_2_estado">
+                                </label>
+                                <input type="text" {{ $carbohidrato_2_estado ? '' : 'disabled' }}
+                                    class="form-control input-default bordeado  @error('carbohidrato_2') is-invalid @enderror"
+                                    wire:model.lazy="carbohidrato_2" style="height: 30px">
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label class="form-label">Ensalada</label>
+                                <input type="text"
+                                    class="form-control bordeado input-default  @error('ensalada') is-invalid @enderror"
+                                    wire:model.lazy="ensalada" style="height: 30px">
+                            </div>
+
+                            <div class="mb-3 col-6">
+                                <label class="form-label"><strong>Carbohidrato 3</strong>
+                                    <input type="checkbox" class="form-check-input my-0 ms-2 p-0"
+                                        wire:model="carbohidrato_3_estado">
+                                </label>
+                                <input type="text" {{ $carbohidrato_3_estado ? '' : 'disabled' }}
+                                    class="form-control input-default bordeado  @error('carbohidrato_3') is-invalid @enderror"
+                                    wire:model.lazy="carbohidrato_3" style="height: 30px">
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label class="form-label">Jugo/Mate</label>
+                                <input type="text"
+                                    class="form-control bordeado input-default @error('jugo') is-invalid @enderror"
+                                    wire:model.lazy="jugo" placeholder="Jugo/Mate" style="height: 30px">
                             </div>
                         </div>
-                        <div class="mb-3 col-6">
-                            <label class="form-label">Dieta</label>
-                            <input type="text"
-                                class="form-control bordeado input-default  @error('dieta') is-invalid @enderror"
-                                wire:model.lazy="dieta" style="height: 30px">
-                        </div>
-                        <div class="mb-3 col-6">
-                            <div class="form-check pt-3 custom-checkbox checkbox-info">
-                                <input type="checkbox" class="form-check-input" wire:model="dieta_tiene_carbo"
-                                    id="checkdieta" required="">
-                                <label class="form-check-label" for="checkdieta">Con carbohidrato a elección?</label>
-                            </div>
-                        </div>
-                        <div class="mb-3 col-6">
-                            <label class="form-label">Vegetariano</label>
-                            <input type="text"
-                                class="form-control bordeado input-default  @error('vegetariano') is-invalid @enderror"
-                                wire:model.lazy="vegetariano" style="height: 30px">
-                        </div>
-                        <div class="mb-3 col-6">
-                            <div class="form-check pt-3 custom-checkbox checkbox-info">
-                                <input type="checkbox" class="form-check-input" wire:model="vegetariano_tiene_carbo"
-                                    id="checkvegetariano" required="">
-                                <label class="form-check-label" for="checkvegetariano">Con carbohidrato a
-                                    elección?</label>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="mb-3 col-6">
-                            <label class="form-label">Sopa</label>
-                            <input type="text"
-                                class="form-control bordeado input-default  @error('sopa') is-invalid @enderror"
-                                wire:model.lazy="sopa" style="height: 30px">
-                        </div>
-                        <div class="mb-3 col-6">
-                            <label class="form-label">Ensalada</label>
-                            <input type="text"
-                                class="form-control bordeado input-default  @error('ensalada') is-invalid @enderror"
-                                wire:model.lazy="ensalada" style="height: 30px">
-                        </div>
-                        <div class="mb-3 col-6">
-                            <label class="form-label">Carbohidrato 1</label>
-                            <input type="text"
-                                class="form-control input-default bordeado  @error('carbohidrato_1') is-invalid @enderror"
-                                wire:model.lazy="carbohidrato_1" style="height: 30px">
-                        </div>
-                        <div class="mb-3 col-6">
-                            <label class="form-label">Carbohidrato 2</label>
-                            <input type="text"
-                                class="form-control input-default bordeado  @error('carbohidrato_2') is-invalid @enderror"
-                                wire:model.lazy="carbohidrato_2" style="height: 30px">
-                        </div>
-                        <div class="mb-3 col-6">
-                            <label class="form-label">Carbohidrato 3</label>
-                            <input type="text"
-                                class="form-control input-default bordeado  @error('carbohidrato_3') is-invalid @enderror"
-                                wire:model.lazy="carbohidrato_3" style="height: 30px">
-                        </div>
-                        <div class="mb-3 col-6">
-                            <label class="form-label">Jugo/Mate</label>
-                            <input type="text"
-                                class="form-control bordeado input-default @error('jugo') is-invalid @enderror"
-                                wire:model.lazy="jugo" placeholder="Jugo/Mate" style="height: 30px">
-                        </div>
+
+                        <button wire:click="actualizar" class="btn btn-xs p-2 mb-2 btn-primary">Guardar</button>
+
                     </div>
+                @else
+                    <div class="card-body mx-auto">
+                        <span class="">Dia inactivo, no se mostrara a los clientes <i class="fa fa-ban"></i></span>
+                    </div>
+                @endif
 
-                    <button wire:click="actualizar" class="btn btn-xs p-2 mb-2 btn-primary">Guardar</button>
-
-                </div>
 
             </div>
         @endisset

@@ -86,7 +86,7 @@ class GlobalHelper
                 $det['SOPA'] == '' ? $sopaCustom = '0' : $sopaCustom = '1';
 
                 $saberDia = WhatsappAPIHelper::saber_dia($fechaSeleccionada);
-                $menu = Almuerzo::where('dia', $saberDia)->first();
+                $menu = Almuerzo::withoutGlobalScope('diasActivos')->where('dia', $saberDia)->first();
                 $tipoSegundo = '';
                 $tipoEnvio = '';
 
@@ -146,7 +146,7 @@ class GlobalHelper
                 $det['SOPA'] == '' ? $sopaCustom = 'Sin Sopa' : $sopaCustom = $det['SOPA'];
 
                 $saberDia = WhatsappAPIHelper::saber_dia($fechaSeleccionada);
-                $menu = Almuerzo::where('dia', $saberDia)->first();
+                $menu = Almuerzo::withoutGlobalScope('diasActivos')->where('dia', $saberDia)->first();
                 $tipoSegundo = '';
                 $tipoEnvio = '';
 
@@ -216,7 +216,7 @@ class GlobalHelper
     }
     public static function actualizarCarbosDisponibilidad()
     {
-        $menuHoy = Almuerzo::hoy()->first();
+        $menuHoy = Almuerzo::withoutGlobalScope('diasActivos')->hoy()->first();
         $adicionalesCocina = Adicionale::cocinaAdicionales()->get();
         // dd($menuHoy, $adicionales);
         foreach ($adicionalesCocina as $adicional) {
@@ -256,7 +256,7 @@ class GlobalHelper
     public static function actualizarMenuCantidadDesdePOS(Adicionale $adicional, $accion = 'reducir')
     {
         // Obtén el menú de hoy
-        $menuHoy = Almuerzo::hoy()->first();
+        $menuHoy = Almuerzo::withoutGlobalScope('diasActivos')->hoy()->first();
 
         // Verifica si se encontró un menú para hoy
         if (!$menuHoy) {

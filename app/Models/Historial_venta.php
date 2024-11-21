@@ -10,23 +10,46 @@ class Historial_venta extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'usuario_id','cliente_id','sucursale_id','total','puntos','descuento','tipo','caja_id','saldo'
-       
+        'usuario_id',
+        'cliente_id',
+        'sucursale_id',
+        'total',
+        'puntos',
+        'descuento',
+        'tipo',
+        'caja_id',
+        'saldo',
+        //version 2 atributos para ventas:
+        'a_favor_cliente',
+        'saldo_monto',
+        'total_descuento',
+        'descuento_manual',
+        'descuento_productos',
+        'total_pagado',
+        'total_a_pagar',
+        'subtotal'
     ];
 
-   
+    public function metodosPagos()
+    {
+        return $this->belongsToMany(MetodoPago::class)
+            ->withPivot('monto')
+            ->withTimestamps();
+    }
+
     public function productos()
     {
         return $this->belongsToMany(Producto::class)
-        ->withPivot('cantidad','estado_actual');
+            ->withPivot('cantidad', 'estado_actual')
+            ->withTimestamps();
     }
     public function usuario()
     {
-        return $this->belongsTo(User::class,'usuario_id');
+        return $this->belongsTo(User::class, 'usuario_id');
     }
     public function cliente()
     {
-        return $this->belongsTo(User::class,'cliente_id');
+        return $this->belongsTo(User::class, 'cliente_id');
     }
     public function sucursale()
     {
@@ -35,6 +58,5 @@ class Historial_venta extends Model
     public function caja()
     {
         return $this->belongsTo(Caja::class);
-
     }
 }

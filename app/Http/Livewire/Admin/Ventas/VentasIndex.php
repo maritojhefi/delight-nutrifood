@@ -27,11 +27,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Http\Livewire\Admin\PedidosRealtimeComponent;
+use App\Models\MetodoPago;
 use App\Models\Subcategoria;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 class VentasIndex extends Component
 {
+    public $metodosPagos, $metodosSeleccionados = [], $totalAcumuladoMetodos = 0;
     public $sucursal;
     public $cuenta;
     public $search;
@@ -55,24 +57,60 @@ class VentasIndex extends Component
     public $name, $cumpleano, $email, $direccion, $password, $password_confirmation;
     public $saldo, $valorSaldo = 0, $deshabilitarBancos = false, $saldoRestante = 0, $verVistaSaldo = false;
     public $montoSaldo, $detalleSaldo, $tipoSaldo;
-    public $descuentoProductos, $subtotal;
+    public $descuentoProductos, $subtotal, $subtotalConDescuento;
     public $subcategoriaSeleccionada;
     protected $rules = [
         'sucursal' => 'required|integer',
     ];
+    protected $listeners = ['cobrar' => 'cobrar', 'cerrarVenta' => 'cerrarVenta'];
+    public function mount()
+    {
+        $this->metodosPagos = MetodoPago::where('activo', true)->get();
+    }
     public function updated($atributo)
     {
-        // dd($atributo);
+        if (str_starts_with($atributo, 'metodosSeleccionados.')) {
+            // dd($atributo);
+            $this->totalAcumuladoMetodos = 0; // Reinicia el acumulador
+            foreach ($this->metodosSeleccionados as $metodoSelec) {
+                if (isset($metodoSelec['activo']) && $metodoSelec['activo'] === true  && isset($metodoSelec['valor']) && is_numeric($metodoSelec['valor'])) {
+                    $this->totalAcumuladoMetodos += (float)$metodoSelec['valor'];
+                }
+            }
+        }
+        if (str_starts_with($atributo, 'metodosSeleccionados.') && str_ends_with($atributo, '.activo')) {
+            // Cuenta los métodos seleccionados que tienen 'activo' como true
+            $activos = collect($this->metodosSeleccionados)
+                ->filter(function ($metodo) {
+                    return isset($metodo['activo']) && $metodo['activo'] === true;
+                });
+
+            if ($activos->count() == 1) {
+                // Obtén el código del primer método activo
+                $codigoMetodoActivo = $activos->keys()->first();
+                $this->totalAcumuladoMetodos = $this->subtotalConDescuento;
+                // Asigna $subtotalConDescuento al valor correspondiente
+                $this->metodosSeleccionados[$codigoMetodoActivo]['valor'] = $this->subtotalConDescuento;
+            }
+            //focus al input del check
+            $cadena = $atributo;
+            $partes = explode('.', $cadena); // Divide la cadena por '.'
+            $segundoTexto = $partes[1]; // Obtiene el segundo elemento
+            $this->emit('focusInput', $segundoTexto);
+        }
+
+
         switch ($atributo) {
-            case 'saldoRestante':
-                $this->controlarEntrante();
-                break;
-            case 'valorSaldo':
-                $this->controlarSaldo();
-                break;
+                // case 'saldoRestante':
+                //     $this->controlarEntrante();
+                //     break;
+                // case 'valorSaldo':
+                //     $this->controlarSaldo();
+                //     break;
             case 'search':
                 $this->reset('subcategoriaSeleccionada');
                 break;
+
             default:
                 # code...
                 break;
@@ -426,6 +464,7 @@ class VentasIndex extends Component
         $this->subtotal = $resultado[1];
         $this->cuenta->puntos = $resultado[3];
         $this->descuentoProductos = $resultado[4];
+        $this->subtotalConDescuento = $this->subtotal - $this->descuentoProductos - $this->cuenta->descuento;
         $this->itemsCuenta = $resultado[2];
         $this->reset(['adicionales', 'productoapuntado']);
         $this->saldo = false;
@@ -824,7 +863,7 @@ class VentasIndex extends Component
         }
         $this->cuenta = $venta;
         $listafiltrada = $venta->productos->pluck('nombre');
-        $this->reset('tipocobro');
+        $this->reset('tipocobro', 'metodosSeleccionados', 'totalAcumuladoMetodos');
         $this->saldoRestante = 0;
         $this->saldo = false;
 
@@ -881,58 +920,110 @@ class VentasIndex extends Component
             ]);
             return false;
         }
-        $this->validate(['tipocobro' => 'required']);
+        if (!$this->cuenta->cliente && $this->totalAcumuladoMetodos != $this->subtotalConDescuento) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => "Los metodos de pago no equivalen al monto total de la venta"
+            ]);
+            return false;
+        }
+        // $this->validate(['tipocobro' => 'required']);
         $cajaactiva = Caja::where('sucursale_id', $this->cuenta->sucursale->id)->whereDate('created_at', Carbon::today())->first();
 
         if ($cajaactiva != null) {
             if ($cajaactiva->estado == "abierto") {
+                try {
+                    //inicio de transaccion de cobranza
+                    DB::beginTransaction();
+                    DB::table('cajas')->where('id', $cajaactiva->id)->increment('acumulado', ($this->subtotal - $this->cuenta->descuento - $this->cuenta->saldo - $this->descuentoProductos));
+                    $cuenta = Venta::find($this->cuenta->id);
+                    //revisar si hay saldo y si es a favor o en deuda del cliente
 
-                DB::table('cajas')->where('id', $cajaactiva->id)->increment('acumulado', ($this->subtotal - $this->cuenta->descuento - $this->cuenta->saldo - $this->descuentoProductos));
-                $cuenta = Venta::find($this->cuenta->id);
-                $cuentaguardada = Historial_venta::create([
-                    'caja_id' => $cajaactiva->id,
-                    'usuario_id' => auth()->user()->id,
-                    'sucursale_id' => $this->cuenta->sucursale_id,
-                    'cliente_id' => $this->cuenta->cliente_id,
-                    'total' => $this->subtotal - $this->descuentoProductos,
-                    'puntos' => $this->cuenta->puntos,
-                    'descuento' => $this->cuenta->descuento,
-                    'tipo' => $this->tipocobro,
-                    'saldo' => $this->valorSaldo
-                ]);
-              
-                $productos = $cuenta->productos;
-                if ($this->cuenta->cliente_id != null) {
-                    DB::table('users')->where('id', $this->cuenta->cliente_id)->increment('puntos', $this->cuenta->puntos);
-                }
-                if ($this->valorSaldo > 0) {
-                    Saldo::create([
-                        'user_id' => $this->cuenta->cliente_id,
-                        'historial_venta_id' => 1,
-                        'historial_ventas_id' => $cuentaguardada->id,
+                    if ($this->totalAcumuladoMetodos === $this->subtotalConDescuento) {
+                        $saldoAFavorCliente = null;
+                        $montoSaldo = 0;
+                    } else if ($this->totalAcumuladoMetodos < $this->subtotalConDescuento) {
+                        $saldoAFavorCliente = false;
+                        $montoSaldo = $this->subtotalConDescuento - $this->totalAcumuladoMetodos;
+                    } else {
+                        $saldoAFavorCliente = true;
+                        $montoSaldo = $this->totalAcumuladoMetodos - $this->subtotalConDescuento;
+                    }
+
+
+                    $cuentaguardada = Historial_venta::create([
                         'caja_id' => $cajaactiva->id,
-                        'monto' => $this->valorSaldo,
-                        'es_deuda' => true,
-                        'atendido_por' => auth()->user()->id
+                        'usuario_id' => auth()->user()->id,
+                        'sucursale_id' => $this->cuenta->sucursale_id,
+                        'cliente_id' => $this->cuenta->cliente_id,
+                        'total' => $this->subtotal - $this->descuentoProductos,
+                        'puntos' => $this->cuenta->puntos,
+                        'descuento' => $this->cuenta->descuento,
+                        'tipo' => $this->tipocobro ?? 'N/A',
+                        'saldo' => (float)$this->valorSaldo,
+                        //nuevos campos v2 de ventas
+                        'subtotal' => (float)$this->subtotal,
+                        'total_pagado' => (float)$this->totalAcumuladoMetodos,
+                        'total_a_pagar' => (float)$this->subtotalConDescuento,
+                        'descuento_productos' => (float)$this->descuentoProductos,
+                        'descuento_manual' => $this->cuenta->descuento,
+                        'total_descuento' => (float)$this->descuentoProductos + $this->cuenta->descuento,
+                        'saldo_monto' => (float)$montoSaldo,
+                        'a_favor_cliente' => $saldoAFavorCliente,
                     ]);
-                    DB::table('users')->where('id', $this->cuenta->cliente_id)->increment('saldo', $this->valorSaldo);
-                }
-                foreach ($productos as $prod) {
-                    $cuentaguardada->productos()->attach($prod->id, ['cantidad' => $prod->pivot->cantidad, 'adicionales' => $prod->pivot->adicionales]);
-                }
-                $cuenta->historial_venta_id = $cuentaguardada->id;
-                $cuenta->pagado = true;
-                $cuenta->save();
 
-                $this->cuenta = $cuenta;
-                // $cuenta->productos()->detach();
-                // $cuenta->delete();
+                    $productos = $cuenta->productos;
+                    if ($this->cuenta->cliente_id != null) {
+                        DB::table('users')->where('id', $this->cuenta->cliente_id)->increment('puntos', $this->cuenta->puntos);
+                    }
+                    if ($montoSaldo > 0) {
+                        Saldo::create([
+                            'user_id' => $this->cuenta->cliente_id,
+                            'historial_venta_id' => 1,
+                            'historial_ventas_id' => $cuentaguardada->id,
+                            'caja_id' => $cajaactiva->id,
+                            'monto' => $montoSaldo,
+                            'es_deuda' => $saldoAFavorCliente ? false : true,
+                            'atendido_por' => auth()->user()->id
+                        ]);
+                        if ($saldoAFavorCliente) {
+                            DB::table('users')->where('id', $this->cuenta->cliente_id)->decrement('saldo', $montoSaldo);
+                        } else {
+                            DB::table('users')->where('id', $this->cuenta->cliente_id)->increment('saldo', $montoSaldo);
+                        }
+                    }
+                    //guardar en pivot metodos de pago
+                    foreach ($this->metodosSeleccionados as $codigo => $data) {
+                        if ($data['activo'] == true && isset($data['valor']) && is_numeric($data['valor'])) {
+                            $metodo = MetodoPago::where('codigo', $codigo)->first();
+                            $cuentaguardada->metodosPagos()->attach($metodo->id, ['monto' => $data['valor']]);
+                        }
+                    }
+                    foreach ($productos as $prod) {
+                        $cuentaguardada->productos()->attach($prod->id, ['cantidad' => $prod->pivot->cantidad, 'adicionales' => $prod->pivot->adicionales]);
+                    }
+                    $cuenta->historial_venta_id = $cuentaguardada->id;
+                    $cuenta->pagado = true;
+                    $cuenta->save();
 
-                // $this->reset('cuenta');
-                $this->dispatchBrowserEvent('alert', [
-                    'type' => 'success',
-                    'message' => "Esta venta ahora se encuentra pagada!"
-                ]);
+                    $this->cuenta = $cuenta;
+                    // $cuenta->productos()->detach();
+                    // $cuenta->delete();
+
+                    // $this->reset('cuenta');
+
+                    DB::commit();
+                    $this->dispatchBrowserEvent('alert', [
+                        'type' => 'success',
+                        'message' => "Esta venta ahora se encuentra pagada!"
+                    ]);
+                } catch (\Throwable $th) {
+                    DB::rollBack();
+                    $this->dispatchBrowserEvent('alert', [
+                        'type' => 'error',
+                        'message' => "Error:" . $th->getMessage()
+                    ]);
+                }
             } else {
                 $this->dispatchBrowserEvent('alert', [
                     'type' => 'error',

@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use App\Helpers\WhatsappAPIHelper;
 use Carbon\Carbon;
+use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Almuerzo extends Model
@@ -12,6 +13,7 @@ class Almuerzo extends Model
     use HasFactory;
     protected $fillable = [
         'dia',
+        'estado_dia',
         'ensalada',
         'sopa',
         'foto',
@@ -21,6 +23,12 @@ class Almuerzo extends Model
         'carbohidrato_1',
         'carbohidrato_2',
         'carbohidrato_3',
+        'carbohidrato_1_estado',
+        'carbohidrato_2_estado',
+        'carbohidrato_3_estado',
+        'ejecutivo_estado',
+        'dieta_estado',
+        'vegetariano_estado',
         'jugo',
         'ensalada_cant',
         'sopa_cant',
@@ -35,7 +43,15 @@ class Almuerzo extends Model
         'vegetariano_tiene_carbo',
         'dieta_tiene_carbo'
     ];
+    protected static function boot()
+    {
+        parent::boot();
 
+        // Agregar el Global Scope
+        static::addGlobalScope('diasActivos', function (Builder $builder) {
+            $builder->where('estado_dia', true);
+        });
+    }
     public function scopeHoy($query)
     {
         return $query->where('dia', WhatsappAPIHelper::saber_dia(Carbon::today()));

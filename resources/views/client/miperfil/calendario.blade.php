@@ -54,201 +54,20 @@ $path = 'https://delight-nutrifood.com';
                         @csrf
                         <div class="row mb-0">
                             @if ($plan->segundo)
-                            <div class="col-12 mb-1" id="plato{{ $lista['id'] }}">
-                                <i class="fa fa-star color-yellow-dark"></i> <strong>Elija su
-                                    plato</strong>
-                                <div class="fac fac-radio fac-default" data-group="plato{{ $lista['id'] }}"><span></span>
-                                    <input id="box1-fac-radio{{ $lista['id'] }}" type="radio" class="segundos"
-                                        @if(!$lista['ejecutivo_estado'])disabled @endif name="plato{{ $lista['id'] }}" data-id="{{ $lista['id'] }}"
-                                        value="{{ $lista['ejecutivo'] }}" data-carbo="{{$lista['ejecutivo_tiene_carbo']}}">
-                                    <label for="box1-fac-radio{{ $lista['id'] }}"><mark
-                                            class="highlight ps-1 font-10 pe-1 bg-magenta-dark mr-2 rounded-m">Ejecutivo</mark>
-                                        @if ($lista['ejecutivo_estado'])
-                                        {{ $lista['ejecutivo'] }} <i class="fa fa-check color-green-dark"></i>
-                                        @else
-                                        <del>{{ $lista['ejecutivo'] }}</del> <i class="fa fa-ban color-red-dark"></i>
-                                        @endif
-
-                                    </label>
-                                </div>
-                                <div class="fac fac-radio fac-default" data-group="plato{{ $lista['id'] }}"><span></span>
-                                    <input id="box2-fac-radio{{ $lista['id'] }}" type="radio" class="segundos" data-id="{{ $lista['id'] }}"
-                                        @if(!$lista['dieta_estado'])disabled @endif name="plato{{ $lista['id'] }}"
-                                        value="{{ $lista['dieta'] }}" data-carbo="{{$lista['dieta_tiene_carbo']}}">
-                                    <label for="box2-fac-radio{{ $lista['id'] }}"><mark
-                                            class="highlight ps-1 font-10 pe-1 bg-magenta-dark mr-2 rounded-m">Dieta</mark>
-                                        @if ($lista['dieta_estado'])
-                                        {{ $lista['dieta'] }} <i class="fa fa-check color-green-dark"></i>
-                                        @else
-                                        <del>{{ $lista['dieta'] }}</del> <i class="fa fa-ban color-red-dark"></i>
-                                        @endif
-                                    </label>
-                                </div>
-                                <div class="fac fac-radio fac-default" data-group="plato{{ $lista['id'] }}"><span></span>
-                                    <input id="box3-fac-radio{{ $lista['id'] }}" type="radio" class="segundos" data-id="{{ $lista['id'] }}"
-                                        @if(!$lista['vegetariano_estado'])disabled @endif name="plato{{ $lista['id'] }}"
-                                        value="{{ $lista['vegetariano'] }}" data-carbo="{{$lista['vegetariano_tiene_carbo']}}">
-                                    <label for="box3-fac-radio{{ $lista['id'] }}"><mark
-                                            class="highlight ps-1 font-10 pe-1 bg-magenta-dark mr-2 rounded-m">Veggie</mark>
-                                        @if ($lista['vegetariano_estado'])
-                                        {{ $lista['vegetariano'] }} <i class="fa fa-check color-green-dark"></i>
-                                        @else
-                                        <del>{{ $lista['vegetariano'] }}</del> <i class="fa fa-ban color-red-dark"></i>
-                                        @endif
-                                    </label>
-                                </div>
-
-                            </div>
+                            @include('client.miperfil.includes.seleccion-segundo')
                             <hr>
                             @endif
                            
                             @if ($plan->carbohidrato)
-                            <div class="col-12 mb-1" id="carb{{ $lista['id'] }}">
-                                <i class="fa fa-star color-yellow-dark"></i> <strong>Elija su
-                                    carbohidrato</strong>
-                                <div class="fac fac-radio fac-default carbos{{$lista['id']}}" data-group="carb{{ $lista['id'] }}"><span></span>
-                                    <input id="box4-fac-radio{{ $lista['id'] }}" type="radio"
-                                        @if(!$lista['carbohidrato_1_estado'])disabled @endif
-                                        name="carb{{ $lista['id'] }}" value="{{ $lista['carbohidrato_1'] }}">
-                                    <label for="box4-fac-radio{{ $lista['id'] }}">
-                                        @if ($lista['carbohidrato_1_estado'])
-                                        {{ $lista['carbohidrato_1'] }} <i class="fa fa-check color-green-dark"></i>
-                                        @else
-                                        <del>{{ $lista['carbohidrato_1'] }}</del> <i
-                                            class="fa fa-ban color-red-dark"></i>
-                                        @endif
-
-                                    </label>
-                                </div>
-                                <div class="fac fac-radio fac-default carbos{{$lista['id']}}" data-group="carb{{ $lista['id'] }}"><span></span>
-                                    <input id="box5-fac-radio{{ $lista['id'] }}" type="radio"
-                                        @if(!$lista['carbohidrato_2_estado'])disabled @endif
-                                        name="carb{{ $lista['id'] }}" value="{{ $lista['carbohidrato_2'] }}">
-                                    <label for="box5-fac-radio{{ $lista['id'] }}">
-                                        @if ($lista['carbohidrato_2_estado'])
-                                        {{ $lista['carbohidrato_2'] }} <i class="fa fa-check color-green-dark"></i>
-                                        @else
-                                        <del>{{ $lista['carbohidrato_2'] }}</del> <i
-                                            class="fa fa-ban color-red-dark"></i>
-                                        @endif
-                                    </label>
-                                </div>
-                                <div class="fac fac-radio fac-default carbos{{$lista['id']}}" data-group="carb{{ $lista['id'] }}"><span></span>
-                                    <input id="box6-fac-radio{{ $lista['id'] }}" type="radio"
-                                        @if(!$lista['carbohidrato_3_estado'])disabled @endif
-                                        name="carb{{ $lista['id'] }}" value="{{ $lista['carbohidrato_3'] }}">
-                                    <label for="box6-fac-radio{{ $lista['id'] }}">
-                                        @if ($lista['carbohidrato_3_estado'])
-                                        {{ $lista['carbohidrato_3'] }} <i class="fa fa-check color-green-dark"></i>
-                                        @else
-                                        <del>{{ $lista['carbohidrato_3'] }}</del> <i
-                                            class="fa fa-ban color-red-dark"></i>
-                                        @endif
-                                    </label>
-                                </div>
-                                <div class="fac fac-radio fac-default" data-group="carb{{ $lista['id'] }}"><span></span>
-                                    <input id="box13-fac-radio{{ $lista['id'] }}" type="radio"
-                                        name="carb{{ $lista['id'] }}" value="sin carbohidrato">
-                                    <label for="box13-fac-radio{{ $lista['id'] }}">Sin
-                                        carbohidrato</label>
-                                </div>
-
-                            </div>
+                            @include('client.miperfil.includes.seleccion-carbohidrato')
                             <hr>
                             @endif
                             
                         </div>
                         
-                        <div class="row mb-0">
-                            <div class="col-6" id="envio{{ $lista['id'] }}">
-                                <i class="fa fa-map-marker font-16 color-red-dark"></i> <strong>Tipo de
-                                    envio</strong>
-                                <div class="fac fac-radio fac-default mesa" data-group="envio{{ $lista['id'] }}"><span></span>
-                                    <input id="box7-fac-radio{{ $lista['id'] }}" type="radio"
-                                        data-id="{{ $lista['id'] }}" class="mesa" name="envio{{ $lista['id'] }}"
-                                        value="{{ $lista['envio1'] }}">
-                                    <label for="box7-fac-radio{{ $lista['id'] }}">{{ $lista['envio1'] }}</label>
-                                </div>
-                                <div class="fac fac-radio fac-default" data-group="envio{{ $lista['id'] }}"><span></span>
-                                    <input id="box8-fac-radio{{ $lista['id'] }}" type="radio"
-                                        data-id="{{ $lista['id'] }}" class="otro" name="envio{{ $lista['id'] }}"
-                                        value="{{ $lista['envio2'] }}">
-                                    <label for="box8-fac-radio{{ $lista['id'] }}">{{ $lista['envio2'] }}</label>
-                                </div>
-                                <div class="fac fac-radio fac-default" data-group="envio{{ $lista['id'] }}"><span></span>
-                                    <input id="box9-fac-radio{{ $lista['id'] }}" type="radio"
-                                        data-id="{{ $lista['id'] }}" class="otro" name="envio{{ $lista['id'] }}"
-                                        value="{{ $lista['envio3'] }}">
-                                    <label for="box9-fac-radio{{ $lista['id'] }}">{{ $lista['envio3'] }}</label>
-                                </div>
-
-                            </div>
-
-                            <div class="col-6 empaques d-none" id="empaque{{ $lista['id'] }}">
-                                <i class="fa fa-edit font-16 color-red-dark"></i> <strong>Tipo de
-                                    empaque</strong>
-                                <div class="fac fac-radio fac-default" data-group="empaque{{ $lista['id'] }}"><span></span>
-                                    <input id="box10-fac-radio{{ $lista['id'] }}" type="radio"
-                                        name="empaque{{ $lista['id'] }}" value="{{ $lista['empaque1'] }}">
-                                    <label for="box10-fac-radio{{ $lista['id'] }}">{{ $lista['empaque1'] }}</label>
-                                </div>
-                                <div class="fac fac-radio fac-default" data-group="empaque{{ $lista['id'] }}"><span></span>
-                                    <input id="box11-fac-radio{{ $lista['id'] }}" type="radio"
-                                        name="empaque{{ $lista['id'] }}" value="{{ $lista['empaque2'] }}">
-                                    <label for="box11-fac-radio{{ $lista['id'] }}">{{ $lista['empaque2'] }}</label>
-                                </div>
-                                <div class="fac fac-radio fac-default d-none" data-group="empaque{{ $lista['id'] }}"><span></span>
-                                    <input id="box12-fac-radio{{ $lista['id'] }}" type="radio"
-                                        name="empaque{{ $lista['id'] }}" value="Ninguno">
-                                    <label for="box12-fac-radio{{ $lista['id'] }}">Ninguno(si es para
-                                        mesa)</label>
-                                </div>
-
-
-                            </div>
-                            <div class="box7-fac-radio{{ $lista['id'] }}" id="empaque{{ $lista['id'] }}"></div>
-                        </div>
+                        @include('client.miperfil.includes.seleccion-envio')
                         <hr>
-                        <div class="row mb-0">
-                            @if ($plan->sopa)
-                            <h4 class="col-6 font-500  font-13"> <i class="fa fa-check color-green-dark"></i>
-                                <strong>Sopa</strong>
-                            </h4>
-                            <p class="col-6 mb-3 text-end  font-900 mb-0">
-                                {{ $lista['sopa'] }}
-                            </p>
-                            <input type="hidden" value="{{ $lista['sopa'] }}" name="sopa">
-                            @endif
-                            @if ($plan->ensalada)
-                            <h4 class="col-6 font-500 font-13 "> <i class="fa fa-check color-green-dark"></i>
-                                <strong>Ensalada</strong>
-                            </h4>
-                            <p class="col-6 mb-3 text-end  font-900 mb-0">
-                                {{ $lista['ensalada'] }}
-                            </p>
-                            <input type="hidden" value="{{ $lista['ensalada'] }}" name="ensalada">
-                            @endif
-                            @if ($plan->jugo)
-                            <h4 class="col-6 font-500 font-13"> <i class="fa fa-check color-green-dark"></i>
-                                <strong>Jugo</strong>
-                            </h4>
-                            <p class="col-6 mb-3 text-end  font-900 mb-0">
-                                {{ $lista['jugo'] }}
-                            </p>
-                            <input type="hidden" value="{{ $lista['jugo'] }}" name="jugo">
-                            @endif
-
-                            <input type="hidden" value="{{ $lista['dia'] }}" name="dia">
-                            <input type="hidden" value="{{ $lista['id'] }}" name="id">
-                            <input type="hidden" value="{{ $plan->id }}" name="plan">
-
-
-                            <div class="col">
-                                <button type="submit" disabled
-                                    class="btn btn-m btn-full mb-3 rounded-xs text-uppercase font-900 shadow-s bg-mint-dark">Guardar
-                                    {{ $lista['dia'] }}</button>
-                            </div>
-                        </div>
+                        @include('client.miperfil.includes.seleccion-secundarios')
 
                     </form>
                     @elseif($lista['estado']=='desarrollo')
@@ -289,30 +108,7 @@ $path = 'https://delight-nutrifood.com';
 
 
 </div>
-@if ($errors->any())
-<div class="ms-3 me-3 mb-5 alert alert-small rounded-s shadow-xl bg-red-dark" role="alert">
-    <span><i class="fa fa-times"></i></span>
-    <strong>Rellene bien los campos</strong>
-
-
-</div>
-@endif
-@if (session('success'))
-<div class="ms-3 me-3 mb-5 alert alert-small rounded-s shadow-xl bg-green-dark" role="alert">
-    <span><i class="fa fa-check"></i></span>
-    <strong>{{ session('success') }}</strong>
-    <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert"
-        aria-label="Close">×</button>
-</div>
-@endif
-@if (session('error'))
-<div class="ms-3 me-3 mb-5 alert alert-small rounded-s shadow-xl bg-red-dark" role="alert">
-    <span><i class="fa fa-times-circle "></i></span>
-    <strong>{{ session('error') }}</strong>
-    <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert"
-        aria-label="Close">×</button>
-</div>
-@endif
+@include('client.miperfil.includes.show-errores')
 
 
 <div class="card card-style bg-18">

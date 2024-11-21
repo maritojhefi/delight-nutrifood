@@ -3,15 +3,11 @@
         <ul class="metismenu" id="menu">
             @if (auth()->user()->role->nombre == 'cocina')
                 <x-sidebar-elements titulo="Cocina" linkglobal="cocina" :lista="[
-                     'Despachar pedidos' => 'reporte.cocina',
-                    'Agregar stock' => 'sucursal.stock'
-                    
-                    
-                   
+                    'Despachar pedidos' => 'reporte.cocina',
+                    'Agregar stock' => 'sucursal.stock',
                 ]">
                     <i class="flaticon-025-dashboard"></i>
                 </x-sidebar-elements>
-
             @endif
 
             @if (auth()->user()->role->nombre == 'admin')
@@ -19,7 +15,7 @@
                     <i class="flaticon-025-dashboard"></i>
                 </x-sidebar-elements>
 
-                <x-sidebar-elements titulo="Estadisticas" linkglobal="admin/caja" :lista="['Todas las ventas' => 'caja.reportes']">
+                <x-sidebar-elements titulo="Estadisticas" linkglobal="admin/caja" :lista="['Reporte (antiguo)' => 'caja.reportes', 'Reporte de ventas (nuevo)' => 'caja.reportes.v2']">
                     <i class="flaticon-041-graph"></i>
                 </x-sidebar-elements>
 
@@ -27,9 +23,10 @@
                     <i class="flaticon-086-star"></i>
                 </x-sidebar-elements>
                 <x-sidebar-elements titulo="Nutri-Tips" linkglobal="admin/tienda" :lista="[
-                'Galeria de fotos' => 'tienda.galeria',
-                'Videos' => 'tienda.tutoriales',
-                'Novedades' => 'tienda.novedades']">
+                    'Galeria de fotos' => 'tienda.galeria',
+                    'Videos' => 'tienda.tutoriales',
+                    'Novedades' => 'tienda.novedades',
+                ]">
                     <i class="fa fa-camera"></i>
                 </x-sidebar-elements>
             @endif
@@ -48,8 +45,8 @@
                 <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="[
                     'Listar Usuarios' => 'usuario.listar',
                     'Roles' => 'usuario.roles',
-                    'Colaboradores'=>'usuario.empleo',
-                    'Saldos'=>'usuario.saldos',
+                    'Colaboradores' => 'usuario.empleo',
+                    'Saldos' => 'usuario.saldos',
                     'Asistencia' => 'usuario.asistencia',
                     'Cumpleaños' => 'usuario.cumpleanos',
                 ]">
@@ -63,12 +60,12 @@
                     'Agregar Plan a Usuario' => 'planes',
                     'Planes por expirar' => 'planes.expirar',
                     'Cocina' => 'reporte.cocina',
-                    'Planes en desarrollo(whatsapp)'=>'reporte.whatsapp'
+                    'Planes en desarrollo(whatsapp)' => 'reporte.whatsapp',
                 ]">
                     <i class="flaticon-022-copy"></i>
                 </x-sidebar-elements>
 
-                <x-sidebar-elements titulo="Ventas" linkglobal="admin/ventas" :lista="['Ventas diarias' => 'ventas.listar','Prospectos de Clientes'=>'ventas.prospectos']">
+                <x-sidebar-elements titulo="Ventas" linkglobal="admin/ventas" :lista="['Ventas diarias' => 'ventas.listar', 'Prospectos de Clientes' => 'ventas.prospectos']">
                     <i class="flaticon-013-checkmark"></i>
                 </x-sidebar-elements>
 
@@ -78,8 +75,11 @@
 
 
 
-                <x-sidebar-elements titulo="Otros" linkglobal="admin/otros" :lista="['Importar excel' => 'importar.index','Historial enviados'=>'whatsapp.historial',
-                'Tickets whatsapp' => 'whatsapp.index']">
+                <x-sidebar-elements titulo="Otros" linkglobal="admin/otros" :lista="[
+                    'Importar excel' => 'importar.index',
+                    'Historial enviados' => 'whatsapp.historial',
+                    'Tickets whatsapp' => 'whatsapp.index',
+                ]">
                     <i class="flaticon-022-copy"></i>
                 </x-sidebar-elements>
             @endif

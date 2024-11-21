@@ -46,7 +46,7 @@ class FinalizarPlanesDiarios10AMCommand extends Command
         DB::table('plane_user')->whereDate('start', Carbon::today())->where('estado', Plane::ESTADODESARROLLO)->update(['estado' => Plane::ESTADOPENDIENTE, 'color' => Plane::COLORPENDIENTE, 'detalle' => null]);
         // Paso 1: Obtener los registros que coinciden con los criterios
         $records = DB::table('plane_user')
-        ->select('plane_user.*','planes.sopa')
+            ->select('plane_user.*', 'planes.sopa')
             ->leftJoin('planes', 'planes.id', '=', 'plane_user.plane_id')
             ->whereDate('start', Carbon::today())
             ->whereIn('estado', [Plane::ESTADODESARROLLO, Plane::ESTADOPENDIENTE])
@@ -71,38 +71,40 @@ class FinalizarPlanesDiarios10AMCommand extends Command
 
 
 
+        if ($ejecutivo) {
+            // Paso 5: Actualizar los registros en dos grupos usando foreach
+            foreach ($firstHalf as $record) {
 
-        // Paso 5: Actualizar los registros en dos grupos usando foreach
-        foreach ($firstHalf as $record) {
-
-            if ($record->sopa == true) {
-                $planEjecutivo = GlobalHelper::menuDiarioArray($ejecutivo['sopa'], $ejecutivo['ejecutivo'], $ejecutivo['ensalada'], $ejecutivo['carbohidrato_1'], $ejecutivo['jugo']);
-            } else {
-                $planEjecutivo = GlobalHelper::menuDiarioArray('', $ejecutivo['ejecutivo'], $ejecutivo['ensalada'], $ejecutivo['carbohidrato_1'], $ejecutivo['jugo']);
+                if ($record->sopa == true && $ejecutivo) {
+                    $planEjecutivo = GlobalHelper::menuDiarioArray($ejecutivo['sopa'], $ejecutivo['ejecutivo'], $ejecutivo['ensalada'], $ejecutivo['carbohidrato_1'], $ejecutivo['jugo']);
+                } else {
+                    $planEjecutivo = GlobalHelper::menuDiarioArray('', $ejecutivo['ejecutivo'], $ejecutivo['ensalada'], $ejecutivo['carbohidrato_1'], $ejecutivo['jugo']);
+                }
+                $detalle = json_encode($planEjecutivo);
+                DB::table('plane_user')
+                    ->where('id', $record->id)
+                    ->update(['estado' => Plane::ESTADOFINALIZADO, 'color' => Plane::COLORFINALIZADO, 'detalle' => $detalle]);
             }
-            // dd($planEjecutivo);
-            $detalle = json_encode($planEjecutivo);
-            DB::table('plane_user')
-                ->where('id', $record->id)
-                ->update(['estado' => Plane::ESTADOFINALIZADO, 'color' => Plane::COLORFINALIZADO, 'detalle' => $detalle]);
         }
 
-        foreach ($secondHalf as $record) {
+        if ($dieta) {
+            foreach ($secondHalf as $record) {
 
-            if ($record->sopa == true) {
-                $planDieta = GlobalHelper::menuDiarioArray($dieta['sopa'], $dieta['dieta'], $dieta['ensalada'], $dieta['carbohidrato_2'], $dieta['jugo']);
-            } else {
-                $planDieta = GlobalHelper::menuDiarioArray('', $dieta['dieta'], $dieta['ensalada'], $dieta['carbohidrato_2'], $dieta['jugo']);
+                if ($record->sopa == true) {
+                    $planDieta = GlobalHelper::menuDiarioArray($dieta['sopa'], $dieta['dieta'], $dieta['ensalada'], $dieta['carbohidrato_2'], $dieta['jugo']);
+                } else {
+                    $planDieta = GlobalHelper::menuDiarioArray('', $dieta['dieta'], $dieta['ensalada'], $dieta['carbohidrato_2'], $dieta['jugo']);
+                }
+                $detalle = json_encode($planDieta);
+                DB::table('plane_user')
+                    ->where('id', $record->id)
+                    ->update(['estado' => Plane::ESTADOFINALIZADO, 'color' => Plane::COLORFINALIZADO, 'detalle' => $detalle]);
             }
-            $detalle = json_encode($planDieta);
-
-            DB::table('plane_user')
-                ->where('id', $record->id)
-                ->update(['estado' => Plane::ESTADOFINALIZADO, 'color' => Plane::COLORFINALIZADO, 'detalle' => $detalle]);
         }
+
 
         // Actualizar los registros restantes sin detalle específico
-        
+
         DB::table('plane_user')->whereDate('start', Carbon::today())->where('estado', Plane::ESTADOPENDIENTE)->update(['estado' => Plane::ESTADOFINALIZADO, 'color' => Plane::COLORFINALIZADO]);
 
         DB::table('whatsapp_plan_almuerzos')->delete();

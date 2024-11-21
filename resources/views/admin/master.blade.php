@@ -186,7 +186,7 @@
             @include('admin.partials.sidebar')
 
             <div class="content-body">
-                <div class="container-fluid p-0">
+                <div class="container-fluid p-1">
                     @include('admin.partials.alertas')
                     @yield('content')
                 </div>

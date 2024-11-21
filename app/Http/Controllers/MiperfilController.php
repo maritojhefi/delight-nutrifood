@@ -80,7 +80,7 @@ class MiperfilController extends Controller
             $usuario = User::find(auth()->user()->id);
             $planes = CreateList::crearlistaplan($usuario->id);
         }
-        $fotoMenu = Almuerzo::find(1);
+        $fotoMenu = Almuerzo::withoutGlobalScope('diasActivos')->find(1);
         return view('client.miperfil.index', compact('usuario', 'planes', 'fotoMenu'));
     }
     public function calendario(Plane $plan, User $usuario)
@@ -107,7 +107,9 @@ class MiperfilController extends Controller
             if (date('y-m-d', strtotime($dias->pivot->start)) <= $fechalimite && date('y-m-d', strtotime($dias->pivot->start)) >= $fechaactual) {
 
                 $menusemanal = Almuerzo::where('dia', $this->saber_dia($dias->pivot->start))->first();
-
+                if (!$menusemanal) {
+                    continue;
+                }
                 $coleccion->push([
                     'detalle' => $dias->pivot->detalle,
                     'estado' => $dias->pivot->estado,
