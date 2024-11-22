@@ -11,8 +11,8 @@ class Caja extends Model
     use HasFactory;
 
     protected $fillable = [
-        'acumulado','entrada','sucursale_id','estado'
-       
+        'acumulado', 'entrada', 'sucursale_id', 'estado'
+
     ];
     public function sucursale()
     {
@@ -24,6 +24,10 @@ class Caja extends Model
     }
     public function saldos()
     {
-        return $this->hasMany(Saldo::class,'caja_id');
+        return $this->hasMany(Saldo::class, 'caja_id');
+    }
+    public function saldosPagadosSinVenta()
+    {
+        return $this->hasMany(Saldo::class, 'caja_id')->where('historial_ventas_id', null)->where('es_deuda', false)->where('anulado', false);
     }
 }

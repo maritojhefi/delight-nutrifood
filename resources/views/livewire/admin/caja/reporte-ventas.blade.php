@@ -3,7 +3,9 @@
         <div class="col-9 pe-1">
             <div class="card p-0 bordeado">
                 <div class="card-header">
-                    <strong>Listado de ventas</strong>
+                    <strong>Listado de ventas <a href="#" wire:click="cambiarCaja"
+                            class="badge badge-sm badge-warning">Cambiar caja <i
+                                class="flaticon-075-reload"></i></a></strong>
                 </div>
                 <div class="card-body">
                     <table class="table p-0 m-0 letra12">
@@ -12,17 +14,24 @@
                                 <th>Cliente</th>
                                 <th>Método</th>
                                 <th>Puntos</th>
-                                <th>Monto saldo</th>
                                 <th>Subtotal</th>
                                 <th>Total Descuentos</th>
+                                <th>Monto saldo</th>
                                 <th>Total Cobrado</th>
-                                <th>Opciones</th>
+                                <th><i class="fa fa-gear"></i></th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($ventasCaja as $venta)
                                 <tr>
-                                    <td>{{ $venta->cliente ? $venta->cliente->name : 'Desconocido' }}</td>
+                                    <td>
+                                        @if ($venta->cliente)
+                                            <strong>{{ Str::limit($venta->cliente->name, 20) }}</strong>
+                                        @else
+                                            <span class="text-muted">Desconocido</span>
+                                        @endif
+
+                                    </td>
                                     <td>
                                         @foreach ($venta->metodosPagos as $metPago)
                                             <span class="rounded-circle popover-container"
@@ -41,9 +50,38 @@
                                         @endforeach
                                     </td>
                                     <td>{{ floatval($venta->puntos) }} Pts</td>
-                                    <td>{{ floatval($venta->saldo_monto) }} Bs</td>
-                                    <td>{{ floatval($venta->subtotal) }} Bs</td>
-                                    <td>{{ floatval($venta->total_descuentos) }} Bs</td>
+                                    <td>{{ floatval($venta->subtotal + $venta->descuento_productos + $venta->descuento_manual) }}
+                                        Bs</td>
+                                    <td>{{ floatval($venta->total_descuento) }} Bs
+                                        @if (floatval($venta->total_descuento) != 0)
+                                            <span class="popover-container"><i
+                                                    class="flaticon-050-info fs-20 text-primary"></i>
+                                                <span class="popover-text">Productos: {{ $venta->descuento_productos }}
+                                                    Bs
+                                                    <br>
+                                                    Manual: {{ $venta->descuento_manual }} Bs
+                                                </span>
+                                            </span>
+                                        @endif
+                                    </td>
+
+                                    @if ($venta->a_favor_cliente === 1)
+                                        <td><span
+                                                class="text-info popover-container">{{ floatval($venta->saldo_monto) }}
+                                                Bs <i class="flaticon-003-arrow-up"></i><span class="popover-text">A
+                                                    favor del cliente</span></span>
+                                        </td>
+                                    @elseif ($venta->a_favor_cliente === 0)
+                                        <td><span
+                                                class="text-warning popover-container">{{ floatval($venta->saldo_monto) }}
+                                                Bs <i class="flaticon-001-arrow-down"></i><span class="popover-text">A
+                                                    deuda del cliente</span></span>
+                                        </td>
+                                    @elseif ($venta->a_favor_cliente === null)
+                                        <td><span class="text-dark">{{ floatval($venta->saldo_monto) }} Bs</span></td>
+                                    @else
+                                        <td><span class="text-muted">{{ floatval($venta->saldo_monto) }} Bs</span></td>
+                                    @endif
                                     <td><strong> {{ floatval($venta->total_pagado) }} Bs</strong></td>
                                     <td><span class="badge badge-xxs badge-info py-0 px-1 m-0"><i
                                                 class="fa fa-list"></i></span></td>
@@ -74,7 +112,8 @@
                         <i class="flaticon-017-clipboard fs-30 me-3"></i>
                         <div class="media-body event-size">
                             <span class="fs-14 d-block mb-1 text-primary">Total ingreso</span>
-                            <span class="fs-18 font-w500 event-size-1">{{ $totalIngreso }} Bs</span>
+                            <span class="fs-18 font-w500 event-size-1">{{ $totalIngreso }} Bs
+                                <span>({{ $totalIngreso - $totalSaldo }} +{{ $totalSaldo }})</span></span>
                         </div>
                     </div>
                     <div class="media event-card p-1 px-2 rounded align-items-center m-1">

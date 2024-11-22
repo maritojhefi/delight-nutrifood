@@ -10,6 +10,7 @@ class ReporteVentas extends Component
 {
     use WithPagination;
     public $cajaSeleccionada, $ventasCaja, $totalIngreso, $totalDescuentos, $totalSaldo, $totalPuntos, $acumuladoPorMetodoPago;
+    public $totalSaldosPagados;
     protected $paginationTheme = 'bootstrap';
     public function mount() {}
     public function buscarCaja(Caja $caja)
@@ -33,6 +34,11 @@ class ReporteVentas extends Component
         $this->totalIngreso = floatval($this->ventasCaja->sum('total_pagado'));
         $this->totalSaldo = floatval($this->ventasCaja->sum('saldo_monto'));
         $this->totalPuntos = floatval($this->ventasCaja->sum('puntos'));
+        $this->totalSaldosPagados = floatval($this->cajaSeleccionada->saldosPagadosSinVenta->sum('monto'));
+    }
+    public function cambiarCaja()
+    {
+        $this->reset();
     }
     public function render()
     {

@@ -1073,6 +1073,7 @@ class VentasIndex extends Component
         $cuenta = Venta::find($this->cuenta->id);
         $this->cuenta = $cuenta;
         $this->reset('descuento');
+        $this->actualizarlista($cuenta);
     }
     public function descargarPDF()
     {
