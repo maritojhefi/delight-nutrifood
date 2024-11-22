@@ -42,7 +42,7 @@
                         @isset($item->cliente)
                             <br>
                             <strong class="p-0 m-0"
-                                style="font-size:10px;line-height: 10px">{{ Str::limit($item->cliente->name, 35) }}</strong>
+                                style="font-size:15px;line-height: 10px">{{ Str::limit($item->cliente->name, 35) }}</strong>
                         @endisset
                     </a>
 
