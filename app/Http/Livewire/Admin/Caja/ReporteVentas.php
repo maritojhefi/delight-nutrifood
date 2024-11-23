@@ -9,7 +9,7 @@ use Livewire\WithPagination;
 class ReporteVentas extends Component
 {
     use WithPagination;
-    public $cajaSeleccionada, $ventasCaja, $totalIngreso, $totalDescuentos, $totalSaldo, $totalPuntos, $acumuladoPorMetodoPago;
+    public $cajaSeleccionada, $ventasCaja, $totalIngreso, $saldosPagadosArray,$totalDescuentos, $totalSaldoExcedentes, $totalPuntos, $acumuladoPorMetodoPago;
     public $totalSaldosPagados;
     protected $paginationTheme = 'bootstrap';
     public function mount() {}
@@ -32,8 +32,9 @@ class ReporteVentas extends Component
         $this->acumuladoPorMetodoPago = $acumuladoPorMetodoPago;
         $this->totalDescuentos = floatval($this->ventasCaja->sum('total_descuento'));
         $this->totalIngreso = floatval($this->ventasCaja->sum('total_pagado'));
-        $this->totalSaldo = floatval($this->ventasCaja->sum('saldo_monto'));
+        $this->totalSaldoExcedentes = floatval($this->ventasCaja->where('a_favor_cliente',true)->sum('saldo_monto'));
         $this->totalPuntos = floatval($this->ventasCaja->sum('puntos'));
+        $this->saldosPagadosArray = $this->cajaSeleccionada->saldosPagadosSinVenta;
         $this->totalSaldosPagados = floatval($this->cajaSeleccionada->saldosPagadosSinVenta->sum('monto'));
     }
     public function cambiarCaja()

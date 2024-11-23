@@ -128,13 +128,13 @@
             color: #fff;
             text-align: center;
             border-radius: 5px;
-            padding: 10px;
+            padding: 5px;
             position: absolute;
             bottom: 125%;
             /* Ajusta según la posición deseada */
             left: 50%;
             transform: translateX(-50%);
-            z-index: 1;
+            z-index: 100;
             opacity: 0;
             transition: opacity 0.3s;
         }

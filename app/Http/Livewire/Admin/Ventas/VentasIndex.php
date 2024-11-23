@@ -346,6 +346,8 @@ class VentasIndex extends Component
             'message' => "Se asigno a esta venta el cliente: " . $cliente->name
         ]);
         $this->cuenta->save();
+        $this->reset('user');
+        $this->actualizarlista($this->cuenta);
     }
     public function cargarObservacion(Producto $prod)
     {
