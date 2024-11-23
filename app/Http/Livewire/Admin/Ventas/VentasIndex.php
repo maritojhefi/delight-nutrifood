@@ -383,7 +383,7 @@ class VentasIndex extends Component
             'type' => 'success',
             'message' => "Nuevo cliente: " . $this->name . " creado!"
         ]);
-        $this->reset();
+        $this->resetExcept(['metodosPagos']);
     }
     public function mostraradicionales(Producto $producto)
     {
@@ -883,7 +883,7 @@ class VentasIndex extends Component
         ]);
         if ($this->cuenta != null) {
             if ($venta->id == $this->cuenta->id) {
-                $this->reset();
+                $this->resetExcept(['metodosPagos']);
             }
         }
     }
