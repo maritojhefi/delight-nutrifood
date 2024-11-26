@@ -6,7 +6,7 @@
                     <strong>Listado de ventas <a href="#" wire:click="cambiarCaja"
                             class="badge badge-sm badge-warning">Cambiar caja <i
                                 class="flaticon-075-reload"></i></a></strong>
-                                <strong>{{App\Helpers\GlobalHelper::fechaFormateada(2,$cajaSeleccionada->created_at)}}</strong>
+                    <strong>{{ App\Helpers\GlobalHelper::fechaFormateada(2, $cajaSeleccionada->created_at) }}</strong>
                 </div>
                 <div class="card-body">
                     <div style="max-height: 300px !important; overflow-y: auto;overflow-x: hidden;">
@@ -118,7 +118,7 @@
             <div class="card p-0 bordeado">
                 <div class="card-header">
                     <strong>Resumen general</strong>
-                    
+
                 </div>
                 <div class="card-body p-1">
                     <div class="media event-card p-1 px-2 rounded align-items-center m-1">
@@ -157,7 +157,7 @@
             <div class="card p-0 bordeado">
                 <div class="card-header">
                     <strong>Saldos pagados y anticipos </strong>
-                    <strong>{{App\Helpers\GlobalHelper::fechaFormateada(2,$cajaSeleccionada->created_at)}}</strong>
+                    <strong>{{ App\Helpers\GlobalHelper::fechaFormateada(2, $cajaSeleccionada->created_at) }}</strong>
                 </div>
                 <div class="card-body">
                     <div style="max-height: 300px !important; overflow-y: auto;overflow-x: hidden;">
@@ -176,7 +176,24 @@
                                 @foreach ($saldosPagadosArray as $saldo)
                                     <tr>
                                         <td class="py-1"><strong>{{ $saldo->usuario->name }}</strong></td>
-                                        <td class="py-1">{{ $saldo->tipo }}</td>
+                                        <td class="py-1">
+                                            @foreach ($saldo->metodosPagos as $metPago)
+                                                <span class="rounded-circle popover-container m-0 p-0"
+                                                    style="
+                                            width: 25px;
+                                            height: 25px;
+                                            display: inline-block;
+                                            background-image: url({{ $metPago->imagen }});
+                                            background-size: cover;
+                                            background-position: center;
+                                            background-repeat: no-repeat;
+                                        "
+                                                    alt="">
+                                                    <span class="popover-text">{{ $metPago->nombre_metodo_pago }} :
+                                                        {{ $metPago->pivot->monto }} Bs</span>
+                                                </span>
+                                            @endforeach
+                                        </td>
                                         <td class="py-1">
                                             <span class="text-info popover-container"><strong>{{ floatval($saldo->monto) }}
                                                     Bs</strong> <i class="flaticon-003-arrow-up"></i><span
