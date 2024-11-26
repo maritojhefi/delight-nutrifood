@@ -169,6 +169,7 @@
                                     <th class="text-white bg-primary">Cliente</th>
                                     <th class="text-white bg-primary">Método</th>
                                     <th class="text-white bg-primary">Monto</th>
+                                    <th class="text-white bg-primary">Detalle</th>
                                     <th class="text-white bg-primary">Hora</th>
                                     <th class="text-white bg-primary">Atendido por</th>
 
@@ -202,6 +203,9 @@
                                                     class="popover-text">A
                                                     favor del cliente</span></span>
                                         </td>
+                                        <td><span class="popover-container">{{ Str::limit($saldo->detalle, 15) }}
+                                                <span class="popover-text">{{ $saldo->detalle }}</span>
+                                            </span></td>
                                         <td>{{ App\Helpers\GlobalHelper::fechaFormateada(9, $saldo->created_at) }}
                                             ({{ App\Helpers\GlobalHelper::timeago($saldo->created_at) }})
                                         </td>
