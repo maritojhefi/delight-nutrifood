@@ -20,6 +20,7 @@
                                     <th class="text-white bg-primary">Total Descuentos</th>
                                     <th class="text-white bg-primary">Monto saldo</th>
                                     <th class="text-white bg-primary">Total Cobrado</th>
+                                    <th class="text-white bg-primary">Hora</th>
                                     <th class="text-white bg-primary"><i class="fa fa-gear"></i></th>
                                 </tr>
                             </thead>
@@ -93,6 +94,7 @@
                                         @endif
                                         <td class="p-0"><strong> {{ floatval($venta->total_pagado) }} Bs</strong>
                                         </td>
+                                        <td>{{ App\Helpers\GlobalHelper::fechaFormateada(9, $venta->created_at) }}</td>
                                         <td class="p-0"><span class="badge badge-xxs badge-info py-0 px-1 m-0"><i
                                                     class="fa fa-list"></i></span></td>
                                     </tr>
@@ -167,7 +169,7 @@
                                     <th class="text-white bg-primary">Cliente</th>
                                     <th class="text-white bg-primary">Método</th>
                                     <th class="text-white bg-primary">Monto</th>
-                                    <th class="text-white bg-primary">Fecha</th>
+                                    <th class="text-white bg-primary">Hora</th>
                                     <th class="text-white bg-primary">Atendido por</th>
 
                                 </tr>
