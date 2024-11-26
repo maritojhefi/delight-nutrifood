@@ -229,13 +229,13 @@ class VentasIndex extends Component
     public function registrarSaldo()
     {
         $this->validate([
-            'tipoSaldo' => 'required|string|min:2',
+            'tipoSaldo' => 'required|integer',
             'montoSaldo' => 'required|numeric|min:0',
             'detalleSaldo' => 'required'
         ]);
         $cajaactiva = Caja::where('sucursale_id', $this->cuenta->sucursale->id)->whereDate('created_at', Carbon::today())->first();
 
-        Saldo::create([
+        $saldoCreado = Saldo::create([
             'detalle' => $this->detalleSaldo,
             'historial_venta_id' => 1,
             'caja_id' => $cajaactiva->id,
@@ -245,6 +245,7 @@ class VentasIndex extends Component
             'atendido_por' => auth()->user()->id,
             'tipo' => $this->tipoSaldo
         ]);
+        $saldoCreado->metodosPagos()->attach($this->tipoSaldo,['monto'=>$this->montoSaldo]);
         DB::table('users')->where('id', $this->cuenta->cliente->id)->decrement('saldo', $this->montoSaldo);
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',

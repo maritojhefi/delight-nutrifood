@@ -31,12 +31,11 @@
                                     <div class="col-lg-6">
                                         <select name="" id="" wire:model="tipoSaldo"
                                             class="form-control @error($tipoSaldo) is-invalid @enderror">
-                                            <option value="">Seleccione uno</option>
-                                            <option value="efectivo">Efectivo</option>
-                                            <option value="tarjeta">Tarjeta</option>
-                                            {{-- <option value="banco-sol">Banco Sol</option> --}}
-                                            <option value="banco-bnb">Banco BNB</option>
-                                            {{-- <option value="banco-mercantil">Banco Mercantil</option> --}}
+                                            <option value="">Seleccione un metodo</option>
+                                            @foreach ($metodosPagos as $metodo)
+                                                <option value="{{ $metodo->id }}">{{ $metodo->nombre_metodo_pago }}
+                                                </option>
+                                            @endforeach
                                         </select>
 
                                     </div>
