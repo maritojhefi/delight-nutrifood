@@ -18,20 +18,37 @@ class GlobalHelper
     {
         $timestamp = strtotime($date);
 
-        $strTime = ['segundo', 'minuto', 'hora', 'dia', 'mes', 'año'];
-        $length = ['60', '60', '24', '30', '12', '10'];
+        // Traducción para unidades de tiempo
+        $strTimeSingular = ['segundo', 'minuto', 'hora', 'día', 'mes', 'año'];
+        $strTimePlural = ['segundos', 'minutos', 'horas', 'días', 'meses', 'años'];
+        $length = [60, 60, 24, 30, 12, 10];
 
         $currentTime = time();
-        if ($currentTime >= $timestamp) {
-            $diff = time() - $timestamp;
-            for ($i = 0; $diff >= $length[$i] && $i < count($length) - 1; $i++) {
-                $diff = $diff / $length[$i];
-            }
 
-            $diff = round($diff);
-            return 'Hace ' . $diff . ' ' . $strTime[$i] . '(s)';
+        // Validación de fecha válida
+        if ($timestamp === false || $timestamp < 0) {
+            return "Fecha no válida";
+        }
+
+        $isFuture = $currentTime < $timestamp;
+        $diff = abs($currentTime - $timestamp);
+
+        // Calcular el tiempo transcurrido o faltante
+        for ($i = 0; $diff >= $length[$i] && $i < count($length) - 1; $i++) {
+            $diff = $diff / $length[$i];
+        }
+
+        $diff = round($diff);
+        $unit = $diff > 1 ? $strTimePlural[$i] : $strTimeSingular[$i];
+
+        // Construir el mensaje
+        if ($isFuture) {
+            return "Faltan $diff $unit";
+        } else {
+            return "Hace $diff $unit";
         }
     }
+
     public static function saber_dia($nombredia)
     {
         //dd(date('N', strtotime($nombredia)));
@@ -39,40 +56,40 @@ class GlobalHelper
         $fecha = $dias[date('N', strtotime($nombredia))];
         return $fecha;
     }
-    public static function fechaFormateada(int $level, $fecha = null)
-    {
-        switch ($level) {
-            case 1:
-                $formato = 'dddd D';
-                break;
-            case 2:
-                $formato = 'dddd D \d\e MMMM';
-                break;
-            case 3:
-                $formato = 'dddd D \d\e MMMM \d\e\l Y';
-                break;
-            case 4:
-                $formato = 'D \d\e MMMM';
-                break;
-            case 5:
-                $formato = 'D \d\e MMMM \d\e\l Y';
-                break;
-            case 6:
-                $formato = 'hh:mm a';
-                break;
-            case 7:
-                $formato = 'dddd D \d\e MMMM hh:mm a';
-                break;
-            default:
-                $formato = 'dddd D \d\e MMMM \d\e\l Y';
-                break;
-        }
-        if ($fecha != null) {
-            return ucfirst(Carbon::parse($fecha)->locale('es')->isoFormat($formato));
-        } else {
-            return ucfirst(Carbon::now()->locale('es')->isoFormat($formato));
-        }
-    }
+    // public static function fechaFormateada(int $level, $fecha = null)
+    // {
+    //     switch ($level) {
+    //         case 1:
+    //             $formato = 'dddd D';
+    //             break;
+    //         case 2:
+    //             $formato = 'dddd D \d\e MMMM';
+    //             break;
+    //         case 3:
+    //             $formato = 'dddd D \d\e MMMM \d\e\l Y';
+    //             break;
+    //         case 4:
+    //             $formato = 'D \d\e MMMM';
+    //             break;
+    //         case 5:
+    //             $formato = 'D \d\e MMMM \d\e\l Y';
+    //             break;
+    //         case 6:
+    //             $formato = 'hh:mm a';
+    //             break;
+    //         case 7:
+    //             $formato = 'dddd D \d\e MMMM hh:mm a';
+    //             break;
+    //         default:
+    //             $formato = 'dddd D \d\e MMMM \d\e\l Y';
+    //             break;
+    //     }
+    //     if ($fecha != null) {
+    //         return ucfirst(Carbon::parse($fecha)->locale('es')->isoFormat($formato));
+    //     } else {
+    //         return ucfirst(Carbon::now()->locale('es')->isoFormat($formato));
+    //     }
+    // }
     public static function armarColeccionReporteDiario($pens, $fechaSeleccionada)
     {
 
@@ -305,6 +322,54 @@ class GlobalHelper
                 return 'primary';
             default:
                 return 'primary'; // Opcional: para manejar cualquier caso inesperado
+        }
+    }
+    public static function fechaFormateada(int $level, $fecha = null)
+    {
+        switch ($level) {
+            case 1:
+                $formato = 'dddd D';
+                break;
+            case 2:
+                $formato = 'dddd D \d\e MMMM';
+                break;
+            case 3:
+                $formato = 'dddd D \d\e MMMM \d\e\l Y';
+                break;
+            case 4:
+                $formato = 'D \d\e MMMM';
+                break;
+            case 5:
+                $formato = 'D \d\e MMMM \d\e\l Y';
+                break;
+            case 6:
+                $formato = 'hh:mm a';
+                break;
+            case 7:
+                $formato = 'dddd D \d\e MMMM hh:mm a';
+                break;
+            case 8:
+                $formato = 'hh:mm';
+                break;
+            case 9:
+                $formato = 'hh:mm a';
+                break;
+            default:
+                $formato = 'dddd D \d\e MMMM \d\e\l Y';
+                break;
+        }
+        if ($fecha != null) {
+            return ucfirst(
+                Carbon::parse($fecha)
+                    ->locale('es')
+                    ->isoFormat($formato),
+            );
+        } else {
+            return ucfirst(
+                Carbon::now()
+                    ->locale('es')
+                    ->isoFormat($formato),
+            );
         }
     }
 }

@@ -6,6 +6,7 @@
                     <strong>Listado de ventas <a href="#" wire:click="cambiarCaja"
                             class="badge badge-sm badge-warning">Cambiar caja <i
                                 class="flaticon-075-reload"></i></a></strong>
+                                <strong>{{App\Helpers\GlobalHelper::fechaFormateada(2,$cajaSeleccionada->created_at)}}</strong>
                 </div>
                 <div class="card-body">
                     <div style="max-height: 300px !important; overflow-y: auto;overflow-x: hidden;">
@@ -117,6 +118,7 @@
             <div class="card p-0 bordeado">
                 <div class="card-header">
                     <strong>Resumen general</strong>
+                    
                 </div>
                 <div class="card-body p-1">
                     <div class="media event-card p-1 px-2 rounded align-items-center m-1">
@@ -155,6 +157,7 @@
             <div class="card p-0 bordeado">
                 <div class="card-header">
                     <strong>Saldos pagados y anticipos </strong>
+                    <strong>{{App\Helpers\GlobalHelper::fechaFormateada(2,$cajaSeleccionada->created_at)}}</strong>
                 </div>
                 <div class="card-body">
                     <div style="max-height: 300px !important; overflow-y: auto;overflow-x: hidden;">
@@ -164,6 +167,7 @@
                                     <th class="text-white bg-primary">Cliente</th>
                                     <th class="text-white bg-primary">Método</th>
                                     <th class="text-white bg-primary">Monto</th>
+                                    <th class="text-white bg-primary">Fecha</th>
                                     <th class="text-white bg-primary">Atendido por</th>
 
                                 </tr>
@@ -178,6 +182,9 @@
                                                     Bs</strong> <i class="flaticon-003-arrow-up"></i><span
                                                     class="popover-text">A
                                                     favor del cliente</span></span>
+                                        </td>
+                                        <td>{{ App\Helpers\GlobalHelper::fechaFormateada(9, $saldo->created_at) }}
+                                            ({{ App\Helpers\GlobalHelper::timeago($saldo->created_at) }})
                                         </td>
                                         <td class="py-1">{{ $saldo->atendidoPor->name }}</td>
                                     </tr>
