@@ -6,7 +6,7 @@
         <div class="nav-container" style="overflow-x: auto; white-space: nowrap;">
             @foreach ($subcategorias as $subcategoria)
                 <a href="#"
-                    class="nav-item m-0 p-0 mb-2 letra14 popover-container {{ $subcategoriaSeleccionada == $subcategoria->id ? 'selected bg-primary' : '' }}"
+                    class="nav-item m-0 p-0 mb-2 letra14 popover-container {{ $subcategoriaSeleccionada == $subcategoria->id ? 'selected bg-primary text-white' : '' }}"
                     role="presentation"
                     style="border-style: solid;border-color:rgb(14, 178, 79);
                     border-width: 1px;border-radius:15px; display: inline-block;"
