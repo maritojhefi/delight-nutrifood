@@ -3,18 +3,18 @@
         <div class="modal-content">
             @isset($cuenta->cliente)
                 <div class="modal-header">
-                    <h5 class="modal-title col-4"><span
-                            class="badge badge-xxs badge-{{ $cuenta->cliente->saldo > 0 ? 'warning' : 'primary' }}">
+                    <h5 class="modal-title letra14  px-0 mx-0"><strong
+                            class="text-{{ $cuenta->cliente->saldo > 0 ? 'danger' : 'success' }} mx-0">
                             {{ Str::of($cuenta->cliente->name)->before(' ') }}{{ $cuenta->cliente->saldo > 0 ? ' debe:' : ' tiene a favor:' }}
-                            {{ abs((int) $cuenta->cliente->saldo) }} Bs </span></h5>
-                    <a href="#" wire:click="verSaldo" class="btn btn-xxs btn-outline-warning col-4"><i
+                            {{ abs((int) $cuenta->cliente->saldo) }} Bs </strong></h5>
+                    <a href="#"  data-bs-dismiss="modal" data-bs-target="#modalClientes" data-bs-toggle="modal"  class="btn btn-xxs btn-warning px-1 mx-0"><i
                             class="flaticon-075-reload"></i> Cambiar cliente</a>
                     @if ($verVistaSaldo)
-                        <a href="#" wire:click="verSaldo" class="btn btn-xxs btn-outline-info col-4"><i
+                        <a href="#" wire:click="verSaldo" class="btn btn-xxs btn-info  px-1 mx-0"><i
                                 class="fa fa-list"></i>
                             Ver sus planes</a>
                     @else
-                        <a href="#" wire:click="verSaldo" class="btn btn-xxs btn-outline-secondary col-4"><i
+                        <a href="#" wire:click="verSaldo" class="btn btn-xxs btn-secondary  px-1 mx-0"><i
                                 class="flaticon-381-id-card"></i> Ver su billetera</a>
                     @endif
                    
@@ -254,13 +254,17 @@
                     </div>
                     <center>ó</center>
                     <div class="col-12 mt-2">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control">
+                            <button class="btn btn-primary" type="button">Button</button>
+                        </div>
                         <input type="text" class="form-control  form-control-sm bordeado" style="height:35px"
                             placeholder="Agrega una referencia" wire:model.lazy="userManual">
                     </div>
                 </div>
             </div>
             <div class="card-footer">
-                <button class="btn btn-success btn-xs" wire:click="addUsuarioManual">Guardar</button>
+                <button class="btn btn-success btn-xs" wire:click="addUsuarioManual" data-bs-dismiss="modal">Guardar</button>
             </div>
         </div>
     </div>
