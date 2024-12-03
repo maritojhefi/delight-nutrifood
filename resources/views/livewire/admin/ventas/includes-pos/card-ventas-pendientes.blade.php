@@ -22,11 +22,11 @@
                             </a>
                         @endif
                         @if ($item->pagado)
-                            <span class="badge badge-dark badge-sm popover-container">Pagado <span
+                            <span class="badge badge-dark badge-sm popover-container p-1">Pagado <span
                                     class="popover-text">Esta venta se encuentra pagada</span></span>
                         @endif
                         @if ($item->cocina && !$item->despachado_cocina)
-                            <span class="badge badge-info badge-sm popover-container"><i class="fa fa-send"></i>
+                            <span class="badge badge-info badge-sm popover-container py-1"><i class="fa fa-send"></i>
                                 <span class="popover-text">Enviado a cocina</span></span>
                         @elseif($item->despachado_cocina)
                             <span class="badge badge-success badge-sm popover-container"><i
@@ -36,7 +36,7 @@
                         @isset($item->usuario_manual)
                             <br>
                             <strong class="p-0 m-0"
-                                style="font-size:10px;line-height: 10px">{{ Str::limit($item->usuario_manual, 35) }}</strong>
+                                style="font-size:13px;line-height: 10px">{{ Str::limit($item->usuario_manual, 35) }}</strong>
                         @endisset
 
                         @isset($item->cliente)
