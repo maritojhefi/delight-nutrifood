@@ -3,22 +3,23 @@
         <div class="modal-content">
             @isset($cuenta->cliente)
                 <div class="modal-header">
-                    <h5 class="modal-title col-7"><span
+                    <h5 class="modal-title col-4"><span
                             class="badge badge-xxs badge-{{ $cuenta->cliente->saldo > 0 ? 'warning' : 'primary' }}">
-                            {{Str::of($cuenta->cliente->name)->before(' ')}}{{ $cuenta->cliente->saldo > 0 ? ' debe:' : ' tiene a favor:' }}
+                            {{ Str::of($cuenta->cliente->name)->before(' ') }}{{ $cuenta->cliente->saldo > 0 ? ' debe:' : ' tiene a favor:' }}
                             {{ abs((int) $cuenta->cliente->saldo) }} Bs </span></h5>
+                    <a href="#" wire:click="verSaldo" class="btn btn-xxs btn-outline-warning col-4"><i
+                            class="flaticon-075-reload"></i> Cambiar cliente</a>
                     @if ($verVistaSaldo)
                         <a href="#" wire:click="verSaldo" class="btn btn-xxs btn-outline-info col-4"><i
                                 class="fa fa-list"></i>
                             Ver sus planes</a>
                     @else
-                        <a href="#" wire:click="verSaldo" class="btn btn-xxs btn-outline-primary col-4"><i
+                        <a href="#" wire:click="verSaldo" class="btn btn-xxs btn-outline-secondary col-4"><i
                                 class="flaticon-381-id-card"></i> Ver su billetera</a>
                     @endif
-                    <button type="button" class="btn-close col-2" data-bs-dismiss="modal">
-                    </button>
+                   
                 </div>
-                <div class="modal-body">
+                <div class="modal-body pt-0">
                     @if ($verVistaSaldo)
                         <div class="card m-0 bordeado">
                             <center class="letra14">Anticipos/Pagos de deudas</center>
@@ -67,9 +68,9 @@
                             </div>
 
                             <center>Registro de saldos:{{ $cuenta->cliente->saldos->count() }}</center>
-                            <ul class="list-group" style="overflow-y: auto;max-height:300px;overflow-x: hidden">
+                            <ul class="list-group" style="overflow-y: auto;max-height:250px;overflow-x: hidden">
                                 @foreach ($cuenta->cliente->saldos->sortByDesc('created_at') as $saldo)
-                                    <li class="list-group-item d-flex justify-content-between lh-condensed letra12">
+                                    <li class="list-group-item d-flex justify-content-between lh-condensed letra12 p-1">
 
                                         <div class="">
                                             @if ($saldo->anulado)
@@ -110,12 +111,10 @@
                                 @endforeach
 
                             </ul>
-                            <ul class="list-group mt-3 ">
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <span>Saldo </span>
-                                    <strong>{{ $cuenta->cliente->saldo }} Bs</strong>
-                                </li>
-                            </ul>
+                            <span
+                                class="badge badge-xxs rounded-md badge-{{ $cuenta->cliente->saldo > 0 ? 'warning' : 'primary' }}">
+                                {{ Str::of($cuenta->cliente->name)->before(' ') }}{{ $cuenta->cliente->saldo > 0 ? ' debe:' : ' tiene a favor:' }}
+                                {{ abs((int) $cuenta->cliente->saldo) }} Bs </span>
 
 
 
@@ -233,38 +232,35 @@
 </div>
 
 <div wire:ignore.self class="modal fade" id="modalClientes">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content letra12">
             <div class="modal-header">
-                Enlazar usuario a esta cuenta
+                Vincular cliente a esta cuenta
                 <span class="badge light badge-info" wire:loading wire:target='user'> Cargando...</span>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="mb-3 col-md-6 mt-2">
-                        <label for="">Buscar usuario</label>
-                        <input type="text" class="form-control  form-control-sm" placeholder="Buscar Usuario"
-                            wire:model.debounce.1000ms='user'>
-                        <br>
+                    <div class="col-12">
+                        <input type="text" class="form-control  form-control-sm bordeado" style="height:35px"
+                            placeholder="Buscar Usuario" wire:model.debounce.1000ms='user'>
+                        @isset($usuarios)
+                            <span class="text-muted letra10">Clientes encontrados: {{ $usuarios->count() }}</span><br>
+                        @endisset
                         @foreach ($usuarios as $item)
-                            <a href="#" class=""
+                            <a href="#" class="badge light badge-outline-primary bordeado mt-2"
                                 wire:click="cambiarClienteACuenta({{ $item->id }})"><small>{{ $item->name }}
-                                </small><span class="badge light badge-primary"> <i class="fa fa-plus"></i></span></a>
-                            <hr>
+                                </small><span class=""> <i class="fa fa-plus"></i></span></a>
                         @endforeach
                     </div>
-
-                    <div class="mb-3 col-md-6 mt-2">
-                        <label for=""> Agregar Referencia</label>
-                        <input type="text" class="form-control  form-control-sm"
-                            placeholder="Agregar una referencia auxiliar" wire:model.lazy="userManual">
-                        <button class="btn btn-success btn-xs" wire:click="addUsuarioManual">Confirmar</button>
+                    <center>ó</center>
+                    <div class="col-12 mt-2">
+                        <input type="text" class="form-control  form-control-sm bordeado" style="height:35px"
+                            placeholder="Agrega una referencia" wire:model.lazy="userManual">
                     </div>
                 </div>
-
-
-
-
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-success btn-xs" wire:click="addUsuarioManual">Guardar</button>
             </div>
         </div>
     </div>
