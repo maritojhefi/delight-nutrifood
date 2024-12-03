@@ -94,10 +94,10 @@
                             </div>
 
                             @foreach ($usuarios as $item)
-                                <a href="#" class="m-1" style="font-size: 12px;"
+                                <a href="#" class="m-1 letra12 "
                                     wire:click="seleccionarcliente('{{ $item->id }}','{{ $item->name }}')">
                                     @if ($item->id == $cliente)
-                                        <strong class="badge  badge-outline-success ">{{ $item->name }} <i
+                                        <strong class="badge  badge-outline-success py-0">{{ $item->name }} <i
                                                 class="fa fa-check"></i>
                                         </strong>
                                     @else
@@ -109,7 +109,7 @@
                                 </a>
                             @endforeach
                         </div>
-                        <button type="button" wire:click="crear" class="btn btn-primary btn-sm m-0 p-1">Abrir
+                        <button type="button" wire:click="crear" class="btn btn-primary btn-block btn-sm m-0 p-1 mt-2">Abrir
                             Venta</button>
                     </div>
                 </div>

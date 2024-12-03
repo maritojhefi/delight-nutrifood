@@ -112,7 +112,7 @@
 
                             </ul>
                             <span
-                                class="badge badge-xxs rounded-md badge-{{ $cuenta->cliente->saldo > 0 ? 'warning' : 'primary' }}">
+                                class="badge badge-xxs rounded-md badge-{{ $cuenta->cliente->saldo > 0 ? 'danger' : 'success' }}">
                                 {{ Str::of($cuenta->cliente->name)->before(' ') }}{{ $cuenta->cliente->saldo > 0 ? ' debe:' : ' tiene a favor:' }}
                                 {{ abs((int) $cuenta->cliente->saldo) }} Bs </span>
 
@@ -255,16 +255,12 @@
                     <center>ó</center>
                     <div class="col-12 mt-2">
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control">
-                            <button class="btn btn-primary" type="button">Button</button>
+                            <input type="text" class="form-control bordeado"  wire:model.lazy="userManual" style="height:35px;"  placeholder="Agrega una referencia">
+                            <button class="btn btn-primary p-1" style="height:35px;width:50px" wire:click="addUsuarioManual" type="button"><i class="fa fa-save"></i></button>
                         </div>
-                        <input type="text" class="form-control  form-control-sm bordeado" style="height:35px"
-                            placeholder="Agrega una referencia" wire:model.lazy="userManual">
+                        
                     </div>
                 </div>
-            </div>
-            <div class="card-footer">
-                <button class="btn btn-success btn-xs" wire:click="addUsuarioManual" data-bs-dismiss="modal">Guardar</button>
             </div>
         </div>
     </div>
