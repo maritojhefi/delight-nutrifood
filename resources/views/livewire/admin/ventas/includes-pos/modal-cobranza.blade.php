@@ -3,7 +3,11 @@
         @if ($modoImpresion)
             <div class="modal-content">
                 <div class="modal-header">
-                    Ajustes de Impresion
+                    <h5 class="modal-title"> Ajustes de Impresion
+                        <div wire:loading class="spinner-border spinner-border-sm" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </h5>
                 </div>
                 <div class="modal-body pb-0 mb-0">
                     <div class="mb-3 row">
@@ -85,12 +89,11 @@
                     @endif
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-dark btn-xxs" wire:click="modalResumen">Atras</button>
-                    <button class="btn btn-outline-info btn-xxs" wire:click="descargarPDF">Descargar
-                        PDF <i class="fa fa-file"></i></button>
-                    <button class="btn btn-outline-success btn-xxs" wire:click="imprimir">Imprimir <i
-                            class="fa fa-print"></i></button>
-
+                    <a href="#" class="btn btn-dark btn-xxs" onclick="atrasModalImpresion()">Atras</a>
+                    <a href="#" class="btn btn-outline-info btn-xxs" onclick="descargarPDFFile()">Descargar
+                        PDF <i class="fa fa-file"></i></a>
+                    <a href="#" class="btn btn-outline-success btn-xxs" onclick="imprimirReciboApi()">Imprimir <i
+                            class="fa fa-print"></i></a>
                 </div>
             </div>
         @else
@@ -150,7 +153,8 @@
                                     <li><a href="javascript:void(0);"><i class="fa fa-gear"></i></a>
                                     </li>
                                     <li><a href="javascript:void(0);" class="ms-2">Estado:</a></li>
-                                    <li><strong><a href="javascript:void(0);" class="mx-2 badge badge-sm badge-dark">Pagado</a></strong></li>
+                                    <li><strong><a href="javascript:void(0);"
+                                                class="mx-2 badge badge-sm badge-dark">Pagado</a></strong></li>
                                 </ul>
                                 @if ($cuenta->ventaHistorial->metodosPagos)
 
@@ -171,11 +175,12 @@
                                         <ul class="d-flex align-items-center mb-1">
                                             <li><a href="javascript:void(0);"><i class="fa fa-tag"></i></a>
                                             </li>
-                                            <li><a href="javascript:void(0);"
-                                                    class="ms-2">Saldo creado: </a></li>
+                                            <li><a href="javascript:void(0);" class="ms-2">Saldo creado: </a></li>
                                             <li><strong><a href="javascript:void(0);"
-                                                        class="mx-2">{{ $cuenta->ventaHistorial->saldo_monto }} Bs</a></strong>
-                                                        <span class="letra10">{{$cuenta->ventaHistorial->a_favor_cliente?'(A favor del cliente)':'(Deuda nueva del cliente)'}}</span>
+                                                        class="mx-2">{{ $cuenta->ventaHistorial->saldo_monto }}
+                                                        Bs</a></strong>
+                                                <span
+                                                    class="letra10">{{ $cuenta->ventaHistorial->a_favor_cliente ? '(A favor del cliente)' : '(Deuda nueva del cliente)' }}</span>
                                             </li>
                                         </ul>
                                     @endif

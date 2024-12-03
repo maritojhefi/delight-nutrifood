@@ -68,6 +68,19 @@
             Livewire.emit('cerrarVenta');
         }
 
+        function atrasModalImpresion() {
+            Livewire.emit('modalResumen');
+        }
+
+        function descargarPDFFile() {
+
+            Livewire.emit('descargarPDF');
+        }
+
+        function imprimirReciboApi() {
+            Livewire.emit('imprimir');
+        }
+
         function alertCobrarVenta(montoMetodosAcumulado, montoSubtotal, cliente = null) {
             // Convertir las cantidades a números por si vienen como strings
             let acumulado = parseFloat(montoMetodosAcumulado) || 0;

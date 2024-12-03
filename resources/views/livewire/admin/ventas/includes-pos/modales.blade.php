@@ -3,24 +3,36 @@
         <div class="modal-content">
             @isset($cuenta->cliente)
                 <div class="modal-header">
-                    <h5 class="modal-title col-5">Saldo : {{ $cuenta->cliente->saldo }} Bs </h5>
-                    <a href="#" wire:click="verSaldo"
-                        class="btn btn-xxs btn-warning col-5">{{ $verVistaSaldo ? 'Ver Planes' : 'Descontar Saldo' }}</a>
+                    <h5 class="modal-title col-7"><span
+                            class="badge badge-xxs badge-{{ $cuenta->cliente->saldo > 0 ? 'warning' : 'primary' }}">
+                            {{Str::of($cuenta->cliente->name)->before(' ')}}{{ $cuenta->cliente->saldo > 0 ? ' debe:' : ' tiene a favor:' }}
+                            {{ abs((int) $cuenta->cliente->saldo) }} Bs </span></h5>
+                    @if ($verVistaSaldo)
+                        <a href="#" wire:click="verSaldo" class="btn btn-xxs btn-outline-info col-4"><i
+                                class="fa fa-list"></i>
+                            Ver sus planes</a>
+                    @else
+                        <a href="#" wire:click="verSaldo" class="btn btn-xxs btn-outline-primary col-4"><i
+                                class="flaticon-381-id-card"></i> Ver su billetera</a>
+                    @endif
                     <button type="button" class="btn-close col-2" data-bs-dismiss="modal">
                     </button>
                 </div>
                 <div class="modal-body">
                     @if ($verVistaSaldo)
-                        <div class="card m-0 ">
-                            <div class="card-body">
-                                <div class="mb-3 row">
+                        <div class="card m-0 bordeado">
+                            <center class="letra14">Anticipos/Pagos de deudas</center>
+                            <div class="card-body letra12">
+
+                                <div class="row">
                                     <label class="col-lg-4 col-form-label" for="validationCustom01">Monto (Bs)
                                         <span class="text-danger">*</span>
                                     </label>
                                     <div class="col-lg-6">
-                                        <input type="number" class="form-control @error($montoSaldo) is-invalid @enderror"
-                                            step="any" wire:model.lazy="montoSaldo"
-                                            placeholder="Ingrese el monto que paga el cliente" required="">
+                                        <input type="number"
+                                            class="form-control @error($montoSaldo) is-invalid @enderror bordeado"
+                                            style="height: 30px" step="any" wire:model.lazy="montoSaldo"
+                                            placeholder="Ingrese un monto" required="">
 
                                     </div>
                                 </div>
@@ -30,8 +42,9 @@
                                     </label>
                                     <div class="col-lg-6">
                                         <select name="" id="" wire:model="tipoSaldo"
-                                            class="form-control @error($tipoSaldo) is-invalid @enderror">
-                                            <option value="">Seleccione un metodo</option>
+                                            class="form-control @error($tipoSaldo) is-invalid @enderror bordeado"
+                                            style="height: 30px">
+                                            <option value="">Seleccione uno</option>
                                             @foreach ($metodosPagos as $metodo)
                                                 <option value="{{ $metodo->id }}">{{ $metodo->nombre_metodo_pago }}
                                                 </option>
@@ -45,64 +58,55 @@
                                             class="text-danger">*</span>
                                     </label>
                                     <div class="col-lg-6">
-                                        <textarea class="form-control @error($detalleSaldo) is-invalid @enderror" cols="30" rows="10"
-                                            wire:model.lazy="detalleSaldo"></textarea>
+                                        <textarea class="form-control @error($detalleSaldo) is-invalid @enderror bordeado" style="height: 30px" cols="30"
+                                            rows="10" wire:model.lazy="detalleSaldo"></textarea>
 
                                     </div>
                                 </div>
-                                <div class="card-footer">
-                                    <button class="btn btn-success" wire:click="registrarSaldo">Registrar</button>
-                                </div>
+                                <button class="btn btn-success btn-xxs" wire:click="registrarSaldo">Registrar</button>
                             </div>
-                            <h4>Registro de saldos:{{ $cuenta->cliente->saldos->count() }}</h4>
-                            <ul class="list-group mt-3 " style="overflow-y: auto;max-height:300px;overflow-x: hidden">
-                                @foreach ($cuenta->cliente->saldos->sortByDesc('created_at') as $saldo)
-                                    @if ($saldo->es_deuda)
-                                        <li class="list-group-item d-flex justify-content-between active">
-                                            <div class="text-white">
-                                                <h6 class="my-0 text-white">DEUDA POR COMPRA</h6>
-                                                <small>{{ $saldo->created_at->format('d-M') }}<a href="#"
-                                                        class="badge badge-warning badge-xs">{{ App\Helpers\WhatsappAPIHelper::timeago($saldo->created_at) }}</a></small>
-                                            </div>
-                                            <span class="text-white">{{ $saldo->monto }} Bs <a href="#"
-                                                    wire:click="imprimirSaldo({{ $saldo->id }})"
-                                                    class="badge badge-warning"><i class="fa fa-print"></i></a>
-                                                @if ($saldo->anulado)
-                                                    <a href="#" wire:click="anularSaldo({{ $saldo->id }})"
-                                                        class="badge badge-danger"><i class="fa fa-close"></i>
-                                                        Anulado</a>
-                                                @else
-                                                    <a href="#" wire:click="anularSaldo({{ $saldo->id }})"
-                                                        class="badge badge-warning"><i class="fa fa-check"></i>
-                                                        Activo</a>
-                                                @endif
-                                            </span>
 
-                                        </li>
-                                    @else
-                                        <li class="list-group-item d-flex justify-content-between lh-condensed">
-                                            <div>
-                                                <h6 class="my-0">PAGO A FAVOR DEL CLIENTE</h6>
-                                                <small class="text-muted">{{ $saldo->created_at->format('d-M') }}
-                                                    <a href="#"
-                                                        class="badge badge-warning badge-xs">{{ App\Helpers\WhatsappAPIHelper::timeago($saldo->created_at) }}</a></small><br>
-                                                <small class="text-muted">{{ Str::limit($saldo->detalle, 25) }}</small>
-                                            </div>
-                                            <span class="text-muted">{{ $saldo->monto }} Bs <a href="#"
-                                                    wire:click="imprimirSaldo({{ $saldo->id }})"
-                                                    class="badge badge-primary"><i class="fa fa-print"></i></a>
-                                                @if ($saldo->anulado)
-                                                    <a href="#" wire:click="anularSaldo({{ $saldo->id }})"
-                                                        class="badge badge-danger"><i class="fa fa-close"></i>
-                                                        Anulado</a>
-                                                @else
-                                                    <a href="#" wire:click="anularSaldo({{ $saldo->id }})"
-                                                        class="badge badge-warning"><i class="fa fa-check"></i>
-                                                        Activo</a>
-                                                @endif
-                                            </span>
-                                        </li>
-                                    @endif
+                            <center>Registro de saldos:{{ $cuenta->cliente->saldos->count() }}</center>
+                            <ul class="list-group" style="overflow-y: auto;max-height:300px;overflow-x: hidden">
+                                @foreach ($cuenta->cliente->saldos->sortByDesc('created_at') as $saldo)
+                                    <li class="list-group-item d-flex justify-content-between lh-condensed letra12">
+
+                                        <div class="">
+                                            @if ($saldo->anulado)
+                                                <del class="my-0 text-danger">
+                                                    {{ $saldo->es_deuda ? 'DEUDA POR COMPRA' : 'PAGO A FAVOR DEL CLIENTE' }}
+                                                    <i
+                                                        class="flaticon-{{ $saldo->es_deuda ? '001-arrow-down text-warning' : '003-arrow-up text-info' }} "></i></del><br>
+                                            @else
+                                                <h6 class="my-0">
+                                                    {{ $saldo->es_deuda ? 'DEUDA POR COMPRA' : 'PAGO A FAVOR DEL CLIENTE' }}
+                                                    <i
+                                                        class="flaticon-{{ $saldo->es_deuda ? '001-arrow-down text-warning' : '003-arrow-up text-info' }}"></i>
+                                                </h6>
+                                            @endif
+
+                                            <small
+                                                class="letra10 text-muted">{{ App\Helpers\GlobalHelper::fechaFormateada(4, $saldo->created_at->format('d-M')) }},
+                                                {{ App\Helpers\WhatsappAPIHelper::timeago($saldo->created_at) }}</small><br>
+                                            <small class="letra10">{{ Str::limit($saldo->detalle, 25) }}</small>
+                                        </div>
+
+                                        <strong class="letra14">
+                                            @if ($saldo->anulado)
+                                                <del class="text-danger me-2">{{ $saldo->monto }} Bs</del>
+                                                <a href="#" wire:click="anularSaldo({{ $saldo->id }})"
+                                                    class="badge badge-danger letra10"><i class="fa fa-ban"></i>
+                                                    Anulado</a>
+                                            @else
+                                                {{ $saldo->monto }} Bs
+                                                <a href="#" wire:click="imprimirSaldo({{ $saldo->id }})"
+                                                    class="badge badge-outline-dark letra14"><i class="fa fa-print"></i></a>
+                                                <a href="#" wire:click="anularSaldo({{ $saldo->id }})"
+                                                    class="badge badge-success letra10"><i class="fa fa-check"></i>
+                                                    Activo</a>
+                                            @endif
+                                        </strong>
+                                    </li>
                                 @endforeach
 
                             </ul>
@@ -117,14 +121,22 @@
 
                         </div>
                     @else
+                        @if ($cuenta->cliente->planes->groupBy('nombre')->count() == 0)
+                            <center>No hay planes activos para {{ Str::of($cuenta->cliente->name)->before(' ') }}</center>
+                        @else
+                            <center>Planes activos de {{ Str::of($cuenta->cliente->name)->before(' ') }} :
+                                <strong>{{ $cuenta->cliente->planes->groupBy('nombre')->count() }}</strong>
+                            </center>
+                        @endif
                         @foreach ($cuenta->cliente->planes->groupBy('nombre') as $nombre => $item)
-                            <div class="card m-0 ">
+                            <div class="card m-0 bordeado">
                                 <div class="card-body px-4 py-3 py-lg-2">
                                     <div class="row align-items-center">
                                         <div class="col-xl-3 col-xxl-12 col-lg-12 my-2">
-                                            <strong class="mb-0 fs-14">{{ Str::limit($nombre, 20, '') }}</strong>
+                                            <strong class="mb-0 fs-14">{{ Str::limit($nombre, 30, '') }}</strong>
                                             <a href="{{ route('detalleplan', [$cuenta->cliente->id, $item[0]->id]) }}"
-                                                class="badge badge-info">Ir <i class="fa fa-arrow-right"></i></a>
+                                                target="_blank" class="badge badge-outline-dark">Ver <i
+                                                    class="flaticon-083-share"></i></a>
                                         </div>
                                         <div class="col-xl-7 col-xxl-12 col-lg-12">
                                             <div class="row align-items-center">

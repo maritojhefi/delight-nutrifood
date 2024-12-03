@@ -62,7 +62,13 @@ class VentasIndex extends Component
     protected $rules = [
         'sucursal' => 'required|integer',
     ];
-    protected $listeners = ['cobrar' => 'cobrar', 'cerrarVenta' => 'cerrarVenta'];
+    protected $listeners = [
+        'cobrar' => 'cobrar',
+        'cerrarVenta' => 'cerrarVenta',
+        'imprimir' => 'imprimir',
+        'descargarPDF' => 'descargarPDF',
+        'modalResumen' => 'modalResumen'
+    ];
     public function mount()
     {
         $this->metodosPagos = MetodoPago::where('activo', true)->get();
@@ -245,7 +251,7 @@ class VentasIndex extends Component
             'atendido_por' => auth()->user()->id,
             'tipo' => $this->tipoSaldo
         ]);
-        $saldoCreado->metodosPagos()->attach($this->tipoSaldo,['monto'=>$this->montoSaldo]);
+        $saldoCreado->metodosPagos()->attach($this->tipoSaldo, ['monto' => $this->montoSaldo]);
         DB::table('users')->where('id', $this->cuenta->cliente->id)->decrement('saldo', $this->montoSaldo);
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
