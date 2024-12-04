@@ -9,112 +9,122 @@
                     <strong>{{ App\Helpers\GlobalHelper::fechaFormateada(2, $cajaSeleccionada->created_at) }}</strong>
                 </div>
                 <div class="card-body">
-                    <div style="max-height: 300px !important; overflow-y: auto;overflow-x: hidden;">
-                        <table class="table p-0 m-0 letra12 table-responsive table-striped">
-                            <thead>
-                                <tr>
-                                    <th class="text-white bg-primary">Cliente</th>
-                                    <th class="text-white bg-primary">Método</th>
-                                    <th class="text-white bg-primary">Puntos</th>
-                                    <th class="text-white bg-primary">Subtotal</th>
-                                    <th class="text-white bg-primary">Total Descuentos</th>
-                                    <th class="text-white bg-primary">Monto saldo</th>
-                                    <th class="text-white bg-primary">Total Cobrado</th>
-                                    <th class="text-white bg-primary">Hora</th>
-                                    <th class="text-white bg-primary"><i class="fa fa-gear"></i></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($ventasCaja as $venta)
+                    <div class="table-responsive">
+                        <div style="max-height: 300px !important; overflow-y: auto;">
+                            <table class="table p-0 m-0 letra12 table-striped">
+                                <thead>
                                     <tr>
-                                        <td class="p-0">
-                                            @if ($venta->cliente)
-                                                <strong>{{ Str::limit($venta->cliente->name, 20) }}</strong>
-                                            @else
-                                                <span class="text-muted">Desconocido</span>
-                                            @endif
-
-                                        </td>
-                                        <td class="p-0">
-                                            @foreach ($venta->metodosPagos as $metPago)
-                                                <span class="rounded-circle popover-container m-0 p-0"
-                                                    style="
-                                                width: 25px;
-                                                height: 25px;
-                                                display: inline-block;
-                                                background-image: url({{ $metPago->imagen }});
-                                                background-size: cover;
-                                                background-position: center;
-                                                background-repeat: no-repeat;
-                                            "
-                                                    alt="">
-                                                    <span class="popover-text">{{ $metPago->nombre_metodo_pago }} :
-                                                        {{ $metPago->pivot->monto }} Bs</span>
-                                                </span>
-                                            @endforeach
-                                        </td>
-                                        <td class="p-0">{{ floatval($venta->puntos) }} Pts</td>
-                                        <td class="p-0">{{ floatval($venta->subtotal) }}
-                                            Bs</td>
-                                        <td class="p-0">{{ floatval($venta->total_descuento) }} Bs
-                                            @if (floatval($venta->total_descuento) != 0)
-                                                <span class="popover-container"><i
-                                                        class="flaticon-050-info fs-20 text-primary"></i>
-                                                    <span class="popover-text">Productos:
-                                                        {{ $venta->descuento_productos }}
-                                                        Bs
-                                                        <br>
-                                                        Manual: {{ $venta->descuento_manual }} Bs
-                                                    </span>
-                                                </span>
-                                            @endif
-                                        </td>
-
-                                        @if ($venta->a_favor_cliente === 1)
-                                            <td class="p-0"><span
-                                                    class="text-info popover-container">{{ floatval($venta->saldo_monto) }}
-                                                    Bs <i class="flaticon-003-arrow-up"></i><span class="popover-text">A
-                                                        favor del cliente</span></span>
-                                            </td>
-                                        @elseif ($venta->a_favor_cliente === 0)
-                                            <td class="p-0"><span
-                                                    class="text-warning popover-container">{{ floatval($venta->saldo_monto) }}
-                                                    Bs <i class="flaticon-001-arrow-down"></i><span
-                                                        class="popover-text">A
-                                                        deuda del cliente</span></span>
-                                            </td>
-                                        @elseif ($venta->a_favor_cliente === null)
-                                            <td class="p-0"><span
-                                                    class="text-dark">{{ floatval($venta->saldo_monto) }} Bs</span>
-                                            </td>
-                                        @else
-                                            <td class="p-0"><span
-                                                    class="text-muted">{{ floatval($venta->saldo_monto) }} Bs</span>
-                                            </td>
-                                        @endif
-                                        <td class="p-0"><strong> {{ floatval($venta->total_pagado) }} Bs</strong>
-                                        </td>
-                                        <td>{{ App\Helpers\GlobalHelper::fechaFormateada(9, $venta->created_at) }}</td>
-                                        <td class="p-0"><a href="#"
+                                        <th class="text-white bg-primary"><i class="fa fa-gear"></i></th>
+                                        <th class="text-white bg-primary">Cliente</th>
+                                        <th class="text-white bg-primary">Método</th>
+                                        <th class="text-white bg-primary">Puntos</th>
+                                        <th class="text-white bg-primary">Subtotal</th>
+                                        <th class="text-white bg-primary">Total Descuentos</th>
+                                        <th class="text-white bg-primary">Monto saldo</th>
+                                        <th class="text-white bg-primary">Total Cobrado</th>
+                                        <th class="text-white bg-primary">Hora</th>
+                                       
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($ventasCaja as $venta)
+                                        <tr>
+                                            <td class="p-0"><a href="#"
                                                 wire:click="seleccionarVenta({{ $venta->id }})"
                                                 data-bs-target="#modalDetalleVenta" data-bs-toggle="modal"
                                                 class="badge badge-xxs badge-info py-0 px-1 m-0"><i
                                                     class="fa fa-list"></i></a></td>
+                                            <td class="p-0">
+                                                @if ($venta->cliente)
+                                                    <strong>{{ Str::limit($venta->cliente->name, 20) }}</strong>
+                                                @else
+                                                    <span class="text-muted">Desconocido</span>
+                                                @endif
+
+                                            </td>
+                                            <td class="p-0">
+                                                @foreach ($venta->metodosPagos as $metPago)
+                                                    <span class="rounded-circle popover-container m-0 p-0"
+                                                        style="
+                                                    width: 25px;
+                                                    height: 25px;
+                                                    display: inline-block;
+                                                    background-image: url({{ $metPago->imagen }});
+                                                    background-size: cover;
+                                                    background-position: center;
+                                                    background-repeat: no-repeat;
+                                                "
+                                                        alt="">
+                                                        <span class="popover-text">{{ $metPago->nombre_metodo_pago }} :
+                                                            {{ $metPago->pivot->monto }} Bs</span>
+                                                    </span>
+                                                @endforeach
+                                            </td>
+                                            <td class="p-0">{{ floatval($venta->puntos) }} Pts</td>
+                                            <td class="p-0">{{ floatval($venta->subtotal) }}
+                                                Bs</td>
+                                            <td class="p-0">{{ floatval($venta->total_descuento) }} Bs
+                                                @if (floatval($venta->total_descuento) != 0)
+                                                    <span class="popover-container"><i
+                                                            class="flaticon-050-info fs-20 text-primary"></i>
+                                                        <span class="popover-text">Productos:
+                                                            {{ $venta->descuento_productos }}
+                                                            Bs
+                                                            <br>
+                                                            Manual: {{ $venta->descuento_manual }} Bs
+                                                        </span>
+                                                    </span>
+                                                @endif
+                                            </td>
+
+                                            @if ($venta->a_favor_cliente === 1)
+                                                <td class="p-0"><span
+                                                        class="text-info popover-container">{{ floatval($venta->saldo_monto) }}
+                                                        Bs <i class="flaticon-003-arrow-up"></i><span
+                                                            class="popover-text">A
+                                                            favor del cliente</span></span>
+                                                </td>
+                                            @elseif ($venta->a_favor_cliente === 0)
+                                                <td class="p-0"><span
+                                                        class="text-warning popover-container">{{ floatval($venta->saldo_monto) }}
+                                                        Bs <i class="flaticon-001-arrow-down"></i><span
+                                                            class="popover-text">A
+                                                            deuda del cliente</span></span>
+                                                </td>
+                                            @elseif ($venta->a_favor_cliente === null)
+                                                <td class="p-0"><span
+                                                        class="text-dark">{{ floatval($venta->saldo_monto) }} Bs</span>
+                                                </td>
+                                            @else
+                                                <td class="p-0"><span
+                                                        class="text-muted">{{ floatval($venta->saldo_monto) }}
+                                                        Bs</span>
+                                                </td>
+                                            @endif
+                                            <td class="p-0"><strong> {{ floatval($venta->total_pagado) }}
+                                                    Bs</strong>
+                                            </td>
+                                            <td>{{ App\Helpers\GlobalHelper::fechaFormateada(9, $venta->created_at) }}
+                                            </td>
+                                            
+                                        </tr>
+                                    @endforeach
+                                    <tr class="letra14">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><strong>{{ $totalIngreso }} Bs</strong></td>
+                                        <td></td>
                                     </tr>
-                                @endforeach
-                                <tr class="letra14">
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td><strong>{{ $totalIngreso }} Bs</strong></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+
 
                 </div>
             </div>
@@ -165,7 +175,8 @@
                     <strong>{{ App\Helpers\GlobalHelper::fechaFormateada(2, $cajaSeleccionada->created_at) }}</strong>
                 </div>
                 <div class="card-body">
-                    <div style="max-height: 300px !important; overflow-y: auto;overflow-x: hidden;">
+                    <div class="table-responsive"
+                        style="max-height: 300px !important; overflow-y: auto;">
                         <table class="table p-0 m-0 letra12">
                             <thead>
                                 <tr>
