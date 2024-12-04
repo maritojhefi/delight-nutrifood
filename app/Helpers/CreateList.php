@@ -39,11 +39,12 @@ class CreateList
                     }
                 }
             }
-
+            $descuentoProducto = 0;
             if ($producto->descuento != 0) {
                 // $subtotal = $producto->descuento * $item->cantidad;
                 // $subtotal = $subtotal + $totaladicionales;
-                $descuento = $descuento + ($producto->precio*$item->cantidad)-($producto->descuento*$item->cantidad);
+                $descuentoProducto = ($producto->precio - $producto->descuento) * $item->cantidad;
+                $descuento = $descuento + ($producto->precio * $item->cantidad) - ($producto->descuento * $item->cantidad);
             }
             //     $personalizado->prepend([
             //         'id' => $producto->id, 
@@ -55,25 +56,26 @@ class CreateList
             //         'foto' => $producto->pathAttachment()
             //     ]);
             // } else {
-                $subtotal = $producto->precio * $item->cantidad;
-                $subtotal = $subtotal + $totaladicionales;
-                $personalizado->prepend([
-                    'id' => $producto->id, 
-                    'nombre' => $producto->nombre, 
-                    'medicion' => $producto->medicion, 
-                    'cantidad' => $item->cantidad, 
-                    'precio' => $producto->precio, 
-                    'subtotal' => $subtotal, 
-                    'foto' => $producto->pathAttachment()
-                ]);
+            $subtotal = $producto->precio * $item->cantidad;
+            $subtotal = $subtotal + $totaladicionales;
+            $personalizado->prepend([
+                'id' => $producto->id,
+                'nombre' => $producto->nombre,
+                'medicion' => $producto->medicion,
+                'cantidad' => $item->cantidad,
+                'precio' => $producto->precio,
+                'subtotal' => $subtotal,
+                'descuento_producto' => $descuentoProducto,
+                'foto' => $producto->pathAttachment()
+            ]);
             //}
             $puntos = $puntos + ($producto->puntos * $item->cantidad);
-            
+
             $total = $total + $subtotal;
         }
         //$total=$total-$descuento;
         //dd($descuento);
-        return [$personalizado, floatval($total), floatval($cantidadItems), $puntos,floatval($descuento)];
+        return [$personalizado, floatval($total), floatval($cantidadItems), $puntos, floatval($descuento)];
     }
     static function crearListaHistorico(Historial_venta $cuenta)
     {
@@ -105,7 +107,7 @@ class CreateList
             if ($producto->descuento != 0) {
                 // $subtotal = $producto->descuento * $item->cantidad;
                 // $subtotal = $subtotal + $totaladicionales;
-                $descuento = $descuento + ($producto->precio*$item->cantidad)-($producto->descuento*$item->cantidad);
+                $descuento = $descuento + ($producto->precio * $item->cantidad) - ($producto->descuento * $item->cantidad);
             }
             //     $personalizado->prepend([
             //         'id' => $producto->id, 
@@ -117,25 +119,25 @@ class CreateList
             //         'foto' => $producto->pathAttachment()
             //     ]);
             // } else {
-                $subtotal = $producto->precio * $item->cantidad;
-                $subtotal = $subtotal + $totaladicionales;
-                $personalizado->prepend([
-                    'id' => $producto->id, 
-                    'nombre' => $producto->nombre, 
-                    'medicion' => $producto->medicion, 
-                    'cantidad' => $item->cantidad, 
-                    'precio' => $producto->precio, 
-                    'subtotal' => $subtotal, 
-                    'foto' => $producto->pathAttachment()
-                ]);
+            $subtotal = $producto->precio * $item->cantidad;
+            $subtotal = $subtotal + $totaladicionales;
+            $personalizado->prepend([
+                'id' => $producto->id,
+                'nombre' => $producto->nombre,
+                'medicion' => $producto->medicion,
+                'cantidad' => $item->cantidad,
+                'precio' => $producto->precio,
+                'subtotal' => $subtotal,
+                'foto' => $producto->pathAttachment()
+            ]);
             //}
             $puntos = $puntos + ($producto->puntos * $item->cantidad);
-            
+
             $total = $total + $subtotal;
         }
         //$total=$total-$descuento;
         //dd($descuento);
-        return [$personalizado, floatval($total), floatval($cantidadItems), $puntos,floatval($descuento)];
+        return [$personalizado, floatval($total), floatval($cantidadItems), $puntos, floatval($descuento)];
     }
     static function crearlistaantiguo(Venta $cuenta)
     {

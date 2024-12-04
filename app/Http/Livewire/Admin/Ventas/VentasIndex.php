@@ -1010,8 +1010,21 @@ class VentasIndex extends Component
                             $cuentaguardada->metodosPagos()->attach($metodo->id, ['monto' => $data['valor']]);
                         }
                     }
+                    // dd($this->listacuenta);
                     foreach ($productos as $prod) {
-                        $cuentaguardada->productos()->attach($prod->id, ['cantidad' => $prod->pivot->cantidad, 'adicionales' => $prod->pivot->adicionales]);
+                        foreach ($this->listacuenta as $lista) {
+                            if ($lista['id'] == $prod->id) {
+                                $prodLista = $lista;
+                                break;
+                            }
+                        }
+                        $cuentaguardada->productos()->attach($prod->id, [
+                            'cantidad' => $prod->pivot->cantidad,
+                            'adicionales' => $prod->pivot->adicionales,
+                            'precio_subtotal' => $prodLista['subtotal'],
+                            'precio_unitario' => $prodLista['precio'],
+                            'descuento_producto'=>$prodLista['descuento_producto']
+                        ]);
                     }
                     $cuenta->historial_venta_id = $cuentaguardada->id;
                     $cuenta->pagado = true;

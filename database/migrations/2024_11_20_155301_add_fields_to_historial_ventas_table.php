@@ -35,6 +35,7 @@ class AddFieldsToHistorialVentasTable extends Migration
         Schema::table('historial_ventas', function (Blueprint $table) {
             $table->dropColumn([
                 'subtotal',
+                'total_a_pagar',
                 'total_pagado',
                 'descuento_productos',
                 'descuento_manual',

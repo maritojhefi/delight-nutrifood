@@ -15,7 +15,7 @@
                     <i class="flaticon-025-dashboard"></i>
                 </x-sidebar-elements>
 
-                <x-sidebar-elements titulo="Estadisticas" linkglobal="admin/caja" :lista="['Reporte (antiguo)' => 'caja.reportes', 'Reporte de ventas (nuevo)' => 'caja.reportes.v2']">
+                <x-sidebar-elements titulo="Estadisticas" linkglobal="admin/caja" :lista="['Reporte de ventas' => 'caja.reportes.v2']">
                     <i class="flaticon-041-graph"></i>
                 </x-sidebar-elements>
 

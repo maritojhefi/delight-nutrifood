@@ -7,8 +7,12 @@
                             class="text-{{ $cuenta->cliente->saldo > 0 ? 'danger' : 'success' }} mx-0">
                             {{ Str::of($cuenta->cliente->name)->before(' ') }}{{ $cuenta->cliente->saldo > 0 ? ' debe:' : ' tiene a favor:' }}
                             {{ abs((int) $cuenta->cliente->saldo) }} Bs </strong></h5>
-                    <a href="#"  data-bs-dismiss="modal" data-bs-target="#modalClientes" data-bs-toggle="modal"  class="btn btn-xxs btn-warning px-1 mx-0"><i
-                            class="flaticon-075-reload"></i> Cambiar cliente</a>
+                    @if (!$cuenta->pagado)
+                        <a href="#" data-bs-dismiss="modal" data-bs-target="#modalClientes" data-bs-toggle="modal"
+                            class="btn btn-xxs btn-warning px-1 mx-0"><i class="flaticon-075-reload"></i> Cambiar
+                            cliente</a>
+                    @endif
+
                     @if ($verVistaSaldo)
                         <a href="#" wire:click="verSaldo" class="btn btn-xxs btn-info  px-1 mx-0"><i
                                 class="fa fa-list"></i>
@@ -17,7 +21,7 @@
                         <a href="#" wire:click="verSaldo" class="btn btn-xxs btn-secondary  px-1 mx-0"><i
                                 class="flaticon-381-id-card"></i> Ver su billetera</a>
                     @endif
-                   
+
                 </div>
                 <div class="modal-body pt-0">
                     @if ($verVistaSaldo)
@@ -255,10 +259,12 @@
                     <center>ó</center>
                     <div class="col-12 mt-2">
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control bordeado"  wire:model.lazy="userManual" style="height:35px;"  placeholder="Agrega una referencia">
-                            <button class="btn btn-primary p-1" style="height:35px;width:50px" wire:click="addUsuarioManual" type="button"><i class="fa fa-save"></i></button>
+                            <input type="text" class="form-control bordeado" wire:model.lazy="userManual"
+                                style="height:35px;" placeholder="Agrega una referencia">
+                            <button class="btn btn-primary p-1" style="height:35px;width:50px"
+                                wire:click="addUsuarioManual" type="button"><i class="fa fa-save"></i></button>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
