@@ -226,9 +226,11 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content letra14">
                     <div class="modal-header">
-                        <strong>Atendido por: {{ $ventaSeleccionada->usuario->name }}</strong>
-                        <strong>Hora de venta:
-                            {{ App\Helpers\GlobalHelper::fechaFormateada(6, $ventaSeleccionada->created_at) }}</strong>
+                        @isset($ventaSeleccionada)
+                            <strong>Atendido por: {{ $ventaSeleccionada->usuario->name }}</strong>
+                            <strong>Hora de venta:
+                                {{ App\Helpers\GlobalHelper::fechaFormateada(6, $ventaSeleccionada->created_at) }}</strong>
+                        @endisset
                     </div>
                     <center wire:loading>
                         <div class="spinner-border mb-3" style="width: 3rem; height: 3rem;" role="status">
