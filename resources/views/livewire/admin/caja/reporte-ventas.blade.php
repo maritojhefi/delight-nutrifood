@@ -215,7 +215,7 @@
                             <div class="row">
                                 <div class="col-5">
                                     <div class="table-responsive">
-                                        <div style="max-height: 300px !important; overflow-y: auto;">
+                                        <div style="max-height: 450px !important; overflow-y: auto;">
                                             <table class="table p-0 m-0 letra12">
                                                 <thead>
                                                     <tr>
