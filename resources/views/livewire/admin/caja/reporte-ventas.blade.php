@@ -1,7 +1,7 @@
 <div class="row">
     @if ($cajaSeleccionada)
         <div class="row">
-            <div class="col-9 p-0">
+            <div class="col-12 col-md-9 p-0">
                 <div class="col-12 pe-1">
                     <div class="card p-0 bordeado">
                         <div class="card-header py-2">
@@ -259,7 +259,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-3 p-0">
+            <div class="col-12 col-md-3 p-0">
                 <div class="col-12 ps-1">
                     <div class="card p-0 bordeado">
                         <div class="card-header py-2">
