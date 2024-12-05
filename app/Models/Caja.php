@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Helpers\CajaReporteHelper;
 use App\Models\Sucursale;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -102,96 +104,18 @@ class Caja extends Model
     }
     public function generarGraficoIngresosPorMetodoPago(): string
     {
-        // Obtener datos desde el modelo (supongamos que la función ya existe)
-        $ingresosPorMetodoPago = $this->ingresosTotalesPorMetodoPago();
-
-        // Formatear los datos para el gráfico
-        $labels = array_keys($ingresosPorMetodoPago);
-        $data = array_values($ingresosPorMetodoPago);
-
-        // Colores para el gráfico
-        $colores = [
-            'rgb(255, 99, 132)',  // Red
-            'rgb(255, 159, 64)',  // Orange
-            'rgb(255, 205, 86)',  // Yellow
-            'rgb(75, 192, 192)',  // Green
-            'rgb(54, 162, 235)',  // Blue
-            'rgb(153, 102, 255)', // Purple
-            'rgb(201, 203, 207)', // Grey
-        ];
-
-        // Armar el JSON para el gráfico
-        $chartConfig = [
-            'type' => 'doughnut',
-            'data' => [
-                'datasets' => [[
-                    'data' => $data,
-                    'backgroundColor' => array_slice($colores, 0, count($data)),
-                    'label' => 'Ingresos por Método de Pago',
-                ]],
-                'labels' => $labels,
-            ],
-            'options' => [
-                'title' => [
-                    'display' => true,
-                    'text' => 'Distribución de Ingresos por Métodos de Pago',
-                ],
-            ],
-        ];
-
-        // Convertir el array del gráfico a JSON
-        $chartJson = json_encode($chartConfig);
-
-        // Armar la URL para QuickChart
-        $baseUrl = 'https://quickchart.io/chart?c=';
-        return $baseUrl . urlencode($chartJson);
+        return CajaReporteHelper::graficoIngresosPorMetodo($this->ingresosTotalesPorMetodoPago());
+    }
+    public function arrayProductosVendidos()
+    {
+        return CajaReporteHelper::arrayProductosVendidosRanking($this->id);
     }
     public function urlGraficoComposicionIngresos(): string
     {
-        // Calcular datos
-        $totalIngresos = $this->totalIngresoAbsoluto();
-        $ingresoVentasPOS = $this->ingresoVentasPOS();
-        $totalSaldosPagados = $this->totalSaldosPagadosSinVenta();
-
-        // Evitar división por cero
-        if ($totalIngresos == 0 || $ingresoVentasPOS == 0 ||  $totalSaldosPagados == 0) {
-            $datos = [100];
-            $etiquetas = ['Sin datos'];
-        } else {
-            // Calcular porcentajes
-            $porcentajeVentasPOS = ($ingresoVentasPOS / $totalIngresos) * 100;
-            $porcentajeSaldosPagados = ($totalSaldosPagados / $totalIngresos) * 100;
-
-            $datos = [$ingresoVentasPOS, $totalSaldosPagados];
-            $etiquetas = ['Ventas', 'Saldos/Excedentes'];
-        }
-
-        // Construir configuración del gráfico
-        $config = [
-            'type' => 'doughnut',
-            'data' => [
-                'datasets' => [
-                    [
-                        'data' => $datos,
-                        'backgroundColor' => [
-                            '#3A82EF', // Color para Ventas POS
-                            '#FB3E7A', // Color para Saldos Pagados
-                        ],
-                        'label' => 'Composición de Ingresos',
-                    ],
-                ],
-                'labels' => $etiquetas,
-            ],
-            'options' => [
-                'title' => [
-                    'display' => true,
-                    'text' => 'Composición del Total de Ingresos',
-                ],
-            ],
-        ];
-
-        // Codificar en JSON y generar URL
-        $jsonConfig = json_encode($config);
-        return "https://quickchart.io/chart?c=" . urlencode($jsonConfig);
+        return CajaReporteHelper::graficoComposicionIngresos($this->totalIngresoAbsoluto(), $this->ingresoVentasPOS(), $this->totalSaldosPagadosSinVenta());
+    }
+    public function urlGraficoProductosVendidos(): string
+    {
+        return CajaReporteHelper::urlGraficoProductosVendidos($this->arrayProductosVendidos());
     }
 }
