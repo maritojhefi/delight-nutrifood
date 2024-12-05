@@ -411,15 +411,15 @@
 
                                     <div class="col-6 letra14">
                                         <strong>{{ App\Helpers\GlobalHelper::fechaFormateada(2, $caja->created_at) }}</strong>
-                                        <ul class="mt-2">
-                                            <li><i class="fa fa-stop text-info"></i> Ingresos Ventas: <br>
-                                                <strong>{{ $caja->ingresoVentasPOS() }} Bs</strong>
+                                        <ul class="mt-2 text-center">
+                                            <li><span class="float-start"><i class="fa fa-stop text-info"></i> Ingresos Ventas:</span>  <br>
+                                                <strong class="">{{ $caja->ingresoVentasPOS() }} Bs</strong>
                                             </li>
-                                            <li><i class="fa fa-stop text-secondary"></i> Ingresos Saldos: <br>
-                                                <strong>{{ $caja->totalSaldosPagadosSinVenta() }} Bs</strong>
+                                            <li><span class="float-start"><i class="fa fa-stop text-secondary"></i> Ingresos Saldos:</span>  <br>
+                                                <strong class="">{{ $caja->totalSaldosPagadosSinVenta() }} Bs</strong>
                                             </li>
-                                            <li><i class="fa fa-stop text-success"></i> Total Ingresos: <br>
-                                                <strong>{{ $caja->totalIngresoAbsoluto() }} Bs</strong>
+                                            <li><span class="float-start"><i class="fa fa-stop text-success"></i> Total Ingresos:</span>  <br>
+                                                <strong class="">{{ $caja->totalIngresoAbsoluto() }} Bs</strong>
                                             </li>
 
                                         </ul>
