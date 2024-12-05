@@ -1,5 +1,5 @@
-@if ($cajaSeleccionada)
-    <div class="row">
+<div class="row">
+    @if ($cajaSeleccionada)
         <div class="col-9 pe-1">
             <div class="card p-0 bordeado">
                 <div class="card-header">
@@ -23,17 +23,17 @@
                                         <th class="text-white bg-primary">Monto saldo</th>
                                         <th class="text-white bg-primary">Total Cobrado</th>
                                         <th class="text-white bg-primary">Hora</th>
-                                       
+
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($ventasCaja as $venta)
                                         <tr>
                                             <td class="p-0"><a href="#"
-                                                wire:click="seleccionarVenta({{ $venta->id }})"
-                                                data-bs-target="#modalDetalleVenta" data-bs-toggle="modal"
-                                                class="badge badge-xxs badge-info py-0 px-1 m-0"><i
-                                                    class="fa fa-list"></i></a></td>
+                                                    wire:click="seleccionarVenta({{ $venta->id }})"
+                                                    data-bs-target="#modalDetalleVenta" data-bs-toggle="modal"
+                                                    class="badge badge-xxs badge-info py-0 px-1 m-0"><i
+                                                        class="fa fa-list"></i></a></td>
                                             <td class="p-0">
                                                 @if ($venta->cliente)
                                                     <strong>{{ Str::limit($venta->cliente->name, 20) }}</strong>
@@ -106,7 +106,7 @@
                                             </td>
                                             <td>{{ App\Helpers\GlobalHelper::fechaFormateada(9, $venta->created_at) }}
                                             </td>
-                                            
+
                                         </tr>
                                     @endforeach
                                     <tr class="letra14">
@@ -117,7 +117,7 @@
                                         <td></td>
                                         <td></td>
                                         <td></td>
-                                        <td><strong>{{ $totalIngreso }} Bs</strong></td>
+                                        <td><strong>{{ $totalIngresoPOS }} Bs</strong></td>
                                         <td></td>
                                     </tr>
                                 </tbody>
@@ -141,14 +141,15 @@
                         <div class="media-body event-size">
                             <span class="fs-14 d-block mb-1 text-primary">Ingresos</span>
                             <span class="fs-18 letra14 event-size-1">
-                                <strong>{{ $totalIngreso - $totalSaldoExcedentes }} Bs</strong><span class="letra10">
+                                <strong>{{ $totalIngresoPOS - $totalSaldoExcedentes }} Bs</strong><span
+                                    class="letra10">
                                     (Ventas)</span><br>
                                 <strong>{{ $totalSaldoExcedentes }} Bs</strong><span class="letra10">
                                     (Excedentes de ventas)</span><br>
                                 <strong>{{ $totalSaldosPagados }} Bs</strong><span class="letra10">
                                     (Saldos pagados y anticipos)</span><br>
                                 <hr class="m-0 p-0">
-                                <strong>{{ $totalIngreso + $totalSaldosPagados }} Bs</strong><span class="letra10">
+                                <strong>{{ $totalIngresoAbsoluto }} Bs</strong><span class="letra10">
                                     (Total Ingreso)</span>
                             </span>
                         </div>
@@ -175,8 +176,7 @@
                     <strong>{{ App\Helpers\GlobalHelper::fechaFormateada(2, $cajaSeleccionada->created_at) }}</strong>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive"
-                        style="max-height: 300px !important; overflow-y: auto;">
+                    <div class="table-responsive" style="max-height: 300px !important; overflow-y: auto;">
                         <table class="table p-0 m-0 letra12">
                             <thead>
                                 <tr>
@@ -399,23 +399,55 @@
                 </div>
             </div>
         </div>
-    </div>
-@else
-    <div class="col-xl-4 col-lg-12 col-xxl-6 col-sm-12">
-        <div class="row m-0 p-0" style="">
-            <div class="card m-0 p-0">
+    @else
+        <div class="col-12">
+            <div class="row m-0 p-0" style="">
 
-                <div class="card-header">
-                    Listado de cajas
-                </div>
-                <div class="card-body">
-                    @foreach ($cajas as $caja)
-                        <div class="media pb-3 border-bottom mb-3 align-items-center">
+                @foreach ($cajas as $caja)
+                    <div class="col-12 col-sm-4 px-1 m-0 py-0">
+                        <div class="card py-0 bordeado">
+                            <div class="card-body py-2">
+                                <div class="row">
+
+                                    <div class="col-6 letra14">
+                                        <strong>{{ App\Helpers\GlobalHelper::fechaFormateada(2, $caja->created_at) }}</strong>
+                                        <ul class="mt-2">
+                                            <li><i class="fa fa-stop text-info"></i> Ingresos Ventas: <br>
+                                                <strong>{{ $caja->ingresoVentasPOS() }} Bs</strong>
+                                            </li>
+                                            <li><i class="fa fa-stop text-secondary"></i> Ingresos Saldos: <br>
+                                                <strong>{{ $caja->totalSaldosPagadosSinVenta() }} Bs</strong>
+                                            </li>
+                                            <li><i class="fa fa-stop text-success"></i> Total Ingresos: <br>
+                                                <strong>{{ $caja->totalIngresoAbsoluto() }} Bs</strong>
+                                            </li>
+
+                                        </ul>
+                                        <a href="#" wire:click="buscarCaja({{ $caja->id }})">
+                                            <span class="badge badge-primary badge-xxs letra10 py-1">Ver
+                                                detalles</span>
+                                        </a>
+                                    </div>
+                                    <div class="col-6" style="height: 200px; overflow: hidden;">
+                                        <!-- Establecemos el tamaño del contenedor y nos aseguramos de que la imagen no se salga -->
+                                        <img src="{{ $caja->urlGraficoComposicionIngresos() }}"
+                                            style="width: 100%; height: 100%; object-fit: cover;" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    {{-- <div class="media pb-3 border-bottom mb-3 align-items-center">
                             <a href="#" wire:click="buscarCaja(877)">
                                 <div class="media-image me-2">
                                     <img src="{{ asset('logodelight.png') }}" alt="">
                                 </div>
                             </a>
+                            <img src="{{ $caja->generarGraficoIngresosPorMetodoPago() }}" alt="">
                             <div class="media-body"><a href="#" wire:click="buscarCaja({{ $caja->id }})">
                                     <h6 class="fs-16 mb-0">{{ $caja->created_at->format('d-M-Y') }} <span
                                             class="badge badge-outline-primary badge-xxs letra10 py-1">{{ $caja->sucursale->nombre }}</span>
@@ -431,14 +463,14 @@
                                 </div>
                             </div>
 
-                        </div>
-                    @endforeach
-                </div>
-                {{ $cajas->links() }}
+                        </div> --}}
+                @endforeach
             </div>
+            {{ $cajas->links() }}
+
         </div>
-    </div>
-@endif
+    @endif
+</div>
 @push('css')
     <style>
         .table {

@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\DB;
 class ReporteVentas extends Component
 {
     use WithPagination;
-    public $cajaSeleccionada, $ventasCaja, $totalIngreso, $saldosPagadosArray, $totalDescuentos, $totalSaldoExcedentes, $totalPuntos, $acumuladoPorMetodoPago;
-    public $totalSaldosPagados, $ventaSeleccionada, $metodosPagos;
+    public $cajaSeleccionada, $ventasCaja, $totalIngresoPOS, $saldosPagadosArray, $totalDescuentos, $totalSaldoExcedentes, $totalPuntos, $acumuladoPorMetodoPago;
+    public $totalSaldosPagados, $ventaSeleccionada, $metodosPagos, $totalIngresoAbsoluto;
     protected $paginationTheme = 'bootstrap';
     protected $listeners =  [
         'cambiarMetodo' => 'cambiarMetodo',
@@ -39,40 +39,14 @@ class ReporteVentas extends Component
     {
         $this->cajaSeleccionada = $caja;
         $this->ventasCaja = $caja->ventas;
-        $acumuladoPorMetodoPago = [];
-        //sumando de ventas
-        foreach ($this->ventasCaja as $ven) {
-            foreach ($ven->metodosPagos as $met) {
-                $monto = $met->pivot->monto;
-                $nombre = $met->nombre_metodo_pago;
-                if (isset($acumuladoPorMetodoPago[$nombre])) {
-                    $acumuladoPorMetodoPago[$nombre] += $monto;
-                } else {
-                    $acumuladoPorMetodoPago[$nombre] = $monto;
-                }
-            }
-        }
-        $this->saldosPagadosArray = $this->cajaSeleccionada->saldosPagadosSinVenta;
-        //sumando de saldos entrantes pagados
-        foreach ($this->saldosPagadosArray as $saldo) {
-            // dd($saldo);
-            foreach ($saldo->metodosPagos as $metSaldo) {
-                $monto = $metSaldo->pivot->monto;
-                $nombre = $metSaldo->nombre_metodo_pago;
-                if (isset($acumuladoPorMetodoPago[$nombre])) {
-                    $acumuladoPorMetodoPago[$nombre] += $monto;
-                } else {
-                    $acumuladoPorMetodoPago[$nombre] = $monto;
-                }
-            }
-        }
-        $this->acumuladoPorMetodoPago = $acumuladoPorMetodoPago;
-        $this->totalDescuentos = floatval($this->ventasCaja->sum('total_descuento'));
-        $this->totalIngreso = floatval($this->ventasCaja->sum('total_pagado'));
-        $this->totalSaldoExcedentes = floatval($this->ventasCaja->where('a_favor_cliente', true)->sum('saldo_monto'));
-        $this->totalPuntos = floatval($this->ventasCaja->sum('puntos'));
-
-        $this->totalSaldosPagados = floatval($this->cajaSeleccionada->saldosPagadosSinVenta->sum('monto'));
+        $this->saldosPagadosArray = $caja->saldosPagadosSinVenta;
+        $this->acumuladoPorMetodoPago = $caja->ingresosTotalesPorMetodoPago();
+        $this->totalDescuentos = $caja->totalDescuentos();
+        $this->totalIngresoPOS = $caja->ingresoVentasPOS();
+        $this->totalIngresoAbsoluto = $caja->totalIngresoAbsoluto();
+        $this->totalSaldoExcedentes = $caja->totalSaldoExcedentes();
+        $this->totalPuntos = $caja->totalPuntos();
+        $this->totalSaldosPagados = $caja->totalSaldosPagadosSinVenta();
     }
     public function seleccionarVenta(Historial_venta $venta)
     {
