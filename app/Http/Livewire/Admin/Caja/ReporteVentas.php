@@ -58,7 +58,7 @@ class ReporteVentas extends Component
     }
     public function render()
     {
-        $cajas = Caja::orderBy('created_at', 'DESC')->paginate(10);
+        $cajas = Caja::orderBy('created_at', 'DESC')->paginate(9);
         return view('livewire.admin.caja.reporte-ventas', compact('cajas'))
             ->extends('admin.master')
             ->section('content');
