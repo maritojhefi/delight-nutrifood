@@ -424,7 +424,7 @@
 
                                         </ul>
                                         <a href="#" wire:click="buscarCaja({{ $caja->id }})">
-                                            <span class="badge badge-primary badge-xxs letra10 py-1">Ver
+                                            <span class="badge badge-primary badge-xxs letra14 py-1">Ver
                                                 detalles</span>
                                         </a>
                                     </div>
