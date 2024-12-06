@@ -311,7 +311,7 @@
                             <div class="media event-card p-1 px-2 rounded align-items-center m-1">
                                 <i class="flaticon-381-id-card fs-30 me-3"></i>
                                 <div class="media-body event-size">
-                                    <span class="fs-14 d-block mb-1 text-primary">Ingresos por Cajero</span>
+                                    <span class="fs-14 d-block mb-1 text-primary">Ingresos por metodo</span>
                                     @foreach ($acumuladoPorMetodoPago as $metodo => $monto)
                                         <strong>{{ floatval($monto) }} Bs</strong><span class="letra12">
                                             ({{ $metodo }})
@@ -328,7 +328,7 @@
                             <div class="media event-card p-1 px-2 rounded align-items-center m-1">
                                 <i class="flaticon-381-id-card fs-30 me-3"></i>
                                 <div class="media-body event-size">
-                                    <span class="fs-14 d-block mb-1 text-primary">Metodos de pago</span>
+                                    <span class="fs-14 d-block mb-1 text-primary">Ingresos por cajero</span>
                                     @foreach ($acumuladoPorCajero as $id => $data)
                                         <strong>{{ floatval($data['monto']) }} Bs</strong><span class="letra12">
                                             ({{ $data['nombre'] }})

@@ -80,11 +80,17 @@ class Caja extends Model
     {
         $ventas = $this->ingresosPorMetodoPagoDeVentas();
         $saldos = $this->ingresosPorMetodoPagoDeSaldos();
+        
+        $sumado = $ventas; //array que se trabajara para acumular
+        foreach ($saldos as $key => $value) {
+            if (isset($sumado[$key])) {
+                $sumado[$key] += $value; // Suma el valor si la clave ya existe
+            } else {
+                $sumado[$key] = $value; // Añade la clave y el valor si no existe
+            }
+        }
 
-        return array_merge_recursive(
-            array_map('floatval', $ventas),
-            array_map('floatval', $saldos)
-        );
+        return $sumado;
     }
 
     public function ingresosPorCajeroDeVentas()
