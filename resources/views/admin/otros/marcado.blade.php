@@ -88,8 +88,8 @@
                     }
 
                     function getDistanceFromLatLonInKm(lat2, lon2) {
-                        var lat1 = -21.5336906;
-                        var lon1 = -64.7356312;
+                        var lat1 = -21.5337951;//lat y long de delight
+                        var lon1 = -64.7359975;
                         var R = 6371; // Radius of the earth in km
                         var dLat = deg2rad(lat2 - lat1); // deg2rad below
                         var dLon = deg2rad(lon2 - lon1);
