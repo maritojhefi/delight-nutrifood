@@ -147,4 +147,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(Contrato::class);
     }
+    public function scopeCajeros($query)
+    {
+        return $query->whereIn('role_id', [1,2]);
+    }
 }

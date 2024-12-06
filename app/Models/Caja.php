@@ -12,6 +12,7 @@ class Caja extends Model
 {
     use HasFactory;
 
+    public $atendidoPor;
     protected $fillable = [
         'acumulado',
         'entrada',
@@ -25,15 +26,27 @@ class Caja extends Model
     }
     public function ventas()
     {
-        return $this->hasMany(Historial_venta::class);
+        if ($this->atendidoPor != null) {
+            return $this->hasMany(Historial_venta::class)->where('usuario_id', $this->atendidoPor);
+        } else {
+            return $this->hasMany(Historial_venta::class);
+        }
     }
     public function saldos()
     {
-        return $this->hasMany(Saldo::class, 'caja_id');
+        if ($this->atendidoPor != null) {
+            return $this->hasMany(Saldo::class, 'caja_id')->where('atendido_por', $this->atendidoPor);
+        } else {
+            return $this->hasMany(Saldo::class, 'caja_id');
+        }
     }
     public function saldosPagadosSinVenta()
     {
-        return $this->hasMany(Saldo::class, 'caja_id')->where('historial_ventas_id', null)->where('es_deuda', false)->where('anulado', false);
+        if ($this->atendidoPor != null) {
+            return $this->hasMany(Saldo::class, 'caja_id')->where('historial_ventas_id', null)->where('es_deuda', false)->where('anulado', false)->where('atendido_por', $this->atendidoPor);
+        } else {
+            return $this->hasMany(Saldo::class, 'caja_id')->where('historial_ventas_id', null)->where('es_deuda', false)->where('anulado', false);
+        }
     }
     private function calcularIngresosPorMetodoPago($coleccion): array
     {
@@ -74,7 +87,69 @@ class Caja extends Model
         );
     }
 
+    public function ingresosPorCajeroDeVentas()
+    {
+        return $this->ventas()
+            ->join('users', 'historial_ventas.usuario_id', '=', 'users.id') // Relaciona con la tabla users
+            ->select('usuario_id', 'users.name as cajero_nombre', DB::raw('SUM(total_pagado) as total_pagado'))
+            ->groupBy('usuario_id', 'users.name') // Agrupa por ID del usuario y su nombre
+            ->get();
+    }
 
+    public function ingresosPorCajeroPagoDeSaldos()
+    {
+        return $this->saldosPagadosSinVenta()
+            ->join('users', 'saldos.atendido_por', '=', 'users.id') // Relaciona con la tabla users
+            ->select('atendido_por as usuario_id', 'users.name as cajero_nombre', DB::raw('SUM(monto) as monto'))
+            ->groupBy('atendido_por', 'users.name') // Agrupa por ID del usuario y su nombre
+            ->get();
+    }
+
+    public function ingresosTotalesPorCajero(): array
+    {
+        $ventas = $this->ingresosPorCajeroDeVentas();
+        $saldos = $this->ingresosPorCajeroPagoDeSaldos();
+
+        $ingresosTotales = [];
+
+        // Procesar ingresos de ventas
+        foreach ($ventas as $venta) {
+            $cajeroId = $venta->usuario_id;
+            $nombre = $venta->cajero_nombre;
+            $monto = $venta->total_pagado;
+
+            if (isset($ingresosTotales[$cajeroId])) {
+                $ingresosTotales[$cajeroId]['monto'] += $monto;
+            } else {
+                $ingresosTotales[$cajeroId] = [
+                    'nombre' => $nombre,
+                    'monto' => $monto,
+                ];
+            }
+        }
+
+        // Procesar ingresos de saldos pagados
+        foreach ($saldos as $saldo) {
+            $cajeroId = $saldo->usuario_id;
+            $nombre = $saldo->cajero_nombre;
+            $monto = $saldo->monto;
+
+            if (isset($ingresosTotales[$cajeroId])) {
+                $ingresosTotales[$cajeroId]['monto'] += $monto;
+            } else {
+                $ingresosTotales[$cajeroId] = [
+                    'nombre' => $nombre,
+                    'monto' => $monto,
+                ];
+            }
+        }
+
+        return $ingresosTotales;
+    }
+    public function generarGraficoIngresosPorCajero()
+    {
+        return CajaReporteHelper::graficoIngresosPorCajero($this->ingresosTotalesPorCajero());
+    }
     public function totalDescuentos(): float
     {
         return floatval($this->ventas()->sum('total_descuento'));
@@ -106,16 +181,16 @@ class Caja extends Model
     {
         return CajaReporteHelper::graficoIngresosPorMetodo($this->ingresosTotalesPorMetodoPago());
     }
-    public function arrayProductosVendidos()
+    public function arrayProductosVendidos($cajeroId = null)
     {
-        return CajaReporteHelper::arrayProductosVendidosRanking($this->id);
+        return CajaReporteHelper::arrayProductosVendidosRanking($this->id, $cajeroId);
     }
     public function urlGraficoComposicionIngresos(): string
     {
         return CajaReporteHelper::graficoComposicionIngresos($this->totalIngresoAbsoluto(), $this->ingresoVentasPOS(), $this->totalSaldosPagadosSinVenta());
     }
-    public function urlGraficoProductosVendidos(): string
+    public function urlGraficoProductosVendidos($cajeroId = null): string
     {
-        return CajaReporteHelper::urlGraficoProductosVendidos($this->arrayProductosVendidos());
+        return CajaReporteHelper::urlGraficoProductosVendidos($this->arrayProductosVendidos($cajeroId));
     }
 }

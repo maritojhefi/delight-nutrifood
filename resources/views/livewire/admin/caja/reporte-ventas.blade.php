@@ -8,8 +8,31 @@
                             <strong>Listado de ventas <a href="#" wire:click="cambiarCaja"
                                     class="badge badge-sm badge-warning">Cambiar caja <i
                                         class="flaticon-075-reload"></i></a></strong>
+                            <div class="dropdown ms-auto">
+                                Filtrar por:
+                                <a href="#" class="mx-2 badge badge-xs light badge-info p-1 py-0 letra14"
+                                    data-bs-toggle="dropdown" aria-expanded="false"> <span>
+                                        {{ $cajeroSeleccionado ? Str::limit($cajeroSeleccionado->name, 15) : 'Todos' }}
+                                        <i class="flaticon-075-reload"></i></span></a>
+                                <ul class="dropdown-menu dropdown-menu-end" style="">
+                                    <li class="dropdown-item" wire:click="resetCajero()">
+                                        <a href="javascript:void(0);">
+                                            Todos
+                                        </a>
+                                    </li>
+                                    @foreach ($cajeros as $cajero)
+                                        <li class="dropdown-item" wire:click="seleccionarCajero({{ $cajero->id }})">
+                                            <a href="javascript:void(0);">
+                                                {{ $cajero->name }}
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
                             <strong>{{ App\Helpers\GlobalHelper::fechaFormateada(2, $cajaSeleccionada->created_at) }}</strong>
+
                         </div>
+
                         <div class="card-body py-2">
                             <div class="table-responsive">
                                 <div style="max-height: 300px !important; overflow-y: auto;">
@@ -225,7 +248,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach ($cajaSeleccionada->arrayProductosVendidos() as $pro)
+                                                    @foreach ($cajaSeleccionada->arrayProductosVendidos($cajeroSeleccionado ? $cajeroSeleccionado->id : null) as $pro)
                                                         <tr>
                                                             <td class="py-1"><span class="float-start"><i
                                                                         class="fa fa-stop "
@@ -249,7 +272,7 @@
                                 <div class="col-7">
                                     <div class="row" style="height: 450px; overflow: hidden;">
                                         <!-- Establecemos el tamaño del contenedor y nos aseguramos de que la imagen no se salga -->
-                                        <img src="{{ $cajaSeleccionada->urlGraficoProductosVendidos() }}"
+                                        <img src="{{ $cajaSeleccionada->urlGraficoProductosVendidos($cajeroSeleccionado ? $cajeroSeleccionado->id : null) }}"
                                             style="width: 100%; height: 100%; object-fit: cover;" alt="">
                                     </div>
                                 </div>
@@ -288,7 +311,7 @@
                             <div class="media event-card p-1 px-2 rounded align-items-center m-1">
                                 <i class="flaticon-381-id-card fs-30 me-3"></i>
                                 <div class="media-body event-size">
-                                    <span class="fs-14 d-block mb-1 text-primary">Metodos de pago</span>
+                                    <span class="fs-14 d-block mb-1 text-primary">Ingresos por Cajero</span>
                                     @foreach ($acumuladoPorMetodoPago as $metodo => $monto)
                                         <strong>{{ floatval($monto) }} Bs</strong><span class="letra12">
                                             ({{ $metodo }})
@@ -300,6 +323,23 @@
                             <div class="row" style="height: 250px; overflow: hidden;">
                                 <!-- Establecemos el tamaño del contenedor y nos aseguramos de que la imagen no se salga -->
                                 <img src="{{ $cajaSeleccionada->generarGraficoIngresosPorMetodoPago() }}"
+                                    style="width: 100%; height: 100%; object-fit: cover;" alt="">
+                            </div>
+                            <div class="media event-card p-1 px-2 rounded align-items-center m-1">
+                                <i class="flaticon-381-id-card fs-30 me-3"></i>
+                                <div class="media-body event-size">
+                                    <span class="fs-14 d-block mb-1 text-primary">Metodos de pago</span>
+                                    @foreach ($acumuladoPorCajero as $id => $data)
+                                        <strong>{{ floatval($data['monto']) }} Bs</strong><span class="letra12">
+                                            ({{ $data['nombre'] }})
+                                        </span><br>
+                                    @endforeach
+
+                                </div>
+                            </div>
+                            <div class="row" style="height: 250px; overflow: hidden;">
+                                <!-- Establecemos el tamaño del contenedor y nos aseguramos de que la imagen no se salga -->
+                                <img src="{{ $cajaSeleccionada->generarGraficoIngresosPorCajero() }}"
                                     style="width: 100%; height: 100%; object-fit: cover;" alt="">
                             </div>
                         </div>
@@ -485,11 +525,13 @@
                                     <div class="col-6 letra14">
                                         <strong>{{ App\Helpers\GlobalHelper::fechaFormateada(2, $caja->created_at) }}</strong>
                                         <ul class="mt-2 text-center">
-                                            <li><span class="float-start"><i class="fa fa-stop" style="color: {{ \App\Helpers\GraficosHelper::obtenerColorPosicion(0) }}"></i>
+                                            <li><span class="float-start"><i class="fa fa-stop"
+                                                        style="color: {{ \App\Helpers\GraficosHelper::obtenerColorPosicion(0) }}"></i>
                                                     Ingresos Ventas:</span> <br>
                                                 <strong class="">{{ $caja->ingresoVentasPOS() }} Bs</strong>
                                             </li>
-                                            <li><span class="float-start"><i class="fa fa-stop" style="color: {{ \App\Helpers\GraficosHelper::obtenerColorPosicion(1) }}"></i>
+                                            <li><span class="float-start"><i class="fa fa-stop"
+                                                        style="color: {{ \App\Helpers\GraficosHelper::obtenerColorPosicion(1) }}"></i>
                                                     Ingresos Saldos:</span> <br>
                                                 <strong class="">{{ $caja->totalSaldosPagadosSinVenta() }}
                                                     Bs</strong>

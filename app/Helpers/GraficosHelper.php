@@ -102,7 +102,6 @@ class GraficosHelper
         // Generar la URL del gráfico con QuickChart
         $baseUrl = 'https://quickchart.io/chart';
         $chartUrl = $baseUrl . '?c=' . urlencode(json_encode($chartConfig));
-
         return $chartUrl;
     }
 }

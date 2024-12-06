@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Admin\Caja;
 
 use App\Models\Caja;
+use App\Models\User;
 use Livewire\Component;
 use App\Models\MetodoPago;
 use Livewire\WithPagination;
@@ -12,8 +13,9 @@ use Illuminate\Support\Facades\DB;
 class ReporteVentas extends Component
 {
     use WithPagination;
-    public $cajaSeleccionada, $ventasCaja, $totalIngresoPOS, $saldosPagadosArray, $totalDescuentos, $totalSaldoExcedentes, $totalPuntos, $acumuladoPorMetodoPago;
-    public $totalSaldosPagados, $ventaSeleccionada, $metodosPagos, $totalIngresoAbsoluto;
+    public $cajaSeleccionada, $ventasCaja, $totalIngresoPOS, $saldosPagadosArray, $totalDescuentos, $totalSaldoExcedentes, $totalPuntos, $acumuladoPorMetodoPago, $acumuladoPorCajero;
+    public $totalSaldosPagados, $ventaSeleccionada, $metodosPagos, $totalIngresoAbsoluto, $cajeroSeleccionado = null;
+    public $cajeros;
     protected $paginationTheme = 'bootstrap';
     protected $listeners =  [
         'cambiarMetodo' => 'cambiarMetodo',
@@ -24,7 +26,7 @@ class ReporteVentas extends Component
         DB::table('historial_venta_metodo_pago')->where('id', $pivot)->update(['metodo_pago_id' => $id]);
         $this->ventaSeleccionada = Historial_venta::find($this->ventaSeleccionada->id);
         $this->cajaSeleccionada = Caja::find($this->cajaSeleccionada->id);
-        $this->buscarCaja($this->cajaSeleccionada);
+        $this->buscarCaja($this->cajaSeleccionada->id);
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
             'message' => "Se actualizo el metodo de pago!"
@@ -34,13 +36,22 @@ class ReporteVentas extends Component
     public function mount()
     {
         $this->metodosPagos = MetodoPago::where('activo', true)->get();
+        $this->cajeros = User::cajeros()->get();
     }
-    public function buscarCaja(Caja $caja)
+    public function resetCajero()
     {
+        $this->reset('cajeroSeleccionado');
+        $this->buscarCaja($this->cajaSeleccionada->id);
+    }
+    public function buscarCaja($cajaId)
+    {
+        $caja = Caja::find($cajaId);
         $this->cajaSeleccionada = $caja;
+        $caja->atendidoPor = $this->cajeroSeleccionado ? $this->cajeroSeleccionado->id : null;
         $this->ventasCaja = $caja->ventas;
         $this->saldosPagadosArray = $caja->saldosPagadosSinVenta;
         $this->acumuladoPorMetodoPago = $caja->ingresosTotalesPorMetodoPago();
+        $this->acumuladoPorCajero = $caja->ingresosTotalesPorCajero();
         $this->totalDescuentos = $caja->totalDescuentos();
         $this->totalIngresoPOS = $caja->ingresoVentasPOS();
         $this->totalIngresoAbsoluto = $caja->totalIngresoAbsoluto();
@@ -48,13 +59,18 @@ class ReporteVentas extends Component
         $this->totalPuntos = $caja->totalPuntos();
         $this->totalSaldosPagados = $caja->totalSaldosPagadosSinVenta();
     }
+    public function seleccionarCajero(User $cajero)
+    {
+        $this->cajeroSeleccionado = $cajero;
+        $this->buscarCaja($this->cajaSeleccionada->id);
+    }
     public function seleccionarVenta(Historial_venta $venta)
     {
         $this->ventaSeleccionada = $venta;
     }
     public function cambiarCaja()
     {
-        $this->resetExcept('metodosPagos');
+        $this->resetExcept('metodosPagos', 'cajeros');
     }
     public function render()
     {

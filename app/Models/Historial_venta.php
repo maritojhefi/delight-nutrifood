@@ -33,14 +33,18 @@ class Historial_venta extends Model
     public function metodosPagos()
     {
         return $this->belongsToMany(MetodoPago::class)
-            ->withPivot('monto','id')
+            ->withPivot('monto', 'id')
             ->withTimestamps();
     }
 
+    public function scopePorVendedor($query, $vendedorId)
+    {
+        return $query->where('usuario_id', $vendedorId);
+    }
     public function productos()
     {
         return $this->belongsToMany(Producto::class)
-            ->withPivot('cantidad', 'estado_actual','precio_subtotal','precio_unitario','descuento_producto','id')
+            ->withPivot('cantidad', 'estado_actual', 'precio_subtotal', 'precio_unitario', 'descuento_producto', 'id')
             ->withTimestamps();
     }
     public function usuario()
