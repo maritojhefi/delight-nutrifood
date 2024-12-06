@@ -66,8 +66,8 @@ class FinalizarPlanesDiarios10AMCommand extends Command
 
         // Paso 4: Preparar los valores de detalle
         $diaActual = WhatsappAPIHelper::saber_dia(Carbon::today());
-        $ejecutivo = Almuerzo::select('sopa', 'ejecutivo', 'carbohidrato_1', 'ensalada', 'jugo')->where('dia', $diaActual)->first()->toArray();
-        $dieta = Almuerzo::select('sopa', 'dieta', 'carbohidrato_2', 'ensalada', 'jugo')->where('dia', $diaActual)->first()->toArray();
+        $ejecutivo = Almuerzo::select('sopa', 'ejecutivo', 'ejecutivo_tiene_carbo', 'carbohidrato_1', 'ensalada', 'jugo')->where('dia', $diaActual)->first()->toArray();
+        $dieta = Almuerzo::select('sopa', 'dieta', 'dieta_tiene_carbo', 'carbohidrato_2', 'ensalada', 'jugo')->where('dia', $diaActual)->first()->toArray();
 
 
 
@@ -76,9 +76,9 @@ class FinalizarPlanesDiarios10AMCommand extends Command
             foreach ($firstHalf as $record) {
 
                 if ($record->sopa == true && $ejecutivo) {
-                    $planEjecutivo = GlobalHelper::menuDiarioArray($ejecutivo['sopa'], $ejecutivo['ejecutivo'], $ejecutivo['ensalada'], $ejecutivo['carbohidrato_1'], $ejecutivo['jugo']);
+                    $planEjecutivo = GlobalHelper::menuDiarioArray($ejecutivo['sopa'], $ejecutivo['ejecutivo'], $ejecutivo['ensalada'], $ejecutivo['ejecutivo_tiene_carbo'] == true ? $ejecutivo['carbohidrato_1'] : 'sin carbohidrato', $ejecutivo['jugo']);
                 } else {
-                    $planEjecutivo = GlobalHelper::menuDiarioArray('', $ejecutivo['ejecutivo'], $ejecutivo['ensalada'], $ejecutivo['carbohidrato_1'], $ejecutivo['jugo']);
+                    $planEjecutivo = GlobalHelper::menuDiarioArray('', $ejecutivo['ejecutivo'], $ejecutivo['ensalada'], $ejecutivo['ejecutivo_tiene_carbo'] == true ? $ejecutivo['carbohidrato_1'] : 'sin carbohidrato', $ejecutivo['jugo']);
                 }
                 $detalle = json_encode($planEjecutivo);
                 DB::table('plane_user')
@@ -91,9 +91,9 @@ class FinalizarPlanesDiarios10AMCommand extends Command
             foreach ($secondHalf as $record) {
 
                 if ($record->sopa == true) {
-                    $planDieta = GlobalHelper::menuDiarioArray($dieta['sopa'], $dieta['dieta'], $dieta['ensalada'], $dieta['carbohidrato_2'], $dieta['jugo']);
+                    $planDieta = GlobalHelper::menuDiarioArray($dieta['sopa'], $dieta['dieta'], $dieta['ensalada'], $dieta['dieta_tiene_carbo'] == true ? $dieta['carbohidrato_2'] : 'sin carbohidrato', $dieta['jugo']);
                 } else {
-                    $planDieta = GlobalHelper::menuDiarioArray('', $dieta['dieta'], $dieta['ensalada'], $dieta['carbohidrato_2'], $dieta['jugo']);
+                    $planDieta = GlobalHelper::menuDiarioArray('', $dieta['dieta'], $dieta['ensalada'], $dieta['dieta_tiene_carbo'] == true ? $dieta['carbohidrato_2'] : 'sin carbohidrato', $dieta['jugo']);
                 }
                 $detalle = json_encode($planDieta);
                 DB::table('plane_user')
