@@ -326,7 +326,7 @@
                                 style="width: 100%; height: 100%; object-fit: cover;" alt="">
                         </div>
                         <div class="media event-card p-1 px-2 rounded align-items-center m-1">
-                            <i class="flaticon-381-id-card fs-30 me-3"></i>
+                            <i class="fa fa-user fs-30 me-3"></i>
                             <div class="media-body event-size">
                                 <span class="fs-14 d-block mb-1 text-primary">Ingresos por cajero</span>
                                 @foreach ($acumuladoPorCajero as $id => $data)
