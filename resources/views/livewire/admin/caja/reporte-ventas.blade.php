@@ -287,7 +287,6 @@
                 <div class="card p-0 bordeado">
                     <div class="card-header py-2">
                         <strong>Resumen general</strong>
-
                     </div>
                     <div class="card-body py-2 px-1">
                         <div class="media event-card p-1 px-2 rounded align-items-center m-1">

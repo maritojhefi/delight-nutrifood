@@ -18,7 +18,7 @@ class ProductTable extends Component
     use WithFileUploads;
     public $buscar;
     public $productoEdit, $nombre, $precio, $puntos, $medicion, $detalle, $descuento, $imagen, $subcategoria_id, $subcategorias;
-    public $fechaStock,$cantidadStock;
+    public $fechaStock, $cantidadStock, $productoSeleccionado;
     protected $paginationTheme = 'bootstrap';
     protected $queryString = ['buscar'];
 
@@ -42,29 +42,30 @@ class ProductTable extends Component
     public function guardarStock(Producto $producto)
     {
         $this->validate([
-            'cantidadStock'=>'required|numeric|integer',
-            'fechaStock'=>'required|date'
+            'cantidadStock' => 'required|numeric|integer',
+            'fechaStock' => 'required|date'
         ]);
- 
+
         // Execution doesn't reach here if validation fails.
         DB::beginTransaction();
-        $sucursal=Sucursale::find(1);
+        $sucursal = Sucursale::find(1);
         $sucursal->productos()->attach($producto->id);
-        
-        $registro = DB::table('producto_sucursale')->where('producto_id',$producto->id)->where('sucursale_id',$sucursal->id)->get()->last();
-      
+
+        $registro = DB::table('producto_sucursale')->where('producto_id', $producto->id)->where('sucursale_id', $sucursal->id)->get()->last();
+
         //dd($registro);
         DB::table('producto_sucursale')
-        ->where('id', $registro->id)
-        ->update(['fecha_venc'=>$this->fechaStock,'usuario_id'=>auth()->user()->id,'cantidad'=>$this->cantidadStock,'max'=>$this->cantidadStock]); 
-        DB::table('productos')->where('id',$producto->id)->update(['contable'=>1]);
+            ->where('id', $registro->id)
+            ->update(['fecha_venc' => $this->fechaStock, 'usuario_id' => auth()->user()->id, 'cantidad' => $this->cantidadStock, 'max' => $this->cantidadStock]);
+        DB::table('productos')->where('id', $producto->id)->update(['contable' => 1]);
         DB::commit();
-         $this->dispatchBrowserEvent('alert',[
-            'type'=>'success',
-            'message'=>"Se agregaron ".$this->cantidadStock." productos de ".$producto->nombre
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => "Se agregaron " . $this->cantidadStock . " productos de " . $producto->nombre
         ]);
-        $this->reset(['cantidadStock','fechaStock']);
-        $producto=Producto::find($producto->id);
+        $this->reset(['cantidadStock', 'fechaStock']);
+        $producto = Producto::find($producto->id);
+        $this->productoSeleccionado = $producto;
     }
     public function actualizarProducto()
     {
@@ -82,15 +83,14 @@ class ProductTable extends Component
 
             ]);
         }
-        if($this->imagen)
-        {
+        if ($this->imagen) {
             if ($this->productoEdit->imagen != null || $this->productoEdit->imagen != "") {
                 $this->validate([
                     'imagen' => 'mimes:jpg,jpeg,png,gif|max:5120',
-    
+
                 ]);
-                Storage::disk('public_images')->delete('productos/'.$this->productoEdit->imagen);  
-            } 
+                Storage::disk('public_images')->delete('productos/' . $this->productoEdit->imagen);
+            }
             $filename = time() . "." . $this->imagen->extension();
             $this->imagen->storeAs('productos', $filename, 'public_images');
             //comprimir la foto
@@ -102,10 +102,10 @@ class ProductTable extends Component
             $img->save('imagenes/productos/' . $filename);
             $this->productoEdit->imagen = $filename;
         }
-        
+
 
         //$this->imagen->move(public_path('imagenes'),$filename);
-        
+
         $this->productoEdit->nombre = $this->nombre;
 
         $this->productoEdit->precio = $this->precio;
@@ -127,10 +127,14 @@ class ProductTable extends Component
     }
     public function render()
     {
-        $productos = Producto::where('nombre', 'LIKE', '%' . $this->buscar . '%')->orWhere('estado', $this->buscar)->orderBy('nombre', 'asc')->paginate(8);
+        $productos = Producto::limitadoPorRol()->where('nombre', 'LIKE', '%' . $this->buscar . '%')->orWhere('estado', $this->buscar)->orderBy('nombre', 'asc')->paginate(12);
         return view('livewire.admin.productos.product-table', compact('productos'));
     }
-
+    public function verStock($idProducto)
+    {
+        // dd($idProducto);
+        $this->productoSeleccionado = Producto::find($idProducto);
+    }
     public function cambiarestado(Producto $producto)
     {
 
