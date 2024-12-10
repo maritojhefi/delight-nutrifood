@@ -8,6 +8,7 @@
         "php": "^8.0",
         "asantibanez/livewire-charts": "*",
         "barryvdh/laravel-dompdf": "^2.0",
+        "beyondcode/laravel-websockets": "^1.14",
         "consoletvs/charts": "6.*",
         "davejamesmiller/laravel-breadcrumbs": "^5.3",
         "doctrine/dbal": "^3.4",

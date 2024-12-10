@@ -448,7 +448,7 @@ class VentasIndex extends Component
                 } else if ($registro[0]->cantidad > 0) {
                     foreach ($json[$cantidad] as $pos => $adic) {
                         $adicional = Adicionale::where('nombre', key($adic))->first();
-                        if ($adicional) {
+                        if ($adicional && $adicional->contable) {
                             $adicional->increment('cantidad');
                             $adicional->save();
                             GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
@@ -515,8 +515,11 @@ class VentasIndex extends Component
                     //     'type' => 'success',
                     //     'message' => "Agregado!"
                     // ]);
-                    GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'reducir');
-                    $adicional->decrement('cantidad');
+                    if($adicional->contable){
+                        GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'reducir');
+                        $adicional->decrement('cantidad');
+                    }
+                    
                     $adicional->save();
                     $resultado = CreateList::crearlista($this->cuenta);
                     $this->listacuenta = $resultado[0];
@@ -557,7 +560,7 @@ class VentasIndex extends Component
         } else {
             foreach ($this->array[$posicion] as $pos => $adic) {
                 $adicional = Adicionale::where('nombre', key($adic))->first();
-                if ($adicional) {
+                if ($adicional && $adicional->contable) {
                     $adicional->increment('cantidad');
                     $adicional->save();
                     GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
