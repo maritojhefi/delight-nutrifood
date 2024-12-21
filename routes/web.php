@@ -233,10 +233,11 @@ Route::prefix('/pedidos')->group(function () {
 });
 
 Route::prefix('/usuario')->name('usuario.')->group(function () {
-    Route::get('/registro', [UsuarioController::class, 'inicioRegistro']);
+    Route::get('/registro', [UsuarioController::class, 'inicioRegistro'])->name('inicio.registro');
     Route::post('/registrar', [UsuarioController::class, 'registrarUsuario'])->name('registrar');
     Route::post('/verificar', [UsuarioController::class, 'verificarUsuario'])->name('existe');
     Route::get('/actualizado', function(){
         return view('auth.registrado');
     });
+    Route::get('/reconocer/cliente/{idEncriptado}', [UsuarioController::class, 'reconocerUsuarioNFC'])->name('reconocer-usuario-nfc');
 });

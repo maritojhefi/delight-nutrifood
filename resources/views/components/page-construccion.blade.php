@@ -1,4 +1,4 @@
-<div class="card card-style bg-24"  style="height:600px!important;background-image:url({{asset('imagenes/delight/6.jpeg')}})">
+<div class="card card-style"  style="height:600px!important;">
     <div class="card-center text-center">
         <img src="{{asset('imagenes/delight/underconstruction.gif')}}" alt="">
         <h1 class="color-white font-34 font-700 mb-2">Casi listo!</h1>
@@ -37,4 +37,44 @@
         </div>
     </div>
     <div class="card-overlay bg-black opacity-85"></div>
+    <script>
+        // Establece la fecha objetivo
+        const targetDate = new Date('{{date('Y-m-d H:i:s', strtotime('2025-01-01 00:00:00'))}}'); 
+        // Cambia esta fecha según sea necesario
+    
+        function updateCountdown() {
+            const now = new Date(); // Fecha y hora actual
+            const diff = targetDate - now; // Diferencia en milisegundos
+    
+            if (diff <= 0) {
+                // Cuando se llega al objetivo, muestra ceros
+                document.getElementById('years').textContent = '0';
+                document.getElementById('days').textContent = '0';
+                document.getElementById('hours').textContent = '0';
+                document.getElementById('minutes').textContent = '0';
+                document.getElementById('seconds').textContent = '0';
+                clearInterval(interval); // Detiene el intervalo
+                return;
+            }
+    
+            // Calcula años, días, horas, minutos y segundos restantes
+            const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
+            const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+            // Actualiza los valores en el HTML
+            document.getElementById('years').textContent = years;
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+    
+        // Actualiza el contador cada segundo
+        const interval = setInterval(updateCountdown, 1000);
+        updateCountdown(); // Llama a la función inmediatamente para inicializar
+    </script>
+    
 </div>

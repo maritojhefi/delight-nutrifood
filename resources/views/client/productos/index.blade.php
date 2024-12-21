@@ -1,5 +1,5 @@
 @extends('client.master')
-@section('content')
+@section('content-comentado')
     <x-cabecera-pagina titulo="Productos" cabecera="bordeado" />
 
     {{-- <x-page-construccion/> --}}
@@ -186,4 +186,8 @@
             <div class="card-overlay dark-mode-tint"></div>
         </div>
     @endif
+@endsection
+@section('content')
+    <x-cabecera-pagina titulo="En construcción!" cabecera="bordeado" />
+    <x-page-construccion />
 @endsection

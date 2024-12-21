@@ -1,5 +1,5 @@
 @extends('client.master')
-@section('content')
+@section('content-comentado')
     <x-cabecera-pagina titulo="Linea Delight!" cabecera="bordeado" />
 
 
@@ -193,8 +193,8 @@
                     <div class="row mb-0">
                         @foreach ($conMasPuntos as $item)
                             <div class="col-6 ps-2">
-                                <a href="{{ route('delight.detalleproducto', $item->id) }}" class="card card-style mx-0 mb-3"
-                                    data-menu="menu-product">
+                                <a href="{{ route('delight.detalleproducto', $item->id) }}"
+                                    class="card card-style mx-0 mb-3" data-menu="menu-product">
                                     <img src="{{ asset($item->pathAttachment()) }}" alt="img" width="100"
                                         class="mx-auto mt-2">
                                     <div class="p-2">
@@ -219,4 +219,9 @@
             <div class="card-overlay dark-mode-tint"></div>
         </div>
     @endif
+@endsection
+
+@section('content')
+    <x-cabecera-pagina titulo="En construcción!" cabecera="bordeado" />
+    <x-page-construccion />
 @endsection

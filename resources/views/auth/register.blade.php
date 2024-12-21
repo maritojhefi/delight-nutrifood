@@ -39,15 +39,29 @@
                             <div class="input-style input-transparent no-borders has-icon">
                                 <i class="fa fa-phone"></i>
                                 <input type="number" class="form-control @error('telefono') is-invalid @enderror"
-                                    id="telefono" placeholder="Teléfono (8 digitos)" name="telefono" value="{{ old('telefono') }}"
-                                    required>
+                                    id="telefono" placeholder="Teléfono (8 digitos)" name="telefono"
+                                    value="{{ old('telefono') }}" required>
                                 <label for="telefono" class="color-blue-dark font-10 mt-1">Teléfono</label>
                                 @error('telefono')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
+                            {{-- foto de perfil --}}
+                            <div class="file-data pb-5">
+                                <input type="file" id="file-upload" class="upload-file bg-highlight shadow-s rounded-s "
+                                    accept="image/*" name="foto">
+                                <p class="upload-file-text color-white">Subir Foto</p>
+                            </div>
+                            @error('foto')
+                                <p class="text-danger">{{ $message }}</p>
+                            @enderror
+                            <div class="list-group list-custom-large upload-file-data disabled">
+                                <img id="image-data" src="images/empty.png" class="mx-auto img-fluid rounded-circle"
+                                    style="width:150px; display:block; height:150px;">
+                            </div>
+                            {{-- fin foto de perfil --}}
                             <button type="button"
-                                class="btn btn-xs mb-3 rounded-xl text-uppercase font-900 shadow-s bg-mint-dark btn-next"
+                                class="btn btn-xxs mb-3 rounded-xl text-uppercase font-900 shadow-s bg-mint-dark btn-next"
                                 id="nextStep1">Siguiente</button>
                         </div>
 
@@ -91,8 +105,8 @@
                                         </select>
                                     </div>
                                     <div class="col-4">
-                                        <input type="number" class="form-control" placeholder="Año" name="ano_nacimiento"
-                                            required>
+                                        <input type="number" class="form-control" placeholder="Año"
+                                            name="ano_nacimiento" required>
                                     </div>
                                 </div>
                                 <label for="nacimiento" class="color-blue-dark font-10 mt-1">Fecha de Nacimiento</label>
@@ -170,8 +184,8 @@
     </div>
 @endsection
 @push('modals')
-    <div id="menu-errores" class="menu menu-box-bottom menu-box-detached bg-yellow-dark rounded-m " data-menu-height="305"
-        data-menu-effect="menu-over" style="display: block; height: 305px;">
+    <div id="menu-errores" class="menu menu-box-bottom menu-box-detached bg-yellow-dark rounded-m "
+        data-menu-height="305" data-menu-effect="menu-over" style="display: block; height: 305px;">
         <h1 class="text-center mt-4"><i class="fa fa-3x fa-info-circle color-white shadow-xl rounded-circle"></i></h1>
         <h1 class="text-center mt-3 text-uppercase color-white font-700">Uy!</h1>
         <p class="boxed-text-l color-white opacity-70">
@@ -309,7 +323,7 @@
                                 // Crear el div para los mensajes de error
                                 const errorDiv = document.createElement('div');
                                 errorDiv.classList.add(
-                                'font-10'); // Añadir otras clases si es necesario
+                                    'font-10'); // Añadir otras clases si es necesario
                                 errorDiv.innerText = messages.join(', ');
 
                                 // Aplicar estilo en línea con !important

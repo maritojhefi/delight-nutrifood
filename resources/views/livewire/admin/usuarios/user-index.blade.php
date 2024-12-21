@@ -50,7 +50,8 @@
                     <input type="text" class="form-control" placeholder="Buscar Usuarios"
                         wire:model.debounce.500ms="searchUser">
                     <div>
-                        <button wire:click="descargarExcel" class="btn btn-success btn-xxs"><i class="fa fa-file"></i> Descargar Excel</button>
+                        <button wire:click="descargarExcel" class="btn btn-success btn-xxs"><i class="fa fa-file"></i>
+                            Descargar Excel</button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -85,6 +86,10 @@
 
                                         <td>
                                             <div class="d-flex">
+                                                <a href="#" wire:click="copiarUrlNfc('{{$item->name}}')"
+                                                    onclick="copiarTextoPortapapeles('{{ route('usuario.reconocer-usuario-nfc', Crypt::encrypt($item->id)) }}')"
+                                                    class="btn btn-secondary shadow btn-xs sharp me-1"><i
+                                                        class="flaticon-381-id-card"></i></a>
                                                 <a href="#" wire:click="copiarTexto('{{ $item->id }}')"
                                                     class="btn btn-info shadow btn-xs sharp me-1"><i
                                                         class="fa fa-copy"></i></a>
@@ -180,6 +185,20 @@
         </div>
     </div>
 
-
+    @push('scripts')
+        <script>
+            function copiarTextoPortapapeles(texto) {
+                // Crear un elemento de texto temporal
+                const tempInput = document.createElement('textarea');
+                tempInput.value = texto; // Asignar el texto a copiar
+                document.body.appendChild(tempInput); // Agregar el elemento al DOM
+                tempInput.select(); // Seleccionar el texto
+                tempInput.setSelectionRange(0, 99999); // Para dispositivos móviles
+                document.execCommand('copy'); // Copiar al portapapeles
+                document.body.removeChild(tempInput); // Eliminar el elemento temporal
+                // alert('Texto copiado al portapapeles: ' + texto);
+            }
+        </script>
+    @endpush
 
 </div>

@@ -1,5 +1,5 @@
 @extends('client.master')
-@section('content')
+@section('content-comentado')
     <x-cabecera-pagina titulo="Mi carrito" cabecera="bordeado" />
     <div class="card card-style">
         <div class="content">
@@ -49,4 +49,8 @@
             <a href="#" class="btn btn-full btn-sm rounded-sm bg-highlight font-800 text-uppercase">Realizar pago seguro</a>
         </div>
     </div>
+@endsection
+@section('content')
+    <x-cabecera-pagina titulo="En construcción!" cabecera="bordeado" />
+    <x-page-construccion />
 @endsection

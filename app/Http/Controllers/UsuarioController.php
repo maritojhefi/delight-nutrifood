@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
+use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Validator;
 
 class UsuarioController extends Controller
@@ -50,7 +51,13 @@ class UsuarioController extends Controller
             'direccion' => 'required|string|max:255',
             'direccion_trabajo' => 'nullable|string|max:255',
             'password' => 'required|string|min:8|confirmed',
-            'hijos' => 'nullable|boolean'
+            'hijos' => 'nullable|boolean',
+            'foto' => [
+                'required',             // El campo es obligatorio
+                'image',                // Verifica que el archivo sea una imagen
+                'mimes:jpeg,png,jpg',   // Formatos de archivo permitidos
+                'max:4096',             // Tamaño máximo del archivo (en KB)
+            ],
         ], [
             // Mensajes personalizados
             'name.required' => 'Nombre es requerido',
@@ -70,7 +77,11 @@ class UsuarioController extends Controller
             'direccion.required' => 'Dirección es requerida',
             'password.required' => 'Contraseña es requerida',
             'password.min' => 'Mínimo 8 caracteres',
-            'password.confirmed' => 'Las contraseñas no coinciden'
+            'password.confirmed' => 'Las contraseñas no coinciden',
+            'foto.required' => 'La foto es obligatoria.',
+            'foto.image' => 'El archivo debe ser una imagen.',
+            'foto.mimes' => 'Solo se permiten archivos con formato jpeg, png o jpg.',
+            'foto.max' => 'El tamaño máximo permitido es de 2MB.',
         ]);
 
         // Si la validación falla, se devuelve la respuesta con los errores en formato JSON
@@ -80,7 +91,7 @@ class UsuarioController extends Controller
                 'errors' => $validator->errors()
             ], 400);
         }
-
+        
         // Verificar si el usuario ya existe por su correo electrónico
         $user = User::where('email', $request->email)->first();
 
@@ -99,8 +110,6 @@ class UsuarioController extends Controller
                 $user->password = $request->password;
             }
 
-            // Guardamos los cambios
-            $user->save();
         } else {
             // El usuario no existe, entonces creamos uno nuevo
             $user = new User();
@@ -115,9 +124,27 @@ class UsuarioController extends Controller
             $user->password = $request->password;
 
             // Guardamos el nuevo usuario
-            $user->save();
+            
         }
+        if ($request->hasFile('foto')) {
+            $imagen = $request->file('foto');
 
+            // Generar un nombre único para la imagen
+            $nombreArchivo = uniqid() . '.' . $imagen->getClientOriginalExtension();
+
+            // Ruta de almacenamiento
+            $ruta = public_path('imagenes/perfil/' . $nombreArchivo);
+
+            // Redimensionar y guardar la imagen
+            $image = Image::make($imagen)
+                ->resize(600, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+            $image->orientate();
+            $image->save($ruta, 80); // Comprimir al 80% de calidad
+            $user->foto = $nombreArchivo;
+        }
+        $user->save();
         // Autenticar al usuario
         Auth::login($user);
 
@@ -133,5 +160,19 @@ class UsuarioController extends Controller
             Auth::logout();
         }
         return redirect()->route('register');
+    }
+    public function reconocerUsuarioNFC($idEncriptado)
+    {
+        try {
+            $idUsuario = Crypt::decrypt($idEncriptado);
+            $usuario = User::find($idUsuario);
+            if ($usuario) {
+                return view('auth.cliente-encontrado', compact('usuario'));
+            } else {
+                return redirect()->route('usuario.inicio.registro');
+            }
+        } catch (\Throwable $th) {
+            return redirect()->route('usuario.inicio.registro');
+        }
     }
 }
