@@ -56,7 +56,7 @@ class UsuarioController extends Controller
                 'required',             // El campo es obligatorio
                 'image',                // Verifica que el archivo sea una imagen
                 'mimes:jpeg,png,jpg',   // Formatos de archivo permitidos
-                'max:4096',             // Tamaño máximo del archivo (en KB)
+                'max:10240',             // Tamaño máximo del archivo (en KB)
             ],
         ], [
             // Mensajes personalizados
@@ -81,7 +81,7 @@ class UsuarioController extends Controller
             'foto.required' => 'La foto es obligatoria.',
             'foto.image' => 'El archivo debe ser una imagen.',
             'foto.mimes' => 'Solo se permiten archivos con formato jpeg, png o jpg.',
-            'foto.max' => 'El tamaño máximo permitido es de 2MB.',
+            'foto.max' => 'El tamaño máximo permitido es de 10MB.',
         ]);
 
         // Si la validación falla, se devuelve la respuesta con los errores en formato JSON

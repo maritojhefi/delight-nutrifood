@@ -224,9 +224,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
 Route::get('/construccion', function () {
     return view('client.page-construccion');
 })->name('construccion');
-Route::get('/prueba/ip', function (Request $request) {
-    dd($request->ip());
-});
 
 Route::prefix('/pedidos')->group(function () {
     Route::get('/inicio', [PedidosController::class, 'index']);
