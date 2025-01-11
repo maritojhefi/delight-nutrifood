@@ -149,7 +149,7 @@
                             <div class="input-style input-transparent no-borders has-icon">
                                 <i class="fa fa-lock"></i>
                                 <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                    id="password" placeholder="Contraseña" name="password" required>
+                                    id="password" placeholder="Minimo 4 caracteres" name="password" required>
                                 <label for="password" class="color-blue-dark font-10 mt-1">Contraseña</label>
                                 @error('password')
                                     <small class="text-danger">{{ $message }}</small>
@@ -159,7 +159,7 @@
                             <div class="input-style input-transparent no-borders has-icon">
                                 <i class="fa fa-arrow-right"></i>
                                 <input type="password" class="form-control" id="password_confirmation"
-                                    placeholder="Confirmar Contraseña" name="password_confirmation" required>
+                                    placeholder="Confirmar contraseña" name="password_confirmation" required>
                                 <label for="password_confirmation" class="color-blue-dark font-10 mt-1">Confirmar
                                     Contraseña</label>
                             </div>
@@ -188,9 +188,14 @@
         data-menu-height="305" data-menu-effect="menu-over" style="display: block; height: 305px;">
         <h1 class="text-center mt-4"><i class="fa fa-3x fa-info-circle color-white shadow-xl rounded-circle"></i></h1>
         <h1 class="text-center mt-3 text-uppercase color-white font-700">Uy!</h1>
-        <p class="boxed-text-l color-white opacity-70">
-            Tu informacion no es correcta.<br> Por favor vuelve a revisarla.
-        </p>
+        <div class="text-center" >
+            <span class=" color-white opacity-70 font-500 m-0 p-0 text-center">
+                Tu informacion no es correcta:
+            </span>
+            <div id="error-registro"></div>
+        </div>
+        
+        
         <a href="#"
             class="close-menu btn btn-m btn-center-m button-s shadow-l rounded-s text-uppercase font-900 bg-white color-yellow-dark"
             style="">Entendido</a>
@@ -316,6 +321,22 @@
                             let firstErrorStep = 0;
                             $('.menu-hider').addClass('menu-active');
                             $('#menu-errores').addClass('menu-active');
+                            if (Array.isArray(errors)) {
+                                // Si es un array, concatenar los errores en un solo string
+                                errorMessages = errors.map(error => `<li>${error}</li>`).join('');
+                            } else if (typeof errors === 'object') {
+                                // Si es un objeto, recorrer cada propiedad y concatenar
+                                errorMessages = Object.values(errors)
+                                    .flat() // Aplana posibles arrays anidados
+                                    .map(error => `<li>${error}</li>`)
+                                    .join('');
+                            } else {
+                                // Si no es ni array ni objeto, mostrarlo directamente
+                                errorMessages = `<li>${errors}</li>`;
+                            }
+                            // Mostrar errores en la lista de errores
+                            $('#error-registro').html(
+                                `<ul class="list-group text-danger">${errorMessages}</ul>`);
                             // Mostrar errores y encontrar el paso con el primer error
                             for (const [field, messages] of Object.entries(errors)) {
                                 const inputField = document.querySelector(`[name="${field}"]`);
