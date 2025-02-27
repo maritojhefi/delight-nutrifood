@@ -108,15 +108,13 @@
                                                     <td class="p-0"><span
                                                             class="text-info popover-container">{{ floatval($venta->saldo_monto) }}
                                                             Bs <i class="flaticon-003-arrow-up"></i><span
-                                                                class="popover-text">A
-                                                                favor del cliente</span></span>
+                                                                class="popover-text">{{ $venta->saldoSituacion() }}</span></span>
                                                     </td>
                                                 @elseif ($venta->a_favor_cliente === 0)
                                                     <td class="p-0"><span
                                                             class="text-warning popover-container">{{ floatval($venta->saldo_monto) }}
                                                             Bs <i class="flaticon-001-arrow-down"></i><span
-                                                                class="popover-text">A
-                                                                deuda del cliente</span></span>
+                                                                class="popover-text">{{ $venta->saldoSituacion() }}</span></span>
                                                     </td>
                                                 @elseif ($venta->a_favor_cliente === null)
                                                     <td class="p-0"><span
@@ -432,12 +430,12 @@
                                                 <td></td>
                                                 @if ($ventaSeleccionada->a_favor_cliente)
                                                     <td class="py-1 text-info">
-                                                        <span class="letra14 ">A favor cliente <i
+                                                        <span class="letra14 ">{{ $ventaSeleccionada->saldoSituacion() }}<i
                                                                 class="flaticon-003-arrow-up"></i></span>
                                                     </td>
                                                 @else
                                                     <td class="py-1 text-warning">
-                                                        <span class="letra14 ">A deuda <i
+                                                        <span class="letra14 ">{{ $ventaSeleccionada->saldoSituacion() }}<i
                                                                 class="flaticon-001-arrow-down"></i></span>
                                                     </td>
                                                 @endif

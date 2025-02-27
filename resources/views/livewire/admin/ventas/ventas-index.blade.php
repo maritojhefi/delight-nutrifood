@@ -64,6 +64,13 @@
 @endpush
 @push('scripts')
     <script>
+        Livewire.on('focusInputBuscador', () => {
+            const input = document.getElementById('input-buscador');
+            if (input) {
+                input.focus();
+            }
+        });
+
         function sendFinalizarVenta() {
             Livewire.emit('cerrarVenta');
         }

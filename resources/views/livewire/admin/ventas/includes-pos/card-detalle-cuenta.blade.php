@@ -29,6 +29,7 @@
             <a class="" href="#" wire:loading>
                 <small class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></small>
             </a>
+
             @if ($cuenta->cliente)
                 <a href="#" data-bs-toggle="modal" data-bs-target="#planesusuario"><span
                         class="badge  badge-success p-1"
@@ -41,13 +42,24 @@
                             style="font-size: 11px">{{ $cuenta->usuario_manual }}</span></a>
                 @else
                     <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span
-                            class="badge  badge-danger p-1" style="font-size: 11px">Sin usuario</span></a>
+                            class="badge  badge-dark p-1" style="font-size: 11px">Sin usuario</span></a>
                 @endif
             @endif
 
 
-            <span class="badge badge-info badge-xs badge-pill p-1">{{ $itemsCuenta }} items</span>
+            <span class="badge badge-outline-info badge-xs badge-rounded p-1">{{ $itemsCuenta }} items</span>
         </h4>
+        @isset($cuenta->cliente)
+            @if ($cuenta->cliente->saldo > 0)
+                <small class="m-0 px-2 bg-warning text-white"><i class="flaticon-091-warning"></i>
+                        DEUDA DEL CLIENTE : {{ $cuenta->cliente->saldo }} Bs</small>
+            @elseif($cuenta->cliente->saldo < 0)
+                <small class="m-0 px-2 bg-primary text-white"><i class="flaticon-008-check"></i>
+                        A FAVOR DEL CLIENTE : {{ abs((int) $cuenta->cliente->saldo) }} Bs</small>
+            @endif
+        @endisset
+
+
         @if ($esCumple)
             <div class="d-flex">
                 <span class="badge badge-outline-primary p-1 mx-auto" style="font-size: 11px"><i class="fa fa-gift"></i>

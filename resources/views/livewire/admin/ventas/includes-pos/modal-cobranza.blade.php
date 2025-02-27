@@ -180,7 +180,7 @@
                                                         class="mx-2">{{ $cuenta->ventaHistorial->saldo_monto }}
                                                         Bs</a></strong>
                                                 <span
-                                                    class="letra10">{{ $cuenta->ventaHistorial->a_favor_cliente ? '(A favor del cliente)' : '(Deuda nueva del cliente)' }}</span>
+                                                    class="letra10">{{ $cuenta->ventaHistorial->a_favor_cliente ? '(A favor del cliente)' : '(Saldo incremental para el cliente)' }}</span>
                                             </li>
                                         </ul>
                                     @endif
@@ -208,9 +208,16 @@
                                 {{ $subtotalConDescuento == $totalAcumuladoMetodos ? '' : 'disabled' }}>
                                 Marcar como pagado</button>
                         @else
-                            <button type="button" class="btn btn-primary p-2 my-0 " wire:loading.attr="disabled"
-                                onclick="alertCobrarVenta('{{ $totalAcumuladoMetodos }}','{{ $subtotalConDescuento }}','{{ $cuenta->cliente->name }}')">Marcar
-                                como pagado</button>
+                            @if ($descuentoSaldo != 0 && $subtotalConDescuento != $totalAcumuladoMetodos)
+                                <button type="button" disabled class="btn btn-primary p-2 my-0 " wire:loading.attr="disabled"
+                                    onclick="alertCobrarVenta('{{ $totalAcumuladoMetodos }}','{{ $subtotalConDescuento }}','{{ $cuenta->cliente->name }}')">Marcar
+                                    como pagado</button>
+                            @else
+                                <button type="button" class="btn btn-primary p-2 my-0 " wire:loading.attr="disabled"
+                                    onclick="alertCobrarVenta('{{ $totalAcumuladoMetodos }}','{{ $subtotalConDescuento }}','{{ $cuenta->cliente->name }}')">Marcar
+                                    como pagado</button>
+                            @endif
+
                         @endif
                     @else
                         <button type="button" class="btn btn-dark p-2 my-0 " wire:loading.attr="disabled"

@@ -27,14 +27,25 @@ class Historial_venta extends Model
         'descuento_productos',
         'total_pagado',
         'total_a_pagar',
-        'subtotal'
+        'subtotal',
+        'descuento_saldo',
     ];
-
+    public function saldoSituacion()
+    {
+        if ($this->a_favor_cliente) {
+            //si es excedente de venta
+            return 'A favor cliente ';
+        } else {
+            if ($this->descuento_saldo > 0) {
+                return 'Desc. de saldo disponible ';
+            } else {
+                return 'Deuda generada ';
+            }
+        }
+    }
     public function metodosPagos()
     {
-        return $this->belongsToMany(MetodoPago::class)
-            ->withPivot('monto', 'id')
-            ->withTimestamps();
+        return $this->belongsToMany(MetodoPago::class)->withPivot('monto', 'id')->withTimestamps();
     }
 
     public function scopePorVendedor($query, $vendedorId)
@@ -43,9 +54,7 @@ class Historial_venta extends Model
     }
     public function productos()
     {
-        return $this->belongsToMany(Producto::class)
-            ->withPivot('cantidad', 'estado_actual', 'precio_subtotal', 'precio_unitario', 'descuento_producto', 'id')
-            ->withTimestamps();
+        return $this->belongsToMany(Producto::class)->withPivot('cantidad', 'estado_actual', 'precio_subtotal', 'precio_unitario', 'descuento_producto', 'id')->withTimestamps();
     }
     public function usuario()
     {

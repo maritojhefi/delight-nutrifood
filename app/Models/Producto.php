@@ -40,7 +40,8 @@ class Producto extends Model
     {
 
         return $this->belongsToMany(Sucursale::class)
-            ->withPivot('sucursale_id', 'cantidad', 'id', 'fecha_venc')
+            ->withTimestamps()
+            ->withPivot('sucursale_id', 'cantidad', 'id', 'fecha_venc','max')
             ->wherePivot('cantidad', '!=', 0);
     }
 

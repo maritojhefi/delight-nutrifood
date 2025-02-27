@@ -1,5 +1,5 @@
 <x-card-col tamano="6">
-    <input type="search" wire:model.debounce.750ms="search" style="border: 2px solid #20c996b3;height:30px"
+    <input type="search" id="input-buscador" wire:model.debounce.750ms="search" style="border: 2px solid #20c996b3;height:30px"
         class="form-control mt-2" placeholder="Busca productos y categorias">
     <ul class=" m-1" role="tablist"
         style="white-space: nowrap; overflow-x: auto; overflow-y: hidden; overflow-x: hidden; display: flex; flex-wrap: nowrap; -webkit-overflow-scrolling: touch;">
