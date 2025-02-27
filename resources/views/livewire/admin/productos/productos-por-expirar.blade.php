@@ -98,28 +98,32 @@
 
                                                             <ul
                                                                 class="fs-14 list-inline mb-2 d-flex justify-content-between">
-                                                                <li>Restantes</li>
-                                                                <li> {{ $sucursal->pivot->cantidad . '/' . $sucursal->pivot->max }}
+                                                                <li>Restantes : {{ $sucursal->pivot->cantidad }}</li>
+                                                                <li>Vendidos :
+                                                                    {{ $sucursal->pivot->max - $sucursal->pivot->cantidad . '/' . $sucursal->pivot->max }}
                                                                 </li>
                                                             </ul>
                                                             @php
-                                                                $porcentaje =
-                                                                    ($sucursal->pivot->cantidad * 100) /
+                                                                $porcentaje_vendido =
+                                                                    (($sucursal->pivot->max -
+                                                                        $sucursal->pivot->cantidad) *
+                                                                        100) /
                                                                     $sucursal->pivot->max;
+
                                                                 $clase =
-                                                                    $porcentaje <= 25
+                                                                    $porcentaje_vendido <= 25
                                                                         ? 'bg-danger'
-                                                                        : ($porcentaje <= 50
+                                                                        : ($porcentaje_vendido <= 50
                                                                             ? 'bg-warning'
-                                                                            : ($porcentaje <= 75
+                                                                            : ($porcentaje_vendido <= 75
                                                                                 ? 'bg-info'
                                                                                 : 'bg-success'));
                                                             @endphp
                                                             <div class="progress mb-0" style="height:4px; width:100%;">
                                                                 <div class="progress-bar {{ $clase }}"
-                                                                    style="width:{{ ($sucursal->pivot->cantidad * 100) / $sucursal->pivot->max }}%;"
+                                                                    style="width:{{ $porcentaje_vendido }}%;"
                                                                     role="progressbar">
-                                                                    <span class="sr-only">60% Complete</span>
+
                                                                 </div>
                                                             </div>
                                                         </div>
