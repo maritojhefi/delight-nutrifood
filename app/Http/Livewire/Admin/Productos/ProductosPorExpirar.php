@@ -66,8 +66,9 @@ class ProductosPorExpirar extends Component
 
         $query = Producto::whereHas('sucursale')
             ->join('producto_sucursale', 'productos.id', '=', 'producto_sucursale.producto_id')
-            ->select('productos.*', 'producto_sucursale.fecha_venc') // Aseguramos seleccionar fecha_venc
-            ->orderBy('producto_sucursale.fecha_venc', 'asc'); // Ordenamos por la fecha de vencimiento más próxima
+            ->select('productos.*', DB::raw('MIN(producto_sucursale.fecha_venc) as fecha_venc')) // Seleccionamos la fecha mínima
+            ->groupBy('productos.id') // Agrupamos por producto para evitar repeticiones
+            ->orderBy('fecha_venc', 'asc');
 
         if ($this->search) {
             $query->where('productos.nombre', 'LIKE', '%' . $this->search . '%');
@@ -75,6 +76,7 @@ class ProductosPorExpirar extends Component
 
         $productos = $query->get();
 
+        // dd($productos);
         return view('livewire.admin.productos.productos-por-expirar', compact('productos'))->extends('admin.master')->section('content');
     }
 }
