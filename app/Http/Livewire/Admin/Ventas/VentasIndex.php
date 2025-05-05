@@ -12,23 +12,24 @@ use Livewire\Component;
 use App\Models\Producto;
 use App\Models\Sucursale;
 use App\Models\Adicionale;
+use App\Models\MetodoPago;
 use Mike42\Escpos\Printer;
 use App\Helpers\CreateList;
 use Illuminate\Support\Str;
 use App\Helpers\CustomPrint;
+use App\Models\Subcategoria;
+use App\Helpers\GlobalHelper;
 use App\Models\ReciboImpreso;
 use Mike42\Escpos\EscposImage;
 use App\Models\Historial_venta;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Events\CocinaPedidoEvent;
-use App\Helpers\GlobalHelper;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Http\Livewire\Admin\PedidosRealtimeComponent;
-use App\Models\MetodoPago;
-use App\Models\Subcategoria;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 class VentasIndex extends Component
@@ -63,7 +64,12 @@ class VentasIndex extends Component
         $saldoRestante = 0,
         $verVistaSaldo = false;
     public $montoSaldo, $detalleSaldo, $tipoSaldo;
-    public $descuentoProductos, $subtotal, $subtotalConDescuento, $descuentoSaldo = 0, $saldoSobranteCheck = false, $maxDescuentoSaldo;
+    public $descuentoProductos,
+        $subtotal,
+        $subtotalConDescuento,
+        $descuentoSaldo = 0,
+        $saldoSobranteCheck = false,
+        $maxDescuentoSaldo;
     public $subcategoriaSeleccionada;
     protected $rules = [
         'sucursal' => 'required|integer',
@@ -71,7 +77,7 @@ class VentasIndex extends Component
     protected $listeners = [
         'cobrar' => 'cobrar',
         'cerrarVenta' => 'cerrarVenta',
-        'imprimir' => 'imprimir',
+        'imprimir' => 'imprimirReciboCliente',
         'descargarPDF' => 'descargarPDF',
         'modalResumen' => 'modalResumen',
     ];
@@ -111,12 +117,12 @@ class VentasIndex extends Component
         }
 
         switch ($atributo) {
-                // case 'saldoRestante':
-                //     $this->controlarEntrante();
-                //     break;
-                // case 'valorSaldo':
-                //     $this->controlarSaldo();
-                //     break;
+            // case 'saldoRestante':
+            //     $this->controlarEntrante();
+            //     break;
+            // case 'valorSaldo':
+            //     $this->controlarSaldo();
+            //     break;
             case 'search':
                 $this->reset('subcategoriaSeleccionada');
                 break;
@@ -124,10 +130,9 @@ class VentasIndex extends Component
                 if ($this->saldoSobranteCheck == true) {
                     $this->descuentoSaldo = min($this->subtotalConDescuento, abs((int) $this->cuenta->cliente->saldo));
                     $this->maxDescuentoSaldo = $this->descuentoSaldo;
-                    $this->reset('totalAcumuladoMetodos','metodosSeleccionados');
+                    $this->reset('totalAcumuladoMetodos', 'metodosSeleccionados');
                     $this->actualizarLista($this->cuenta);
-                }else
-                {
+                } else {
                     $this->descuentoSaldo = 0;
                     $this->actualizarLista($this->cuenta);
                 }
@@ -137,7 +142,7 @@ class VentasIndex extends Component
                     $this->descuentoSaldo = $this->maxDescuentoSaldo;
                     $this->dispatchBrowserEvent('alert', [
                         'type' => 'info',
-                        'message' => 'El máximo que puede ingresar es de '.$this->descuentoSaldo.' Bs',
+                        'message' => 'El máximo que puede ingresar es de ' . $this->descuentoSaldo . ' Bs',
                     ]);
                 }
                 $this->actualizarLista($this->cuenta);
@@ -861,9 +866,11 @@ class VentasIndex extends Component
                 $array = (array) $arrayAdicionales;
 
                 // Verificar si todos los elementos están vacíos
-                $todoVacio = empty(array_filter($array, function ($item) {
-                    return !empty($item); // Filtra los items que no están vacíos
-                }));
+                $todoVacio = empty(
+                    array_filter($array, function ($item) {
+                        return !empty($item); // Filtra los items que no están vacíos
+                    })
+                );
             }
 
             if ($todoVacio) {
@@ -906,7 +913,7 @@ class VentasIndex extends Component
             return false;
         }
         $this->cuenta = $venta;
-        $this->reset('tipocobro', 'metodosSeleccionados', 'totalAcumuladoMetodos','descuentoSaldo','saldoSobranteCheck');
+        $this->reset('tipocobro', 'metodosSeleccionados', 'totalAcumuladoMetodos', 'descuentoSaldo', 'saldoSobranteCheck');
         $this->saldoRestante = 0;
         $this->saldo = false;
         $this->emit('focusInputBuscador');
@@ -981,21 +988,20 @@ class VentasIndex extends Component
                     $cuenta = Venta::find($this->cuenta->id);
                     //revisar si hay saldo y si es a favor o en deuda del cliente
                     // dd($this->totalAcumuladoMetodos,$this->subtotalConDescuento,$this->descuentoSaldo);
-                    if($this->descuentoSaldo > 0){
+                    if ($this->descuentoSaldo > 0) {
                         $saldoAFavorCliente = false;
                         $montoSaldo = $this->descuentoSaldo;
-                    }
-                    else if ($this->totalAcumuladoMetodos === $this->subtotalConDescuento) {
+                    } elseif ($this->totalAcumuladoMetodos === $this->subtotalConDescuento) {
                         $saldoAFavorCliente = null;
                         $montoSaldo = 0;
-                    } else if ($this->totalAcumuladoMetodos < $this->subtotalConDescuento) {
+                    } elseif ($this->totalAcumuladoMetodos < $this->subtotalConDescuento) {
                         $saldoAFavorCliente = false;
                         $montoSaldo = $this->subtotalConDescuento - $this->totalAcumuladoMetodos;
                     } else {
                         $saldoAFavorCliente = true;
                         $montoSaldo = $this->totalAcumuladoMetodos - $this->subtotalConDescuento;
                     }
-                    
+
                     $cuentaguardada = Historial_venta::create([
                         'caja_id' => $cajaactiva->id,
                         'usuario_id' => auth()->user()->id,
@@ -1032,9 +1038,8 @@ class VentasIndex extends Component
                             'es_deuda' => $saldoAFavorCliente ? false : true,
                             'atendido_por' => auth()->user()->id,
                         ]);
-                        
                     }
-                    
+
                     //guardar en pivot metodos de pago
                     foreach ($this->metodosSeleccionados as $codigo => $data) {
                         if ($data['activo'] == true && isset($data['valor']) && is_numeric($data['valor'])) {
@@ -1153,7 +1158,7 @@ class VentasIndex extends Component
             echo $pdf;
         }, $data['nombreCliente'] . '-' . date('d-m-Y-H:i:s') . '.pdf');
     }
-    public function imprimir()
+    public function imprimirReciboCliente()
     {
         //QrCode::format('png')->size(150)->generate('https://delight-nutrifood.com/miperfil', public_path() . '/qrcode.png');
         if ($this->cuenta->sucursale->id_impresora) {
@@ -1164,7 +1169,6 @@ class VentasIndex extends Component
                     'type' => 'success',
                     'message' => 'Se imprimio el recibo correctamente',
                 ]);
-
                 ReciboImpreso::create([
                     'observacion' => $this->observacionRecibo,
                     'cliente' => $this->cuenta->cliente,
@@ -1173,10 +1177,9 @@ class VentasIndex extends Component
                     'metodo' => $this->metodoRecibo,
                 ]);
             } elseif ($respuesta == false) {
-                $this->dispatchBrowserEvent('alert', [
-                    'type' => 'error',
-                    'message' => 'La impresora no esta conectada',
-                ]);
+                $stringCode = CustomPrint::getStringImpresion($recibo);
+                $base64Encoded = base64_encode($stringCode);
+                $this->emit('imprimir-recibo-local', $base64Encoded);
             }
         } else {
             $this->dispatchBrowserEvent('alert', [
@@ -1185,6 +1188,7 @@ class VentasIndex extends Component
             ]);
         }
     }
+
     public function cambiarPrioridad(Producto $producto, $prioridad)
     {
         $producto->prioridad = $prioridad;

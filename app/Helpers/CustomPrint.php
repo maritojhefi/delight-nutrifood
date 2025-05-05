@@ -2,69 +2,53 @@
 
 namespace App\Helpers;
 
-use App\Models\ReciboImpreso;
+use Exception;
 use Mike42\Escpos\Printer;
 use Illuminate\Support\Str;
+use App\Models\ReciboImpreso;
 use Mike42\Escpos\EscposImage;
+use Illuminate\Support\Facades\Log;
 use Rawilk\Printing\Facades\Printing;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
-
-
-
 
 class CustomPrint
 {
-
-
     static function imprimir($stringprinter, $idprinter)
     {
+        // dd($idprinter);
         $printeractivo = Printing::find($idprinter);
 
-        if ($printeractivo->isOnline()) {
-            $lista = collect($stringprinter);
-            $cont = 0;
-            $listastring = "";
-            foreach ($lista as $p) {
-                $cont++;
-                if ($cont == 2) {
-                    $boleta = collect($p);
-                    foreach ($boleta as $asd) {
-                        for ($i = 0; $i < collect($asd)->count(); $i++) {
-                            $listastring = $listastring . $asd[$i];
-                        }
-                        break;
-                    }
-                }
+        try {
+            if ($printeractivo->isOnline()) {
+                $listaString = CustomPrint::getStringImpresion($stringprinter);
+                Printing::newPrintTask()->printer($idprinter)->content($listaString)->send();
+                return true;
+            } else {
+                return false;
             }
-            // dd($stringprinter,$listastring);
-            Printing::newPrintTask()
-                ->printer($idprinter)
-                ->content($listastring)
-                ->send();
-
-            return true;
-        } else {
+        } catch (\Throwable $th) {
             return false;
         }
     }
-    public static function imprimirReciboVenta(string $nombreCliente = null, $listaCuenta, $subtotal, $valorSaldo = 0, $descuentoProductos = 0, $otrosDescuentos = 0, $fecha = null, $observacion = null, $metodo = "")
+    public static function imprimirReciboVenta(string $nombreCliente = null, $listaCuenta, $subtotal, $valorSaldo = 0, $descuentoProductos = 0, $otrosDescuentos = 0, $fecha = null, $observacion = null, $metodo = '')
     {
-        $nombre_impresora = "POS-582";
+        $nombre_impresora = 'POS-582';
         $connector = new WindowsPrintConnector($nombre_impresora);
         $printer = new Printer($connector);
         ob_start();
         $printer->setJustification(Printer::JUSTIFY_CENTER);
         $printer->setTextSize(1, 2);
-        $img = EscposImage::load(public_path("delight_logo.jpg"));
+        $img = EscposImage::load(public_path('delight_logo.jpg'));
         $printer->bitImageColumnFormat($img);
         $printer->setTextSize(1, 1);
-        $printer->text("Nutri-Food/Eco-Tienda" . "\n");
+        $printer->text('Nutri-Food/Eco-Tienda' . "\n");
         $printer->feed(1);
         $printer->text("'NUTRIENDO HABITOS!'" . "\n");
         $printer->feed(1);
-        $printer->text("Contacto : 78227629" . "\n" . "Campero e/15 de abril y Madrid" . "\n");
+        $printer->text('Contacto : 78227629' . "\n" . 'Campero e/15 de abril y Madrid' . "\n");
         if (isset($nombreCliente)) {
-            $printer->text("Cliente: " . $nombreCliente . "\n");
+            $printer->text('Cliente: ' . $nombreCliente . "\n");
         }
         $printer->setTextSize(2, 2);
         $printer->text("--------------\n");
@@ -72,9 +56,9 @@ class CustomPrint
         foreach ($listaCuenta as $list) {
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             if ($list['cantidad'] == 1) {
-                $printer->text($list['cantidad'] . "x " . $list['nombre'] . "\n");
+                $printer->text($list['cantidad'] . 'x ' . $list['nombre'] . "\n");
             } else {
-                $printer->text($list['cantidad'] . "x " . $list['nombre'] . "(" . $list['precio'] . " c/u)" . "\n");
+                $printer->text($list['cantidad'] . 'x ' . $list['nombre'] . '(' . $list['precio'] . ' c/u)' . "\n");
             }
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
             $printer->text(' Bs ' . floatval($list['subtotal']) . "\n");
@@ -82,28 +66,28 @@ class CustomPrint
         $printer->text("--------\n");
         $printer->setTextSize(1, 1);
 
-        $printer->text("Subtotal: " . floatval($subtotal) . " Bs\n");
-        $printer->text("Descuento por productos: " . floatval($descuentoProductos) . " Bs\n");
-        $printer->text("Otros descuentos: " . floatval($otrosDescuentos) . " Bs\n");
+        $printer->text('Subtotal: ' . floatval($subtotal) . " Bs\n");
+        $printer->text('Descuento por productos: ' . floatval($descuentoProductos) . " Bs\n");
+        $printer->text('Otros descuentos: ' . floatval($otrosDescuentos) . " Bs\n");
         if ($valorSaldo != null && $valorSaldo != 0) {
             $printer->feed(1);
-            $printer->text("Saldo agregado: " . floatval($valorSaldo) . " Bs\n");
+            $printer->text('Saldo agregado: ' . floatval($valorSaldo) . " Bs\n");
             $printer->feed(1);
             $printer->setTextSize(1, 2);
-            $printer->text("TOTAL PAGADO: Bs " . $subtotal - $otrosDescuentos - $valorSaldo - $descuentoProductos . "\n");
+            $printer->text('TOTAL PAGADO: Bs ' . $subtotal - $otrosDescuentos - $valorSaldo - $descuentoProductos . "\n");
         } else {
             $printer->feed(1);
             $printer->setTextSize(1, 2);
-            $printer->text("TOTAL PAGADO: Bs " . $subtotal - $otrosDescuentos - $descuentoProductos . "\n");
+            $printer->text('TOTAL PAGADO: Bs ' . $subtotal - $otrosDescuentos - $descuentoProductos . "\n");
         }
         $printer->setTextSize(1, 1);
-        if (isset($metodo) && $metodo != "") {
-            $printer->text("Metodo: " . $metodo . "\n");
+        if (isset($metodo) && $metodo != '') {
+            $printer->text('Metodo: ' . $metodo . "\n");
         }
 
         $printer->feed(1);
         $printer->setJustification(Printer::JUSTIFY_CENTER);
-        $img = EscposImage::load(public_path("qrcode.png"));
+        $img = EscposImage::load(public_path('qrcode.png'));
         $printer->bitImageColumnFormat($img);
         $printer->setTextSize(1, 1);
         if (isset($observacion)) {
@@ -120,12 +104,122 @@ class CustomPrint
         if (isset($fecha)) {
             $printer->text($fecha . "\n");
         } else {
-            $printer->text(date("Y-m-d H:i:s") . "\n");
+            $printer->text(date('Y-m-d H:i:s') . "\n");
         }
 
         // dd($printer);
         $printer->feed(3);
         $contenidoRecibo = ob_get_clean();
         return $printer;
+    }
+    public static function getStringImpresion($recibo)
+    {
+        $lista = collect($recibo);
+        $cont = 0;
+        $listastring = '';
+        foreach ($lista as $p) {
+            $cont++;
+            if ($cont == 2) {
+                $boleta = collect($p);
+                foreach ($boleta as $asd) {
+                    for ($i = 0; $i < collect($asd)->count(); $i++) {
+                        $listastring = $listastring . $asd[$i];
+                    }
+                    break;
+                }
+            }
+        }
+
+        return $listastring;
+    }
+
+    public static function imprimirTicket(string $nombreCliente = null, $listaCuenta, $subtotal, $valorSaldo = 0, $descuentoProductos = 0, $otrosDescuentos = 0, $fecha = null, $observacion = null, $metodo = '')
+    {
+        try {
+            // 🖨️ Conexión a la impresora
+            // Para Windows (con impresora compartida)
+            $connector = new WindowsPrintConnector('POS-58'); // Reemplaza "TICKET" con el nombre de tu impresora
+
+            $printer = new Printer($connector);
+            ob_start();
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->setTextSize(1, 2);
+            $img = EscposImage::load(public_path('delight_logo.jpg'));
+            $printer->bitImageColumnFormat($img);
+            $printer->setTextSize(1, 1);
+            $printer->text('Nutri-Food/Eco-Tienda' . "\n");
+            $printer->feed(1);
+            $printer->text("'NUTRIENDO HABITOS!'" . "\n");
+            $printer->feed(1);
+            $printer->text('Contacto : 78227629' . "\n" . 'Campero e/15 de abril y Madrid' . "\n");
+            if (isset($nombreCliente)) {
+                $printer->text('Cliente: ' . $nombreCliente . "\n");
+            }
+            $printer->setTextSize(2, 2);
+            $printer->text("--------------\n");
+            $printer->setTextSize(1, 1);
+            foreach ($listaCuenta as $list) {
+                $printer->setJustification(Printer::JUSTIFY_LEFT);
+                if ($list['cantidad'] == 1) {
+                    $printer->text($list['cantidad'] . 'x ' . $list['nombre'] . "\n");
+                } else {
+                    $printer->text($list['cantidad'] . 'x ' . $list['nombre'] . '(' . $list['precio'] . ' c/u)' . "\n");
+                }
+                $printer->setJustification(Printer::JUSTIFY_RIGHT);
+                $printer->text(' Bs ' . floatval($list['subtotal']) . "\n");
+            }
+            $printer->text("--------\n");
+            $printer->setTextSize(1, 1);
+
+            $printer->text('Subtotal: ' . floatval($subtotal) . " Bs\n");
+            $printer->text('Descuento por productos: ' . floatval($descuentoProductos) . " Bs\n");
+            $printer->text('Otros descuentos: ' . floatval($otrosDescuentos) . " Bs\n");
+            if ($valorSaldo != null && $valorSaldo != 0) {
+                $printer->feed(1);
+                $printer->text('Saldo agregado: ' . floatval($valorSaldo) . " Bs\n");
+                $printer->feed(1);
+                $printer->setTextSize(1, 2);
+                $printer->text('TOTAL PAGADO: Bs ' . $subtotal - $otrosDescuentos - $valorSaldo - $descuentoProductos . "\n");
+            } else {
+                $printer->feed(1);
+                $printer->setTextSize(1, 2);
+                $printer->text('TOTAL PAGADO: Bs ' . $subtotal - $otrosDescuentos - $descuentoProductos . "\n");
+            }
+            $printer->setTextSize(1, 1);
+            if (isset($metodo) && $metodo != '') {
+                $printer->text('Metodo: ' . $metodo . "\n");
+            }
+
+            $printer->feed(1);
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $img = EscposImage::load(public_path('qrcode.png'));
+            $printer->bitImageColumnFormat($img);
+            $printer->setTextSize(1, 1);
+            if (isset($observacion)) {
+                $printer->feed(1);
+                $printer->text($observacion . "\n");
+                $printer->feed(1);
+            }
+
+            $printer->text("Ingresa a nuestra plataforma!\n");
+            $printer->feed(1);
+            $printer->text("Gracias por tu compra\n");
+            $printer->text("Vuelve pronto!\n");
+            $printer->feed(1);
+            if (isset($fecha)) {
+                $printer->text($fecha . "\n");
+            } else {
+                $printer->text(date('Y-m-d H:i:s') . "\n");
+            }
+
+            $printer->feed(2);
+            $printer->cut();
+            $printer->close();
+
+            return true;
+        } catch (Exception $e) {
+            Log::error('Error al imprimir: ' . $e->getMessage());
+            return false;
+        }
     }
 }
