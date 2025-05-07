@@ -9,9 +9,6 @@ use App\Models\Adicionale;
 use App\Helpers\WhatsappAPIHelper;
 use Rawilk\Printing\Facades\Printing;
 
-
-
-
 class GlobalHelper
 {
     public static function timeago($date)
@@ -27,7 +24,7 @@ class GlobalHelper
 
         // Validación de fecha válida
         if ($timestamp === false || $timestamp < 0) {
-            return "Fecha no válida";
+            return 'Fecha no válida';
         }
 
         $isFuture = $currentTime < $timestamp;
@@ -52,7 +49,7 @@ class GlobalHelper
     public static function saber_dia($nombredia)
     {
         //dd(date('N', strtotime($nombredia)));
-        $dias = array('Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo');
+        $dias = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
         $fecha = $dias[date('N', strtotime($nombredia))];
         return $fecha;
     }
@@ -92,7 +89,6 @@ class GlobalHelper
     // }
     public static function armarColeccionReporteDiario($pens, $fechaSeleccionada)
     {
-
         $coleccion = collect();
         foreach ($pens as $lista) {
             //dd($lista);
@@ -100,7 +96,7 @@ class GlobalHelper
             if ($detalle != null) {
                 $det = collect(json_decode($detalle, true));
                 $sopaCustom = '';
-                $det['SOPA'] == '' ? $sopaCustom = '0' : $sopaCustom = '1';
+                $det['SOPA'] == '' ? ($sopaCustom = '0') : ($sopaCustom = '1');
 
                 $saberDia = WhatsappAPIHelper::saber_dia($fechaSeleccionada);
                 $menu = Almuerzo::withoutGlobalScope('diasActivos')->where('dia', $saberDia)->first();
@@ -113,16 +109,26 @@ class GlobalHelper
                 $menu->dieta = str_replace(' ', '', $menu->dieta);
                 $menu->vegetariano = str_replace(' ', '', $menu->vegetariano);
 
-                if ($det['PLATO'] == $menu->ejecutivo) $tipoSegundo = 'EJECUTIVO';
-                if ($det['PLATO'] == $menu->dieta) $tipoSegundo = 'DIETA';
-                if ($det['PLATO'] == $menu->vegetariano) $tipoSegundo = 'VEGGIE';
+                if ($det['PLATO'] == $menu->ejecutivo) {
+                    $tipoSegundo = 'EJECUTIVO';
+                }
+                if ($det['PLATO'] == $menu->dieta) {
+                    $tipoSegundo = 'DIETA';
+                }
+                if ($det['PLATO'] == $menu->vegetariano) {
+                    $tipoSegundo = 'VEGGIE';
+                }
 
-                if ($det['ENVIO'] == Plane::ENVIO1) $tipoEnvio = 'c) ' . Plane::ENVIO1;
-                if ($det['ENVIO'] == Plane::ENVIO2) $tipoEnvio = 'b) ' . Plane::ENVIO2;
-                if ($det['ENVIO'] == Plane::ENVIO3) $tipoEnvio = 'a) ' . Plane::ENVIO3;
+                if ($det['ENVIO'] == Plane::ENVIO1) {
+                    $tipoEnvio = 'c) ' . Plane::ENVIO1;
+                }
+                if ($det['ENVIO'] == Plane::ENVIO2) {
+                    $tipoEnvio = 'b) ' . Plane::ENVIO2;
+                }
+                if ($det['ENVIO'] == Plane::ENVIO3) {
+                    $tipoEnvio = 'a) ' . Plane::ENVIO3;
+                }
                 $coleccion->push([
-
-
                     'NOMBRE' => $lista->name,
                     'SOPA' => $sopaCustom,
                     'PLATO' => $tipoSegundo,
@@ -131,7 +137,7 @@ class GlobalHelper
                     'ENSALADA' => 1,
                     'EMPAQUE' => $det['EMPAQUE'],
                     'JUGO' => 1,
-                    'ESTADO' => $lista->estado
+                    'ESTADO' => $lista->estado,
                 ]);
             } else {
                 $coleccion->push([
@@ -143,7 +149,7 @@ class GlobalHelper
                     'ENSALADA' => '',
                     'EMPAQUE' => '',
                     'JUGO' => '',
-                    'ESTADO' => $lista->estado
+                    'ESTADO' => $lista->estado,
                 ]);
             }
         }
@@ -152,7 +158,6 @@ class GlobalHelper
     }
     public static function armarColeccionReporteDiarioVista($pens, $fechaSeleccionada)
     {
-
         $coleccion = collect();
         foreach ($pens as $lista) {
             // dd($lista);
@@ -160,7 +165,7 @@ class GlobalHelper
             if ($detalle != null) {
                 $det = collect(json_decode($detalle, true));
                 $sopaCustom = '';
-                $det['SOPA'] == '' ? $sopaCustom = 'Sin Sopa' : $sopaCustom = $det['SOPA'];
+                $det['SOPA'] == '' ? ($sopaCustom = 'Sin Sopa') : ($sopaCustom = $det['SOPA']);
 
                 $saberDia = WhatsappAPIHelper::saber_dia($fechaSeleccionada);
                 $menu = Almuerzo::withoutGlobalScope('diasActivos')->where('dia', $saberDia)->first();
@@ -174,12 +179,24 @@ class GlobalHelper
                 $menu->dieta = str_replace(' ', '', $menu->dieta);
                 $menu->vegetariano = str_replace(' ', '', $menu->vegetariano);
 
-                if ($det['PLATO'] == $menu->ejecutivo) $tipoSegundo = 'EJECUTIVO';
-                if ($det['PLATO'] == $menu->dieta) $tipoSegundo = 'DIETA';
-                if ($det['PLATO'] == $menu->vegetariano) $tipoSegundo = 'VEGGIE';
-                if ($det['ENVIO'] == Plane::ENVIO1) $tipoEnvio = 'c.- ' . Plane::ENVIO1;
-                if ($det['ENVIO'] == Plane::ENVIO2) $tipoEnvio = 'b.- ' . Plane::ENVIO2;
-                if ($det['ENVIO'] == Plane::ENVIO3) $tipoEnvio = 'a.- ' . Plane::ENVIO3;
+                if ($det['PLATO'] == $menu->ejecutivo) {
+                    $tipoSegundo = 'EJECUTIVO';
+                }
+                if ($det['PLATO'] == $menu->dieta) {
+                    $tipoSegundo = 'DIETA';
+                }
+                if ($det['PLATO'] == $menu->vegetariano) {
+                    $tipoSegundo = 'VEGGIE';
+                }
+                if ($det['ENVIO'] == Plane::ENVIO1) {
+                    $tipoEnvio = 'c.- ' . Plane::ENVIO1;
+                }
+                if ($det['ENVIO'] == Plane::ENVIO2) {
+                    $tipoEnvio = 'b.- ' . Plane::ENVIO2;
+                }
+                if ($det['ENVIO'] == Plane::ENVIO3) {
+                    $tipoEnvio = 'a.- ' . Plane::ENVIO3;
+                }
 
                 $coleccion->push([
                     'ID' => $lista->id,
@@ -195,7 +212,7 @@ class GlobalHelper
                     'COCINA' => $lista->cocina,
                     'PLAN' => $lista->nombre,
                     'PLAN_ID' => $lista->plane_id,
-                    'USER_ID' => $lista->user_id
+                    'USER_ID' => $lista->user_id,
                 ]);
             } else {
                 $coleccion->push([
@@ -212,7 +229,7 @@ class GlobalHelper
                     'COCINA' => $lista->cocina,
                     'PLAN' => $lista->nombre,
                     'PLAN_ID' => $lista->plane_id,
-                    'USER_ID' => $lista->user_id
+                    'USER_ID' => $lista->user_id,
                 ]);
             }
         }
@@ -221,15 +238,15 @@ class GlobalHelper
     }
     public static function menuDiarioArray($sopa, $plato, $ensalada, $carbohidrato, $jugo, $envio = Plane::ENVIO1, $empaque = 'Ninguno')
     {
-        return array(
+        return [
             'SOPA' => $sopa,
             'PLATO' => $plato,
             'ENSALADA' => $ensalada,
             'CARBOHIDRATO' => $carbohidrato,
             'JUGO' => $jugo,
             'ENVIO' => $envio,
-            'EMPAQUE' => $empaque
-        );
+            'EMPAQUE' => $empaque,
+        ];
     }
     public static function actualizarCarbosDisponibilidad()
     {
@@ -281,7 +298,7 @@ class GlobalHelper
         }
 
         // Determina el método a usar (increment o decrement) en función de la acción
-        $method = ($accion === 'aumentar') ? 'increment' : 'decrement';
+        $method = $accion === 'aumentar' ? 'increment' : 'decrement';
 
         // Actualiza el campo correspondiente basado en el código de cocina
         switch ($adicional->codigo_cocina) {
@@ -314,11 +331,11 @@ class GlobalHelper
     public static function cantidadColor($cantidad)
     {
         switch (true) {
-            case ($cantidad <= 5):
+            case $cantidad <= 5:
                 return 'danger';
-            case ($cantidad > 5 && $cantidad <= 10):
+            case $cantidad > 5 && $cantidad <= 10:
                 return 'warning';
-            case ($cantidad > 10):
+            case $cantidad > 10:
                 return 'primary';
             default:
                 return 'primary'; // Opcional: para manejar cualquier caso inesperado
@@ -359,17 +376,22 @@ class GlobalHelper
                 break;
         }
         if ($fecha != null) {
-            return ucfirst(
-                Carbon::parse($fecha)
-                    ->locale('es')
-                    ->isoFormat($formato),
-            );
+            return ucfirst(Carbon::parse($fecha)->locale('es')->isoFormat($formato));
         } else {
-            return ucfirst(
-                Carbon::now()
-                    ->locale('es')
-                    ->isoFormat($formato),
-            );
+            return ucfirst(Carbon::now()->locale('es')->isoFormat($formato));
         }
+    }
+    public static function limpiarTextoParaPOS($texto)
+    {
+        // Normaliza a forma con caracteres separados (NFD)
+        $texto = \Normalizer::normalize($texto, \Normalizer::FORM_D);
+
+        // Elimina los caracteres de acento (diacríticos)
+        $texto = preg_replace('/[\p{Mn}]/u', '', $texto);
+
+        // Elimina cualquier carácter no ASCII imprimible
+        $texto = preg_replace('/[^\x20-\x7E]/', '', $texto);
+
+        return $texto;
     }
 }

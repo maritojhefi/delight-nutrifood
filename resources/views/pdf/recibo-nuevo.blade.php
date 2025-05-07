@@ -171,7 +171,7 @@
 
                     <thead>
                         <th style="width:10%">U.</th>
-                        <th  style="width:50%">Producto</th>
+                        <th style="width:50%">Producto</th>
                         <th>Unitario</th>
                         <th>Precio</th>
                     </thead>
@@ -185,7 +185,7 @@
                                 </td>
                                 <td><small>{{ $list['nombre'] }}</small></td>
                                 <td><small>{{ $list['precio'] }} Bs</small></td>
-                                <th><small>{{ $list['precio']*$list['cantidad'] }} Bs</small></th>
+                                <th><small>{{ $list['precio'] * $list['cantidad'] }} Bs</small></th>
                             </tr>
                             <br>
                         @endforeach
@@ -196,7 +196,7 @@
                         <tr>
                             <td></td>
                             <td>Subtotal</td>
-                            
+
                             <td></td>
                             <td>Bs {{ number_format($subtotal, 2) }}</td>
                         </tr>
@@ -204,15 +204,15 @@
                         <tr>
                             <td></td>
                             <td><small>Descuento por productos</small> </td>
-                            
+
                             <td></td>
                             <td><small>Bs {{ number_format($descuentoProductos, 2) }}</small></td>
                         </tr>
-                        
+
                         <tr>
                             <td></td>
                             <td><small>Otros descuentos</small></td>
-                           
+
                             <td></td>
                             <td><small>Bs {{ number_format($otrosDescuentos, 2) }}</small></td>
                         </tr>
@@ -220,7 +220,7 @@
                             <tr>
                                 <td></td>
                                 <td>Saldo agregado</td>
-                               
+
                                 <td></td>
                                 <td>Bs {{ number_format($valorSaldo, 2) }}</td>
                             </tr>
@@ -228,7 +228,7 @@
                             <tr>
                                 <td></td>
                                 <td><strong> TOTAL PAGADO</strong></td>
-                               
+
                                 <td></td>
                                 <td><strong>Bs
                                         {{ number_format($subtotal - $otrosDescuentos - $valorSaldo - $descuentoProductos, 2) }}</strong>
@@ -239,7 +239,7 @@
                             <tr>
                                 <td></td>
                                 <td><strong> TOTAL PAGADO</strong></td>
-                                
+
                                 <td></td>
                                 <td><strong> Bs
                                         {{ number_format($subtotal - $otrosDescuentos - $descuentoProductos, 2) }}</strong>
@@ -253,7 +253,13 @@
                 <hr>
                 <br>
                 @if (isset($metodo) && $metodo != '')
-                    <p>Metodo de pago: {{ $metodo }}</p>
+                    Metodos de pago:
+                    @foreach ($metodo as $item)
+                        <p>- {{ $item->nombre_metodo_pago }}</p>
+                    @endforeach
+                @else
+                    Metodos de pago:
+                    <p>- Efectivo</p>
                 @endif
                 @if (isset($observacion))
                     <p>Informacion Adicional: {{ $observacion }}</p>

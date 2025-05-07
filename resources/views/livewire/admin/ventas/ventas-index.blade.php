@@ -7,7 +7,6 @@
     @endisset
     @include('livewire.admin.ventas.includes-pos.modales')
 
-
 </div>
 @push('css')
     <style>
@@ -129,8 +128,6 @@
                 }
             });
         }
-
-
         document.addEventListener('DOMContentLoaded', function() {
             Livewire.on('scrollToSubcategoria', (subcategoriaId) => {
                 setTimeout(() => {
@@ -151,5 +148,54 @@
                 $('#input-' + idInput).focus().select();
             });
         });
+    </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.4/qz-tray.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Livewire.on('imprimir-recibo-local', (rawbytes) => {
+                const decodedBytes = Uint8Array.from(atob(rawbytes), c => c.charCodeAt(0));
+
+                if (!qz.websocket.isActive()) {
+                    qz.websocket.connect().then(() => {
+                        iniciarImpresion(decodedBytes);
+                    }).catch((err) => {
+                        console.error("Error al conectar con QZ Tray:", err);
+                    });
+                } else {
+                    iniciarImpresion(decodedBytes);
+                }
+            });
+        });
+
+        function iniciarImpresion(decodedBytes) {
+            qz.printers.find().then(printers => {
+                const impresora58 = printers.find(nombre => nombre.toLowerCase().includes('58'));
+                if (!impresora58) {
+                    Toast.fire({
+                        title: "No se encontró ninguna impresora conectada.",
+                        icon: "error"
+                    });
+                    return; // IMPORTANTE: evitar seguir si no hay impresora
+                }
+                const config = qz.configs.create(impresora58);
+                Toast.fire({
+                    title: "Impresora seleccionada no activa, imprimiendo en la impresora local.",
+                    icon: "success"
+                });
+                return qz.print(config, [{
+                    type: 'raw',
+                    format: 'hex',
+                    data: bytesToHex(decodedBytes)
+                }]);
+            }).catch(err => {
+                console.error('Error al imprimir:', err);
+            });
+        }
+
+        function bytesToHex(bytes) {
+            return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
     </script>
 @endpush

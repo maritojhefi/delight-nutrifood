@@ -430,12 +430,14 @@
                                                 <td></td>
                                                 @if ($ventaSeleccionada->a_favor_cliente)
                                                     <td class="py-1 text-info">
-                                                        <span class="letra14 ">{{ $ventaSeleccionada->saldoSituacion() }}<i
+                                                        <span
+                                                            class="letra14 ">{{ $ventaSeleccionada->saldoSituacion() }}<i
                                                                 class="flaticon-003-arrow-up"></i></span>
                                                     </td>
                                                 @else
                                                     <td class="py-1 text-warning">
-                                                        <span class="letra14 ">{{ $ventaSeleccionada->saldoSituacion() }}<i
+                                                        <span
+                                                            class="letra14 ">{{ $ventaSeleccionada->saldoSituacion() }}<i
                                                                 class="flaticon-001-arrow-down"></i></span>
                                                     </td>
                                                 @endif
@@ -463,46 +465,67 @@
                             </table>
                         </div>
                         <div class="card-body py-3 letra12">
-                            <ul class="d-flex align-items-center mb-1">
-
-                                <li><a href="javascript:void(0);" class="ms-2">Metodos de pago:</a></li>
-
-                            </ul>
-                            @isset($ventaSeleccionada->metodosPagos)
-                                @foreach ($ventaSeleccionada->metodosPagos as $metodo)
+                            <div class="row">
+                                <div class="col-12 col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
                                     <ul class="d-flex align-items-center mb-1">
-                                        <li><a href="javascript:void(0);"><img src="{{ $metodo->imagen }}"
-                                                    class="rounded-circle" style="width: 35px;height:35px"
-                                                    alt=""></a>
-                                        </li>
-                                        <li><a href="javascript:void(0);"
-                                                class="ms-2">{{ $metodo->nombre_metodo_pago }}</a></li>
-                                        <li><strong><a href="javascript:void(0);"
-                                                    class="mx-2">{{ $metodo->pivot->monto . ' Bs' }}</a></strong>
+                                        <li><a href="javascript:void(0);" class="ms-2">Metodos de pago:</a></li>
+                                    </ul>
+                                    @isset($ventaSeleccionada->metodosPagos)
+                                        @foreach ($ventaSeleccionada->metodosPagos as $metodo)
+                                            <ul class="d-flex align-items-center mb-1">
+                                                <li><a href="javascript:void(0);"><img src="{{ $metodo->imagen }}"
+                                                            class="rounded-circle" style="width: 35px;height:35px"
+                                                            alt=""></a>
+                                                </li>
+                                                <li><a href="javascript:void(0);"
+                                                        class="ms-2">{{ $metodo->nombre_metodo_pago }}</a></li>
+                                                <li><strong><a href="javascript:void(0);"
+                                                            class="mx-2">{{ $metodo->pivot->monto . ' Bs' }}</a></strong>
+                                                </li>
+                                                <li>
+                                                    <div class="dropdown ms-auto">
+                                                        <a href="#"
+                                                            class="mx-2 badge badge-xs badge-info p-1 py-0 letra10"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <strong>Cambiar
+                                                                <i class="flaticon-075-reload"></i></strong></a>
+                                                        <ul class="dropdown-menu dropdown-menu-end" style="">
+
+                                                            @foreach ($metodosPagos as $met)
+                                                                <li class="dropdown-item"
+                                                                    onclick="cambiarMetodo('{{ $met->nombre_metodo_pago }}',{{ $met->id }},{{ $metodo->pivot->id }})">
+                                                                    <a href="javascript:void(0);"><img
+                                                                            src="{{ $met->imagen }}"
+                                                                            class="rounded-circle"
+                                                                            style="width: 35px;height:35px"
+                                                                            alt="">
+                                                                        {{ $met->nombre_metodo_pago }}
+                                                                    </a>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        @endforeach
+                                    @endisset
+                                </div>
+                                <div
+                                    class="col-12 col-lg-6 col-md-6 col-sm-12 col-xs-12 d-flex align-items-center justify-content-center">
+                                    <ul class="d-flex align-items-center mb-1">
+                                        <li>
+                                            <a href="#" class="btn btn-outline-info btn-xxs"
+                                                wire:click="descargarPDF">Descargar
+                                                PDF <i class="fa fa-file"></i></a>
                                         </li>
                                         <li>
-                                            <div class="dropdown ms-auto">
-                                                <a href="#" class="mx-2 badge badge-xs badge-info p-1 py-0 letra10"
-                                                    data-bs-toggle="dropdown" aria-expanded="false"> <strong>Cambiar
-                                                        <i class="flaticon-075-reload"></i></strong></a>
-                                                <ul class="dropdown-menu dropdown-menu-end" style="">
-
-                                                    @foreach ($metodosPagos as $met)
-                                                        <li class="dropdown-item"
-                                                            onclick="cambiarMetodo('{{ $met->nombre_metodo_pago }}',{{ $met->id }},{{ $metodo->pivot->id }})">
-                                                            <a href="javascript:void(0);"><img src="{{ $met->imagen }}"
-                                                                    class="rounded-circle" style="width: 35px;height:35px"
-                                                                    alt="">
-                                                                {{ $met->nombre_metodo_pago }}
-                                                            </a>
-                                                        </li>
-                                                    @endforeach
-                                                </ul>
-                                            </div>
+                                            <a href="#" class="btn btn-outline-success btn-xxs"
+                                                wire:click="imprimirReciboCliente">Imprimir <i
+                                                    class="fa fa-print"></i></a>
                                         </li>
                                     </ul>
-                                @endforeach
-                            @endisset
+                                </div>
+                            </div>
 
                         </div>
                     </div>
@@ -656,6 +679,53 @@
                     Livewire.emit('cambiarMetodo', id, pivotId);
                 }
             });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.4/qz-tray.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Livewire.on('imprimir-recibo-local', (rawbytes) => {
+                const decodedBytes = Uint8Array.from(atob(rawbytes), c => c.charCodeAt(0));
+
+                if (!qz.websocket.isActive()) {
+                    qz.websocket.connect().then(() => {
+                        iniciarImpresion(decodedBytes);
+                    }).catch((err) => {
+                        console.error("Error al conectar con QZ Tray:", err);
+                    });
+                } else {
+                    iniciarImpresion(decodedBytes);
+                }
+            });
+        });
+
+        function iniciarImpresion(decodedBytes) {
+            qz.printers.find().then(printers => {
+                const impresora58 = printers.find(nombre => nombre.toLowerCase().includes('58'));
+                if (!impresora58) {
+                    Toast.fire({
+                        title: "No se encontró ninguna impresora conectada.",
+                        icon: "error"
+                    });
+                    return; // IMPORTANTE: evitar seguir si no hay impresora
+                }
+                const config = qz.configs.create(impresora58);
+                Toast.fire({
+                    title: "Impresora seleccionada no activa, imprimiendo en la impresora local.",
+                    icon: "success"
+                });
+                return qz.print(config, [{
+                    type: 'raw',
+                    format: 'hex',
+                    data: bytesToHex(decodedBytes)
+                }]);
+            }).catch(err => {
+                console.error('Error al imprimir:', err);
+            });
+        }
+
+        function bytesToHex(bytes) {
+            return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
         }
     </script>
 @endpush
