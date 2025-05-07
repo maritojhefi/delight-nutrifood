@@ -1161,9 +1161,15 @@ class VentasIndex extends Component
     public function imprimirReciboCliente()
     {
         //QrCode::format('png')->size(150)->generate('https://delight-nutrifood.com/miperfil', public_path() . '/qrcode.png');
+        $metodosPagosRecibo = null;
+        if ($this->cuenta->ventaHistorial && $this->cuenta->ventaHistorial->metodosPagos->isNotEmpty()) {
+            $metodosPagosRecibo = $this->cuenta->ventaHistorial->metodosPagos;
+        } else {
+            $metodosPagosRecibo = null;
+        }
+        $recibo = CustomPrint::imprimirReciboVenta(!$this->checkClientePersonalizado ? (isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null) : $this->clienteRecibo, $this->listacuenta, $this->cuenta->total + $this->descuentoProductos, isset($this->valorSaldo) ? $this->valorSaldo : 0, $this->descuentoProductos, $this->cuenta->descuento, isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'), isset($this->observacionRecibo) ? $this->observacionRecibo : null, $metodosPagosRecibo);
+        $respuesta = CustomPrint::imprimir($recibo, $this->cuenta->sucursale->id_impresora);
         if ($this->cuenta->sucursale->id_impresora) {
-            $recibo = CustomPrint::imprimirReciboVenta(!$this->checkClientePersonalizado ? (isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null) : $this->clienteRecibo, $this->listacuenta, $this->cuenta->total + $this->descuentoProductos, isset($this->valorSaldo) ? $this->valorSaldo : 0, $this->descuentoProductos, $this->cuenta->descuento, isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'), isset($this->observacionRecibo) ? $this->observacionRecibo : null, $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo : '');
-            $respuesta = CustomPrint::imprimir($recibo, $this->cuenta->sucursale->id_impresora);
             if ($respuesta == true) {
                 $this->dispatchBrowserEvent('alert', [
                     'type' => 'success',
@@ -1182,10 +1188,9 @@ class VentasIndex extends Component
                 $this->emit('imprimir-recibo-local', $base64Encoded);
             }
         } else {
-            $this->dispatchBrowserEvent('alert', [
-                'type' => 'warning',
-                'message' => 'La sucursal no tiene una impresora activa',
-            ]);
+            $stringCode = CustomPrint::getStringImpresion($recibo);
+            $base64Encoded = base64_encode($stringCode);
+            $this->emit('imprimir-recibo-local', $base64Encoded);
         }
     }
 

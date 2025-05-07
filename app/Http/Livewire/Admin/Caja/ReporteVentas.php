@@ -2,34 +2,48 @@
 
 namespace App\Http\Livewire\Admin\Caja;
 
+use Carbon\Carbon;
 use App\Models\Caja;
 use App\Models\User;
 use Livewire\Component;
 use App\Models\MetodoPago;
+use App\Helpers\CreateList;
+use Illuminate\Support\Str;
+use App\Helpers\CustomPrint;
 use Livewire\WithPagination;
+use App\Models\ReciboImpreso;
 use App\Models\Historial_venta;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
 class ReporteVentas extends Component
 {
     use WithPagination;
     public $cajaSeleccionada, $ventasCaja, $totalIngresoPOS, $saldosPagadosArray, $totalDescuentos, $totalSaldoExcedentes, $totalPuntos, $acumuladoPorMetodoPago, $acumuladoPorCajero;
-    public $totalSaldosPagados, $ventaSeleccionada, $metodosPagos, $totalIngresoAbsoluto, $cajeroSeleccionado = null;
+    public $totalSaldosPagados,
+        $ventaSeleccionada,
+        $metodosPagos,
+        $totalIngresoAbsoluto,
+        $cajeroSeleccionado = null;
     public $cajeros;
     protected $paginationTheme = 'bootstrap';
-    protected $listeners =  [
+    protected $listeners = [
         'cambiarMetodo' => 'cambiarMetodo',
-
+        'imprimir' => 'imprimirReciboCliente',
+        'descargarPDF' => 'descargarPDF',
     ];
+
     public function cambiarMetodo($id, $pivot)
     {
-        DB::table('historial_venta_metodo_pago')->where('id', $pivot)->update(['metodo_pago_id' => $id]);
+        DB::table('historial_venta_metodo_pago')
+            ->where('id', $pivot)
+            ->update(['metodo_pago_id' => $id]);
         $this->ventaSeleccionada = Historial_venta::find($this->ventaSeleccionada->id);
         $this->cajaSeleccionada = Caja::find($this->cajaSeleccionada->id);
         $this->buscarCaja($this->cajaSeleccionada->id);
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
-            'message' => "Se actualizo el metodo de pago!"
+            'message' => 'Se actualizo el metodo de pago!',
         ]);
         // dd($id, $pivot);
     }
@@ -75,8 +89,63 @@ class ReporteVentas extends Component
     public function render()
     {
         $cajas = Caja::orderBy('created_at', 'DESC')->paginate(9);
-        return view('livewire.admin.caja.reporte-ventas', compact('cajas'))
-            ->extends('admin.master')
-            ->section('content');
+        return view('livewire.admin.caja.reporte-ventas', compact('cajas'))->extends('admin.master')->section('content');
+    }
+
+    public function descargarPDF()
+    {
+        $resultado = CreateList::crearlista($this->ventaSeleccionada->venta);
+        $listacuenta = $resultado[0];
+        $data = [
+            'nombreCliente' => isset($this->ventaSeleccionada->cliente->name) ? Str::limit($this->ventaSeleccionada->cliente->name, '20', '') : 'Anonimo',
+            'listaCuenta' => $listacuenta,
+            'subtotal' => $this->ventaSeleccionada->subtotal,
+            'descuentoProductos' => $resultado[4],
+            'otrosDescuentos' => $this->ventaSeleccionada->venta->descuento,
+            'valorSaldo' => $this->ventaSeleccionada->saldo,
+            'metodo' => isset($this->ventaSeleccionada->metodosPagos) ? $this->ventaSeleccionada->metodosPagos : null,
+            'observacion' => null,
+            'fecha' => date('d-m-Y H:i:s'),
+        ];
+        $pdf = Pdf::loadView('pdf.recibo-nuevo', $data)->output();
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf;
+        }, $data['nombreCliente'] . '-' . date('d-m-Y-H:i:s') . '.pdf');
+    }
+    public function imprimirReciboCliente()
+    {
+        $resultado = CreateList::crearlista($this->ventaSeleccionada->venta);
+        $listacuenta = $resultado[0];
+        $metodosPagosRecibo = null;
+        if ($this->ventaSeleccionada && $this->ventaSeleccionada->metodosPagos->isNotEmpty()) {
+            $metodosPagosRecibo = $this->ventaSeleccionada->metodosPagos;
+        } else {
+            $metodosPagosRecibo = null;
+        }
+        $recibo = CustomPrint::imprimirReciboVenta($this->ventaSeleccionada->venta->cliente->name, $listacuenta, $this->ventaSeleccionada->subtotal, $this->ventaSeleccionada->saldo, $resultado[4], $this->ventaSeleccionada->venta->descuento, date('d-m-Y H:i:s'), null, $metodosPagosRecibo);
+        $respuesta = CustomPrint::imprimir($recibo, $this->ventaSeleccionada->venta->sucursale->id_impresora);
+        if ($this->ventaSeleccionada->venta->sucursale->id_impresora) {
+            if ($respuesta == true) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'success',
+                    'message' => 'Se imprimio el recibo correctamente',
+                ]);
+                ReciboImpreso::create([
+                    'observacion' => null,
+                    'cliente' => $this->ventaSeleccionada->venta->cliente,
+                    'telefono' => null,
+                    'fecha' => date('Y-m-d H:i:s'),
+                    'metodo' => null,
+                ]);
+            } elseif ($respuesta == false) {
+                $stringCode = CustomPrint::getStringImpresion($recibo);
+                $base64Encoded = base64_encode($stringCode);
+                $this->emit('imprimir-recibo-local', $base64Encoded);
+            }
+        } else {
+            $stringCode = CustomPrint::getStringImpresion($recibo);
+            $base64Encoded = base64_encode($stringCode);
+            $this->emit('imprimir-recibo-local', $base64Encoded);
+        }
     }
 }
