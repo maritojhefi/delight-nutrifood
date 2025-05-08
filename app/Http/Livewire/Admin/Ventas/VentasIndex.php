@@ -1140,6 +1140,14 @@ class VentasIndex extends Component
     }
     public function descargarPDF()
     {
+        $metodosPagosRecibo = null;
+        if ($this->cuenta->ventaHistorial && $this->cuenta->ventaHistorial->metodosPagos->isNotEmpty()) {
+            $metodosPagosRecibo = $this->cuenta->ventaHistorial->metodosPagos;
+        } else {
+            $metodosPagosRecibo = null;
+        }
+        // dd($metodosPagosRecibo);
+
         $data = [
             // Aquí puedes pasar las variables necesarias para la vista Blade
             'nombreCliente' => !$this->checkClientePersonalizado ? (isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : 'Anonimo') : $this->clienteRecibo,
@@ -1148,7 +1156,7 @@ class VentasIndex extends Component
             'descuentoProductos' => $this->descuentoProductos,
             'otrosDescuentos' => $this->cuenta->descuento,
             'valorSaldo' => isset($this->valorSaldo) ? $this->valorSaldo : 0,
-            'metodo' => $this->checkMetodoPagoPersonalizado ? $this->metodoRecibo : '',
+            'metodo' => isset($metodosPagosRecibo) ? $metodosPagosRecibo : null,
             'observacion' => isset($this->observacionRecibo) ? $this->observacionRecibo : null,
             'fecha' => isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
         ];

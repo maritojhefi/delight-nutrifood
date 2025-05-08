@@ -94,14 +94,14 @@ class ReporteVentas extends Component
 
     public function descargarPDF()
     {
-        $resultado = CreateList::crearlista($this->ventaSeleccionada->venta);
+        $resultado = CreateList::crearListaHistorico($this->ventaSeleccionada);
         $listacuenta = $resultado[0];
         $data = [
             'nombreCliente' => isset($this->ventaSeleccionada->cliente->name) ? Str::limit($this->ventaSeleccionada->cliente->name, '20', '') : 'Anonimo',
             'listaCuenta' => $listacuenta,
             'subtotal' => $this->ventaSeleccionada->subtotal,
             'descuentoProductos' => $resultado[4],
-            'otrosDescuentos' => $this->ventaSeleccionada->venta->descuento,
+            'otrosDescuentos' => $this->ventaSeleccionada->descuento,
             'valorSaldo' => $this->ventaSeleccionada->saldo,
             'metodo' => isset($this->ventaSeleccionada->metodosPagos) ? $this->ventaSeleccionada->metodosPagos : null,
             'observacion' => null,
@@ -114,7 +114,7 @@ class ReporteVentas extends Component
     }
     public function imprimirReciboCliente()
     {
-        $resultado = CreateList::crearlista($this->ventaSeleccionada->venta);
+        $resultado = CreateList::crearListaHistorico($this->ventaSeleccionada);
         $listacuenta = $resultado[0];
         $metodosPagosRecibo = null;
         if ($this->ventaSeleccionada && $this->ventaSeleccionada->metodosPagos->isNotEmpty()) {
@@ -122,9 +122,9 @@ class ReporteVentas extends Component
         } else {
             $metodosPagosRecibo = null;
         }
-        $recibo = CustomPrint::imprimirReciboVenta($this->ventaSeleccionada->venta->cliente->name, $listacuenta, $this->ventaSeleccionada->subtotal, $this->ventaSeleccionada->saldo, $resultado[4], $this->ventaSeleccionada->venta->descuento, date('d-m-Y H:i:s'), null, $metodosPagosRecibo);
-        $respuesta = CustomPrint::imprimir($recibo, $this->ventaSeleccionada->venta->sucursale->id_impresora);
-        if ($this->ventaSeleccionada->venta->sucursale->id_impresora) {
+        $recibo = CustomPrint::imprimirReciboVenta(isset($this->ventaSeleccionada->cliente->name) ? Str::limit($this->ventaSeleccionada->cliente->name, '20', '') : 'Anonimo', $listacuenta, $this->ventaSeleccionada->subtotal, $this->ventaSeleccionada->saldo, $resultado[4], $this->ventaSeleccionada->descuento, date('d-m-Y H:i:s'), null, $metodosPagosRecibo);
+        $respuesta = CustomPrint::imprimir($recibo, $this->ventaSeleccionada->sucursale->id_impresora);
+        if ($this->ventaSeleccionada->sucursale->id_impresora) {
             if ($respuesta == true) {
                 $this->dispatchBrowserEvent('alert', [
                     'type' => 'success',
@@ -132,7 +132,7 @@ class ReporteVentas extends Component
                 ]);
                 ReciboImpreso::create([
                     'observacion' => null,
-                    'cliente' => $this->ventaSeleccionada->venta->cliente,
+                    'cliente' => $this->ventaSeleccionada->cliente->cliente,
                     'telefono' => null,
                     'fecha' => date('Y-m-d H:i:s'),
                     'metodo' => null,
