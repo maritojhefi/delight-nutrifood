@@ -33,7 +33,6 @@ Auth::routes();
 
 Route::get('/login/withid/{id}', [App\Http\Controllers\UsuarioController::class, 'loginWithId']);
 
-
 Route::get('/', function () {
     return redirect(route('inicio'));
 })->name('home');
@@ -41,95 +40,92 @@ Route::get('/', function () {
 //inicio
 
 Route::prefix('/inicio')->group(function () {
-
-
     Route::get('', [App\Http\Controllers\ProductoController::class, 'menusemanal'])->name('inicio');
     Route::get('menusemanal', [App\Http\Controllers\ProductoController::class, 'menusemanal'])->name('menusemanal');
 });
 //ajustes
 Route::prefix('/ajustes')->group(function () {
-
     Route::get('', [App\Http\Controllers\AjustesController::class, 'index'])->name('ajustes');
 });
 
 //404
 Route::prefix('/404')->group(function () {
-
     Route::get('/login', function () {
         return view('client.404.error-login');
     })->name('errorLogin');
 });
 //productos
 Route::prefix('/productos')->group(function () {
-
     Route::get('', [App\Http\Controllers\ProductoController::class, 'index'])->name('productos');
     Route::get('/detalle/{id}', [App\Http\Controllers\ProductoController::class, 'detalleproducto'])->name('detalleproducto');
     Route::get('/subcategoria/{id}', [App\Http\Controllers\ProductoController::class, 'detallesubcategoria'])->name('listar.productos.subcategoria');
-
-
 
     Route::get('/add/carrito/{id}', [App\Http\Controllers\CarritoController::class, 'addToCarrito']);
 });
 //promociones
 Route::prefix('/lineadelight')->group(function () {
-
     Route::get('', [App\Http\Controllers\LineaDelightController::class, 'index'])->name('linea.delight');
     Route::get('/categoria/planes', [App\Http\Controllers\LineaDelightController::class, 'categoriaPlanes'])->name('categoria.planes');
     Route::get('/lineadelight/{id}', [App\Http\Controllers\ProductoController::class, 'lineadelightsubcategoria'])->name('delight.listar.productos.subcategoria');
     Route::get('/lineadelight/detalle/{id}', [App\Http\Controllers\ProductoController::class, 'lineadelightproducto'])->name('delight.detalleproducto');
 });
-Route::prefix('/carrito')->middleware('auth')->group(function () {
+Route::prefix('/carrito')
+    ->middleware('auth')
+    ->group(function () {
+        Route::get('', [App\Http\Controllers\CarritoController::class, 'index'])->name('carrito');
+    });
 
-    Route::get('', [App\Http\Controllers\CarritoController::class, 'index'])->name('carrito');
-});
-
-Route::prefix('/ventas')->middleware('auth')->group(function () {
-
-    Route::get('', [App\Http\Controllers\VentasCocinaController::class, 'index'])->name('ventas.cocina.pedido');
-});
+Route::prefix('/ventas')
+    ->middleware('auth')
+    ->group(function () {
+        Route::get('', [App\Http\Controllers\VentasCocinaController::class, 'index'])->name('ventas.cocina.pedido');
+    });
 Route::prefix('/otros')->group(function () {
-
     Route::get('/tutoriales', [App\Http\Controllers\OtrosController::class, 'tutorialesIndex'])->name('tutoriales');
     Route::get('/cambiarcolor', [App\Http\Controllers\OtrosController::class, 'cambiarColor']);
 });
 //perfil
-Route::prefix('/miperfil')->middleware('auth')->group(function () {
-    Route::get('/mostrar/{idplan}/{iduser}', [App\Http\Controllers\admin\UsuariosController::class, 'mostrar']);
-    Route::get('/permiso/{id}/{todos}', [App\Http\Controllers\admin\UsuariosController::class, 'permiso']);
-    Route::get('/editar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'editar']);
-    Route::get('/saldo/usuario', [App\Http\Controllers\admin\UsuariosController::class, 'saldo'])->name('usuario.saldo');
-    Route::get('', [App\Http\Controllers\MiperfilController::class, 'index'])->name('miperfil');
-    Route::get('/calendario/{plan}/{usuario}', [App\Http\Controllers\MiperfilController::class, 'calendario'])->name('calendario.cliente');
-    Route::post('/personalizardia', [App\Http\Controllers\MiperfilController::class, 'personalizardia'])->name('personalizardia');
-    Route::get('/editardia/{idpivot}', [App\Http\Controllers\MiperfilController::class, 'editardia'])->name('editardia');
-    Route::post('/subirfoto', [App\Http\Controllers\MiperfilController::class, 'subirFoto'])->name('subirfoto.perfil');
-    Route::get('/misplanes', [App\Http\Controllers\MiperfilController::class, 'misPlanes'])->name('misplanes');
-    Route::get('/whatsapp/asistente', [App\Http\Controllers\MiperfilController::class, 'revisarWhatsappAsistente']);
-    Route::get('/whatsapp/cambiar/estado', [App\Http\Controllers\MiperfilController::class, 'cambiarEstadoWhatsappAsistente']);
+Route::prefix('/miperfil')
+    ->middleware('auth')
+    ->group(function () {
+        Route::get('/mostrar/{idplan}/{iduser}', [App\Http\Controllers\admin\UsuariosController::class, 'mostrar']);
+        Route::get('/permiso/{id}/{todos}', [App\Http\Controllers\admin\UsuariosController::class, 'permiso']);
+        Route::get('/editar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'editar']);
+        Route::get('/saldo/usuario', [App\Http\Controllers\admin\UsuariosController::class, 'saldo'])->name('usuario.saldo');
+        Route::get('', [App\Http\Controllers\MiperfilController::class, 'index'])->name('miperfil');
+        Route::get('/calendario/{plan}/{usuario}', [App\Http\Controllers\MiperfilController::class, 'calendario'])->name('calendario.cliente');
+        Route::post('/personalizardia', [App\Http\Controllers\MiperfilController::class, 'personalizardia'])->name('personalizardia');
+        Route::get('/editardia/{idpivot}', [App\Http\Controllers\MiperfilController::class, 'editardia'])->name('editardia');
+        Route::post('/subirfoto', [App\Http\Controllers\MiperfilController::class, 'subirFoto'])->name('subirfoto.perfil');
+        Route::get('/misplanes', [App\Http\Controllers\MiperfilController::class, 'misPlanes'])->name('misplanes');
+        Route::get('/whatsapp/asistente', [App\Http\Controllers\MiperfilController::class, 'revisarWhatsappAsistente']);
+        Route::get('/whatsapp/cambiar/estado', [App\Http\Controllers\MiperfilController::class, 'cambiarEstadoWhatsappAsistente']);
 
-    //rutas para completar perfil ajax
-    Route::post('/change/birthday', [App\Http\Controllers\MiperfilController::class, 'actualizarNacimiento']);
-});
-Route::get('perfil/editar', [App\Http\Controllers\MiperfilController::class, 'revisarPerfil'])->middleware('auth')->name('llenarDatosPerfil');
-Route::post('perfil/guardarPerfilFaltante', [App\Http\Controllers\MiperfilController::class, 'guardar
-PerfilFaltante'])->middleware('auth')->name('guardarPerfilFaltante');
-
+        //rutas para completar perfil ajax
+        Route::post('/change/birthday', [App\Http\Controllers\MiperfilController::class, 'actualizarNacimiento']);
+    });
+Route::get('perfil/editar', [App\Http\Controllers\MiperfilController::class, 'revisarPerfil'])
+    ->middleware('auth')
+    ->name('llenarDatosPerfil');
+Route::post('perfil/guardarPerfilFaltante', [
+    App\Http\Controllers\MiperfilController::class,
+    'guardar
+PerfilFaltante',
+])
+    ->middleware('auth')
+    ->name('guardarPerfilFaltante');
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], function () {
-
     Route::prefix('/inicio')->group(function () {
-
         Route::get('resumen', [App\Http\Controllers\admin\ProductosController::class, 'resumen'])->name('resumen');
         Route::get('ventas/sucursal', [App\Http\Controllers\admin\ProductosController::class, 'resumen'])->name('ventas.sucursal');
     });
     Route::prefix('/tienda')->group(function () {
-
         Route::get('galeria', \App\Http\Livewire\Admin\TiendaComponent::class)->name('tienda.galeria');
         Route::get('novedades', \App\Http\Livewire\Admin\NovedadesVideosComponent::class)->name('tienda.novedades');
         Route::get('tutoriales', \App\Http\Livewire\Admin\TutorialesComponent::class)->name('tienda.tutoriales');
     });
     Route::prefix('/productos')->group(function () {
-
         Route::get('listar', [App\Http\Controllers\admin\ProductosController::class, 'listar'])->name('producto.listar');
         Route::get('crear', [App\Http\Controllers\admin\ProductosController::class, 'crear'])->name('producto.crear');
         Route::get('categoria', [App\Http\Controllers\admin\ProductosController::class, 'categoria'])->name('producto.categoria');
@@ -139,7 +135,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
         Route::get('productos/expiracion', \App\Http\Livewire\Admin\Productos\ProductosPorExpirar::class)->name('producto.expiracion');
     });
     Route::prefix('/usuarios')->group(function () {
-
         Route::get('/index', \App\Http\Livewire\Admin\Usuarios\UserIndex::class)->name('usuario.listar');
         Route::get('/roles', \App\Http\Livewire\Admin\Usuarios\RolesIndex::class)->name('usuario.roles');
         Route::get('/miperfil', \App\Http\Livewire\Admin\Usuarios\PerfilUsuario::class)->name('usuario.perfil');
@@ -162,26 +157,25 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
         Route::get('/editar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'editar']);
         Route::get('/borrar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'borrar']);
 
-
         Route::get('/mostrar/{idplan}/{iduser}', [App\Http\Controllers\admin\UsuariosController::class, 'mostrar']);
 
         Route::get('/asistencia', \App\Http\Livewire\Admin\Usuarios\AsistenciaPersonal::class)->name('usuario.asistencia');
         Route::get('/cambiarEstados', function () {
-            DB::table('plane_user')->where('estado', 'despachado')->update(['estado' => 'pendiente']);
+            DB::table('plane_user')
+                ->where('estado', 'despachado')
+                ->update(['estado' => 'pendiente']);
         });
     });
     Route::prefix('/sucursales')->group(function () {
-
         Route::get('/index', \App\Http\Livewire\Admin\SucursalesIndex::class)->name('sucursal.listar');
         Route::get('/stock', \App\Http\Livewire\Admin\StockProductos::class)->name('sucursal.stock');
     });
     Route::prefix('/ventas')->group(function () {
-
         Route::get('/index', \App\Http\Livewire\Admin\Ventas\VentasIndex::class)->middleware('checkCajaOpen')->name('ventas.listar');
         Route::get('/prospectos', \App\Http\Livewire\Admin\Ventas\ProspectosComponent::class)->name('ventas.prospectos');
+        Route::get('/mesas', \App\Http\Livewire\Admin\Ventas\MesasComponent::class)->name('ventas.mesas');
     });
     Route::prefix('/almuerzos')->group(function () {
-
         Route::get('/index', \App\Http\Livewire\Admin\Almuerzos\Personalizar::class)->name('almuerzos.listar');
         Route::get('/reporte', \App\Http\Livewire\Admin\Almuerzos\ReporteDiario::class)->name('almuerzos.reporte');
         Route::get('/reporte/semana', \App\Http\Livewire\Admin\Almuerzos\ReporteSemanal::class)->name('reporte.semana');
@@ -189,7 +183,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
         Route::get('/reporte/whatsapp', \App\Http\Livewire\Admin\WhatsappReporteDesarrolloComponent::class)->name('reporte.whatsapp');
     });
     Route::prefix('/perifericos')->group(function () {
-
         Route::get('/impresoras', \App\Http\Livewire\Perifericos\ImpresorasIndex::class)->name('impresoras.index');
     });
     Route::prefix('/caja')->group(function () {
@@ -198,7 +191,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
         Route::get('/reportes', \App\Http\Livewire\Admin\Caja\Reportes::class)->name('caja.reportes');
     });
     Route::prefix('/otros')->group(function () {
-
         Route::post('importar', [App\Http\Controllers\admin\OtroController::class, 'importar'])->name('importar.excel');
         Route::post('importar/usuarios', [App\Http\Controllers\admin\OtroController::class, 'importarUser'])->name('importarUser.excel');
         Route::get('index', [App\Http\Controllers\admin\OtroController::class, 'index'])->name('importar.index');
@@ -229,12 +221,14 @@ Route::prefix('/pedidos')->group(function () {
     Route::get('/inicio', [PedidosController::class, 'index']);
 });
 
-Route::prefix('/usuario')->name('usuario.')->group(function () {
-    Route::get('/registro', [UsuarioController::class, 'inicioRegistro'])->name('inicio.registro');
-    Route::post('/registrar', [UsuarioController::class, 'registrarUsuario'])->name('registrar');
-    Route::post('/verificar', [UsuarioController::class, 'verificarUsuario'])->name('existe');
-    Route::get('/actualizado', function(){
-        return view('auth.registrado');
+Route::prefix('/usuario')
+    ->name('usuario.')
+    ->group(function () {
+        Route::get('/registro', [UsuarioController::class, 'inicioRegistro'])->name('inicio.registro');
+        Route::post('/registrar', [UsuarioController::class, 'registrarUsuario'])->name('registrar');
+        Route::post('/verificar', [UsuarioController::class, 'verificarUsuario'])->name('existe');
+        Route::get('/actualizado', function () {
+            return view('auth.registrado');
+        });
+        Route::get('/reconocer/cliente/{idEncriptado}', [UsuarioController::class, 'reconocerUsuarioNFC'])->name('reconocer-usuario-nfc');
     });
-    Route::get('/reconocer/cliente/{idEncriptado}', [UsuarioController::class, 'reconocerUsuarioNFC'])->name('reconocer-usuario-nfc');
-});
