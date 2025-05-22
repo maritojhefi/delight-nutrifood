@@ -46,7 +46,7 @@ class SaldoObserver
 
             // Guardamos cuánto queda pendiente en cada saldo
             $saldo->saldo_restante = $saldoPendiente;
-            $saldo->save();
+            $saldo->saveQuietly();
         }
         User::where('id', $userId)->update(['saldo', $saldoPendiente]);
     }
