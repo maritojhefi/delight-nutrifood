@@ -32,8 +32,9 @@ class CustomPrint
             return false;
         }
     }
-    public static function imprimirReciboVenta(string $nombreCliente = null, $listaCuenta, $subtotal, $valorSaldo = 0, $descuentoProductos = 0, $otrosDescuentos = 0, $fecha = null, $observacion = null, $metodo = null)
+    public static function imprimirReciboVenta(string $nombreCliente = null, $listaCuenta, $subtotal, $valorSaldo = 0, $descuentoProductos = 0, $otrosDescuentos = 0, $fecha = null, $observacion = null, $metodo = null, $historialVenta = null)
     {
+        // dd($historialVenta);
         $nombre_impresora = 'POS-582';
         $connector = new WindowsPrintConnector($nombre_impresora);
         $printer = new Printer($connector);
@@ -116,14 +117,24 @@ class CustomPrint
         if ($otrosDescuentos != 0) {
             $printer->text(sprintf('Otros descuentos: %.2f Bs' . "\n", floatval($otrosDescuentos)));
         }
-
-        $totalPagado = $subtotal - $otrosDescuentos - $descuentoProductos;
-        if ($valorSaldo != null && $valorSaldo != 0) {
-            $printer->feed();
-            $printer->text(sprintf('Saldo agregado: %.2f Bs' . "\n", floatval($valorSaldo)));
-            $totalPagado -= $valorSaldo;
-            $printer->feed();
+        if (!isset($historialVenta)) {
+            $totalPagado = $subtotal - $otrosDescuentos - $descuentoProductos;
+            if ($valorSaldo != null && $valorSaldo != 0) {
+                $printer->feed();
+                $printer->text(sprintf('Saldo agregado: %.2f Bs' . "\n", floatval($valorSaldo)));
+                $totalPagado -= $valorSaldo;
+                $printer->feed();
+            }
+        } else {
+            $totalPagado = $historialVenta->total_pagado;
+            if ($valorSaldo != null && $valorSaldo != 0) {
+                $printer->feed();
+                $texto_saldo = $historialVenta->a_favor_cliente ? 'A favor cliente' : 'Deuda Generada';
+                $printer->text(sprintf($texto_saldo . ': %.2f Bs' . "\n", floatval($valorSaldo)));
+                $printer->feed();
+            }
         }
+
 
         // MEJORA: Resaltar el total pagado
         $printer->setTextSize(1, 2);

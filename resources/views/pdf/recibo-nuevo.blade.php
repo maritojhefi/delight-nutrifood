@@ -184,8 +184,8 @@
                                     <center>{{ $list['cantidad'] }}</center>
                                 </td>
                                 <td><small>{{ $list['nombre'] }}</small></td>
-                                <td><small>{{ $list['precio'] }} Bs</small></td>
-                                <th><small>{{ $list['precio'] * $list['cantidad'] }} Bs</small></th>
+                                <td><small>Bs {{ $list['precio'] }}</small></td>
+                                <th><small>Bs {{ $list['precio'] * $list['cantidad'] }}</small></th>
                             </tr>
                             <br>
                         @endforeach
@@ -201,25 +201,29 @@
                             <td>Bs {{ number_format($subtotal, 2) }}</td>
                         </tr>
                         <br>
-                        <tr>
-                            <td></td>
-                            <td><small>Descuento por productos</small> </td>
+                        @if ($descuentoProductos != 0)
+                            <tr>
+                                <td></td>
+                                <td><small>Descuento por productos</small> </td>
 
-                            <td></td>
-                            <td><small>Bs {{ number_format($descuentoProductos, 2) }}</small></td>
-                        </tr>
+                                <td></td>
+                                <td><small>Bs {{ number_format($descuentoProductos, 2) }}</small></td>
+                            </tr>
+                        @endif
 
-                        <tr>
-                            <td></td>
-                            <td><small>Otros descuentos</small></td>
+                        @if ($otrosDescuentos != 0)
+                            <tr>
+                                <td></td>
+                                <td><small>Otros descuentos</small></td>
 
-                            <td></td>
-                            <td><small>Bs {{ number_format($otrosDescuentos, 2) }}</small></td>
-                        </tr>
+                                <td></td>
+                                <td><small>Bs {{ number_format($otrosDescuentos, 2) }}</small></td>
+                            </tr>
+                        @endif
                         @if ($valorSaldo != null && $valorSaldo != 0)
                             <tr>
                                 <td></td>
-                                <td>Saldo agregado</td>
+                                <td>{{ $cuenta->a_favor_cliente ? 'A favor cliente' : 'Deuda Generada' }}</td>
 
                                 <td></td>
                                 <td>Bs {{ number_format($valorSaldo, 2) }}</td>
@@ -231,7 +235,7 @@
 
                                 <td></td>
                                 <td><strong>Bs
-                                        {{ number_format($subtotal - $otrosDescuentos - $valorSaldo - $descuentoProductos, 2) }}</strong>
+                                        {{ number_format($cuenta->total_pagado, 2) }}</strong>
                                 </td>
                             </tr>
                         @else
@@ -242,7 +246,7 @@
 
                                 <td></td>
                                 <td><strong> Bs
-                                        {{ number_format($subtotal - $otrosDescuentos - $descuentoProductos, 2) }}</strong>
+                                        {{ number_format($cuenta->total_pagado, 2) }}</strong>
                                 </td>
                             </tr>
                         @endif

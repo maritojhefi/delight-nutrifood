@@ -94,15 +94,20 @@ class ReporteVentas extends Component
 
     public function descargarPDF()
     {
+        // dd($this->ventaSeleccionada);
         $resultado = CreateList::crearListaHistorico($this->ventaSeleccionada);
         $listacuenta = $resultado[0];
+
+        // dd($resultado, $this->ventaSeleccionada, $this->ventaSeleccionada->subtotal);
+
         $data = [
+            'cuenta' => $this->ventaSeleccionada,
             'nombreCliente' => isset($this->ventaSeleccionada->cliente->name) ? Str::limit($this->ventaSeleccionada->cliente->name, '20', '') : 'Anonimo',
             'listaCuenta' => $listacuenta,
             'subtotal' => $this->ventaSeleccionada->subtotal,
             'descuentoProductos' => $resultado[4],
             'otrosDescuentos' => $this->ventaSeleccionada->descuento,
-            'valorSaldo' => $this->ventaSeleccionada->saldo,
+            'valorSaldo' => $this->ventaSeleccionada->saldo_monto,
             'metodo' => isset($this->ventaSeleccionada->metodosPagos) ? $this->ventaSeleccionada->metodosPagos : null,
             'observacion' => null,
             'fecha' => date('d-m-Y H:i:s'),
@@ -122,7 +127,7 @@ class ReporteVentas extends Component
         } else {
             $metodosPagosRecibo = null;
         }
-        $recibo = CustomPrint::imprimirReciboVenta(isset($this->ventaSeleccionada->cliente->name) ? Str::limit($this->ventaSeleccionada->cliente->name, '20', '') : 'Anonimo', $listacuenta, $this->ventaSeleccionada->subtotal, $this->ventaSeleccionada->saldo, $resultado[4], $this->ventaSeleccionada->descuento, date('d-m-Y H:i:s'), null, $metodosPagosRecibo);
+        $recibo = CustomPrint::imprimirReciboVenta(isset($this->ventaSeleccionada->cliente->name) ? Str::limit($this->ventaSeleccionada->cliente->name, '20', '') : 'Anonimo', $listacuenta, $this->ventaSeleccionada->subtotal, $this->ventaSeleccionada->saldo_monto, $resultado[4], $this->ventaSeleccionada->descuento, date('d-m-Y H:i:s'), null, $metodosPagosRecibo, $this->ventaSeleccionada);
         $respuesta = CustomPrint::imprimir($recibo, $this->ventaSeleccionada->sucursale->id_impresora);
         if ($this->ventaSeleccionada->sucursale->id_impresora) {
             if ($respuesta == true) {

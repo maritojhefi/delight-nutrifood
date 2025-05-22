@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Validator;
 
@@ -43,8 +44,42 @@ class UsuarioController extends Controller
             );
         }
     }
+
+    private function convertHeicToJpg($file)
+    {
+        try {
+            $img = Image::make($file->getRealPath());
+            $tempPath = tempnam(sys_get_temp_dir(), 'conv') . '.jpg';
+            $img->encode('jpg')->save($tempPath);
+
+            return new \Illuminate\Http\UploadedFile(
+                $tempPath,
+                pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '.jpg', // Forzar extensión .jpg
+                'image/jpeg',
+                null,
+                true
+            );
+        } catch (\Exception $e) {
+            // Cambiar a error para que sea visible
+            throw new \Exception("No se pudo convertir la imagen HEIC. Error: " . $e->getMessage());
+        }
+    }
+
     public function registrarUsuario(Request $request)
     {
+        $imagenJpg = null;
+        // 1. Conversión HEIC antes de validar
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $extension = strtolower($file->getClientOriginalExtension());
+
+            if (in_array($extension, ['heic', 'heif'])) {
+                $convertedFile = $this->convertHeicToJpg($file);
+                $imagenJpg = $convertedFile;
+                $request->files->set('foto', $convertedFile); // Reemplazar en el request
+            }
+        }
+
         // Definir las reglas de validación
         $validator = Validator::make(
             $request->all(),
@@ -138,8 +173,11 @@ class UsuarioController extends Controller
             // Guardamos el nuevo usuario
         }
         if ($request->hasFile('foto')) {
-            $imagen = $request->file('foto');
-
+            if ($imagenJpg != null) {
+                $imagen = $imagenJpg;
+            } else {
+                $imagen = $request->file('foto');
+            }
             // Generar un nombre único para la imagen
             $nombreArchivo = uniqid() . '.' . $imagen->getClientOriginalExtension();
 
