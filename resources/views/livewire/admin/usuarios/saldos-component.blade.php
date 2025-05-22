@@ -12,10 +12,10 @@
                     <table class="table table-striped table-responsive-sm table-hover">
                         <thead>
                             <tr class="">
-                                <th class="p-1">Detalle</th>
-                                <th class="p-1">Monto</th>
                                 <th class="p-1">Balance</th>
+                                <th class="p-1">Monto</th>
                                 <th class="p-1">Tipo</th>
+                                <th class="p-1">Detalle</th>
                                 <th class="p-1">Fecha</th>
                             </tr>
                         </thead>
@@ -28,20 +28,12 @@
                             @foreach ($usuarioSeleccionado->saldosVigentes as $saldo)
                                 <tr class="" style="cursor: pointer;" data-bs-target="#modalDetalleVenta"
                                     data-bs-toggle="modal" wire:click="verSaldoDetalleVenta({{ $saldo->id }})">
-                                    <td class="p-1">
-                                        @if ($saldo->historial_ventas_id)
-                                            <a href="#" class="text-info">Saldo desde Venta</a>
-                                        @else
-                                            <span class="text-muted">{{ $saldo->detalle }}</span>
-                                        @endif
-                                    </td>
-                                    <td class="p-1">{{ $saldo->monto }} Bs</td>
                                     @if ($saldo->saldo_restante > 0)
                                         <td class="p-1 text-danger">{{ $saldo->saldo_restante_formateado }} Bs </td>
                                     @else
                                         <td class="p-1 text-success">{{ $saldo->saldo_restante_formateado }} Bs</td>
                                     @endif
-
+                                    <td class="p-1">{{ $saldo->monto }} Bs</td>
                                     @if ($saldo->es_deuda)
                                         <td class="p-1 text-danger"><strong class=" p-2">Deuda</strong>
                                             <i class="flaticon-001-arrow-down"></i>
@@ -51,6 +43,17 @@
                                                 favor</strong> <i class="flaticon-003-arrow-up"></i>
                                         </td>
                                     @endif
+                                    <td class="p-1">
+                                        @if ($saldo->historial_ventas_id)
+                                            <a href="#" class="text-info">Saldo desde Venta</a>
+                                        @else
+                                            <span class="text-muted">{{ $saldo->detalle }}</span>
+                                        @endif
+                                    </td>
+
+
+
+
 
                                     <td class="p-1 letra10">
                                         {{ App\Helpers\GlobalHelper::fechaFormateada(7, $saldo->created_at) }}<br><small
