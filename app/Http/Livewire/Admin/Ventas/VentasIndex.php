@@ -1192,24 +1192,15 @@ class VentasIndex extends Component
     }
     public function anularSaldo(Saldo $saldo)
     {
-        $user = User::find($this->cuenta->cliente->id);
         if ($saldo->anulado) {
-            if ($saldo->es_deuda) {
-                $user->saldo = $user->saldo + $saldo->monto;
-            } else {
-                $user->saldo = $user->saldo - $saldo->monto;
-            }
+           
             $saldo->anulado = false;
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'success',
                 'message' => 'El saldo vuelve a estar activo!',
             ]);
         } else {
-            if ($saldo->es_deuda) {
-                $user->saldo = $user->saldo - $saldo->monto;
-            } else {
-                $user->saldo = $user->saldo + $saldo->monto;
-            }
+           
             $saldo->anulado = true;
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'success',
@@ -1217,7 +1208,6 @@ class VentasIndex extends Component
             ]);
         }
         $this->cuenta = Venta::where('cliente_id', $this->cuenta->cliente->id)->first();
-        $user->save();
         $saldo->save();
     }
     public function seleccionarSubcategoria($id)

@@ -1,141 +1,152 @@
 <div class="row">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col">
-                        <h4 class="card-title">Reporte de Saldos</h4>
-                    </div>
-                    <div class="col">
-                        <div class="d-flex justify-content-center">
-                            <div wire:loading class="spinner-border" role="status">
-                                <span class="sr-only">Loading...</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="input-group input-info">
-                            <a href="#" wire:click="cambiarEstadoBuscador" class="input-group-text">Buscar</a>
-                            <input type="text" class="form-control" wire:model.debounce.700ms="search">
-                        </div>
-                    </div>
+    @if ($usuarioSeleccionado)
+        <div class="col-8 mx-0">
+            <div class="card">
+                <div class="card-header py-1">
+                    <span class="">Registros pendientes de:
+                        <br><strong>{{ $usuarioSeleccionado->name }}</strong></span>
+                    <div class="float-end"><a href="#" class="badge badge-sm badge-danger p-1"
+                            wire:click="cerrarDetalle">Cambiar <i class="flaticon-075-reload"></i></a></div>
                 </div>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped table-responsive-sm">
+                <div class="card-body p-1">
+                    <table class="table table-striped table-responsive-sm table-hover">
                         <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Balance</th>
-                                <th>Tipo</th>
-                                <th>Detalle</th>
+                            <tr class="">
+                                <th class="p-1">Detalle</th>
+                                <th class="p-1">Monto</th>
+                                <th class="p-1">Balance</th>
+                                <th class="p-1">Tipo</th>
+                                <th class="p-1">Fecha</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($usuarios as $usuario)
-                                <tr>
-                                    <td>{{ $usuario->name }}</td>
-                                    @if ($usuario->saldo < 0)
-                                        <td><span class="badge badge-warning"><strong>{{ $usuario->saldo }}
-                                                    Bs</strong></span></td>
-                                    @else
-                                        <td><span class="badge badge-danger"><strong>{{ $usuario->saldo }}
-                                                    Bs</strong></span></td>
-                                    @endif
-                                    <td><span
-                                            class="badge badge-{{ $usuario->saldo < 0 ? 'warning' : 'danger' }}">{{ $usuario->saldo < 0 ? 'A favor del cliente' : 'Deuda acumulada' }}</span>
+                            {{-- <td class="p-0"><a href="#"
+                                wire:click="seleccionarVenta({{ $venta->id }})"
+                                data-bs-target="#modalDetalleVenta" data-bs-toggle="modal"
+                                class="badge badge-xxs badge-info py-0 px-1 m-0"><i
+                                    class="fa fa-list"></i></a></td> --}}
+                            @foreach ($usuarioSeleccionado->saldosVigentes as $saldo)
+                                <tr class="" style="cursor: pointer;" data-bs-target="#modalDetalleVenta"
+                                    data-bs-toggle="modal" wire:click="verSaldoDetalleVenta({{ $saldo->id }})">
+                                    <td class="p-1">
+                                        @if ($saldo->historial_ventas_id)
+                                            <a href="#" class="text-info">Saldo desde Venta</a>
+                                        @else
+                                            <span class="text-muted">{{ $saldo->detalle }}</span>
+                                        @endif
                                     </td>
-                                    <td><a href="#" data-bs-toggle="modal"
-                                            data-bs-target="#modalSaldos{{ $usuario->id }}" class="badge badge-info"><i
-                                                class=" fa fa-eye"></i></a></td>
+                                    <td class="p-1">{{ $saldo->monto }} Bs</td>
+                                    @if ($saldo->saldo_restante > 0)
+                                        <td class="p-1 text-danger">{{ $saldo->saldo_restante_formateado }} Bs </td>
+                                    @else
+                                        <td class="p-1 text-success">{{ $saldo->saldo_restante_formateado }} Bs</td>
+                                    @endif
+
+                                    @if ($saldo->es_deuda)
+                                        <td class="p-1 text-danger"><strong class=" p-2">Deuda</strong>
+                                            <i class="flaticon-001-arrow-down"></i>
+                                        </td>
+                                    @else
+                                        <td class="p-1 text-success"><strong class="p-2">A
+                                                favor</strong> <i class="flaticon-003-arrow-up"></i>
+                                        </td>
+                                    @endif
+
+                                    <td class="p-1 letra10">
+                                        {{ App\Helpers\GlobalHelper::fechaFormateada(7, $saldo->created_at) }}<br><small
+                                            class="text-muted">{{ App\Helpers\GlobalHelper::timeago($saldo->created_at) }}</small>
+                                    </td>
                                 </tr>
-                                <div wire:ignore.self class="modal fade" tabindex="-1" role="dialog"
-                                    aria-hidden="true" id="modalSaldos{{ $usuario->id }}">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Balance de Saldo: {{ $usuario->saldo }} Bs</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal">
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                @foreach ($usuario->saldos->sortByDesc('created_at') as $item)
-                                                    <ul class="list-group mb-3">
-                                                        @if ($item->es_deuda)
-                                                            <li
-                                                                class="list-group-item d-flex justify-content-between lh-condensed">
-                                                                <div>
-                                                                    <h6 class="my-0">Deuda creada a partir de una
-                                                                        venta
-                                                                        <small>({{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }})</small>
-                                                                        @if ($item->anulado)
-                                                                            <a href="#"
-                                                                                wire:click="anularSaldo('{{ $item->id }}','{{ $usuario->id }}')"
-                                                                                class="badge badge-danger badge-sm"><i
-                                                                                    class="fa fa-close"></i>
-                                                                                Anulado</a>
-                                                                        @else
-                                                                            <a href="#"
-                                                                                wire:click="anularSaldo('{{ $item->id }}','{{ $usuario->id }}')"
-                                                                                class="badge badge-warning badge-sm"><i
-                                                                                    class="fa fa-check"></i>
-                                                                                Activo</a>
-                                                                        @endif
-                                                                    </h6>
-                                                                    <strong>Detalle productos</strong><br>
-                                                                    @foreach ($item->venta->productos as $prod)
-                                                                        <small
-                                                                            class="text-muted">{{ $prod->pivot->cantidad }}
-                                                                            {{ $prod->nombre }}</small><br>
-                                                                    @endforeach
-
-
-                                                                </div>
-                                                                <span class="text-muted">{{ $item->monto }} Bs</span>
-
-
-                                                            </li>
-                                                        @else
-                                                            <li
-                                                                class="list-group-item d-flex justify-content-between active">
-                                                                <div class="text-white">
-                                                                    <h6 class="my-0 text-white">Saldo creado a favor del
-                                                                        cliente
-                                                                        <small>({{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }})</small>
-                                                                        @if ($item->anulado)
-                                                                            <a href="#"
-                                                                                wire:click="anularSaldo('{{ $item->id }}','{{ $usuario->id }}')"
-                                                                                class="badge badge-danger badge-sm"><i
-                                                                                    class="fa fa-close"></i>
-                                                                                Anulado</a>
-                                                                        @else
-                                                                            <a href="#"
-                                                                                wire:click="anularSaldo('{{ $item->id }}','{{ $usuario->id }}')"
-                                                                                class="badge badge-warning badge-sm"><i
-                                                                                    class="fa fa-check"></i>
-                                                                                Activo</a>
-                                                                        @endif
-                                                                    </h6>
-                                                                    <small><strong>Detalle:</strong>
-                                                                        {{ $item->detalle }}</small>
-                                                                </div>
-                                                                <span class="text-white"> {{ $item->monto }} Bs</span>
-                                                            </li>
-                                                        @endif
-                                                    </ul>
-                                                @endforeach
-                                            </div>
-                                            <div class="modal-footer">
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-    </div>
+        @include('livewire.admin.caja.includes.modal-detalle-venta')
+    @else
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header py-1">
+                    <div class="row">
+                        <div class="col">
+                            <h4 class="card-title"></h4>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-center">
+                                <div wire:loading class="spinner-border" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group input-info">
+                                <a href="#" wire:click="cambiarEstadoBuscador" class="input-group-text">Buscar</a>
+                                <input type="text" class="form-control" wire:model.debounce.700ms="search">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-1">
+                    <div class="row">
+                        <div class="col-6 mx-auto">
+                            <h3 class="text-center">Con Deuda</h3>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-responsive-sm table-hover">
+                                    <thead>
+                                        <tr class="bg-light">
+                                            <th class="p-1">Cliente</th>
+                                            <th class="p-1">Monto</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($clientesConDeuda as $usuario)
+                                            <tr style="cursor: pointer;"
+                                                wire:click="seleccionarUsuario({{ $usuario->id }})">
+                                                <td class="p-1 align-middle">{{ $usuario->name }}</td>
+                                                <td class="p-1 align-middle"><span
+                                                        class="badge badge-warning badge-sm p-2"><strong>{{ $usuario->saldo_formateado }}
+                                                            Bs</strong></span></td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                <div class="row mx-auto">
+                                    {{ $clientesConDeuda->links() }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mx-auto">
+                            <h3 class="text-center">Con Saldo a Favor</h3>
+                            <table class="table table-striped table-responsive-sm table-hover">
+                                <thead>
+                                    <tr class="bg-light">
+                                        <th class="p-1">Cliente</th>
+                                        <th class="p-1">Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($clientesConExcedente as $usuario)
+                                        <tr style="cursor: pointer;"
+                                            wire:click="seleccionarUsuario({{ $usuario->id }})">
+                                            <td class="p-1 align-middle">{{ $usuario->name }}</td>
+                                            <td class="p-1 align-middle"><span
+                                                    class="badge badge-success badge-sm p-2"><strong>{{ $usuario->saldo_formateado }}
+                                                        Bs</strong></span></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            <div class="row mx-auto">
+                                {{ $clientesConExcedente->links() }}
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    @endif
+
+</div>

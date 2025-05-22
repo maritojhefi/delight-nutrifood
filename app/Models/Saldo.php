@@ -19,9 +19,17 @@ class Saldo extends Model
         'caja_id',
         'historial_ventas_id',
         'atendido_por',
-        'tipo'
+        'tipo',
+        'liquidado',
+        'saldo_restante'
 
     ];
+    protected $appends = ['saldo_restante_formateado'];
+    public function getSaldoRestanteFormateadoAttribute()
+    {
+        $saldoRestante = abs($this->saldo_restante);
+        return $saldoRestante == floor($saldoRestante) ? number_format($saldoRestante, 0) : number_format($saldoRestante, 2);
+    }
     public function usuario()
     {
         return $this->belongsTo(User::class, 'user_id');
