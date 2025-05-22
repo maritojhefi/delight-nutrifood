@@ -48,7 +48,10 @@ class SaldoObserver
             $saldo->saldo_restante = $saldoPendiente;
             $saldo->saveQuietly();
         }
-        User::where('id', $userId)->update(['saldo', $saldoPendiente]);
+
+        
+        // Debería ser:
+        User::where('id', $userId)->update(['saldo' => $saldoPendiente]);
     }
     public function created(Saldo $saldo)
     {
