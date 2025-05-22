@@ -116,47 +116,66 @@
                     </table>
                 </div>
                 <div class="card-body py-3 letra12">
-                    <ul class="d-flex align-items-center mb-1">
-
-                        <li><a href="javascript:void(0);" class="ms-2">Metodos de pago:</a></li>
-
-                    </ul>
-                    @isset($ventaSeleccionada->metodosPagos)
-                        @foreach ($ventaSeleccionada->metodosPagos as $metodo)
+                    <div class="row">
+                        <div class="col-12 col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
                             <ul class="d-flex align-items-center mb-1">
-                                <li><a href="javascript:void(0);"><img src="{{ $metodo->imagen }}" class="rounded-circle"
-                                            style="width: 35px;height:35px" alt=""></a>
-                                </li>
-                                <li><a href="javascript:void(0);" class="ms-2">{{ $metodo->nombre_metodo_pago }}</a></li>
-                                <li><strong><a href="javascript:void(0);"
-                                            class="mx-2">{{ $metodo->pivot->monto . ' Bs' }}</a></strong>
-                                </li>
-                                @isset($metodosPagos)
-                                    <li>
-                                        <div class="dropdown ms-auto">
-                                            <a href="#" class="mx-2 badge badge-xs badge-info p-1 py-0 letra10"
-                                                data-bs-toggle="dropdown" aria-expanded="false"> <strong>Cambiar
-                                                    <i class="flaticon-075-reload"></i></strong></a>
-                                            <ul class="dropdown-menu dropdown-menu-end" style="">
-
-                                                @foreach ($metodosPagos as $met)
-                                                    <li class="dropdown-item"
-                                                        onclick="cambiarMetodo('{{ $met->nombre_metodo_pago }}',{{ $met->id }},{{ $metodo->pivot->id }})">
-                                                        <a href="javascript:void(0);"><img src="{{ $met->imagen }}"
-                                                                class="rounded-circle" style="width: 35px;height:35px"
-                                                                alt="">
-                                                            {{ $met->nombre_metodo_pago }}
-                                                        </a>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    </li>
-                                @endisset
-
+                                <li><a href="javascript:void(0);" class="ms-2">Metodos de pago:</a></li>
                             </ul>
-                        @endforeach
-                    @endisset
+                            @isset($ventaSeleccionada->metodosPagos)
+                                @foreach ($ventaSeleccionada->metodosPagos as $metodo)
+                                    <ul class="d-flex align-items-center mb-1">
+                                        <li><a href="javascript:void(0);"><img src="{{ $metodo->imagen }}"
+                                                    class="rounded-circle" style="width: 35px;height:35px"
+                                                    alt=""></a>
+                                        </li>
+                                        <li><a href="javascript:void(0);"
+                                                class="ms-2">{{ $metodo->nombre_metodo_pago }}</a></li>
+                                        <li><strong><a href="javascript:void(0);"
+                                                    class="mx-2">{{ $metodo->pivot->monto . ' Bs' }}</a></strong>
+                                        </li>
+                                        @isset($metodosPagos)
+                                            <li>
+                                                <div class="dropdown ms-auto">
+                                                    <a href="#" class="mx-2 badge badge-xs badge-info p-1 py-0 letra10"
+                                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <strong>Cambiar
+                                                            <i class="flaticon-075-reload"></i></strong></a>
+                                                    <ul class="dropdown-menu dropdown-menu-end" style="">
+
+                                                        @foreach ($metodosPagos as $met)
+                                                            <li class="dropdown-item"
+                                                                onclick="cambiarMetodo('{{ $met->nombre_metodo_pago }}',{{ $met->id }},{{ $metodo->pivot->id }})">
+                                                                <a href="javascript:void(0);"><img src="{{ $met->imagen }}"
+                                                                        class="rounded-circle" style="width: 35px;height:35px"
+                                                                        alt="">
+                                                                    {{ $met->nombre_metodo_pago }}
+                                                                </a>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        @endisset
+
+                                    </ul>
+                                @endforeach
+                            @endisset
+                        </div>
+                        <div
+                            class="col-12 col-lg-6 col-md-6 col-sm-12 col-xs-12 d-flex align-items-center justify-content-center">
+                            <ul class="d-flex align-items-center mb-1">
+                                <li>
+                                    <a href="#" class="btn btn-outline-info btn-xxs"
+                                        wire:click="descargarPDF">Descargar
+                                        PDF <i class="fa fa-file"></i></a>
+                                </li>
+                                <li>
+                                    <a href="#" class="btn btn-outline-success btn-xxs"
+                                        wire:click="imprimirReciboCliente">Imprimir <i class="fa fa-print"></i></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
 
                 </div>
             </div>

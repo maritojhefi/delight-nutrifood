@@ -21,10 +21,10 @@
                             Personalizada</label>
                         <div class="col-sm-9">
                             <input type="date" class="form-control form-control-sm bordeado m-0 p-0 px-1"
-                                style="height: 35px" wire:model="fechaRecibo">
+                                style="height: 35px" wire:model="fechaRecibo" max="{{ now()->toDateString() }}">
                         </div>
                     </div>
-                    <div class="form-check mb-2">
+                    {{-- <div class="form-check mb-2">
                         <input type="checkbox" class="form-check-input" wire:model="checkMetodoPagoPersonalizado">
                         <label class="form-check-label" for="check1">Agregar Metodo de Pago</label>
                     </div>
@@ -38,7 +38,7 @@
 
 
                         </div>
-                    @endif
+                    @endif --}}
                     <div class="form-check mb-2">
                         <input type="checkbox" class="form-check-input" wire:model="checkClientePersonalizado">
                         <label class="form-check-label" for="check1">Agregar Cliente
@@ -65,7 +65,7 @@
 
                         </div>
                     @endif
-                    <div class="form-check mb-2">
+                    {{-- <div class="form-check mb-2">
                         <input type="checkbox" class="form-check-input" wire:model="checkTelefonoPersonalizado">
                         <label class="form-check-label" for="check1">Agregar Telefono</label>
                     </div>
@@ -86,7 +86,7 @@
                                 </button>
                             </div>
                         </div>
-                    @endif
+                    @endif --}}
                 </div>
                 <div class="modal-footer">
                     <a href="#" class="btn btn-dark btn-xxs" onclick="atrasModalImpresion()">Atras</a>
@@ -209,7 +209,8 @@
                                 Marcar como pagado</button>
                         @else
                             @if ($descuentoSaldo != 0 && $subtotalConDescuento != $totalAcumuladoMetodos)
-                                <button type="button" disabled class="btn btn-primary p-2 my-0 " wire:loading.attr="disabled"
+                                <button type="button" disabled class="btn btn-primary p-2 my-0 "
+                                    wire:loading.attr="disabled"
                                     onclick="alertCobrarVenta('{{ $totalAcumuladoMetodos }}','{{ $subtotalConDescuento }}','{{ $cuenta->cliente->name }}')">Marcar
                                     como pagado</button>
                             @else
