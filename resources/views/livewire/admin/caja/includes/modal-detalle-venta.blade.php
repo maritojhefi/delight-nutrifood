@@ -118,10 +118,11 @@
                 <div class="card-body py-3 letra12">
                     <div class="row">
                         <div class="col-12 col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
-                            <ul class="d-flex align-items-center mb-1">
-                                <li><a href="javascript:void(0);" class="ms-2">Metodos de pago:</a></li>
-                            </ul>
                             @isset($ventaSeleccionada->metodosPagos)
+                                <ul class="d-flex align-items-center mb-1">
+                                    <li><a href="javascript:void(0);" class="ms-2">Metodos de pago:</a></li>
+                                </ul>
+
                                 @foreach ($ventaSeleccionada->metodosPagos as $metodo)
                                     <ul class="d-flex align-items-center mb-1">
                                         <li><a href="javascript:void(0);"><img src="{{ $metodo->imagen }}"
@@ -159,22 +160,27 @@
 
                                     </ul>
                                 @endforeach
+                            @else
+                                <h1 class="letra14">No existe una venta vinculada a este saldo</h1>
                             @endisset
                         </div>
-                        <div
-                            class="col-12 col-lg-6 col-md-6 col-sm-12 col-xs-12 d-flex align-items-center justify-content-center">
-                            <ul class="d-flex align-items-center mb-1">
-                                <li>
-                                    <a href="#" class="btn btn-outline-info btn-xxs"
-                                        wire:click="descargarPDF">Descargar
-                                        PDF <i class="fa fa-file"></i></a>
-                                </li>
-                                <li>
-                                    <a href="#" class="btn btn-outline-success btn-xxs"
-                                        wire:click="imprimirReciboCliente">Imprimir <i class="fa fa-print"></i></a>
-                                </li>
-                            </ul>
-                        </div>
+                        @isset($ventaSeleccionada)
+                            <div
+                                class="col-12 col-lg-6 col-md-6 col-sm-12 col-xs-12 d-flex align-items-center justify-content-center">
+                                <ul class="d-flex align-items-center mb-1">
+                                    <li>
+                                        <a href="#" class="btn btn-outline-info btn-xxs"
+                                            wire:click="descargarPDF">Descargar
+                                            PDF <i class="fa fa-file"></i></a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="btn btn-outline-success btn-xxs"
+                                            wire:click="imprimirReciboCliente">Imprimir <i class="fa fa-print"></i></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        @endisset
+
                     </div>
 
                 </div>
