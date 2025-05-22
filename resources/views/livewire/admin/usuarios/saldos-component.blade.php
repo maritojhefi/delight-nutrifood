@@ -29,7 +29,8 @@
                                 <tr class="" style="cursor: pointer;" data-bs-target="#modalDetalleVenta"
                                     data-bs-toggle="modal" wire:click="verSaldoDetalleVenta({{ $saldo->id }})">
                                     @if ($saldo->saldo_restante > 0)
-                                        <td class="p-1 text-danger">{{ $saldo->saldo_restante_formateado }} Bs </td>
+                                        <td class="p-1 text-danger {{ $loop->first ? 'fw-bold' : '' }}">
+                                            {{ $saldo->saldo_restante_formateado }} Bs </td>
                                     @else
                                         <td class="p-1 text-success">{{ $saldo->saldo_restante_formateado }} Bs</td>
                                     @endif
