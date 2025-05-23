@@ -166,6 +166,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
                 ->update(['estado' => 'pendiente']);
         });
     });
+    Route::prefix('/convenios')->group(function () {
+        Route::get('/index', \App\Http\Livewire\Admin\ConveniosIndexComponent::class)->name('convenio.index');
+        Route::get('/vincular/clientes', \App\Http\Livewire\Admin\ConveniosUsuariosComponent::class)->name('convenio.vincular.usuario');
+    });
     Route::prefix('/sucursales')->group(function () {
         Route::get('/index', \App\Http\Livewire\Admin\SucursalesIndex::class)->name('sucursal.listar');
         Route::get('/stock', \App\Http\Livewire\Admin\StockProductos::class)->name('sucursal.stock');
