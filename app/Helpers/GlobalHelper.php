@@ -5,6 +5,7 @@ namespace App\Helpers;
 use Carbon\Carbon;
 use App\Models\Plane;
 use App\Models\Almuerzo;
+use App\Models\Producto;
 use App\Models\Adicionale;
 use App\Helpers\WhatsappAPIHelper;
 use Rawilk\Printing\Facades\Printing;
@@ -393,5 +394,16 @@ class GlobalHelper
         $texto = preg_replace('/[^\x20-\x7E]/', '', $texto);
 
         return $texto;
+    }
+
+    public static function obtenerNombresProductos($productoId)
+    {
+        $producto = Producto::findOrFail($productoId);
+        if ($producto) {
+            $nombre = $producto->nombre;
+        } else {
+            $nombre = 'Producto no encontrado';
+        }
+        return $nombre;
     }
 }

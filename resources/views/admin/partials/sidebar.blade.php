@@ -52,6 +52,14 @@
                 ]">
                     <i class="flaticon-045-heart"></i>
                 </x-sidebar-elements>
+
+                <x-sidebar-elements titulo="Convenios" linkglobal="admin/convenios" :lista="[
+                    'Crear' => 'convenio.index',
+                    'Vincular Usuario' => 'convenio.vincular.usuario',
+                ]">
+                    <i class="flaticon-381-panel"></i>
+                </x-sidebar-elements>
+
                 <x-sidebar-elements titulo="Almuerzos" linkglobal="admin/almuerzos" :lista="[
                     'Personalizar dias' => 'almuerzos.listar',
                     'Reporte Diario' => 'almuerzos.reporte',

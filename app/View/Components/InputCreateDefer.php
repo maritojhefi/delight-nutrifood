@@ -6,10 +6,11 @@ use Illuminate\View\Component;
 
 class InputCreateDefer extends Component
 {
-    public $lista;
-    public function __construct($lista)
+    public $lista, $posicion;
+    public function __construct($lista, $posicion = 1)
     {
-        $this->lista=$lista;
+        $this->lista = $lista;
+        $this->posicion = $posicion;
     }
     public function render()
     {
