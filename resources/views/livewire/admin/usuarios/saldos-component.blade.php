@@ -3,7 +3,7 @@
         <div class="col-8 mx-0">
             <div class="card">
                 <div class="card-header py-1">
-                    <span class="">Registros pendientes de:
+                    <span class="">Saldos registrados de:
                         <br><strong>{{ $usuarioSeleccionado->name }}</strong></span>
                     <div class="float-end"><a href="#" class="badge badge-sm badge-danger p-1"
                             wire:click="cerrarDetalle">Cambiar <i class="flaticon-075-reload"></i></a></div>
