@@ -30,9 +30,9 @@ class Saldo extends Model
         $saldoRestante = abs($this->saldo_restante);
         return $saldoRestante == floor($saldoRestante) ? number_format($saldoRestante, 0) : number_format($saldoRestante, 2);
     }
-    public function getMontoAttribute()
+    public function getMontoAttribute($value)
     {
-        $monto = abs($this->monto);
+        $monto = abs($value);
         return $monto == floor($monto) ? number_format($monto, 0) : number_format($monto, 2);
     }
     public function usuario()
