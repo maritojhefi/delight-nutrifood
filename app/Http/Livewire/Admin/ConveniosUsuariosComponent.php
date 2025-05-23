@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Admin;
 
+use App\Helpers\GlobalHelper;
 use App\Models\User;
 use Livewire\Component;
 use App\Models\Convenio;
@@ -16,7 +17,7 @@ class ConveniosUsuariosComponent extends Component
     public $buscar;
     public $usuariosDisponibles = [];
 
-    protected $listeners = ['usuariosVinculados' => 'render'];
+    protected $listeners = ['usuariosVinculados' => 'render', 'eliminar-usuario-convenio' => 'eliminarUsuarioConvenio'];
 
     public function agregarUsuarios($convenioId)
     {
@@ -75,10 +76,43 @@ class ConveniosUsuariosComponent extends Component
 
         $this->emit('usuariosVinculados');
         $this->emit('cerrarModalUsuarios');
-        $this->dispatchBrowserEvent('notificar', [
+        $this->emit('notificar', [
             'tipo' => 'success',
             'mensaje' => 'Vinculación de usuarios actualizada correctamente.',
         ]);
+    }
+    public function verUsuarios($convenioId)
+    {
+        $convenio = Convenio::findOrFail($convenioId);
+        // Obtener usuarios relacionados con sus timestamps del pivot
+        $usuariosConvenio = $convenio->usuarios->sortByDesc(function ($usuario) {
+            return $usuario->pivot->created_at;
+        });
+        $arrayUsuarios = [];
+        // Iterar sobre los usuarios y mostrar sus datos
+        foreach ($usuariosConvenio as $usuario) {
+            array_push($arrayUsuarios, [
+                'id' => $usuario->id,
+                'nombre' => $usuario->name,
+                'telf' => $usuario->telf,
+                'fecha_creacion' => GlobalHelper::fechaFormateada(5, $usuario->pivot->created_at),
+                'hora_creacion' => GlobalHelper::fechaFormateada(9, $usuario->pivot->created_at),
+                'hace_tiempo' => GlobalHelper::timeago($usuario->pivot->created_at),
+
+            ]);
+        }
+        $this->emit('mostrar-usuarios', $arrayUsuarios);
+    }
+
+    public function eliminarUsuarioConvenio($convenioId, $usuarioId)
+    {
+        $convenio = Convenio::findOrFail($convenioId);
+        $convenio->usuarios()->detach($usuarioId);
+        $this->emit('notificar', [
+            'tipo' => 'success',
+            'mensaje' => 'Usuario eliminado del convenio correctamente.',
+        ]);
+        $this->verUsuarios($convenio->id);
     }
 
     public function render()
@@ -87,6 +121,8 @@ class ConveniosUsuariosComponent extends Component
             $query->where('nombre_convenio', 'like', '%' . $this->buscar . '%');
         })->paginate(10);
 
-        return view('livewire.admin.convenios-usuarios-component', compact('convenios'))->extends('admin.master')->section('content');
+        return view('livewire.admin.convenios-usuarios-component', compact('convenios'))
+            ->extends('admin.master')
+            ->section('content');
     }
 }

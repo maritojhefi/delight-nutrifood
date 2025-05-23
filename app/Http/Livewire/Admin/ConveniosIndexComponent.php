@@ -10,7 +10,7 @@ use Livewire\WithPagination;
 class ConveniosIndexComponent extends Component
 {
     use WithPagination;
-
+    protected $paginationTheme = 'bootstrap';
     public $nombre_convenio,
         $tipo_descuento,
         $valor_descuento,
@@ -18,14 +18,19 @@ class ConveniosIndexComponent extends Component
         $fecha_limite;
     public $convenio_id; // Para edición
     public $is_editing = false; // Bandera para saber si estamos editando
-
+    public $buscar = ''; // Añadir propiedad para la búsqueda
 
     protected $listeners = [
         'eliminar-convenio' => 'eliminarConvenio'
     ];
 
+    public function updatingBuscar()
+    {
+        $this->resetPage();
+    }
     public function crearNuevo()
     {
+        $this->resetErrorBag();
         $this->resetearCampos();
         $this->is_editing = false;
         $this->dispatchProductos();
@@ -33,6 +38,7 @@ class ConveniosIndexComponent extends Component
 
     public function editarConvenio($id)
     {
+        $this->resetErrorBag();
         $convenio = Convenio::findOrFail($id);
 
         $this->convenio_id = $id;
@@ -133,7 +139,32 @@ class ConveniosIndexComponent extends Component
 
     public function render()
     {
-        $convenios = Convenio::paginate(10);
-        return view('livewire.admin.convenios-index-component', compact('convenios'))->extends('admin.master')->section('content');
+        $query = Convenio::query();
+
+        // Aplicar filtro de búsqueda si hay texto
+        if ($this->buscar) {
+            // Primero obtenemos los IDs de productos que coinciden con la búsqueda
+            $productosIds = Producto::where('nombre', 'like', '%' . $this->buscar . '%')
+                ->pluck('id')
+                ->toArray();
+
+            $query->where(function ($q) use ($productosIds) {
+                $q->where('nombre_convenio', 'like', '%' . $this->buscar . '%')
+                    ->orWhere('tipo_descuento', 'like', '%' . $this->buscar . '%')
+                    ->orWhere('valor_descuento', 'like', '%' . $this->buscar . '%')
+                    ->when(count($productosIds) > 0, function ($q) use ($productosIds) {
+                        $q->orWhere(function ($q) use ($productosIds) {
+                            foreach ($productosIds as $id) {
+                                $q->orWhere('productos_afectados', 'like', '%"' . $id . '"%');
+                            }
+                        });
+                    });
+            });
+        }
+        $convenios = $query->paginate(10);
+
+        return view('livewire.admin.convenios-index-component', compact('convenios'))
+            ->extends('admin.master')
+            ->section('content');
     }
 }

@@ -6,7 +6,7 @@
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <input type="text" class="form-control form-control-sm bordeado" style="height: 30px"
-                    placeholder="Buscar" wire:model.debounce.750ms="buscar">
+                    placeholder="Buscar por Nombre de convenio/Tipo/Monto/Producto" wire:model.debounce.750ms="buscar">
             </div>
             <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12 text-end">
                 <button type="button" class="btn btn-primary btn-xs" data-bs-toggle="modal"
@@ -22,7 +22,7 @@
                             <th class="m-0 p-0"><strong>Nombre</strong></th>
                             <th class="m-0 p-0"><strong>Tipo</strong></th>
                             <th class="m-0 p-0"><strong>Monto</strong></th>
-                            <th class="m-0 p-0"><strong>Productos</strong></th>
+                            <th class="m-0 p-0" style="width: 30%;"><strong>Productos</strong></th>
                             <th class="m-0 p-0"><strong>Fecha Limite</strong></th>
                             <th class="m-0 p-0"><strong>Acciones</strong></th>
                         </tr>
@@ -55,9 +55,9 @@
                                         {{ $convenio->fecha_limite }}
                                         <br>
                                         <small
-                                            class="text-muted">{{ \App\Helpers\GlobalHelper::timeago($convenio->fecha_limite) }}</small>
+                                            class="text-muted text-primary"><strong>{{ \App\Helpers\GlobalHelper::timeago($convenio->fecha_limite) }}</strong></small>
                                     @else
-                                        Sin fecha
+                                        <small class="text-muted">(Sin fecha)</small>
                                     @endif
                                 </td>
                                 <td class="m-0 p-1">
@@ -90,19 +90,22 @@
 
     {{-- modal crear/editar  --}}
     <div class="modal fade" id="basicModal" style="display: none;" aria-hidden="true" wire:ignore.self>
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
+        <div class="modal-dialog" role="document" wire:ignore.self>
+            <div class="modal-content" wire:ignore.self>
                 <div class="modal-header">
                     <h5 class="modal-title">{{ $is_editing ? 'Editar' : 'Nuevo' }} Convenio</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" wire:click="resetearCampos">
                 </div>
                 <div class="modal-body">
+                    @php
+                        $hoy = \Carbon\Carbon::now()->toDateString();
+                    @endphp
                     <x-input-create-defer :lista="[
                         'Nombre Convenio' => ['nombre_convenio', 'text'],
                         'Valor' => ['valor_descuento', 'text', '(opcional)'],
-                        'Fecha Limite' => ['fecha_limite', 'date', '(opcional)'],
+                        'Fecha Limite' => ['fecha_limite', 'date', '(opcional)', $hoy],
                     ]">
-                        <x-slot name="otrosinputs">
+                        <x-slot name="custominput" :posicion="2">
 
                             <div class="mb-3 row">
                                 <div class="col-4">
@@ -114,6 +117,7 @@
                                             class="form-control default-select bordeado wide mb-3 @error($tipo_descuento) is-invalid @enderror"
                                             id="" name="" wire:model="tipo_descuento"
                                             style="margin-bottom: 0px !important;">
+                                            <option value="">--Elija una opción--</option>
                                             <option value="porcentaje">Porcentaje</option>
                                             <option value="fijo">Monto Fijo</option>
                                         </select>
@@ -123,7 +127,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="mb-3 row">
+                        </x-slot>
+                        <x-slot name="otrosinputs">
+                            <div class="mb-3 row" wire:ignore>
                                 <div class="col-4">
                                     Productos
                                 </div>
@@ -134,12 +140,16 @@
                                             id="productos_afectados" name="productos_afectados[]" multiple ="multiple">
                                         </select>
                                     </div>
-                                    @error('productos_afectados')
-                                        <small class="error">{{ $message }}</small>
-                                    @enderror
+
                                 </div>
                             </div>
+                            @error('productos_afectados')
+                                <small class="error d-flex align-items-end justify-content-end">{{ $message }}</small>
+                            @enderror
                         </x-slot>
+                        <x-slot name="nocerrarmodal">
+                        </x-slot>
+
                     </x-input-create-defer>
                 </div>
             </div>
@@ -158,6 +168,9 @@
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script>
             Livewire.on('iniciar-librerias', (productos, seleccionados) => {
+
+                $('#productos_afectados').empty().trigger('change');
+
                 // Destruye Select2 si ya existe
                 if ($('#productos_afectados').hasClass('select2-hidden-accessible')) {
                     $('#productos_afectados').select2('destroy');
@@ -183,7 +196,7 @@
                     @this.set('productos_afectados', $(this).val());
                 });
             });
-                    
+
             Livewire.on('sweet-detalles-productos-eliminar', (usuarios, convenioId) => {
                 var usersAffected = usuarios;
                 let htmlContent = '<p>¿Estás seguro de eliminar el convenio?</p>';
@@ -192,7 +205,7 @@
                     htmlContent += `
             <p>Al eliminar el convenio también eliminarás a los usuarios registrados en él:</p>
             <ul style="text-align: left; margin: 10px 0 0 20px;">
-                ${usersAffected.map(user => `<li>${user}</li>`).join('')}
+                ${usersAffected.map(user => `<li> - ${user}</li>`).join('')}
             </ul>
         `;
                 } else {
