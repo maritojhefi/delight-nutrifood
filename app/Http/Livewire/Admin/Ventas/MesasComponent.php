@@ -226,7 +226,7 @@ class MesasComponent extends Component
         );
 
         $background->text(
-            'Nutri-Food/Eco-Tienda',
+            'Nutri-Food/Comida Nutritiva',
             $centro, // Omitimos X para usar align center
             450,  // Tu posición Y personalizada
             function ($font) use ($colorLetra) {

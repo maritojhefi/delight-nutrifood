@@ -157,7 +157,7 @@
         <!-- Encabezado -->
         <div class="ticket-header">
             <img src="{{ asset('delight_logo.jpg') }}" width="150"> <!-- Usar asset() para rutas -->
-            <div class="ticket-title">Nutri-Food/Eco-Tienda</div>
+            <div class="ticket-title">Nutri-Food/Comida Nutritiva</div>
             <div class="ticket-subtitle">'NUTRIENDO HABITOS!'</div>
             <div class="ticket-contact">
                 Contacto: 78227629<br>

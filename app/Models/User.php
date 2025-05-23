@@ -68,10 +68,11 @@ class User extends Authenticatable
 
     protected $appends = ['saldo_formateado'];
 
+   
     public function getSaldoFormateadoAttribute()
     {
-        $saldoAbsoluto = abs($this->saldo);
-        return $saldoAbsoluto == floor($saldoAbsoluto) ? number_format($saldoAbsoluto, 0) : number_format($saldoAbsoluto, 2);
+        $saldo = abs($this->saldo);
+        return number_format($saldo, 2);
     }
 
 

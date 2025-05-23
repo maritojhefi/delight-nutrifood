@@ -53,7 +53,7 @@ class CustomPrint
         }
 
         $printer->setTextSize(1, 1);
-        $textoNombreTienda = GlobalHelper::limpiarTextoParaPOS('Nutri-Food/Eco-Tienda');
+        $textoNombreTienda = GlobalHelper::limpiarTextoParaPOS('Nutri-Food/Comida Nutritiva');
         $printer->text($textoNombreTienda . "\n");
         $printer->feed(1); // MEJORA: Reducir a feed() sin parámetro o eliminar si no es necesario
 

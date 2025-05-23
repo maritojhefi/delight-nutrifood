@@ -220,8 +220,8 @@
                                         <p class="font-400">{{ $almuerzo->carbohidrato_1 }} <i
                                                 class="fa fa-check-circle color-green-dark me-2"></i></p>
                                     @elseif(App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
-                                        <del class="font-400">{{ $almuerzo->carbohidrato_1 }}</del> <i
-                                            class="fa fa-times-circle color-red-dark me-2"></i>
+                                        {{-- <del class="font-400">{{ $almuerzo->carbohidrato_1 }}</del> <i
+                                            class="fa fa-times-circle color-red-dark me-2"></i> --}}
                                     @else
                                         <p class="font-400">{{ $almuerzo->carbohidrato_1 }}</p>
                                     @endif
@@ -237,8 +237,8 @@
                                         <p class="font-400">{{ $almuerzo->carbohidrato_2 }} <i
                                                 class="fa fa-check-circle color-green-dark me-2"></i></p>
                                     @elseif(App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
-                                        <del class="font-400">{{ $almuerzo->carbohidrato_2 }}</del> <i
-                                            class="fa fa-times-circle color-red-dark me-2"></i>
+                                        {{-- <del class="font-400">{{ $almuerzo->carbohidrato_2 }}</del> <i
+                                            class="fa fa-times-circle color-red-dark me-2"></i> --}}
                                     @else
                                         <p class="font-400">{{ $almuerzo->carbohidrato_2 }} </p>
                                     @endif
@@ -254,8 +254,8 @@
                                         <p class="font-400">{{ $almuerzo->carbohidrato_3 }} <i
                                                 class="fa fa-check-circle color-green-dark me-2"></i></p>
                                     @elseif(App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
-                                        <del class="font-400">{{ $almuerzo->carbohidrato_3 }}</del> <i
-                                            class="fa fa-times-circle color-red-dark me-2"></i>
+                                        {{-- <del class="font-400">{{ $almuerzo->carbohidrato_3 }}</del> <i
+                                            class="fa fa-times-circle color-red-dark me-2"></i> --}}
                                     @else
                                         <p class="font-400">{{ $almuerzo->carbohidrato_3 }} </p>
                                     @endif

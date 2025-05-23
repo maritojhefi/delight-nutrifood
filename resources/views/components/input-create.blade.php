@@ -12,7 +12,7 @@
               <label class="col-sm-4 col-form-label">{{$titulo}}</label>
               <div class="col-sm-8">
                 <div class=" input-group" >
-              <input type="{{$variables[1]}}"  wire:model.debounce.1000ms="{{$variables[0]}}" placeholder="@isset($variables[2]){{$variables[2]}} @endisset" min="0" step=".01" class=" form-control  @error($variables[0]) is-invalid @enderror bordeado">
+              <input type="{{$variables[1]}}"  wire:model.debounce.1000ms="{{$variables[0]}}" placeholder="@isset($variables[2]){{$variables[2]}} @endisset" min="0" step=".01" class=" form-control form-control-sm  @error($variables[0]) is-invalid @enderror bordeado">
               <small class="input-group-text">Bs</small>
             </div>
               @error($variables[0]) <small class="error">{{ $message }}</small> @enderror
@@ -23,7 +23,7 @@
             <div class="mb-3 row">
               <label class="col-sm-4 col-form-label">{{$titulo}}</label>
               <div class="col-sm-8">
-              <input type="{{$variables[1]}}" wire:model.debounce.1000ms="{{$variables[0]}}" placeholder="@isset($variables[2]){{$variables[2]}} @endisset" class=" form-control  @error($variables[0]) is-invalid @enderror bordeado">
+              <input type="{{$variables[1]}}" wire:model.debounce.1000ms="{{$variables[0]}}" placeholder="@isset($variables[2]){{$variables[2]}} @endisset" class=" form-control form-control-sm  @error($variables[0]) is-invalid @enderror bordeado">
               @error($variables[0]) <small class="error">{{ $message }}</small> @enderror
               </div>
             </div>
@@ -34,7 +34,7 @@
           <div class="mb-3 row">
             <label class="col-sm-4 col-form-label">Confirmar</label>
             <div class="col-sm-8">
-            <input type="password" wire:model.debounce.1000ms="{{$variables[0]}}_confirmation" class=" form-control @error($variables[0]) is-invalid @enderror bordeado" placeholder="Confirmar">
+            <input type="password" wire:model.debounce.1000ms="{{$variables[0]}}_confirmation" class=" form-control form-control-sm @error($variables[0]) is-invalid @enderror bordeado" placeholder="Confirmar">
             </div>
           </div>
           
@@ -45,7 +45,7 @@
             
                 <label for="{{$titulo}}" class="btn btn-danger btn-sm btn-rounded" >Subir Foto</label>
                 <div class="col-sm-8">
-                <input id="{{$titulo}}" type="file" wire:model="{{$variables[0]}}"  class=" form-control @error($variables[0]) is-invalid @enderror bordeado" style="display:none">
+                <input id="{{$titulo}}" type="file" wire:model="{{$variables[0]}}"  class=" form-control form-control-sm @error($variables[0]) is-invalid @enderror bordeado" style="display:none">
                 </div>
             </div>
             <div class="col-6 col-sm-6">
@@ -67,7 +67,7 @@
           <div class="mb-3 row">
             <label class="col-sm-4 col-form-label">{{$titulo}}</label>
             <div class="col-sm-8">
-            <textarea type="text" wire:model.debounce.1000ms="{{$variables[0]}}" placeholder="@isset($variables[2]){{$variables[2]}} @endisset" class=" form-control @error($variables[0]) is-invalid @enderror bordeado"></textarea>
+            <textarea type="text" wire:model.debounce.1000ms="{{$variables[0]}}" placeholder="@isset($variables[2]){{$variables[2]}} @endisset" class=" form-control form-control-sm @error($variables[0]) is-invalid @enderror bordeado"></textarea>
             @error($variables[0]) <small class="error">{{ $message }}</small> @enderror
             </div>
           </div>

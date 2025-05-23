@@ -200,7 +200,7 @@ class VentasIndex extends Component
             $img = EscposImage::load(public_path('delight_logo.jpg'));
             $printer->bitImageColumnFormat($img);
             $printer->setTextSize(1, 1);
-            $printer->text('Nutri-Food/Eco-Tienda' . "\n");
+            $printer->text('Nutri-Food/Comida Nutritiva' . "\n");
             $printer->feed(1);
             $printer->text("'NUTRIENDO HABITOS!'" . "\n");
             $printer->feed(1);

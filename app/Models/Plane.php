@@ -33,7 +33,7 @@ class Plane extends Model
     const COCINASOLOSEGUNDO="solo-segundo";
     use HasFactory;
     protected $fillable = [
-        'nombre','producto_id','detalle','editable','sopa','segundo','ensalada','carbohidrato','jugo'
+        'nombre','producto_id','detalle','editable','sopa','segundo','ensalada','carbohidrato','jugo','asignado_automatico'
        
     ];
     public function usuarios()

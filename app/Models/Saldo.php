@@ -28,7 +28,7 @@ class Saldo extends Model
     public function getSaldoRestanteFormateadoAttribute()
     {
         $saldoRestante = abs($this->saldo_restante);
-        return $saldoRestante == floor($saldoRestante) ? number_format($saldoRestante, 0) : number_format($saldoRestante, 2);
+        return number_format($saldoRestante, 2);
     }
     public function usuario()
     {

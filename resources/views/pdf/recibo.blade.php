@@ -6,7 +6,7 @@
 <body>
     <div style="text-align: center;">
         {!! '<img src="' . public_path("delight_logo.jpg") . '" />' !!}
-        <h1>Nutri-Food/Eco-Tienda</h1>
+        <h1>Nutri-Food/Comida Nutritiva</h1>
         <p>'NUTRIENDO HABITOS!'</p>
         <p>Contacto : 78227629</p>
         @if (isset($nombreCliente))
