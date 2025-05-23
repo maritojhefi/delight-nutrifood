@@ -866,11 +866,9 @@ class VentasIndex extends Component
                 $array = (array) $arrayAdicionales;
 
                 // Verificar si todos los elementos están vacíos
-                $todoVacio = empty(
-                    array_filter($array, function ($item) {
-                        return !empty($item); // Filtra los items que no están vacíos
-                    })
-                );
+                $todoVacio = empty(array_filter($array, function ($item) {
+                    return !empty($item); // Filtra los items que no están vacíos
+                }));
             }
 
             if ($todoVacio) {
@@ -1146,16 +1144,17 @@ class VentasIndex extends Component
         } else {
             $metodosPagosRecibo = null;
         }
-        // dd($metodosPagosRecibo);
+        // dd($this->cuenta->ventaHistorial);
 
         $data = [
+            'cuenta' => $this->cuenta->ventaHistorial,
             // Aquí puedes pasar las variables necesarias para la vista Blade
             'nombreCliente' => !$this->checkClientePersonalizado ? (isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : 'Anonimo') : $this->clienteRecibo,
             'listaCuenta' => $this->listacuenta,
             'subtotal' => $this->cuenta->total + $this->descuentoProductos,
             'descuentoProductos' => $this->descuentoProductos,
             'otrosDescuentos' => $this->cuenta->descuento,
-            'valorSaldo' => isset($this->valorSaldo) ? $this->valorSaldo : 0,
+            'valorSaldo' => $this->cuenta->ventaHistorial->saldo_monto,
             'metodo' => isset($metodosPagosRecibo) ? $metodosPagosRecibo : null,
             'observacion' => isset($this->observacionRecibo) ? $this->observacionRecibo : null,
             'fecha' => isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
@@ -1175,7 +1174,7 @@ class VentasIndex extends Component
         } else {
             $metodosPagosRecibo = null;
         }
-        $recibo = CustomPrint::imprimirReciboVenta(!$this->checkClientePersonalizado ? (isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null) : $this->clienteRecibo, $this->listacuenta, $this->cuenta->total + $this->descuentoProductos, isset($this->valorSaldo) ? $this->valorSaldo : 0, $this->descuentoProductos, $this->cuenta->descuento, isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'), isset($this->observacionRecibo) ? $this->observacionRecibo : null, $metodosPagosRecibo);
+        $recibo = CustomPrint::imprimirReciboVenta(!$this->checkClientePersonalizado ? (isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null) : $this->clienteRecibo, $this->listacuenta, $this->cuenta->total + $this->descuentoProductos, $this->cuenta->ventaHistorial->saldo_monto, $this->descuentoProductos, $this->cuenta->descuento, isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'), isset($this->observacionRecibo) ? $this->observacionRecibo : null, $metodosPagosRecibo, $this->cuenta->ventaHistorial);
         $respuesta = CustomPrint::imprimir($recibo, $this->cuenta->sucursale->id_impresora);
         if ($this->cuenta->sucursale->id_impresora) {
             if ($respuesta == true) {
@@ -1209,24 +1208,15 @@ class VentasIndex extends Component
     }
     public function anularSaldo(Saldo $saldo)
     {
-        $user = User::find($this->cuenta->cliente->id);
         if ($saldo->anulado) {
-            if ($saldo->es_deuda) {
-                $user->saldo = $user->saldo + $saldo->monto;
-            } else {
-                $user->saldo = $user->saldo - $saldo->monto;
-            }
+           
             $saldo->anulado = false;
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'success',
                 'message' => 'El saldo vuelve a estar activo!',
             ]);
         } else {
-            if ($saldo->es_deuda) {
-                $user->saldo = $user->saldo - $saldo->monto;
-            } else {
-                $user->saldo = $user->saldo + $saldo->monto;
-            }
+           
             $saldo->anulado = true;
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'success',
@@ -1234,7 +1224,6 @@ class VentasIndex extends Component
             ]);
         }
         $this->cuenta = Venta::where('cliente_id', $this->cuenta->cliente->id)->first();
-        $user->save();
         $saldo->save();
     }
     public function seleccionarSubcategoria($id)

@@ -66,6 +66,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    protected $appends = ['saldo_formateado'];
+
+    public function getSaldoFormateadoAttribute()
+    {
+        $saldoAbsoluto = abs($this->saldo);
+        return $saldoAbsoluto == floor($saldoAbsoluto) ? number_format($saldoAbsoluto, 0) : number_format($saldoAbsoluto, 2);
+    }
+
 
     public function setPasswordAttribute($value)
     {
@@ -135,6 +143,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Plane::class)->wherePivotBetween('start', [date("y-m-d", strtotime("last sunday")), date("y-m-d", strtotime("next sunday"))])
             ->withPivot('start', 'end', 'title', 'detalle', 'id');
     }
+
     public function asistencias()
     {
         return $this->belongsToMany(Contrato::class)->withPivot('entrada', 'salida', 'diferencia_entrada', 'created_at', 'diferencia_salida', 'tiempo_total');
@@ -142,6 +151,10 @@ class User extends Authenticatable
     public function saldos()
     {
         return $this->hasMany(Saldo::class);
+    }
+    public function saldosVigentes()
+    {
+        return $this->hasMany(Saldo::class)->whereNull('liquidado')->where('anulado',false)->orderBy('created_at', 'desc');
     }
     public function contrato()
     {
@@ -155,4 +168,13 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Convenio::class, 'convenio_user')->withTimestamps();
     }
+    public function scopeSaldoAFavor($query)
+    {
+        return $query->where('saldo','<',0);
+    }
+    public function scopeSaldoADeuda($query)
+    {
+        return $query->where('saldo','>',0);
+    }
+
 }

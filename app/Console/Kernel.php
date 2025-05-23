@@ -38,7 +38,7 @@ class Kernel extends ConsoleKernel
             ->dailyAt('09:00')->appendOutputTo($logGeneral);
 
         $schedule->command('eliminar:stocks-vacios')
-            ->dailyAt('01:00');
+            ->dailyAt('01:30');
         // $schedule->command('whatsapp:enviarMenu')
         //     ->twiceDaily(18, 20)->appendOutputTo($logsMenu);
         // $schedule->command('whatsapp:enviarMenuManana')
