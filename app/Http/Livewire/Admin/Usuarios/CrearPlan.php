@@ -109,6 +109,19 @@ class CrearPlan extends Component
             'message' => "Se cambio el estado de este plan!!"
         ]);
     }
+    public function cambiarAsignacion(Plane $plane)
+    {
+        if ($plane->asignado_automatico == true) {
+            $plane->asignado_automatico = false;
+        } else {
+            $plane->asignado_automatico = true;
+        }
+        $plane->save();
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => "Se cambio el estado de este plan!!"
+        ]);
+    }
     public function resetproducto()
     {
         $this->reset('productoseleccionado');

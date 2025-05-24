@@ -42,11 +42,11 @@
 
     <div class=" col-xxl-8 col-xl-8 col-lg-12 col-sm-12">
         <div class="card overflow-hidden bordeado">
-            <div class="card">
-                <div class="card-header">
+            <div class="card p-0">
+                <div class="card-header  m-0">
                     <h4 class="card-title">Planes Registrados</h4>
                 </div>
-                <div class="card-body letra12">
+                <div class="card-body letra12 m-0 p-0">
                     <div class="table-responsive">
                         <table class="table table-responsive-md">
                             <thead>
@@ -72,17 +72,11 @@
                                         <td><a href="#" wire:click="cambiarEditable({{ $item->id }})"><span
                                                     class="badge badge-pill badge-{{ $item->editable == true ? 'success' : 'danger' }} light">{{ $item->editable == true ? 'SI' : 'NO' }}</span></a>
                                         </td>
-                                        <td><a href="#" wire:click="cambiarEditable({{ $item->id }})"><span
-                                                    class="badge badge-pill badge-{{ $item->asignacion_automatica == true ? 'success' : 'danger' }} light">{{ $item->asignacion_automatica == true ? 'SI' : 'NO' }}</span></a>
+                                        <td><a href="#" wire:click="cambiarAsignacion({{ $item->id }})"><span
+                                                    class="badge badge-pill badge-{{ $item->asignado_automatico == true ? 'success' : 'danger' }} light">{{ $item->asignado_automatico == true ? 'SI' : 'NO' }}</span></a>
                                         </td>
                                         <td>{{ $item->detalle }}</td>
-
-
-
-
-
-
-                                        <td>
+                                        {{-- <td>
                                             <div class="dropdown">
                                                 <button type="button" class="btn btn-danger light sharp"
                                                     data-bs-toggle="dropdown">
@@ -106,31 +100,9 @@
                                                         data-bs-target="#modaldelete{{ $item->id }}">Eliminar</a>
                                                 </div>
                                             </div>
-                                        </td>
+                                        </td> --}}
                                     </tr>
 
-
-                                    <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog"
-                                        aria-hidden="true" id="modaldelete{{ $item->id }}">
-                                        <div class="modal-dialog modal-sm">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Esta seguro?</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal">
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">Eliminando <strong>{{ $item->nombre }}</strong>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-danger btn-sm light"
-                                                        data-bs-dismiss="modal">Cancelar</button>
-                                                    <button type="button" class="btn btn-primary btn-sm"
-                                                        data-bs-dismiss="modal"
-                                                        wire:click="eliminar('{{ $item->id }}')">Aceptar</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 @endforeach
                             </tbody>
                         </table>
