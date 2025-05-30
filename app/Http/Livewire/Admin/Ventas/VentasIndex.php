@@ -1003,7 +1003,7 @@ class VentasIndex extends Component
                         $saldoAFavorCliente = true;
                         $montoSaldo = $this->totalAcumuladoMetodos - $this->subtotalConDescuento;
                     }
-                    dd($this->subtotalConDescuento);
+                    // dd($this->subtotalConDescuento);
                     $cuentaguardada = Historial_venta::create([
                         'caja_id' => $cajaactiva->id,
                         'usuario_id' => auth()->user()->id,
