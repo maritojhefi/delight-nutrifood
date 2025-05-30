@@ -503,7 +503,10 @@ class VentasIndex extends Component
             }
         }
     }
-
+    public function actualizarCuenta()
+    {
+        $this->actualizarlista($this->cuenta);
+    }
     public function actualizarlista($cuenta)
     {
         $resultado = CreateList::crearlista($cuenta);
@@ -520,6 +523,7 @@ class VentasIndex extends Component
         $this->reset(['adicionales', 'productoapuntado']);
         $this->saldo = false;
         $this->saldoRestante = 0;
+       
     }
 
     public function agregaradicional(Adicionale $adicional, $item)
@@ -999,7 +1003,7 @@ class VentasIndex extends Component
                         $saldoAFavorCliente = true;
                         $montoSaldo = $this->totalAcumuladoMetodos - $this->subtotalConDescuento;
                     }
-
+                    dd($this->subtotalConDescuento);
                     $cuentaguardada = Historial_venta::create([
                         'caja_id' => $cajaactiva->id,
                         'usuario_id' => auth()->user()->id,
