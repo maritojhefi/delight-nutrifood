@@ -215,6 +215,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
             return view('admin.otros.marcado-exitosamente-salida', compact('diferencia'));
         })->name('marcacion.salida');
     });
+    Route::prefix('/configuraciones')->group(function () {
+        Route::get('/sistema', \App\Http\Livewire\Admin\Configuracion\SistemaIndexComponent::class)->name('sistema.index');
+    });
 });
 
 Route::get('/construccion', function () {

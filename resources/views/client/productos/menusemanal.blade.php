@@ -40,11 +40,11 @@
     </style>
 @endpush
 @section('content')
-    <x-cabecera-pagina titulo="Bienvenidos a Delight" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Bienvenidos a {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}" cabecera="bordeado" />
 
 
     <a href="#" class="cambiarColor card card-style bg-3" data-card-height="125"
-        style="background-image:url({{ asset('imagenes/delight/1.jpeg') }})">
+        style="background-image:url({{ asset(GlobalHelper::getValorAtributoSetting('dia_noche_inicio')) }})">
         <div class="card-top">
             @if (isset(auth()->user()->color_page) && auth()->user()->color_page == 'theme-dark')
                 <i class="fa fa-sun color-yellow-dark fa-3x float-end me-3 mt-3 color"></i>
@@ -124,7 +124,7 @@
                 @if ($diaActual && !$feriado)
                     <div data-card-height="90"
                         class="card card-style bg-25 mb-0 rounded-s m-3 {{ App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia ? 'gradient-border' : '' }}"
-                        style="height: 90px;background-image:url({{ asset('imagenes/delight/21.jpeg') }}">
+                        style="height: 90px;background-image:url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}">
                         @if (App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
                             <div class="card-top"><i class="fa fa-check color-yellow-dark fa-3x float-end me-3 mt-3"></i>
                             </div>
@@ -280,7 +280,7 @@
                 @elseif($feriado)
                     <div data-card-height="90"
                         class="card card-style bg-25 mb-0 rounded-s m-3 {{ App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia ? 'gradient-border' : '' }}"
-                        style="height: 90px;background-image:url({{ asset('imagenes/delight/21.jpeg') }}">
+                        style="height: 90px;background-image:url({{ asset(GlobalHelper::getValorAtributoSetting('dia_noche_inicio')) }}">
                     
                         <div class="card-center">
                             <button class="btn accordion-btn">
@@ -328,16 +328,16 @@
                                 </a>
                                 <div class="d-flex pt-3">
                                     <div class="align-self-center">
-                                        <img src="{{ asset('delight_logo.jpg') }}" width="23"
+                                        <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo')) }}" width="23"
                                             class="rounded-xs me-2">
                                     </div>
                                     <div class="align-self-center">
                                         <a href="#" class="color-white font-14 d-block font-500 opacity-80">by
-                                            Delight
+                                            {{GlobalHelper::getValorAtributoSetting('nombre_sistema')}}
                                         </a>
                                     </div>
                                     <div class="align-self-center ms-auto">
-                                        <strong class="font-300 color-white opacity-30">Nutriendo tus habitos</strong>
+                                        <strong class="font-300 color-white opacity-30">{{GlobalHelper::getValorAtributoSetting('slogan')}}</strong>
                                     </div>
                                 </div>
                             </div>
@@ -356,7 +356,7 @@
 
 
         <div data-card-height="140" class="card card-style round-medium shadow-huge top-30"
-            style="height: 140px;background-image:url('{{ asset('imagenes/delight/4.jpeg') }}')">
+            style="height: 140px;background-image:url('{{ asset(GlobalHelper::getValorAtributoSetting('inicio_perfil')) }}')">
             <div class="card-top mt-3 ms-3">
                 <h2 class="color-white pt-3 pb-3">{{ Str::limit(auth()->user()->name, 25) }}</h2>
 
@@ -381,7 +381,7 @@
             </div>
             <div class="card-bottom mb-n3 ps-5 ms-4">
                 <h5 class="font-13 color-white mb-n1">Toda tu informacion aqui!</h5>
-                <p class="color-white font-10 opacity-70">Delight by Macrobyte</p>
+                <p class="color-white font-10 opacity-70">{{GlobalHelper::getValorAtributoSetting('nombre_sistema')}} by Macrobyte</p>
             </div>
             <div class="card-overlay bg-highlight opacity-40"></div>
             <div class="card-overlay bg-gradient"></div>
@@ -389,7 +389,7 @@
     @endauth
     <div class="card card-style mb-0" style="">
         <div class="card mb-0 bg-0" data-card-height="570"
-            style="height: 570px;background-image:url({{ asset('imagenes/delight/2.jpeg') }}">
+            style="height: 570px;background-image:url({{ asset(GlobalHelper::getValorAtributoSetting('inicio_disfruta')) }}">
             <div class="card-bottom text-center">
                 <h1 class="color-white font-26 font-700">Disfruta de todas tus comidas</h1>
                 <p class="font-14 color-white px-4 pb-3 opacity-60">

@@ -7,7 +7,7 @@
         <div data-card-height="cover-card " class="card bg-transparent" style="height: 670px;">
             <div class="card-center text-center">
                 {{-- <h1 class="fa-3x font-900 mb-0 color-highlight">{{auth()->user()->name}}</h1> --}}
-                <p class="font-13  mt-5">Eres miembro oficial de<strong> Delight!</strong> </p>
+                <p class="font-13  mt-5">Eres miembro oficial de<strong> {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!</strong> </p>
                 <div class="row mx-auto  mb-0" >
                     <div class="card card-style card-delight col-3  pt-4 ">
                         <a href="{{ route('misplanes') }}">
@@ -76,15 +76,15 @@
                 </div>
                 <div class="row mx-auto  mb-0">
                     <div class="col-4">
-                        <a href="https://www.facebook.com/DelightNutriFoodEcoTienda"
+                        <a href="{{ GlobalHelper::getValorAtributoSetting('url_facebook') }}"
                             class="icon icon-l color-facebook rounded-xl "><i class="font-20 fab fa-facebook-f"></i></a>
                     </div>
                     <div class="col-4">
-                        <a href="https://wa.link/ewfjau" class="icon icon-l color-whatsapp rounded-xl"><i
+                        <a href="{{ GlobalHelper::getValorAtributoSetting('url_whatsapp') }}" class="icon icon-l color-whatsapp rounded-xl"><i
                                 class="font-20 fab fa-whatsapp"></i></a>
                     </div>
                     <div class="col-4">
-                        <a href="https://www.instagram.com/delight_nutrifood_ecotienda/"
+                        <a href="{{ GlobalHelper::getValorAtributoSetting('url_instagram') }}"
                             class="icon icon-l color-instagram rounded-xl "><i class="font-20 fab fa-instagram"></i></a>
                     </div>
                 </div>

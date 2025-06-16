@@ -6,7 +6,7 @@
         <div class="card-center text-center">
             <h1 class="mb-5"><i class="fa fa-4x fa-star color-yellow-dark "></i></h1>
             <h1 class="color-white bolder fa-3x">Gracias</h1>
-            <h6 class="color-white mb-4">Con cariño, el equipo Delight</h6>
+            <h6 class="color-white mb-4">Con cariño, el equipo {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}</h6>
             <p class="boxed-text-l color-white opacity-80 mb-5">
                 Con mas de 8 años de experiencia, estamos a la vanguardia de tu salud y tu paladar, se vienen sorpresas y novedades, pronto seras parte de ellas.
             </p>

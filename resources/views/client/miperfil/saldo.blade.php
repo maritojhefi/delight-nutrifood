@@ -64,7 +64,7 @@
                                         <p class="font-600 color-highlight mt-n3">Venta registrada</p>
                                     </div>
                                     <div class="ms-auto">
-                                        <img src="{{ asset('delight_logo.jpg') }}" width="40">
+                                        <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo')) }}" width="40">
                                     </div>
                                 </div>
                                 <div class="divider mt-3 mb-3"></div>
@@ -163,7 +163,7 @@
                                     <p class="font-600 color-highlight mt-n3">Pago registrado</p>
                                 </div>
                                 <div class="ms-auto">
-                                    <img src="{{ asset('delight_logo.jpg') }}" width="40">
+                                    <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo')) }}" width="40">
                                 </div>
                             </div>
                             <div class="divider mt-3 mb-3"></div>

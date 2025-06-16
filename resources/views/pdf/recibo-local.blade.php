@@ -156,12 +156,12 @@
     <div class="ticket-pos">
         <!-- Encabezado -->
         <div class="ticket-header">
-            <img src="{{ asset('delight_logo.jpg') }}" width="150"> <!-- Usar asset() para rutas -->
-            <div class="ticket-title">Nutri-Food/Comida Nutritiva</div>
-            <div class="ticket-subtitle">'NUTRIENDO HABITOS!'</div>
+            <img src="{{ public_path(GlobalHelper::getValorAtributoSetting('logo'))  }}" width="150"> <!-- Usar asset() para rutas -->
+            <div class="ticket-title">{{GlobalHelper::getValorAtributoSetting('nombre_empresa')}}</div>
+            <div class="ticket-subtitle">'{{strtoupper(GlobalHelper::getValorAtributoSetting('slogan'))}}!'</div>
             <div class="ticket-contact">
-                Contacto: 78227629<br>
-                Campero e/15 de abril y Madrid
+                Contacto: {{GlobalHelper::getValorAtributoSetting('telefono')}}<br>
+                {{GlobalHelper::getValorAtributoSetting('direccion')}}
             </div>
             @if (isset($nombreCliente))
                 <div class="ticket-client">Cliente: {{ $nombreCliente }}</div>

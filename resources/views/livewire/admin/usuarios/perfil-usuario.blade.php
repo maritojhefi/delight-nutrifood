@@ -75,8 +75,8 @@
                                     <div class="profile-interest mt-3">
                                         <h5 class="text-primary d-inline">Ultimos registros</h5>
                                         <div class="row mt-4 sp4" id="lightgallery">
-                                            <a href="{{asset('delight_logo.jpg')}}" data-exthumbimage="{{asset('delight_logo.jpg')}}" data-src="images/profile/2.jpg" class="mb-1 col-lg-4 col-xl-4 col-sm-4 col-6">
-                                                <img src="{{asset('delight_logo.jpg')}}" alt="" class="img-fluid">
+                                            <a href="{{asset(GlobalHelper::getValorAtributoSetting('logo'))}}" data-exthumbimage="{{asset(GlobalHelper::getValorAtributoSetting('logo'))}}" data-src="images/profile/2.jpg" class="mb-1 col-lg-4 col-xl-4 col-sm-4 col-6">
+                                                <img src="{{asset(GlobalHelper::getValorAtributoSetting('logo'))}}" alt="" class="img-fluid">
                                             </a>
                                            
                                         </div>

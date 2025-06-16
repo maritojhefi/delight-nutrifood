@@ -4,8 +4,8 @@
         <div class="card header-card shape-rounded" data-card-height="200">
 
             <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset('imagenes/delight/21.jpeg') }}"
-                data-ll-status="loaded" style="background-image: url({{ asset('imagenes/delight/21.jpeg') }});"></div>
+            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
+                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
         </div>
         <div class="mt-3 pt-1 pb-1">
             <h1 class="text-center">
@@ -47,8 +47,8 @@
         <div class="card header-card shape-rounded" data-card-height="200">
 
             <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset('imagenes/delight/21.jpeg') }}"
-                data-ll-status="loaded" style="background-image: url({{ asset('imagenes/delight/21.jpeg') }});"></div>
+            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
+                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
         </div>
         <div class="mt-3 pt-1 pb-1">
             <h1 class="text-center">
@@ -68,7 +68,7 @@
             <h3 class="mx-auto mt-2">2° PARTE: REGISTRO</h3>
             <p class="boxed-text-xl pt-3 mb-3">
                 DEBE TENER UNA CUENTA VALIDA CON DATOS REALES DENTRO DE NUESTRA PLATAFORMA WEB:
-                <strong>DELIGHT-NUTRIFOOD.COM</strong> PARA PODER AGREGAR EL PLAN
+                <strong>{{ GlobalHelper::getValorAtributoSetting('url_web') }}</strong> PARA PODER AGREGAR EL PLAN
                 SELECCIONADO DE SU PREFERENCIA A ESA CUENTA Y PODER GESTIONAR EL MISMO.
 
             </p>
@@ -90,8 +90,8 @@
         <div class="card header-card shape-rounded" data-card-height="200">
 
             <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset('imagenes/delight/21.jpeg') }}"
-                data-ll-status="loaded" style="background-image: url({{ asset('imagenes/delight/21.jpeg') }});"></div>
+            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
+                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
         </div>
         <div class="mt-3 pt-1 pb-1">
             <h1 class="text-center">
@@ -140,8 +140,8 @@
         <div class="card header-card shape-rounded" data-card-height="200">
 
             <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset('imagenes/delight/21.jpeg') }}"
-                data-ll-status="loaded" style="background-image: url({{ asset('imagenes/delight/21.jpeg') }});"></div>
+            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
+                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
         </div>
         <div class="mt-3 pt-1 pb-1">
             <h1 class="text-center">
@@ -183,8 +183,8 @@
         <div class="card header-card shape-rounded" data-card-height="200">
 
             <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset('imagenes/delight/21.jpeg') }}"
-                data-ll-status="loaded" style="background-image: url({{ asset('imagenes/delight/21.jpeg') }});"></div>
+            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
+                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
         </div>
         <div class="mt-3 pt-1 pb-1">
             <h1 class="text-center">
@@ -230,8 +230,8 @@
         <div class="card header-card shape-rounded" data-card-height="200">
 
             <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset('imagenes/delight/21.jpeg') }}"
-                data-ll-status="loaded" style="background-image: url({{ asset('imagenes/delight/21.jpeg') }});"></div>
+            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
+                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
         </div>
         <div class="mt-3 pt-1 pb-1">
             <h1 class="text-center">
@@ -286,8 +286,8 @@
         <div class="card header-card shape-rounded" data-card-height="200">
 
             <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset('imagenes/delight/21.jpeg') }}"
-                data-ll-status="loaded" style="background-image: url({{ asset('imagenes/delight/21.jpeg') }});"></div>
+            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
+                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
         </div>
         <div class="mt-3 pt-1 pb-1">
             <h1 class="text-center">
@@ -333,8 +333,8 @@
         <div class="card header-card shape-rounded" data-card-height="200">
 
             <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset('imagenes/delight/21.jpeg') }}"
-                data-ll-status="loaded" style="background-image: url({{ asset('imagenes/delight/21.jpeg') }});"></div>
+            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
+                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
         </div>
         <div class="mt-3 pt-1 pb-1">
             <h1 class="text-center">
@@ -376,8 +376,8 @@
         <div class="card header-card shape-rounded" data-card-height="200">
 
             <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset('imagenes/delight/1.jpeg') }}"
-                data-ll-status="loaded" style="background-image: url({{ asset('imagenes/delight/1.jpeg') }});"></div>
+            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('dia_noche_inicio')) }}"
+                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('dia_noche_inicio')) }});"></div>
         </div>
         <div class="mt-3 pt-1 pb-1">
             <h1 class="text-center">
@@ -398,7 +398,7 @@
         <div class="card card-style">
             <p class="boxed-text-xl pt-3 mb-3">
                 LOS PUNTOS ANTERIORES ESTAN ENFOCADOS A FAVOR DE PRESERVAR UNA BUENA ORGANIZACION ADMINISTRATIVA Y PARA OFRECER LA MEJOR ATENCION Y CALIDAD EN CADA UNO DE NUESTROS PRODUCTOS,
-            <STRONG>DELIGHT, NUTRIENDO TUS HABITOS!</STRONG> </p>
+            <STRONG>{{ strtoupper(GlobalHelper::getValorAtributoSetting('nombre_sistema')) }}, {{ strtoupper(GlobalHelper::getValorAtributoSetting('slogan')) }}!</STRONG> </p>
         </div>
         <a href="#"
             class="close-menu btn btn-m btn-margins rounded-sm btn-full shadow-l bg-highlight text-uppercase font-900">Entiendo!</a>

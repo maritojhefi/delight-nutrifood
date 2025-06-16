@@ -1,6 +1,6 @@
 @if (count($datos)>0)
 <div class="scroll-ad shadow-xl bg-dark-dark">
-    <img src="{{ asset('logo2.png') }}" class="shadow-l" alt="img">
+    <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}" class="shadow-l" alt="img">
     <h1 class="text-uppercase font-800 font-18 color-white">Tu perfil esta incompleto!</h1>
     <em class="font-12">Se vienen funciones interesantes <br>Necesitamos saber mas de ti!</em>
     <a href="#" class="bg-highlight color-white shadow-m " data-menu="menu-perfil-1">Llenar</a>
@@ -16,8 +16,8 @@
                 <div class="card header-card shape-rounded" data-card-height="200">
 
                     <div class="card-overlay dark-mode-tint"></div>
-                    <div class="card-bg preload-img entered loaded" data-src="{{ asset('imagenes/delight/21.jpeg') }}"
-                        data-ll-status="loaded" style="background-image: url({{ asset('imagenes/delight/21.jpeg') }});">
+                    <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
+                        data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});">
                     </div>
                 </div>
                 <div class="mt-3 pt-1 pb-1">

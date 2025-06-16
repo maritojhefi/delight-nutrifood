@@ -5,8 +5,8 @@
     <div class="card card-style bg-24" style="height: 573px;">
         <div class="card-center">
             <div class="ms-5 me-5">
-                <img src="{{asset('logo2.png')}}" class="img mx-auto d-block " style="width:100px" alt="">
-                <p class="color-highlight font-12 text-center ">Bienvenido a Delight!</p>
+                <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}" class="img mx-auto d-block " style="width:100px" alt="">
+                <p class="color-highlight font-12 text-center ">Bienvenido a {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!</p>
                 <div class="mt-2 mb-0">
                     <form action="{{ route('login') }}" method="post">
                         @csrf

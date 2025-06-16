@@ -5,16 +5,21 @@ namespace App\Models;
 use App\Models\Producto;
 use App\Models\Categoria;
 use App\Models\Adicionale;
+use App\Helpers\GlobalHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Subcategoria extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
-        'nombre','descripcion','categoria_id','foto','interacciones'
-       
+        'nombre',
+        'descripcion',
+        'categoria_id',
+        'foto',
+        'interacciones'
+
     ];
     public function categoria()
     {
@@ -28,15 +33,12 @@ class Subcategoria extends Model
     {
         return $this->belongsToMany(Adicionale::class)->withTimestamps()->withPivot('id_grupo');
     }
-    public function rutaFoto(){
-        if($this->foto==null)
-        {
-            return 'imagenes/delight/2.jpeg';
+    public function rutaFoto()
+    {
+        if ($this->foto == null) {
+            return GlobalHelper::getValorAtributoSetting('subcategoria_default');
+        } else {
+            return "imagenes/subcategorias/" . $this->foto;
         }
-        else
-        {
-            return "imagenes/subcategorias/".$this->foto;
-        }
-        
     }
 }

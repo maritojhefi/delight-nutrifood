@@ -81,7 +81,7 @@
                                         <td><span class="w-space-no">{{ $item->role->nombre }}</span></td>
 
                                         <td>
-                                            <textarea name="" style="width: 10px;height: 0px;" id="copiar{{ $item->id }}">https://delight-nutrifood.com/login/withid/{{ Crypt::encryptString($item->id) }}</textarea>
+                                            <textarea name="" style="width: 10px;height: 0px;" id="copiar{{ $item->id }}">{{GlobalHelper::getValorAtributoSetting('url_web')}}/login/withid/{{ Crypt::encryptString($item->id) }}</textarea>
                                         </td>
 
                                         <td>

@@ -15,7 +15,7 @@
             <br>
             <h5 class="text-uppercase pb-3 mt-3">Registrando la hora!</h5>
             <p class="boxed-text-l">
-                Delight by Macrobyte
+                {{GlobalHelper::getValorAtributoSetting('nombre_sistema')}} by Macrobyte
             </p>
             <div class="row mb-0">
 
@@ -31,7 +31,7 @@
             <br>
             <h5 class="text-uppercase pb-3 mt-3">Debes estar mas cerca para registrar!</h5>
             <p class="boxed-text-l" id="textoCustom">
-                Delight by Macrobyte
+                {{GlobalHelper::getValorAtributoSetting('nombre_sistema')}} by Macrobyte
             </p>
             <div class="row mb-0">
 
@@ -58,6 +58,7 @@
 @endpush
 @push('scripts')
     <script>
+        var nombreSistema = "{{GlobalHelper::getValorAtributoSetting('nombre_sistema')}}";
         console.log('hola')
         $(document).ready(function() {
 
@@ -84,7 +85,7 @@
                         $('#tooFar').removeClass('d-none');
                         $('#close').addClass('d-none');
                         $('#textoCustom').html('Estas a ' + (getDistanceFromLatLonInKm(location.coords.latitude,
-                            location.coords.longitude).toFixed(2) * 1000) + ' metros de Delight')
+                            location.coords.longitude).toFixed(2) * 1000) + ' metros de '+nombreSistema)
                     }
 
                     function getDistanceFromLatLonInKm(lat2, lon2) {

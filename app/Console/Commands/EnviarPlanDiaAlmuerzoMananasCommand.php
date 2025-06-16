@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Carbon\Carbon;
 use App\Models\Almuerzo;
 use App\Models\SwitchPlane;
+use App\Helpers\GlobalHelper;
 use Illuminate\Console\Command;
 use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
@@ -114,7 +115,7 @@ class EnviarPlanDiaAlmuerzoMananasCommand extends Command
                                 $menuDiaActual->vegetariano . '(veggie)',
                                 'Pedir Permiso'
                             ],
-                            env('APP_ENV') == 'local' ? 'https://delight-nutrifood.com/delight_logo.jpg' : asset('imagenes/almuerzo/'.$menuDiaActual->foto),
+                            env('APP_ENV') == 'local' ? asset(GlobalHelper::getValorAtributoSetting('logo')) : asset('imagenes/almuerzo/'.$menuDiaActual->foto),
                             'image',
                             $cliente->cliente->telf,
                             'es'

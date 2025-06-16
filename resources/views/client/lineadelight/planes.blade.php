@@ -1,9 +1,9 @@
 @extends('client.master')
 @section('content')
-    <x-cabecera-pagina titulo="Planes Delight" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Planes {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}" cabecera="bordeado" />
     <a href="#" data-menu="menu-tips-1">
         <div class="card card-style bg-11" data-card-height="175"
-            style="height: 175px;background-image:url({{ asset('imagenes/delight/gifpulse7.gif') }})">
+            style="height: 175px;background-image:url({{ asset(GlobalHelper::getValorAtributoSetting('gif_pulse')) }})">
             <div class="card-center">
                 <div class="row mb-0">
                     <div class="col-10">

@@ -8,6 +8,7 @@ use App\Models\Categoria;
 use App\Models\Sucursale;
 
 use App\Models\Subcategoria;
+use App\Helpers\GlobalHelper;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
@@ -112,7 +113,7 @@ class ProductCreate extends Component
                 'medicion' => $this->medicion,
                 'puntos' => $this->puntos,
             ]);
-            $producto->codigoBarra='delight'.$producto->id;
+            $producto->codigoBarra=GlobalHelper::getValorAtributoSetting('prefijo_codigo_barras').$producto->id;
             $producto->save();
         }
         else
@@ -127,7 +128,7 @@ class ProductCreate extends Component
                 'puntos' => $this->puntos,
                 
             ]); 
-            $producto->codigoBarra='delight'.$producto->id;
+            $producto->codigoBarra=GlobalHelper::getValorAtributoSetting('prefijo_codigo_barras').$producto->id;
             $producto->save();
         }
          $this->dispatchBrowserEvent('alert',[

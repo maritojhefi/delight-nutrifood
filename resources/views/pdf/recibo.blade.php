@@ -5,10 +5,10 @@
 </head>
 <body>
     <div style="text-align: center;">
-        {!! '<img src="' . public_path("delight_logo.jpg") . '" />' !!}
-        <h1>Nutri-Food/Comida Nutritiva</h1>
-        <p>'NUTRIENDO HABITOS!'</p>
-        <p>Contacto : 78227629</p>
+        {!! '<img src="' . public_path(GlobalHelper::getValorAtributoSetting('logo')) . '" />' !!}
+        <h1>{{ GlobalHelper::getValorAtributoSetting('nombre_empresa') }}</h1>
+        <p>'{{ GlobalHelper::getValorAtributoSetting('slogan') }}!'</p>
+        <p>Contacto : {{ GlobalHelper::getValorAtributoSetting('telefono') }}</p>
         @if (isset($nombreCliente))
             <p>Cliente: {{ $nombreCliente }}</p>
         @endif

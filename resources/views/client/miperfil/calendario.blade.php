@@ -8,7 +8,7 @@ $path = env('APP_URL');
 @endenv
 @production
 @php
-$path = 'https://delight-nutrifood.com';
+$path = "{{ GlobalHelper::getValorAtributoSetting('url_web') }}";
 @endphp
 @endproduction
 @include('client.miperfil.script-calendar')

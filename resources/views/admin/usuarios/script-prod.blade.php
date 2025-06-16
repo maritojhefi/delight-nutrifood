@@ -4,12 +4,13 @@
 let formulario = document.getElementById("form-cal");
 let formBasic = document.getElementById("formBasic");
 var calendarEl = document.getElementById('calendar');
+var urlBase = "{{ GlobalHelper::getValorAtributoSetting('url_web')}}"
 var calendar = new FullCalendar.Calendar(calendarEl, {
   initialView: 'dayGridMonth',
   locale:"es",
   hiddenDays: [ 0 ],
   selectable:true,
-    events:"https://delight-nutrifood.com/admin/usuarios/mostrar/"+{{$plan->id}}+"/"+{{$usuario->id}},
+    events: urlBase+"/admin/usuarios/mostrar/"+{{$plan->id}}+"/"+{{$usuario->id}},
   dateClick:function(info){
       formulario.reset();
       formulario.start.value=info.dateStr;
@@ -20,7 +21,7 @@ var calendar = new FullCalendar.Calendar(calendarEl, {
   eventClick:function(info){
       var evento=info.event;
       console.log(evento);
-      axios.get('https://delight-nutrifood.com/admin/usuarios/editar/'+info.event.id).
+      axios.get(urlBase+'/admin/usuarios/editar/'+info.event.id).
     then(
         (respuesta)=>{
             formBasic.title.value=respuesta.data.title;
@@ -54,7 +55,7 @@ document.getElementById("btnGuardar").addEventListener("click",function(){
     console.log(datos);
     console.log(formulario.nombre.value);
    
-    axios.post('https://delight-nutrifood.com/admin/usuarios/agregarplan',datos).
+    axios.post(urlBase+'/admin/usuarios/agregarplan',datos).
     then(
         (respuesta)=>{
             calendar.refetchEvents();
@@ -72,7 +73,7 @@ document.getElementById("btnEliminar").addEventListener("click",function(){
     const datos=new FormData(formulario);
     
     
-    axios.get('https://delight-nutrifood.com/admin/usuarios/borrar/'+formBasic.id.value).
+    axios.get(urlBase+'/admin/usuarios/borrar/'+formBasic.id.value).
     then(
         (respuesta)=>{
             calendar.refetchEvents();
@@ -90,7 +91,7 @@ document.getElementById("btnEliminar").addEventListener("click",function(){
 document.getElementById("btnFeriado").addEventListener("click",function(){
     const datos=new FormData(formulario);
     
-    axios.post('https://delight-nutrifood.com/admin/usuarios/feriado',datos).
+    axios.post(urlBase+'/admin/usuarios/feriado',datos).
     then(
         (respuesta)=>{
             calendar.refetchEvents();

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Subcategoria;
+use App\Helpers\GlobalHelper;
 use Illuminate\Database\Seeder;
 
 class SubcategoriaSeeder extends Seeder
@@ -66,7 +67,7 @@ class SubcategoriaSeeder extends Seeder
         {
             Subcategoria::create([
                 'nombre'=>$nombre,
-                'descripcion'=>'Productos Delight',
+                'descripcion'=>'Productos '.GlobalHelper::getValorAtributoSetting('nombre_sistema'),
                 'categoria_id'=>$categoria
             ]);
         }

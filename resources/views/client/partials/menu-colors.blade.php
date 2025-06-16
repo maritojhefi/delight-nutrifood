@@ -1,7 +1,7 @@
 
 <div class="card header-card color-card shape-rounded" style="height:40%">
     <div class="card-overlay bg-highlight opacity-95"></div>
-    <div class="card-bg preload-img" data-src="{{asset('images/delight_logo.jpg')}}"></div>
+    <div class="card-bg preload-img" data-src="{{asset(GlobalHelper::getValorAtributoSetting('logo'))}}"></div>
     </div>
     <div class="card bg-transparent mb-0">
     <h1 class="text-center color-white mt-4 font-35 font-800">AZURES</h1>
