@@ -12,10 +12,10 @@
     <meta name="format-detection" content="telephone=no">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <!-- PAGE TITLE HERE -->
-    <title>DELIGHT</title>
+    <title>{{ strtoupper(GlobalHelper::getValorAtributoSetting('nombre_sistema')) }}</title>
 
     <!-- FAVICONS ICON -->
-    <link rel="shortcut icon" type="image/png" href="{{ asset('delight_logo.jpg') }}" />
+    <link rel="shortcut icon" type="image/png" href="{{ asset(GlobalHelper::getValorAtributoSetting('logo')) }}" />
 
 
 
@@ -144,6 +144,8 @@
             opacity: 1;
         }
     </style>
+    @include('macrobyte.includes.includes-styles')
+
 </head>
 
 <body version="dark">
@@ -169,9 +171,9 @@
                     <!-- <img class="logo-abbr" src="./images/logo.png" alt="">
     <div class="brand-title">Ventic</div> -->
                     <img class="logo-abbr" width="54" viewBox="0 0 54 54" fill="none"
-                        src="{{ asset('delight_logo.jpg') }}" />
+                        src="{{ asset(GlobalHelper::getValorAtributoSetting('logo')) }}" />
 
-                    <span class="brand-title" width="97" height="25" fill="none">Delight
+                    <span class="brand-title" width="97" height="25" fill="none">{{GlobalHelper::getValorAtributoSetting('nombre_sistema')}}
                     </span>
                 </a>
                 <div class="nav-control">

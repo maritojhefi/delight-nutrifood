@@ -111,15 +111,15 @@ class AdminTicketsHelper
                             DB::table('whatsapp_plan_almuerzos')->where('id', $actualizarTicket->id)->update(['paso_segundo' => 0, 'paso_carbohidrato' => 0, 'paso_metodo_envio' => 0, 'paso_metodo_empaque' => 0]);
                         }
                         DB::table('plane_user')->where('id', $buscarUsuario->idPivot)->update(['estado' => Plane::ESTADOPERMISO, 'detalle' => null, 'color' => Plane::COLORPERMISO]);
-                        WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Tu permiso fue aceptado y guardado! Si quieres personalizar tu semana y ver todo lo que ofrece Delight visitanos: https://delight-nutrifood.com');
+                        WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Tu permiso fue aceptado y guardado! Si quieres personalizar tu semana y ver todo lo que ofrece '.GlobalHelper::getValorAtributoSetting('nombre_sistema').' visitanos: '. GlobalHelper::getValorAtributoSetting('url_web'));
                     }
                 } else {
 
-                    $devlucion = WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola! No tienes planes pendientes para el dia '.$diaPlan.', probablemente se modifico tu plan o no te encuentras registrado en ninguno, ingresa a tu perfil aqui para mas detalles! https://delight-nutrifood.com/miperfil');
+                    $devlucion = WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola! No tienes planes pendientes para el dia '.$diaPlan.', probablemente se modifico tu plan o no te encuentras registrado en ninguno, ingresa a tu perfil aqui para mas detalles! '.GlobalHelper::getValorAtributoSetting('url_web').'/miperfil');
                     // dd($devlucion);
                 }
             } else {
-                WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola! No tienes planes pendientes para el dia '.$diaPlan.', probablemente se modifico tu plan o no te encuentras registrado en ninguno, ingresa a tu perfil aqui para mas detalles! https://delight-nutrifood.com/miperfil');
+                WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'Hola! No tienes planes pendientes para el dia '.$diaPlan.', probablemente se modifico tu plan o no te encuentras registrado en ninguno, ingresa a tu perfil aqui para mas detalles! '.GlobalHelper::getValorAtributoSetting('url_web').'/miperfil');
             }
         } else {
             WhatsappAPIHelper::enviarMensajePersonalizado($idConversacion, 'text', 'No marcaste una opcion correcta, vuelve a intentarlo');
@@ -142,7 +142,7 @@ class AdminTicketsHelper
                 break;
             case '3':
 
-                WhatsappAPIHelper::enviarTemplate('delight_empaque', ['*1* Vianda   *2* Eco-Empaque Delight', 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
+                WhatsappAPIHelper::enviarTemplate('delight_empaque', ['*1* Vianda   *2* Eco-Empaque '.GlobalHelper::getValorAtributoSetting('nombre_sistema'), 'Cancelar operacion y pedir permiso'], $usuario->telf, 'es');
                 break;
             case '4':
                 

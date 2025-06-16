@@ -113,7 +113,7 @@ class ReporteVentas extends Component
             'fecha' => date('d-m-Y H:i:s'),
         ];
 
-        dd($listacuenta, $resultado, $data);
+        // dd($listacuenta, $resultado, $data);
         $pdf = Pdf::loadView('pdf.recibo-nuevo', $data)->output();
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf;

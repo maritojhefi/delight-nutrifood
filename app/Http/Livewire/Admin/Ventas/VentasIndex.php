@@ -196,15 +196,14 @@ class VentasIndex extends Component
             $printer = new Printer($connector);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $printer->setTextSize(1, 2);
-            //$printer->text("DELIGHT" . "\n");
-            $img = EscposImage::load(public_path('delight_logo.jpg'));
+            $img = EscposImage::load(public_path(GlobalHelper::getValorAtributoSetting('logo')));
             $printer->bitImageColumnFormat($img);
             $printer->setTextSize(1, 1);
-            $printer->text('Nutri-Food/Eco-Tienda' . "\n");
+            $printer->text(GlobalHelper::getValorAtributoSetting('nombre_empresa') . "\n");
             $printer->feed(1);
-            $printer->text("'NUTRIENDO HABITOS!'" . "\n");
+            $printer->text("'".strtoupper(GlobalHelper::getValorAtributoSetting('slogan'))."!'" . "\n");
             $printer->feed(1);
-            $printer->text('Contacto : 78227629' . "\n" . 'Campero e/15 de abril y Madrid' . "\n");
+            $printer->text('Contacto : '.GlobalHelper::getValorAtributoSetting('telefono'). "\n" . GlobalHelper::getValorAtributoSetting('direccion').' ' . "\n");
             if (isset($this->cuenta->cliente->name)) {
                 $printer->text('Cliente: ' . Str::limit($this->cuenta->cliente->name, '20', '') . "\n");
             }
@@ -1167,7 +1166,6 @@ class VentasIndex extends Component
     }
     public function imprimirReciboCliente()
     {
-        //QrCode::format('png')->size(150)->generate('https://delight-nutrifood.com/miperfil', public_path() . '/qrcode.png');
         $metodosPagosRecibo = null;
         if ($this->cuenta->ventaHistorial && $this->cuenta->ventaHistorial->metodosPagos->isNotEmpty()) {
             $metodosPagosRecibo = $this->cuenta->ventaHistorial->metodosPagos;
@@ -1209,14 +1207,14 @@ class VentasIndex extends Component
     public function anularSaldo(Saldo $saldo)
     {
         if ($saldo->anulado) {
-           
+
             $saldo->anulado = false;
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'success',
                 'message' => 'El saldo vuelve a estar activo!',
             ]);
         } else {
-           
+
             $saldo->anulado = true;
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'success',

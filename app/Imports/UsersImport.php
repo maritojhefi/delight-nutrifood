@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\User;
+use App\Helpers\GlobalHelper;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
@@ -18,7 +19,7 @@ class UsersImport implements ToModel,WithHeadingRow
         return new User([
             'name' => $row['nombre'],
             'email' => str_replace(" ", "", strtolower($row['nombre'])) .'@gmail.com',
-            'password' => str_replace(" ", "", strtolower($row['nombre'])).'-delight',
+            'password' => str_replace(" ", "", strtolower($row['nombre'])).'-'.strtolower(GlobalHelper::getValorAtributoSetting('nombre_sistema')),
             
         ]);
     }

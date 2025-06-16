@@ -29,9 +29,9 @@
         <h1 class="pt-3 font-800 font-28 text-uppercase">{{ Str::words(auth()->user()->name, 1, '') }}</h1>
     @endauth
     @guest
-        <h1 class="pt-3 font-800 font-28 text-uppercase">DELIGHT</h1>
+        <h1 class="pt-3 font-800 font-28 text-uppercase">{{ strtoupper(GlobalHelper::getValorAtributoSetting('nombre_sistema'))}}</h1>
     @endguest
-    <p class="font-11 mt-n2">Nutriendo <span class="color-highlight">tus</span> habitos!</p>
+    <p class="font-11 mt-n2">{{ ucfirst(GlobalHelper::getValorAtributoSetting('slogan')) }}!</p>
 </div>
 <div class="menu-items mb-4">
     <h5 class="text-uppercase opacity-20 font-12 pl-3">Menu</h5>
@@ -70,7 +70,7 @@
     <a id="nav-media" href="{{ route('linea.delight') }}"
         class="{{ request()->is('lineadelight' . '*') ? 'nav-item-active' : '' }} ">
         <i class="fa fa-leaf font-16 color-green-dark"></i>
-        <span>Linea Delight!</span>
+        <span>Linea {{GlobalHelper::getValorAtributoSetting('nombre_sistema')}}!</span>
         <i class="fa fa-circle"></i>
     </a>
 
@@ -157,15 +157,15 @@
     </a> -->
 </div>
 <div class="text-center">
-    <a href="https://www.facebook.com/DelightNutriFoodEcoTienda" class="icon icon-xs mr-1 rounded-s bg-facebook"><i
+    <a href="{{GlobalHelper::getValorAtributoSetting('url_facebook')}}" class="icon icon-xs mr-1 rounded-s bg-facebook"><i
             class="fab fa-facebook"></i></a>
     <!--  <a href="#" class="icon icon-xs mr-1 rounded-s bg-twitter"><i class="fab fa-twitter"></i></a> -->
     <!--  <a href="#" class="icon icon-xs mr-1 rounded-s bg-instagram"><i class="fab fa-instagram"></i></a> -->
     <!-- <a href="#" class="icon icon-xs mr-1 rounded-s bg-linkedin"><i class="fab fa-linkedin-in"></i></a> -->
-    <a href="https://wa.link/ewfjau" class="icon icon-xs rounded-s bg-whatsapp"><i class="fab fa-whatsapp"></i></a>
-    <a href="https://www.instagram.com/delight_nutrifood_ecotienda/" class="icon icon-xs rounded-s bg-instagram"><i
+    <a href="{{GlobalHelper::getValorAtributoSetting('url_whatsapp')}}" class="icon icon-xs rounded-s bg-whatsapp"><i class="fab fa-whatsapp"></i></a>
+    <a href="{{GlobalHelper::getValorAtributoSetting('url_instagram')}}" class="icon icon-xs rounded-s bg-instagram"><i
             class="fab fa-instagram"></i></a>
-    <p class="mb-0 pt-3 font-10 opacity-30">Delight-Nutrifood <span class="copyright-year"></span> by Macrobyte</p>
+    <p class="mb-0 pt-3 font-10 opacity-30">{{GlobalHelper::getValorAtributoSetting('nombre_sistema')}} <span class="copyright-year"></span> by Macrobyte</p>
 
 </div>
 <div id="toast-sesion2" class="toast toast-tiny toast-top bg-magenta-dark fade hide" data-bs-delay="3000"

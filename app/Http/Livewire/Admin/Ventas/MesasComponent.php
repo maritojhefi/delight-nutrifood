@@ -6,6 +6,7 @@ use App\Models\Mesa;
 use Livewire\Component;
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
+use App\Helpers\GlobalHelper;
 use Intervention\Image\Facades\Image;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -175,7 +176,7 @@ class MesasComponent extends Component
             });
 
         // 3. Cargar logo (método seguro)
-        $logoPath = public_path('logo2.png');
+        $logoPath = GlobalHelper::getValorAtributoSetting('logo_small');
         if (!file_exists($logoPath)) {
             throw new \Exception("El archivo del logo no existe: $logoPath");
         }
@@ -204,7 +205,7 @@ class MesasComponent extends Component
 
         $qrImage->insert($logoBackground, 'center');
 
-        $background = Image::make(public_path('images/qr-design/QR-DELIGHT.png'));
+        $background = Image::make(asset(GlobalHelper::getValorAtributoSetting('diseno_qr')));
         $x = (int) (($background->width() - $qrImage->width()) / 2);
         $y = (int) (($background->height() - $qrImage->height()) / 2) + $offsetY;
         $background->insert($qrImage, 'top-left', $x, $y);
@@ -214,7 +215,7 @@ class MesasComponent extends Component
         $centro = $background->width() / 2;
 
         $background->text(
-            'Delight',
+            GlobalHelper::getValorAtributoSetting('nombre_sistema'),
             $centro, // Omitimos X para usar align center
             350,  // Tu posición Y personalizada
             function ($font) use ($colorLetra) {
@@ -226,7 +227,7 @@ class MesasComponent extends Component
         );
 
         $background->text(
-            'Nutri-Food/Eco-Tienda',
+            GlobalHelper::getValorAtributoSetting('nombre_empresa'),
             $centro, // Omitimos X para usar align center
             450,  // Tu posición Y personalizada
             function ($font) use ($colorLetra) {
@@ -237,7 +238,7 @@ class MesasComponent extends Component
             }
         );
         $background->text(
-            '"Nutriendo tus hábitos"',
+            '"' . ucfirst(GlobalHelper::getValorAtributoSetting('slogan')) . '"',
             $centro, // Omitimos X para usar align center
             550,  // Tu posición Y personalizada
             function ($font) use ($colorLetra) {
@@ -274,7 +275,7 @@ class MesasComponent extends Component
         );
 
         $background->text(
-            'Calle Campero y 15 de abril',
+            GlobalHelper::getValorAtributoSetting('direccion'),
             $centro, // Omitimos X para usar align center
             1900,  // Tu posición Y personalizada
             function ($font) use ($colorLetra) {
@@ -338,7 +339,7 @@ class MesasComponent extends Component
             });
 
         // 3. Cargar logo (método seguro)
-        $logoPath = public_path('logo2.png');
+        $logoPath = GlobalHelper::getValorAtributoSetting('logo_small');
         if (!file_exists($logoPath)) {
             throw new \Exception("El archivo del logo no existe: $logoPath");
         }

@@ -35,7 +35,7 @@
                                             @if ($item->imagen)
                                                 <img src="{{ asset($item->pathAttachment()) }}" class="rounded-lg me-2"
                                                 width="24" alt="">@else<img
-                                                    src="{{ asset('delight_logo.jpg') }}" class="rounded-lg me-2"
+                                                    src="{{ asset(GlobalHelper::getValorAtributoSetting('logo')) }}" class="rounded-lg me-2"
                                                     width="24" alt="">
                                             @endif
                                             <strong>{{ $item->nombre }}</strong>

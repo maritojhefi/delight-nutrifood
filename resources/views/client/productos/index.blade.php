@@ -150,7 +150,7 @@
     @endif
     @if ($conMasPuntos->count() > 0)
         <div class="card preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
-            style="background-image: url({{asset('imagenes/delight/8.jpeg')}});">
+            style="background-image: url({{asset(GlobalHelper::getValorAtributoSetting('mas_puntos'))}});">
             <div class="card-body">
                 <h4 class="color-white pt-3 font-24">Gana Puntos!</h4>
                 <p class="color-white pt-1">

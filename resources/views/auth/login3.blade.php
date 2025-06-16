@@ -10,7 +10,7 @@
                         <div class="col-xl-12">
                             <div class="auth-form">
                                 <div class="text-center mb-3">
-                                    <a href="index.html"><img src="{{asset('delight_logo.jpg')}}" alt=""></a>
+                                    <a href="index.html"><img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo')) }}" alt=""></a>
                                 </div>
                                 <h4 class="text-center mb-4">Inicia sesion con tu cuenta</h4>
                                 <form method="POST" action="{{ route('login') }}">

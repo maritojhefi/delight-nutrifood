@@ -25,7 +25,7 @@
     <div class="card-overlay bg-highlight opacity-95"></div>
     <div class="card-overlay dark-mode-tint"></div>
     <div class="card-bg preload-img entered loaded" data-src="{{asset('user.png')}}" data-ll-status="loaded"
-        style="background-image: url(&quot;{{asset('delight_logo.jpg')}}&quot;);"></div>
+        style="background-image: url(&quot;{{asset(GlobalHelper::getValorAtributoSetting('logo'))}}&quot;);"></div>
 </div>
 @break
 
