@@ -51,7 +51,7 @@ class FinalizarPlanesDiarios10AMCommand extends Command
             ->whereDate('start', Carbon::today())
             ->whereIn('estado', [Plane::ESTADODESARROLLO, Plane::ESTADOPENDIENTE])
             ->where('plane_user.detalle', null)
-            ->where('editable', true)
+            ->where('asignado_automatico', true)
             ->get();
 
         // Paso 2: Barajar los registros para obtener un orden aleatorio

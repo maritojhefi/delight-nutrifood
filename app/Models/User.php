@@ -162,11 +162,7 @@ class User extends Authenticatable
     }
     public function scopeCajeros($query)
     {
-        return $query->whereIn('role_id', [1, 2]);
-    }
-    public function convenios()
-    {
-        return $this->belongsToMany(Convenio::class, 'convenio_user')->withTimestamps();
+        return $query->whereIn('role_id', [1,2]);
     }
     public function scopeSaldoAFavor($query)
     {

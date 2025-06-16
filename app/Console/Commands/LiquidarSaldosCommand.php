@@ -14,13 +14,13 @@ class LiquidarSaldosCommand extends Command
 
     public function handle()
     {
-        $this->info("⏳ Iniciando proceso de liquidación de saldos...");
+        $this->info('⏳ Iniciando proceso de liquidación de saldos...');
 
         // Obtener la cantidad total de usuarios con saldos
         $totalUsuarios = User::whereHas('saldos')->count();
-        
+
         if ($totalUsuarios === 0) {
-            $this->info("🎉 No hay saldos pendientes por liquidar.");
+            $this->info('🎉 No hay saldos pendientes por liquidar.');
             return;
         }
 
@@ -28,7 +28,8 @@ class LiquidarSaldosCommand extends Command
 
         User::whereHas('saldos') // Solo usuarios con saldos
             ->select('id')
-            ->chunk(50, function ($usuarios) { // Procesa en lotes de 50 usuarios
+            ->chunk(50, function ($usuarios) {
+                // Procesa en lotes de 50 usuarios
                 foreach ($usuarios as $user) {
                     DB::transaction(function () use ($user) {
                         $this->procesarSaldos($user->id);
@@ -39,21 +40,21 @@ class LiquidarSaldosCommand extends Command
             });
 
         $this->output->progressFinish(); // Finaliza la barra de progreso
-        $this->info("✅ Proceso de liquidación de saldos finalizado.");
+        $this->info('✅ Proceso de liquidación de saldos finalizado.');
     }
 
     private function procesarSaldos($userId)
     {
-        $saldos = Saldo::where('user_id', $userId)
-            ->whereNull('liquidado')
-            ->where('anulado', false)
-            ->orderBy('created_at', 'asc')
-            ->get();
+        $saldos = Saldo::where('user_id', $userId)->whereNull('liquidado')->where('anulado', false)->orderBy('created_at', 'asc')->get();
 
         $saldoPendiente = 0;
         $saldosActualizar = [];
 
         foreach ($saldos as $saldo) {
+            if ($saldo->venta) {
+                $saldo->monto = $saldo->venta->saldo_monto ?? $saldo->venta->saldo;
+                $saldo->saveQuietly();
+            }
             if ($saldo->es_deuda) {
                 $saldoPendiente += $saldo->monto; // Suma deuda
             } else {
@@ -70,8 +71,7 @@ class LiquidarSaldosCommand extends Command
                     ->update(['liquidado' => $fechaLiquidacion]);
             }
 
-            Saldo::where('id', $saldo->id)
-            ->update(['saldo_restante' => $saldoPendiente]);
+            Saldo::where('id', $saldo->id)->update(['saldo_restante' => $saldoPendiente]);
         }
 
         // Actualizar el saldo total del usuario

@@ -302,7 +302,7 @@
                     <button class="btn btn-xs btn-dark light" data-bs-toggle="modal"
                         data-bs-target="#basicModal">Finalizar venta</button>
                 @else
-                    <button class="btn btn-xs btn-warning" data-bs-toggle="modal" data-bs-target="#basicModal">Cobrar
+                    <button class="btn btn-xs btn-warning" wire:click="actualizarCuenta" data-bs-toggle="modal" data-bs-target="#basicModal">Cobrar
                         Cuenta</button>
                 @endif
 
