@@ -1,13 +1,28 @@
 <div>
-    <div class="col-lg-12">
+    <div class="col-12">
         <div class="card">
-            <div class="card-header row">
-                <div class="col">
-                    <h4 class="card-title">Lista de Productos</h4>
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-12 col-md-4 mb-2 mb-md-0">
+                        <h4 class="card-title">Lista de Productos</h4>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4 mb-2 mb-md-0">
+                        <div class="input-group" style="max-height: 35px !important">
+                            <button class="btn btn-secondary" type="button">Categoría</button>
+                            <select name="" id="" class="form-control"
+                                wire:model.lazy="categoria_select">
+                                <option value="">Todos</option>
+                                @foreach ($categorias as $categoria)
+                                    <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4">
+                        <input type="text" class="form-control form-control-sm bordeado" style="height: 30px"
+                            placeholder="Buscar producto" wire:model.debounce.750ms="buscar">
+                    </div>
                 </div>
-                <div class="col"> <input type="text" class="form-control form-control-sm bordeado"
-                        style="height: 30px" placeholder="Buscar" wire:model.debounce.750ms="buscar"></div>
-
             </div>
 
             <div class="card-body">
@@ -16,13 +31,14 @@
                         <thead class="m-0 p-0">
                             <tr class="m-0 p-0">
                                 <th class="m-0 p-0"><strong>Nombre</strong></th>
+                                <th class="m-0 p-0  "><strong>Stock</strong></th>
                                 <th class="m-0 p-0"><strong>Precio</strong></th>
-                                <th class="m-0 p-0"><strong>Estado</strong></th>
-                                <th class="m-0 p-0"><strong>Contable</strong></th>
-                                <th class="m-0 p-0"><strong>Stock</strong></th>
-                                <th class="m-0 p-0"><small>Subcategoria</small></th>
-                                <th class="m-0 p-0"><strong>Medicion</strong></th>
-                                <th class="m-0 p-0"><strong>Puntos</strong></th>
+                                <th class="m-0 p-0  "><strong>Estado</strong></th>
+                                <th class="m-0 p-0  "><strong>Contable</strong></th>
+
+                                <th class="m-0 p-0  "><strong>Subcategoria</strong></th>
+                                <th class="m-0 p-0 "><strong>Unidad</strong></th>
+                                <th class="m-0 p-0 "><strong>Puntos</strong></th>
                                 {{-- <th class="m-0 p-0"><strong>Codigo Barra</strong></th> --}}
                                 <th class="m-0 p-0"><strong>Acciones</strong></th>
                             </tr>
@@ -33,44 +49,50 @@
                                     <td class="m-0 p-1">
                                         <div class="d-flex align-items-center">
                                             @if ($item->imagen)
-                                                <img src="{{ asset($item->pathAttachment()) }}" class="rounded-lg me-2"
-                                                width="24" alt="">@else<img
-                                                    src="{{ asset('delight_logo.jpg') }}" class="rounded-lg me-2"
-                                                    width="24" alt="">
+                                                <img src="{{ asset($item->pathAttachment()) }}"
+                                                    class="rounded-lg me-2  d-sm-block" width="24"
+                                                alt="">@else<img src="{{ asset('delight_logo.jpg') }}"
+                                                    class="rounded-lg me-2  d-sm-block" width="24" alt="">
                                             @endif
-                                            <strong>{{ $item->nombre }}</strong>
+                                            <strong class="">{{ $item->nombre }}</strong>
                                         </div>
                                     </td>
+                                    <td class="m-0 p-1  d-sm"><span class="w-space-no">
+                                            @if ($item->contable)
+                                                <button class="badge badge-outline-info badge-xxs"
+                                                    data-bs-toggle="modal" data-bs-target="#modalStock"
+                                                    wire:click="verStock({{ $item->id }})">Stock:{{ $item->stock_actual }}</button>
+                                            @else
+                                                <span class="">No aplica</span>
+                                            @endif
+
+                                        </span>
+                                    </td>
                                     @if ($item->descuento)
-                                        <td class="m-0 p-1"><del
-                                                class="w-space-no badge light badge-danger">{{ $item->precio }}</del><span
-                                                class="w-space-no badge light badge-success">{{ $item->descuento }}
-                                                Bs</span></td>
+                                        <td class="m-0 p-1 text-truncate fw-bold">
+                                            <del class=" text-danger">{{ $item->precio }}</del> 
+                                            <span class="">{{ $item->descuento }} Bs</span>
+                                        </td>
                                     @else
-                                        <td class="m-0 p-1"><span
-                                                class="w-space-no badge light badge-success">{{ $item->precio }}
+                                        <td class="m-0 p-1 text-truncate fw-bold"><span
+                                                class="">{{ $item->precio }}
                                                 Bs</span></td>
                                     @endif
-                                    <td class="m-0 p-1"><a href="#"
+                                    <td class="m-0 p-1  d-md"><a href="#"
                                             wire:click="cambiarestado('{{ $item->id }}')">
                                             <div class="d-flex align-items-center"><i
                                                     class="fa fa-circle text-{{ $item->estado == 'activo' ? 'success' : 'danger' }} me-1"></i>
                                                 {{ $item->estado }}</div>
                                         </a></td>
-                                    <td class="m-0 p-1"><a href="#"
+                                    <td class="m-0 p-1  d-lg"><a href="#"
                                             wire:click="cambiarcontable('{{ $item->id }}')"><span
                                                 class="badge badge-{{ $item->contable == 0 ? 'warning' : 'success' }}">{{ $item->contable == 0 ? 'NO' : 'SI' }}</span></a>
                                     </td>
-                                    <td class="m-0 p-1"><span class="w-space-no">
-                                            <button class="btn btn-success light btn-xxs" data-bs-toggle="modal"
-                                                data-bs-target="#modalStock"
-                                                wire:click="verStock({{ $item->id }})">Ver stock</button>
-                                        </span>
-                                    </td>
-                                    <td class="m-0 p-1"><span
-                                            class="w-space-no">{{ $item->subcategoria->nombre }}</span></td>
-                                    <td class="m-0 p-1"><span class="w-space-no">{{ $item->medicion }}</span></td>
-                                    <td class="m-0 p-1"><span class="w-space-no">{{ $item->puntos }}</span></td>
+
+                                    <td class="m-0 p-1  d-lg"><span
+                                            class="">{{ $item->subcategoria->nombre }}</span></td>
+                                    <td class="m-0 p-1 "><span class="w-space-no">{{ $item->medicion }}</span></td>
+                                    <td class="m-0 p-1 "><span class="w-space-no">{{ $item->puntos }}</span></td>
 
                                     {{-- @if ($item->codigoBarra)
                                         <td class="m-0 p-1"><img src="data:image/png;base64,{{ DNS1D::getBarcodePNG($item->codigoBarra, 'C39+', 1, 33) }}"
@@ -83,51 +105,32 @@
 
 
                                     <td class="m-0 p-1">
-                                        <div class="d-flex">
-                                            <a href="#" class="btn btn-primary shadow btn-xs sharp me-1"
+                                        <div class="d-flex flex-column flex-sm-row">
+                                            <a href="#"
+                                                class="btn btn-primary shadow btn-xs sharp me-1 mb-1 mb-sm-0"
                                                 data-bs-toggle="modal" data-bs-target="#modalEditar"
                                                 wire:click="editarProducto({{ $item->id }})"><i
                                                     class="fa fa-pencil"></i></a>
                                             <a href="#" class="btn btn-danger shadow btn-xs sharp"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modaldelete{{ $item->id }}"><i
+                                                onclick="confirmarEliminacion('{{ $item->id }}', '{{ $item->nombre }}')"><i
                                                     class="fa fa-trash"></i></a>
                                         </div>
                                     </td>
                                 </tr>
-
-                                <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog"
-                                    aria-hidden="true" id="modaldelete{{ $item->id }}">
-                                    <div class="modal-dialog modal-sm">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Esta seguro?</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal">
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">Eliminando <strong>{{ $item->nombre }}</strong>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-danger btn-sm light"
-                                                    data-bs-dismiss="modal">Cancelar</button>
-                                                <button type="button" class="btn btn-primary btn-sm"
-                                                    data-bs-dismiss="modal"
-                                                    wire:click="eliminar('{{ $item->id }}')">Aceptar</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             @endforeach
 
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div class="row  mx-auto">
-                <div class="col">{{ $productos->links() }}</div>
-            </div>
-            <div class="row  mx-auto">
-                <div class="col">Mostrando {{ $productos->count() }} de {{ $productos->total() }} registros</div>
+            <div class="row mx-auto">
+                <div class="col-12 col-md-8 mb-2 mb-md-0">
+                    {{ $productos->links() }}
+                </div>
+                <div class="col-12 col-md-4 text-md-end">
+                    <small class="text-muted">Mostrando {{ $productos->count() }} de {{ $productos->total() }}
+                        registros</small>
+                </div>
             </div>
         </div>
     </div>
@@ -194,14 +197,8 @@
                 </div>
                 <div wire:loading.remove class="modal-body">
                     @isset($productoSeleccionado)
-                        @php
-                            $totalStock = 0;
-                        @endphp
-                        @if ($productoSeleccionado->sucursale->count() != 0)
-                            @foreach ($productoSeleccionado->sucursale as $stock)
-                                @php
-                                    $totalStock += $stock->pivot->cantidad;
-                                @endphp
+                        @if ($productoSeleccionado->getStockDetallado()->count() != 0)
+                            @foreach ($productoSeleccionado->getStockDetallado() as $stock)
                                 <div class="card overflow-hidden bg-image-2 bg-secondary my-1">
                                     <div class="card-header  border-0 m-0 py-1">
                                         <div class="">
@@ -217,7 +214,8 @@
                                 </div>
                             @endforeach
                             <hr>
-                            <center class="letra14"><strong>Stock total : {{ $totalStock }}</strong></center>
+                            <center class="letra14"><strong>Stock total :
+                                    {{ $productoSeleccionado->stock_actual }}</strong></center>
                         @else
                             <div class="text-center"><span class="text-muted text-center"> No hay registro de stock para
                                     este producto</span></div>
@@ -255,4 +253,25 @@
     </div>
 
 
+
 </div>
+@push('scripts')
+    <script>
+        function confirmarEliminacion(id, nombre) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: `¿Deseas eliminar el producto "${nombre}"?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    @this.call('eliminar', id);
+                }
+            });
+        }
+    </script>
+@endpush

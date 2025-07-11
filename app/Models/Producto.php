@@ -30,7 +30,8 @@ class Producto extends Model
         'medicion',
         'contable',
         'observacion',
-        'prioridad'
+        'prioridad',
+        'stock_actual'
 
     ];
     const PRIORIDADBAJA = "1";
@@ -66,6 +67,10 @@ class Producto extends Model
     {
 
         return ucfirst(strtolower($this->nombre));
+    }
+    public function getPuntosAttribute($value)
+    {
+        return floatval($value);
     }
     public function precio()
     {
@@ -333,5 +338,38 @@ class Producto extends Model
             default:
                 return $query; // Sin restricciones para otros roles
         }
+    }
+
+    /**
+     * Obtiene el stock detallado del producto por sucursal
+     */
+    public function getStockDetallado()
+    {
+        return $this->sucursale()
+            ->withPivot('sucursale_id', 'cantidad', 'id', 'fecha_venc', 'max')
+            ->wherePivot('cantidad', '>', 0)
+            ->get();
+    }
+
+    /**
+     * Accessor para obtener el stock actual total del producto
+     */
+    public function getStockActualAttribute()
+    {
+        return $this->sucursale()
+            ->withPivot('cantidad')
+            ->wherePivot('cantidad', '>', 0)
+            ->sum('producto_sucursale.cantidad');
+    }
+
+    /**
+     * Obtiene el stock total del producto
+     */
+    public function getStockTotal()
+    {
+        return $this->sucursale()
+            ->withPivot('cantidad')
+            ->wherePivot('cantidad', '>', 0)
+            ->sum('producto_sucursale.cantidad');
     }
 }
