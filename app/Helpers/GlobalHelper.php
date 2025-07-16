@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use Carbon\Carbon;
 use App\Models\Plane;
+use App\Models\Setting;
 use App\Models\Almuerzo;
 use App\Models\Producto;
 use App\Models\Adicionale;
@@ -405,5 +406,11 @@ class GlobalHelper
             $nombre = 'Producto no encontrado';
         }
         return $nombre;
+    }
+
+    public static function getValorAtributoSetting($atributo)
+    {
+        $atributo = Setting::where('atributo', $atributo)->firstOrFail();
+        return $atributo->valor;
     }
 }

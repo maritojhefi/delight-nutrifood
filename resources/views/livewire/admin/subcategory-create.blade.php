@@ -66,7 +66,7 @@
                                                 <img src="{{ asset('imagenes/subcategorias/' . $item->foto) }}"
                                                     class="img-thumbnail" style="width: 50px" alt="">
                                             @else
-                                                <img src="{{ asset('imagenes/delight/1.jpeg') }}" class="img-thumbnail"
+                                                <img src="{{ asset(GlobalHelper::getValorAtributoSetting('dia_noche_inicio')) }}" class="img-thumbnail"
                                                     style="width: 50px" alt="">
                                             @endif{{ $item->nombre }}
                                         </th>

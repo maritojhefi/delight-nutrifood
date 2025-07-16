@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content-comentado')
-    <x-cabecera-pagina titulo="Linea Delight!" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Linea {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!" cabecera="bordeado" />
 
 
 
@@ -91,7 +91,7 @@
     </div>
 
     <div data-card-height="140" class="card card-style round-medium shadow-huge top-30"
-        style="height: 140px;background-image:url('{{ asset('imagenes/delight/2.jpeg') }}')">
+        style="height: 140px;background-image:url('{{ asset(GlobalHelper::getValorAtributoSetting('inicio_disfruta')) }}')">
         <div class="card-top mt-3 ms-3">
             <h2 class="color-white pt-3 pb-3">Planes Saludables!</h2>
 
@@ -107,7 +107,7 @@
         </div>
         <div class="card-bottom mb-n3 ps-5 ms-4">
             <h5 class="font-13 color-white mb-n1">Encuentra uno para ti!</h5>
-            <p class="color-white font-10 opacity-70">Delight by Macrobyte</p>
+            <p class="color-white font-10 opacity-70">{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }} by Macrobyte</p>
         </div>
 
         <div class="card-overlay bg-gradient opacity-80"></div>
@@ -183,7 +183,7 @@
     @endif
     @if ($conMasPuntos->count() > 0)
         <div class="card preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
-            style="background-image: url({{ asset('imagenes/delight/8.jpeg') }});">
+            style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('gana_puntos')) }});">
             <div class="card-body">
                 <h4 class="color-white pt-3 font-24">Gana Puntos!</h4>
                 <p class="color-white pt-1">

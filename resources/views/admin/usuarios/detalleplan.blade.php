@@ -8,7 +8,7 @@
     @endenv
     @production
         @php
-        $path = 'https://delight-nutrifood.com';
+        $path = "{{ strtoupper(GlobalHelper::getValorAtributoSetting('url_web')) }}";
         @endphp
     @endproduction
     @include('admin.usuarios.script')

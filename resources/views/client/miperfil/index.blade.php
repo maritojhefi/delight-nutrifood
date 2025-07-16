@@ -3,7 +3,7 @@
     @auth
         <x-cabecera-pagina titulo="Hola!" cabecera="bordeado" />
         <div class="card card-style preload-img entered loaded" data-src="{{ asset('images/imagen4.jpg') }}" data-card-height="450"
-            style="height: 450px; background-image: url(&quot;{{ asset('imagenes/delight/21.jpeg') }}&quot;);"
+            style="height: 450px; background-image: url(&quot;{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}&quot;);"
             data-ll-status="loaded">
             <div class="card-bottom ms-3 ">
                 <h1 class="font-40 line-height-xl ">{{ auth()->user()->name }}</h1>

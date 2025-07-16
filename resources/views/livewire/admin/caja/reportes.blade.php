@@ -13,7 +13,7 @@
                                 <div class="media pb-3 border-bottom mb-3 align-items-center">
                                     <a href="#" wire:click='buscarCaja({{ $item->id }})'>
                                         <div class="media-image me-2">
-                                            <img src="{{ asset('images/delight_logo.jpg') }}" alt="">
+                                            <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo')) }}" alt="">
                                         </div>
                                         <div class="media-body">
                                             <h6 class="fs-16 mb-0">{{ $item->created_at->format('d-M-Y') }} <span

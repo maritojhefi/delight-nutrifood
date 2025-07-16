@@ -229,7 +229,8 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'Charts'=>ConsoleTVs\Charts\Charts::class,
+        'Charts' => ConsoleTVs\Charts\Charts::class,
+        'GlobalHelper' => App\Helpers\GlobalHelper::class,
     ],
 
 ];

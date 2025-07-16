@@ -49,10 +49,10 @@
                                     <td class="m-0 p-1">
                                         <div class="d-flex align-items-center">
                                             @if ($item->imagen)
-                                                <img src="{{ asset($item->pathAttachment()) }}"
-                                                    class="rounded-lg me-2  d-sm-block" width="24"
-                                                alt="">@else<img src="{{ asset('delight_logo.jpg') }}"
-                                                    class="rounded-lg me-2  d-sm-block" width="24" alt="">
+                                                <img src="{{ asset($item->pathAttachment()) }}" class="rounded-lg me-2"
+                                                width="24" alt="">@else<img
+                                                    src="{{ asset(GlobalHelper::getValorAtributoSetting('logo')) }}" class="rounded-lg me-2"
+                                                    width="24" alt="">
                                             @endif
                                             <strong class="">{{ $item->nombre }}</strong>
                                         </div>

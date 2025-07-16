@@ -37,8 +37,6 @@ class Reportes extends Component
     }
     public function imprimir()
     {
-
-        //QrCode::format('png')->size(150)->generate('https://delight-nutrifood.com/miperfil', public_path() . '/qrcode.png');
         if ($this->cuenta->sucursale->id_impresora) {
 
             $recibo = CustomPrint::imprimirReciboVenta(

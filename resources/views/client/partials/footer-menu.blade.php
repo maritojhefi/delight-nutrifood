@@ -70,7 +70,7 @@
     <a href="{{ route('linea.delight') }}"
         class="{{ request()->is('lineadelight' . '*') ? 'active-nav rounded-m' : '' }} cargando">
         <i class="fa fa-leaf font-16 color-white fa-beat"></i>
-        <span class="color-white">Linea Delight!</span>
+        <span class="color-white">Linea {{GlobalHelper::getValorAtributoSetting('nombre_sistema')}}!</span>
     </a>
     <a href="{{ route('menusemanal') }}"
         class="{{ request()->is('inicio' . '*') ? 'active-nav rounded-m' : '' }} cargando">

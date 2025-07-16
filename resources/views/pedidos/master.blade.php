@@ -8,7 +8,7 @@
         content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1, user-scalable=0 viewport-fit=cover" />
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
-    <title>Delight</title>
+    <title>{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}</title>
 
     <link rel="stylesheet" type="text/css" href="{{ asset('styles/bootstrap.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('styles/custom.css') }}">
@@ -78,7 +78,7 @@
                 <div class="p-2">
                     <div class="row p-0 d-flex align-items-center">
                         <div class="col-auto pe-0 m-0">
-                            <a href="#"><img src="{{ asset('images/delight_logo.jpg') }}"
+                            <a href="#"><img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo')) }}"
                                     class="rounded-sm shadow-xl img-fluid" style="height:66px"></a>
                         </div>
                         <div class="col m-0">
