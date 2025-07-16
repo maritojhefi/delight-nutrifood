@@ -22,40 +22,40 @@
             asset('images/cumple.gif') .
             ');background-position: top;background-repeat: no-repeat;"'
         : '' !!}>
-        <center style="font-size: 10px" class="mt-0">Creado por: {{ Str::limit($cuenta->usuario->name, 25) }}
+        <center style="font-size: 10px" class="mt-0">Creado por: {{ Str::words($cuenta->usuario->name, 1, '') }}
+            <a class="" href="#" wire:loading>
+                <small class="spinner-border spinner-border-sm letra10" role="status" aria-hidden="true"></small>
+            </a>
         </center>
         <h4 class="d-flex justify-content-between align-items-center m-0">
-            <strong class="m-3 text-muted" style="font-size: 12px">Venta #{{ $cuenta->id }}</strong> <br>
-            <a class="" href="#" wire:loading>
-                <small class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></small>
-            </a>
+            <strong class="m-3 text-muted" style="font-size: 12px"><i class="fa fa-send"></i>
+                #{{ $cuenta->id }}</strong> <br>
+
 
             @if ($cuenta->cliente)
                 <a href="#" data-bs-toggle="modal" data-bs-target="#planesusuario"><span
-                        class="badge  badge-success p-1"
-                        style="font-size: 11px">{{ Str::before($cuenta->cliente->name, ' ') }} <i
+                        class="badge  badge-success letra10 p-1">{{ Str::before($cuenta->cliente->name, ' ') }} <i
                             class="fa fa-user"></i></span></a>
             @else
                 @if ($cuenta->usuario_manual)
                     <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span
-                            class="badge  badge-warning p-1"
-                            style="font-size: 11px">{{ $cuenta->usuario_manual }}</span></a>
+                            class="badge letra10 badge-info p-1">{{ $cuenta->usuario_manual }}</span></a>
                 @else
                     <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span
-                            class="badge  badge-dark p-1" style="font-size: 11px">Sin usuario</span></a>
+                            class="badge badge-outline-danger p-1 letra10">Sin usuario</span></a>
                 @endif
             @endif
 
 
-            <span class="badge badge-outline-info badge-xs badge-rounded p-1">{{ $itemsCuenta }} items</span>
+            <span class="text-muted letra10">{{ $itemsCuenta }} items</span>
         </h4>
         @isset($cuenta->cliente)
             @if ($cuenta->cliente->saldo > 0)
                 <small class="m-0 px-2 bg-warning text-white"><i class="flaticon-091-warning"></i>
-                        DEUDA DEL CLIENTE : {{ $cuenta->cliente->saldo }} Bs</small>
+                    DEUDA DEL CLIENTE : {{ $cuenta->cliente->saldo }} Bs</small>
             @elseif($cuenta->cliente->saldo < 0)
                 <small class="m-0 px-2 bg-primary text-white"><i class="flaticon-008-check"></i>
-                        A FAVOR DEL CLIENTE : {{ abs((int) $cuenta->cliente->saldo) }} Bs</small>
+                    A FAVOR DEL CLIENTE : {{ abs((int) $cuenta->cliente->saldo) }} Bs</small>
             @endif
         @endisset
 
@@ -302,7 +302,8 @@
                     <button class="btn btn-xs btn-dark light" data-bs-toggle="modal"
                         data-bs-target="#basicModal">Finalizar venta</button>
                 @else
-                    <button class="btn btn-xs btn-warning" wire:click="actualizarCuenta" data-bs-toggle="modal" data-bs-target="#basicModal">Cobrar
+                    <button class="btn btn-xs btn-warning" wire:click="actualizarCuenta" data-bs-toggle="modal"
+                        data-bs-target="#basicModal">Cobrar
                         Cuenta</button>
                 @endif
 

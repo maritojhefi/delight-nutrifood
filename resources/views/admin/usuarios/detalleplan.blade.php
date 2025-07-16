@@ -8,7 +8,7 @@
     @endenv
     @production
         @php
-        $path = "{{ strtoupper(GlobalHelper::getValorAtributoSetting('url_web')) }}";
+        $path = strtoupper(GlobalHelper::getValorAtributoSetting('url_web'));
         @endphp
     @endproduction
     @include('admin.usuarios.script')
