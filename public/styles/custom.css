@@ -103,5 +103,27 @@
     );
 }
 
+.card.login-card {
+        /* background-color: lch(0% 0 0); */
+
+    background-color: lch(98.38% 9.58 150.89);
+    border-color: #94ffadc3;
+}
+
+.card.login-card form label {
+    color: #3dc15b;
+    font-size: 16px;
+}
+
+.theme-light form input:focus {
+    border-color: #2f686a !important;
+    box-shadow: 0 0 0 0.2rem rgba(47, 104, 106, 0.25);
+}
+
+
+
+.theme-light .input-icon  {
+    color: #3dc15b;
+}
 
 
