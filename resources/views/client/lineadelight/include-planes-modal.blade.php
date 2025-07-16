@@ -35,6 +35,7 @@
                 <a href="#"
                     class="btn btn-border btn-sm ms-3 rounded-s btn-full shadow-l color-highlight border-highlight close-menu text-uppercase font-900">Cerrar</a>
             </div>
+            
             <div class="col-6">
                 <a data-menu="menu-tips-2" href="#"
                     class="btn btn-sm me-3 rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase">1/9 -
@@ -73,7 +74,7 @@
 
             </p>
         </div>
-        <div class="row mb-3">
+        <div class="row mb-3 justify-content-between mx-auto">
             <div class="col-6">
                 <a href="#"
                     class="btn btn-border btn-sm ms-3 rounded-s btn-full shadow-l color-highlight border-highlight close-menu text-uppercase font-900">Cerrar</a>
@@ -304,8 +305,8 @@
             <h1 class="text-center color-white font-22 font-700">PWA Ready</h1>
             <p class="text-center mt-n3 mb-3 font-11 color-white">Just add it to your home screen and Enjoy!</p>
         </div>
-        <div class="card card-style">
-            <h3 class="mx-auto mt-2">7° PARTE: HORARIO DE ATENCION DE COCINA</h3>
+        <div class="card card-style p-3 d-flex flex-column align-items-center justify-content-center">
+            <h3 class=" mt-2 text-center">7° PARTE: HORARIO DE ATENCION DE COCINA</h3>
             <p class="boxed-text-xl pt-3 mb-3">
                 LA ATENCION DE COCINA PARA ALMUERZOS ES DE 12:00 A 14:00, SI USTED SE SIRVE EN MESA Y EN CASO NO LLEGASE
                 HASTA
