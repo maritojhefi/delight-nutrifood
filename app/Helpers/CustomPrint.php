@@ -43,7 +43,7 @@ class CustomPrint
         // Encabezado
         $printer->setJustification(Printer::JUSTIFY_CENTER);
         $printer->setTextSize(1, 2);
-        $img = EscposImage::load(public_path('delight_logo.jpg'));
+        $img = EscposImage::load(public_path(GlobalHelper::getValorAtributoSetting('logo')));
 
         // MEJORA: Verificar si la imagen existe antes de intentar cargarla
         try {
@@ -53,20 +53,20 @@ class CustomPrint
         }
 
         $printer->setTextSize(1, 1);
-        $textoNombreTienda = GlobalHelper::limpiarTextoParaPOS('Nutri-Food/Comida Nutritiva');
+        $textoNombreTienda = GlobalHelper::limpiarTextoParaPOS(GlobalHelper::getValorAtributoSetting('nombre_empresa'));
         $printer->text($textoNombreTienda . "\n");
         $printer->feed(1); // MEJORA: Reducir a feed() sin parámetro o eliminar si no es necesario
 
         // MEJORA: Usar un separador consistente
-        $textoLema = GlobalHelper::limpiarTextoParaPOS("'NUTRIENDO HÁBITOS!'");
+        $textoLema = GlobalHelper::limpiarTextoParaPOS("'" . GlobalHelper::getValorAtributoSetting('slogan') . "!'");
         $printer->text($textoLema . "\n");
         $printer->feed(); // MEJORA: feed() sin parámetro es suficiente
 
         // MEJORA: Combinar líneas de contacto para ahorrar espacio
-        $textoContacto = GlobalHelper::limpiarTextoParaPOS('Contacto: 78227629');
+        $textoContacto = GlobalHelper::limpiarTextoParaPOS('Contacto: '.GlobalHelper::getValorAtributoSetting('telefono'));
         $printer->text(str: $textoContacto . "\n");
 
-        $textoDireccion = GlobalHelper::limpiarTextoParaPOS('Campero e/15 de abril y Madrid');
+        $textoDireccion = GlobalHelper::limpiarTextoParaPOS(GlobalHelper::getValorAtributoSetting('direccion'));
         $printer->text($textoDireccion . "\n");
 
         if (isset($nombreCliente)) {
@@ -243,14 +243,14 @@ class CustomPrint
             ob_start();
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $printer->setTextSize(1, 2);
-            $img = EscposImage::load(public_path('delight_logo.jpg'));
+            $img = EscposImage::load(public_path(GlobalHelper::getValorAtributoSetting('logo')));
             $printer->bitImageColumnFormat($img);
             $printer->setTextSize(1, 1);
-            $printer->text('Nutri-Food/Eco-Tienda' . "\n");
+            $printer->text(GlobalHelper::getValorAtributoSetting('nombre_empresa') . "\n");
             $printer->feed(1);
-            $printer->text("'NUTRIENDO HABITOS!'" . "\n");
+            $printer->text("'".strtoupper(GlobalHelper::getValorAtributoSetting('slogan'))."!'" . "\n");
             $printer->feed(1);
-            $printer->text('Contacto : 78227629' . "\n" . 'Campero e/15 de abril y Madrid' . "\n");
+            $printer->text('Contacto : '.GlobalHelper::getValorAtributoSetting('telefono') . "\n" . GlobalHelper::getValorAtributoSetting('direccion').' ' . "\n");
             if (isset($nombreCliente)) {
                 $printer->text('Cliente: ' . $nombreCliente . "\n");
             }

@@ -168,8 +168,8 @@
         </div>
     @else
         <div data-card-height="200" class="card card-style preload-img entered loaded"
-            data-src="{{ asset('delight_logo.jpg') }}"
-            style="height: 200px; background-image: url({{ asset('imagenes/delight/2.jpeg') }});"
+            data-src="{{ asset(GlobalHelper::getValorAtributoSetting('logo')) }}"
+            style="height: 200px; background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('inicio_disfruta')) }});"
             data-ll-status="loaded">
             <div class="card-top pt-4 ms-3 me-3">
                 <h2 class="color-white font-600">Completaste tu perfil!</h2>

@@ -9,6 +9,7 @@ use App\Models\Venta;
 use App\Models\Deshecho;
 use App\Models\Sucursale;
 use App\Models\Subcategoria;
+use App\Helpers\GlobalHelper;
 use App\Models\Stock_producto;
 use App\Models\Historial_venta;
 use Illuminate\Database\Eloquent\Model;
@@ -53,7 +54,7 @@ class Producto extends Model
     public function pathAttachment()
     {
         if ($this->imagen == null) {
-            return 'logo2.png';
+            return GlobalHelper::getValorAtributoSetting('producto_default');
         } else {
             return "imagenes/productos/" . $this->imagen;
         }

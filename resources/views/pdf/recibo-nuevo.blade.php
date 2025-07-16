@@ -143,9 +143,9 @@
     <div class="container">
 
         <div class="receipt_header">
-            {!! '<img src="' . public_path('delight_logo.jpg') . '" />' !!}
-            <h1>Recibo de Venta <span>Nutri-Food/Eco-Tienda</span></h1>
-            <h2>Direccion: Calle Campero y 15 de abril<span>Contacto : 78227629</span>
+            {!! '<img src="' . public_path(GlobalHelper::getValorAtributoSetting('logo')) . '" />' !!}
+            <h1>Recibo de Venta <span>{{ GlobalHelper::getValorAtributoSetting('nombre_empresa') }}</span></h1>
+            <h2>Direccion: {{ GlobalHelper::getValorAtributoSetting('direccion') }}<span>Contacto : {{ GlobalHelper::getValorAtributoSetting('telefono') }}</span>
                 @if (isset($nombreCliente))
                     <span>Cliente: {{ $nombreCliente }}</span>
                 @endif

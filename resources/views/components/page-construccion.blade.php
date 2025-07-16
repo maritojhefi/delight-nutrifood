@@ -1,6 +1,6 @@
 <div class="card card-style"  style="height:600px!important;">
     <div class="card-center text-center">
-        <img src="{{asset('imagenes/delight/underconstruction.gif')}}" alt="">
+        <img src="{{asset(GlobalHelper::getValorAtributoSetting('bajo_construccion'))}}" alt="">
         <h1 class="color-white font-34 font-700 mb-2">Casi listo!</h1>
         <p class="color-white boxed-text-xl opacity-50">
             Estamos realizando los ultimos ajustes para una buena experiencia!
