@@ -16,8 +16,9 @@
                             <i class="fa fa-user ms-2 input-icon"></i>
                             <input type="email" class="form-control rounded-sm validate-email font-13" id="form1a" name="email" value="{{ old('email') }}" required>
                         </div>
+
                         @error('email')
-                            <small class="text-danger">{{ $message }}</small>
+                            <small class="text-danger">{{ $message }}</ small>
                         @enderror
                         
                         <label for="password-input">Contraseña</label>
