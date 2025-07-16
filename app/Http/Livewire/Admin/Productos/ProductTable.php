@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Admin\Productos;
 
 use Livewire\Component;
 use App\Models\Producto;
+use App\Models\Categoria;
 use App\Models\Sucursale;
 use App\Models\Subcategoria;
 use Livewire\WithPagination;
@@ -18,11 +19,20 @@ class ProductTable extends Component
     use WithFileUploads;
     public $buscar;
     public $productoEdit, $nombre, $precio, $puntos, $medicion, $detalle, $descuento, $imagen, $subcategoria_id, $subcategorias;
-    public $fechaStock, $cantidadStock, $productoSeleccionado;
+    public $fechaStock, $cantidadStock, $productoSeleccionado, $categorias, $categoria_select, $stockDetallado;
     protected $paginationTheme = 'bootstrap';
     protected $queryString = ['buscar'];
 
+    public function mount()
+    {
+        $this->categorias = Categoria::all();
+    }
     public function updatingBuscar()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingCategoriaSelect()
     {
         $this->resetPage();
     }
@@ -127,13 +137,31 @@ class ProductTable extends Component
     }
     public function render()
     {
-        $productos = Producto::limitadoPorRol()->where('nombre', 'LIKE', '%' . $this->buscar . '%')->orWhere('estado', $this->buscar)->orderBy('nombre', 'asc')->paginate(12);
+        $query = Producto::limitadoPorRol();
+        
+        // Filtrar por categoría si se ha seleccionado una
+        if ($this->categoria_select) {
+            $query->whereHas('subcategoria', function ($subQuery) {
+                $subQuery->where('categoria_id', $this->categoria_select);
+            });
+        }
+        
+        // Filtrar por búsqueda de texto
+        if ($this->buscar) {
+            $query->where(function($searchQuery) {
+                $searchQuery->where('nombre', 'LIKE', '%' . $this->buscar . '%')
+                           ->orWhere('estado', $this->buscar);
+            });
+        }
+        
+        $productos = $query->orderBy('nombre', 'asc')->paginate(12);
         return view('livewire.admin.productos.product-table', compact('productos'));
     }
     public function verStock($idProducto)
     {
-        // dd($idProducto);
         $this->productoSeleccionado = Producto::find($idProducto);
+        // Cargar el stock detallado usando la función del modelo
+        $this->stockDetallado = $this->productoSeleccionado->getStockDetallado();
     }
     public function cambiarestado(Producto $producto)
     {
