@@ -1,0 +1,107 @@
+
+.theme-light .guide-card {
+    background-color: #3dc15b;
+}
+
+.theme-light .guide-card h4 {
+    color: #ffffff;
+}
+
+.theme-light .guide-card p {
+    color: #ffffff;
+}
+
+
+.theme-dark .card.guide-card {
+    /* background-color: #255d32; */
+    /* background-color: #2f2f2f; */
+}
+
+.theme-dark .guide-card h4 {
+    color: #ffffff;
+}
+
+.theme-dark .guide-card p {
+    color: #cccccc;
+}
+
+.theme-light .terms-button-overlay {
+    background-color: rgba(91, 214, 255, 0.9);
+    opacity: 0.9;
+}
+
+
+.theme-dark .terms-button-overlay {
+    background-color: rgb(5, 59, 78);
+    opacity: 0.9
+}
+
+
+.theme-light .card.plan-card {
+    background-color: #54b5b9;
+}
+
+.theme-dark .card.plan-card {
+    border-color: #2f686a;
+}
+
+.card.plan-card h2 {
+    color: #ffffff;
+    text-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 0.8),
+        1px 1px 2px rgba(0, 0, 0, 0.9),
+        0 0 8px rgba(0, 0, 0, 0.5);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    position: relative;
+    z-index: 15;
+}
+
+
+.theme-light .confirm-btn {
+        background-color: #3dc15b;
+}
+
+.theme-dark .confirm-btn {
+        background-color: rgb(5, 59, 78);
+        /* border-color: #ffffff; */
+}
+
+.confirm-btn:hover {
+    transform: scale(1.1);
+}
+
+.theme-light .plan-icon {
+    color: rgb(255, 79, 79);
+}
+
+.theme-dark .plan-icon {
+    color: rgba(204, 86, 86, 0.736);
+}
+
+.theme-dark .plan-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgb(0, 63, 72) ;
+}
+
+.theme-light .plan-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.6) 0%,
+        rgba(0, 0, 0, 0.4) 40%,
+        rgba(0, 0, 0, 0.1) 80%,
+        rgba(0, 0, 0, 0) 100%
+    );
+}
+
+
+
