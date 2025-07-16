@@ -6,7 +6,7 @@
             <div class="content">
                 <h4 class="font-700">Planes suscritos</h4>
                 <p class="pb-0">
-                    Actualmente estas suscrito en {{ $planes->count() }} plan(es):
+                  Actualmente estas suscrito en {{$planes->count()}} plan(es):
                 </p>
             </div>
         </div>
@@ -14,7 +14,7 @@
             @foreach ($usuario->planes as $plane)
                 @if ($plane->id == $item['id'])
                     <div data-card-height="140" class="card card-style rounded-m shadow-xl bg-18"
-                        style="height: 140px; background-image:url('{{ asset(GlobalHelper::getValorAtributoSetting('planes_usuario')) }}')">
+                        style="height: 140px; background-image:url('{{ asset('imagenes/delight/9.jpeg') }}')">
                         <div class="card-top mt-4 ms-3">
                             <h2 class="color-white">{{ Str::limit($item['plan'], 30) }}</h2>
                             <p class="color-white font-10 opacity-70 mt-2 mb-n1"><i class="far fa-calendar"></i> Restante:
@@ -30,17 +30,17 @@
                         <div class="card-center me-3">
                             <a href="{{ route('calendario.cliente', [$item['id'], $usuario->id]) }}"
                                 class="float-end bg-highlight btn btn-xs text-uppercase font-900 rounded-xl font-11">Administrar
-                            </a>
+                                </a>
                         </div>
                         <div class="card-overlay bg-black opacity-60"></div>
                     </div>
-                    @break
-                @endif
-            @endforeach
+                @break
+            @endif
         @endforeach
-
-        <div class="divider bg-mint-dark divider-margins"></div>
-    @endisset
+    @endforeach
+   
+    <div class="divider bg-mint-dark divider-margins"></div>
+@endisset
 
 <a href="#" data-menu="menu-tips-1">
     <div class="card card-style bg-11" data-card-height="125"
