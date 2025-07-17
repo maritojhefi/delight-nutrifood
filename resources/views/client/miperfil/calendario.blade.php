@@ -26,7 +26,7 @@
                         {{-- @dd($lista) --}}
                         <div class="card card-style">
                             <div
-                                class="list-group list-custom-small list-icon-0 bg-@if ($lista['detalle'] == null && $lista['estado'] == 'pendiente') {{ 'mint' }}@elseif($lista['estado'] == 'desarrollo'){{ 'yellow' }}@else{{ 'green' }} @endif-dark ps-3 pe-4 ">
+                                class="list-group list-custom-small list-icon-0 bg-@if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'mint' }}@elseif($lista['estado'] == 'desarrollo'){{ 'yellow' }}@else{{ 'green' }}@endif-dark ps-3 pe-4 ">
                                 <a data-bs-toggle="collapse" class="no-effect collapsed" href="#collapse-7{{ $lista['id'] }}"
                                     aria-expanded="false">
 
