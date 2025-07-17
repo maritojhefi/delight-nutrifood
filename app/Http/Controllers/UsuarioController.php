@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Validator;
+use Intervention\Image\ImageManagerStatic as Imagk;
+Imagk::configure(['driver' => 'imagick']);
 
 class UsuarioController extends Controller
 {
@@ -48,7 +50,7 @@ class UsuarioController extends Controller
     private function convertHeicToJpg($file)
     {
         try {
-            $img = Image::make($file->getRealPath());
+            $img = Imagk::make($file->getRealPath());
             $tempPath = tempnam(sys_get_temp_dir(), 'conv') . '.jpg';
             $img->encode('jpg')->save($tempPath);
 
@@ -84,21 +86,20 @@ class UsuarioController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'name' => 'required|string|max:255',
+                'name' => 'required|string|max:80',
                 'email' => 'required|email',
                 'telefono' => 'required|digits_between:7,15',
-                'profesion' => 'required|string|max:255',
+                'profesion' => 'required|string|max:40',
                 'dia_nacimiento' => 'required|integer|between:1,31',
                 'mes_nacimiento' => 'required|integer|between:1,12',
-                'ano_nacimiento' => 'required|integer|min:1900|max:' . date('Y'),
-                'direccion' => 'required|string|max:255',
-                'direccion_trabajo' => 'nullable|string|max:255',
+                'ano_nacimiento' => 'required|integer|min:1900|max:' . (date('Y') - 1),
+                'direccion' => 'required|string|max:100',
+                'direccion_trabajo' => 'nullable|string|max:100',
                 'password' => 'required|string|min:4|confirmed',
                 'hijos' => 'nullable|boolean',
                 'foto' => [
-                    'required', // El campo es obligatorio
-                    'image', // Verifica que el archivo sea una imagen
-                    'mimes:jpeg,png,jpg', // Formatos de archivo permitidos
+                    'nullable', // El campo no es obligatorio
+                    'mimetypes:image/jpeg,image/png,image/heic,image/heif', // Formatos de archivo permitidos
                     'max:10240', // Tamaño máximo del archivo (en KB)
                 ],
             ],
@@ -122,9 +123,7 @@ class UsuarioController extends Controller
                 'password.required' => 'Por favor, crea una contraseña.',
                 'password.min' => 'La contraseña debe tener al menos 4 caracteres.',
                 'password.confirmed' => 'Las contraseñas no coinciden. Por favor, vuelve a intentarlo.',
-                'foto.required' => 'Por favor, sube una foto.',
-                'foto.image' => 'El archivo debe ser una imagen válida.',
-                'foto.mimes' => 'La imagen debe ser en formato JPEG, PNG o JPG.',
+                'foto.mimes' => 'El archivo debe ser una imagen en formato JPEG, PNG, JPG, HEIC o HEIF.',
                 'foto.max' => 'El tamaño máximo permitido para la imagen es de 10 MB.',
             ],
         );
@@ -185,7 +184,7 @@ class UsuarioController extends Controller
             $ruta = public_path('imagenes/perfil/' . $nombreArchivo);
 
             // Redimensionar y guardar la imagen
-            $image = Image::make($imagen)->resize(600, null, function ($constraint) {
+            $image = Imagk::make($imagen)->resize(600, null, function ($constraint) {
                 $constraint->aspectRatio();
             });
             $image->orientate();
