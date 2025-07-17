@@ -75,9 +75,21 @@
 
 
         <div class="d-flex justify-content-between align-items-center ms-4 me-4 mt-4">
-            <h2 class="mb-0" style="z-index: 10;">{!! wordwrap($plan->nombre, 18, "<br />\n") !!}</h2>
+            <div class="plan-title-container" style="flex: 1; margin-right: 15px;">
+                <h2 class="mb-0 plan-title-text" 
+                    style="z-index: 10; 
+                           display: -webkit-box; 
+                           -webkit-line-clamp: 2; 
+                           -webkit-box-orient: vertical; 
+                           overflow: hidden; 
+                           line-height: 1.2;
+                           word-break: break-word;"
+                    data-plan-name="{{ $plan->nombre }}">
+                    {{ $plan->nombre }}
+                </h2>
+            </div>
             <a href="#"
-                class="btn confirm-btn text-light rounded-pill fw-bold text-uppercase small carrito"
+                class="btn confirm-btn text-light rounded-pill fw-bold text-uppercase small carrito flex-shrink-0"
                 style="z-index: 10;"
                 id="{{ $plan->id }}">
                 <span class="text-white">{{$plan->producto->precioReal()}} Bs </span>
@@ -100,4 +112,40 @@
     </div>
 @endforeach
 @include('client.lineadelight.include-planes-modal')
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Función para ajustar el tamaño de fuente de los títulos de planes
+    function adjustPlanTitleFontSize() {
+        const planTitles = document.querySelectorAll('.plan-title-text');
+        
+        planTitles.forEach(function(title) {
+            const planName = title.getAttribute('data-plan-name');
+            const nameLength = planName.length;
+            
+            // Determinar el tamaño de fuente basado en la longitud del nombre
+            let fontSize;
+            if (nameLength <= 15) {
+                fontSize = '1.5rem'; // Tamaño normal para nombres cortos
+            } else if (nameLength <= 25) {
+                fontSize = '1.3rem'; // Tamaño mediano para nombres medianos
+            } else if (nameLength <= 35) {
+                fontSize = '1.1rem'; // Tamaño más pequeño para nombres largos
+            } else {
+                fontSize = '0.95rem'; // Tamaño mínimo para nombres muy largos
+            }
+            
+            title.style.fontSize = fontSize;
+            
+            // Ajustar también el line-height proporcionalmente
+            const lineHeight = parseFloat(fontSize) * 1.2;
+            title.style.lineHeight = lineHeight + 'rem';
+        });
+    }
+    
+    // Ejecutar la función al cargar la página
+    adjustPlanTitleFontSize();
+});
+</script>
+
 @endsection
