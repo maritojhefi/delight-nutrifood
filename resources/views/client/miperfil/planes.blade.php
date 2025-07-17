@@ -42,7 +42,7 @@
     <div class="divider bg-mint-dark divider-margins my-3"></div>
 @endisset
 
-<a href="#" data-menu="menu-tips-1 " style="background-color: #000000;">
+<a href="#" data-menu="menu-tips-1" style="background-color: #000000;">
     <div class="card card-style mb-3" style="background-color: #000000 !important;" data-card-height="125"
         style="height: 145px;">
         <div class="card-center ">
