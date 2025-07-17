@@ -104,7 +104,7 @@
         </div>
         <div class="d-flex align-items-center ms-4 me-3 mb-2 card-bottom">
             <i class="fa fa-apple-alt fs-1 me-3 plan-icon" ></i>
-            <p class="text-white small lh-sm m-0">{{ $plan->detalle }}</p>
+            <p class="text-white small lh-sm m-0">{{ $plan->producto->detalle }}</p>
         </div>
 
         <div class="plan-overlay card-overlay opacity-60"></div>
