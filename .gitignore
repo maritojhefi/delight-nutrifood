@@ -13,3 +13,8 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
+
+# Ignorar carpetas de imágenes subidas por usuarios
+/public/imagenes/perfil/
+/public/imagenes/productos/
+/public/imagenes/subcategorias/
