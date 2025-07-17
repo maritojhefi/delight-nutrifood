@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-center">
         <div class="card card-style login-card bg-24" style="height: 500px; width: 350px;">
             <div class="card-center">
-                <div class="px-5 align-content-center ">
+                <div class="px-5">
                     <div class="d-flex flex-column">
                         <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}" class="img mx-auto d-block" style="width:100px" alt="">
                         <p class="mt-2 color-highlight font-26 font-weight-bold text-center ">Bienvenido a {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!</p>
@@ -48,8 +48,12 @@
             <div class="card-bottom">
                 <div class="row">
                     <div class="text-end pe-5">
+                        {{-- <a href="{{ route('register') }}"
+                            class="opacity-50 font-15 hover-blue color-aqua-dark">Aun sin cuenta? <strong>Registrate aqui</strong>
+                        </a> --}}
                         <a href="{{ route('register') }}"
-                            class="color-black opacity-50 font-15">Aun sin cuenta? <strong>Registrate aqui</strong>
+                        class="opacity-50 font-15 text-decoration-none">
+                        Aun sin cuenta? <strong>Registrate aqui</strong>
                         </a>
                     </div>
                 </div>

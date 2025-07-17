@@ -1,186 +1,192 @@
 @extends('client.masterSinFooter')
 @section('content')
     <x-cabecera-pagina titulo="Registrate" cabecera="bordeado" />
-
-    <div class="card card-style bg-24" style="height: 750px;max-height: 920px;">
+    <div class="d-flex justify-content-center">
+    <div class="card card-style signin-card bg-24" style="height: 650px;max-height: 920px; width: 400px;">
         <div class="card-center">
-            <div class="ms-5 me-5">
-                <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}" class="img mx-auto d-block " style="width:100px" alt="">
-                <p class="color-highlight font-15 text-center "><strong> Bienvenido a {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!</strong></p>
-                <div class="mt-2 mb-0">
-                    <form action="{{ route('usuario.registrar') }}" method="post" id="multiStepForm" novalidate>
-                        @csrf
-
-                        <!-- Paso 1: Información Personal -->
-                        <div class="form-step" id="step-1">
-                            <h5 class="text-center text-white">Paso 1: Información Personal</h5>
-                            <div class="input-style input-transparent no-borders has-icon">
-                                <i class="fa fa-user"></i>
-                                <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                    id="name" placeholder="Nombre Completo" name="name" value="{{ old('name') }}"
-                                    required>
-                                <label for="name" class="color-blue-dark font-10 mt-1">Nombre Completo</label>
-                                @error('name')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-
-                            <div class="input-style input-transparent no-borders has-icon">
-                                <i class="fa fa-at"></i>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                    id="email" placeholder="Correo Electrónico" name="email"
-                                    value="{{ old('email') }}" required>
-                                <label for="email" class="color-blue-dark font-10 mt-1">Correo Electrónico</label>
-                                @error('email')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-
-                            <div class="input-style input-transparent no-borders has-icon">
-                                <i class="fa fa-phone"></i>
-                                <input type="number" class="form-control @error('telefono') is-invalid @enderror"
-                                    id="telefono" placeholder="Teléfono (8 digitos)" name="telefono"
-                                    value="{{ old('telefono') }}" required>
-                                <label for="telefono" class="color-blue-dark font-10 mt-1">Teléfono</label>
-                                @error('telefono')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                            {{-- foto de perfil --}}
-                            <div class="file-data pb-5">
-                                <input type="file" id="file-upload" class="upload-file bg-highlight shadow-s rounded-s "
-                                    accept="image/*" name="foto">
-                                <p class="upload-file-text color-white">Subir Foto</p>
-                            </div>
-                            @error('foto')
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
-                            <div class="list-group list-custom-large upload-file-data disabled">
-                                <img id="image-data" src="images/empty.png" class="mx-auto img-fluid rounded-circle"
-                                    style="width:150px; display:block; height:150px;">
-                            </div>
-                            {{-- fin foto de perfil --}}
-                            <button type="button"
-                                class="btn btn-xxs mb-3 rounded-xl text-uppercase font-900 shadow-s bg-mint-dark btn-next"
-                                id="nextStep1">Siguiente</button>
-                        </div>
-
-                        <!-- Paso 2: Detalles Adicionales -->
-                        <div class="form-step d-none" id="step-2">
-                            <h5 class="text-center text-white">Paso 2: Detalles Adicionales</h5>
-                            <div class="input-style input-transparent no-borders has-icon">
-                                <i class="fa fa-briefcase"></i>
-                                <input type="text" class="form-control @error('profesion') is-invalid @enderror"
-                                    id="profesion" placeholder="Profesión" name="profesion" value="{{ old('profesion') }}"
-                                    required>
-                                <label for="profesion" class="color-blue-dark font-10 mt-1">Profesión</label>
-                                @error('profesion')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                            <label for="profesion" class="color-white-dark font-10 mt-1">Fecha de nacimiento</label>
-                            <div class="input-style input-transparent no-borders has-icon">
-                                <i class="fa fa-calendar"></i>
-                                <div class="row">
-                                    <div class="col-4">
-                                        <input type="number" class="form-control" placeholder="Día" name="dia_nacimiento"
-                                            required>
-                                    </div>
-                                    <div class="col-4">
-                                        <!-- Convertimos el campo del mes en un select -->
-                                        <select class="form-control" name="mes_nacimiento" required>
-                                            <option value="" disabled selected>Mes</option>
-                                            <option value="1">Enero</option>
-                                            <option value="2">Febrero</option>
-                                            <option value="3">Marzo</option>
-                                            <option value="4">Abril</option>
-                                            <option value="5">Mayo</option>
-                                            <option value="6">Junio</option>
-                                            <option value="7">Julio</option>
-                                            <option value="8">Agosto</option>
-                                            <option value="9">Septiembre</option>
-                                            <option value="10">Octubre</option>
-                                            <option value="11">Noviembre</option>
-                                            <option value="12">Diciembre</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-4">
-                                        <input type="number" class="form-control" placeholder="Año"
-                                            name="ano_nacimiento" required>
-                                    </div>
-                                </div>
-                                <label for="nacimiento" class="color-blue-dark font-10 mt-1">Fecha de Nacimiento</label>
-                            </div>
-
-
-                            <div class="input-style input-transparent no-borders has-icon">
-                                <i class="fa fa-map"></i>
-                                <input type="text" class="form-control @error('direccion') is-invalid @enderror"
-                                    id="direccion" placeholder="Dirección" name="direccion"
-                                    value="{{ old('direccion') }}" required>
-                                <label for="direccion" class="color-blue-dark font-10 mt-1">Dirección</label>
-                                @error('direccion')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-
-                            <div class="input-style input-transparent no-borders has-icon">
-                                <i class="fa fa-building"></i>
-                                <input type="text"
-                                    class="form-control @error('direccion_trabajo') is-invalid @enderror"
-                                    id="direccion_trabajo" placeholder="Dirección de Trabajo" name="direccion_trabajo"
-                                    value="{{ old('direccion_trabajo') }}">
-                                <label for="direccion_trabajo" class="color-blue-dark font-10 mt-1">Dirección de
-                                    Trabajo</label>
-                                @error('direccion_trabajo')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                            <button type="button"
-                                class="btn btn-xs mb-3 rounded-xl text-uppercase font-900 shadow-s bg-mint-dark btn-prev">Anterior</button>
-                            <button type="button"
-                                class="btn btn-xs  mb-3 rounded-xl text-uppercase font-900 shadow-s bg-mint-dark btn-next">Siguiente</button>
-                        </div>
-
-                        <!-- Paso 3: Seguridad -->
-                        <div class="form-step d-none" id="step-3">
-                            <h5 class="text-center text-white">Paso 3: Seguridad y Otros Detalles</h5>
-
-                            <div class="input-style input-transparent no-borders has-icon">
-                                <i class="fa fa-lock"></i>
-                                <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                    id="password" placeholder="Minimo 4 caracteres" name="password" required>
-                                <label for="password" class="color-blue-dark font-10 mt-1">Contraseña</label>
-                                @error('password')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-
-                            <div class="input-style input-transparent no-borders has-icon">
-                                <i class="fa fa-arrow-right"></i>
-                                <input type="password" class="form-control" id="password_confirmation"
-                                    placeholder="Confirmar contraseña" name="password_confirmation" required>
-                                <label for="password_confirmation" class="color-blue-dark font-10 mt-1">Confirmar
-                                    Contraseña</label>
-                            </div>
-
-                            <div class="form-check mt-3">
-                                <input class="form-check-input" type="checkbox" name="hijos" id="hijos"
-                                    value="1">
-                                <label class="form-check-label" for="hijos">¿Tiene hijos?</label>
-                            </div>
-                            <br>
-                            <button type="button"
-                                class="btn btn-xs mb-3 rounded-xl text-uppercase font-900 shadow-s bg-mint-dark btn-prev">Anterior</button>
-                            <button type="submit"
-                                class="btn btn-xs mb-3 rounded-xl text-uppercase font-900 shadow-s bg-red-dark btn-block">Registrar
-                                Cuenta</button>
-                        </div>
-                    </form>
+            <div class="px-5">
+                <div class="d-flex flex-column">
+                    <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}" class="img mx-auto d-block" style="width:100px" alt="">
+                    <p class="mt-2 color-highlight font-26 font-weight-bold text-center ">Bienvenido a {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!</p>
                 </div>
+                <form action="{{ route('usuario.registrar') }}" method="post" id="multiStepForm" novalidate>
+                    @csrf
+                    <!-- Paso 1: Información Personal -->
+                    <div class="form-step" id="step-1">
+                    {{-- <div class="form-step" id="step-2"> --}}
+                        <h5 class="text-center">Paso 1: Información Personal</h5>
+                        <label for="name">Nombre Completo</label>
+                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
+                            <i class="fa fa-user ms-2 input-icon"></i>
+                            <input type="text" class="form-control rounded-sm @error('name') is-invalid @enderror"
+                                id="name" name="name" value="{{ old('name') }}"
+                                required>
+                            @error('name')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        <label for="email">Correo Electrónico</label>
+                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
+                            <i class="fa fa-at ms-2 input-icon"></i>
+                            <input type="email" class="form-control rounded-sm @error('email') is-invalid @enderror"
+                                id="email" name="email"
+                                value="{{ old('email') }}" required>
+                            @error('email')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        <label for="telefono">Teléfono (8 digitos)</label>
+                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
+                            <i class="fa fa-phone ms-2 input-icon"></i>  
+                            <input type="number" class="form-control rounded-sm @error('telefono') is-invalid @enderror"
+                                id="telefono" name="telefono"
+                                value="{{ old('telefono') }}" required>
+                            @error('telefono')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                        {{-- foto de perfil --}}
+                        <div class="file-data pb-5">
+                            <input type="file" id="file-upload" class="upload-file rounded-sm bg-highlight shadow-s rounded-s "
+                                accept="image/*" name="foto">
+                            <p class="upload-file-text color-white">Subir Foto</p>
+                        </div>
+                        @error('foto')
+                            <p class="text-danger">{{ $message }}</p>
+                        @enderror
+                        <div class="list-group list-custom-large upload-file-data disabled">
+                            <img id="image-data" src="images/empty.png" class="mx-auto img-fluid rounded-circle"
+                                style="width:150px; display:block; height:150px;">
+                        </div>
+                        {{-- fin foto de perfil --}}
+                        <div class="d-flex justify-content-end">
+                            <button type="button"
+                            class="btn btn-xs rounded-xl text-uppercase font-900 shadow-s bg-mint-dark btn-next"
+                            id="nextStep1">Siguiente</button>
+                        </div>
+                    </div>
+
+                    <!-- Paso 2: Detalles Adicionales -->
+                    <div class="form-step d-none" id="step-2">
+                    {{-- <div class="form-step d-none" id="step-1"> --}}
+                        <h5 class="text-center">Paso 2: Detalles Adicionales</h5>
+
+                        <label for="profesion">Profesión</label>
+                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
+                            <i class="fa fa-briefcase ms-2 input-icon"></i>
+                            <input type="text" class="form-control rounded-sm @error('profesion') is-invalid @enderror"
+                                id="profesion" name="profesion" value="{{ old('profesion') }}"
+                                required>
+                            @error('profesion')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                        <label for="profesion">Fecha de nacimiento</label>
+                        <div class="input-style has-icon validate-field d-flex flex-row">
+                                <i class="fa fa-calendar input-icon"></i>
+                                <div class="col-4">
+                                    <input type="number" class="form-control" placeholder="Día" name="dia_nacimiento"
+                                        required>
+                                </div>
+                                <div class="col-4">
+                                    <!-- Convertimos el campo del mes en un select -->
+                                    <select class="form-control" name="mes_nacimiento" required>
+                                        <option value="" disabled selected>Mes</option>
+                                        <option value="1">Enero</option>
+                                        <option value="2">Febrero</option>
+                                        <option value="3">Marzo</option>
+                                        <option value="4">Abril</option>
+                                        <option value="5">Mayo</option>
+                                        <option value="6">Junio</option>
+                                        <option value="7">Julio</option>
+                                        <option value="8">Agosto</option>
+                                        <option value="9">Septiembre</option>
+                                        <option value="10">Octubre</option>
+                                        <option value="11">Noviembre</option>
+                                        <option value="12">Diciembre</option>
+                                    </select>
+                                </div>
+                                <div class="col-4">
+                                    <input type="number" class="form-control" placeholder="Año"
+                                        name="ano_nacimiento" required>
+                                </div>
+                        </div>
+
+
+                        <label for="direccion">Dirección</label>
+                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
+                            <i class="fa fa-map ms-2 input-icon"></i>
+                            <input type="text" class="form-control rounded-sm @error('direccion') is-invalid @enderror"
+                                id="direccion" name="direccion"
+                                value="{{ old('direccion') }}" required>
+                            @error('direccion')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        <label for="direccion_trabajo">Dirección de Trabajo</label>
+                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
+                            <i class="fa fa-building ms-2 input-icon"></i>
+                            <input type="text"
+                                class="form-control rounded-sm @error('direccion_trabajo') is-invalid @enderror"
+                                id="direccion_trabajo" name="direccion_trabajo"
+                                value="{{ old('direccion_trabajo') }}">
+                            
+                            @error('direccion_trabajo')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                        <div class="d-flex justify-content-between align-content-between">
+                            <button type="button"
+                                class="btn btn-xs rounded-xl text-uppercase font-900 shadow-s bg-red-dark btn-prev">Anterior</button>
+                            <button type="button"
+                                class="btn btn-xs rounded-xl text-uppercase font-900 shadow-s bg-mint-dark btn-next">Siguiente</button>
+                        </div>
+                    </div>
+
+                    <!-- Paso 3: Seguridad -->
+                    <div class="form-step d-none" id="step-3">
+                        <h5 class="text-center">Paso 3: Seguridad y Otros Detalles</h5>
+                        <label for="password">Contraseña</label>
+                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
+                            <i class="fa fa-lock ms-2 input-icon"></i>
+                            <input type="password" class="form-control rounded-sm @error('password') is-invalid @enderror"
+                                id="password" placeholder="Minimo 4 caracteres" name="password" required>
+                            @error('password')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        <label for="password_confirmation">Confirmar Contraseña</label>
+                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
+                            <i class="fa fa-arrow-right ms-2 input-icon"></i>
+                            <input type="password" class="form-control rounded-sm" id="password_confirmation"
+                                 name="password_confirmation" required>
+                            
+                        </div>
+
+                        <div class="d-flex flex-row align-content-center">
+                            <label for="hijos">¿Tiene hijos?: </label>
+                            <input class="form-check-input ms-1" type="checkbox" name="hijos" id="hijos"
+                                value="1">
+                        </div>
+                        <br>
+                        <div class="d-flex justify-content-between align-content-between">
+                            <button type="button"
+                                class="btn btn-xs mb-3 rounded-xl text-uppercase font-900 shadow-s bg-red-dark btn-prev"
+                                >Anterior</button>
+                            <button type="submit"
+                                class="btn btn-xs mb-3 rounded-xl text-uppercase font-900 shadow-s bg-mint-dark btn-block"
+                                >Registrar Cuenta</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-        <div class="card-overlay bg-black opacity-85"></div>
+        {{-- <div class="card-overlay bg-black opacity-85"></div> --}}
+    </div>
     </div>
 @endsection
 @push('modals')
