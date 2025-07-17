@@ -362,7 +362,10 @@ class Producto extends Model
             ->wherePivot('cantidad', '>', 0)
             ->sum('producto_sucursale.cantidad');
     }
-
+    public function precioReal()
+    {
+        return $this->descuento > 0 ? $this->descuento : $this->precio;
+    }
     /**
      * Obtiene el stock total del producto
      */
