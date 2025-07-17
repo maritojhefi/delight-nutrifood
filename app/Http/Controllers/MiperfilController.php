@@ -68,9 +68,10 @@ class MiperfilController extends Controller
         if (auth()->user() != null) {
             $usuario = User::find(auth()->user()->id);
             $planes = CreateList::crearlistaplan($usuario->id);
-            $subcategoria = Subcategoria::find(1);
+            // $subcategoria = Subcategoria::find(1);
+            $planesTodos = Plane::all();
         }
-        return view('client.miperfil.planes', compact('planes', 'usuario', 'subcategoria'));
+        return view('client.miperfil.planes', compact('planes','planesTodos', 'usuario'));
     }
     public function index()
     {
