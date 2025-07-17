@@ -6,7 +6,7 @@
             <div class="content">
                 <h4 class="font-700">Planes suscritos</h4>
                 <p class="pb-0">
-                  Actualmente estas suscrito en {{$planes->count()}} plan(es):
+                    Actualmente estas suscrito en {{ $planes->count() }} plan(es):
                 </p>
             </div>
         </div>
@@ -30,7 +30,7 @@
                         <div class="card-center me-3">
                             <a href="{{ route('calendario.cliente', [$item['id'], $usuario->id]) }}"
                                 class="float-end bg-highlight btn btn-xs text-uppercase font-900 rounded-xl font-11">Administrar
-                                </a>
+                            </a>
                         </div>
                         <div class="card-overlay bg-black opacity-60"></div>
                     </div>
