@@ -99,7 +99,7 @@ class UsuarioController extends Controller
                 'hijos' => 'nullable|boolean',
                 'foto' => [
                     'nullable', // El campo no es obligatorio
-                    'mimetypes:image/jpeg,image/png,image/heic,image/heif', // Formatos de archivo permitidos
+                    'mimetypes:image/jpeg,image/png,image/heic', // Formatos de archivo permitidos
                     'max:10240', // Tamaño máximo del archivo (en KB)
                 ],
             ],
