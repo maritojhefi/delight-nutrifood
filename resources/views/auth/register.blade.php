@@ -2,8 +2,9 @@
 @section('content')
     <x-cabecera-pagina titulo="Registrate" cabecera="bordeado" />
     <div class="d-flex justify-content-center">
-    <div class="card card-style signin-card bg-24" style="height: 650px;max-height: 920px; width: 400px;">
-        <div class="card-center">
+    {{-- <div class="card card-style signin-card bg-24" style="height: 650px;max-height: 920px; width: 400px;"> --}}
+    <div class="card card-style signin-card bg-24 py-4" style="min-height: 450px; width: 400px; ">
+        <div class="">
             <div class="px-5">
                 <div class="d-flex flex-column">
                     <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}" class="img mx-auto d-block" style="width:100px" alt="">
@@ -13,42 +14,56 @@
                     @csrf
                     <!-- Paso 1: Información Personal -->
                     <div class="form-step" id="step-1">
-                    {{-- <div class="form-step" id="step-2"> --}}
                         <h5 class="text-center">Paso 1: Información Personal</h5>
-                        <label for="name">Nombre Completo</label>
-                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
-                            <i class="fa fa-user ms-2 input-icon"></i>
-                            <input type="text" class="form-control rounded-sm @error('name') is-invalid @enderror"
-                                id="name" name="name" value="{{ old('name') }}"
-                                required>
+                        {{-- Nombre Completo --}}
+                        <div class="d-flex flex-column">
+                            <label for="name">Nombre Completo</label>
+                            <div class="input-style validate-field d-flex flex-row">
+                                <i class="fa fa-user ms-2 input-icon mt-3 position-fixed"></i>
+                                <div class="d-flex flex-column w-100">
+                                    <input type="text" class="form-control w-auto rounded-sm @error('name') is-invalid @enderror"
+                                        id="name" name="name" value="{{ old('name') }}"
+                                        required>
+                                </div>
+
+                            </div>
                             @error('name')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-
-                        <label for="email">Correo Electrónico</label>
-                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
-                            <i class="fa fa-at ms-2 input-icon"></i>
-                            <input type="email" class="form-control rounded-sm @error('email') is-invalid @enderror"
-                                id="email" name="email"
-                                value="{{ old('email') }}" required>
+                        {{-- Correo Electrónico --}}
+                        <div class="d-flex flex-column">
+                            <label for="email">Correo Electrónico</label>
+                            <div class="input-style validate-field d-flex flex-row">
+                                <i class="fa fa-at ms-2 input-icon mt-3 position-fixed"></i>
+                                <div class="d-flex flex-column w-100">
+                                    <input type="email" class="form-control rounded-sm @error('email') is-invalid @enderror"
+                                        id="email" name="email"
+                                        value="{{ old('email') }}" required>
+                                </div>
+                            </div>
                             @error('email')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-
-                        <label for="telefono">Teléfono (8 digitos)</label>
-                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
-                            <i class="fa fa-phone ms-2 input-icon"></i>  
-                            <input type="number" class="form-control rounded-sm @error('telefono') is-invalid @enderror"
-                                id="telefono" name="telefono"
-                                value="{{ old('telefono') }}" required>
-                            @error('telefono')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
+                        {{-- Telefono --}}
+                        <div class="d-flex flex-column">
+                            <label for="telefono">Teléfono (8 digitos)</label>
+                            <div class="input-style validate-field d-flex flex-row">
+                                <i class="fa fa-phone ms-2 mt-3 position-fixed input-icon"></i>  
+                                <div class="d-flex flex-column w-100">
+                                    <input type="number" class="form-control rounded-sm @error('telefono') is-invalid @enderror"
+                                        id="telefono" name="telefono"
+                                        value="{{ old('telefono') }}" required>
+                                </div>
+                                @error('telefono')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
                         </div>
+
                         {{-- foto de perfil --}}
-                        <div class="file-data pb-5">
+                        {{-- <div class="file-data pb-5">
                             <input type="file" id="file-upload" class="upload-file rounded-sm bg-highlight shadow-s rounded-s "
                                 accept="image/*" name="foto">
                             <p class="upload-file-text color-white">Subir Foto</p>
@@ -57,9 +72,38 @@
                             <p class="text-danger">{{ $message }}</p>
                         @enderror
                         <div class="list-group list-custom-large upload-file-data disabled">
-                            <img id="image-data" src="images/empty.png" class="mx-auto img-fluid rounded-circle"
+                            <img id="image-data" class="mx-auto img-fluid rounded-circle"
                                 style="width:150px; display:block; height:150px;">
+                            <button id="remove-file-upload" class="rounded md bg-red-dark">
+                                <i class="fa fa-cross text-white"></i>
+                            </button>
+                        </div> --}}
+                        
+                        {{-- fin foto de perfil --}}
+
+                        {{-- foto de perfil --}}
+                        <div class="custom-major-file-container d-flex flex-row justify-content-center" id="major-file-container">
+                            <div class="custom-file-upload-container">
+                                <div class="file-upload-area" id="uploadArea">
+                                    <div class="upload-text">
+                                        <strong>Subir Foto</strong><br>
+                                        <small>JPEG, PNG, HEIC</small>
+                                        <small>(opcional)</small>
+                                    </div>
+                                    <img class="preview-image" id="previewImage" style="display: none;">
+                                    {{-- <button class="remove-button" id="removeButton" type="button">×</button> --}}
+                                    <div class="converting-overlay" id="convertingOverlay">
+                                        Convirtiendo...
+                                    </div>
+                                </div>
+                                <input type="file" id="fileInput" class="hidden-input" accept="image/*" name="foto">
+                                <div class="error-message" id="errorMessage"></div>
+                            </div>
+                            <button class="remove-button" id="removeButton" type="button">×</button>
                         </div>
+                        @error('foto')
+                            <p class="text-danger">{{ $message }}</p>
+                        @enderror
                         {{-- fin foto de perfil --}}
                         <div class="d-flex justify-content-end">
                             <button type="button"
@@ -72,71 +116,110 @@
                     <div class="form-step d-none" id="step-2">
                     {{-- <div class="form-step d-none" id="step-1"> --}}
                         <h5 class="text-center">Paso 2: Detalles Adicionales</h5>
-
-                        <label for="profesion">Profesión</label>
-                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
-                            <i class="fa fa-briefcase ms-2 input-icon"></i>
-                            <input type="text" class="form-control rounded-sm @error('profesion') is-invalid @enderror"
-                                id="profesion" name="profesion" value="{{ old('profesion') }}"
-                                required>
-                            @error('profesion')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                        <label for="profesion">Fecha de nacimiento</label>
-                        <div class="input-style has-icon validate-field d-flex flex-row">
-                                <i class="fa fa-calendar input-icon"></i>
-                                <div class="col-4">
-                                    <input type="number" class="form-control" placeholder="Día" name="dia_nacimiento"
+                        <div class="d-flex flex-column">
+                            <label for="profesion">Profesión</label>
+                            <div class="input-style validate-field d-flex flex-row">
+                                <i class="fa fa-briefcase ms-2 mt-3 position-fixed input-icon"></i>
+                                <div class="d-flex flex-column w-100">
+                                    <input type="text" class="form-control rounded-sm @error('profesion') is-invalid @enderror"
+                                        id="profesion" name="profesion" value="{{ old('profesion') }}"
                                         required>
-                                </div>
-                                <div class="col-4">
-                                    <!-- Convertimos el campo del mes en un select -->
-                                    <select class="form-control" name="mes_nacimiento" required>
-                                        <option value="" disabled selected>Mes</option>
-                                        <option value="1">Enero</option>
-                                        <option value="2">Febrero</option>
-                                        <option value="3">Marzo</option>
-                                        <option value="4">Abril</option>
-                                        <option value="5">Mayo</option>
-                                        <option value="6">Junio</option>
-                                        <option value="7">Julio</option>
-                                        <option value="8">Agosto</option>
-                                        <option value="9">Septiembre</option>
-                                        <option value="10">Octubre</option>
-                                        <option value="11">Noviembre</option>
-                                        <option value="12">Diciembre</option>
-                                    </select>
-                                </div>
-                                <div class="col-4">
-                                    <input type="number" class="form-control" placeholder="Año"
-                                        name="ano_nacimiento" required>
-                                </div>
+                                </div>        
+                                @error('profesion')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>        
+                        </div>
+
+                        {{-- <div class="d-flex flex-column w-100">
+                            <label for="profesion">Fecha de nacimiento</label>
+                            <div class="input-style validate-field d-flex flex-row">
+                                    <i class="fa fa-calendar ms-2 mt-3 position-absolute input-icon"></i>
+                                    <div class="col-2">
+                                        <input type="number" class="form-control rounded-sm" placeholder="Día" name="dia_nacimiento"
+                                            required>
+                                    </div>
+                                    <div class="col-3">
+                                        <!-- Convertimos el campo del mes en un select -->
+                                        <select class="form-control rounded-sm" name="mes_nacimiento" required>
+                                            <option value="" disabled selected>Mes</option>
+                                            <option value="1">Enero</option>
+                                            <option value="2">Febrero</option>
+                                            <option value="3">Marzo</option>
+                                            <option value="4">Abril</option>
+                                            <option value="5">Mayo</option>
+                                            <option value="6">Junio</option>
+                                            <option value="7">Julio</option>
+                                            <option value="8">Agosto</option>
+                                            <option value="9">Septiembre</option>
+                                            <option value="10">Octubre</option>
+                                            <option value="11">Noviembre</option>
+                                            <option value="12">Diciembre</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-2">
+                                        <input type="number" class="form-control rounded-sm" placeholder="Año"
+                                            name="ano_nacimiento" required>
+                                    </div>
+                            </div>
+                        </div> --}}
+
+                        <div class="d-flex flex-column w-100">
+                            <label for="nacimiento">Fecha de nacimiento</label>
+                            <div class="input-style validate-field d-flex flex-row gap-2 position-relative">
+                                <i class="fa fa-calendar ms-2 mt-3 position-absolute input-icon"></i>
+
+                                <input type="number" class="form-control rounded-sm flex-grow-1" placeholder="Día" name="dia_nacimiento" required>
+
+                                <select class="form-control rounded-sm flex-grow-1" name="mes_nacimiento" required>
+                                    <option value="" disabled selected>Mes</option>
+                                    <option value="1">Enero</option>
+                                    <option value="2">Febrero</option>
+                                    <option value="3">Marzo</option>
+                                    <option value="4">Abril</option>
+                                    <option value="5">Mayo</option>
+                                    <option value="6">Junio</option>
+                                    <option value="7">Julio</option>
+                                    <option value="8">Agosto</option>
+                                    <option value="9">Septiembre</option>
+                                    <option value="10">Octubre</option>
+                                    <option value="11">Noviembre</option>
+                                    <option value="12">Diciembre</option>
+                                </select>
+                                <input type="number" class="form-control rounded-sm flex-grow-1" placeholder="Año" name="ano_nacimiento" required>
+                            </div>
                         </div>
 
 
-                        <label for="direccion">Dirección</label>
-                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
-                            <i class="fa fa-map ms-2 input-icon"></i>
-                            <input type="text" class="form-control rounded-sm @error('direccion') is-invalid @enderror"
-                                id="direccion" name="direccion"
-                                value="{{ old('direccion') }}" required>
-                            @error('direccion')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
+                        <div class="d-flex flex-column">
+                            <label for="direccion">Dirección</label>
+                            <div class="input-style validate-field d-flex flex-row align-content-center">
+                                <i class="fa fa-map ms-2 m-3 position-absolute input-icon"></i>
+                                <div class="d-flex flex-column w-100">
+                                    <input type="text" class="form-control rounded-sm @error('direccion') is-invalid @enderror"
+                                        id="direccion" name="direccion"
+                                        value="{{ old('direccion') }}" required>
+                                </div>
+                                @error('direccion')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
                         </div>
 
-                        <label for="direccion_trabajo">Dirección de Trabajo</label>
-                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
-                            <i class="fa fa-building ms-2 input-icon"></i>
-                            <input type="text"
-                                class="form-control rounded-sm @error('direccion_trabajo') is-invalid @enderror"
-                                id="direccion_trabajo" name="direccion_trabajo"
-                                value="{{ old('direccion_trabajo') }}">
-                            
-                            @error('direccion_trabajo')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
+                        <div class="d-flex flex-column">       
+                            <label for="direccion_trabajo">Dirección de Trabajo</label>
+                            <div class="input-style validate-field d-flex flex-row align-content-center">
+                                <i class="fa fa-building ms-2 mt-3 position-absolute input-icon"></i>
+                                <div class="d-flex flex-column w-100">
+                                    <input type="text"
+                                        class="form-control rounded-sm @error('direccion_trabajo') is-invalid @enderror"
+                                        id="direccion_trabajo" name="direccion_trabajo"
+                                        value="{{ old('direccion_trabajo') }}">
+                                </div>
+                                @error('direccion_trabajo')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
                         </div>
                         <div class="d-flex justify-content-between align-content-between">
                             <button type="button"
@@ -149,22 +232,29 @@
                     <!-- Paso 3: Seguridad -->
                     <div class="form-step d-none" id="step-3">
                         <h5 class="text-center">Paso 3: Seguridad y Otros Detalles</h5>
-                        <label for="password">Contraseña</label>
-                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
-                            <i class="fa fa-lock ms-2 input-icon"></i>
-                            <input type="password" class="form-control rounded-sm @error('password') is-invalid @enderror"
-                                id="password" placeholder="Minimo 4 caracteres" name="password" required>
-                            @error('password')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
+                        <div class="d-flex flex-column">       
+                            <label for="password">Contraseña</label>
+                            <div class="input-style validate-field d-flex flex-row">
+                                <i class="fa fa-lock ms-2 mt-3 position-absolute input-icon"></i>
+                                <div class="d-flex flex-column w-100">
+                                    <input type="password" class="form-control rounded-sm @error('password') is-invalid @enderror"
+                                        id="password" placeholder="Minimo 4 caracteres" name="password" required>
+                                </div>
+                                @error('password')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
                         </div>
 
-                        <label for="password_confirmation">Confirmar Contraseña</label>
-                        <div class="input-style has-icon validate-field d-flex flex-row align-content-center">
-                            <i class="fa fa-arrow-right ms-2 input-icon"></i>
-                            <input type="password" class="form-control rounded-sm" id="password_confirmation"
-                                 name="password_confirmation" required>
-                            
+                        <div class="d-flex flex-column">       
+                            <label for="password_confirmation">Confirmar Contraseña</label>
+                            <div class="input-style validate-field d-flex flex-row">
+                                <i class="fa fa-arrow-right ms-2 mt-3 position-fixed input-icon"></i>
+                                <div class="d-flex flex-column w-100">
+                                    <input type="password" class="form-control rounded-sm" id="password_confirmation"
+                                        name="password_confirmation" required>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="d-flex flex-row align-content-center">
@@ -185,7 +275,6 @@
                 </form>
             </div>
         </div>
-        {{-- <div class="card-overlay bg-black opacity-85"></div> --}}
     </div>
     </div>
 @endsection
@@ -221,6 +310,120 @@
     </div>
 @endpush
 @push('scripts')
+    <!-- Inclusion de heic2any desde CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/heic'];
+            
+            const majorContainer = document.getElementById('major-file-container');
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const previewImage = document.getElementById('previewImage');
+            const removeButton = document.getElementById('removeButton');
+            const errorMessage = document.getElementById('errorMessage');
+            const convertingOverlay = document.getElementById('convertingOverlay');
+            const uploadText = uploadArea.querySelector('.upload-text');
+
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            // Manejo de seleccion del archivo
+            fileInput.addEventListener('change', async function(event) {
+                const file = event.target.files[0];
+                
+                if (!file) {
+                    resetUpload();
+                    return;
+                }
+
+                // Clear previous error messages
+                errorMessage.textContent = '';
+
+                // Validar tipo de archivo
+                if (!allowedTypes.includes(file.type) && !file.name.toLowerCase().endsWith('.heic')) {
+                    alert('Debe subir una imagen en formato valido (JPEG, PNG, o HEIC)');
+                    showError('Debe subir una imagen en formato válido (JPEG, PNG, o HEIC)');
+                    resetUpload();
+                    return;
+                }
+
+                try {
+                    let processedFile = file;
+
+                    // Convertir HEIC de ser necesario
+                    if (file.type === 'image/heic' || file.name.toLowerCase().endsWith('.heic')) {
+                        convertingOverlay.classList.add('show');
+                        
+                        console.log('HEIC file detected, converting...');
+                        
+                        const convertedBlob = await heic2any({
+                            blob: file,
+                            toType: "image/jpeg",
+                            quality: 0.8
+                        });
+
+                        processedFile = new File([convertedBlob], 
+                            file.name.replace(/\.heic$/i, '.jpg'), 
+                            { type: 'image/jpeg' }
+                        );
+
+                        // Actualizar el Input con el archivo convertido
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(processedFile);
+                        event.target.files = dataTransfer.files;
+                        
+                        console.log('HEIC conversion completed');
+                        convertingOverlay.classList.remove('show');
+                    }
+
+                    // Mostrar preview
+                    showPreview(processedFile);
+
+                } catch (error) {
+                    console.error('Error processing image:', error);
+                    showError('Error al procesar la imagen. Por favor, intenta nuevamente.');
+                    resetUpload();
+                    convertingOverlay.classList.remove('show');
+                }
+            });
+
+            // Boton de remover
+            removeButton.addEventListener('click', function(event) {
+                event.stopPropagation();
+                resetUpload();
+            });
+
+            function showPreview(file) {
+                const previewUrl = URL.createObjectURL(file);
+                previewImage.src = previewUrl;
+                previewImage.style.display = 'block';
+                uploadText.style.display = 'none';
+                uploadArea.classList.add('has-image');
+                majorContainer.classList.add('has-image');
+
+                previewImage.onload = function() {
+                    URL.revokeObjectURL(previewUrl);
+                };
+            }
+
+            function resetUpload() {
+                fileInput.value = '';
+                previewImage.style.display = 'none';
+                previewImage.src = '';
+                uploadText.style.display = 'block';
+                uploadArea.classList.remove('has-image');
+                majorContainer.classList.remove('has-image');
+                errorMessage.textContent = '';
+                convertingOverlay.classList.remove('show');
+            }
+
+            function showError(message) {
+                errorMessage.textContent = message;
+            }
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const steps = document.querySelectorAll('.form-step');
@@ -307,6 +510,7 @@
                 e.preventDefault(); // Evitar el envío tradicional
 
                 const formData = new FormData(form);
+                console.log("Enviado en el formulario: ",formData);
                 fetch('{{ route('usuario.registrar') }}', {
                         method: 'POST',
                         headers: {
