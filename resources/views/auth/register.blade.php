@@ -131,62 +131,13 @@
                             </div>        
                         </div>
 
-                        {{-- <div class="d-flex flex-column w-100">
-                            <label for="profesion">Fecha de nacimiento</label>
-                            <div class="input-style validate-field d-flex flex-row">
-                                    <i class="fa fa-calendar ms-2 mt-3 position-absolute input-icon"></i>
-                                    <div class="col-2">
-                                        <input type="number" class="form-control rounded-sm" placeholder="Día" name="dia_nacimiento"
-                                            required>
-                                    </div>
-                                    <div class="col-3">
-                                        <!-- Convertimos el campo del mes en un select -->
-                                        <select class="form-control rounded-sm" name="mes_nacimiento" required>
-                                            <option value="" disabled selected>Mes</option>
-                                            <option value="1">Enero</option>
-                                            <option value="2">Febrero</option>
-                                            <option value="3">Marzo</option>
-                                            <option value="4">Abril</option>
-                                            <option value="5">Mayo</option>
-                                            <option value="6">Junio</option>
-                                            <option value="7">Julio</option>
-                                            <option value="8">Agosto</option>
-                                            <option value="9">Septiembre</option>
-                                            <option value="10">Octubre</option>
-                                            <option value="11">Noviembre</option>
-                                            <option value="12">Diciembre</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-2">
-                                        <input type="number" class="form-control rounded-sm" placeholder="Año"
-                                            name="ano_nacimiento" required>
-                                    </div>
-                            </div>
-                        </div> --}}
-
-                        <div class="d-flex flex-column w-100">
+                        <div class="d-flex flex-column">
                             <label for="nacimiento">Fecha de nacimiento</label>
-                            <div class="input-style validate-field d-flex flex-row gap-2 position-relative">
+                            <div class="input-style rounded-sm validate-field d-flex flex-row">
                                 <i class="fa fa-calendar ms-2 mt-3 position-absolute input-icon"></i>
-
-                                <input type="number" class="form-control rounded-sm flex-grow-1" placeholder="Día" name="dia_nacimiento" required>
-
-                                <select class="form-control rounded-sm flex-grow-1" name="mes_nacimiento" required>
-                                    <option value="" disabled selected>Mes</option>
-                                    <option value="1">Enero</option>
-                                    <option value="2">Febrero</option>
-                                    <option value="3">Marzo</option>
-                                    <option value="4">Abril</option>
-                                    <option value="5">Mayo</option>
-                                    <option value="6">Junio</option>
-                                    <option value="7">Julio</option>
-                                    <option value="8">Agosto</option>
-                                    <option value="9">Septiembre</option>
-                                    <option value="10">Octubre</option>
-                                    <option value="11">Noviembre</option>
-                                    <option value="12">Diciembre</option>
-                                </select>
-                                <input type="number" class="form-control rounded-sm flex-grow-1" placeholder="Año" name="ano_nacimiento" required>
+                                <div class="d-flex flex-column w-100">
+                                    <input type="date" class="form-control rounded-sm" id="nacimiento" name="nacimiento" required>
+                                </div>
                             </div>
                         </div>
 
@@ -207,7 +158,7 @@
                         </div>
 
                         <div class="d-flex flex-column">       
-                            <label for="direccion_trabajo">Dirección de Trabajo</label>
+                            <label for="direccion_trabajo">Dirección de Trabajo (opcional)</label>
                             <div class="input-style validate-field d-flex flex-row align-content-center">
                                 <i class="fa fa-building ms-2 mt-3 position-absolute input-icon"></i>
                                 <div class="d-flex flex-column w-100">

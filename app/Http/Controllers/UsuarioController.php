@@ -90,9 +90,15 @@ class UsuarioController extends Controller
                 'email' => 'required|email',
                 'telefono' => 'required|digits_between:7,15',
                 'profesion' => 'required|string|max:40',
-                'dia_nacimiento' => 'required|integer|between:1,31',
-                'mes_nacimiento' => 'required|integer|between:1,12',
-                'ano_nacimiento' => 'required|integer|min:1900|max:' . (date('Y') - 1),
+                // 'dia_nacimiento' => 'required|integer|between:1,31',
+                // 'mes_nacimiento' => 'required|integer|between:1,12',
+                // 'ano_nacimiento' => 'required|integer|min:1900|max:' . (date('Y') - 1),
+                'nacimiento' => [
+                    'required',
+                    'date',
+                    'before:' . date('Y-01-01'),
+                    'after:1900-01-01',
+                ],
                 'direccion' => 'required|string|max:100',
                 'direccion_trabajo' => 'nullable|string|max:100',
                 'password' => 'required|string|min:4|confirmed',
@@ -112,13 +118,17 @@ class UsuarioController extends Controller
                 'telefono.required' => 'El número de teléfono es obligatorio.',
                 'telefono.digits_between' => 'Por favor, ingresa un número de teléfono válido.',
                 'profesion.required' => 'Por favor, selecciona tu profesión.',
-                'dia_nacimiento.required' => 'El día de nacimiento es obligatorio.',
-                'dia_nacimiento.between' => 'Por favor, ingresa un día válido.',
-                'mes_nacimiento.required' => 'El mes de nacimiento es obligatorio.',
-                'mes_nacimiento.between' => 'Por favor, ingresa un mes válido.',
-                'ano_nacimiento.required' => 'El año de nacimiento es obligatorio.',
-                'ano_nacimiento.min' => 'Por favor, ingresa un año de nacimiento válido.',
-                'ano_nacimiento.max' => 'Por favor, ingresa un año de nacimiento válido.',
+                // 'dia_nacimiento.required' => 'El día de nacimiento es obligatorio.',
+                // 'dia_nacimiento.between' => 'Por favor, ingresa un día válido.',
+                // 'mes_nacimiento.required' => 'El mes de nacimiento es obligatorio.',
+                // 'mes_nacimiento.between' => 'Por favor, ingresa un mes válido.',
+                // 'ano_nacimiento.required' => 'El año de nacimiento es obligatorio.',
+                // 'ano_nacimiento.min' => 'Por favor, ingresa un año de nacimiento válido.',
+                // 'ano_nacimiento.max' => 'Por favor, ingresa un año de nacimiento válido.',
+                'nacimiento.required' => 'La fecha de nacimiento es obligatoria',
+                'nacimiento.date' => 'Debe ingresar una fecha válida',
+                'nacimiento.before' => 'Debe ingresar una fecha válida',
+                'nacimiento.after' => 'Debe ingresar una fecha válida',
                 'direccion.required' => 'La dirección es obligatoria.',
                 'password.required' => 'Por favor, crea una contraseña.',
                 'password.min' => 'La contraseña debe tener al menos 4 caracteres.',
@@ -147,7 +157,8 @@ class UsuarioController extends Controller
             $user->name = $request->name;
             $user->telf = $request->telefono;
             $user->profesion = $request->profesion;
-            $user->nacimiento = $request->ano_nacimiento . '-' . $request->mes_nacimiento . '-' . $request->dia_nacimiento;
+            // $user->nacimiento = $request->ano_nacimiento . '-' . $request->mes_nacimiento . '-' . $request->dia_nacimiento;
+            $user->nacimiento = $request->nacimiento;
             $user->direccion = $request->direccion;
             $user->direccion_trabajo = $request->direccion_trabajo;
             $user->hijos = $request->hijos ? 1 : 0;
@@ -163,7 +174,8 @@ class UsuarioController extends Controller
             $user->email = $request->email;
             $user->telf = $request->telefono;
             $user->profesion = $request->profesion;
-            $user->nacimiento = $request->ano_nacimiento . '-' . $request->mes_nacimiento . '-' . $request->dia_nacimiento;
+            // $user->nacimiento = $request->ano_nacimiento . '-' . $request->mes_nacimiento . '-' . $request->dia_nacimiento;
+            $user->nacimiento = $request->nacimiento;
             $user->direccion = $request->direccion;
             $user->direccion_trabajo = $request->direccion_trabajo;
             $user->hijos = $request->hijos ? 1 : 0;
