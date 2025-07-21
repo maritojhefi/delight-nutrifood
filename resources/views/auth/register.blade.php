@@ -8,13 +8,14 @@
             <div class="px-5">
                 <div class="d-flex flex-column">
                     <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}" class="img mx-auto d-block" style="width:100px" alt="">
-                    <p class="mt-2 color-highlight font-26 font-weight-bold text-center ">Bienvenido a {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!</p>
+                    <p class="mt-2 mb-3 color-highlight font-26 font-weight-bold text-center ">Bienvenido a {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!</p>
                 </div>
                 <form action="{{ route('usuario.registrar') }}" method="post" id="multiStepForm" novalidate>
                     @csrf
                     <!-- Paso 1: Información Personal -->
                     <div class="form-step" id="step-1">
-                        <h5 class="text-center">Paso 1: Información Personal</h5>
+                        <x-form-step-progress :step="1" :maxSteps="3"></x-form-step-progress>
+                        <h5 class="text-center mt-2">Paso 1: Información Personal</h5>
                         {{-- Nombre Completo --}}
                         <div class="d-flex flex-column">
                             <label for="name">Nombre Completo</label>
@@ -93,8 +94,9 @@
 
                     <!-- Paso 2: Detalles Adicionales -->
                     <div class="form-step d-none" id="step-2">
+                    <x-form-step-progress :step="2" :maxSteps="3"></x-form-step-progress>
                     {{-- <div class="form-step d-none" id="step-1"> --}}
-                        <h5 class="text-center">Paso 2: Detalles Adicionales</h5>
+                        <h5 class="text-center mt-2">Paso 2: Detalles Adicionales</h5>
                         <div class="d-flex flex-column">
                             <label for="profesion">Profesión</label>
                             <div class="input-style validate-field d-flex flex-row">
@@ -163,7 +165,8 @@
 
                     <!-- Paso 3: Seguridad -->
                     <div class="form-step d-none" id="step-3">
-                        <h5 class="text-center">Paso 3: Seguridad y Otros Detalles</h5>
+                    <x-form-step-progress :step="3" :maxSteps="3"></x-form-step-progress>
+                        <h5 class="text-center mt-2">Paso 3: Seguridad y Otros Detalles</h5>
                         <div class="d-flex flex-column">       
                             <label for="password">Contraseña</label>
                             <div class="input-style validate-field d-flex flex-row">
