@@ -235,6 +235,12 @@ hover-blue:hover {
     display: block;
 }
 
+.card.signin-card input[type="checkbox"] {
+    width: 1.2em;
+    height: 1.2em;
+}
+
+
 
 /* .file-upload-area.has-image .remove-button {
     display: block;

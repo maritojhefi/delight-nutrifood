@@ -192,12 +192,18 @@
                             </div>
                         </div>
 
-                        <div class="d-flex flex-row align-content-center">
+                        {{-- <div class="d-flex flex-row align-content-center mb-2">
                             <label for="hijos">¿Tiene hijos?: </label>
                             <input class="form-check-input ms-1" type="checkbox" name="hijos" id="hijos"
                                 value="1">
+                        </div> --}}
+
+                        <div class="d-flex align-content-center mb-4">
+                            <label for="hijos" class="me-2">¿Tiene hijos?:</label>
+                            <input class="form-check-input" type="checkbox" name="hijos" id="hijos" value="1">
                         </div>
-                        <br>
+
+
                         <div class="d-flex justify-content-between align-content-between">
                             <button type="button"
                                 class="btn btn-xs mb-3 rounded-xl text-uppercase font-900 shadow-s bg-red-dark btn-prev"
