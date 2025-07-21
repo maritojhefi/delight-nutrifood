@@ -8,7 +8,7 @@
             <div class="px-5">
                 <div class="d-flex flex-column">
                     <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}" class="img mx-auto d-block" style="width:100px" alt="">
-                    <p class="mt-2 mb-3 color-highlight font-26 font-weight-bold text-center ">Bienvenido a {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!</p>
+                    <h3 class="mt-2 mb-3 font-26 text-center ">¡Bienvenido a {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!</h3>
                 </div>
                 <form action="{{ route('usuario.registrar') }}" method="post" id="multiStepForm" novalidate>
                     @csrf
@@ -170,10 +170,13 @@
                         <div class="d-flex flex-column">       
                             <label for="password">Contraseña</label>
                             <div class="input-style validate-field d-flex flex-row">
-                                <i class="fa fa-lock ms-2 mt-3 position-absolute input-icon"></i>
+                                <i class="fa fa-key ms-2 mt-3 position-absolute input-icon"></i>
                                 <div class="d-flex flex-column w-100">
                                     <input type="password" class="form-control rounded-sm @error('password') is-invalid @enderror"
                                         id="password" placeholder="Minimo 4 caracteres" name="password" required>
+                                    <button type="button" class="me-2 btn btn-link position-absolute end-0 top-50 translate-middle-y pe-3 password-toggle" style="border: none; background: none; z-index: 10;">
+                                        <i class="fa fa-lock" id="toggleIcon1"></i>
+                                    </button>
                                 </div>
                                 @error('password')
                                     <small class="text-danger">{{ $message }}</small>
@@ -188,15 +191,12 @@
                                 <div class="d-flex flex-column w-100">
                                     <input type="password" class="form-control rounded-sm" id="password_confirmation"
                                         name="password_confirmation" required>
+                                    <button type="button" class="me-2 btn btn-link position-absolute end-0 top-50 translate-middle-y pe-3 password_confirmation-toggle" style="border: none; background: none; z-index: 10;">
+                                        <i class="fa fa-lock" id="toggleIcon2"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-
-                        {{-- <div class="d-flex flex-row align-content-center mb-2">
-                            <label for="hijos">¿Tiene hijos?: </label>
-                            <input class="form-check-input ms-1" type="checkbox" name="hijos" id="hijos"
-                                value="1">
-                        </div> --}}
 
                         <div class="d-flex align-content-center mb-4">
                             <label for="hijos" class="me-2">¿Tiene hijos?:</label>
@@ -251,6 +251,39 @@
     </div>
 @endpush
 @push('scripts')
+    <!-- Revisar contraseña -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('password');
+            const confirmationInput = document.getElementById('password_confirmation');
+            const toggleButton1 = document.querySelector('.password-toggle');
+            const toggleButton2 = document.querySelector('.password_confirmation-toggle');
+
+            const toggleIcon1 = document.getElementById('toggleIcon1');
+            const toggleIcon2 = document.getElementById('toggleIcon2');
+
+
+            if (passwordInput && toggleButton1 && toggleIcon1) {
+                toggleButton1.addEventListener('click', function() {
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        confirmationInput.type = 'text';
+                        toggleIcon1.classList.remove('fa-lock');
+                        toggleIcon1.classList.add('fa-lock-open');
+                        toggleIcon2.classList.remove('fa-lock');
+                        toggleIcon2.classList.add('fa-lock-open');
+                    } else {
+                        passwordInput.type = 'password';
+                        confirmationInput.type = 'password';
+                        toggleIcon1.classList.remove('fa-lock-open');
+                        toggleIcon1.classList.add('fa-lock');
+                        toggleIcon2.classList.remove('fa-lock-open');
+                        toggleIcon2.classList.add('fa-lock');
+                    }
+                });
+            }
+        });
+    </script>
     <!-- Inclusion de heic2any desde CDN -->
     <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
     <script>
