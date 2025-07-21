@@ -117,7 +117,7 @@ class UsuarioController extends Controller
                 'email.unique' => 'Este correo electrónico ya está registrado.',
                 'telefono.required' => 'El número de teléfono es obligatorio.',
                 'telefono.digits_between' => 'Por favor, ingresa un número de teléfono válido.',
-                'profesion.required' => 'Por favor, selecciona tu profesión.',
+                'profesion.required' => 'Por favor, ingresa tu profesión.',
                 // 'dia_nacimiento.required' => 'El día de nacimiento es obligatorio.',
                 // 'dia_nacimiento.between' => 'Por favor, ingresa un día válido.',
                 // 'mes_nacimiento.required' => 'El mes de nacimiento es obligatorio.',
