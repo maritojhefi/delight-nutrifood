@@ -126,7 +126,9 @@
                                         required>
                                 </div>        
                                 @error('profesion')
-                                    <small class="text-danger">{{ $message }}</small>
+                                    {{-- <small class="text-danger identifying">{{ $message }}</small> --}}
+                                    <small class="text-danger identifying">Test error message</small>
+
                                 @enderror
                             </div>        
                         </div>
@@ -476,28 +478,29 @@
                             window.location.href = data.redirect;
                         } else if (data.status === 'error') {
                             // Limpiar mensajes de error previos
-                            document.querySelectorAll('.text-danger').forEach(el => el.remove());
+                            document.querySelectorAll('.custom-error-message').forEach(el => el.remove());
 
                             const errors = data.errors;
-                            let firstErrorStep = 0;
-                            $('.menu-hider').addClass('menu-active');
-                            $('#menu-errores').addClass('menu-active');
-                            if (Array.isArray(errors)) {
-                                // Si es un array, concatenar los errores en un solo string
-                                errorMessages = errors.map(error => `<li>${error}</li>`).join('');
-                            } else if (typeof errors === 'object') {
-                                // Si es un objeto, recorrer cada propiedad y concatenar
-                                errorMessages = Object.values(errors)
-                                    .flat() // Aplana posibles arrays anidados
-                                    .map(error => `<li>${error}</li>`)
-                                    .join('');
-                            } else {
-                                // Si no es ni array ni objeto, mostrarlo directamente
-                                errorMessages = `<li>${errors}</li>`;
-                            }
-                            // Mostrar errores en la lista de errores
-                            $('#error-registro').html(
-                                `<ul class="list-group text-danger">${errorMessages}</ul>`);
+                            let firstErrorStep = Infinity;
+                            // // Renderizado del modal (omitido)
+                            // $('.menu-hider').addClass('menu-active');
+                            // $('#menu-errores').addClass('menu-active');
+                            // if (Array.isArray(errors)) {
+                            //     // Si es un array, concatenar los errores en un solo string
+                            //     errorMessages = errors.map(error => `<li>${error}</li>`).join('');
+                            // } else if (typeof errors === 'object') {
+                            //     // Si es un objeto, recorrer cada propiedad y concatenar
+                            //     errorMessages = Object.values(errors)
+                            //         .flat() // Aplana posibles arrays anidados
+                            //         .map(error => `<li>${error}</li>`)
+                            //         .join('');
+                            // } else {
+                            //     // Si no es ni array ni objeto, mostrarlo directamente
+                            //     errorMessages = `<li>${errors}</li>`;
+                            // }
+                            // // Mostrar errores en la lista de errores
+                            // $('#error-registro').html(
+                            //     `<ul class="list-group text-danger">${errorMessages}</ul>`);
                             // Mostrar errores y encontrar el paso con el primer error
                             for (const [field, messages] of Object.entries(errors)) {
                                 const inputField = document.querySelector(`[name="${field}"]`);
@@ -505,7 +508,7 @@
                                 // Crear el div para los mensajes de error
                                 const errorDiv = document.createElement('div');
                                 errorDiv.classList.add(
-                                    'font-10'); // Añadir otras clases si es necesario
+                                    'font-10','custom-error-message'); // Añadir otras clases si es necesario
                                 errorDiv.innerText = messages.join(', ');
 
                                 // Aplicar estilo en línea con !important
@@ -515,19 +518,22 @@
                                 inputField.parentElement.appendChild(errorDiv);
 
                                 // Determinar el paso del error
+                                let errorStep = null;
                                 if (['name', 'email', 'telefono'].includes(field)) {
-                                    firstErrorStep = Math.min(firstErrorStep, 0); // Paso 1
-                                } else if (['profesion', 'dia_nacimiento', 'mes_nacimiento',
-                                        'ano_nacimiento', 'direccion', 'direccion_trabajo'
-                                    ].includes(field)) {
-                                    firstErrorStep = Math.min(firstErrorStep, 1); // Paso 2
+                                    errorStep = 0;
+                                } else if (['profesion', 'nacimiento', 'direccion', 'direccion_trabajo'].includes(field)) {
+                                    errorStep = 1;
                                 } else if (['password', 'password_confirmation'].includes(field)) {
-                                    firstErrorStep = Math.min(firstErrorStep, 2); // Paso 3
+                                    errorStep = 2;
+                                }
+
+                                if (errorStep !== null) {
+                                    firstErrorStep = Math.min(firstErrorStep, errorStep);
                                 }
                             }
 
                             // Relocalizar al primer paso con error
-                            steps[currentStep].classList.add('d-none');
+                            steps[currentStep].classList.add('d-none'); 
                             currentStep = firstErrorStep;
                             steps[currentStep].classList.remove('d-none');
                         }
