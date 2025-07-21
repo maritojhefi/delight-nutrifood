@@ -48,11 +48,11 @@
                         </div>
                         {{-- Telefono --}}
                         <div class="d-flex flex-column">
-                            <label for="telefono">Teléfono (8 digitos)</label>
-                            <div class="input-style validate-field d-flex flex-row">
-                                <i class="fa fa-phone ms-2 mt-3 position-fixed input-icon"></i>  
-                                <div class="d-flex flex-column w-100">
-                                    <input type="number" class="form-control rounded-sm @error('telefono') is-invalid @enderror"
+                            <label for="telefono">Teléfono</label>
+                            <div class="input-style remove-mb validate-field d-flex flex-row justify-content-between ">
+                                <x-countrycode-select></x-countrycode-select>
+                                <div class="d-flex flex-column w-99">
+                                    <input type="number" class="no-padding text-center form-control rounded-sm @error('telefono') is-invalid @enderror"
                                         id="telefono" name="telefono"
                                         value="{{ old('telefono') }}" required>
                                 </div>
@@ -61,28 +61,8 @@
                                 @enderror
                             </div>
                         </div>
-
                         {{-- foto de perfil --}}
-                        {{-- <div class="file-data pb-5">
-                            <input type="file" id="file-upload" class="upload-file rounded-sm bg-highlight shadow-s rounded-s "
-                                accept="image/*" name="foto">
-                            <p class="upload-file-text color-white">Subir Foto</p>
-                        </div>
-                        @error('foto')
-                            <p class="text-danger">{{ $message }}</p>
-                        @enderror
-                        <div class="list-group list-custom-large upload-file-data disabled">
-                            <img id="image-data" class="mx-auto img-fluid rounded-circle"
-                                style="width:150px; display:block; height:150px;">
-                            <button id="remove-file-upload" class="rounded md bg-red-dark">
-                                <i class="fa fa-cross text-white"></i>
-                            </button>
-                        </div> --}}
-                        
-                        {{-- fin foto de perfil --}}
-
-                        {{-- foto de perfil --}}
-                        <div class="custom-major-file-container d-flex flex-row justify-content-center" id="major-file-container">
+                        <div class="custom-major-file-container d-flex flex-row justify-content-center mt-3" id="major-file-container">
                             <div class="custom-file-upload-container">
                                 <div class="file-upload-area" id="uploadArea">
                                     <div class="upload-text">
@@ -91,7 +71,6 @@
                                         <small>(opcional)</small>
                                     </div>
                                     <img class="preview-image" id="previewImage" style="display: none;">
-                                    {{-- <button class="remove-button" id="removeButton" type="button">×</button> --}}
                                     <div class="converting-overlay" id="convertingOverlay">
                                         Convirtiendo...
                                     </div>
@@ -383,6 +362,8 @@
             const nextBtns = document.querySelectorAll('.btn-next');
             const prevBtns = document.querySelectorAll('.btn-prev');
             let currentStep = 0;
+            const selectedCountryCode = document.getElementById('country-code-selector');
+
 
             // Manejo de los botones de siguiente
             nextBtns.forEach(button => {
@@ -461,9 +442,13 @@
             const form = document.getElementById('multiStepForm');
             form.addEventListener('submit', function(e) {
                 e.preventDefault(); // Evitar el envío tradicional
+                console.log(`Codigo seleccionado: ${selectedCountryCode.value}`);
 
                 const formData = new FormData(form);
-                console.log("Enviado en el formulario: ",formData);
+                const originalPhoneNumber = formData.get('telefono');
+                formData.set('telefono', `+${selectedCountryCode.value}${originalPhoneNumber}`);
+
+                console.log("Enviado en el formulario: ", ...formData);
                 fetch('{{ route('usuario.registrar') }}', {
                         method: 'POST',
                         headers: {
@@ -515,7 +500,11 @@
                                 errorDiv.style.cssText = 'color: red !important;';
 
                                 // Insertar el div de error después del input
-                                inputField.parentElement.appendChild(errorDiv);
+                                if (field == 'telefono') {
+                                    inputField.parentElement.parentElement.parentElement.appendChild(errorDiv);
+                                } else {
+                                    inputField.parentElement.appendChild(errorDiv);
+                                }
 
                                 // Determinar el paso del error
                                 let errorStep = null;
