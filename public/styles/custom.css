@@ -135,9 +135,17 @@
 
 .card.signin-card form input {
     font-size: 14px !important;
-    padding-left: 2.0rem !important; /* Adjust as needed */
+    padding-left: 2.0rem !important;
 }
 
+.card.signin-card form input.no-padding {
+    font-size: 14px !important;
+    padding-left: 0.0rem !important;
+}
+
+.input-style.remove-mb {
+    margin-bottom: 0 !important; 
+}
 
 .theme-light form input:focus {
     border-color: #2f686a !important;
@@ -154,6 +162,8 @@
 hover-blue:hover {
         color: blue !important;
     }
+
+
 
 
 .custom-file-upload-container {

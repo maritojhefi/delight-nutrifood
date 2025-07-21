@@ -88,7 +88,7 @@ class UsuarioController extends Controller
             [
                 'name' => 'required|string|max:80',
                 'email' => 'required|email',
-                'telefono' => 'required|digits_between:7,15',
+                'telefono' => 'required|string|max:20|min:8',
                 'profesion' => 'required|string|max:40',
                 // 'dia_nacimiento' => 'required|integer|between:1,31',
                 // 'mes_nacimiento' => 'required|integer|between:1,12',
@@ -116,7 +116,7 @@ class UsuarioController extends Controller
                 'email.email' => 'Por favor, ingresa un correo electrónico válido.',
                 'email.unique' => 'Este correo electrónico ya está registrado.',
                 'telefono.required' => 'El número de teléfono es obligatorio.',
-                'telefono.digits_between' => 'Por favor, ingresa un número de teléfono válido.',
+                'telefono.string' => 'Por favor, ingresa un número de teléfono válido.',
                 'profesion.required' => 'Por favor, ingresa tu profesión.',
                 // 'dia_nacimiento.required' => 'El día de nacimiento es obligatorio.',
                 // 'dia_nacimiento.between' => 'Por favor, ingresa un día válido.',
