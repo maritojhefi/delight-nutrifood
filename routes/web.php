@@ -232,6 +232,7 @@ Route::prefix('/usuario')
     ->name('usuario.')
     ->group(function () {
         Route::get('/registro', [UsuarioController::class, 'inicioRegistro'])->name('inicio.registro');
+        Route::post('/validar-paso', [UsuarioController::class, 'validarPaso'])->name('validar-paso');
         Route::post('/registrar', [UsuarioController::class, 'registrarUsuario'])->name('registrar');
         Route::post('/verificar', [UsuarioController::class, 'verificarUsuario'])->name('existe');
         Route::get('/actualizado', function () {
