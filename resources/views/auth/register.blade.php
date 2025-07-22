@@ -10,6 +10,7 @@
                     <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}" class="img mx-auto d-block" style="width:100px" alt="">
                     <h3 class="mt-2 mb-3 font-26 text-center ">¡Bienvenido a {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!</h3>
                 </div>
+                {{-- Form and Steps definition --}}
                 <form action="{{ route('usuario.registrar') }}" method="post" id="multiStepForm" novalidate>
                     @csrf
                     <!-- Paso 1: Información Personal -->
@@ -19,12 +20,12 @@
                         {{-- Nombre Completo --}}
                         <div class="d-flex flex-column">
                             <label for="name">Nombre Completo</label>
-                            <div class="input-style validate-field d-flex flex-row">
+                            <div class="input-style d-flex flex-row">
                                 <i class="fa fa-user ms-2 input-icon mt-3 position-fixed"></i>
                                 <div class="d-flex flex-column w-100">
-                                    <input type="text" class="form-control w-auto rounded-sm @error('name') is-invalid @enderror"
+                                    <input type="text" class="form-control w-auto rounded-sm"
                                         id="name" name="name" value="{{ old('name') }}"
-                                        required>
+                                        >
                                 </div>
 
                             </div>
@@ -35,12 +36,12 @@
                         {{-- Correo Electrónico --}}
                         <div class="d-flex flex-column">
                             <label for="email">Correo Electrónico</label>
-                            <div class="input-style validate-field d-flex flex-row">
+                            <div class="input-style d-flex flex-row">
                                 <i class="fa fa-at ms-2 input-icon mt-3 position-fixed"></i>
                                 <div class="d-flex flex-column w-100">
-                                    <input type="email" class="form-control rounded-sm @error('email') is-invalid @enderror"
+                                    <input type="text" class="form-control rounded-sm"
                                         id="email" name="email"
-                                        value="{{ old('email') }}" required>
+                                        value="{{ old('email') }}">
                                 </div>
                             </div>
                             @error('email')
@@ -50,12 +51,12 @@
                         {{-- Telefono --}}
                         <div class="d-flex flex-column">
                             <label for="telefono">Teléfono</label>
-                            <div class="input-style remove-mb validate-field d-flex flex-row justify-content-between ">
+                            <div class="input-style remove-mb d-flex flex-row justify-content-between ">
                                 <x-countrycode-select></x-countrycode-select>
                                 <div class="d-flex flex-column w-99">
-                                    <input type="number" class="no-padding text-center form-control rounded-sm @error('telefono') is-invalid @enderror"
+                                    <input type="number" class="no-padding text-center form-control rounded-sm"
                                         id="telefono" name="telefono"
-                                        value="{{ old('telefono') }}" required>
+                                        value="{{ old('telefono') }}">
                                 </div>
                                 @error('telefono')
                                     <small class="text-danger">{{ $message }}</small>
@@ -104,7 +105,7 @@
                                 <div class="d-flex flex-column w-100">
                                     <input type="text" class="form-control rounded-sm @error('profesion') is-invalid @enderror"
                                         id="profesion" name="profesion" value="{{ old('profesion') }}"
-                                        required>
+                                        >
                                 </div>        
                                 @error('profesion')
                                     {{-- <small class="text-danger identifying">{{ $message }}</small> --}}
@@ -116,23 +117,41 @@
 
                         <div class="d-flex flex-column">
                             <label for="nacimiento">Fecha de nacimiento</label>
-                            <div class="input-style rounded-sm validate-field d-flex flex-row">
+                            <div class="input-style remove-mb rounded-sm validate-field d-flex flex-row gap-2">
                                 <i class="fa fa-calendar ms-2 mt-3 position-absolute input-icon"></i>
-                                <div class="d-flex flex-column w-100">
-                                    <input type="date" class="form-control rounded-sm" id="nacimiento" name="nacimiento" required>
-                                </div>
+                                <input type="number" class="text-center form-control rounded-sm flex-grow-1" placeholder="Día" name="dia_nacimiento" required>
+
+                                <select class="text-center form-control rounded-sm flex-grow-1" name="mes_nacimiento" required>
+                                    <option value="" disabled selected>Mes</option>
+                                    <option value="1">Enero</option>
+                                    <option value="2">Febrero</option>
+                                    <option value="3">Marzo</option>
+                                    <option value="4">Abril</option>
+                                    <option value="5">Mayo</option>
+                                    <option value="6">Junio</option>
+                                    <option value="7">Julio</option>
+                                    <option value="8">Agosto</option>
+                                    <option value="9">Septiembre</option>
+                                    <option value="10">Octubre</option>
+                                    <option value="11">Noviembre</option>
+                                    <option value="12">Diciembre</option>
+                                </select>
+                                <input type="number" class="form-control rounded-sm" placeholder="Año" name="ano_nacimiento" required>
+                                {{-- <div class="d-flex flex-column w-100">
+                                    <input type="date" class="form-control rounded-sm" id="nacimiento" name="nacimiento">
+                                </div> --}}
                             </div>
                         </div>
 
 
-                        <div class="d-flex flex-column">
+                        <div class="d-flex flex-column mt-2">
                             <label for="direccion">Dirección</label>
                             <div class="input-style validate-field d-flex flex-row align-content-center">
                                 <i class="fa fa-map ms-2 m-3 position-absolute input-icon"></i>
                                 <div class="d-flex flex-column w-100">
                                     <input type="text" class="form-control rounded-sm @error('direccion') is-invalid @enderror"
                                         id="direccion" name="direccion"
-                                        value="{{ old('direccion') }}" required>
+                                        value="{{ old('direccion') }}">
                                 </div>
                                 @error('direccion')
                                     <small class="text-danger">{{ $message }}</small>
@@ -173,11 +192,11 @@
                                 <i class="fa fa-key ms-2 mt-3 position-absolute input-icon"></i>
                                 <div class="d-flex flex-column w-100">
                                     <input type="password" class="form-control rounded-sm @error('password') is-invalid @enderror"
-                                        id="password" placeholder="Minimo 4 caracteres" name="password" required>
-                                    <button type="button" class="me-2 btn btn-link position-absolute end-0 top-50 translate-middle-y pe-3 password-toggle" style="border: none; background: none; z-index: 10;">
-                                        <i class="fa fa-lock" id="toggleIcon1"></i>
-                                    </button>
+                                        id="password" placeholder="Minimo 4 caracteres" name="password">
                                 </div>
+                                <button type="button" class="me-2 btn btn-link position-absolute mt-2 end-0 pe-3 password-toggle" style="border: none; background: none; z-index: 10;">
+                                        <i class="fa fa-lock" id="toggleIcon1"></i>
+                                </button>
                                 @error('password')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
@@ -190,7 +209,7 @@
                                 <i class="fa fa-arrow-right ms-2 mt-3 position-fixed input-icon"></i>
                                 <div class="d-flex flex-column w-100">
                                     <input type="password" class="form-control rounded-sm" id="password_confirmation"
-                                        name="password_confirmation" required>
+                                        name="password_confirmation">
                                     <button type="button" class="me-2 btn btn-link position-absolute end-0 top-50 translate-middle-y pe-3 password_confirmation-toggle" style="border: none; background: none; z-index: 10;">
                                         <i class="fa fa-lock" id="toggleIcon2"></i>
                                     </button>
@@ -262,26 +281,25 @@
             const toggleIcon1 = document.getElementById('toggleIcon1');
             const toggleIcon2 = document.getElementById('toggleIcon2');
 
-
             if (passwordInput && toggleButton1 && toggleIcon1) {
-                toggleButton1.addEventListener('click', function() {
-                    if (passwordInput.type === 'password') {
-                        passwordInput.type = 'text';
-                        confirmationInput.type = 'text';
-                        toggleIcon1.classList.remove('fa-lock');
-                        toggleIcon1.classList.add('fa-lock-open');
-                        toggleIcon2.classList.remove('fa-lock');
-                        toggleIcon2.classList.add('fa-lock-open');
-                    } else {
-                        passwordInput.type = 'password';
-                        confirmationInput.type = 'password';
-                        toggleIcon1.classList.remove('fa-lock-open');
-                        toggleIcon1.classList.add('fa-lock');
-                        toggleIcon2.classList.remove('fa-lock-open');
-                        toggleIcon2.classList.add('fa-lock');
-                    }
+                toggleButton1.addEventListener('click', function () {
+                    const isHidden = passwordInput.type === 'password';
+                    passwordInput.type = isHidden ? 'text' : 'password';
+                    toggleIcon1.classList.toggle('fa-lock', !isHidden);
+                    toggleIcon1.classList.toggle('fa-lock-open', isHidden);
                 });
             }
+
+            if (confirmationInput && toggleButton2 && toggleIcon2) {
+                toggleButton2.addEventListener('click', function () {
+                    const isHidden = confirmationInput.type === 'password';
+                    confirmationInput.type = isHidden ? 'text' : 'password';
+                    toggleIcon2.classList.toggle('fa-lock', !isHidden);
+                    toggleIcon2.classList.toggle('fa-lock-open', isHidden);
+                });
+            }
+
+            
         });
     </script>
     <!-- Inclusion de heic2any desde CDN -->
@@ -406,72 +424,170 @@
             let currentStep = 0;
             const selectedCountryCode = document.getElementById('country-code-selector');
 
+            // ============= PREVENIR ENVIO DEL FORMULARIO POR TECLA ENTER =============
+            const mainForm = document.getElementById('multiStepForm');
+            
+            mainForm.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    const target = e.target;
+                    
+                    // Permitir ENTER en text-areas
+                    if (target.tagName === 'TEXTAREA') {
+                        return true;
+                    }
+                    
+                    // Prevenir ENTER en el resto de la pagina
+                    e.preventDefault();
+                    return false;
+                }
+            });
 
-            // Manejo de los botones de siguiente
-            nextBtns.forEach(button => {
-                button.addEventListener('click', () => {
-                    const currentFormStep = steps[currentStep].querySelectorAll(
-                        'input, select, textarea');
+            // ============= QUITAR MENSAJES DE ERROR =============
 
-                    // Validar solo los campos visibles del paso actual
-                    let valid = true;
-                    currentFormStep.forEach(input => {
-                        if (!input.checkValidity()) {
-                            input.reportValidity();
-                            valid = false;
+            // Primer Paso
+            function clearFirstErrorMessages() {
+                document.querySelectorAll('#step-1 .custom-error-message').forEach(el => el.remove());
+            }
+
+            // Todos los pasos
+            function clearErrorMessages() {
+                document.querySelectorAll('.custom-error-message').forEach(el => el.remove());
+            }
+
+            // ============= MOSTRAR MENSAJES DE ERROR =============
+            function displayErrorMessages(errors) {
+                clearErrorMessages();
+
+                let nacimientoErrorAdded = false;
+
+                console.log(errors);
+
+                for (const [field, messages] of Object.entries(errors)) {
+                    const inputField = document.querySelector(`[name="${field}"]`);
+
+                    if (!inputField) continue; // Skip if field not found
+
+                    // Crear el div para los mensajes de error
+                    const errorDiv = document.createElement('div');
+                    errorDiv.classList.add('font-10','custom-error-message');
+                    errorDiv.innerText = messages.join(', ');
+                    errorDiv.style.cssText = 'color: red !important;';
+
+                    // Maneja las fechas de nacimiento
+                    if (['dia_nacimiento', 'mes_nacimiento', 'ano_nacimiento'].includes(field)) {
+                        if (!nacimientoErrorAdded) {
+                            inputField.parentElement.parentElement.appendChild(errorDiv);
+                            nacimientoErrorAdded = true;
                         }
+                        continue;
+                    }
+
+                    // Insertar el div de error después del input
+                    if (field == 'telefono') {
+                        inputField.parentElement.parentElement.parentElement.appendChild(errorDiv);
+                    } else {
+                        console.log(inputField);
+                        inputField.parentElement.appendChild(errorDiv);
+                    }
+                }
+            }
+            
+            // ============= VALIDAR PASO ACTUAL =============
+            async function validateCurrentStep(stepNumber) {
+                const currentFormStep = steps[stepNumber];
+                const formData = new FormData();
+                formData.append('formStep', stepNumber);
+
+                console.log(`Iniciada validacion del paso ${stepNumber}`);
+                
+                if (stepNumber === 0) {
+                    const nameInput = currentFormStep.querySelector('[name="name"]');
+                    const emailInput = currentFormStep.querySelector('[name="email"]');
+                    const codigoPaisInput = currentFormStep.querySelector('[name="codigo_pais"]');
+                    const telefonoInput = currentFormStep.querySelector('[name="telefono"]');
+                    const fotoInput = currentFormStep.querySelector('[name="foto"]');
+
+                    if (nameInput) formData.append('name', nameInput.value);
+                    if (emailInput) formData.append('email', emailInput.value);
+                    if (codigoPaisInput) formData.append('codigo_pais', `+${codigoPaisInput.value}`)
+                    if (telefonoInput) formData.append('telefono', telefonoInput.value);
+                    if (fotoInput && fotoInput.files.length > 0) {
+                        formData.append('foto', fotoInput.files[0]);
+                    }
+                } 
+                else if (stepNumber === 1) {
+                    const profesionInput = currentFormStep.querySelector('[name="profesion"]');
+                    const dia_nacimientoInput = currentFormStep.querySelector('[name="dia_nacimiento"]');
+                    const mes_nacimientoInput = currentFormStep.querySelector('[name="mes_nacimiento"]');
+                    const ano_nacimientoInput = currentFormStep.querySelector('[name="ano_nacimiento"]');
+                    const direccionInput = currentFormStep.querySelector('[name="direccion"]');
+                    if (profesionInput) formData.append('profesion', profesionInput.value);
+                    if (dia_nacimientoInput) formData.append('dia_nacimiento', dia_nacimientoInput.value);
+                    if (mes_nacimientoInput) formData.append('mes_nacimiento', mes_nacimientoInput.value);
+                    if (ano_nacimientoInput) formData.append('ano_nacimiento', ano_nacimientoInput.value);
+                    if (direccionInput) formData.append('direccion', direccionInput.value);
+                }
+
+                console.log(`FormData:`, ...formData);
+
+                try {
+                    const response = await fetch('{{ route('usuario.validar-paso') }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        },
+                        body: formData
                     });
 
-                    // Si el primer paso es válido, verificar si el usuario ya existe
-                    if (valid && currentStep === 0) {
-                        const email = document.getElementById('email').value;
+                    const data = await response.json();
+                    
+                    if (data.status === 'success') {
+                        return { valid: true, data: data };
+                    } else {
+                        const errors = data.errors;
+                        displayErrorMessages(errors);
+                        return { valid: false, data: data };
+                    }
+                } catch (error) {
+                    console.error('Validation error:', error);
+                    return { valid: false, error: 'Network error occurred' };
+                }
+            }
 
-                        // Verificación AJAX del usuario por correo
-                        fetch('{{ route('usuario.existe') }}', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                },
-                                body: JSON.stringify({
-                                    email: email
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.exists) {
-                                    // Si el usuario ya existe, mostrar modal de usuario existente
-                                    $('#menu-existe').addClass('menu-active');
-                                    $('.menu-hider').addClass('menu-active');
+            // ============= MANEJO BOTONES - SIGUIENTE =============
+            nextBtns.forEach(button => {
+                button.addEventListener('click', async () => {
+                    if (currentStep == 0) {
+                        console.log("cleaning very first step error messages");
+                        clearFirstErrorMessages();
+                        console.log("They should've been cleared now");
+                    } else {
+                        clearErrorMessages();
+                    }
 
-                                    // Esperar a que el usuario cierre el modal para avanzar al siguiente paso
-                                    $('.close-menu').on('click', function() {
-                                        $('#menu-existe').removeClass('menu-active');
-                                        $('.menu-hider').removeClass('menu-active');
+                    button.disabled = true;
+                    const originalText = button.textContent;
+                    button.textContent = 'Validando...';
 
-                                        // Continuar al siguiente paso
-                                        steps[currentStep].classList.add('d-none');
-                                        currentStep++;
-                                        steps[currentStep].classList.remove('d-none');
-                                    });
-                                } else {
-                                    // Si no existe, pasar al siguiente paso directamente
-                                    steps[currentStep].classList.add('d-none');
-                                    currentStep++;
-                                    steps[currentStep].classList.remove('d-none');
-                                }
-                            })
-                            .catch(error => console.error('Error:', error));
-                    } else if (valid) {
-                        // Si no es el primer paso, simplemente avanzar al siguiente
-                        steps[currentStep].classList.add('d-none');
-                        currentStep++;
-                        steps[currentStep].classList.remove('d-none');
+                    try {
+                        const validationResult = await validateCurrentStep(currentStep);
+                        // Si la validacion es valida se avanza al siguiente paso
+                        if (validationResult.valid) {
+                            steps[currentStep].classList.add('d-none');
+                            currentStep++;
+                            steps[currentStep].classList.remove('d-none');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                    } finally {
+                        // Reiniciar estado del boton siguiente
+                        button.disabled = false;
+                        button.textContent = originalText;
                     }
                 });
             });
 
-            // Botón para retroceder pasos
+            // ============= MANEJO BOTONES - ANTERIOR =============
             prevBtns.forEach(button => {
                 button.addEventListener('click', () => {
                     steps[currentStep].classList.add('d-none');
@@ -480,17 +596,16 @@
                 });
             });
 
-            // Manejo del envío del formulario
+            // ============= MANEJO ENVIO FORMULARIO REGISTRO =============
             const form = document.getElementById('multiStepForm');
             form.addEventListener('submit', function(e) {
                 e.preventDefault(); // Evitar el envío tradicional
                 console.log(`Codigo seleccionado: ${selectedCountryCode.value}`);
 
                 const formData = new FormData(form);
-                const originalPhoneNumber = formData.get('telefono');
-                formData.set('telefono', `+${selectedCountryCode.value}${originalPhoneNumber}`);
+                const originalCountryCode = formData.get('codigo_pais');
+                formData.set('codigo_pais', `+${originalCountryCode}`);
 
-                console.log("Enviado en el formulario: ", ...formData);
                 fetch('{{ route('usuario.registrar') }}', {
                         method: 'POST',
                         headers: {
@@ -504,69 +619,9 @@
                             // Redirigir si el registro es exitoso
                             window.location.href = data.redirect;
                         } else if (data.status === 'error') {
-                            // Limpiar mensajes de error previos
-                            document.querySelectorAll('.custom-error-message').forEach(el => el.remove());
-
                             const errors = data.errors;
-                            let firstErrorStep = Infinity;
-                            // // Renderizado del modal (omitido)
-                            // $('.menu-hider').addClass('menu-active');
-                            // $('#menu-errores').addClass('menu-active');
-                            // if (Array.isArray(errors)) {
-                            //     // Si es un array, concatenar los errores en un solo string
-                            //     errorMessages = errors.map(error => `<li>${error}</li>`).join('');
-                            // } else if (typeof errors === 'object') {
-                            //     // Si es un objeto, recorrer cada propiedad y concatenar
-                            //     errorMessages = Object.values(errors)
-                            //         .flat() // Aplana posibles arrays anidados
-                            //         .map(error => `<li>${error}</li>`)
-                            //         .join('');
-                            // } else {
-                            //     // Si no es ni array ni objeto, mostrarlo directamente
-                            //     errorMessages = `<li>${errors}</li>`;
-                            // }
-                            // // Mostrar errores en la lista de errores
-                            // $('#error-registro').html(
-                            //     `<ul class="list-group text-danger">${errorMessages}</ul>`);
-                            // Mostrar errores y encontrar el paso con el primer error
-                            for (const [field, messages] of Object.entries(errors)) {
-                                const inputField = document.querySelector(`[name="${field}"]`);
-
-                                // Crear el div para los mensajes de error
-                                const errorDiv = document.createElement('div');
-                                errorDiv.classList.add(
-                                    'font-10','custom-error-message'); // Añadir otras clases si es necesario
-                                errorDiv.innerText = messages.join(', ');
-
-                                // Aplicar estilo en línea con !important
-                                errorDiv.style.cssText = 'color: red !important;';
-
-                                // Insertar el div de error después del input
-                                if (field == 'telefono') {
-                                    inputField.parentElement.parentElement.parentElement.appendChild(errorDiv);
-                                } else {
-                                    inputField.parentElement.appendChild(errorDiv);
-                                }
-
-                                // Determinar el paso del error
-                                let errorStep = null;
-                                if (['name', 'email', 'telefono'].includes(field)) {
-                                    errorStep = 0;
-                                } else if (['profesion', 'nacimiento', 'direccion', 'direccion_trabajo'].includes(field)) {
-                                    errorStep = 1;
-                                } else if (['password', 'password_confirmation'].includes(field)) {
-                                    errorStep = 2;
-                                }
-
-                                if (errorStep !== null) {
-                                    firstErrorStep = Math.min(firstErrorStep, errorStep);
-                                }
-                            }
-
-                            // Relocalizar al primer paso con error
-                            steps[currentStep].classList.add('d-none'); 
-                            currentStep = firstErrorStep;
-                            steps[currentStep].classList.remove('d-none');
+                            // Generar mensajes de error
+                            displayErrorMessages(errors);
                         }
                     })
                     .catch(error => console.error('Error:', error));
