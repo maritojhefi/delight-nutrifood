@@ -103,5 +103,242 @@
     );
 }
 
+.card.login-card {
+        /* background-color: lch(0% 0 0); */
+
+    /* background-color: lch(98.38% 9.58 150.89); */
+    background-color: #F5F7FA;
+    border-color: #94ffadc3;
+}
+
+.card.signin-card {
+        /* background-color: lch(0% 0 0); */
+
+    /* background-color: lch(98.38% 9.58 150.89); */
+    background-color: #F5F7FA;
+    border-color: #94ffadc3;
+}
+
+.card.signin-card h3{
+    color: #FF5A5A;
+}
+
+.card.login-card h3{
+    color: #FF5A5A;
+}
+
+/* .card.signin-card h3 {
+    color: #FF5A5A;
+    background: linear-gradient(135deg, #FF5A5A 0%, #FF8A80 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 4px rgba(255, 90, 90, 0.1);
+    letter-spacing: -0.5px;
+} */
+
+.card.login-card form label {
+    color: #26A69A;
+    font-size: 16px;
+}
+
+.card.signin-card h5 {
+    font-size: 16px !important;
+    color: #26A69A;
+}
 
 
+.card.signin-card form label {
+    color: #26A69A;
+    font-size: 14px;
+}
+
+.card.login-card form input {
+    font-size: 14px !important;
+    padding-left: 2.0rem !important;
+}
+
+.card.signin-card form input {
+    font-size: 14px !important;
+    padding-left: 2.0rem !important;
+}
+
+.card.signin-card form input.no-padding {
+    font-size: 14px !important;
+    padding-left: 0.0rem !important;
+}
+
+.input-style.remove-mb {
+    margin-bottom: 0 !important; 
+}
+
+.theme-light form input:focus {
+    border-color: #2f686a !important;
+    box-shadow: 0 0 0 0.2rem rgba(47, 104, 106, 0.25);
+}
+
+
+
+.theme-light .input-icon  {
+    color: #26A69A;
+}
+
+
+hover-blue:hover {
+        color: blue !important;
+    }
+
+
+
+
+.custom-file-upload-container {
+            position: relative;
+            display: inline-block;
+        }
+
+.file-upload-area {
+    width: 150px;
+    height: 150px;
+    border: 2px dashed #ccc;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+    position: relative;
+    overflow: hidden;
+}
+
+.file-upload-area:hover {
+    border-color: #007bff;
+    background-color: #e3f2fd;
+}
+
+.file-upload-area.has-image {
+    border: none;
+    background: none;
+}
+
+.upload-text {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    padding: 10px;
+}
+
+.preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.remove-button {
+    top: 5px;
+    right: 5px;
+    background: #ffffff;
+    color: black;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    display: none;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.remove-button:hover {
+    background: #FF5A5A;
+    color: white;
+}
+
+.custom-major-file-container.has-image .remove-button {
+    display: block;
+}
+
+.card.signin-card input[type="checkbox"] {
+    width: 1.2em;
+    height: 1.2em;
+}
+
+
+
+/* .file-upload-area.has-image .remove-button {
+    display: block;
+} */
+
+.hidden-input {
+    display: none;
+}
+
+.error-message {
+    color: #FF5A5A;
+    font-size: 12px;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.converting-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 12px;
+}
+
+.converting-overlay.show {
+    display: flex;
+}
+
+.pill {
+    width: 80px;
+    height: 8px;
+    background-color: #b3b3b3;
+    border-radius: 50px;
+    transition: background-color 0.3s ease;
+}
+
+.pill.active {
+    /* background-color: #2f686a; */
+    background-color: #4ECDC4;
+}
+
+.password-toggle {
+    color: #6c757d;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.password-toggle:hover {
+    color: #4ECDC4;
+}
+
+.password_confirmation-toggle {
+    color: #6c757d;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.password_confirmation-toggle:hover {
+    color: #4ECDC4;
+}
+
+.password-toggle:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.input-style.position-relative {
+    overflow: visible;
+}
