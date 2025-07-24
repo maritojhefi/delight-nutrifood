@@ -177,19 +177,13 @@
     box-shadow: 0 0 0 0.2rem rgba(47, 104, 106, 0.25);
 }
 
-
-
 .theme-light .input-icon  {
     color: #26A69A;
 }
 
-
 hover-blue:hover {
         color: blue !important;
     }
-
-
-
 
 .custom-file-upload-container {
             position: relative;
@@ -341,4 +335,121 @@ hover-blue:hover {
 
 .input-style.position-relative {
     overflow: visible;
+}
+
+.card.resumen-carrito {
+    background-color: #4ECDC4;
+    
+}
+
+.resumen-carrito-detalles button {
+    /* color: #4ECDC4; */
+    background-color: #FF5A5A;
+}
+
+.card-overlay {
+    pointer-events: none;
+}
+
+
+/* Cart Item Styling */
+.cart-item-wrapper {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cart-item-wrapper:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.item-carrito-info {
+    border: 1px solid #e9ecef;
+    transition: border-color 0.2s ease;
+}
+
+.item-carrito-info:hover {
+    border-color: #dee2e6;
+}
+
+/* Product Image */
+.product-image-container {
+    flex-shrink: 0;
+}
+
+.product-image {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border: 2px solid #f8f9fa;
+    transition: border-color 0.2s ease;
+}
+
+.product-image:hover {
+    border-color: #dee2e6;
+}
+
+/* Quantity Controls */
+.quantity-controls {
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    min-height: 35px;
+}
+
+.quantity-controls button {
+    color: #6c757d;
+    transition: all 0.2s ease;
+    min-width: 30px;
+}
+
+.quantity-controls button:hover {
+    color: #495057;
+    background-color: #e9ecef;
+    transform: scale(1.1);
+}
+
+.quantity-controls button:active {
+    transform: scale(0.95);
+}
+
+/* Product Details */
+.item-carrito-detalles h5 {
+    color: #212529;
+    line-height: 1.3;
+}
+
+.item-carrito-detalles p {
+    line-height: 1.4;
+}
+
+/* Price Styling */
+.text-success {
+    color: #198754 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+    .item-carrito-info {
+        flex-direction: column;
+    }
+    
+    .product-image-container {
+        align-self: center;
+        margin-top: 1rem;
+    }
+    
+    .product-image {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .quantity-controls {
+        align-self: flex-end;
+    }
+}
+
+/* Custom Divider (if you still want to use it) */
+.cart-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #dee2e6, transparent);
+    margin: 1.5rem 0;
 }
