@@ -43,7 +43,7 @@ class CarritoController extends Controller
                     'nombre' => 'PLAN MENSUAL DESAYUNO ',
                     'descripcion' => 'desayuno compuesto por una bebida fria/caliente y su acompañamiento',
                     'precio' => 320.00,
-                    'imagen' => '/imagenes/delight/default-bg-1.png',
+                    // 'imagen' => '/imagenes/delight/default-bg-1.png',
                     'cantidad' => 1 
                 ],  
                 (object)[
@@ -51,44 +51,11 @@ class CarritoController extends Controller
                     'nombre' => 'PLAN MENSUAL CENA - ALMUERZO',
                     'descripcion' => 'PLAN 20 DIAS DE CONSUMO',
                     'precio' => 359.00,
-                    'imagen' => '/imagenes/delight/default-bg-1.png',
+                    // 'imagen' => '/imagenes/delight/default-bg-1.png',
                     'cantidad' => 1
                 ],
                 
             ];        
-
-        // $planes = [
-        //     (object)[
-        //         'id' => 9,
-        //         'nombre' => 'PLAN MENSUAL DESAYUNO',
-        //         'detalle' => 'PLAN 20 CONSUMOS',
-        //         'editable' => false,
-        //         'asignado_automatico' => false,
-        //         'producto_id' => 492,
-        //         'created_at' => '2023-02-15 05:42:06',
-        //         'updated_at' => '2023-02-15 05:43:30',
-        //         'sopa' => false,
-        //         'ensalada' => false,
-        //         'segundo' => false,
-        //         'carbohidrato' => false,
-        //         'jugo' => false,
-        //     ],
-        //     (object)[
-        //         'id' => 8,
-        //         'nombre' => 'PLAN MENSUAL CENA',
-        //         'detalle' => 'PLAN DE 20 CONSUMOS Y/O CENAS',
-        //         'editable' => true,
-        //         'asignado_automatico' => true,
-        //         'producto_id' => 478,
-        //         'created_at' => '2023-01-16 05:14:16',
-        //         'updated_at' => '2025-05-24 01:19:51',
-        //         'sopa' => false,
-        //         'ensalada' => true,
-        //         'segundo' => true,
-        //         'carbohidrato' => true,
-        //         'jugo' => false,
-        //     ],
-        // ];
        
 
         return view('client.carrito.index',compact('user','listado'));
