@@ -72,7 +72,8 @@ Route::prefix('/lineadelight')->group(function () {
 Route::prefix('/carrito')
     ->middleware('auth')
     ->group(function () {
-        Route::get('', [App\Http\Controllers\CarritoController::class, 'index'])->name('carrito');
+        Route::get('', action: [App\Http\Controllers\CarritoController::class, 'index'])->name('carrito');
+        Route::post('mi-carrito', [App\Http\Controllers\CarritoController::class, 'validateCarrito']);
     });
 
 Route::prefix('/ventas')

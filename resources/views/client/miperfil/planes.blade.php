@@ -67,11 +67,10 @@
         <div class="content">
             <h4 class="font-700">Estos son todos nuestros planes:</h4>
         </div>
-    </div>
+    </div>  
     @foreach ($planesTodos as $plan)
         <div data-card-height="150" class="card card-style plan-card round-medium shadow-huge top-30 mb-3"
             style="background-image: url('{{ asset('imagenes/delight/default-bg-horizontal.jpg') }}'); background-size: cover; background-position: center;">
-
 
             <div class="d-flex justify-content-between align-items-center ms-4 me-4 mt-4">
                 <div class="plan-title-container" style="flex: 1; margin-right: 15px;">
@@ -85,8 +84,12 @@
                     </h2>
                 </div>
                 <a href="#"
-                    class="btn confirm-btn text-light rounded-pill fw-bold text-uppercase small carrito flex-shrink-0"
-                    style="z-index: 10;" id="{{ $plan->id }}">
+                    class="btn add-to-cart confirm-btn text-light rounded-pill fw-bold text-uppercase small carrito flex-shrink-0"
+                    style="z-index: 10;" 
+                    id="{{ $plan->id }}"
+                    data-producto-id="{{$plan->producto_id}}"
+                    data-producto-nombre="{{$plan->nombre}}"
+                    >
                     <span class="text-white">{{ $plan->producto->precioReal() }} Bs </span>
                     <i class="fa fa-heart fa-beat" style="color: deeppink;"> </i>
                 </a>
@@ -187,5 +190,32 @@
             adjustPlanTitleFontSize();
             setTimeout(adjustPlanTitleFontSize, 100);
         });
+    </script>
+    <script src="{{ asset('js/carrito/index.js') }}"></script>
+    <script> 
+        $(document).ready(function() {
+
+            $('.add-to-cart').on('click', addToCartHandler);
+        });
+
+        function addToCartHandler() {
+            const product_Id = $(this).data('producto-id');
+            const product_nombre = $(this).data('producto-nombre')
+
+            console.log(product_Id);
+            console.log(product_nombre);
+            const result = addToCart(product_Id, 1, true);
+            if (result.success) {
+                showMessage('success', 'Item added to cart!');
+                showMessage('error', result.message);
+
+            }
+            
+        }
+
+        function showMessage(type, text) {
+            $('#message-container').html(`<div class="alert alert-${type}">${text}</div>`);
+            setTimeout(() => $('#message-container').empty(), 3000);
+        }
     </script>
 @endsection
