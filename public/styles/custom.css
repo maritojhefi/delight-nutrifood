@@ -1145,3 +1145,20 @@ hover-blue:hover {
     background: rgb(0, 63, 72) ;
 }
 
+.hover-grow {
+    transition: transform 0.3s ease-out; /* Default state (mouse leave) */
+}
+
+.hover-grow:hover {
+    transform: scale(1.1);
+    transition: transform 0.1s ease-in; /* Hover state (mouse enter) */
+}
+
+.hover-grow-xs {
+    transition: transform 0.3s ease-out; /* Default state (mouse leave) */
+}
+
+.hover-grow-xs:hover {
+    transform: scale(1.01);
+    transition: transform 0.1s ease-in; /* Hover state (mouse enter) */
+}

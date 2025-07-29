@@ -60,6 +60,26 @@
 
                 });
             }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCounter();
+            
+            // Optional: Listen for custom events if you update the cart elsewhere
+            document.addEventListener('cartUpdated', updateCartCounter);
+        });
+
+        function updateCartCounter() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || { items: [] }; // Fixed typo: was 'item', now 'items'
+            const cartCounter = document.getElementById('cart-counter');
+            
+            if (cart.items && cart.items.length > 0) {
+                cartCounter.textContent = cart.items.length;
+                cartCounter.style.display = 'inline-block'; // Ensure it's visible
+            } else {
+                cartCounter.textContent = '';
+                cartCounter.style.display = 'none'; // Hide when empty
+            }
+        }
         </script>
     @endpush
     <a id="uno" href="{{ route('miperfil') }}"
@@ -82,11 +102,23 @@
         <i class="fa fa-gem font-16 color-white fa-beat"></i>
         <span class="color-white">Eco-Tienda</span>
     </a>
-    <a href="{{ route('carrito') }}"
+    {{-- <a href="{{ route('carrito') }}"
         class="{{ request()->is('carrito' . '*') ? 'active-nav rounded-m' : '' }} cargando">
-        <i class="fa fa-shopping-cart font-16 color-white fa-beat"></i>
+        <div class="d-flex flex-row align-self-center">
+            <i class="fa fa-shopping-cart font-16 color-white fa-beat"></i>
+            <span id="cart-counter">counter</span>
+        </div>
         <span class="color-white">Mi carrito</span>
+    </a> --}}
+    <a href="{{ route('carrito') }}"
+    class="{{ request()->is('carrito' . '*') ? 'active-nav rounded-m' : '' }} cargando">
+            <i class="fa fa-shopping-cart font-16 color-white fa-beat"></i>
+             <span id="cart-counter" class="cart-counter-badge"></span>
+        <span class="color-white">Mi carrito</span>           
+
     </a>
+
+    {{-- </div> --}}
     <!--  <a href="{{ route('ajustes') }}" class="{{ request()->is('ajustes' . '*') ? 'active-nav' : '' }} ">
             <i data-feather="settings" data-feather-line="1" data-feather-size="21" data-feather-color="dark-dark" data-feather-bg="gray-fade-light"></i>
             <span>Ajustes</span>

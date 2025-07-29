@@ -99,7 +99,7 @@ class CarritoController extends Controller
             ]);
 
             // Procesa productos regulares
-            $productos = collect(); // Initialize as empty collection
+            $productos = collect();
             
             if ($idsProductos->isNotEmpty()) {
                 $productos = Producto::whereIn('id', $idsProductos)
@@ -142,7 +142,7 @@ class CarritoController extends Controller
             }
 
             // Procesa Planes
-            $planes = collect(); // Initialize as empty collection
+            $planes = collect();
             
             if ($idsPlanes->isNotEmpty()) {
                 $planes = Producto::whereIn('id', $idsPlanes)
@@ -171,10 +171,10 @@ class CarritoController extends Controller
                     });
             }
 
-            // Combine products and plans - both are now regular Collections
+            // Combinar planes y productos en una sola colección
             $allItems = $productos->merge($planes);
 
-            // Categorize items by status
+            // Categorizar los items por estado
             $itemsDisponibles = $allItems->filter(fn($p) => $p['estado'] === 'disponible');
             $itemsEscasos = $allItems->filter(fn($p) => $p['estado'] === 'escaso');
             $itemsAgotados = $allItems->filter(fn($p) => $p['estado'] === 'agotado');
