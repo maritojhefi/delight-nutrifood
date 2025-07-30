@@ -50,4 +50,42 @@ class LineaDelightController extends Controller
         //dd($subcategoria->productos());
         return view('client.lineadelight.planes',compact('subcategoria'));
     }
+    public function lineadelightHorario($horario)
+    {
+        switch ($horario) {
+            case 'manana':
+                $ids = [3, 4, 8, 10, 12, 13, 54, 56, 57]; // IDs para desayuno
+                $nombreHorario = 'mañana'; // Adding a display name
+                break;
+
+            case 'tarde':
+                $ids = [2, 6, 9, 52, 55]; // IDs para almuerzo
+                $nombreHorario = 'tarde';
+                break;
+
+            case 'noche':
+                $ids = [8, 9, 14, 55, 58]; // IDs para cena
+                $nombreHorario = 'noche';
+                break;
+
+            default:
+                $ids = [2, 3, 4, 6, 8, 9, 10, 12, 13, 15, 52, 53, 54, 55, 56, 57, 58]; // Ningún horario válido o todos los horarios
+                $nombreHorario = 'día'; // Default display name
+                break;
+        }
+
+        $subcategorias = Subcategoria::whereIn('id', $ids)->orderBy('nombre')->get();
+
+        $horarioData = (object)[
+            'nombre' => $nombreHorario,
+            'value' => $horario
+        ];
+
+        return view('client.lineadelight.subcategorias-horario', compact('subcategorias', 'horarioData'));
+    }
+    public function lineadelightPopulares() {
+
+
+        return view('client.lineadelight.productos-populares');
+    }
 }

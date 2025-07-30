@@ -17,7 +17,6 @@
             </div>
             <div class="search-results disabled-search-list mt-3">
                 <div class="card card-style mx-0 px-2 p-0 mb-0">
-
                     @foreach ($productos as $item)
                         <a href="{{ route('delight.detalleproducto', $item->id) }}" class="d-flex py-2"
                             data-filter-item="{{ Str::of($item->nombre)->lower() }}"
@@ -36,8 +35,6 @@
                             </div>
                         </a>
                     @endforeach
-
-
                 </div>
             </div>
         </div>
@@ -211,7 +208,6 @@
                                 </a>
                             </div>
                         @endforeach
-
                     </div>
                 </div>
             </div>
@@ -242,10 +238,11 @@
                             data-filter-item="{{ Str::of($item->nombre)->lower() }}"
                             data-filter-name="{{ Str::of($item->nombre)->lower() }}">
                             <div class="align-self-center">
-                                <img src="{{ asset($item->pathAttachment()) }}" class="rounded-sm me-3" width="35"
-                                    alt="img">
+                                {{-- <img src="{{ asset($item->pathAttachment()) }}" class="rounded-sm me-3" width="35"
+                                    alt="img"> --}}
+                                <i class="fa fa-search"></i>
                             </div>
-                            <div class="align-self-center">
+                            <div class="align-self-center ps-2">
                                 <span
                                     class="color-theme font-15 d-block mb-0">{{ Str::limit(ucfirst(strtolower($item->nombre)), 35, '...') }}</span>
                             </div>
@@ -291,44 +288,36 @@
 
                 <div class="card-overlay bg-gradient opacity-80"></div>
             </div> --}}
-            <a href="{{ route('categoria.planes') }}" data-card-height="100" class="card card-style col-12 mx-0 mt-1 px-0 round-medium shadow-huge hover-grow-xs" 
+            <a href="{{ route('delight.listar.populares') }}" data-card-height="100" class="card card-style col-12 mx-0 mt-1 px-0 round-medium shadow-huge hover-grow-xs" 
                 style="height: 100px;background-color: #FF5A5A;">
-                <div class="card-center d-flex flex-row align-items-center justify-content-between px-3">
-                    <!-- Left section with circle icon -->
-                    {{-- <div class="d-flex align-items-center">
-                        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center" 
-                            style="width: 40px; height: 40px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                            <i class="fa fa-line-chart text-primary" style="font-size: 1.2rem;"></i>
-                        </div>
-                    </div> --}}
-                    
-                    {{-- <img url="{{asset('imagenes/delight/logo_white.svg')}}" style="width: 40px; height: 40px;"></img> --}}
-                    <div class="d-flex flex-row align-items-center gap-2">
-                        <img class="mb-1" src="{{ asset('imagenes/delight/logo_white.svg') }}" alt="Logo" style="width: 50px; height: 50px;">
-                        <!-- Middle section with text -->
+                <div class="card-center d-flex flex-row align-items-center justify-content-between ps-4 pe-3">
+                    <div class="d-flex flex-row align-items-center gap-3">
+                        {{-- <img class="mb-1" src="{{ asset('imagenes/delight/logo_white.svg') }}" alt="Logo" style="width: 50px; height: 50px;"> --}}
+                        <i class="fa fa-apple-alt fa-3x" style="color: white"></i>
                         <div class="text-start">
                             <h2 class="text-white">Productos Populares</h2>
                             <p class="mb-0 text-white opacity-75">Descubre nuestros artículos más vendidos</p>
                         </div>
                     </div>
                     <!-- Right section with "Ver Todos" -->
-                    <div class="d-flex fl   ex-row gap-2 align-items-center">
+                    {{-- <div class="d-flex fl   ex-row gap-2 align-items-center">
                         <span class="text-white font-weight-bold">Ver Todos</span>
                         <i class="fa fa-arrow-right text-white"></i>
-                    </div>
+                    </div> --}}
+                    <i class="fa fa-arrow-circle-right fa-2x" style="color: white"></i>
                 </div>
-                {{-- <div class="card-overlay bg-gradient opacity-80"></div> --}}
+                <div class="card-overlay dark-mode-tint"></div>
             </a>
             <div class="col-6">
-                <a href="#" data-card-height="125" class="card card-style mb-4 mx-0 hover-grow" style="height: 125px;">
+                <a href="{{ route('delight.listar.subcategorias.horario', "manana") }}" data-card-height="125" class="card card-style mb-4 mx-0 hover-grow" style="height: 125px;">
                     <div class="card-center text-center">
                         <i class="fa fa-coffee font-30 pt-3 color-red-dark"></i>
-                        <h5 class="pt-2">Manana</h5>
+                        <h5 class="pt-2">Mañana</h5>
                     </div>
                 </a>
             </div>
             <div class="col-6">
-                <a href="#" data-card-height="125" class="card card-style mb-4 mx-0 hover-grow" style="height: 125px;">
+                <a href="{{ route('delight.listar.subcategorias.horario', "tarde") }}" data-card-height="125" class="card card-style mb-4 mx-0 hover-grow" style="height: 125px;">
                     <div class="card-center text-center">
                         <i class="fa fa-sun font-30 pt-3 color-green-dark"></i>
                         <h5 class="pt-2">Tarde</h5>
@@ -336,7 +325,7 @@
                 </a>
             </div>
             <div class="col-6">
-                <a href="#" data-card-height="125" class="card card-style mb-4 mx-0 hover-grow" style="height: 125px;">
+                <a href="{{ route('delight.listar.subcategorias.horario', "noche") }}" data-card-height="125" class="card card-style mb-4 mx-0 hover-grow" style="height: 125px;">
                     <div class="card-center text-center">
                         <i class="fa fa-moon font-30 pt-3 color-magenta-dark"></i>
                         <h5 class="pt-2">Noche</h5>
@@ -344,14 +333,14 @@
                 </a>
             </div>
             <div class="col-6">
-                <a href="#" data-card-height="125" class="card card-style mb-4 mx-0 hover-grow" style="height: 125px;">
+                <a href="{{ route('delight.listar.productos.subcategoria', 53) }}" data-card-height="125" class="card card-style mb-4 mx-0 hover-grow" style="height: 125px;">
                     <div class="card-center text-center">
                         <i class="fa fa-heartbeat font-30 pt-3 color-orange-dark"></i>
                         <h5 class="pt-2">Fitness</h5>
                     </div>
                 </a>
             </div>
-            <div data-card-height="120" class="card card-style col-12 mx-0 my-0 px-0 round-medium shadow-huge hover-grow-xs"
+            {{-- <div data-card-height="120" class="card card-style col-12 mx-0 my-0 px-0 round-medium shadow-huge hover-grow-xs"
                 style="height: 120px;background-image:url('{{ asset(GlobalHelper::getValorAtributoSetting('inicio_disfruta')) }}')">
                 <div class="d-flex flex-row justify-content-between mx-3 mt-4 align-items-center">
                     <h2 class="color-white pb-0">Planes y paquetes</h2>
@@ -368,7 +357,27 @@
                     </div>   
                 </div>
                 <div class="card-overlay bg-gradient opacity-80"></div>
-            </div>
+            </div> --}}
+            <a href="{{ route('categoria.planes') }}" data-card-height="100" class="card card-style col-12 mx-0 my-0 px-0 round-medium shadow-huge hover-grow-xs"
+                style="height: 100px;background-color: #4ECDC4">
+                <div class="card-center d-flex flex-row align-items-center justify-content-between ps-4 pe-3">
+                    <div class="d-flex flex-row align-items-center gap-3">
+                        <i class="fa fa-calendar fa-3x" style="color: white"></i>
+                        <!-- Middle section with text -->
+                        <div class="text-start">
+                            <h2 class="text-white">Planes y paquetes</h2>
+                            <p class="mb-0 text-white opacity-75">Encuentra el adecuado para ti!</p>
+                        </div>
+                    </div>
+                    <!-- Right section with "Ver Todos" -->
+                    {{-- <a href="{{ route('categoria.planes') }}"
+                        class="float-end bg-white color-black btn btn-s rounded-xl font-900 text-uppercase font-11 hover-grow">
+                        Ver planes
+                    </a> --}}
+                    <i class="fa fa-arrow-circle-right fa-2x" style="color: white"></i>
+                </div>
+                <div class="card-overlay dark-mode-tint"></div>
+            </a>
 
             {{-- <div class="col-4">
                 <a href="#" data-card-height="125" class="card card-style mb-4 mx-0" style="height: 125px;">
@@ -403,16 +412,19 @@
     <div class="divider divider-margins"></div>
 
     @if ($conMasPuntos->count() > 0)
+        {{-- <div class="card card-style rounded-md mx-0 preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
+            style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('gana_puntos')) }});"> --}}
         <div class="card card-style rounded-md mx-0 preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
-            style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('gana_puntos')) }});">
+            style="background-image: url({{ asset('imagenes/delight/default-bg-vertical.jpg') }});">
             <div class="card-body">
                 <h4 class="color-white pt-3 font-24">Gana Puntos!</h4>
                 <p class="color-white pt-1">
+                    Los productos seleccionados atribuyen puntos por cada compra realizada.
                     Mientras mas puntos, mas premios!
                 </p>
                 <div class="card card-style bg-transparent m-0 shadow-0">
-                    <div class="row mb-0">
-                        @foreach ($conMasPuntos as $item)
+                    <div class="row mb-0 p-2">
+                        {{-- @foreach ($conMasPuntos as $item)
                             <div class="col-6 ps-2">
                                 <a href="{{ route('delight.detalleproducto', $item->id) }}"
                                     class="card card-style mx-0 mb-3" data-menu="menu-product">
@@ -431,8 +443,24 @@
                                     </h5>
                                 </a>
                             </div>
+                        @endforeach --}}
+                        @foreach ($conMasPuntos as $item)
+                            <div class="col-6">
+                                <a href="{{ route('delight.detalleproducto', $item->id) }}"
+                                    class="card card-style py-3 d-flex align-items-center hover-grow" data-menu="menu-product">
+                                    <img src="{{ asset('imagenes/delight/optimal_logo.svg')}}" alt="img" width="100"
+                                    class="mx-auto">
+                                    <div class="p-2">
+                                        <p class="mb-0 font-600 text-center">{{ Str::limit($item->nombre(), 22) }}</p>
+                                    </div>
+                                    <div class="divider mb-0"></div>
+                                    <div class="d-flex flex-row justify-content-between gap-4 mb-0">
+                                        <p class="font-600 mb-0">{{ $item->descuento ? $item->descuento : $item->precio }} Bs</p>
+                                        <p class="bg-blue-dark font-11 px-2 font-600 rounded-xs shadow-xxl mb-0">{{ $item->puntos }} Pts</p>
+                                    </div>
+                                </a>
+                            </div>
                         @endforeach
-
                     </div>
                 </div>
             </div>

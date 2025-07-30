@@ -65,7 +65,9 @@ Route::prefix('/productos')->group(function () {
 //promociones
 Route::prefix('/lineadelight')->group(function () {
     Route::get('', [App\Http\Controllers\LineaDelightController::class, 'index'])->name('linea.delight');
+    Route::get('/populares', [App\Http\Controllers\LineaDelightController::class, 'lineadelightPopulares'])->name('delight.listar.populares');
     Route::get('/categoria/planes', [App\Http\Controllers\LineaDelightController::class, 'categoriaPlanes'])->name('categoria.planes');
+    Route::get('/categorias/{horario}', [App\Http\Controllers\LineaDelightController::class, 'lineadelightHorario'])->name('delight.listar.subcategorias.horario');
     Route::get('/categoria/{id}', [App\Http\Controllers\ProductoController::class, 'lineadelightsubcategoria'])->name('delight.listar.productos.subcategoria');
     Route::get('/lineadelight/detalle/{id}', [App\Http\Controllers\ProductoController::class, 'lineadelightproducto'])->name('delight.detalleproducto');
 });
