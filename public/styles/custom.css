@@ -1162,3 +1162,29 @@ hover-blue:hover {
     transform: scale(1.01);
     transition: transform 0.1s ease-in; /* Hover state (mouse enter) */
 }
+
+.hover-grow-s {
+    transition: transform 0.3s ease-out; /* Default state (mouse leave) */
+}
+
+.hover-grow-s:hover {
+    transform: scale(1.05);
+    transition: transform 0.1s ease-in; /* Hover state (mouse enter) */
+}
+
+/* Custom cards for subcategory listings */
+
+.category-card-image {
+    overflow: hidden;
+}
+
+.category-card-image img {
+    width: 100px;
+    height: 120px; /* Match the card height */
+    object-fit: cover; /* Ensures image covers the area properly */
+    object-position: center; /* Centers the image */
+    border-top-left-radius: 0.5rem; /* Match the card's border radius */
+    border-bottom-left-radius: 0.5rem; /* Match the card's border radius */
+    border-top-right-radius: 0; /* No radius on the right side */
+    border-bottom-right-radius: 0; /* No radius on the right side */
+}

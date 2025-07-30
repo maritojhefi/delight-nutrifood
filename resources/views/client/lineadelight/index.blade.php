@@ -70,8 +70,6 @@
                         </a>
                     </div>
                 @endforeach
-
-
             </div>
         </div>
         <ul class="splide__pagination">
@@ -417,11 +415,13 @@
         <div class="card card-style rounded-md mx-0 preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
             style="background-image: url({{ asset('imagenes/delight/default-bg-vertical.jpg') }});">
             <div class="card-body">
-                <h4 class="color-white pt-3 font-24">Gana Puntos!</h4>
-                <p class="color-white pt-1">
-                    Los productos seleccionados atribuyen puntos por cada compra realizada.
-                    Mientras mas puntos, mas premios!
-                </p>
+                <div class="mx-4 mb-0">
+                    <h4 class="color-white pt-3 font-24">Gana Puntos!</h4>
+                    <p class="color-white pt-1 mb-2">
+                        Los productos seleccionados atribuyen puntos por cada compra realizada.
+                        Mientras mas puntos, mas premios!
+                    </p>
+                </div>
                 <div class="card card-style bg-transparent m-0 shadow-0">
                     <div class="row mb-0 p-2">
                         {{-- @foreach ($conMasPuntos as $item)
