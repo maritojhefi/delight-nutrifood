@@ -1,7 +1,7 @@
 @extends('client.master')
 @section('content')
     @auth
-        <x-cabecera-pagina titulo="Hola!" cabecera="appkit" />
+        <x-cabecera-pagina titulo="Perfil Personal" cabecera="appkit" />
         <div class="card card-style preload-img entered loaded" data-src="{{ asset('images/imagen4.jpg') }}" data-card-height="450"
             style="height: 450px; background-image: url(&quot;{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}&quot;);"
             data-ll-status="loaded">

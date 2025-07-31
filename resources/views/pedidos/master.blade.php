@@ -17,7 +17,7 @@
         href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900|Roboto:300,300i,400,400i,500,500i,700,700i,900,900i&amp;display=swap"
         rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('fonts/css/fontawesome-all.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_mint.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_teal.css') }}">
 
 
     @stack('header')
@@ -91,7 +91,7 @@
                         </div>
                         <div class="col m-0">
                             <a href="#"
-                                class="btn btn-xxs mb-3 rounded-s text-uppercase font-700 shadow-s bg-highlight mt-3 scale-box">
+                                class="btn btn-xxs mb-3 rounded-s text-uppercase font-700 shadow-s  mt-3 scale-box">
                                 <span class="badge badge-light font-10">Ver pedido</span>
                                 <span id="spinner" class="spinner-border spinner-border-sm" role="status"
                                     aria-hidden="true" style="display: none;"></span>
