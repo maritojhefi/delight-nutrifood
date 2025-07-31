@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-    <x-cabecera-pagina titulo="Mi saldo" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Mi saldo" cabecera="appkit" />
     <div class="card card-style">
         <div class="content mb-2">
             <h4>Resumen detallado</h4>

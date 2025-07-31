@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-    <x-cabecera-pagina titulo="{{ $plan->nombre }}" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="{{ $plan->nombre }}" cabecera="appkit" />
     @env('local')
     @php
         $path = env('APP_URL');

@@ -1,7 +1,7 @@
 @extends('client.master')
 @section('content')
 
-<x-cabecera-pagina titulo="Jummm...!" cabecera="bordeado" />
+<x-cabecera-pagina titulo="Jummm...!" cabecera="appkit" />
     <div class="card card-style text-center">
         <div class="content py-5">
             <h1><i class="fa fa-exclamation-triangle color-red-dark fa-4x"></i></h1>

@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-    <x-cabecera-pagina titulo="Hola!" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Hola!" cabecera="appkit" />
 
     <div class="card card-style text-center" id="close">
         <form action="{{ route('registrar.asistencia') }}" method="post" id="myform">

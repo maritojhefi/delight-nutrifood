@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-    <x-cabecera-pagina titulo="Videos" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Videos" cabecera="appkit" />
 
     @php
         $colores = ['mint', 'orange', 'red', 'pink', 'blue', 'green'];
