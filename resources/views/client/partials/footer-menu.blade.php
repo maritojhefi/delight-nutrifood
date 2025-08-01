@@ -53,6 +53,6 @@
         class="{{ request()->is('carrito' . '*') ? 'active-nav rounded-m' : '' }} cargando">
         <i class="fa fa-shopping-cart"></i>
         <span>Mi carrito</span>
-                <em></em>
+        <em></em>
     </a>
 </div>
