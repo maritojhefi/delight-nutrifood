@@ -10,8 +10,8 @@
 
     <title>{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}</title>
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('styles/bootstrap.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('styles/custom.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('styles/bootstrap.css') }}?v=1.0.0">
+    <link rel="stylesheet" type="text/css" href="{{ asset('styles/custom.css') }}?v=1.0.0">
 
     <link
         href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900|Roboto:300,300i,400,400i,500,500i,700,700i,900,900i&amp;display=swap"
@@ -84,8 +84,8 @@
     </div>
     @include('client.partials.modalredes')
     @stack('modals')
-    <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('scripts/custom.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}?v=1.0.0"></script>
+    <script type="text/javascript" src="{{ asset('scripts/custom.js') }}?v=1.0.0"></script>
     <script>
         function myFunction() {
             var element = document.body;
