@@ -1,33 +1,13 @@
 @push('modals')
     <div id="menu-tips-1" class="menu menu-box-modal menu-box-detached rounded-l"  data-menu-width="360"
         data-menu-effect="menu-over">
-        <div class="card header-card shape-rounded" data-card-height="200">
-
-            <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
-                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
-        </div>
-        <div class="mt-3 pt-1 pb-1">
-            <h1 class="text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="feather feather-smartphone" data-feather-line="1" data-feather-size="60"
-                    data-feather-color="gray-dark" data-feather-bg="none"
-                    style="stroke-width: 1; width: 60px; height: 60px;">
-                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                </svg>
-            </h1>
-            <h1 class="text-center color-white font-22 font-700">PWA Ready</h1>
-            <p class="text-center mt-n3 mb-3 font-11 color-white">Just add it to your home screen and Enjoy!</p>
-        </div>
+        <x-cabecera-terminos-plan/>
         <div class="card card-style">
             <h3 class="mx-auto mt-2">1° PARTE: PAGOS</h3>
             <p class="boxed-text-xl pt-3 mb-3">
                 EL PAGO ES POR ADELANTADO , UNA VEZ HECHO EL PAGO (EN EFECTIVO O POR TRANSFERENCIA ), SE LE AGREGA EL PLAN
                 PARA QUE PUEDA LLENAR SUS ELECCIONES DE MENÚ Y VER EL DETALLE DE SU PLAN EN SU PERFIL DE LA PAGINA WEB.
                 PUEDE PAGAR EL 50% AL INICIO Y DESPUES DE 5 DIAS MÁXIMO CANCELAR LOS 50% RESTANTES.
-
             </p>
         </div>
         <div class="row mb-3">
@@ -45,26 +25,8 @@
     </div>
     <div id="menu-tips-2" class="menu menu-box-modal menu-box-detached rounded-l" data-menu-width="360"
         data-menu-effect="menu-over">
-        <div class="card header-card shape-rounded" data-card-height="200">
+        <x-cabecera-terminos-plan/>
 
-            <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
-                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
-        </div>
-        <div class="mt-3 pt-1 pb-1">
-            <h1 class="text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="feather feather-smartphone" data-feather-line="1" data-feather-size="60"
-                    data-feather-color="gray-dark" data-feather-bg="none"
-                    style="stroke-width: 1; width: 60px; height: 60px;">
-                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                </svg>
-            </h1>
-            <h1 class="text-center color-white font-22 font-700">PWA Ready</h1>
-            <p class="text-center mt-n3 mb-3 font-11 color-white">Just add it to your home screen and Enjoy!</p>
-        </div>
         <div class="card card-style">
             <h3 class="mx-auto mt-2">2° PARTE: REGISTRO</h3>
             <p class="boxed-text-xl pt-3 mb-3">
@@ -88,27 +50,8 @@
     </div>
     <div id="menu-tips-3" class="menu menu-box-modal menu-box-detached rounded-l" data-menu-width="360"
         data-menu-effect="menu-over">
-        <div class="card header-card shape-rounded" data-card-height="200">
+        <x-cabecera-terminos-plan/>
 
-            <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
-                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
-        </div>
-        <div class="mt-3 pt-1 pb-1">
-            <h1 class="text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" class="feather feather-smartphone" data-feather-line="1"
-                    data-feather-size="60" data-feather-color="gray-dark" data-feather-bg="none"
-                    style="stroke-width: 1; width: 60px; height: 60px;">
-                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2">
-                    </rect>
-                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                </svg>
-            </h1>
-            <h1 class="text-center color-white font-22 font-700">PWA Ready</h1>
-            <p class="text-center mt-n3 mb-3 font-11 color-white">Just add it to your home screen and Enjoy!</p>
-        </div>
         <div class="card card-style">
             <h3 class="mx-auto mt-2">3° PARTE: LLENADO DE MENÚ</h3>
 
@@ -138,27 +81,9 @@
     </div>
     <div id="menu-tips-4" class="menu menu-box-modal menu-box-detached rounded-l" data-menu-width="360"
         data-menu-effect="menu-over">
-        <div class="card header-card shape-rounded" data-card-height="200">
+        <x-cabecera-terminos-plan/>
 
-            <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
-                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
-        </div>
-        <div class="mt-3 pt-1 pb-1">
-            <h1 class="text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" class="feather feather-smartphone" data-feather-line="1"
-                    data-feather-size="60" data-feather-color="gray-dark" data-feather-bg="none"
-                    style="stroke-width: 1; width: 60px; height: 60px;">
-                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2">
-                    </rect>
-                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                </svg>
-            </h1>
-            <h1 class="text-center color-white font-22 font-700">PWA Ready</h1>
-            <p class="text-center mt-n3 mb-3 font-11 color-white">Just add it to your home screen and Enjoy!</p>
-        </div>
+
         <div class="card card-style">
             <h3 class="mx-auto mt-2">4° PARTE: TIEMPO DEL PLAN</h3>
             <p class="boxed-text-xl pt-3 mb-3">
@@ -181,27 +106,8 @@
     </div>
     <div id="menu-tips-5" class="menu menu-box-modal menu-box-detached rounded-l" data-menu-width="360"
         data-menu-effect="menu-over">
-        <div class="card header-card shape-rounded" data-card-height="200">
+        <x-cabecera-terminos-plan/>
 
-            <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
-                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
-        </div>
-        <div class="mt-3 pt-1 pb-1">
-            <h1 class="text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" class="feather feather-smartphone" data-feather-line="1"
-                    data-feather-size="60" data-feather-color="gray-dark" data-feather-bg="none"
-                    style="stroke-width: 1; width: 60px; height: 60px;">
-                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2">
-                    </rect>
-                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                </svg>
-            </h1>
-            <h1 class="text-center color-white font-22 font-700">PWA Ready</h1>
-            <p class="text-center mt-n3 mb-3 font-11 color-white">Just add it to your home screen and Enjoy!</p>
-        </div>
         <div class="card card-style">
             <h3 class="mx-auto mt-2">5° PARTE: PERMISOS</h3>
             <p class="boxed-text-xl pt-3 mb-3">
@@ -228,27 +134,8 @@
     </div>
     <div id="menu-tips-6" class="menu menu-box-modal menu-box-detached rounded-l" data-menu-width="360"
         data-menu-effect="menu-over">
-        <div class="card header-card shape-rounded" data-card-height="200">
+        <x-cabecera-terminos-plan/>
 
-            <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
-                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
-        </div>
-        <div class="mt-3 pt-1 pb-1">
-            <h1 class="text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" class="feather feather-smartphone" data-feather-line="1"
-                    data-feather-size="60" data-feather-color="gray-dark" data-feather-bg="none"
-                    style="stroke-width: 1; width: 60px; height: 60px;">
-                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2">
-                    </rect>
-                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                </svg>
-            </h1>
-            <h1 class="text-center color-white font-22 font-700">PWA Ready</h1>
-            <p class="text-center mt-n3 mb-3 font-11 color-white">Just add it to your home screen and Enjoy!</p>
-        </div>
         <div class="card card-style" style="overflow-y: auto; max-height:350px">
             <h3 class="mx-auto mt-2">6° PARTE: DELIVERY Y EMPAQUES</h3>
             <p class="boxed-text-xl pt-3 mb-3">
@@ -284,27 +171,8 @@
     </div>
     <div id="menu-tips-7" class="menu menu-box-modal menu-box-detached rounded-l" data-menu-width="360"
         data-menu-effect="menu-over">
-        <div class="card header-card shape-rounded" data-card-height="200">
+        <x-cabecera-terminos-plan/>
 
-            <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
-                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
-        </div>
-        <div class="mt-3 pt-1 pb-1">
-            <h1 class="text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" class="feather feather-smartphone" data-feather-line="1"
-                    data-feather-size="60" data-feather-color="gray-dark" data-feather-bg="none"
-                    style="stroke-width: 1; width: 60px; height: 60px;">
-                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2">
-                    </rect>
-                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                </svg>
-            </h1>
-            <h1 class="text-center color-white font-22 font-700">PWA Ready</h1>
-            <p class="text-center mt-n3 mb-3 font-11 color-white">Just add it to your home screen and Enjoy!</p>
-        </div>
         <div class="card card-style p-3 d-flex flex-column align-items-center justify-content-center">
             <h3 class=" mt-2 text-center">7° PARTE: HORARIO DE ATENCION DE COCINA</h3>
             <p class="boxed-text-xl pt-3 mb-3">
@@ -331,27 +199,7 @@
     </div>
     <div id="menu-tips-8" class="menu menu-box-modal menu-box-detached rounded-l" data-menu-width="360"
         data-menu-effect="menu-over">
-        <div class="card header-card shape-rounded" data-card-height="200">
-
-            <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}"
-                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }});"></div>
-        </div>
-        <div class="mt-3 pt-1 pb-1">
-            <h1 class="text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" class="feather feather-smartphone" data-feather-line="1"
-                    data-feather-size="60" data-feather-color="gray-dark" data-feather-bg="none"
-                    style="stroke-width: 1; width: 60px; height: 60px;">
-                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2">
-                    </rect>
-                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                </svg>
-            </h1>
-            <h1 class="text-center color-white font-22 font-700">PWA Ready</h1>
-            <p class="text-center mt-n3 mb-3 font-11 color-white">Just add it to your home screen and Enjoy!</p>
-        </div>
+        <x-cabecera-terminos-plan/>
         <div class="card card-style">
             <h3 class="mx-auto mt-2">8° PARTE: OBSERVACIONES</h3>
             <p class="boxed-text-xl pt-3 mb-3">
@@ -374,28 +222,7 @@
     </div>
     <div id="menu-tips-9" class="menu menu-box-modal menu-box-detached rounded-m" 
         data-menu-width="340" data-menu-effect="menu-over">
-        <div class="card header-card shape-rounded" data-card-height="200">
-
-            <div class="card-overlay dark-mode-tint"></div>
-            <div class="card-bg preload-img entered loaded" data-src="{{ asset(GlobalHelper::getValorAtributoSetting('dia_noche_inicio')) }}"
-                data-ll-status="loaded" style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('dia_noche_inicio')) }});"></div>
-        </div>
-        <div class="mt-3 pt-1 pb-1">
-            <h1 class="text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" class="feather feather-smile" data-feather-line="1" data-feather-size="60"
-                    data-feather-color="gray-dark" data-feather-bg="none"
-                    style="stroke-width: 1; width: 60px; height: 60px;">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-                    <line x1="9" y1="9" x2="9.01" y2="9"></line>
-                    <line x1="15" y1="9" x2="15.01" y2="9"></line>
-                </svg>
-            </h1>
-            <h1 class="text-center color-white font-22 font-700">Colors to Match your Style!</h1>
-            <p class="text-center mt-n2 mb-3 font-11 color-white">We've added tons of colors just for you!</p>
-        </div>
+        <x-cabecera-terminos-plan/>
         <div class="card card-style">
             <p class="boxed-text-xl pt-3 mb-3">
                 LOS PUNTOS ANTERIORES ESTAN ENFOCADOS A FAVOR DE PRESERVAR UNA BUENA ORGANIZACION ADMINISTRATIVA Y PARA OFRECER LA MEJOR ATENCION Y CALIDAD EN CADA UNO DE NUESTROS PRODUCTOS,
