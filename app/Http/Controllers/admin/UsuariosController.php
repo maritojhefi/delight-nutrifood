@@ -198,6 +198,7 @@ class UsuariosController extends Controller
     {
 
         $dias = $this->getDiasHabiles($request->start, $request->end, []);
+        // dd($dias);
         $contador = 0;
         foreach ($dias as $dia) {
             $siexiste = DB::table('plane_user')->where('start', $dia)->where('title', 'feriado')->get();
@@ -217,13 +218,14 @@ class UsuariosController extends Controller
             foreach ($getPlanesCoincidentes as $planCoincidente) {
                 DB::beginTransaction();
                 $extraerUltimo = DB::table('plane_user')
+                    ->where('plane_id', $planCoincidente->plane_id)
                     ->where('user_id', $planCoincidente->user_id)
                     ->where('title', '!=', 'feriado')
                     ->orderBy('start', 'DESC')
                     ->first();
 
                 $ultimaFecha = $extraerUltimo->start;
-                $fechaParaAgregar =  $this->diaSiguienteAlUltimo($ultimaFecha);
+                $fechaParaAgregar =  $this->diaSiguienteAlUltimo($ultimaFecha, $planCoincidente->plane_id, $planCoincidente->user_id);
                 DB::table('plane_user')->insert([
 
                     'start' => $fechaParaAgregar,
@@ -239,8 +241,25 @@ class UsuariosController extends Controller
         }
         return response()->json($contador);
     }
-    public function diaSiguienteAlUltimo($ultimaFecha)
+    public function diaSiguienteAlUltimo($ultimaFecha, $planeId = null, $userId = null)
     {
+        // Determinar si el plan del usuario incluye sábados
+        $planIncluyeSabados = false;
+        if ($planeId && $userId) {
+            // Revisar si existen registros del plan en días sábado
+            $registrosEnSabado = DB::table('plane_user')
+                ->where('plane_id', $planeId)
+                ->where('user_id', $userId)
+                ->where('title', '!=', 'feriado')
+                ->get();
+            
+            foreach ($registrosEnSabado as $registro) {
+                if (WhatsappAPIHelper::saber_dia($registro->start) == 'Sabado') {
+                    $planIncluyeSabados = true;
+                    break;
+                }
+            }
+        }
 
         $saberDia = WhatsappAPIHelper::saber_dia($ultimaFecha);
         if ($saberDia == 'Sabado') {
@@ -248,12 +267,22 @@ class UsuariosController extends Controller
         } else {
             $fechaParaAgregar = Carbon::parse(Carbon::create($ultimaFecha)->addDays(1))->format('Y-m-d');
         }
+        
+        // Si el día siguiente cae en sábado y el plan no incluye sábados, saltar al lunes
+        if (WhatsappAPIHelper::saber_dia($fechaParaAgregar) == 'Sabado' && !$planIncluyeSabados) {
+            $fechaParaAgregar = Carbon::parse(Carbon::create($fechaParaAgregar)->addDays(2))->format('Y-m-d');
+        }
+        
         //dd($fechaParaAgregar);
         $siExisteFeriado = DB::table('plane_user')->where('start', $fechaParaAgregar)->where('title', 'feriado')->first();
         while ($siExisteFeriado) {
             $fechaParaAgregar = Carbon::parse(Carbon::create($fechaParaAgregar)->addDays(1))->format('Y-m-d');
             if (WhatsappAPIHelper::saber_dia($fechaParaAgregar) == 'Domingo') {
                 $fechaParaAgregar = Carbon::parse(Carbon::create($fechaParaAgregar)->addDays(1))->format('Y-m-d');
+            }
+            // Si cae en sábado y el plan no incluye sábados, saltar al lunes
+            if (WhatsappAPIHelper::saber_dia($fechaParaAgregar) == 'Sabado' && !$planIncluyeSabados) {
+                $fechaParaAgregar = Carbon::parse(Carbon::create($fechaParaAgregar)->addDays(2))->format('Y-m-d');
             }
            
             $siExisteFeriado = DB::table('plane_user')->where('start', $fechaParaAgregar)->where('title', 'feriado')->first();
@@ -274,7 +303,7 @@ class UsuariosController extends Controller
             ->where('title', '!=', 'feriado')
             ->orderBy('start', 'DESC')
             ->first();
-        $fechaParaAgregar = $this->diaSiguienteAlUltimo($extraerUltimo->start);
+        $fechaParaAgregar = $this->diaSiguienteAlUltimo($extraerUltimo->start, $evento->plane_id, $evento->user_id);
         $saberDia = WhatsappAPIHelper::saber_dia($fechaParaAgregar);
         if ($saberDia == "Domingo") {
             $fechaParaAgregar = Carbon::parse($fechaParaAgregar)->addDay();
