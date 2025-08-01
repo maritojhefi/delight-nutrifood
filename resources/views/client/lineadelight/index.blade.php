@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content-comentado')
-    <x-cabecera-pagina titulo="Linea {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Linea {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!" cabecera="appkit" />
 
 
 
@@ -222,6 +222,6 @@
 @endsection
 
 @section('content')
-    <x-cabecera-pagina titulo="En construcción!" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="En construcción!" cabecera="appkit" />
     <x-page-construccion />
 @endsection

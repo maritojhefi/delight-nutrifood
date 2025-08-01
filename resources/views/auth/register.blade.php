@@ -1,6 +1,6 @@
 @extends('client.masterSinFooter')
 @section('content')
-    <x-cabecera-pagina titulo="Registrate" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Registrate" cabecera="appkit" />
     <div class="d-flex justify-content-center">
     {{-- <div class="card card-style signin-card bg-24" style="height: 650px;max-height: 920px; width: 400px;"> --}}
     <div class="card card-style signin-card bg-24 py-4" style="min-height: 450px; width: 400px; ">

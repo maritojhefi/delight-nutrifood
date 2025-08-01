@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-    <x-cabecera-pagina titulo="Detalles del Producto" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Detalles del Producto" cabecera="appkit" />
     <x-producto-detalle-component :producto="$producto"/>
 
     <div class="card card-style">

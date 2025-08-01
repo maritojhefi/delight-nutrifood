@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content-comentado')
-    <x-cabecera-pagina titulo="Mi carrito" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Mi carrito" cabecera="appkit" />
     <div class="card card-style">
         <div class="content">
             @foreach ($user->addCarrito as $item)
@@ -51,6 +51,6 @@
     </div>
 @endsection
 @section('content')
-    <x-cabecera-pagina titulo="En construcción!" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="En construcción!" cabecera="appkit" />
     <x-page-construccion />
 @endsection

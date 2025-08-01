@@ -40,8 +40,9 @@
     </style>
 @endpush
 @section('content')
-    <x-cabecera-pagina titulo="Bienvenidos a {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}" cabecera="bordeado" />
+    {{-- <x-cabecera-pagina titulo="Bienvenidos a {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}" cabecera="appkit" /> --}}
 
+    <x-cabecera-pagina titulo="Bienvenidos" cabecera="appkit" />
 
     <a href="#" class="cambiarColor card card-style bg-3" data-card-height="125"
         style="background-image:url({{ asset(GlobalHelper::getValorAtributoSetting('dia_noche_inicio')) }})">

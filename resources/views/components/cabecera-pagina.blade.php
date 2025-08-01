@@ -72,4 +72,32 @@
         style="background-image: url(&quot;{{asset('imagenes/perfil/'.auth()->user()->foto)}}&quot;);"></div>
 </div>
 @break
+
+@case('appkit')
+<div class="page-title page-title-small" style="opacity: 1;">
+    {{-- <h1 class="font-24" style="margin-left: 25px" ><i class="fa fa-chevron-left" data-back-button style="margin-right: 0.8rem"></i>{{$titulo}}</h1> --}}
+
+    <h1>{{$titulo}}</h1>
+
+    
+    {{-- BOTON REDIRECCION AL PERFIL DE USUARIO --}}
+    {{-- <a href="#" class="page-title-icon preload-img entered loaded" data-ll-status="loaded"
+    style="
+        background-image: url('{{ asset('imagenes/perfil/'.auth()->user()->foto) }}');
+        background-size: cover;
+    ">
+    </a> --}}
+    
+    {{-- <button href="#" data-back-button class="page-title-icon shadow-xl bg-theme"><i class="fas fa-chevron-left"></i></button> --}}
+
+
+    <button href="#" class="page-title-icon shadow-xl bg-theme cambiarColor"><x-theme-icon/></button>
+
+
+
+    <a href="#" class="page-title-icon shadow-xl bg-theme color-theme" data-menu="menu-main"><i class="fa fa-bars"></i></a>
+</div>
+@break
+
+
 @endswitch
