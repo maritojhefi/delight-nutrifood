@@ -1,6 +1,6 @@
 @extends('client.masterSinFooter')
 @section('content')
-    <x-cabecera-pagina titulo="Completa tu perfil" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Completa tu perfil" cabecera="appkit" />
 
 
     @if (!session('success'))

@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-    <x-cabecera-pagina titulo="Mis planes" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Mis planes" cabecera="appkit" />
     @isset($planes)
         <div class="card card-style guide-card mb-3">
             <div class="content">

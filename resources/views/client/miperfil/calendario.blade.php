@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-    <x-cabecera-pagina titulo="{{ $plan->nombre }}" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="{{ $plan->nombre }}" cabecera="appkit" />
     @env('local')
     @php
         $path = env('APP_URL');
@@ -42,8 +42,7 @@
                                     @else
                                         <i class="fas fa-save color-white"></i>
                                         <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
-                                        <label for="" class="text-magenta text-white">
-                                            Guardado!</label>
+                                        <span class="text-white">Guardado!</span>
                                     @endif
                                     <i class="fa fa-angle-down color-white"></i>
                                 </a>
@@ -142,25 +141,23 @@
 
         <div class="modal fade" id="basicModal" data-bs-backdrop="false">
             <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content" style="border-radius: 15px;box-shadow: 1px 1px 1px 1px teal;">
-                    <div class="modal-header">
+                <div class="modal-content card card-style shadow-xl pt-2 mx-2">
+                    <div class="card-header bg-transparent d-flex flex-row justify-content-between align-items-center">
                         <h5 class="modal-title">Esta seguro? Esta accion no se puede revertir</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        </button>
+                            <button type="button" class="btn-close bg-magenta-dark p-2" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="card-body">
                         <span>El plan seleccionado pasara a un dia despues del ultimo plan encontrado</span>
                         <form action="" id="formBasic">
                             <input type="hidden" name="id" id="id">
 
                         </form>
-
                     </div>
-                    <div class="modal-footer">
+                    <div class="card-footer align-self-end bg-transparent border-top-0">
 
                         <button type="button"
                             class="btn btn-xxs mb-3 rounded-s text-uppercase font-900 shadow-s border-magenta-dark  bg-magenta-light"
-                            id="btnPermiso">Confirmar Permiso<span class="btn-icon-end"><i class="fa fa-calendar"></i></span>
+                            id="btnPermiso">Confirmar Permiso<span class="btn-icon-end"><i class="ms-2 fa fa-calendar"></i></span>
                         </button>
                     </div>
                 </div>

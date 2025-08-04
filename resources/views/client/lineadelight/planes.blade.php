@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-    <x-cabecera-pagina titulo="Planes {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Planes {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}" cabecera="appkit" />
 
     <a href="#" data-menu="menu-tips-1" >
         <div class="card card-style rounded-md mb-3" style="background-color: #5BD6FF;" data-card-height="125"

@@ -2,7 +2,7 @@ var staticCacheName = "pwa-v" + new Date().getTime();
 var filesToCache = [
     '/offline',
     '/styles/bootstrap.css',
-    '/styles/highlights/highlight_mint.css',
+    '/styles/highlights/highlight_teal.css',
     '/scripts/bootstrap.min.js',
     '/scripts/custom.js',
     //'/productos',

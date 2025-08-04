@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content-comentado')
-    <x-cabecera-pagina titulo="Mi carrito" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Mi carrito" cabecera="appkit" />
     <div class="card card-style">
         <div class="content">
             @foreach ($user->addCarrito as $item)
@@ -54,7 +54,7 @@
 
 
 @section('content')
-    <x-cabecera-pagina titulo="Mi Carrito" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Mi Carrito" cabecera="appkit" />
     <div class="listado-carrito card card-style">
         <div class="content cart-content d-flex flex-column justify-content-center">
         </div>

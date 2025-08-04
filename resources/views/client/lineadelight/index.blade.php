@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content-comentado')
-    <x-cabecera-pagina titulo="Linea {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Linea {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!" cabecera="appkit" />
 
 
 

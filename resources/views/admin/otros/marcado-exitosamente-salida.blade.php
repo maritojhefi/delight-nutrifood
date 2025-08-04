@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-    <x-cabecera-pagina titulo="Vuelve pronto...!" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Vuelve pronto...!" cabecera="appkit" />
     <div class="card card-style text-center">
         <div class="content py-5">
             <h1><i class="fa fa-check color-green-dark fa-4x"></i></h1>

@@ -1,6 +1,6 @@
 @extends('client.masterSinFooter')
 @section('content')
-    <x-cabecera-pagina titulo="Inicia Sesion" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Inicia Sesion" cabecera="appkit" />
     <div class="d-flex justify-content-center">
         <div class="card card-style login-card bg-24" style="height: 500px; width: 380px;">
             <div class="card-center">

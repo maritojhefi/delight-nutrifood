@@ -10,14 +10,14 @@
 
     <title>{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}</title>
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('styles/bootstrap.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('styles/custom.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('styles/bootstrap.css') }}?v=1.0.0">
+    <link rel="stylesheet" type="text/css" href="{{ asset('styles/custom.css') }}?v=1.0.0">
 
     <link
         href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900|Roboto:300,300i,400,400i,500,500i,700,700i,900,900i&amp;display=swap"
         rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('fonts/css/fontawesome-all.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_mint.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_teal.css') }}">
     @laravelPWA
     <style>
         /* Extra small devices (phones, 600px and down) */
@@ -59,16 +59,12 @@
         <div class="spinner-border color-highlight" role="status"></div>
     </div>
     <div id="page">
-
-        <div class="header header-fixed header-auto-show header-logo-app">
+        {{-- <div class="header header-fixed header-auto-show header-logo-app">
             <a href="#" data-back-button class="header-title header-subtitle">Atras</a>
             <a href="#" data-back-button class="header-icon header-icon-1"><i class="fas fa-arrow-left"></i></a>
-
-
             <a href="#" data-menu="menu-main" class="header-icon header-icon-4 "><i class="fas fa-bars"></i></a>
-        </div>
-
-
+        </div> --}}
+        <x-appkit-header/>
         <div class="page-content">
             @yield('content')
         </div>
@@ -88,8 +84,8 @@
     </div>
     @include('client.partials.modalredes')
     @stack('modals')
-    <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('scripts/custom.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}?v=1.0.0"></script>
+    <script type="text/javascript" src="{{ asset('scripts/custom.js') }}?v=1.0.0"></script>
     <script>
         function myFunction() {
             var element = document.body;

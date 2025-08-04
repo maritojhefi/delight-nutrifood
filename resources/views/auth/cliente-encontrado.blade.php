@@ -1,6 +1,6 @@
 @extends('client.masterSinFooter')
 @section('content')
-    <x-cabecera-pagina titulo="Tarjeta escaneada correctamente!" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Tarjeta escaneada correctamente!" cabecera="appkit" />
     <div data-card-height="cover-card" class="card card-style"
         style="background-image: url(&quot;images/pictures/14t.jpg&quot;); height: 398px;">
         <div class="card-center text-center">

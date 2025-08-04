@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-<x-cabecera-pagina titulo="Inicio" cabecera="bordeado"/>
+<x-cabecera-pagina titulo="Inicio" cabecera="appkit"/>
 
    
     
