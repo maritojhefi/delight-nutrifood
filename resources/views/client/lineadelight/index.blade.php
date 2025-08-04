@@ -216,7 +216,7 @@
 @endsection
 
 @section('content')
-    <x-cabecera-pagina titulo="Linea Delight" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Linea Delight" cabecera="appkit" />
     <div class="card card-style bg-transparent mx-0 mb-n2 mt-n3 shadow-0">
         <div class="content mt-2">
             <div class="search-box bg-theme color-theme rounded-m shadow-l">

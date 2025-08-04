@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-<x-cabecera-pagina titulo="Linea Delight - {{ ucfirst($horarioData->nombre) }}" cabecera="bordeado" />    
+<x-cabecera-pagina titulo="Linea Delight - {{ ucfirst($horarioData->nombre) }}" cabecera="appkit" />    
     <div class="card card-style">
         <div class="content">
             <h4>Nuestras categorias populares durante la {{$horarioData->nombre}}!</h4>

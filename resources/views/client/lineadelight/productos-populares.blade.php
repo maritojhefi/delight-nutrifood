@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-<x-cabecera-pagina titulo="Linea Delight - Populares" cabecera="bordeado" />    
+<x-cabecera-pagina titulo="Linea Delight - Populares" cabecera="appkit" />    
     <div class="card card-style">
         <div class="content">
             <h4>La sensacion del momento!</h4>

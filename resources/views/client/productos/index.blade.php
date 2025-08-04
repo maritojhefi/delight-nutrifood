@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-    <x-cabecera-pagina titulo="Productos" cabecera="bordeado" />
+    <x-cabecera-pagina titulo="Productos" cabecera="appkit" />
 
     {{-- <x-page-construccion/> --}}
 
