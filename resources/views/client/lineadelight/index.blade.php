@@ -236,8 +236,6 @@
                             data-filter-item="{{ Str::of($item->nombre)->lower() }}"
                             data-filter-name="{{ Str::of($item->nombre)->lower() }}">
                             <div class="align-self-center">
-                                {{-- <img src="{{ asset($item->pathAttachment()) }}" class="rounded-sm me-3" width="35"
-                                    alt="img"> --}}
                                 <i class="fa fa-search"></i>
                             </div>
                             <div class="align-self-center ps-2">
@@ -267,25 +265,40 @@
         </div>
     </div>
     <div class="content mb-0">
-        <div class="row mb-0">
-            {{-- <div data-card-height="140" class="card card-style col-12 mx-0 mt-1 px-0 round-medium shadow-huge"
-                style="height: 140px;background-image:url('{{ asset('imagenes/delight/default-bg-horizontal.jpg') }}')">
-                <div class="card-center d-flex flex-row align-items-center">
-                    <div class="">
-                        <i class="fa fa-arrow-up"></i>
+
+        <div class="splide topic-slider slider-no-arrows slider-no-dots pb-2 splide--loop splide--ltr splide--draggable" id="topic-slider-1" style="visibility: visible;">
+            <div class="splide__track" id="topic-slider-1-track" style="padding-left: 15px; padding-right: 40px;">
+                <div class="splide__list" id="topic-slider-1-list" style="transform: translateX(-866.592px);">
+                    <div class="splide__slide" id="topic-slider-1-slide01" style="width: 108.333px;">
+                        <h1 class="font-16 d-block"><button class="time-btn opacity-50" data-time="manana">Manana</button></h1>
                     </div>
-                    <div>
-                        <h2>Productos Populares</h2>
-                        <p>Descrubre nuestros articulos mas vendidos</p>
+                    <div class="splide__slide" id="topic-slider-1-slide02 is-active" style="width: 108.333px;">
+                        <h1 class="font-16 d-block"><button class="time-btn opacity-50" data-time="tarde">Tarde</button></h1>
                     </div>
-                    <div class="d-flex flex-row gap-2 align-items-center">
-                        <span>Ver Todos</span>
-                        <i class="fa fa-arrow-right"></i>
+                    <div class="splide__slide" id="topic-slider-1-slide03" style="width: 108.333px;">
+                        <h1 class="font-16 d-block"><button class="time-btn opacity-50" data-time="noche">Noche</button></h1>
                     </div>
                 </div>
+            </div>
+            <ul class="splide__pagination">
+                <li><button class="splide__pagination__page is-active" type="button" aria-controls="topic-slider-1-slide01 topic-slider-1-slide02 topic-slider-1-slide03" aria-label="Go to page 1" aria-current="true"></button></li>
+                <li><button class="splide__pagination__page" type="button" aria-controls="topic-slider-1-slide04 topic-slider-1-slide05 topic-slider-1-slide06" aria-label="Go to page 2"></button></li>
+            </ul>
+        </div>
 
-                <div class="card-overlay bg-gradient opacity-80"></div>
-            </div> --}}
+        {{-- <section aria-label="Choose Time of Day">
+            <fieldset>
+                <button class="time-btn" data-time="manana">Manana</button>
+                <button class="time-btn" data-time="tarde">Tarde</button>
+                <button class="time-btn" data-time="noche">Noche</button>
+            </fieldset>
+        </section> --}}
+        
+        
+
+        <x-slider-doble-subcategorias/>
+
+        <div class="row mb-0">
             <a href="{{ route('delight.listar.populares') }}" data-card-height="100" class="card card-style col-12 mx-0 mt-1 px-0 round-medium shadow-huge hover-grow-xs" 
                 style="height: 100px;background-color: #FF5A5A;">
                 <div class="card-center d-flex flex-row align-items-center justify-content-between ps-4 pe-3">
@@ -297,11 +310,6 @@
                             <p class="mb-0 text-white opacity-75">Descubre nuestros artículos más vendidos</p>
                         </div>
                     </div>
-                    <!-- Right section with "Ver Todos" -->
-                    {{-- <div class="d-flex fl   ex-row gap-2 align-items-center">
-                        <span class="text-white font-weight-bold">Ver Todos</span>
-                        <i class="fa fa-arrow-right text-white"></i>
-                    </div> --}}
                     <i class="fa fa-arrow-circle-right fa-2x" style="color: white"></i>
                 </div>
                 <div class="card-overlay dark-mode-tint"></div>
@@ -338,72 +346,20 @@
                     </div>
                 </a>
             </div>
-            {{-- <div data-card-height="120" class="card card-style col-12 mx-0 my-0 px-0 round-medium shadow-huge hover-grow-xs"
-                style="height: 120px;background-image:url('{{ asset(GlobalHelper::getValorAtributoSetting('inicio_disfruta')) }}')">
-                <div class="d-flex flex-row justify-content-between mx-3 mt-4 align-items-center">
-                    <h2 class="color-white pb-0">Planes y paquetes</h2>
-                    <a href="{{ route('categoria.planes') }}"
-                        class="float-end bg-white color-black btn btn-s rounded-xl font-900 text-uppercase font-11">
-                        Ver planes
-                    </a>
-                </div>
-                <div class="d-flex flex-row card-bottom mx-3 align-items-center gap-2 mb-2">
-                        <i class="fa fa-calendar font-25 color-white"></i>
-                    <div>
-                        <h5 class="font-13 color-white mb-n1">Encuentra uno para ti!</h5>
-                        <p class="color-white font-10 opacity-70">{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }} by Macrobyte</p>
-                    </div>   
-                </div>
-                <div class="card-overlay bg-gradient opacity-80"></div>
-            </div> --}}
             <a href="{{ route('categoria.planes') }}" data-card-height="100" class="card card-style col-12 mx-0 my-0 px-0 round-medium shadow-huge hover-grow-xs"
                 style="height: 100px;background-color: #4ECDC4">
                 <div class="card-center d-flex flex-row align-items-center justify-content-between ps-4 pe-3">
                     <div class="d-flex flex-row align-items-center gap-3">
                         <i class="fa fa-calendar fa-3x" style="color: white"></i>
-                        <!-- Middle section with text -->
                         <div class="text-start">
                             <h2 class="text-white">Planes y paquetes</h2>
                             <p class="mb-0 text-white opacity-75">Encuentra el adecuado para ti!</p>
                         </div>
                     </div>
-                    <!-- Right section with "Ver Todos" -->
-                    {{-- <a href="{{ route('categoria.planes') }}"
-                        class="float-end bg-white color-black btn btn-s rounded-xl font-900 text-uppercase font-11 hover-grow">
-                        Ver planes
-                    </a> --}}
                     <i class="fa fa-arrow-circle-right fa-2x" style="color: white"></i>
                 </div>
                 <div class="card-overlay dark-mode-tint"></div>
             </a>
-
-            {{-- <div class="col-4">
-                <a href="#" data-card-height="125" class="card card-style mb-4 mx-0" style="height: 125px;">
-                    <div class="card-center text-center">
-                        <i class="fa fa-credit-card pt-3 font-30 color-gray-dark"></i>
-                        <h6 class="pt-2">Cards</h6>
-                        <span class="font-10 opacity-30 color-theme pt-2 d-block">Tap to View</span>
-                    </div>
-                </a>
-            </div>
-            <div class="col-4">
-                <a href="#" data-card-height="125" class="card card-style mb-4 mx-0" style="height: 125px;">
-                    <div class="card-center text-center">
-                        <i class="fa fa-cog font-30 pt-3 color-blue-dark"></i>
-                        <h5 class="pt-2">Service</h5>
-                        <span class="font-10 opacity-30 color-theme pt-2 d-block">Tap to View</span>
-                    </div>
-                </a>
-            </div>
-            <div class="col-4">
-                <a href="#" data-card-height="125" class="card card-style mb-4 mx-0" style="height: 125px;">
-                    <div class="card-center text-center">
-                        <i class="fab fa-usb font-30 pt-3 color-dark-dark"></i>
-                        <h5 class="pt-2">Storage</h5>
-                        <span class="font-10 opacity-30 color-theme pt-2 d-block">Tap to View</span>
-                    </div>
-                </a>
-            </div> --}}
         </div>
     </div>
     
@@ -424,26 +380,6 @@
                 </div>
                 <div class="card card-style bg-transparent m-0 shadow-0">
                     <div class="row mb-0 p-2">
-                        {{-- @foreach ($conMasPuntos as $item)
-                            <div class="col-6 ps-2">
-                                <a href="{{ route('delight.detalleproducto', $item->id) }}"
-                                    class="card card-style mx-0 mb-3" data-menu="menu-product">
-                                    <img src="{{ asset($item->pathAttachment()) }}" alt="img" width="100"
-                                        class="mx-auto mt-2">
-                                    <div class="p-2">
-                                        <h4 class="mb-0 font-600">{{ Str::limit($item->nombre(), 20) }}</h4>
-                                        <p class="mb-0 font-11 mt-n1">Acumula puntos por su compra!</p>
-                                    </div>
-                                    <div class="divider mb-0"></div>
-                                    <h5 class="py-3 pb-2 px-2 font-13 font-600">
-                                        {{ $item->descuento ? $item->descuento : $item->precio }} Bs
-                                        <span
-                                            class="bg-blue-dark font-11 px-2 font-600 rounded-xs shadow-xxl float-end">{{ $item->puntos }}
-                                            Pts</span>
-                                    </h5>
-                                </a>
-                            </div>
-                        @endforeach --}}
                         @foreach ($conMasPuntos as $item)
                             <div class="col-6">
                                 <a href="{{ route('delight.detalleproducto', $item->id) }}"
@@ -468,26 +404,114 @@
             <div class="card-overlay dark-mode-tint"></div>
         </div>
     @endif
-    <!-- footer and footer card-->
-    {{-- <div class="footer" data-menu-load="menu-footer.html"><div class="footer card card-style mx-0 mb-0">
-        <a href="#" class="footer-title pt-4">AZURES</a>
-        <p class="text-center font-12 mt-n1 mb-3 opacity-70">
-            Put a little <span class="color-highlight">color</span> in  your life
-        </p>
-        <p class="boxed-text-l">
-            Built to match the design trends and give your page the awesome facelift it deserves.
-        </p>
-        <div class="text-center mb-3">
-            <a href="#" class="icon icon-xs rounded-sm shadow-l me-1 bg-facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" class="icon icon-xs rounded-sm shadow-l me-1 bg-twitter"><i class="fab fa-twitter"></i></a>
-            <a href="#" class="icon icon-xs rounded-sm shadow-l me-1 bg-phone"><i class="fa fa-phone"></i></a>
-            <a href="#" data-menu="menu-share" class="icon icon-xs rounded-sm me-1 shadow-l bg-red-dark"><i class="fa fa-share-alt"></i></a>
-            <a href="#" class="back-to-top icon icon-xs rounded-sm shadow-l bg-highlight color-white"><i class="fa fa-arrow-up"></i></a>
-        </div>
-            <p class="footer-copyright pb-3 mb-1">Copyright © Enabled <span id="copyright-year">2025</span>. All Rights Reserved.</p>
-        </div>
-        <div class="footer-card card shape-rounded bg-20" style="height:230px">
-            <div class="card-overlay bg-highlight opacity-90"></div>
-        </div>
-    </div>   --}}
 @endsection
+
+@push('scripts')
+<script>
+    const subcategoriasPorHorario = @json($horarios);
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const hour = new Date().getHours();
+        let defaultTime = '';
+
+        if (hour >= 4 && hour < 11) {
+            defaultTime = 'manana';
+        } else if (hour >= 11 && hour < 19) {
+            defaultTime = 'tarde';
+        } else {
+            defaultTime = 'noche';
+        }
+
+        // Inicializacion de slider para horarios
+        new Splide('#topic-slider-1', {
+            type: 'loop',
+            perPage: 3,
+            arrows: false,
+        }).mount();
+
+        // Inicializacion del slider para categorias
+        const doubleSlider = new Splide('#double-slider-1', {
+            type: 'loop',
+            perPage: 2,
+            arrows: false,
+            autoplay: true,
+            interval: 3000,
+        });
+
+        // items/Categorias por defecto a renderizarse
+        const defaultItems = subcategoriasPorHorario[defaultTime];
+        updateSliderContent(defaultItems);
+        doubleSlider.mount();
+        
+        // Determinacion del boton activo
+        const buttons = document.querySelectorAll('.time-btn');
+        buttons.forEach(btn => {
+            if (btn.getAttribute('data-time') === defaultTime) {
+                btn.classList.add('is-active');
+                btn.classList.remove('opacity-50');
+            } else {
+                btn.classList.add('opacity-50');
+            }
+        });
+
+        // Debug hora defecto
+        console.log("Default time: " + defaultTime);
+
+        function updateSliderContent(items) {
+            const list = document.getElementById('double-slider-1-list');
+            
+            // Actualizar contenido del slider
+            list.innerHTML = '';
+            items.forEach(item => {
+                const formattedName = item.nombre.charAt(0).toUpperCase() + item.nombre.slice(1).toLowerCase();
+
+                list.innerHTML += `
+                    <div class="splide__slide" style="width: 190px;">
+                        <div class="card mx-3 mb-0 card-style bg-20" data-card-height="250" style="height: 250px;">
+                            <div class="card-top">
+                                <a href="#" data-menu="menu-cart" class="icon icon-xxs bg-white color-black rounded-xl mt-3 me-2 float-end">
+                                    <i class="fa fa-shopping-bag"></i>
+                                </a>
+                            </div>
+                            <div class="card-bottom">
+                                <h3 class="color-white font-800 mb-3 pb-1 mx-3">${formattedName}</h3>
+                            </div>
+                            <div class="card-overlay bg-gradient"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Refrescar el slider para mostrar los nuevos items
+            doubleSlider.refresh();
+            
+            // Reiniciar el indice del slider al primer elemento
+            doubleSlider.go(0);
+        }
+
+        // Control seleccion del horario
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const time = btn.getAttribute('data-time');
+                const items = subcategoriasPorHorario[time];
+                console.log("Just clicked the button for: " + btn.getAttribute('data-time'));
+                console.log("Items for " + time + ": ", items);
+                
+                // Remover clase activa de todos los botones
+                buttons.forEach(b => {
+                    b.classList.add('opacity-50');
+                    b.classList.remove('is-active');
+                });
+
+                // Acivar el boton clickeado
+                btn.classList.remove('opacity-50');
+                btn.classList.add('is-active');
+
+                // Actualizar el contenido del slider
+                updateSliderContent(items);
+            });
+        });
+    });
+</script>
+@endpush

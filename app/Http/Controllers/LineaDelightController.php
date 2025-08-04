@@ -41,7 +41,17 @@ class LineaDelightController extends Controller
             ->shuffle()
             ->take(10);
 
-        return view('client.lineadelight.index', compact('subcategorias', 'enDescuento', 'conMasPuntos', 'productos'));
+        // $arrayprueba = ["manana", "tarde", "noche"];
+
+        $horarios = (object)[
+            'manana' => Subcategoria::whereIn('id', [3, 4, 8, 10, 12, 13, 54, 56, 57])->get(),
+            'tarde' => Subcategoria::whereIn('id', [2, 6, 9, 52, 55])->get(),
+            'noche' => Subcategoria::whereIn('id', [8, 9, 15, 55, 58])->get()
+        ];
+
+
+
+        return view('client.lineadelight.index', compact('subcategorias', 'enDescuento', 'conMasPuntos', 'productos', 'horarios'));
     }
     public function categoriaPlanes()
     {
@@ -73,6 +83,21 @@ class LineaDelightController extends Controller
                 $nombreHorario = 'día'; // Default display name
                 break;
         }
+
+        // $horarios = (object)[
+        //     'manana' => Subcategoria::whereIn('id', [3, 4, 8, 10, 12, 13, 54, 56, 57])->get(),
+        //     'tarde' => Subcategoria::whereIn('id', [2, 6, 9, 52, 55])->get(),
+        //     'noche' => Subcategoria::whereIn('id', [8, 9, 14, 55, 58])->get()
+        // ];
+
+
+        // $horarios = [
+        //     'manana' => Subcategoria::whereIn('id', [3, 4, 8, 10, 12, 13, 54, 56, 57])->get(),
+        //     'tarde' => Subcategoria::whereIn('id', [2, 6, 9, 52, 55])->get(),
+        //     'noche' => Subcategoria::whereIn('id', [8, 9, 14, 55, 58])->get()
+        // ];
+
+        $arrayprueba = ["manana", "tarde", "noche"];
 
         $subcategorias = Subcategoria::whereIn('id', $ids)->orderBy('nombre')->get();
 
