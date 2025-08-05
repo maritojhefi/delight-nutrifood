@@ -59,7 +59,7 @@ Route::prefix('/productos')->group(function () {
     Route::get('', [App\Http\Controllers\ProductoController::class, 'index'])->name('productos');
     Route::get('/detalle/{id}', [App\Http\Controllers\ProductoController::class, 'detalleproducto'])->name('detalleproducto');
     Route::get('/subcategoria/{id}', [App\Http\Controllers\ProductoController::class, 'detallesubcategoria'])->name('listar.productos.subcategoria');
-
+    Route::get('/categorizados/{id}',[App\Http\Controllers\ProductoController::class, 'productosSubcategoria']);
     Route::get('/add/carrito/{id}', [App\Http\Controllers\CarritoController::class, 'addToCarrito']);
 });
 //promociones

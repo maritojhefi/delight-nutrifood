@@ -1174,11 +1174,11 @@ hover-blue:hover {
 
 /* Custom cards for subcategory listings */
 
-.category-card-image {
+.product-card-image {
     overflow: hidden;
 }
 
-.category-card-image img {
+.product-card-image img {
     width: 100px;
     height: 120px; /* Match the card height */
     object-fit: cover; /* Ensures image covers the area properly */

@@ -9,6 +9,8 @@ use App\Models\Producto;
 use App\Models\Subcategoria;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
 
 class ProductoController extends Controller
 {
@@ -24,7 +26,6 @@ class ProductoController extends Controller
         $nombrearray=Str::of($producto->nombre)->explode(' ');
         //dd($nombrearray);
         return view('client.productos.delight-producto',compact('producto','nombrearray'));
- 
     }
     public function detallesubcategoria($id)
     {
@@ -54,7 +55,6 @@ class ProductoController extends Controller
        $nombrearray=Str::of($producto->nombre)->explode(' ');
        //dd($nombrearray);
        return view('client.productos.detalleproducto',compact('producto','nombrearray'));
-
     }
     public function menusemanal()
     {
@@ -62,5 +62,27 @@ class ProductoController extends Controller
         $almuerzos=Almuerzo::all();
         $galeria=GaleriaFotos::inRandomOrder()->get();
         return view('client.productos.menusemanal',compact('galeria','almuerzos','subcategorias'));
+    }
+    public function productosSubcategoria($id)
+    {
+        try {
+            $productos = Producto::select('productos.*')->where('subcategoria_id', $id)->where('estado', 'activo')->orderBy('nombre')->get();
+
+            foreach ($productos as $producto) {
+                $producto->imagen = $producto->imagen ? asset('imagenes/productos/' . $producto->imagen) : asset('imagenes/delight/default-bg-1.png');
+                $producto ->url_detalle = route('delight.detalleproducto', $producto->id);
+            }
+
+            return response()->json($productos, 200);
+        } catch (\Throwable $th) {
+            // Log::error(`Error al obtener los productos de la categoria con id: ` + $id, [
+            //     'error' => $th->getMessage(),
+            //     'trace' => $th->getTraceAsString()
+            // ]);
+
+            return response()->json([
+                'error' => 'Error al obtener los productos de la categoria. Por favor, intente nuevamente.'
+            ], 500);
+        }
     }
 }
