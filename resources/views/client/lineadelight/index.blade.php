@@ -404,6 +404,45 @@
             <div class="card-overlay dark-mode-tint"></div>
         </div>
     @endif
+
+    <div class="modal fade" id="categorizedProductsModal" tabindex="-1" aria-labelledby="cartSummaryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="categorizedProductsModalLabel">Productos de la categoria seleccionada</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+                    <p class="text-muted">Estos son los productos pertenecientes a la categoria seleccionada</p>  
+                    
+                    <div class="card card-style w-100" style="min-width: 300px;">
+                        <div class="content listado-productos-categoria">
+                            <!-- Contenedor resumen items individuales-->
+                            <div id="cart-summary-items" class="item-producto-categoria mb-3">
+                                <p class="text-muted text-center">No hay items en el carrito</p>
+                            </div>
+                            
+                            <!-- Seccion de totales -->
+                            <div id="cart-totals" class="cart-totals">
+                                <div class="total-row">
+                                    <span>Total:</span>
+                                    <span id="total-amount">$0.00</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Boton de pago -->
+                            <button id="checkout-btn" class="btn btn-primary btn-m rounded-sm text-uppercase font-800 w-100 mt-3">
+                                Realizar Pago Seguro
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div
 @endsection
 
 @push('scripts')
@@ -468,7 +507,7 @@
 
                 list.innerHTML += `
                     <div class="splide__slide" style="width: 190px;">
-                        <div class="card mx-3 mb-0 card-style bg-20" data-card-height="250" style="height: 250px;">
+                        <div class="card mx-3 mb-0 card-style bg-20" data-card-height="250" style="height: 250px; background-image: url('${item.foto}');">
                             <div class="card-top">
                                 <a href="#" data-menu="menu-cart" class="icon icon-xxs bg-white color-black rounded-xl mt-3 me-2 float-end">
                                     <i class="fa fa-shopping-bag"></i>

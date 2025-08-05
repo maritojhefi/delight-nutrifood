@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Plane;
 use App\Models\Producto;
 use App\Models\Subcategoria;
+use App\Helpers\GlobalHelper;
 use Illuminate\Http\Request;
 use Log;
 
@@ -41,15 +42,12 @@ class LineaDelightController extends Controller
             ->shuffle()
             ->take(10);
 
-        // $arrayprueba = ["manana", "tarde", "noche"];
 
         $horarios = (object)[
-            'manana' => Subcategoria::whereIn('id', [3, 4, 8, 10, 12, 13, 54, 56, 57])->get(),
-            'tarde' => Subcategoria::whereIn('id', [2, 6, 9, 52, 55])->get(),
-            'noche' => Subcategoria::whereIn('id', [8, 9, 15, 55, 58])->get()
+            'manana' => GlobalHelper::processSubcategoriaFoto(Subcategoria::whereIn('id', [3, 4, 8, 10, 12, 13, 54, 56, 57])->get()),
+            'tarde' => GlobalHelper::processSubcategoriaFoto(Subcategoria::whereIn('id', [2, 6, 9, 52, 55])->get()),
+            'noche' => GlobalHelper::processSubcategoriaFoto(Subcategoria::whereIn('id', [8, 9, 15, 55, 58])->get())
         ];
-
-
 
         return view('client.lineadelight.index', compact('subcategorias', 'enDescuento', 'conMasPuntos', 'productos', 'horarios'));
     }
