@@ -69,7 +69,7 @@ Route::prefix('/lineadelight')->group(function () {
     Route::get('/categoria/planes', [App\Http\Controllers\LineaDelightController::class, 'categoriaPlanes'])->name('categoria.planes');
     Route::get('/categorias/{horario}', [App\Http\Controllers\LineaDelightController::class, 'lineadelightHorario'])->name('delight.listar.subcategorias.horario');
     Route::get('/categoria/{id}', [App\Http\Controllers\ProductoController::class, 'lineadelightsubcategoria'])->name('delight.listar.productos.subcategoria');
-    Route::get('/lineadelight/detalle/{id}', [App\Http\Controllers\ProductoController::class, 'lineadelightproducto'])->name('delight.detalleproducto');
+    Route::get('/detalle/{id}', [App\Http\Controllers\ProductoController::class, 'lineadelightproducto'])->name('delight.detalleproducto');
 });
 Route::prefix('/carrito')
     ->middleware('auth')

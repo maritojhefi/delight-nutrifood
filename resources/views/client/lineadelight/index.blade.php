@@ -377,8 +377,7 @@
 
                 <!-- Modal Body -->
                 <div class="modal-body mt-0 pt-0 d-flex flex-column justify-content-center align-items-center">
-                    <p class="text-muted mb-0 ms-3">Deseas saber mas? Haz click en la imagen y accede a los detalles del producto.</p>
-
+                    {{-- <p class="text-muted mb-0 ms-3">Deseas saber mas? Haz click en la imagen y accede a los detalles del producto.</p> --}}
                     <div class="w-100" style="min-width: 300px;">
                         <div class="content" id="listado-productos-categoria">
                             <!-- Contenedor items individuales-->
@@ -445,9 +444,6 @@
             }
         });
 
-        // Debug hora defecto
-        console.log("Default time: " + defaultTime);
-
         function updateSliderContent(items) {
             const list = document.getElementById('double-slider-1-list');
 
@@ -457,18 +453,13 @@
                 const formattedName = item.nombre.charAt(0).toUpperCase() + item.nombre.slice(1).toLowerCase();
 
                 list.innerHTML += `
-                    <div class="splide__slide" style="width: 190px;">
+                    <div class="splide__slide hover-grow-s" style="width: 190px;">
                         <div class="card mx-3 mb-0 card-style bg-20"
                             data-card-height="250"
                             data-bs-toggle="modal" 
                             data-bs-target="#categorizedProductsModal" 
                             data-category-id="${item.id}"
                             style="height: 250px; background-image: url('${item.foto}');">
-                            <div class="card-top">
-                                <a href="#" data-menu="menu-cart" class="icon icon-xxs bg-white color-black rounded-xl mt-3 me-2 float-end">
-                                    <i class="fa fa-shopping-bag"></i>
-                                </a>
-                            </div>
                             <div class="card-bottom">
                                 <h3 class="color-white font-800 mb-3 pb-1 mx-3">${formattedName}</h3>
                             </div>
@@ -490,8 +481,6 @@
             btn.addEventListener('click', () => {
                 const time = btn.getAttribute('data-time');
                 const items = subcategoriasPorHorario[time];
-                console.log("Just clicked the button for: " + btn.getAttribute('data-time'));
-                console.log("Items for " + time + ": ", items);
 
                 // Remover clase activa de todos los botones
                 buttons.forEach(b => {
@@ -519,7 +508,6 @@
         const modalElement = document.getElementById('categorizedProductsModal');
 
         modalElement.addEventListener('show.bs.modal', async function (event) {
-            console.log('Modal is about to show');
             const triggerElement = event.relatedTarget; // Elemento que activo el modal
             const categoriaId = triggerElement.getAttribute('data-category-id');
 
@@ -542,7 +530,8 @@
 
     const renderProductItems = (categorizedProducts) => {
         const container = document.getElementById("listado-productos-categoria");
-
+        const isDisabled = false;
+        const cantidadInicial = 0;
         container.innerHTML = '';
 
         if (categorizedProducts.length === 0) {
@@ -553,21 +542,74 @@
         }
 
         categorizedProducts.forEach(item => {
-            container.innerHTML += `
-                <div class="col-12">
-                    <div data-card-height="120" class="card card-style mb-4 mx-0 hover-grow-s" style="height: 120px;overflow: hidden">
-                        <div class="d-flex flex-row align-items-center gap-4"> 
-                            <a href="${item.url_detalle}" class="product-card-image">
-                                <img src="${item.imagen}" class="" style="background-color: white; border: ; " />
-                            </a>
-                            <div class="d-flex flex-column" style="max-width: 300px">
-                                <h4 class="me-2">${item.nombre}</h4>
-                                <p class="mt-n2 font-12 color-highlight mb-0">Bs. ${item.precio}</p>
+            // Condicionar el renderizado en el caso de que el producto disponga de un descuento
+            // En el caso de disponer de descuento, se muestra el precio descontado, con el precio original tachado
+            const formattedName = item.nombre.charAt(0).toUpperCase() + item.nombre.slice(1).toLowerCase();
+
+            if (item.descuento && (item.descuento > 0 && item.descuento < item.precio))  {
+                container.innerHTML += `
+                    <div class="col-12">
+                        <div data-card-height="120" class="card card-style mb-4 mx-0 hover-grow-s" style="height: 120px;overflow: hidden">
+                            <div class="d-flex flex-row align-items-center gap-4"> 
+                                <a href="${item.url_detalle}" class="product-card-image">
+                                <img src="${item.imagen}" 
+                                    onerror="this.src='imagenes/delight/default-bg-1.png';" 
+                                    style="background-color: white;" />
+                                </a>
+                                <div class="d-flex flex-column w-100 gap-1" style="max-width: 300px">
+                                    <h4 class="me-2">${formattedName.length > 60 ? formattedName.substring(0, 60) + '...' : formattedName}</h4>
+                                    <div class="d-flex flex-row align-items-center justify-content-between gap-4 mb-2">
+                                        <div class="d-flex flex-column">
+                                            <p class="font-10 mb-0 mt-n2"><del>Bs. ${item.precio}</del></p>
+                                            <p class="font-22 mt-n2 font-weight-bolder color-highlight mb-0">Bs. ${item.descuento}</p>
+                                        </div>
+                                        <div class="d-flex flex-row gap-2">
+                                            <button ruta="${item.url_detalle}" class="btn btn-xs copiarLink rounded-s btn-full shadow-l bg-red-light font-900">
+                                                <i class="fa fa-link"></i>
+                                            </button>
+                                            <button
+                                                class="btn btn-xs me-4 rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase">
+                                                <i class="fa fa-shopping-cart"></i>
+                                                Añadir
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            } else {
+                container.innerHTML += `
+                    <div class="col-12">
+                        <div data-card-height="120" class="card card-style mb-4 mx-0 hover-grow-s" style="height: 120px;overflow: hidden">
+                            <div class="d-flex flex-row align-items-center gap-4"> 
+                                <a href="${item.url_detalle}" class="product-card-image">
+                                <img src="${item.imagen}" 
+                                    onerror="this.src='imagenes/delight/default-bg-1.png';" 
+                                    style="background-color: white;" />
+                                </a>
+                                <div class="d-flex flex-column w-100 gap-1" style="max-width: 300px">
+                                    <h4 class="me-2">${formattedName.length > 60 ? formattedName.substring(0, 60) + '...' : formattedName}</h4>
+                                    <div class="d-flex flex-row align-items-center justify-content-between gap-4 mb-2">
+                                            <p class="font-22 font-weight-bolder color-highlight mb-0">Bs. ${item.precio}</p>
+                                        <div class="d-flex flex-row gap-2">
+                                            <button ruta="${item.url_detalle}" class="btn btn-xs copiarLink rounded-s btn-full shadow-l bg-red-light font-900">
+                                                <i class="fa fa-link"></i>
+                                            </button>
+                                            <button
+                                                class="btn btn-xs me-4 rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase">
+                                                <i class="fa fa-shopping-cart"></i>
+                                                Añadir
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } 
         });
     }
 

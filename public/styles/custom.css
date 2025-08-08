@@ -449,6 +449,7 @@ hover-blue:hover {
     background-color: #f8f9fa !important;
     border: 1px solid #dee2e6 !important;
     min-height: 35px;
+    border-radius: 5px;
 }
 
 .quantity-controls button {
@@ -641,6 +642,7 @@ hover-blue:hover {
 .product-name,
 .product-description,
 .product-price,
+.product-quantity-controls
 .quantity-controls,
 .quantity-controls button,
 .product-quantity,
@@ -1188,3 +1190,85 @@ hover-blue:hover {
     border-top-right-radius: 0; /* No radius on the right side */
     border-bottom-right-radius: 0; /* No radius on the right side */
 }
+
+
+/* 
+.product-quantity-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    min-height: 38px;
+    border-radius: 5px;
+    padding: 0 6px;
+    gap: 4px; 
+}
+
+.product-quantity-controls button {
+    color: #6c757d;
+    transition: all 0.2s ease;
+    min-width: 25px;
+    border: none;
+}
+
+.product-quantity-controls span {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.product-quantity-controls button:hover {
+    color: #495057;
+    background-color: #e9ecef;
+    transform: scale(1.1);
+}
+
+.product-quantity-controls button:active {
+    transform: scale(0.95);
+}
+
+.theme-dark .product-quantity-controls {
+    background-color: #4a5568 !important;
+    border-color: #6b7280 !important;
+}
+
+.theme-dark .product-quantity-controls button {
+    color: #e2e8f0 !important;
+    border-color: transparent !important;
+}
+
+.theme-dark .product-quantity-controls button:hover {
+    background-color: #6b7280 !important;
+    color: #ffffff !important;
+}
+
+.theme-dark .product-quantity-controls button:active {
+    background-color: #374151 !important;
+}
+
+.theme-dark .product-quantity-controls button:focus {
+    outline: 2px solid #90cdf4 !important;
+    outline-offset: 2px;
+} */
+
+/* <div class="product-quantity-controls me-4">
+    <button class="qty-decrease" 
+            type="button" 
+            data-product-id="${item.id}"
+            title="Disminuir cantidad"
+            ${isDisabled ? 'disabled' : ''}>
+        <i class="fa fa-minus"></i>
+    </button>
+    <span id="item-${item.id}-qty" 
+        class="fw-semibold product-quantity" 
+        data-product-id="${item.id}">
+        ${cantidadInicial}
+    </span>
+    <button class="qty-increase" 
+            type="button" 
+            data-product-id="${item.id}"
+            title="Aumentar cantidad"
+            ${isDisabled ? 'disabled' : ''}>
+        <i class="fa fa-plus"></i>
+    </button>
+</div> */
