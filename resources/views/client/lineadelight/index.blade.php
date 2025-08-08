@@ -366,15 +366,14 @@
     @endif
 
     <div class="modal fade" id="categorizedProductsModal" tabindex="-1" aria-labelledby="categorizedProductsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
             <div class="modal-content">
                 <!-- Modal Header -->
-                <div class="modal-header mx-2 mt-2 border-0 d-flex align-items-center">
-                    <h4 class="mb-0 align-self-center">Todos los productos de esta categoria!</h4>
+                <div class="modal-header mx-2 mt-2 border-0 gap-4 d-flex align-items-center">
+                    <h4 id="categorizer-title" class="mb-0 ms-4 align-self-center text-uppercase">Todos los productos de esta categoria!</h4>
                     {{-- <h5 class="modal-title" id="categorizedProductsModalLabel">Productos de la categoria seleccionada</h5> --}}
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
                 <!-- Modal Body -->
                 <div class="modal-body mt-0 pt-0 d-flex flex-column justify-content-center align-items-center">
                     {{-- <p class="text-muted mb-0 ms-3">Deseas saber mas? Haz click en la imagen y accede a los detalles del producto.</p> --}}
@@ -389,12 +388,37 @@
                 </div>
             </div>
         </div>
-    </div
+    </div>
 @endsection
 
 @push('scripts')
 <script src="{{ asset(path: 'js/producto/producto-service.js') }}"></script>
+{{-- <script src="{{ asset(path: 'js/carrito/index.js') }}"></script> --}}
+{{-- <script> 
+    $(document).ready(function() {
+        $(document).on('click', '.add-to-cart', addToCartHandler);
+    });
 
+    function addToCartHandler() {
+        const product_Id = $(this).data('producto-id');
+        const product_nombre = $(this).data('producto-nombre');
+
+        console.log("ID producto a agregar: ", product_Id);
+        console.log("Nombe producto a agregar: ", product_nombre);
+        
+        const result = addToCart(product_Id, 1, true);
+        if (result.success) {
+            showMessage('success', 'Item added to cart!');
+        } else {
+            showMessage('error', result.message);
+        }
+    }
+
+    function showMessage(type, text) {
+        $('#message-container').html(`<div class="alert alert-${type}">${text}</div>`);
+        setTimeout(() => $('#message-container').empty(), 3000);
+    }
+</script> --}}
 <script>
     const subcategoriasPorHorario = @json($horarios);
 </script>
@@ -459,6 +483,7 @@
                             data-bs-toggle="modal" 
                             data-bs-target="#categorizedProductsModal" 
                             data-category-id="${item.id}"
+                            data-category-name="${item.nombre}"
                             style="height: 250px; background-image: url('${item.foto}');">
                             <div class="card-bottom">
                                 <h3 class="color-white font-800 mb-3 pb-1 mx-3">${formattedName}</h3>
@@ -494,7 +519,6 @@
 
                 // Actualizar el contenido del slider
                 updateSliderContent(items);
-                // renderProductItems(items);
             });
         });
     });
@@ -510,13 +534,21 @@
         modalElement.addEventListener('show.bs.modal', async function (event) {
             const triggerElement = event.relatedTarget; // Elemento que activo el modal
             const categoriaId = triggerElement.getAttribute('data-category-id');
+            const categoryName = triggerElement.getAttribute('data-category-name');
+            const categoryTitle = document.getElementById('categorizer-title');
 
             if (!categoriaId) {
                 console.error('No category ID found in the trigger element');
                 return;
             }
 
+
+
             showLoadingState();
+
+             if (categoryName) {
+                categoryTitle.textContent = `${categoryName}`;
+            }
 
             try {
                 const categorizedProducts = await ProductoService.getProductosCategoria(categoriaId);
@@ -550,25 +582,28 @@
                 container.innerHTML += `
                     <div class="col-12">
                         <div data-card-height="120" class="card card-style mb-4 mx-0 hover-grow-s" style="height: 120px;overflow: hidden">
-                            <div class="d-flex flex-row align-items-center gap-4"> 
+                            <div class="d-flex flex-row align-items-center gap-3"> 
                                 <a href="${item.url_detalle}" class="product-card-image">
                                 <img src="${item.imagen}" 
                                     onerror="this.src='imagenes/delight/default-bg-1.png';" 
                                     style="background-color: white;" />
                                 </a>
-                                <div class="d-flex flex-column w-100 gap-1" style="max-width: 300px">
-                                    <h4 class="me-2">${formattedName.length > 60 ? formattedName.substring(0, 60) + '...' : formattedName}</h4>
+                                <div class="d-flex flex-column w-100 gap-2" style="max-width: 260px">
+                                    <h4 class="me-3">${formattedName.length > 50 ? formattedName.substring(0, 50) + '...' : formattedName}</h4>
                                     <div class="d-flex flex-row align-items-center justify-content-between gap-4 mb-2">
                                         <div class="d-flex flex-column">
                                             <p class="font-10 mb-0 mt-n2"><del>Bs. ${item.precio}</del></p>
-                                            <p class="font-22 mt-n2 font-weight-bolder color-highlight mb-0">Bs. ${item.descuento}</p>
+                                            <p class="font-21 mt-n2 font-weight-bolder color-highlight mb-0">Bs. ${item.descuento}</p>
                                         </div>
                                         <div class="d-flex flex-row gap-2">
                                             <button ruta="${item.url_detalle}" class="btn btn-xs copiarLink rounded-s btn-full shadow-l bg-red-light font-900">
                                                 <i class="fa fa-link"></i>
                                             </button>
                                             <button
-                                                class="btn btn-xs me-4 rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase">
+                                                class="add-to-cart btn btn-xs me-3 rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase"
+                                                data-producto-id="${item.id}"
+                                                data-producto-nombre="${item.nombre}"
+                                                >
                                                 <i class="fa fa-shopping-cart"></i>
                                                 Añadir
                                             </button>
@@ -583,22 +618,25 @@
                 container.innerHTML += `
                     <div class="col-12">
                         <div data-card-height="120" class="card card-style mb-4 mx-0 hover-grow-s" style="height: 120px;overflow: hidden">
-                            <div class="d-flex flex-row align-items-center gap-4"> 
+                            <div class="d-flex flex-row align-items-center gap-3"> 
                                 <a href="${item.url_detalle}" class="product-card-image">
                                 <img src="${item.imagen}" 
                                     onerror="this.src='imagenes/delight/default-bg-1.png';" 
                                     style="background-color: white;" />
                                 </a>
-                                <div class="d-flex flex-column w-100 gap-1" style="max-width: 300px">
-                                    <h4 class="me-2">${formattedName.length > 60 ? formattedName.substring(0, 60) + '...' : formattedName}</h4>
+                                <div class="d-flex flex-column w-100 gap-2" style="max-width: 260px">
+                                    <h4 class="me-3">${formattedName.length > 50 ? formattedName.substring(0, 50) + '...' : formattedName}</h4>
                                     <div class="d-flex flex-row align-items-center justify-content-between gap-4 mb-2">
-                                            <p class="font-22 font-weight-bolder color-highlight mb-0">Bs. ${item.precio}</p>
+                                            <p class="font-21 font-weight-bolder color-highlight mb-0">Bs. ${item.precio}</p>
                                         <div class="d-flex flex-row gap-2">
                                             <button ruta="${item.url_detalle}" class="btn btn-xs copiarLink rounded-s btn-full shadow-l bg-red-light font-900">
                                                 <i class="fa fa-link"></i>
                                             </button>
                                             <button
-                                                class="btn btn-xs me-4 rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase">
+                                                class="add-to-cart btn btn-xs me-3 rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase"
+                                                data-producto-id="${item.id}"
+                                                data-producto-nombre="${item.nombre}"
+                                                >
                                                 <i class="fa fa-shopping-cart"></i>
                                                 Añadir
                                             </button>

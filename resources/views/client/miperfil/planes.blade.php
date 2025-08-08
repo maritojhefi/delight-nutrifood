@@ -202,8 +202,8 @@
             const product_Id = $(this).data('producto-id');
             const product_nombre = $(this).data('producto-nombre')
 
-            console.log(product_Id);
-            console.log(product_nombre);
+            console.log("ID producto a agregar: ", product_Id);
+            console.log("Nombe producto a agregar: ", product_nombre);
             const result = addToCart(product_Id, 1, true);
             if (result.success) {
                 showMessage('success', 'Item added to cart!');
