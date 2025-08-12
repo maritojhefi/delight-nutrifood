@@ -1,5 +1,5 @@
 @extends('client.master')
-@section('content-comentado')
+{{-- @section('content-comentado')
     <x-cabecera-pagina titulo="Linea {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!" cabecera="appkit" />
 
 
@@ -213,7 +213,7 @@
             <div class="card-overlay dark-mode-tint"></div>
         </div>
     @endif
-@endsection
+@endsection --}}
 
 @section('content')
     <x-cabecera-pagina titulo="Linea Delight" cabecera="appkit" />
@@ -263,7 +263,7 @@
         </div>
     </div>
     <div class="content mb-0">
-        <div class="row mb-0">
+        {{-- <div class="row mb-0">
             <a href="{{ route('delight.listar.populares') }}" data-card-height="100" class="card card-style col-12 mx-0 mt-1 px-0 round-medium shadow-huge hover-grow-xs"
                 style="height: 100px;background-color: #FF5A5A;">
                 <div class="card-center d-flex flex-row align-items-center justify-content-between ps-4 pe-3">
@@ -278,7 +278,12 @@
                 </div>
                 <div class="card-overlay dark-mode-tint"></div>
             </a>
-        </div>
+        </div> --}}
+
+        {{-- <x-slider-individual/> --}}
+        <x-slider-principal-lineadelight/>
+
+        {{-- SLIDER HORARIOS --}}
         <div class="splide topic-slider slider-no-arrows slider-no-dots pb-2 splide--loop splide--ltr splide--draggable" id="topic-slider-1" style="visibility: visible;">
             <div class="splide__track" id="topic-slider-1-track" style="padding-left: 15px; padding-right: 40px;">
                 <div class="splide__list" id="topic-slider-1-list" style="transform: translateX(-866.592px);">
@@ -302,7 +307,7 @@
         <x-slider-doble-subcategorias/>
 
 
-        <div class="row mb-0">
+        {{-- <div class="row mb-0">
             <a href="{{ route('categoria.planes') }}" data-card-height="100" class="card card-style col-12 mx-0 my-0 px-0 round-medium shadow-huge hover-grow-xs"
                 style="height: 100px;background-color: #4ECDC4">
                 <div class="card-center d-flex flex-row align-items-center justify-content-between ps-4 pe-3">
@@ -317,12 +322,12 @@
                 </div>
                 <div class="card-overlay dark-mode-tint"></div>
             </a>
-        </div>
-
-        
+        </div> --}}
     </div>
 
-    <div class="divider divider-margins"></div>
+    {{-- <div class="divider divider-margins"></div> --}}
+
+    <x-divider-manzana/>
 
     @if ($conMasPuntos->count() > 0)
         {{-- <div class="card card-style rounded-md mx-0 preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
