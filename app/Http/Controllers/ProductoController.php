@@ -22,10 +22,29 @@ class ProductoController extends Controller
     }
     public function lineadelightproducto($id)
     {
-        $producto=Producto::findOrFail($id);
-        $nombrearray=Str::of($producto->nombre)->explode(' ');
-        //dd($nombrearray);
-        return view('client.productos.delight-producto',compact('producto','nombrearray'));
+        $producto = Producto::findOrFail($id);
+        $nombrearray = Str::of($producto->nombre)->explode(' ');
+        
+        // Process main product image and URL
+        $producto->imagen = $producto->imagen 
+            ? asset('imagenes/productos/' . $producto->imagen) 
+            : asset('imagenes/delight/default-bg-1.png');
+        $producto->url_detalle = route('delight.detalleproducto', $producto->id);
+
+        // Get similar products (excluding current product) and process them
+        $similares = $producto->subcategoria->productos
+            ->reject(fn ($p) => $p->id == $id || $p->estado != 'activo')  // Dual filter
+            ->shuffle()
+            ->take(5)
+            ->map(function ($p) {
+                $p->imagen = $p->imagen
+                    ? asset('imagenes/productos/' . $p->imagen)
+                    : asset('imagenes/delight/21.jpeg');
+                $p->url_detalle = route('delight.detalleproducto', $p->id);
+                return $p;
+            });
+
+        return view('client.productos.delight-producto', compact('producto', 'nombrearray', 'similares'));
     }
     public function detallesubcategoria($id)
     {

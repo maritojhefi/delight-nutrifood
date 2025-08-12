@@ -47,6 +47,13 @@ class Producto extends Model
             ->wherePivot('cantidad', '!=', 0);
     }
 
+    public function unfilteredSucursale()
+    {
+        return $this->belongsToMany(Sucursale::class)
+            ->withTimestamps()
+            ->withPivot('sucursale_id', 'cantidad', 'id', 'fecha_venc','max');
+    }
+
     public function subcategoria()
     {
         return $this->belongsTo(Subcategoria::class);
@@ -376,4 +383,5 @@ class Producto extends Model
             ->wherePivot('cantidad', '>', 0)
             ->sum('producto_sucursale.cantidad');
     }
+    
 }

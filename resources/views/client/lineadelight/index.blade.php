@@ -268,7 +268,6 @@
                 style="height: 100px;background-color: #FF5A5A;">
                 <div class="card-center d-flex flex-row align-items-center justify-content-between ps-4 pe-3">
                     <div class="d-flex flex-row align-items-center gap-3">
-                        {{-- <img class="mb-1" src="{{ asset('imagenes/delight/logo_white.svg') }}" alt="Logo" style="width: 50px; height: 50px;"> --}}
                         <i class="fa fa-apple-alt fa-3x" style="color: white"></i>
                         <div class="text-start">
                             <h2 class="text-white">Productos Populares</h2>
@@ -351,7 +350,7 @@
                                     </div>
                                     <div class="divider mb-0"></div>
                                     <div class="d-flex flex-row justify-content-between gap-4 mb-0">
-                                        <p class="font-600 mb-0">{{ $item->descuento ? $item->descuento : $item->precio }} Bs</p>
+                                        <p class="font-600 mb-0">Bs. {{ $item->descuento ? $item->descuento : $item->precio }}</p>
                                         <p class="bg-blue-dark font-11 px-2 font-600 rounded-xs shadow-xxl mb-0">{{ $item->puntos }} Pts</p>
                                     </div>
                                 </a>
@@ -371,12 +370,10 @@
                 <!-- Modal Header -->
                 <div class="modal-header mx-2 mt-2 border-0 gap-4 d-flex align-items-center">
                     <h4 id="categorizer-title" class="mb-0 ms-4 align-self-center text-uppercase">Todos los productos de esta categoria!</h4>
-                    {{-- <h5 class="modal-title" id="categorizedProductsModalLabel">Productos de la categoria seleccionada</h5> --}}
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!-- Modal Body -->
                 <div class="modal-body mt-0 pt-0 d-flex flex-column justify-content-center align-items-center">
-                    {{-- <p class="text-muted mb-0 ms-3">Deseas saber mas? Haz click en la imagen y accede a los detalles del producto.</p> --}}
                     <div class="w-100" style="min-width: 300px;">
                         <div class="content" id="listado-productos-categoria">
                             <!-- Contenedor items individuales-->
