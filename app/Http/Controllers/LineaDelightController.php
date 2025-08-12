@@ -82,19 +82,6 @@ class LineaDelightController extends Controller
                 break;
         }
 
-        // $horarios = (object)[
-        //     'manana' => Subcategoria::whereIn('id', [3, 4, 8, 10, 12, 13, 54, 56, 57])->get(),
-        //     'tarde' => Subcategoria::whereIn('id', [2, 6, 9, 52, 55])->get(),
-        //     'noche' => Subcategoria::whereIn('id', [8, 9, 14, 55, 58])->get()
-        // ];
-
-
-        // $horarios = [
-        //     'manana' => Subcategoria::whereIn('id', [3, 4, 8, 10, 12, 13, 54, 56, 57])->get(),
-        //     'tarde' => Subcategoria::whereIn('id', [2, 6, 9, 52, 55])->get(),
-        //     'noche' => Subcategoria::whereIn('id', [8, 9, 14, 55, 58])->get()
-        // ];
-
         $arrayprueba = ["manana", "tarde", "noche"];
 
         $subcategorias = Subcategoria::whereIn('id', $ids)->orderBy('nombre')->get();
@@ -107,8 +94,6 @@ class LineaDelightController extends Controller
         return view('client.lineadelight.subcategorias-horario', compact('subcategorias', 'horarioData'));
     }
     public function lineadelightPopulares() {
-
-
         return view('client.lineadelight.productos-populares');
     }
 }

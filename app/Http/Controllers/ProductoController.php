@@ -85,7 +85,15 @@ class ProductoController extends Controller
     public function productosSubcategoria($id)
     {
         try {
-            $productos = Producto::select('productos.*')->where('subcategoria_id', $id)->where('estado', 'activo')->orderBy('nombre')->get();
+            $productos = Producto::select('productos.*')
+                        ->where('subcategoria_id', $id)
+                        ->where('estado', 'activo')
+                        ->orderByRaw('CASE 
+                            WHEN descuento IS NOT NULL AND descuento > 0 AND descuento < precio THEN 0 
+                            ELSE 1 
+                        END')
+                        ->orderBy('nombre')
+                        ->get();
 
             foreach ($productos as $producto) {
                 $producto->imagen = $producto->imagen ? asset('imagenes/productos/' . $producto->imagen) : asset('imagenes/delight/default-bg-1.png');

@@ -61,8 +61,8 @@
                 <div class="card-overlay bg-black opacity-40"></div>
             </div>
             {{-- MENCION A LOS TAGS DEL PRODUCTO --}}
-            <p class="color-highlight font-600 mb-n1">Delight Nutrifood</p>
-            <h1>Caracteristicas del producto</h1>
+            {{-- <p class="color-highlight font-600 mb-n1">Delight Nutrifood</p>
+            <h1>Caracteristicas del producto</h1> --}}
             <div class="row">
                 <div class="col-2"></div>
                 <div class="col-4">
