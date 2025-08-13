@@ -253,7 +253,7 @@
 
             // Render out of stock items
             if (response.agotados.length > 0) {
-                cartHTML += `<h5 class="mb-3 mt-4 text-danger">Productos agotados</h5>`;
+                cartHTML += `<h5 class="mb-3">Productos agotados</h5>`;
                 response.agotados.forEach(producto => {
                     cartHTML += renderCartItem(producto, 'agotado');
                 });
@@ -298,9 +298,10 @@
                         </div>
                         <div class="product-image-container position-relative" style="z-index: 10">
                             <img class="product-image rounded" 
-                                src="${producto.imagen || '/imagenes/delight/default-bg-1.png'}" 
+                                src="${producto.imagen ?? '/imagenes/delight/default-bg-1.png'}" 
                                 alt="${producto.nombre}"
-                                data-product-id="${producto.id}">
+                                data-product-id="${producto.id}"
+                                onerror="this.onerror=null; this.src='/imagenes/delight/default-bg-1.png';">
                             <button class="btn btn-danger delete-item-btn position-absolute" 
                                     type="button" 
                                     data-product-id="${producto.id}"
@@ -372,60 +373,60 @@
     }
 </script>
 <script>
-    // Initialize cart manager when DOM is loaded
-    document.addEventListener('DOMContentLoaded', function() {
-    // Replace the basic CartManager with EnhancedCartManager
-        window.cartManager = new EnhancedCartManager();
+    // // Initialize cart manager when DOM is loaded
+    // document.addEventListener('DOMContentLoaded', function() {
+    // // Replace the basic CartManager with EnhancedCartManager
+    //     window.cartManager = new EnhancedCartManager();
         
-        // Bind checkout button
-        const checkoutBtn = document.getElementById('checkout-btn');
-        if (checkoutBtn) {
-            checkoutBtn.addEventListener('click', function() {
-                window.cartManager.processCheckout();
-            });
-        }
+    //     // Bind checkout button
+    //     const checkoutBtn = document.getElementById('checkout-btn');
+    //     if (checkoutBtn) {
+    //         checkoutBtn.addEventListener('click', function() {
+    //             window.cartManager.processCheckout();
+    //         });
+    //     }
         
-        // Initial render
-        window.cartManager.renderCartSummary();
+    //     // Initial render
+    //     window.cartManager.renderCartSummary();
         
-        // Expose useful methods for debugging
-        window.getCheckoutData = () => window.cartManager.getCheckoutData();
-    });
+    //     // Expose useful methods for debugging
+    //     window.getCheckoutData = () => window.cartManager.getCheckoutData();
+    // });
     
-    // Additional cart-specific functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        // Update the cart summary display
-        const originalUpdateCartUI = window.cartManager.updateCartUI;
-        window.cartManager.updateCartUI = function() {
-            originalUpdateCartUI.call(this);
+    // // Additional cart-specific functionality
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     // Update the cart summary display
+    //     const originalUpdateCartUI = window.cartManager.updateCartUI;
+    //     window.cartManager.updateCartUI = function() {
+    //         originalUpdateCartUI.call(this);
             
-            // Update cart total display
-            const totalElement = document.getElementById('cart-total');
-            if (totalElement) {
-                totalElement.textContent = `Bs. ${this.getCartTotal().toFixed(2)}`;
-            }
+    //         // Update cart total display
+    //         const totalElement = document.getElementById('cart-total');
+    //         if (totalElement) {
+    //             totalElement.textContent = `Bs. ${this.getCartTotal().toFixed(2)}`;
+    //         }
             
-            // Update item count display
-            const countElement = document.getElementById('cart-item-count');
-            if (countElement) {
-                countElement.textContent = this.getItemCount();
-            }
+    //         // Update item count display
+    //         const countElement = document.getElementById('cart-item-count');
+    //         if (countElement) {
+    //             countElement.textContent = this.getItemCount();
+    //         }
             
-            // Show/hide empty cart message
-            const cartContent = document.querySelector('.content');
-            const cartItems = document.querySelectorAll('.cart-item-wrapper');
+    //         // Show/hide empty cart message
+    //         const cartContent = document.querySelector('.content');
+    //         const cartItems = document.querySelectorAll('.cart-item-wrapper');
             
-            if (cartItems1.length === 0) {
-                cartContent.innerHTML = `
-                    <div class="empty-cart text-center py-5">
-                        <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">Tu carrito está vacío</h5>
-                        <p class="text-muted">Agrega algunos productos para comenzar</p>
-                    </div>
-                `;
-            }
-        };
-    });
+    //         if (cartItems1.length === 0) {
+    //             cartContent.innerHTML = `
+    //                 <div class="empty-cart text-center py-5">
+    //                     <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
+    //                     <h5 class="text-muted">Tu carrito está vacío</h5>
+    //                     <p class="text-muted">Agrega algunos productos para comenzar</p>
+    //                 </div>
+    //             `;
+    //         }
+    //     };
+    // });
 
     // Eliminacion del Carrito
     document.addEventListener('DOMContentLoaded', function() {

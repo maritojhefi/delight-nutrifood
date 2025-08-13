@@ -26,6 +26,7 @@
             blurred && (location.reload());
         };
     </script>
+    <script src="{{ asset('js/app.js') }}" defer></script>
     <style>
         .bordeado {
             border-style:dotted;
@@ -150,11 +151,13 @@
     <div id="toast-loading" class="toast toast-tiny toast-top bg-blue-dark fade hide" data-bs-delay="1500"
         data-bs-autohide="true"><i class="fa fa-sync fa-spin me-3"></i>Actualizado!</div>
 
-    <div id="toast-carrito" class="toast toast-tiny toast-top bg-green-dark hide" data-bs-delay="1000"
-        data-bs-autohide="true"><i class="fa fa-check  me-3"></i>Añadido!</div>
+    {{-- <div id="toast-carrito" class="toast toast-tiny toast-top bg-green-dark hide" data-bs-delay="1000"
+        data-bs-autohide="true"><i class="fa fa-check  me-3"></i>Añadido al carrito!</div> --}}
 
-    <div id="saved-to-favorites" class="snackbar-toast bg-green-dark color-white fade hide" data-delay="3000"
-        data-autohide="true"><i class="fa fa-shopping-cart me-3"></i>Añadido al carrito!</div>
+    <div id="toast-cart-added" class="snackbar-toast bg-green-dark color-white fade hide"
+        data-autohide="true" style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Añadido al carrito!</div>
+    <div id="toast-cart-item-limit" class="snackbar-toast bg-yellow-dark color-white fade hide"
+        data-autohide="true" style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Limite alcanzado!</div>
     @include('client.partials.modalredes')
 
     <div id="shared" class="snackbar-toast bg-blue-dark color-white fade hide" data-delay="3000"
@@ -182,7 +185,7 @@
     <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}?v=1.0.0"></script>
     <script type="text/javascript" src="{{ asset('scripts/custom.js') }}?v=1.0.0"></script>
 
-    <script>
+    {{-- <script>
         $(document).ready(function() {
             var baseUrl = '{{ env('APP_URL') }}';
             $.ajaxSetup({
@@ -199,16 +202,16 @@
                         if (result == 'logout') {
                             window.location.href = "{{ route('login') }}";
                         } else {
-                            var toaster = document.getElementById('saved-to-favorites');
-                            cart = new bootstrap.Toast(toaster);
-                            cart.show()
+                            // var toaster = document.getElementById('saved-to-favorites');
+                            // cart = new bootstrap.Toast(toaster);
+                            // cart.show()
                         }
                     }
                 })
 
             });
         });
-    </script>
+    </script> --}}
     <script>
         function myFunction() {
             var element = document.body;

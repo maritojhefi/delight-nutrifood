@@ -55,7 +55,10 @@
                     @if ($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0)
                         <button class="float-end mx-3 gradient-gray btn-s rounded-sm shadow-xl text-uppercase font-800">Sin Stock</button>
                     @else
-                        <button href="#" class="float-end hover-grow-s mx-3 gradient-highlight btn-s rounded-sm shadow-xl text-uppercase font-800">Agregar</button>
+                        <button
+                        data-producto-id="{{$producto->id}}"
+                        data-producto-nombre="{{$producto->nombre}}"
+                        class="add-to-cart float-end hover-grow-s mx-3 gradient-highlight btn-s rounded-sm shadow-xl text-uppercase font-800">Agregar</button>
                     @endif
                 </div>
                 <div class="card-overlay bg-black opacity-40"></div>
@@ -85,4 +88,38 @@
             <x-footer-productos-similares :producto="$producto" :similares="$similares" />
         </div>
     </div>
+
+    <script src="{{ asset('js/carrito/index.js') }}"></script>
+    <script src="{{ asset(path: 'js/producto/producto-service.js') }}"></script>
+
+
+    <script> 
+        $(document).ready(function() {
+            $(document).on('click', '.add-to-cart', addToCartHandler);
+        });
+
+        async function addToCartHandler() {
+            const product_Id = $(this).data('producto-id');
+            const product_nombre = $(this).data('producto-nombre')
+
+            // console.log("ID producto a agregar: ", product_Id);
+            // console.log("Nombre del producto a agregar: ", product_nombre);
+            try {
+                const result = await addToCart(product_Id, 1);
+                if (result.success) {
+                    showMessage('success', 'Item agregado al carrito!');
+                } else {
+                    showMessage('error', result.message);
+                }
+            } catch (error) {
+                console.error('Error agregando el producto al carrito:', error);
+                showMessage('error', 'Error al agregar el producto al carrito');
+            }
+        }
+
+        function showMessage(type, text) {
+            $('#message-container').html(`<div class="alert alert-${type}">${text}</div>`);
+            setTimeout(() => $('#message-container').empty(), 3000);
+        }
+    </script>
 @endsection

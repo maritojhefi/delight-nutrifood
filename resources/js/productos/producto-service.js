@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// FUNCIONES CON LLAMADO A ENDPOINTS DEL BACKEND - PRODUCTO
 export const getProductosCategoria = async (categoriaId) => {
     try {
         const response = await axios.get(`productos/categorizados/${categoriaId}`);
@@ -10,6 +11,17 @@ export const getProductosCategoria = async (categoriaId) => {
     }
 };
 
+export const checkProductStock = async (productId) => {
+    try {
+        const response = await axios.get(`/productos/${productId}/stock`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error al solicitar stock del producto ${productId}`, error);
+        throw error;
+    }
+}
+
 window.ProductoService = {
-    getProductosCategoria
+    getProductosCategoria,
+    checkProductStock
 };

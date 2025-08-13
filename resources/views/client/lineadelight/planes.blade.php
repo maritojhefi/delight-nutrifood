@@ -37,8 +37,8 @@
                         {{ $producto->nombre }}
                     </h2>
                 </div>
-                <a href="#"
-                    class="btn add-to-cart confirm-btn text-light rounded-pill fw-bold text-uppercase small carrito flex-shrink-0"
+                <button
+                    class="btn add-to-cart confirm-btn text-light rounded-pill fw-bold text-uppercase small flex-shrink-0"
                     style="z-index: 10;" 
                     id="{{ $producto->plane ? $producto->plane->id : $producto->id }}"
                     data-producto-id="{{$producto->id}}"
@@ -46,7 +46,7 @@
                     >
                     <span class="text-white">{{ $producto->precioReal() }} Bs </span>
                     <i class="fa fa-heart fa-beat" style="color: deeppink;"> </i>
-                </a>
+                </button>
             </div>
 
             @if ($producto->plane && $producto->plane->editable)
@@ -146,25 +146,31 @@
         });
     </script>
     <script src="{{ asset('js/carrito/index.js') }}"></script>
+    <script src="{{ asset(path: 'js/producto/producto-service.js') }}"></script>
+
+
     <script> 
         $(document).ready(function() {
-
-            $('.add-to-cart').on('click', addToCartHandler);
+            $(document).on('click', '.add-to-cart', addToCartHandler);
         });
 
-        function addToCartHandler() {
+        async function addToCartHandler() {
             const product_Id = $(this).data('producto-id');
             const product_nombre = $(this).data('producto-nombre')
 
-            console.log(product_Id);
-            console.log(product_nombre);
-            const result = addToCart(product_Id, 1, true);
-            if (result.success) {
-                showMessage('success', 'Item added to cart!');
-                showMessage('error', result.message);
-
+            // console.log("ID producto a agregar: ", product_Id);
+            // console.log("Nombre del producto a agregar: ", product_nombre);
+            try {
+                const result = await addToCart(product_Id, 1);
+                if (result.success) {
+                    showMessage('success', 'Item agregado al carrito!');
+                } else {
+                    showMessage('error', result.message);
+                }
+            } catch (error) {
+                console.error('Error agregando el producto al carrito:', error);
+                showMessage('error', 'Error al agregar el producto al carrito');
             }
-            
         }
 
         function showMessage(type, text) {

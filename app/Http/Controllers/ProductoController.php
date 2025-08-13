@@ -25,13 +25,13 @@ class ProductoController extends Controller
         $producto = Producto::findOrFail($id);
         $nombrearray = Str::of($producto->nombre)->explode(' ');
         
-        // Process main product image and URL
+        // Procesar la imagen del producto y su url
         $producto->imagen = $producto->imagen 
             ? asset('imagenes/productos/' . $producto->imagen) 
             : asset('imagenes/delight/default-bg-1.png');
         $producto->url_detalle = route('delight.detalleproducto', $producto->id);
 
-        // Get similar products (excluding current product) and process them
+        // Obtener productos similares excluyendo el producto ya obtenido
         $similares = $producto->subcategoria->productos
             ->reject(fn ($p) => $p->id == $id || $p->estado != 'activo')  // Dual filter
             ->shuffle()
@@ -96,6 +96,12 @@ class ProductoController extends Controller
                         ->get();
 
             foreach ($productos as $producto) {
+                if ($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0) {
+                    $producto->tiene_stock = false;
+                } else {
+                    $producto->tiene_stock = true;
+                }
+
                 $producto->imagen = $producto->imagen ? asset('imagenes/productos/' . $producto->imagen) : asset('imagenes/delight/default-bg-1.png');
                 $producto ->url_detalle = route('delight.detalleproducto', $producto->id);
             }
@@ -110,6 +116,22 @@ class ProductoController extends Controller
             return response()->json([
                 'error' => 'Error al obtener los productos de la categoria. Por favor, intente nuevamente.'
             ], 500);
+        }
+    }
+    public function checkProductStock($id) {
+        $producto = Producto::findOrFail($id);
+
+        if ($producto == null) {
+            return response()->json(["error" => "No existe un producto con el id proporcionado"], 404);
+        }
+
+        // Verificar si el producto no dispone de una sucursal
+        if ($producto->unfilteredSucursale->isEmpty()) {
+            // Al no disponer, se asume que tiene productos infinitos
+            return response()->json(["stock" => -1, "unlimited" => true], 200);
+        } else {
+            // Retornamos la cantidad de stock disponible
+            return response()->json(["stock" => $producto->stock_actual, "unlimited" => false], 200);
         }
     }
 }
