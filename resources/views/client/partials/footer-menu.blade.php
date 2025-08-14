@@ -23,25 +23,13 @@
                 });
             }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCartCounter();
-            
-            // Optional: Listen for custom events if you update the cart elsewhere
-            document.addEventListener('cartUpdated', updateCartCounter);
-        });
-
-        function updateCartCounter() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || { items: [] }; // Fixed typo: was 'item', now 'items'
-            const cartCounter = document.getElementById('cart-counter');
-            
-            if (cart.items && cart.items.length > 0) {
-                cartCounter.textContent = cart.items.length;
-                cartCounter.style.display = 'inline-block'; // Ensure it's visible
-            } else {
-                cartCounter.textContent = '';
-                cartCounter.style.display = 'none'; // Hide when empty
-            }
-        }
+            document.addEventListener('DOMContentLoaded', function() {
+                // Actualizar contenido del carrito de existir al momento de cargarse
+                carritoStorage.updateCartCounterEX();
+                
+                // Optional: Listen for custom events if you update the cart elsewhere
+                // document.addEventListener('cartUpdated', updateCartCounterEX);
+            });
         </script>
     @endpush
     <a id="uno" href="{{ route('miperfil') }}"

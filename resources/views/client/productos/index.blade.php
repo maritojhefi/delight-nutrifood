@@ -1,5 +1,5 @@
 @extends('client.master')
-@section('content')
+@section('content-comentado')
     <x-cabecera-pagina titulo="Productos" cabecera="appkit" />
 
     {{-- <x-page-construccion/> --}}
@@ -178,7 +178,6 @@
                                 </a>
                             </div>
                         @endforeach
-
                     </div>
                 </div>
             </div>
@@ -187,7 +186,7 @@
         </div>
     @endif
 @endsection
-{{-- @section('content')
+@section('content')
     <x-cabecera-pagina titulo="Eco Tienda?!" cabecera="bordeado" />
     <x-page-construccion />
-@endsection --}}
+@endsection

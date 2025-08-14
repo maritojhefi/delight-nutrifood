@@ -21,6 +21,11 @@ export const checkProductStock = async (productId) => {
     }
 }
 
+export default {
+    getProductosCategoria,
+    checkProductStock
+}
+
 window.ProductoService = {
     getProductosCategoria,
     checkProductStock

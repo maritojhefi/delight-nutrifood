@@ -1,6 +1,4 @@
-// Cart Storage
-// const cartData = localStorage.getItem('cart');
-// const cart = cartData ? JSON.parse(cartData) : { items: [] };
+import { checkProductStock } from "../productos/producto-service";
 
 // OBTENER CARRITO
 export const getCart = () => {
@@ -8,10 +6,31 @@ export const getCart = () => {
   return data ? JSON.parse(data) : {items:[]};
 }
 
+// OBTENER PRODUCTO
+export const getCartItem = (productId) => {
+    console.log("retireving cart-item with id: ",productId)
+    const cart = getCart();
+    try {
+        const cartItem = cart.items.find(item => item.id ==productId);
+        console.log("Retrieved cart item: ", cartItem);
+        return cartItem;
+    } catch (error) {
+        console.error("Error retrieving cart-item with id: ", productId);
+        throw new Error(error);
+    }
+}
+
 // VACIAR CARRITO
 export const emptyCart = () => {
     console.log("emptyCart fue llamado")
     localStorage.removeItem('cart');
+}
+
+// REMOVER PRODUCTO
+export const removeProduct = (productId) => {
+    const cart = getCart();
+    cart.items = cart.items.filter(item => item.id.toString() !== productId);
+    localStorage.setItem('cart', JSON.stringify(cart));
 }
 
 export const showAddedToast = () => {
@@ -34,15 +53,28 @@ export const showLimitToast = () => {
     }, 1000); // Ocultar tras 1 segundo
 }
 
+export const updateCartCounterEX = () => {
+    console.log("called the new CartCounter")
+    const cart = JSON.parse(localStorage.getItem('cart')) || { items: [] };
+    const cartCounter = document.getElementById('cart-counter');
+    
+    if (cart.items && cart.items.length > 0) {
+        const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+        cartCounter.textContent = totalQuantity;
+        cartCounter.style.display = 'inline-block'; // Ensure it's visible
+    } else {
+        cartCounter.textContent = '';
+        cartCounter.style.display = 'none'; // Hide when empty
+    }
+}
+
 // AGREGAR ITEMS AL CARRITO
-export async function addToCart(productId, quantity, isPlan = false) {
-//   const cartData = localStorage.getItem('cart');
-//   const cart = cartData ? JSON.parse(cartData) : { items: [] };
+export async function addToCart(productId, quantity, isPlan = false, isUpdate = false) {
   const cart = getCart();
 
-  console.log("Carrito catual:", cart);
+  console.log("Carrito actual:", cart);
 
-  const existingItem = cart.items.find(item => item.id === productId);
+  const existingItem = cart.items.find(item => item.id == productId); // Use the same cart reference
 
   console.log("Item a agregar: ", existingItem);
   const currentQty = existingItem ? existingItem.quantity : 0;
@@ -51,54 +83,92 @@ export async function addToCart(productId, quantity, isPlan = false) {
   console.log("Nueva cantidad: ", newQty);
 
   try {
-      const stockResponse = await ProductoService.checkProductStock(productId);
-      console.log("Respuesta del backend: ", stockResponse);
-      
-      // Si el stock es ilimitado, saltar validacion
-      if (stockResponse.unlimited) {
-        console.log("El stock del item es ilimitado");
-          if (existingItem) {
-              existingItem.quantity = newQty;
-          } else {
-              cart.items.push({id: productId, quantity, isPlan: isPlan});
-          }
-          
-          
-          localStorage.setItem('cart', JSON.stringify(cart));
-          showAddedToast();
-          return {success: true, cart};
-      }
-      
-      // Comparar con el stock disponible
-      const availableStock = stockResponse.stock;
-      if (newQty > availableStock) {
-          console.error(`El stock del producto es ${availableStock}, la cantidad que se solicita es de ${newQty}`);
-          showLimitToast();
-          return {
-              success: false, 
-              message: `Solo hay ${availableStock}u disponibles`,
-              cart
-          };
-      }
-      
-      if (existingItem) {
-          existingItem.quantity = newQty;
-      } else {
-          cart.items.push({id: productId, quantity, isPlan: isPlan});
-      }
-      
-      localStorage.setItem('cart', JSON.stringify(cart));
-      showAddedToast();
-      return {success: true, cart};
-      
-  } catch (error) {
-      console.error('Error checking stock:', error);
-      return {
-          success: false, 
-          message: 'Error al verificar stock del producto',
-          cart
-      };
-  }
+    const stockResponse = await checkProductStock(productId);
+    console.log("Respuesta del backend: ", stockResponse);
+    
+    // Si el stock es ilimitado, saltar validacion
+    if (stockResponse.unlimited) {
+    console.log("El stock del item es ilimitado");
+        if (existingItem) {
+            existingItem.quantity = newQty;
+        } else {
+            cart.items.push({id: productId, quantity, isPlan: isPlan});
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCounterEX()
+        if (!isUpdate) {
+            console.log("No es update")
+                showAddedToast();
+        }
+        return {success: true, newQuantity: newQty, cart};
+    }
+    
+    // Comparar con el stock disponible
+    const availableStock = stockResponse.stock;
+    if (newQty > availableStock) {
+        console.error(`El stock del producto es ${availableStock}, la cantidad que se solicita es de ${newQty}`);
+        showLimitToast();
+        return {
+            success: false, 
+            message: `Solo hay ${availableStock}u disponibles`,
+            cart
+        };
+    }
+    
+    if (existingItem) {
+        existingItem.quantity = newQty;
+    } else {
+        cart.items.push({id: productId, quantity, isPlan: isPlan});
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCounterEX()
+    if (!isUpdate) {
+            console.log("No es update")
+            showAddedToast();
+    }
+    return {success: true, newQuantity: newQty, cart};
+    } catch (error) {
+        console.error('Error checking stock:', error);
+        return {
+            success: false, 
+            message: 'Error al verificar stock del producto',
+            cart
+        };
+    }
 }
 
+export const substractFromCart = (productId, quantity) => {
+    if (quantity <= 0) {
+        return {success:false,message:"El valor no puede ser menor que 1"}
+    }
+    const cart = getCart();
+    console.log("Carrito actual:", cart);
+    console.log("Id item a buscar", productId);
+    const existingItem = cart.items.find(item => item.id == productId); // Use the same cart reference
 
+    console.log("Item encontrado:", existingItem);
+    console.log("Item a reducir: ", existingItem);
+    const currentQty = existingItem.quantity;
+    if (quantity >= currentQty) {
+        return {success:false,message:"El valor no puede ser menor que 1"}
+    }
+    console.log("Cantidad actual del item: ", currentQty);
+    const newQty = currentQty - quantity;
+    console.log("Nueva cantidad: ", newQty);
+
+    existingItem.quantity = newQty;
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCounterEX();
+    return {success: true,message:"Substraccion exitosa",newQuantity: newQty}
+}
+
+window.carritoStorage = {
+    getCart,
+    getCartItem,
+    addToCart,
+    substractFromCart,
+    removeProduct,
+    emptyCart,
+    updateCartCounterEX
+}
