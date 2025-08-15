@@ -134,4 +134,17 @@ class ProductoController extends Controller
             return response()->json(["stock" => $producto->stock_actual, "unlimited" => false], 200);
         }
     }
+
+    public function getProduct($id) {
+        try {
+            $producto = Producto::findOrFail($id);
+            return response()->json($producto, 200); // Removed the array brackets
+        } catch (\Throwable $th) {
+            Log::error(`Error el producto con id: ` + $id, [
+                'error' => $th->getMessage(),
+                'trace' => $th->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+    }
 }

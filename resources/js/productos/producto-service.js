@@ -21,6 +21,16 @@ export const checkProductStock = async (productId) => {
     }
 }
 
+export const getProduct = async (productId) => {
+    try {
+        const response = await axios.get(`/productos/${productId}`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error al solicitar el producto de ID: ${productId}`, error);
+        throw error;
+    }
+}
+
 export default {
     getProductosCategoria,
     checkProductStock
@@ -28,5 +38,6 @@ export default {
 
 window.ProductoService = {
     getProductosCategoria,
-    checkProductStock
+    checkProductStock,
+    getProduct
 };

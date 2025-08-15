@@ -252,6 +252,67 @@ class CarritoController extends Controller
         }
     }
 
+    // public function validateProduct(Request $request)
+    // {
+    //     try {
+    //         $sucursaleId = 1; // Hardcodeado por ahora, pero en el futuro deberia obtenerse de $request->sucursale_id
+    //         $productoId = $request->producto_id;
+    //         $cantidadSolicitada = $request->quantity ?? 1;
+
+    //         Log::info('Validating single product', [
+    //             'sucursale_id' => $sucursaleId,
+    //             'product_id' => $productoId,
+    //             'quantity' => $cantidadSolicitada
+    //         ]);
+
+    //         // Buscar el producto
+    //         $producto = Producto::find($productoId);
+
+    //         if (!$producto) {
+    //             return response()->json([
+    //                 'error' => 'Producto no encontrado'
+    //             ], 404);
+    //         }
+
+    //         // Check if product has stock relations (limited stock) or not (infinite stock)
+    //         $isInfiniteStock = $producto->unfilteredSucursale->isEmpty();
+            
+    //         if ($isInfiniteStock) {
+    //             // Infinite stock product
+    //             $stockSucursal = null;
+    //             $stockDisponible = "INFINITO";
+    //         } else {
+    //             // Limited stock product
+    //             $stockSucursal = $producto->unfilteredSucursale->firstWhere('pivot.sucursale_id', $sucursaleId);
+    //             $stockDisponible = $stockSucursal ? $stockSucursal->pivot->cantidad : 0;
+    //         }
+
+    //         $estado = $this->determinarEstado($stockDisponible, $cantidadSolicitada);
+
+    //         return response()->json([
+    //             'id' => $producto->id,
+    //             'nombre' => $producto->nombre,
+    //             'detalle' => $producto->detalle,
+    //             'precio' => $producto->precio,
+    //             'imagen' => asset('imagenes/productos/' . $producto->imagen),
+    //             'sucursale_id' => $sucursaleId,
+    //             'stock_disponible' => $stockDisponible,
+    //             'cantidad_solicitada' => $cantidadSolicitada,
+    //             'estado' => $estado,
+    //             'max_permitido' => $stockDisponible === "INFINITO" ? "INFINITO" : $stockDisponible,
+    //         ]);
+
+    //     } catch (\Throwable $th) {
+    //         Log::error('Error validating single product', [
+    //             'error' => $th->getMessage(),
+    //             'trace' => $th->getTraceAsString()
+    //         ]);
+    //         return response()->json([
+    //             'error' => 'Error al validar el producto. Por favor, intente nuevamente.'
+    //         ], 500);
+    //     }
+    // }
+
     protected function determinarEstado($stockDisponible, $cantidadSolicitada)
     {
         if ($stockDisponible === "INFINITO") {

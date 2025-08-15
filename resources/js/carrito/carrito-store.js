@@ -40,7 +40,7 @@ export const showAddedToast = () => {
     cart.show()
     setTimeout(() => {
         cart.hide();
-    }, 1000); // Ocultar tras 1 segundo
+    }, 3000); // Ocultar tras 1 segundo
 }
 
 export const showLimitToast = () => {
@@ -50,16 +50,17 @@ export const showLimitToast = () => {
     cart.show()
     setTimeout(() => {
         cart.hide();
-    }, 1000); // Ocultar tras 1 segundo
+    }, 3000); // Ocultar tras 1 segundo
 }
 
 export const updateCartCounterEX = () => {
     console.log("called the new CartCounter")
     const cart = JSON.parse(localStorage.getItem('cart')) || { items: [] };
     const cartCounter = document.getElementById('cart-counter');
-    
     if (cart.items && cart.items.length > 0) {
+        console.log("CArtItemsRender:",cart.items)
         const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+        console.log("TotalQuantity: ", totalQuantity)
         cartCounter.textContent = totalQuantity;
         cartCounter.style.display = 'inline-block'; // Ensure it's visible
     } else {
@@ -153,14 +154,27 @@ export const substractFromCart = (productId, quantity) => {
     if (quantity >= currentQty) {
         return {success:false,message:"El valor no puede ser menor que 1"}
     }
-    console.log("Cantidad actual del item: ", currentQty);
     const newQty = currentQty - quantity;
-    console.log("Nueva cantidad: ", newQty);
 
     existingItem.quantity = newQty;
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCounterEX();
     return {success: true,message:"Substraccion exitosa",newQuantity: newQty}
+}
+
+export const updateProductToMax = async (productId) => {
+    const cart = getCart();
+    const itemToMax = cart.items.find(item => item.id == productId); 
+    try {
+        const itemStockResponse = await checkProductStock(productId);
+        const availableStock = Number(itemStockResponse.stock);
+        itemToMax.quantity = availableStock;
+        localStorage.setItem('cart', JSON.stringify(cart));
+        return {success: true, quantity: itemToMax.quantity}
+    } catch (error) {
+        console.error("Ocurrio un error al actualizar el stock solicitado al maximo: ", productId);
+        return {success: false}
+    }
 }
 
 window.carritoStorage = {
@@ -169,6 +183,7 @@ window.carritoStorage = {
     addToCart,
     substractFromCart,
     removeProduct,
+    updateProductToMax,
     emptyCart,
     updateCartCounterEX
 }

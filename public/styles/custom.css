@@ -391,8 +391,17 @@ hover-blue:hover {
     border-color: #dee2e6;
 }
 
+/* UpdateToMax Button */
+.qty-fixer {
+    width: 120px;
+}
+
+.unavailable-fixer {
+    width: 120px;
+}
+
 /* Delete Button */
-.delete-item-btn {
+/* .delete-item-btn {
     top: -6px;
     right: -6px;
     width: 30px;
@@ -411,7 +420,6 @@ hover-blue:hover {
     z-index: 10;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     background-color: #FF5A5A;
-    /* border-color: #dee2e6; */
 }
 
 .delete-item-btn:hover {
@@ -421,7 +429,7 @@ hover-blue:hover {
 
 .delete-item-btn:active {
     transform: scale(0.95);
-}
+} */
 
 .delete-cart-btn {
     text-decoration: underline;
@@ -433,7 +441,9 @@ hover-blue:hover {
 }
 
 /* Show delete button on cart item hover */
-.cart-item-wrapper:hover .delete-item-btn {
+.cart-item-wrapper:hover
+ /* .delete-item-btn  */
+ {
     opacity: 1;
     visibility: visible;
     transform: scale(1);
@@ -570,7 +580,7 @@ hover-blue:hover {
 }
 
 /* Delete button */
-.theme-dark .delete-item-btn {
+/* .theme-dark .delete-item-btn {
     background-color: #e53e3e !important;
     border-color: #c53030 !important;
 }
@@ -579,7 +589,7 @@ hover-blue:hover {
     background-color: #c53030 !important;
     border-color: #9c2626 !important;
     box-shadow: 0 3px 6px rgba(197, 48, 48, 0.4) !important;
-}
+} */
 
 /* Item overlay (if used) */
 .theme-dark .item-overlay {
@@ -657,10 +667,10 @@ hover-blue:hover {
     outline-offset: 2px;
 }
 
-.theme-dark .delete-item-btn:focus {
+/* .theme-dark .delete-item-btn:focus {
     outline: 2px solid #90cdf4 !important;
     outline-offset: 2px;
-}
+} */
 
 /* Responsive adjustments for dark mode */
 @media (max-width: 576px) {

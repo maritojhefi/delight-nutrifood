@@ -57,6 +57,9 @@
     <x-cabecera-pagina titulo="Mi Carrito" cabecera="appkit" />
     <div class="listado-carrito card card-style">
         <div class="content cart-content d-flex flex-column justify-content-center">
+            <div id="container-state-disponible" class="d-flex flex-column justify-content-center"></div>
+            <div id="container-state-escaso" class="d-flex flex-column justify-content-center"></div>
+            <div id="container-state-agotado" class="d-flex flex-column justify-content-center"></div>
         </div>
     </div>
 
@@ -193,8 +196,8 @@
 
     {{-- SUMMARY WARNING MODAL --}}
 <div class="modal fade" id="stock-warning" tabindex="-1" aria-labelledby="stockWarningLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered rounded-m">
-        <div class="modal-content">
+    <div class="modal-dialog modal-dialog-centered d-flex justify-content-center rounded-m">
+        <div class="modal-content" style="max-width: 350px">
             <div class="modal-body text-center p-4 rounded-m">
                 <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 250px;">
                     <div class="mb-3">
@@ -229,6 +232,9 @@
         const cardSliderContainer = document.querySelector('.cart-slider-container');
         const summaryItemsContainer = document.getElementById('cart-summary-items');
         const summaryTotalContainer = document.getElementById('cart-totals');
+        const availableItemsContainer = document.getElementById('container-state-disponible');
+        const limitedItemsContainer = document.getElementById('container-state-escaso');
+        const unavailableItemsContainer = document.getElementById('container-state-agotado');
 
         const emptyCartHTML = `
                     <div class="empty-cart text-center py-5">
@@ -238,13 +244,13 @@
                     </div>
                 `;
 
-        cardContentContainer.innerHTML = `
-            <div class="text-center py-5">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Cargando...</span>
-                </div>
-                <p class="mt-2">Validando tu carrito...</p>
-            </div>`;
+        // cardContentContainer.innerHTML = `
+        //     <div class="text-center py-5">
+        //         <div class="spinner-border text-primary" role="status">
+        //             <span class="visually-hidden">Cargando...</span>
+        //         </div>
+        //         <p class="mt-2">Validando tu carrito...</p>
+        //     </div>`;
 
         try {
             const response = await getCartProductsInfo({
@@ -275,31 +281,34 @@
 
             // Renderizar items disponibles
             if (disponiblesArray.length > 0) {
-                cartHTML += `<h5 class="mb-3 color-highlight" id="label-disponible">Productos Disponibles</h5>`;
+                // const stateContainer = renderProductStateContainer('disponible')
+                // cartHTML += stateContainer;
+                availableItemsContainer.innerHTML += `<h5 class="mb-3 color-highlight" id="label-disponible">Productos Disponibles</h5>`;
+                // cartHTML += `<h5 class="mb-3 color-highlight" id="label-disponible">Productos Disponibles</h5>`;
 
                 disponiblesArray.forEach(producto => {
                     totalInicial += producto.precio * producto.cantidad_solicitada;
-                    cartHTML += renderCartItem(producto, 'disponible');
+                    availableItemsContainer.innerHTML += renderCartItem(producto, 'disponible', producto.cantidad_solicitada);
                     summaryItemsContainer.innerHTML += renderSummaryItem(producto);
                 });
             }
             // Renderizar items escasos
             if (escasosArray.length > 0) {
-                cartHTML += `<h5 class="mb-3 text-warning" id="label-escaso">Productos con stock limitado</h5>`;
+                limitedItemsContainer.innerHTML += `<h5 class="mb-3 text-warning" id="label-escaso">Productos con stock limitado</h5>`;
                 
                 escasosArray.forEach(producto => {
-                    cartHTML += renderCartItem(producto, 'escaso');
+                    limitedItemsContainer.innerHTML += renderCartItem(producto, 'escaso', producto.cantidad_solicitada);
                 });
             }
             // Renderizar items agotados
             if (agotadosArray.length > 0) {
-                cartHTML += `<h5 class="mb-3 text-danger" id="label-agotado">Productos agotados</h5>`;
+                unavailableItemsContainer.innerHTML += `<h5 class="mb-3 text-danger" id="label-agotado">Productos agotados</h5>`;
                 agotadosArray.forEach(producto => {
-                    cartHTML += renderCartItem(producto, 'agotado');
+                    unavailableItemsContainer.innerHTML += renderCartItem(producto, 'agotado', producto.cantidad_solicitada);
                 });
             }
 
-            cardContentContainer.innerHTML = cartHTML;
+            // cardContentContainer.innerHTML = cartHTML;
             cardContentContainer.innerHTML += `<button id="showSummaryButton" class="summary-btn btn w-30 align-self-center btn-sm rounded-sm bg-highlight font-800 text-uppercase">
                 Realizar Pedido</button>`
             cardContentContainer.innerHTML += `<div class="cart-listing-footer d-flex flex-row">
@@ -312,7 +321,12 @@
         }
     })
 
-    const renderCartItem = (producto, estado) => {
+    const renderProductStateContainer = (estado) => {
+        return `<div id={container-state-${estado}}>
+            </div>`
+    }
+
+    const renderCartItem = (producto, estado, cantidad) => {
         const isDisabled = estado !== 'disponible';
         const isLowStock = estado === 'escaso';
         const isUnavailable = estado === 'agotado';
@@ -323,25 +337,27 @@
 
 
         let stockMessage = '';
+        let actionButton = ''
         if (isLowStock && producto.stock_disponible !== "INFINITO") {
             stockMessage = `<div class="alert alert-warning py-1 px-2 mt-2 mb-0 small">
                 Solo existen ${producto.stock_disponible} unidades disponibles de las ${producto.cantidad_solicitada} solicitadas.
             </div>`;
-        } else if (isUnavailable) {
-            // stockMessage = `<div class="alert alert-danger py-1 px-2 mb-2 small">
-            //     Producto agotado
-            // </div>`;
+            actionButton = `<button data-product-id="${producto.id}" class="qty-fixer btn-s  rounded bg-highlight" style="z-index: 10;">
+                Actualizar
+                </button>`;
+            } else if (isUnavailable) {
+            actionButton = `<button data-product-id="${producto.id}" class="unavailable-fixer btn-s  rounded bg-red-dark" style="z-index: 10;">
+                Eliminar
+                </button>`;
         }
 
         return `
-            <div class="cart-item-wrapper mb-4 ${disabledClass}" data-product-id="${producto.id}" data-product-state="${estado}">
-
+            <div class="cart-item-wrapper mb-4 ${disabledClass}" data-product-id="${producto.id}" data-product-state="${estado}" id="cart-item-wrapper-${producto.id}">
                 <div class="card mb-0 d-flex flex-column item-carrito-info justify-content-between p-3 bg-white rounded-sm shadow-sm border">
                     <div class="mb-0 d-flex flex-row justify-content-between">
                         <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
                             <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
                             <p class="text-muted mb-3 small product-description">${producto.detalle}</p>
-
                         </div>
                         <div class="product-image-container position-relative" style="z-index: 10">
                             <img class="product-image rounded"
@@ -349,20 +365,24 @@
                                 alt="${producto.nombre}"
                                 data-product-id="${producto.id}"
                                 onerror="this.onerror=null; this.src='/imagenes/delight/default-bg-1.png';">
-                            <button class="btn btn-danger delete-item-btn position-absolute"
+                            ${(isUnavailable) ? '':
+                            `<button class="btn btn-xxs  bg-gray-dark opacity-100 delete-item-btn position-absolute"
                                     type="button"
                                     data-product-id="${producto.id}"
-                                    title="Eliminar producto">
-                                <i class="fa fa-trash-alt"></i>
-                            </button>
+                                    title="Eliminar producto"
+                                    style="top: 0.1rem; right: 0.01rem; z-index: 20;"
+                                    >
+                                <i class="fa fa-times"></i>
+                            </button>`}
                         </div>
                         <div class="item-overlay rounded-sm card-overlay opacity-60"></div>
                     </div>
-                    <div class="d-flex flex-row justify-content-between align-items-center mt-2">
+                    <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
                         <p class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
                             Bs. ${producto.precio.toFixed(2)}
                         </p>
-                        <div class="quantity-controls bg-light border rounded d-flex align-items-center" style="min-width: 120px;">
+                        ${(isLowStock || isUnavailable) ? actionButton : 
+                        `<div class="quantity-controls bg-light border rounded d-flex align-items-center" style="min-width: 120px;">
                             <button class="btn btn-sm btn-outline-secondary border-0 px-2 py-1 qty-decrease"
                                     type="button"
                                     data-product-id="${producto.id}"
@@ -373,7 +393,7 @@
                             <span id="item-${producto.id}-qty"
                                 class="px-3 fw-semibold product-quantity"
                                 data-product-id="${producto.id}">
-                                ${producto.cantidad_solicitada}
+                                ${cantidad}
                             </span>
                             <button class="btn btn-sm btn-outline-secondary border-0 px-2 py-1 qty-increase"
                                     type="button"
@@ -382,7 +402,8 @@
                                     ${isDisabled ? 'disabled' : ''}>
                                 <i class="fa fa-plus"></i>
                             </button>
-                        </div>
+                        </div>`
+                        }
                     </div>
                     ${stockMessage}
                     ${disabledOverlay}
@@ -436,8 +457,14 @@
             if (e.target.closest('.summary-btn')) {
                 await handleSummaryCheck(e);
             }
+
+            if (e.target.closest('.qty-fixer')) {
+                await handleUpdateLimitedProduct(e);
+            }
         });
     });
+
+
 
     const handleSummaryCheck = async(e) => {
         e.preventDefault();
@@ -495,6 +522,28 @@
     //         }
     //     });
     // }
+
+    const handleUpdateLimitedProduct = async (e) => {
+        e.preventDefault();
+
+        const quantityFixButton = e.target.closest('.qty-fixer');
+        const productToFixId = quantityFixButton.getAttribute('data-product-id');
+        const productInfo = await ProductoService.getProduct(productToFixId);
+        const availableItemsContainer = document.getElementById('container-state-disponible')
+        console.log("ProductInfo obtained to be passed onto RenderCartItem: ", productInfo);
+
+        // Actualizar el valor al maximo disponible en el carrito
+        const updateResponse = await carritoStorage.updateProductToMax(productToFixId);
+        // Usar un getCartProductInfo
+        if (updateResponse.success == true && updateResponse.quantity >= 1) {
+            removeItemWrapper(productToFixId);
+            availableItemsContainer.innerHTML += renderCartItem(productInfo,'disponible', updateResponse.quantity);
+            // noti de ajuste o algo
+        } else if (updateResponse.success == true && updateResponse.quantity == 0) {
+            removeItemWrapper(productToFixId);  
+            renderCartItem(productInfo,'agotado', 0)
+        }
+    }
 
     const handleProductIncrease = async (e) => {
         e.preventDefault();
@@ -591,37 +640,18 @@
 
     // Control para retirar productos del carrito
     const handleProductRemoval = (e) => {
-        if (!e.target.closest('.delete-item-btn')) return;
+        const button = e.target.closest('.delete-item-btn, .unavailable-fixer');
+        if (!button) return; // nothing matched
 
         e.preventDefault();
-        const button = e.target.closest('.delete-item-btn');
         // Filtrar el objeto a remover
         const productId = button.getAttribute('data-product-id');
-        const cartItemWrapper = button.closest('.cart-item-wrapper');
-
-        // Obtener el carrito de localStorage
-        const cart = carritoStorage.getCart();
-
-        // Obtener el estado del producto
-        const state = cartItemWrapper.getAttribute('data-product-state');
 
         // Remover el producto del carrito
         carritoStorage.removeProduct(productId);
 
-        // Retirar el item del DOM
-        if (cartItemWrapper) {
-            cartItemWrapper.remove();
-        }
-
-        // Revisar si existen items con un estado determinado
-        const remainingItemsWithState = document.querySelectorAll(`.cart-item-wrapper[data-product-state="${state}"]`);
-        if (remainingItemsWithState.length === 0) {
-            // De no existir, elminar el label correspondiente
-            const labelToRemove = document.getElementById(`label-${state}`);
-            if (labelToRemove) {
-                labelToRemove.remove();
-            }
-        }
+        // Remover el elemento renderizado
+        removeItemWrapper(productId);
 
         // Revisar si el carrito esta vacio
         const remainingItems = document.querySelectorAll('.cart-item-wrapper');
@@ -632,6 +662,27 @@
 
         // Actualizar el contador del carrito
         carritoStorage.updateCartCounterEX();
+    }
+
+    const removeItemWrapper = (productId) => {
+        // Localizar el wrapper a remover
+        const wrapperToRemove = document.getElementById(`cart-item-wrapper-${productId}`);
+        // Obtener el estado del wrapper/producto
+        const wrapperState = wrapperToRemove.getAttribute('data-product-state');
+        // De existir el elemento, retirarlo
+        if (wrapperToRemove) {
+            wrapperToRemove.remove();
+        }
+
+        // Revisar si existen elementos del mismo estado
+        const remainingItemsWithState = document.querySelectorAll(`.cart-item-wrapper[data-product-state="${wrapperState}"]`);
+        if (remainingItemsWithState.length === 0) {
+            // De no existir, elminar el label correspondiente
+            const labelToRemove = document.getElementById(`label-${wrapperState}`);
+            if (labelToRemove) {
+                labelToRemove.remove();
+            }
+        }
     }
 
        // Renderizardo de Carrito Vacio

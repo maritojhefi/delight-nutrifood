@@ -22,4 +22,5 @@ export const getCartProductsInfo = async ({ sucursaleId, items }) => {
   }
 }
 
+
 window.getCartProductsInfo = getCartProductsInfo;
