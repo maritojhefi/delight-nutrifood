@@ -1,62 +1,64 @@
-<div class="my-4 splide single-slider slider-has-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-1" style="visibility: visible">
+
+<div class="mb-4 mx-3 splide single-slider slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-1" style="visibility: visible">
     <div class="splide__track" id="single-slider-1-track">
-        {{-- <div class="splide__list" id="double-slider-1-list" style="transform: translateX(-760px);"> --}}
-        <div class="splide__list" id="single-slider-1-list" style="transform: translateX(-760px);">
+        <div class="splide__list" id="single-slider-1-list">
             {{-- LISTADO DE ELEMENTOS A RENDERIZARSE --}}
             
-            {{-- Elementos de ejemplo  --}}
-            {{--           V           --}}
-            {{--           V           --}}
-            {{--           V           --}}
-            <div class="splide__slide mx-3 is-active is-visible" id="single-slider-1-slide01" style="width: 320px;">
-                <div data-card-height="300" class="card bg-6 mb-0 rounded-m shadow-l" style="height: 300px;">
-                    <div class="card-bottom text-center mb-3">
-                        <h2 class="color-white text-uppercase font-900 mb-0">PRIMER SLIDER</h2>
-                        <p class="under-heading color-white">Deberia de mostrarme primero de no alterarse el slider.</p>
-                    </div>
-                    <div class="card-overlay bg-gradient"></div>
-                </div>
-            </div>
+            {{-- ITEMS EN DESCUENTO --}}
             <div class="splide__slide mx-3 is-active is-visible" id="single-slider-1-slide02" style="width: 320px;">
-                <div data-card-height="300" class="card bg-6 mb-0 rounded-m shadow-l" style="height: 300px;">
+                <a href="{{ route('categoria.planes') }}" data-card-height="300" class="card mb-0 shadow-xl rounded-m" style="background-image: url({{asset('imagenes/delight/picking_image.jpg')}});background-size: cover; background-position: center;">
+                    <div class="card-center mt-n4 d-flex flex-column align-items-center">
+                        <i class="fa fa-bolt fa-7x color-white"></i>
+                    </div>
                     <div class="card-bottom text-center mb-3">
-                        <h2 class="color-white text-uppercase font-900 mb-0">SEGUNDO SLIDER</h2>
-                        <p class="under-heading color-white">Yo segundo.</p>
+                        <h2 class="color-gray text-uppercase font-900 mb-0 text-white">EN DESCUENTO</h2>
+                        <p class="under-heading color-white">Aprovecha las ultimas ofertas.</p>
                     </div>
-                    <div class="card-overlay bg-gradient"></div>
-                </div>
+                    <div class="card-overlay dark-mode-tint light-mode-tint opacity-95"></div>
+                </a>
             </div>
-            {{-- <div class="splide__slide is-active is-visible" id="double-slider-1-slide01" style="width: 190px;">
-                <div class="card mx-3 mb-0 card-style bg-20" data-card-height="250" style="height: 250px;">
-                    <div class="card-top">
-                        <a href="#" data-menu="menu-cart" class="icon icon-xxs bg-white color-black rounded-xl mt-3 me-2 float-end"><i class="fa fa-shopping-bag"></i></a>
+
+            {{-- ITEM STARK --}}
+            <div class="splide__slide mx-3 is-active is-visible" id="single-slider-1-slide01" style="width: 320px;">
+                <a href='#' data-card-height="300" class="card mb-0 shadow-xl rounded-m" style="background-image: url({{asset('imagenes/delight/protein_shake.jpg')}});background-size: cover; background-position: center;">
+                    <div class="card-center mt-n4 d-flex flex-column align-items-center">
+                        <i class="fa fa-heart fa-7x text-white"></i>
                     </div>
-                    <div class="card-bottom">
-                        <h3 class="color-white font-800 mb-3 pb-1 ps-3">$59<sup>.99</sup></h3>
+                    <div class="card-bottom text-center mb-3">
+                        <h2 class="color-white text-uppercase font-900 mb-0">SUMPLEMENTOS STARK</h2>
+                        <p class="under-heading color-white">Complementa tu dieta con ayuda de la linea Stark.</p>
                     </div>
-                    <div class="card-overlay bg-gradient"></div>
-                </div>
-                <p class="mx-3 mb-0 mt-2 color-highlight font-600">In stock</p>
-                <h4 class="mx-3 mb-4">Studio <br>Microphone</h4>
+                    <div class="card-overlay dark-mode-tint"></div>
+                </a>
             </div>
-            <div class="splide__slide is-visible" id="double-slider-1-slide02" style="width: 190px;">
-                <div class="card mx-3 mb-0 card-style bg-33" data-card-height="250" style="height: 250px;">
-                    <div class="card-top">
-                        <a href="#" data-menu="menu-cart" class="icon icon-xxs bg-white color-black rounded-xl mt-3 me-2 float-end"><i class="fa fa-shopping-bag"></i></a>
+            
+            {{-- ITEM POPULARES --}}
+            {{-- <div class="splide__slide mx-3 is-active is-visible" id="single-slider-1-slide01" style="width: 320px;">
+                <a href='#' data-bs-toggle="modal" data-bs-target="#categorizedProductsModal" data-category-id="000" data-category-name="Nuestros productos mas populares!" data-card-height="300" class="card bg-6 mb-0 shadow-l rounded-m" style="background-color: #FF5A5A;">
+                    <div class="card-center mt-n4 d-flex flex-column align-items-center">
+                        <i class="fa fa-star fa-7x text-white"></i>
                     </div>
-                    <div class="card-bottom">
-                        <p class="color-white mb-n1 pb-1 ps-3 font-12 opacity-40 font-400"><del>$3,519<sup>.98</sup></del></p>
-                        <h3 class="color-white font-800 mb-3 pb-1 ps-3">$1759<sup>.99</sup></h3>
+                    <div class="card-bottom text-center mb-3">
+                        <h2 class="color-white text-uppercase font-900 mb-0">PRODUCTOS POPULARES</h2>
+                        <p class="under-heading color-white">Descubre nuestros articulos mas vendidos.</p>
                     </div>
-                    <div class="card-overlay bg-gradient"></div>
-                </div>
-                <p class="mx-3 mb-0 mt-2 color-highlight font-600">50% Discount</p>
-                <h4 class="mx-3 mb-4">Guitar <br> Longneck</h4>
+                    <div class="card-overlay dark-mode-tint"></div>
+                </a>
+            </div> --}}
+
+            {{-- ITEM PLANES Y PAQUETES --}}
+            {{-- <div class="splide__slide mx-2 is-active is-visible" id="single-slider-1-slide02" style="width: 320px;">
+                <a href="{{ route('categoria.planes') }}" data-card-height="300" class="card bg-6 mb-0 shadow-l rounded-m" style="height: 300px;background-color: #4ECDC4;">
+                    <div class="card-center mt-n4 d-flex flex-column align-items-center">
+                        <i class="fa fa-calendar fa-7x text-white"></i>
+                    </div>
+                    <div class="card-bottom text-center mb-3">
+                        <h2 class="color-white text-uppercase font-900 mb-0">PLANES Y PAQUETES</h2>
+                        <p class="under-heading color-white">Encuentra la opcion mas apropiada para ti.</p>
+                    </div>
+                    <div class="card-overlay dark-mode-tint"></div>
+                </a>
             </div> --}}
         </div>
     </div>
-    <ul class="splide__pagination">
-        <li><button class="splide__pagination__page is-active" type="button">Page 1</button></li>
-        <li><button class="splide__pagination__page" type="button">Page 2</button></li>
-    </ul>
 </div>

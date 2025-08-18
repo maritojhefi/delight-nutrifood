@@ -213,7 +213,7 @@ class CarritoController extends Controller
                             'id' => $producto->id,
                             'nombre' => $producto->nombre,
                             'detalle' => $producto->detalle,
-                            'precio' => $producto->precio,
+                            'precio' => $producto->precioReal(),
                             'imagen' => asset('imagenes/productos/' . $producto->imagen),
                             'sucursale_id' => $sucursaleId,
                             'stock_disponible' => $stockDisponible,

@@ -211,6 +211,7 @@
 <script>
     const subcategoriasPorHorario = @json($horarios);
 </script>
+    {{-- SCRIPT CONTROL DE SLIDER --}}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const hour = new Date().getHours();
@@ -312,6 +313,7 @@
         });
     });
 </script>
+    {{-- SCRIPT CONTROL DEL MODAL PRODUCTOS CATEGORIZADOS [LINEA-DELGIHT] --}}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         productsModal = new bootstrap.Modal(document.getElementById('categorizedProductsModal'), {

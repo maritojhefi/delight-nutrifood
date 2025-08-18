@@ -1,6 +1,8 @@
 @extends('client.master')
 @section('content-comentado')
-    <x-cabecera-pagina titulo="Productos" cabecera="appkit" />
+    <x-cabecera-pagina titulo="Eco-Tienda" cabecera="appkit" />
+    {{-- <x-cabecera-pagina titulo="Productos" cabecera="appkit-highlight" /> --}}
+
 
     {{-- <x-page-construccion/> --}}
 
@@ -19,12 +21,12 @@
                             data-filter-item="{{ Str::of($item->nombre)->lower() }}"
                             data-filter-name="{{ Str::of($item->nombre)->lower() }}">
                             <div class="align-self-center">
-                                <img src="{{ asset($item->pathAttachment()) }}" class="rounded-sm me-3" width="35"
-                                    alt="img">
+                                {{-- <img src="{{ asset($item->pathAttachment()) }}" class="rounded-sm me-3" width="35"
+                                    alt="img"> --}}
                             </div>
                             <div class="align-self-center">
                                 <span
-                                    class="color-theme font-15 d-block mb-0">{{ Str::limit(ucfirst(strtolower($item->nombre)), 35, '...') }}</span>
+                                    class="color-theme font-15 d-block p-2 mb-0">{{ Str::limit(ucfirst(strtolower($item->nombre)), 35, '...') }}</span>
                             </div>
                             <div class="ms-auto text-center align-self-center pe-2">
                                 <h5 class="line-height-xs font-16 font-600 mb-0">{{ $item->precio }} Bs<sup
@@ -187,6 +189,120 @@
     @endif
 @endsection
 @section('content')
-    <x-cabecera-pagina titulo="Eco Tienda?!" cabecera="bordeado" />
-    <x-page-construccion />
+    {{-- <x-cabecera-pagina titulo="Eco Tienda" cabecera="appkit" /> --}}
+    <x-cabecera-pagina-highlight titulo="Eco Tienda" />
+    {{-- <x-slider-individual /> --}}
+    <div class="content mb-0">
+        <div class="col-12">
+            <div class="card bg-white rounded-xl p-3">
+                Soy una barra de busqueda
+            </div>
+        </div>
+        <a  
+            {{-- data-bs-toggle="modal" 
+            data-bs-target="#subcategoriesModal" --}}
+            href="{{ route('listar.subcategorias.productos') }}"
+            data-card-height="100" class="card card-style col-12 mx-0 mt-1 px-0 round-medium shadow-huge hover-grow-xs"
+            style="height: 100px;background-color: #FF5A5A;">
+            <div class="card-center d-flex flex-row align-items-center justify-content-between ps-4 pe-3">
+                <div class="d-flex flex-row align-items-center gap-3">
+                    <i class="fa fa-star fa-3x" style="color: white"></i>
+                    <div class="text-start">
+                        <h2 class="text-white">Todas nuestras categorias</h2>
+                        <p class="mb-0 text-white opacity-75">Descubre todas nustras categorias disponibles</p>
+                    </div>
+                </div>
+                <i class="fa fa-arrow-circle-right fa-2x" style="color: white"></i>
+            </div>
+            <div class="card-overlay dark-mode-tint"></div>
+        </a>
+        {{-- CARD PRODUCTOS PUNTUADOS --}}
+        @if ($conMasPuntos->count() > 0)
+        <div class="card card-style rounded-md mx-0 preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
+            style="background-image: url({{ asset('imagenes/delight/default-bg-vertical.jpg') }});">
+            <div class="card-body">
+                <div class="mx-4 mb-0">
+                    <h4 class="color-white pt-3 font-24">Gana Puntos!</h4>
+                    <p class="color-white pt-1 mb-2">
+                        Los productos seleccionados atribuyen puntos por cada compra realizada.
+                        Mientras mas puntos, mas premios!
+                    </p>
+                </div>
+                <div class="card card-style bg-transparent m-0 shadow-0">
+                    <div class="row mb-0 p-2">
+                        @foreach ($conMasPuntos as $item)
+                            <div class="col-6">
+                                <a href="{{ route('delight.detalleproducto', $item->id) }}"
+                                    class="card card-style py-3 d-flex align-items-center hover-grow" data-menu="menu-product">
+                                    <img src="{{ asset('imagenes/delight/optimal_logo.svg')}}" alt="img" width="100"
+                                    class="mx-auto">
+                                    <div class="p-2">
+                                        <p class="mb-0 font-600 text-center">{{ Str::limit($item->nombre(), 22) }}</p>
+                                    </div>
+                                    <div class="divider mb-0"></div>
+                                    <div class="d-flex flex-row justify-content-between gap-4 mb-0">
+                                        <p class="font-600 mb-0">Bs. {{ $item->descuento ? $item->descuento : $item->precio }}</p>
+                                        <p class="bg-blue-dark font-11 px-2 font-600 rounded-xs shadow-xxl mb-0">{{ $item->puntos }} Pts</p>
+                                    </div>
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            <div class="card-overlay bg-highlight opacity-90"></div>
+            <div class="card-overlay dark-mode-tint"></div>
+        </div>
+        @endif
+    </div>
+
+    {{-- MODAL PRODUCTOS CATEGORIZADOS --}}
+    {{-- <div class="modal fade" id="subcategoriesModal" tabindex="-1" aria-labelledby="subcategoriesModalLabel" aria-hidden="true" style="z-index: 9999">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header mx-2 mt-2 border-0 gap-4 d-flex align-items-center">
+                    <h4 id="categorizer-title" class="mb-0 ms-4 align-self-center text-uppercase">Todas nuestras categorias</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- Modal Body -->
+                <x-ssr-search-bar :items="$subcategorias" />
+                <div class="modal-body mt-4 pt-0 d-flex flex-column justify-content-center align-items-center">
+                        <div class="content p-0 m-0" id="listado-productos-categoria">
+                            <!-- Contenedor items individuales-->
+                            @foreach ($subcategorias as $subcategoria)
+                                <a href="{{route('listar.productos.subcategoria',$subcategoria->id)}}" data-card-height="80" class="card card-style mb-4 mx-0 hover-grow-s" style="overflow: hidden">
+                                    <div class="d-flex flex-row align-items-center gap-3"> 
+                                        <div class="subcategory-card-image">
+                                            <img src="{{asset($subcategoria->rutaFoto())}}" 
+                                                onerror="this.src='imagenes/delight/default-bg-1.png';" 
+                                                style="background-color: white;" />
+                                        </div>
+                                        <div class="d-flex flex-column w-100 gap-2" style="max-width: 260px">
+                                            <h4 class="me-3">{{ ucfirst(strtolower($subcategoria->nombre)) }}</h4>
+                                        </div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div> --}}
 @endsection
+
+@push('scripts')
+{{-- <script>
+    document.addEventListener('DOMContentLoaded', function () {
+            productsModal = new bootstrap.Modal(document.getElementById('subcategoriesModal'), {
+                focus: true
+            });
+
+            const modalElement = document.getElementById('subcategoriesModal');
+
+            modalElement.addEventListener('show.bs.modal', async function (event) {
+                const triggerElement = event.relatedTarget; // Elemento que activo el modal
+            });
+        });
+</script> --}}
+@endpush

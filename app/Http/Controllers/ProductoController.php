@@ -54,20 +54,32 @@ class ProductoController extends Controller
     }
     public function index(){
         
-        if (session()->missing('producstos')) {
+        // 1. Corregir el typo.
+        if (session()->missing('productos')) {
             $productos=Producto::select('productos.*')
             ->leftjoin('subcategorias','subcategorias.id','productos.subcategoria_id')
             ->leftjoin('categorias','categorias.id','subcategorias.categoria_id')
             ->where('productos.estado','activo')
             ->where('categorias.nombre','ECO-TIENDA')
-            ->get();
+            ->get(); 
+            // 2. Guardar los datos en la sesión para futuros accesos
             session(['productos' => $productos]);
+        } else {
+            // 3. Si la sesión ya tiene los productos, obtenerlos de ahí
+            $productos = session('productos');
         }
-        $subcategorias=Subcategoria::has('productos')->where('categoria_id',1)->inRandomOrder()->get();
+
+        // $subcategorias=Subcategoria::has('productos')->where('categoria_id',1)->inRandomOrder()->get();
+        $subcategorias=Subcategoria::has('productos')->where('categoria_id',1)->orderBy('nombre')->get();
         $enDescuento=$productos->where('descuento','!=',null)->where('descuento','!=',0)->shuffle();
-        //dd($enDescuento);
         $conMasPuntos=$productos->where('puntos','!=',null)->where('puntos','!=',0)->shuffle()->take(10);
         return view('client.productos.index',compact('subcategorias','enDescuento','conMasPuntos'));
+    }
+    public function subcategorias() {
+        $subcategorias = Subcategoria::where('categoria_id', 1)
+                                    ->orderBy('nombre')
+                                    ->get();
+        return view('client.productos.subcategorias', compact('subcategorias'));
     }
     public function detalleproducto($id){
        $producto=Producto::findOrFail($id);
