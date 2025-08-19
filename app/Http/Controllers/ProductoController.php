@@ -69,21 +69,20 @@ class ProductoController extends Controller
             $productos = session('productos');
         }
 
-        // $subcategorias=Subcategoria::has('productos')->where('categoria_id',1)->inRandomOrder()->get();
         $subcategorias=Subcategoria::has('productos')->where('categoria_id',1)->orderBy('nombre')->get();
         $enDescuento=$productos->where('descuento','!=',null)->where('descuento','!=',0)->shuffle();
         $conMasPuntos=$productos->where('puntos','!=',null)->where('puntos','!=',0)->shuffle()->take(10);
         return view('client.productos.index',compact('subcategorias','enDescuento','conMasPuntos'));
     }
     public function subcategorias() {
-        $subcategorias = Subcategoria::where('categoria_id', 1)
+        $subcategorias = Subcategoria::has('productos')->where('categoria_id', 1)
                                     ->orderBy('nombre')
                                     ->get();
-        return view('client.productos.subcategorias', compact('subcategorias'));
+        return view('client.productos.subcategorias', data: compact('subcategorias'));
     }
     public function detalleproducto($id){
        $producto=Producto::findOrFail($id);
-       $nombrearray=Str::of($producto->nombre)->explode(' ');
+       $nombrearray=Str::of($producto->nombre)->explode(delimiter: ' ');
        //dd($nombrearray);
        return view('client.productos.detalleproducto',compact('producto','nombrearray'));
     }

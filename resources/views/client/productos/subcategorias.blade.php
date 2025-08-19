@@ -1,3 +1,4 @@
+
 @extends('client.master')
 @section('content')
 <x-cabecera-pagina titulo="Categorias Eco-Tienda" cabecera="appkit" />    
@@ -7,32 +8,70 @@
             <p>
                 Encuentra lo que mas te gusta!
             </p>
+            <div class="mb-0 input-style input-style-2 has-icon input-required ">
+                <i class="input-icon fa fa-search color-theme"></i>
+                <input type="text" 
+                       id="category-search" 
+                       class="form-control" 
+                       placeholder="Buscar categorías..."
+                       autocomplete="off">
+                <label for="category-search" class="color-highlight font-10 font-900">BUSCAR CATEGORÍA</label>
+            </div>
         </div>
     </div>
-    <div class="content mb-0">
+
+    {{-- Search Bar --}}
+    {{-- <div class="card card-style mb-3">
+        <div class="content">
+            <div class="input-style input-style-2 has-icon input-required">
+                <i class="input-icon fa fa-search color-theme"></i>
+                <input type="text" 
+                       id="category-search" 
+                       class="form-control" 
+                       placeholder="Buscar categorías..."
+                       autocomplete="off">
+                <label for="category-search" class="color-highlight font-10 font-900">BUSCAR CATEGORÍA</label>
+            </div>
+        </div>
+    </div> --}}
+
+    {{-- Categories Container --}}
+    <div class="content mb-0" id="categories-container">
         @foreach($subcategorias as $subcategoria)
         <button 
-        {{-- href="{{ route('delight.listar.productos.subcategoria', $subcategoria->id) }}"  --}}
-        data-bs-toggle="modal" 
-        data-bs-target="#categorizedProductsModal" 
-        data-category-id="{{$subcategoria->id}}"
-        data-category-name="{{$subcategoria->nombre}}"
-        data-card-height="120" class="card card-style w-100 text-start mb-4 mx-0 hover-grow-s" style="height: 120px;overflow: hidden">
+            data-bs-toggle="modal" 
+            data-bs-target="#categorizedProductsModal" 
+            data-category-id="{{$subcategoria->id}}"
+            data-category-name="{{$subcategoria->nombre}}"
+            data-card-height="120" 
+            class="category-card card card-style w-100 text-start mb-4 mx-0 hover-grow-s" 
+            style="height: 120px;overflow: hidden">
             <div class="d-flex flex-row align-items-center gap-4"> 
                 <div class="subcategory-card-image-lg card mb-0">
-                    {{-- <img src="{{ asset($subcategoria->rutaFoto()) }}" class="" style="background-color: white; border: ; " />  --}}
                     <img src="{{asset($subcategoria->rutaFoto())}}" 
-                                    onerror="this.src='/imagenes/delight/default-bg-1.png';" 
-                                    style="background-color: white;" />
+                         onerror="this.src='/imagenes/delight/default-bg-1.png';" 
+                         style="background-color: white;" />
                     <div class="card-overlay rounded-0 dark-mode-tint opacity-70"></div>
                 </div>
                 <div class="d-flex flex-column" style="max-width: 300px">
-                    <h4 class="">{{$subcategoria->nombre}}</h4>
+                    <h4 class="category-name">{{$subcategoria->nombre}}</h4>
                     <p class="mt-n2 font-12 color-highlight mb-0">Delight</p>
                 </div>
             </div>
         </button>
         @endforeach
+    </div>
+
+    {{-- No Results Message --}}
+    <div id="no-results-message" class="card card-style" style="display: none;">
+        <div class="content text-center">
+            <i class="fa fa-search fa-3x color-theme mb-3"></i>
+            <h5>No se encontraron categorías</h5>
+            <p class="text-muted">
+                No hay categorías que coincidan con "<span id="search-term"></span>". 
+                Intenta con otros términos de búsqueda.
+            </p>
+        </div>
     </div>
 
     {{-- MODAL PRODUCTOS CATEGORIZADOS --}}
@@ -61,20 +100,113 @@
 @endsection
 
 @push('scripts')
-{{-- <script>
-    document.addEventListener('DOMContentLoaded', function () {
-            productsModal = new bootstrap.Modal(document.getElementById('subcategoriesModal'), {
-                focus: true
+<script> 
+    $(document).ready(function() {
+        $(document).on('click', '.add-to-cart', addToCartHandler);
+    });
+
+    async function addToCartHandler() {
+        const product_Id = $(this).data('producto-id');
+        const product_nombre = $(this).data('producto-nombre')
+
+        // console.log("ID producto a agregar: ", product_Id);
+        // console.log("Nombre del producto a agregar: ", product_nombre);
+        try {
+            const result = await carritoStorage.addToCart(product_Id, 1);
+            if (result.success) {
+                showMessage('success', 'Item agregado al carrito!');
+            } else {
+                showMessage('error', result.message);
+            }
+        } catch (error) {
+            console.error('Error agregando el producto al carrito:', error);
+            showMessage('error', 'Error al agregar el producto al carrito');
+        }
+    }
+
+    function showMessage(type, text) {
+        $('#message-container').html(`<div class="alert alert-${type}">${text}</div>`);
+        setTimeout(() => $('#message-container').empty(), 3000);
+    }
+</script>
+{{-- FUNCION DE BUSQUEDA  --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('category-search');
+        const categoriesContainer = document.getElementById('categories-container');
+        const noResultsMessage = document.getElementById('no-results-message');
+        const searchTermSpan = document.getElementById('search-term');
+        const categoryCards = document.querySelectorAll('.category-card');
+        
+        let searchTimeout;
+
+        function performSearch(searchTerm) {
+            const normalizedSearch = searchTerm.toLowerCase().trim();
+            let visibleCount = 0;
+
+            categoryCards.forEach(card => {
+                const categoryName = card.getAttribute('data-category-name');
+                const normalizedCategoryName = categoryName.toLowerCase();
+                
+                if (normalizedCategoryName.includes(normalizedSearch)) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                    
+                    card.style.opacity = '0';
+                    setTimeout(() => {
+                        card.style.transition = 'opacity 0.3s ease-in-out';
+                        card.style.opacity = '1';
+                    }, 50);
+                } else {
+                    card.style.display = 'none';
+                }
             });
 
-            const modalElement = document.getElementById('subcategoriesModal');
+            // Mostrar u ocultar el mensaje de no enctonrados
+            if (visibleCount === 0 && normalizedSearch !== '') {
+                searchTermSpan.textContent = searchTerm;
+                noResultsMessage.style.display = 'block';
+                categoriesContainer.style.display = 'none';
+            } else {
+                noResultsMessage.style.display = 'none';
+                categoriesContainer.style.display = 'block';
+            }
+        }
 
-            modalElement.addEventListener('show.bs.modal', async function (event) {
-                const triggerElement = event.relatedTarget; // Elemento que activo el modal
-            });
+        function handleSearch() {
+            const searchTerm = searchInput.value;
+            
+            // Limpiar el timeout
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+            
+            // Aregado de delay para evitar busqueda instantanea con cada input
+            searchTimeout = setTimeout(() => {
+                performSearch(searchTerm);
+            }, 300);
+        }
+
+        function clearSearch() {
+            searchInput.value = '';
+            performSearch('');
+            searchInput.focus();
+        }
+
+        // Llamado a handleSearch con cada input nuevo a la barra de busqueda
+        searchInput.addEventListener('input', handleSearch);
+        
+        // Limpiar la busqueda precionando esc
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                clearSearch();
+            }
         });
-</script> --}}
-    {{-- SCRIPT CONTROL DEL MODAL PRODUCTOS CATEGORIZADOS [LINEA-DELGIHT] --}}
+    });
+</script>
+
+
+{{-- SCRIPT CONTROL DEL MODAL PRODUCTOS CATEGORIZADOS [LINEA-DELGIHT] --}}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         productsModal = new bootstrap.Modal(document.getElementById('categorizedProductsModal'), {
@@ -186,7 +318,7 @@
         if (categorizedProducts.length === 0) {
             container.innerHTML = `
                 <div id="cart-summary-items" class="item-producto-categoria mb-3">
-                    <p class="text-muted"><span>Ups!</span> Parece que aun ni hay productos agregados a esta categoria, regresa mas tarde.</p>
+                    <p class="text-muted"><span>Ups!</span> Parece que aun no hay productos agregados a esta categoria, regresa mas tarde.</p>
                 </div>`;
         }
 
@@ -196,76 +328,6 @@
             const formattedName = item.nombre.charAt(0).toUpperCase() + item.nombre.slice(1).toLowerCase();
 
             renderProductCard(item,formattedName);
-            // if (item.descuento && (item.descuento > 0 && item.descuento < item.precio))  {
-            //     container.innerHTML += `
-            //         <div class="col-12">
-            //             <div data-card-height="120" class="card card-style mb-4 mx-0 hover-grow-s" style="height: 120px;overflow: hidden">
-            //                 <div class="d-flex flex-row align-items-center gap-3"> 
-            //                     <a href="${item.url_detalle}" class="product-card-image">
-            //                     <img src="${item.imagen}" 
-            //                         onerror="this.src='imagenes/delight/default-bg-1.png';" 
-            //                         style="background-color: white;" />
-            //                     </a>
-            //                     <div class="d-flex flex-column w-100 gap-2" style="max-width: 260px">
-            //                         <h4 class="me-3">${formattedName.length > 50 ? formattedName.substring(0, 50) + '...' : formattedName}</h4>
-            //                         <div class="d-flex flex-row align-items-center justify-content-between gap-4 mb-2">
-            //                             <div class="d-flex flex-column">
-            //                                 <p class="font-10 mb-0 mt-n2"><del>Bs. ${item.precio}</del></p>
-            //                                 <p class="font-21 mt-n2 font-weight-bolder color-highlight mb-0">Bs. ${item.descuento}</p>
-            //                             </div>
-            //                             <div class="d-flex flex-row gap-2">
-            //                                 <button ruta="${item.url_detalle}" class="btn btn-xs copiarLink rounded-s btn-full shadow-l bg-red-light font-900">
-            //                                     <i class="fa fa-link"></i>
-            //                                 </button>
-            //                                 <button
-            //                                     class="add-to-cart btn btn-xs me-3 rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase"
-            //                                     data-producto-id="${item.id}"
-            //                                     data-producto-nombre="${item.nombre}"
-            //                                     >
-            //                                     <i class="fa fa-shopping-cart"></i>
-            //                                     Añadir
-            //                                 </button>
-            //                             </div>
-            //                         </div>
-            //                     </div>
-            //                 </div>
-            //             </div>
-            //         </div>
-            //     `;
-            // } else {
-            //     container.innerHTML += `
-            //         <div class="col-12">
-            //             <div data-card-height="120" class="card card-style mb-4 mx-0 hover-grow-s" style="height: 120px;overflow: hidden">
-            //                 <div class="d-flex flex-row align-items-center gap-3"> 
-            //                     <a href="${item.url_detalle}" class="product-card-image">
-            //                     <img src="${item.imagen}" 
-            //                         onerror="this.src='imagenes/delight/default-bg-1.png';" 
-            //                         style="background-color: white;" />
-            //                     </a>
-            //                     <div class="d-flex flex-column w-100 gap-2" style="max-width: 260px">
-            //                         <h4 class="me-3">${formattedName.length > 50 ? formattedName.substring(0, 50) + '...' : formattedName}</h4>
-            //                         <div class="d-flex flex-row align-items-center justify-content-between gap-4 mb-2">
-            //                                 <p class="font-21 font-weight-bolder color-highlight mb-0">Bs. ${item.precio}</p>
-            //                             <div class="d-flex flex-row gap-2">
-            //                                 <button ruta="${item.url_detalle}" class="btn btn-xs copiarLink rounded-s btn-full shadow-l bg-red-light font-900">
-            //                                     <i class="fa fa-link"></i>
-            //                                 </button>
-            //                                 <button
-            //                                     class="add-to-cart btn btn-xs me-3 rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase"
-            //                                     data-producto-id="${item.id}"
-            //                                     data-producto-nombre="${item.nombre}"
-            //                                     >
-            //                                     <i class="fa fa-shopping-cart"></i>
-            //                                     Añadir
-            //                                 </button>
-            //                             </div>
-            //                         </div>
-            //                     </div>
-            //                 </div>
-            //             </div>
-            //         </div>
-            //     `;
-            // } 
         });
     }
 

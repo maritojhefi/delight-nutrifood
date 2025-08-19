@@ -425,7 +425,7 @@
         if (categorizedProducts.length === 0) {
             container.innerHTML = `
                 <div id="cart-summary-items" class="item-producto-categoria mb-3">
-                    <p class="text-muted"><span>Ups!</span> Parece que aun ni hay productos agregados a esta categoria, regresa mas tarde.</p>
+                    <p class="text-muted"><span>Ups!</span> Parece que aun no hay productos agregados a esta categoria, regresa mas tarde.</p>
                 </div>`;
         }
 
