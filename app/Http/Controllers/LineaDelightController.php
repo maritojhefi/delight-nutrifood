@@ -33,6 +33,9 @@ class LineaDelightController extends Controller
             ->orderBy('subcategorias.nombre')
             ->get();
 
+        $masVendidos = $productos->sortByDesc('cantidad_vendida')
+            ->take(10);
+
         $enDescuento = $productos->where('descuento', '!=', null)
             ->where('descuento', '!=', 0)
             ->shuffle();
@@ -49,7 +52,7 @@ class LineaDelightController extends Controller
             'noche' => GlobalHelper::processSubcategoriaFoto(Subcategoria::whereIn('id', [8, 9, 15, 55, 58])->get())
         ];
 
-        return view('client.lineadelight.index', compact('subcategorias', 'enDescuento', 'conMasPuntos', 'productos', 'horarios'));
+        return view('client.lineadelight.index', compact('subcategorias', 'masVendidos','enDescuento', 'conMasPuntos', 'productos', 'horarios'));
     }
     public function categoriaPlanes()
     {

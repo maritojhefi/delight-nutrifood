@@ -16,7 +16,6 @@
             </div>
             <div class="search-results disabled-search-list mt-3">
                 <div class="card card-style mx-0 px-2 p-0 mb-0">
-
                     @foreach ($productos as $item)
                         <a href="{{ route('delight.detalleproducto', $item->id) }}" class="d-flex py-2"
                             data-filter-item="{{ Str::of($item->nombre)->lower() }}"
@@ -51,7 +50,6 @@
 
     {{-- CONTENIDO DE LA PAGINA --}}
     <div class="content mb-0">
-
         {{-- SLIDER INICIO LINEADELIGHT --}}
         <div class="my-4 splide single-slider slider-has-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-1" style="visibility: visible">
             <div class="splide__track" id="single-slider-1-track">
@@ -108,9 +106,14 @@
 
         {{-- SLIDER SUBCATEGORIAS --}}
         <x-slider-doble-subcategorias/>
+
+        {{-- SLIDER PRODUCTOS MAS VENDIDOS --}}
+        <div id="best-selling-container" class="my-4">
+            <x-slider-productos :productos="$masVendidos" :title="'Los mas vendidos'" />
+        </div>
     </div>
 
-    <x-divider-manzana/>
+    <x-divider-manzana class="mb-4"/>
 
     {{-- CARD PRODUCTOS PUNTUADOS --}}
     @if ($conMasPuntos->count() > 0)

@@ -1231,6 +1231,10 @@ hover-blue:hover {
     border-bottom-right-radius: 0; /* No radius on the right side */
 }
 
+.theme-dark .bg-dtheme-blue  {
+    background-color:  #374151 !important;
+}
+
 /* 
 .product-quantity-controls {
     display: flex;

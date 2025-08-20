@@ -70,9 +70,10 @@ class ProductoController extends Controller
         }
 
         $subcategorias=Subcategoria::has('productos')->where('categoria_id',1)->orderBy('nombre')->get();
+        $masVendidos = $productos->sortByDesc('cantidad_vendida')->take(10);
         $enDescuento=$productos->where('descuento','!=',null)->where('descuento','!=',0)->shuffle();
         $conMasPuntos=$productos->where('puntos','!=',null)->where('puntos','!=',0)->shuffle()->take(10);
-        return view('client.productos.index',compact('subcategorias','enDescuento','conMasPuntos'));
+        return view('client.productos.index',compact('subcategorias','masVendidos','enDescuento','conMasPuntos'));
     }
     public function subcategorias() {
         $subcategorias = Subcategoria::has('productos')->where('categoria_id', 1)
@@ -81,10 +82,22 @@ class ProductoController extends Controller
         return view('client.productos.subcategorias', data: compact('subcategorias'));
     }
     public function detalleproducto($id){
-       $producto=Producto::findOrFail($id);
-       $nombrearray=Str::of($producto->nombre)->explode(delimiter: ' ');
-       //dd($nombrearray);
-       return view('client.productos.detalleproducto',compact('producto','nombrearray'));
+        $producto=Producto::findOrFail($id);
+        $nombrearray=Str::of($producto->nombre)->explode(delimiter: ' ');
+
+        $similares = $producto->subcategoria->productos
+            ->reject(fn ($p) => $p->id == $id || $p->estado != 'activo')  // Dual filter
+            ->shuffle()
+            ->take(5)
+            ->map(function ($p) {
+                $p->imagen = $p->imagen
+                    ? asset('imagenes/productos/' . $p->imagen)
+                    : asset('imagenes/delight/21.jpeg');
+                $p->url_detalle = route('delight.detalleproducto', $p->id);
+                return $p;
+            });
+        //dd($nombrearray);
+        return view('client.productos.delight-producto',compact('producto','nombrearray','similares'));
     }
     public function menusemanal()
     {

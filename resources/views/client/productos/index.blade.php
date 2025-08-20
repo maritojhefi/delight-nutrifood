@@ -87,7 +87,6 @@
         <div class="d-flex px-3 mb-2">
             <h4 class="mb-2 font-600">Productos en descuento!</h4>
         </div>
-      
 
         <div class="splide single-slider slider-no-arrows slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"
             id="single-slider-2" style="visibility: visible;">
@@ -196,11 +195,15 @@
                 Soy una barra de busqueda
             </div>
         </div>
+        <div id="best-selling-container">
+            <x-slider-productos :productos="$masVendidos" :title="'Los mas vendidos'" />
+            {{-- <x-slider-productos :productos="[]" :title="'Productos Nuevos'" /> --}}
+        </div>
         <a  
             {{-- data-bs-toggle="modal" 
             data-bs-target="#subcategoriesModal" --}}
             href="{{ route('listar.subcategorias.productos') }}"
-            data-card-height="100" class="card card-style col-12 mx-0 mt-1 px-0 round-medium shadow-huge hover-grow-xs"
+            data-card-height="100" class="card card-style col-12 mx-0 mt-2 px-0 round-medium shadow-huge hover-grow-xs"
             style="height: 100px;background-color: #FF5A5A;">
             <div class="card-center d-flex flex-row align-items-center justify-content-between ps-4 pe-3">
                 <div class="d-flex flex-row align-items-center gap-3">
