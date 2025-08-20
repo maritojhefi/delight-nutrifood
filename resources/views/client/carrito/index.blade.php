@@ -64,7 +64,7 @@
     </div>
 
     <div class="cart-slider-container">
-        <div class="splide single-slider slider-has-dots splide--loop splide--ltr splide--draggable" id="single-slider-6">
+        <div class="splide single-slider slider-has-dots slider-no-arrows splide--loop splide--ltr splide--draggable" id="single-slider-6">
             <div class="splide__track" id="single-slider-6-track">
                 <div class="splide__list" id="single-slider-6-list" style="transform: translateX(-1520px);">
                     <div class="splide__slide splide__slide--clone" style="width: 380px;" >
@@ -80,6 +80,7 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="splide__slide splide__slide--clone" style="width: 380px;">
                         <div data-card-height="250" class="bg-green-light card mx-3 bg-14 rounded-m shadow-l">
                             <div class="card-top mt-4 d-flex flex-column align-items-center">

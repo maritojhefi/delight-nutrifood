@@ -169,7 +169,7 @@
             });
 
             // Mostrar u ocultar el mensaje de no encontrados
-            if (visibleCount === 0 && normalizedSearch !== '')
+            if (visibleCount === 0 && normalizedSearch !== '') {
                 searchTermSpan.textContent = searchTerm;
                 noResultsMessage.style.display = 'block';
                 categoriesContainer.style.display = 'none';

@@ -69,8 +69,6 @@
                         </a>
                     </div>
                 @endforeach
-
-
             </div>
         </div>
         <ul class="splide__pagination">
