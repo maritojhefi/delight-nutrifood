@@ -53,6 +53,19 @@ export const showLimitToast = () => {
     }, 3000); // Ocultar tras 1 segundo
 }
 
+export const updateCartItemDetailCounter = (ProductId) => {
+    const cart = JSON.parse(localStorage.getItem('cart')) || { items: [] };
+    const detailCounter = document.getElementById('details-cart-counter');
+    const itemData = getCartItem(ProductId);
+    if (cart.items && cart.items.length > 0) {
+        detailCounter.textContent = itemData.quantity;
+        detailCounter.style.display = 'inline-block'; 
+    } else {
+        detailCounter.textContent = '0';
+        detailCounter.style.display = 'none'; 
+    }
+}
+
 export const updateCartCounterEX = () => {
     console.log("called the new CartCounter")
     const cart = JSON.parse(localStorage.getItem('cart')) || { items: [] };
@@ -62,10 +75,10 @@ export const updateCartCounterEX = () => {
         const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
         console.log("TotalQuantity: ", totalQuantity)
         cartCounter.textContent = totalQuantity;
-        cartCounter.style.display = 'inline-block'; // Ensure it's visible
+        cartCounter.style.display = 'inline-block'; 
     } else {
         cartCounter.textContent = '';
-        cartCounter.style.display = 'none'; // Hide when empty
+        cartCounter.style.display = 'none';
     }
 }
 
@@ -75,7 +88,7 @@ export async function addToCart(productId, quantity, isPlan = false, isUpdate = 
 
   console.log("Carrito actual:", cart);
 
-  const existingItem = cart.items.find(item => item.id == productId); // Use the same cart reference
+  const existingItem = cart.items.find(item => item.id == productId);
 
   console.log("Item a agregar: ", existingItem);
   const currentQty = existingItem ? existingItem.quantity : 0;
@@ -185,5 +198,6 @@ window.carritoStorage = {
     removeProduct,
     updateProductToMax,
     emptyCart,
-    updateCartCounterEX
+    updateCartCounterEX,
+    updateCartItemDetailCounter
 }

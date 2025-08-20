@@ -100,6 +100,7 @@
 @endsection
 
 @push('scripts')
+{{-- FUNCIONALIDAD AGREGAR AL CARRITO --}}
 <script> 
     $(document).ready(function() {
         $(document).on('click', '.add-to-cart', addToCartHandler);
@@ -141,6 +142,7 @@
         let searchTimeout;
 
         function performSearch(searchTerm) {
+            // Texto ingresado normalizado
             const normalizedSearch = searchTerm.toLowerCase().trim();
             let visibleCount = 0;
 
@@ -148,22 +150,26 @@
                 const categoryName = card.getAttribute('data-category-name');
                 const normalizedCategoryName = categoryName.toLowerCase();
                 
+                // Si el valor ingresado en el input coincide con el nombre de la categoria
                 if (normalizedCategoryName.includes(normalizedSearch)) {
+                    // Hacer el card visible
                     card.style.display = 'block';
                     visibleCount++;
                     
+                    // Transicion de opacidad para estilizado
                     card.style.opacity = '0';
                     setTimeout(() => {
                         card.style.transition = 'opacity 0.3s ease-in-out';
                         card.style.opacity = '1';
                     }, 50);
                 } else {
+                    // De no coincidir, ocultar el card
                     card.style.display = 'none';
                 }
             });
 
-            // Mostrar u ocultar el mensaje de no enctonrados
-            if (visibleCount === 0 && normalizedSearch !== '') {
+            // Mostrar u ocultar el mensaje de no encontrados
+            if (visibleCount === 0 && normalizedSearch !== '')
                 searchTermSpan.textContent = searchTerm;
                 noResultsMessage.style.display = 'block';
                 categoriesContainer.style.display = 'none';
@@ -174,6 +180,7 @@
         }
 
         function handleSearch() {
+            // Termino a buscarse
             const searchTerm = searchInput.value;
             
             // Limpiar el timeout
@@ -187,6 +194,7 @@
             }, 300);
         }
 
+        // Funcion para limpiar el valor en busqueda
         function clearSearch() {
             searchInput.value = '';
             performSearch('');
@@ -204,8 +212,6 @@
         });
     });
 </script>
-
-
 {{-- SCRIPT CONTROL DEL MODAL PRODUCTOS CATEGORIZADOS [LINEA-DELGIHT] --}}
 <script>
     document.addEventListener('DOMContentLoaded', function () {

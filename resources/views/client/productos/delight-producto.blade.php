@@ -1,34 +1,4 @@
 @extends('client.master')
-{{-- @section('content-comentado')
-    <x-cabecera-pagina titulo="Detalles del Producto" cabecera="appkit" />
-    <x-producto-detalle-component :producto="$producto"/>
-
-    <div class="card card-style">
-        <div class="content">
-            <h4>Productos relacionados</h4>
-
-            <div class="divider mt-3 mb-3"></div>
-            @foreach ($producto->subcategoria->productos->shuffle()->take(5) as $item)
-                <div class="d-flex">
-                    <div>
-                        <a href="{{ route('delight.detalleproducto', $item->id) }}">
-                            <img src="{{ asset($item->pathAttachment()) }}" class="rounded-sm" width="55">
-                    </div>
-                    <div class="ps-3">
-                        <h4>{{ Str::limit($item->nombre(), 25) }}</h4>
-                        </a>
-                        <a href="#"><span class="badge bg-magenta-dark font-700 font-11 text-uppercase carrito" id="{{$item->id}}">Añadir <i
-                                    class="fa fa-shopping-cart"></i></span></a>
-                    </div>
-                    <div class="ms-auto">
-                        <h1 class="font-20">{{ $item->descuento ? $item->descuento : $item->precio }} Bs</h1>
-                    </div>
-                </div>
-                <div class="divider mt-3 mb-3"></div>
-            @endforeach
-        </div>
-    </div>
-@endsection --}}
 @section('content')
     {{-- CABECERA ESTATICA --}}
     <x-cabecera-detalle-delight :producto="$producto"/>
@@ -37,7 +7,7 @@
         <div class="drag-line"></div>
         <div class="content">
             {{-- CONTENEDOR PRECIO Y BOTON DE AGREGAR --}}
-            <div class="card card-style bg-6 mx-0 mt-3" style="background-image: url({{asset('imagenes/delight/fork_picture.jpg')}}); height: 100px;" data-card-height="100">
+            <div id="product-info-card" data-producto-id="{{$producto->id}}" class="card card-style bg-6 mx-0 mt-3 bg-highlight" style="height: 100px;" data-card-height="100">
                 <div class="card-center px-3 no-click">
                     {{-- CONDICIONANTE DE TEXTO PARA OFERTAS --}}
                     @if ($producto->descuento && $producto->descuento > 0 && $producto->descuento < $producto->precio)
@@ -48,8 +18,8 @@
                     @else
                         <h1 class="color-white mb-n2 font-24">Precio unitario de Bs. {{$producto->precio}}</h1>
                     @endif
-                    <h5 class="color-white mt-n1 opacity-80 font-14">Unidades en mi carrito: X</h5>
-                </div>
+                    <h5 id="order-info-text" class="color-white mt-n1 opacity-80 font-14">Unidades en mi carrito: <span id="details-cart-counter">x</span></h5>
+                </div>              
                 {{-- CONDICIONANTE HABILITACION BOTON POR STOCK --}}
                 <div class="card-center">
                     @if ($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0)
@@ -58,10 +28,12 @@
                         <button
                         data-producto-id="{{$producto->id}}"
                         data-producto-nombre="{{$producto->nombre}}"
-                        class="add-to-cart float-end hover-grow-s mx-3 gradient-highlight btn-s rounded-sm shadow-xl text-uppercase font-800">Agregar</button>
+                        style="background-color: #FF5A5A;"
+                        class="add-to-cart float-end hover-grow-s mx-3 btn-s rounded-sm shadow-xl text-uppercase font-800">Agregar</button>
                     @endif
                 </div>
-                <div class="card-overlay bg-black opacity-40"></div>
+                {{-- Control tonalidad oscura --}}
+                <div class="card-overlay dark-mode-tint opacity-70"></div>
             </div>
             {{-- MENCION A LOS TAGS DEL PRODUCTO --}}
             {{-- <p class="color-highlight font-600 mb-n1">Delight Nutrifood</p>
@@ -88,38 +60,48 @@
             <x-footer-productos-similares :producto="$producto" :similares="$similares" />
         </div>
     </div>
-
-    <script src="{{ asset('js/carrito/index.js') }}"></script>
-    <script src="{{ asset(path: 'js/producto/producto-service.js') }}"></script>
-
-
-    <script> 
-        $(document).ready(function() {
-            $(document).on('click', '.add-to-cart', addToCartHandler);
-        });
-
-        async function addToCartHandler() {
-            const product_Id = $(this).data('producto-id');
-            const product_nombre = $(this).data('producto-nombre')
-
-            // console.log("ID producto a agregar: ", product_Id);
-            // console.log("Nombre del producto a agregar: ", product_nombre);
-            try {
-                const result = await addToCart(product_Id, 1);
-                if (result.success) {
-                    showMessage('success', 'Item agregado al carrito!');
-                } else {
-                    showMessage('error', result.message);
-                }
-            } catch (error) {
-                console.error('Error agregando el producto al carrito:', error);
-                showMessage('error', 'Error al agregar el producto al carrito');
-            }
-        }
-
-        function showMessage(type, text) {
-            $('#message-container').html(`<div class="alert alert-${type}">${text}</div>`);
-            setTimeout(() => $('#message-container').empty(), 3000);
-        }
-    </script>
 @endsection
+
+@push('scripts')
+<script> 
+    $(document).ready(function() {
+        // Llamado al handler al momento de hacer click en el elemento add-to-cart
+        $(document).on('click', '.add-to-cart', addToCartHandler);
+        // Renderizado condicional de informacion del producto en carrito
+        const product_Id = $('#product-info-card').data('producto-id');
+        renderOrderInfo(product_Id);
+        carritoStorage.updateCartItemDetailCounter(product_Id);
+    });
+
+    async function addToCartHandler() {
+        const product_Id = $(this).data('producto-id'); 
+        try {
+            // Solicitud para revisar stock y agregar al carrito
+            const result = await carritoStorage.addToCart(product_Id, 1);
+            if (result.success) {
+                // En caso de exito, actualizar el contador de unidades
+                carritoStorage.updateCartItemDetailCounter(product_Id);
+                renderOrderInfo(product_Id);
+            } else {
+                console.log('Error: ', result.message);
+            }
+        } catch (error) {
+            console.error('Error agregando el producto al carrito:', error);
+        }
+    }
+
+    // Renderizado condicional de informacion de la orden existente
+    function renderOrderInfo(productId) {
+        const productData = carritoStorage.getCartItem(productId);
+        const orderInfoElement = $('#order-info-text');
+        
+        if (productData && productData.quantity > 0) {
+            // Mostrar la informacion de unidades en el carrito
+            orderInfoElement.show();
+        } else {
+            // Ocultar el elemento si no hay unidades del producto en el carrito
+            orderInfoElement.hide();
+        }
+    }
+</script>
+@endpush
