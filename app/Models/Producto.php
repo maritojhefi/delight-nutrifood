@@ -32,8 +32,8 @@ class Producto extends Model
         'contable',
         'observacion',
         'prioridad',
-        'stock_actual'
-
+        'stock_actual',
+        'cantidad_vendida'
     ];
     const PRIORIDADBAJA = "1";
     const PRIORIDADALTA = "2";
