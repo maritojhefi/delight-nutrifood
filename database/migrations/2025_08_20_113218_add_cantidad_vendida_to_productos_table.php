@@ -14,7 +14,7 @@ class AddCantidadVendidaToProductosTable extends Migration
     public function up()
     {
         Schema::table('productos', function (Blueprint $table) {
-            $table->unsignedBigInteger('cantidad_vendida')->default(0);
+            $table->unsignedBigInteger('cantidad_vendida')->default(0)->after('subcategoria_id');
         });
     }
 
