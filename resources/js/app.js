@@ -5,7 +5,16 @@
 
 // resources/js/app.js
 import './bootstrap';
-console.log("App.js loaded"); // Should appear first
+import { createIcons, icons } from 'lucide';
 
-import './auth/logout';  // Changed from require() to import
+// import { Star, WheatOff } from 'lucide';
+
+import './auth/logout';
 import './carrito/carrito-store';
+
+// const usedIcons = {
+//     Star,
+//     WheatOff
+// };
+
+createIcons({icons});

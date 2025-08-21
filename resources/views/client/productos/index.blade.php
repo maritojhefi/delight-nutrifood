@@ -204,6 +204,7 @@
             style="height: 100px;background-color: #FF5A5A;">
             <div class="card-center d-flex flex-row align-items-center justify-content-between ps-4 pe-3">
                 <div class="d-flex flex-row align-items-center gap-3">
+                    {{-- <i data-lucide="star" class="lucide-icon" style="color: white; width: 3rem; height: 3rem;"></i> --}}
                     <i class="fa fa-star fa-3x" style="color: white"></i>
                     <div class="text-start">
                         <h2 class="text-white">Todas nuestras categorias</h2>
