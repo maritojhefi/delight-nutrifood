@@ -67,7 +67,6 @@ export const updateCartItemDetailCounter = (ProductId) => {
 }
 
 export const updateCartCounterEX = () => {
-    console.log("called the new CartCounter")
     const cart = JSON.parse(localStorage.getItem('cart')) || { items: [] };
     const cartCounter = document.getElementById('cart-counter');
     if (cart.items && cart.items.length > 0) {

@@ -52,28 +52,52 @@ class ProductoController extends Controller
        
        return view('client.productos.detallesubcategoria',compact('subcategoria'));
     }
-    public function index(){
-        
-        // 1. Corregir el typo.
-        if (session()->missing('productos')) {
-            $productos=Producto::select('productos.*')
+    public function index(){   
+        // // 1. Corregir el typo.
+        // if (session()->missing('productos')) {
+        //     $productos=Producto::select('productos.*')
+        //     ->leftjoin('subcategorias','subcategorias.id','productos.subcategoria_id')
+        //     ->leftjoin('categorias','categorias.id','subcategorias.categoria_id')
+        //     ->where('productos.estado','activo')
+        //     ->where('categorias.nombre','ECO-TIENDA')
+        //     ->get(); 
+        //     // 2. Guardar los datos en la sesión para futuros accesos
+        //     session(['productos' => $productos]);
+        // } else {
+        //     // 3. Si la sesión ya tiene los productos, obtenerlos de ahí
+        //     $productos = session('productos');
+        // }
+
+        try {
+                    $productos=Producto::select('productos.*')
             ->leftjoin('subcategorias','subcategorias.id','productos.subcategoria_id')
             ->leftjoin('categorias','categorias.id','subcategorias.categoria_id')
             ->where('productos.estado','activo')
             ->where('categorias.nombre','ECO-TIENDA')
             ->get(); 
-            // 2. Guardar los datos en la sesión para futuros accesos
-            session(['productos' => $productos]);
-        } else {
-            // 3. Si la sesión ya tiene los productos, obtenerlos de ahí
-            $productos = session('productos');
-        }
+
+        // foreach ($productos as $producto) {
+        //     if ($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0) {
+        //         $producto->tiene_stock = false;
+        //     } else {
+        //         $producto->tiene_stock = true;
+        //     }
+        // }
 
         $subcategorias=Subcategoria::has('productos')->where('categoria_id',1)->orderBy('nombre')->get();
         $masVendidos = $productos->sortByDesc('cantidad_vendida')->take(10);
+        $masRecientes = $productos->sortByDesc('created_at')->take(10);
         $enDescuento=$productos->where('descuento','!=',null)->where('descuento','!=',0)->shuffle();
         $conMasPuntos=$productos->where('puntos','!=',null)->where('puntos','!=',0)->shuffle()->take(10);
-        return view('client.productos.index',compact('subcategorias','masVendidos','enDescuento','conMasPuntos'));
+        $suplementosStark = $productos->where('subcategoria_id', 24);
+        return view('client.productos.index',compact('subcategorias','masVendidos','masRecientes','enDescuento','conMasPuntos','suplementosStark'));
+        } catch (\Throwable $th) {
+            Log::error('Error al obtener los productos de la Eco Tienda', [
+                'error' => $th->getMessage(),
+                'trace' => $th->getTraceAsString()
+            ]);
+        }
+
     }
     public function subcategorias() {
         $subcategorias = Subcategoria::has('productos')->where('categoria_id', 1)

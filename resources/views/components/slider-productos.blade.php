@@ -1,14 +1,27 @@
-@if ($title)
-<h1 class="font-18">{{$title}}</h1>
+@props([
+    'title' => null,
+    'productos' => [],
+    'tag' => 'default',
+    'orientation' => 'left'
+])
+
+@if ($title && $orientation == 'right')
+<div class="float-end bg-red-light mb-2 py-3 me-n4 px-5 rounded-sm" >
+    <h2 class="font-24 text-white mb-0">{{$title}}</h2>
+</div>
+@elseif ($title && $orientation == 'left')
+<div class="float-start bg-highlight mb-2 py-3 ms-n4 px-5 rounded-sm"> 
+    <h2 class="font-24 text-white mb-0">{{$title}}</h2>
+</div>
 @endif
 
-<div class="splide double-slider visible-slider slider-no-arrows slider-no-dots splide--loop splide--ltr splide--draggable" id="popular-products-slider" style="visibility: visible;">
-    <div class="splide__track" id="popular-products-slider-track">
-        <div class="splide__list" id="popular-products-slider-list">
+<div class="splide double-slider visible-slider slider-no-arrows slider-no-dots splide--loop splide--ltr splide--draggable" id="{{$tag}}-products-slider" style="visibility: visible;">
+    <div class="splide__track" id="{{$tag}}-products-slider-track">
+        <div class="splide__list" id="{{$tag}}-products-slider-list">
             @foreach ($productos as $producto)
-            <div class="splide__slide" id="popular-products-slider-slide01" style="width: 155px;" aria-hidden="true" tabindex="-1">
+            <div class="splide__slide" id="{{$tag}}-products-slider-slide{{$producto->id}}" style="width: 155px;" aria-hidden="true" tabindex="-1">
                 <a href="{{route('detalleproducto',$producto->id)}}" class="card m-2 rounded-md card-style">
-                    <img src="{{ asset('imagenes/delight/'.$producto->imagen)}}" 
+                    <img src="{{ asset('imagenes/producto/'.$producto->imagen)}}" 
                         onerror="this.src='/imagenes/delight/default-bg-1.png';" 
                         style="height: 150px; width: 100%; object-fit: cover;">
                     <div class="position-absolute position-absolute end-0 p-2 bg-theme bg-dtheme-blue rounded-md color-theme">

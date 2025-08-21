@@ -212,7 +212,7 @@
         });
     });
 </script>
-{{-- SCRIPT CONTROL DEL MODAL PRODUCTOS CATEGORIZADOS [LINEA-DELGIHT] --}}
+{{-- SCRIPT CONTROL DEL MODAL PRODUCTOS CATEGORIZADOS [] --}}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         productsModal = new bootstrap.Modal(document.getElementById('categorizedProductsModal'), {

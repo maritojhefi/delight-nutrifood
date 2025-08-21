@@ -109,7 +109,12 @@
 
         {{-- SLIDER PRODUCTOS MAS VENDIDOS --}}
         <div id="best-selling-container" class="my-4">
-            <x-slider-productos :productos="$masVendidos" :title="'Los mas vendidos'" />
+            <x-slider-productos :productos="$masVendidos" tag="popular" :title="'Los mas vendidos'" />
+        </div>
+
+        {{-- SLIDER PRODUCTOS NUEVOS --}}
+        <div id="recent-container" class="my-4">
+            <x-slider-productos :productos="$masRecientes" tag="recent" title="Novedades" orientation="right" />
         </div>
     </div>
 
