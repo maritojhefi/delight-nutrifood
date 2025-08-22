@@ -1,5 +1,5 @@
 @if (count($similares) >= 1) 
-<div class="card card-style mx-n3 rounded-0 bg-16" 
+<div class="card mx-n3 rounded-0" 
     style="background-image: url({{ asset($producto->subcategoria->foto ? 'imagenes/subcategorias/'.$producto->subcategoria->foto:'imagenes/delight/stock_default.jpg' )  }}), url({{asset('imagenes/delight/stock_default.jpg')}}); height: 150px;" 
     data-card-height="150">
     <div class="card-center text-end ms-2 me-3">

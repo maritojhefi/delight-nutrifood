@@ -204,8 +204,8 @@
             style="height: 100px;background-color: #FF5A5A;">
             <div class="card-center d-flex flex-row align-items-center justify-content-between ps-4 pe-3">
                 <div class="d-flex flex-row align-items-center gap-3">
-                    {{-- <i data-lucide="star" class="lucide-icon" style="color: white; width: 3rem; height: 3rem;"></i> --}}
-                    <i class="fa fa-star fa-3x" style="color: white"></i>
+                    {{-- <i data-lucide="apple" class="lucide-icon" style="color: white; width: 3rem; height: 3rem;"></i> --}}
+                    <i class="fa fa-apple-alt fa-3x" style="color: white"></i>
                     <div class="text-start">
                         <h2 class="text-white">Todas nuestras categorias</h2>
                         <p class="mb-0 text-white opacity-75">Descubre todas nustras categorias disponibles</p>
@@ -237,7 +237,7 @@
                                     <img src="{{ asset('imagenes/delight/optimal_logo.svg')}}" alt="img" width="100"
                                     class="mx-auto">
                                     <div class="p-2">
-                                        <p class="mb-0 font-600 text-center">{{ Str::limit($item->nombre(), 22) }}</p>
+                                        <p class="mb-0 font-600 text-center">{{ Str::limit($item->nombre(), 40) }}</p>
                                     </div>
                                     <div class="divider mb-0"></div>
                                     <div class="d-flex flex-row justify-content-between gap-4 mb-0">

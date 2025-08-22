@@ -1234,6 +1234,9 @@ hover-blue:hover {
 .theme-dark .bg-dtheme-blue  {
     background-color:  #374151 !important;
 }
+.theme-dark .tag-icon {
+    color: white !important;
+}
 
 /* 
 .product-quantity-controls {
