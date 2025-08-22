@@ -6,12 +6,14 @@
 ])
 
 @if ($title && $orientation == 'right')
-<div class="float-end bg-red-light mb-2 py-3 me-n4 px-5 rounded-sm" >
-    <h2 class="font-24 text-white mb-0">{{$title}}</h2>
+<div class="card float-end bg-red-light mb-2 py-3 me-n4 px-5 rounded-sm" >
+    <h2 class="font-24 text-white mb-0" style="z-index: 10">{{$title}}</h2>
+    <div class="card-overlay dark-mode-tint"></div>
 </div>
 @elseif ($title && $orientation == 'left')
-<div class="float-start bg-highlight mb-2 py-3 ms-n4 px-5 rounded-sm"> 
-    <h2 class="font-24 text-white mb-0">{{$title}}</h2>
+<div class="card float-start bg-highlight mb-2 py-3 ms-n4 px-5 rounded-sm"> 
+    <h2 class="font-24 text-white mb-0" style="z-index: 10">{{$title}}</h2>
+    <div class="card-overlay dark-mode-tint"></div>
 </div>
 @endif
 
@@ -24,7 +26,7 @@
                     <img src="{{ asset('imagenes/producto/'.$producto->imagen)}}" 
                         onerror="this.src='/imagenes/delight/default-bg-1.png';" 
                         style="height: 150px; width: 100%; object-fit: cover;">
-                    <div class="position-absolute position-absolute end-0 p-2 bg-theme bg-dtheme-blue rounded-md color-theme">
+                    <div class="position-absolute position-absolute end-0 p-2 bg-theme bg-dtheme-blue rounded-md color-theme" style="border-radius: 0 0 0 0.375rem;">
                         <h4 class="font-14 mb-0">Bs {{$producto->precioReal()}}</h4>
                     </div>
                     <div class="p-2 bg-theme bg-dtheme-blue rounded-sm">
