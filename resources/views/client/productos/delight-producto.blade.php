@@ -11,11 +11,13 @@
                 <div class="card-center px-3 no-click">
                     {{-- CONDICIONANTE DE TEXTO PARA OFERTAS --}}
                     @if ($producto->descuento && $producto->descuento > 0 && $producto->descuento < $producto->precio)
+                        {{-- SI El PRODUCTO TIENE DESCUENTO --}}
                         <div class="d-flex flex-row align-items-center gap-4">
                             <h1 class="color-theme mb-n2 font-24">Precio unitario de Bs. {{$producto->descuento}}</h1>
                         </div>
                         <h5 class="color-theme mt-n1 opacity-80 font-14">Precio fuera de oferta: <del>Bs. {{$producto->precio}}</del></h5>
                     @else
+                        {{-- SI El PRODUCTO TIENE DESCUENTO --}}
                         <h1 class="color-theme mb-n2 font-24">Precio unitario de Bs. {{$producto->precio}}</h1>
                     @endif
                     <h5 id="order-info-text" class="color-highlight mt-n1 opacity-80 font-14">Unidades en mi carrito: <span class="color-theme" id="details-cart-counter">x</span></h5>
@@ -28,8 +30,10 @@
                         <button
                         data-producto-id="{{$producto->id}}"
                         data-producto-nombre="{{$producto->nombre}}"
-                        style="background-color: #FF5A5A;"
-                        class="add-to-cart float-end hover-grow-s mx-3 btn-s rounded-sm shadow-xl text-uppercase text-white font-800">Agregar</button>
+                        class="add-to-cart bg-highlight float-end hover-grow-s mx-3 btn-s rounded-sm shadow-xl text-uppercase text-white font-800">
+                            <i class="fa fa-shopping-cart"></i>
+                            Añadir
+                        </button>
                     @endif
                 </div>
                 {{-- Control tonalidad oscura --}}
@@ -42,16 +46,8 @@
                         <p class="color-theme font-18 mb-0">Gana <span class="font-700">{{$producto->puntos}}</span> puntos por unidad comprada</p>
                         <i data-lucide="circle-star" class="lucide-icon" style="color: gold"></i>
                     </div>
-
-                {{-- <div class="card card-style my-3 p-2" style="background-color: rgba(255, 217, 0, 0.723)">
-                    <div class="d-flex flex-row align-items-center justify-content-center gap-2">
-                        <p class="color-white font-18 mb-0">Gana <span class="font-700">{{$producto->puntos}}</span> puntos por unidad comprada</p>
-                    </div>
-                </div> --}}
             @endif
             {{-- MENCION A LOS TAGS DEL PRODUCTO --}}
-            {{-- <p class="color-highlight font-600 mb-n1">Delight Nutrifood</p>
-            <h1>Caracteristicas del producto</h1> --}}
             <ul class="icon-list row row-cols-2 g-1 ms-5 my-3">
                 @if ($producto->tags->isEmpty())
                     {{-- <li class="col">No hay tags asociados a este producto.</li> --}}

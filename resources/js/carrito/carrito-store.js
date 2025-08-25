@@ -70,9 +70,9 @@ export const updateCartCounterEX = () => {
     const cart = JSON.parse(localStorage.getItem('cart')) || { items: [] };
     const cartCounter = document.getElementById('cart-counter');
     if (cart.items && cart.items.length > 0) {
-        console.log("CArtItemsRender:",cart.items)
+        // console.log("CartItemsRender:",cart.items)
         const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
-        console.log("TotalQuantity: ", totalQuantity)
+        // console.log("TotalQuantity: ", totalQuantity)
         cartCounter.textContent = totalQuantity;
         cartCounter.style.display = 'inline-block'; 
     } else {

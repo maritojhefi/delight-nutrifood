@@ -27,6 +27,9 @@
                         onerror="this.src='/imagenes/delight/default-bg-1.png';" 
                         style="height: 150px; width: 100%; object-fit: cover;">
                     <div class="position-absolute position-absolute end-0 p-2 bg-theme bg-dtheme-blue rounded-md color-theme" style="border-radius: 0 0 0 0.375rem;">
+                        @if ($producto->descuento && $producto->descuento > 0 && $producto->descuento < $producto->precio)
+                        <del class="font-bold">Bs {{$producto->precio}}</del>
+                        @endif
                         <h4 class="font-14 mb-0">Bs {{$producto->precioReal()}}</h4>
                     </div>
                     <div class="p-2 bg-theme bg-dtheme-blue rounded-sm">
