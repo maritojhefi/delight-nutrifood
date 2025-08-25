@@ -58,7 +58,7 @@
                     
                     {{-- ITEM POPULARES --}}
                     <div class="splide__slide mx-2 is-active is-visible" id="single-slider-1-slide01" style="width: 320px;">
-                        <a href='#' data-bs-toggle="modal" data-bs-target="#categorizedProductsModal" data-category-id="000" data-category-name="Nuestros productos mas populares!" data-card-height="200" class="card bg-6 mb-0 shadow-l rounded-m" style="height: 200px; background-color: #FF5A5A;">
+                        <a href='#' data-bs-toggle="modal" data-bs-target="#popularProductsModal" data-category-id="000" data-category-name="Nuestros productos mas populares!" data-card-height="200" class="card bg-6 mb-0 shadow-l rounded-m" style="height: 200px; background-color: #FF5A5A;">
                             <div class="card-center mt-n4 d-flex flex-column align-items-center">
                                 <i class="fa fa-apple-alt fa-7x text-white"></i>
                             </div>
@@ -177,6 +177,35 @@
                                 <p class="text-muted"><span class="font-bold">Ups!</span> Parece que aun no hay productos agregados a esta categoria, regresa mas tarde.</p>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL PRODUCTOS POPULARES --}}
+    <div class="modal fade" id="popularProductsModal" tabindex="-1" aria-labelledby="popularProductsModalLabel" aria-hidden="true" style="z-index: 9999">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header mx-2 mt-2 border-0 gap-4 d-flex align-items-center">
+                    <h4 id="popular-modal-title" class="mb-0 ms-4 align-self-center text-uppercase">Nuestros productos mas populares!</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body pt-0 d-flex flex-column">
+                    <div class="content justify-content-center align-items-center" id="listado-productos-populares">
+                        <!-- Contenedor items individuales-->
+                        @if($masVendidos->isEmpty())
+                            <div class="d-flex flex-column justify-content-center align-items-center text-center py-5">
+                                <i class="fa fa-question-circle fa-5x mb-3"></i>
+                                <p>Parece que no hay productos disponibles en esta categoria, intenta mas tarde.</p>
+                            </div>
+                        @else
+                            @foreach ($masVendidos as $masVendido)
+                                <x-producto-card :producto="$masVendido" />
+                            @endforeach
+                        @endif
                     </div>
                 </div>
             </div>

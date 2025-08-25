@@ -22,11 +22,16 @@ class LineaDelightController extends Controller
             ->get();        
         } catch (\Throwable $th) {
             //throw $th;
-            Log::error('Error validating cart items', [
-                'error' => $th->getMessage(),
-                'trace' => $th->getTraceAsString()
-            ]);
+            // Log::error('Error al obtener los prodctos', [
+            //     'error' => $th->getMessage(),
+            //     'trace' => $th->getTraceAsString()
+            // ]);
         }
+
+        $productos = $productos->map(function ($producto) {
+            $producto->tiene_stock = !($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0);
+            return $producto;
+        });
 
         $subcategorias = Subcategoria::has('productos')
             ->whereIn('categoria_id', [2,3])
@@ -47,6 +52,8 @@ class LineaDelightController extends Controller
             ->where('puntos', '!=', 0)
             ->shuffle()
             ->take(10);
+
+        
 
         // $horarios = (object)[
         //     'manana' => GlobalHelper::processSubcategoriaFoto(Subcategoria::whereIn('id', [3, 4, 8, 10, 12, 13, 54, 56, 57])->get()),
