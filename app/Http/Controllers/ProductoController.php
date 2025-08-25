@@ -59,7 +59,7 @@ class ProductoController extends Controller
                 ->leftjoin('categorias','categorias.id','subcategorias.categoria_id')
                 ->where('productos.estado','activo')
                 ->where('categorias.nombre','ECO-TIENDA')
-                ->with('unfilteredSucursale') 
+                ->with(['unfilteredSucursale', 'tag'])
                 ->get(); 
 
             $productos = $productos->map(function ($producto) {
@@ -73,16 +73,18 @@ class ProductoController extends Controller
             $enDescuento = $productos->where('descuento','!=',null)->where('descuento','!=',0)->shuffle();
             $conMasPuntos = $productos->where('puntos','!=',null)->where('puntos','!=',0)->shuffle()->take(10);
             $suplementosStark = $productos->where('subcategoria_id', 24);
+
+            // Log::debug('Productos de la Eco Tienda en oferta obtenidos correctamente', [
+            //     'productos' => $enDescuento->where('id')
+            // ]);
             
             return view('client.productos.index',compact('subcategorias','masVendidos','masRecientes','enDescuento','conMasPuntos','suplementosStark'));
             
         } catch (\Throwable $th) {
-            Log::error('Error al obtener los productos de la Eco Tienda', [
-                'error' => $th->getMessage(),
-                'trace' => $th->getTraceAsString()
-            ]);
-            
-            // return back()->with('error', 'Hubo un problema al cargar los productos.');
+            // Log::error('Error al obtener los productos de la Eco Tienda', [
+            //     'error' => $th->getMessage(),
+            //     'trace' => $th->getTraceAsString()
+            // ]);
         }
     }
     public function subcategorias() {
@@ -120,6 +122,7 @@ class ProductoController extends Controller
     {
         try {
             $productos = Producto::select('productos.*')
+                        ->with(['unfilteredSucursale', 'tag']) // Add eager loading here
                         ->where('subcategoria_id', $id)
                         ->where('estado', 'activo')
                         ->orderByRaw('CASE 
@@ -137,16 +140,16 @@ class ProductoController extends Controller
                 }
 
                 $producto->imagen = $producto->imagen ? asset('imagenes/productos/' . $producto->imagen) : asset('imagenes/delight/default-bg-1.png');
-                $producto ->url_detalle = route('delight.detalleproducto', $producto->id);
+                $producto->url_detalle = route('delight.detalleproducto', $producto->id);
             }
 
             return response()->json($productos, 200);
         } catch (\Throwable $th) {
-            // Log::error(`Error al obtener los productos de la categoria con id: ` + $id, [
+
+            // Log::error('Error al obtener los productos de la categoria con id: ' . $id, [
             //     'error' => $th->getMessage(),
             //     'trace' => $th->getTraceAsString()
             // ]);
-
             return response()->json([
                 'error' => 'Error al obtener los productos de la categoria. Por favor, intente nuevamente.'
             ], 500);
@@ -174,10 +177,10 @@ class ProductoController extends Controller
             $producto = Producto::findOrFail($id);
             return response()->json($producto, 200); // Removed the array brackets
         } catch (\Throwable $th) {
-            Log::error(`Error el producto con id: ` + $id, [
-                'error' => $th->getMessage(),
-                'trace' => $th->getTraceAsString()
-            ]);
+            // Log::error(`Error el producto con id: ` + $id, [
+            //     'error' => $th->getMessage(),
+            //     'trace' => $th->getTraceAsString()
+            // ]);
             return response()->json(['error' => 'Product not found'], 404);
         }
     }

@@ -32,7 +32,7 @@
                     <div class="p-2 bg-theme bg-dtheme-blue rounded-sm">
                         <div class="d-flex">
                             <div class="align-self-center">
-                                <h4 class="pt-1 mb-1 font-16 line-height-xs mb-0">{{Str::limit(ucfirst(strtolower($producto->nombre)),37)}}</h4>
+                                <h4 class="pt-1 mb-1 font-16 line-height-xs mb-0">{{Str::limit(ucfirst(strtolower($producto->nombre)),35)}}</h4>
                                 {{-- <span class="font-11">per serving</span> --}}
                             </div>
                         </div>

@@ -160,7 +160,7 @@
     @endif
 
     {{-- MODAL PRODUCTOS CATEGORIZADOS --}}
-    <div class="modal fade" id="categorizedProductsModal" tabindex="-1" aria-labelledby="categorizedProductsModalLabel" aria-hidden="true" style="z-index: 9999">
+    <div class="modal fade" id="categorizedProductsModal" tabindex="-1" aria-labelledby="categorizedProductsModalLabel" style="z-index: 9999">
         <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
             <div class="modal-content">
                 <!-- Modal Header -->
@@ -321,7 +321,7 @@
         });
     });
 </script>
-    {{-- SCRIPT CONTROL DEL MODAL PRODUCTOS CATEGORIZADOS [LINEA-DELGIHT] --}}
+{{-- SCRIPT CONTROL DEL MODAL PRODUCTOS CATEGORIZADOS [LINEA-DELGIHT] --}}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         productsModal = new bootstrap.Modal(document.getElementById('categorizedProductsModal'), {
@@ -341,17 +341,17 @@
                 return;
             }
 
-
-
             showLoadingState();
 
-             if (categoryName) {
+            if (categoryName) {
                 categoryTitle.textContent = `${categoryName}`;
             }
 
             try {
                 const categorizedProducts = await ProductoService.getProductosCategoria(categoriaId);
+                // console.log("Productos categorizados: ", categorizedProducts);
                 renderProductItems(categorizedProducts);
+                reinitializeLucideIcons();
             } catch (error) {
                     console.error(`Error al obtener productos para la categoria con ID ${categoriaId}`, error);
                     showErrorState();
@@ -368,16 +368,17 @@
         const renderProductCard = (item, formattedName) => {
             container.innerHTML += `
                 <div class="col-12">
-                    <div data-card-height="120" class="card card-style mb-4 mx-0 hover-grow-s" style="height: 120px;overflow: hidden">
+                    <div data-card-height="130" class="card card-style mb-4 mx-0 hover-grow-s" style="overflow: hidden">
                         <div class="d-flex flex-row align-items-center gap-3"> 
                             <a href="${item.url_detalle}" class="product-card-image">
                                 <img src="${item.imagen}" 
                                     onerror="this.src='imagenes/delight/default-bg-1.png';" 
                                     style="background-color: white;" />
                             </a>
-                            <div class="d-flex flex-column w-100 gap-2" style="max-width: 260px">
-                                <h4 class="me-3">${formattedName.length > 50 ? formattedName.substring(0, 50) + '...' : formattedName}</h4>
-                                <div class="d-flex flex-row align-items-center justify-content-between gap-4 mb-2">
+                            <div class="d-flex flex-column w-100 gap-1 me-2" style="max-width: 260px">
+                                <h4 class="me-1">${formattedName.length > 50 ? formattedName.substring(0, 50) + '...' : formattedName}</h4>
+                                ${renderTagsRow(item)}
+                                <div class="d-flex flex-row align-items-center justify-content-between gap-4">
                                     ${renderPriceSection(item)}
                                     <div class="d-flex flex-row gap-2">
                                         <button ruta="${item.url_detalle}" class="btn btn-xs copiarLink rounded-s btn-full shadow-l bg-red-light font-900">
@@ -396,7 +397,7 @@
         const renderActionButton = (item) => {
             if (!item.tiene_stock) {
                 return `
-                    <button class="btn btn-xs me-3 rounded-s btn-full shadow-l bg-gray-dark font-900 text-uppercase" disabled>
+                    <button class="btn btn-xs rounded-s btn-full shadow-l bg-gray-dark font-900 text-uppercase" disabled>
                         <i class="fa fa-ban"></i>
                         Sin Stock
                     </button>
@@ -405,7 +406,7 @@
             
             return `
                 <button
-                    class="add-to-cart btn btn-xs me-3 rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase"
+                    class="add-to-cart btn btn-xs rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase"
                     data-producto-id="${item.id}"
                     data-producto-nombre="${item.nombre}"
                 >
@@ -430,6 +431,27 @@
             return `<p class="font-21 font-weight-bolder color-highlight mb-0">Bs. ${item.precio}</p>`;
         }
 
+        const renderTagsRow = (item) => {
+            if (item.tag && item.tag.length > 0) {
+                return `
+                    <div class="tags-container d-flex flex-row align-items-center justify-content-start gap-2">
+                    ${item.tag.map(tag => `
+                        <button popovertarget="poppytag-${item.id}-${tag.id}" popoveraction="toggle" style="anchor-name: --tag-btn-${item.id}-${tag.id};">
+                            <i data-lucide="${tag.icono}" class="lucide-icon" style="width:1.5rem;height:1.5rem;"></i>
+                        </button>
+                        <div popover
+                            id="poppytag-${item.id}-${tag.id}"
+                            class="tag-info-popover bg-white bg-dtheme-blue p-2 rounded-2 shadow-lg border"
+                            style="position-anchor: --tag-btn-${item.id}-${tag.id}; max-width:250px;">
+                            <p class="color-theme">${tag.nombre}</p>
+                        </div>
+                    `).join('')}
+                    </div>
+                `;
+            }
+            return '';
+        }
+
         if (categorizedProducts.length === 0) {
             container.innerHTML = `
                 <div id="cart-summary-items" class="item-producto-categoria mb-3">
@@ -443,76 +465,6 @@
             const formattedName = item.nombre.charAt(0).toUpperCase() + item.nombre.slice(1).toLowerCase();
 
             renderProductCard(item,formattedName);
-            // if (item.descuento && (item.descuento > 0 && item.descuento < item.precio))  {
-            //     container.innerHTML += `
-            //         <div class="col-12">
-            //             <div data-card-height="120" class="card card-style mb-4 mx-0 hover-grow-s" style="height: 120px;overflow: hidden">
-            //                 <div class="d-flex flex-row align-items-center gap-3"> 
-            //                     <a href="${item.url_detalle}" class="product-card-image">
-            //                     <img src="${item.imagen}" 
-            //                         onerror="this.src='imagenes/delight/default-bg-1.png';" 
-            //                         style="background-color: white;" />
-            //                     </a>
-            //                     <div class="d-flex flex-column w-100 gap-2" style="max-width: 260px">
-            //                         <h4 class="me-3">${formattedName.length > 50 ? formattedName.substring(0, 50) + '...' : formattedName}</h4>
-            //                         <div class="d-flex flex-row align-items-center justify-content-between gap-4 mb-2">
-            //                             <div class="d-flex flex-column">
-            //                                 <p class="font-10 mb-0 mt-n2"><del>Bs. ${item.precio}</del></p>
-            //                                 <p class="font-21 mt-n2 font-weight-bolder color-highlight mb-0">Bs. ${item.descuento}</p>
-            //                             </div>
-            //                             <div class="d-flex flex-row gap-2">
-            //                                 <button ruta="${item.url_detalle}" class="btn btn-xs copiarLink rounded-s btn-full shadow-l bg-red-light font-900">
-            //                                     <i class="fa fa-link"></i>
-            //                                 </button>
-            //                                 <button
-            //                                     class="add-to-cart btn btn-xs me-3 rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase"
-            //                                     data-producto-id="${item.id}"
-            //                                     data-producto-nombre="${item.nombre}"
-            //                                     >
-            //                                     <i class="fa fa-shopping-cart"></i>
-            //                                     Añadir
-            //                                 </button>
-            //                             </div>
-            //                         </div>
-            //                     </div>
-            //                 </div>
-            //             </div>
-            //         </div>
-            //     `;
-            // } else {
-            //     container.innerHTML += `
-            //         <div class="col-12">
-            //             <div data-card-height="120" class="card card-style mb-4 mx-0 hover-grow-s" style="height: 120px;overflow: hidden">
-            //                 <div class="d-flex flex-row align-items-center gap-3"> 
-            //                     <a href="${item.url_detalle}" class="product-card-image">
-            //                     <img src="${item.imagen}" 
-            //                         onerror="this.src='imagenes/delight/default-bg-1.png';" 
-            //                         style="background-color: white;" />
-            //                     </a>
-            //                     <div class="d-flex flex-column w-100 gap-2" style="max-width: 260px">
-            //                         <h4 class="me-3">${formattedName.length > 50 ? formattedName.substring(0, 50) + '...' : formattedName}</h4>
-            //                         <div class="d-flex flex-row align-items-center justify-content-between gap-4 mb-2">
-            //                                 <p class="font-21 font-weight-bolder color-highlight mb-0">Bs. ${item.precio}</p>
-            //                             <div class="d-flex flex-row gap-2">
-            //                                 <button ruta="${item.url_detalle}" class="btn btn-xs copiarLink rounded-s btn-full shadow-l bg-red-light font-900">
-            //                                     <i class="fa fa-link"></i>
-            //                                 </button>
-            //                                 <button
-            //                                     class="add-to-cart btn btn-xs me-3 rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase"
-            //                                     data-producto-id="${item.id}"
-            //                                     data-producto-nombre="${item.nombre}"
-            //                                     >
-            //                                     <i class="fa fa-shopping-cart"></i>
-            //                                     Añadir
-            //                                 </button>
-            //                             </div>
-            //                         </div>
-            //                     </div>
-            //                 </div>
-            //             </div>
-            //         </div>
-            //     `;
-            // } 
         });
     }
 
@@ -542,12 +494,4 @@
         `;
     };
 </script>
-{{-- <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        popularsModal = new bootstrap.Modal(document.getElementById('popularProductsModal'), {
-            focus: true
-        });
-    });
-</script> --}}
-
 @endpush

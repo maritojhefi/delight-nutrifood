@@ -61,23 +61,8 @@
                             <i data-lucide="{{$tag->icono}}" class="lucide-icon tag-icon me-1"></i>
                             <span class="font-12">{{$tag->nombre}}</span>
                         </li>
+                        
                     @endforeach
-                    <li class="col d-flex align-items-center">
-                        <i data-lucide="wheat-off" class="lucide-icon tag-icon me-1"></i>
-                        <span class="font-12">Libre de Gluten</span>
-                    </li>
-                    <li class="col d-flex align-items-center">
-                        <i data-lucide="candy-off" class="lucide-icon tag-icon me-1"></i>
-                        <span class="font-12">Organico</span>
-                    </li>
-                    <li class="col d-flex align-items-center">
-                        <i data-lucide="candy-off" class="lucide-icon tag-icon me-1"></i>
-                        <span class="font-12">Sin azúcar agregada</span>
-                    </li>
-                    <li class="col d-flex align-items-center">
-                        <i data-lucide="candy-off" class="lucide-icon tag-icon me-1"></i>
-                        <span class="font-12">Organico</span>
-                    </li>
                 @endif
                 {{-- LISTADO DE TAGS DE PRUEBA --}}
 

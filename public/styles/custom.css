@@ -47,7 +47,7 @@
 
 .card.plan-card h2 {
     color: #ffffff;
-    text-shadow: 
+    text-shadow:
         2px 2px 4px rgba(0, 0, 0, 0.8),
         1px 1px 2px rgba(0, 0, 0, 0.9),
         0 0 8px rgba(0, 0, 0, 0.5);
@@ -169,7 +169,7 @@
 }
 
 .input-style.remove-mb {
-    margin-bottom: 0 !important; 
+    margin-bottom: 0 !important;
 }
 
 .theme-light form input:focus {
@@ -339,7 +339,7 @@ hover-blue:hover {
 
 .card.resumen-carrito {
     background-color: #4ECDC4;
-    
+
 }
 
 .resumen-carrito-detalles button {
@@ -498,17 +498,17 @@ hover-blue:hover {
     .item-carrito-info {
         flex-direction: column;
     }
-    
+
     .product-image-container {
         align-self: center;
         margin-top: 1rem;
     }
-    
+
     .product-image {
         width: 100px;
         height: 100px;
     }
-    
+
     .quantity-controls {
         align-self: flex-end;
     }
@@ -677,7 +677,7 @@ hover-blue:hover {
     .theme-dark .item-carrito-info {
         background-color: #2d3748 !important;
     }
-    
+
     .theme-dark .quantity-controls {
         background-color: #4a5568 !important;
     }
@@ -932,11 +932,11 @@ hover-blue:hover {
     .theme-dark .cart-item-summary {
         background-color: #374151 !important;
     }
-    
+
     .theme-dark .cart-item-summary:hover {
         background-color: #4b5563 !important;
     }
-    
+
     .theme-dark .quantity-badge {
         font-size: 0.7rem;
         padding: 0.2rem 0.4rem;
@@ -990,11 +990,11 @@ hover-blue:hover {
     .cart-item-summary {
         padding: 0.75rem !important;
     }
-    
+
     .cart-item-summary .item-name p {
         font-size: 0.9rem;
     }
-    
+
     .cart-item-summary .item-subtotal p {
         font-size: 0.95rem;
     }
@@ -1054,11 +1054,11 @@ hover-blue:hover {
     .modal-dialog {
         margin: 1rem;
     }
-    
+
     .modal-body {
         padding: 1rem;
     }
-    
+
     .bg-light-warning {
         padding: 1rem;
     }
@@ -1192,7 +1192,7 @@ hover-blue:hover {
 
 .product-card-image img {
     width: 100px;
-    height: 120px; /* Match the card height */
+    height: 130px; /* Match the card height */
     object-fit: cover; /* Ensures image covers the area properly */
     object-position: center; /* Centers the image */
     border-top-left-radius: 0.5rem; /* Match the card's border radius */
@@ -1238,7 +1238,72 @@ hover-blue:hover {
     color: white !important;
 }
 
-/* 
+/* Add this to your CSS file */
+.tag-icon {
+    transition: all 0.2s ease;
+}
+
+.tag-icon:hover {
+    color: #0d6efd !important;
+    transform: scale(1.1);
+}
+
+.tag-popover {
+    border: none !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    animation: popoverFadeIn 0.2s ease-out;
+}
+
+@keyframes popoverFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.popover-header {
+    border-bottom: none;
+}
+
+.popover-body {
+    line-height: 1.4;
+}
+
+/* .tags-container {
+    anchor-name: --tag-popover-anchor;
+} */
+
+/* .tag-info-popover {
+    position: absolute;
+    margin: 0;
+    position-anchor: --tag-popover-anchor;
+    top: anchor(top);
+    left: anchor(left);
+    margin-block-start: -45px;
+} */
+
+/* .tag-info-popover:popover-open {
+    position:absolute;
+} */
+
+.tag-info-popover {
+    position: absolute;
+    margin: 0;
+    top: anchor(bottom);
+    left: anchor(left);
+    margin-block-start: 5px; /* Small gap below the button */
+}
+
+.tag-info-popover:popover-open {
+    position: absolute;
+}
+
+
+/*
 .product-quantity-controls {
     display: flex;
     align-items: center;
@@ -1248,7 +1313,7 @@ hover-blue:hover {
     min-height: 38px;
     border-radius: 5px;
     padding: 0 6px;
-    gap: 4px; 
+    gap: 4px;
 }
 
 .product-quantity-controls button {
@@ -1298,20 +1363,20 @@ hover-blue:hover {
 } */
 
 /* <div class="product-quantity-controls me-4">
-    <button class="qty-decrease" 
-            type="button" 
+    <button class="qty-decrease"
+            type="button"
             data-product-id="${item.id}"
             title="Disminuir cantidad"
             ${isDisabled ? 'disabled' : ''}>
         <i class="fa fa-minus"></i>
     </button>
-    <span id="item-${item.id}-qty" 
-        class="fw-semibold product-quantity" 
+    <span id="item-${item.id}-qty"
+        class="fw-semibold product-quantity"
         data-product-id="${item.id}">
         ${cantidadInicial}
     </span>
-    <button class="qty-increase" 
-            type="button" 
+    <button class="qty-increase"
+            type="button"
             data-product-id="${item.id}"
             title="Aumentar cantidad"
             ${isDisabled ? 'disabled' : ''}>

@@ -53,7 +53,12 @@ class Producto extends Model
             ->withTimestamps()
             ->withPivot('sucursale_id', 'cantidad', 'id', 'fecha_venc','max');
     }
-
+    public function tag()
+    {
+        return $this->belongsToMany(Tag::class)
+            ->withTimestamps()
+            ->withPivot('tag_id', 'producto_id');
+    }
     public function subcategoria()
     {
         return $this->belongsTo(Subcategoria::class);

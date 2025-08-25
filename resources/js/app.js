@@ -1,9 +1,3 @@
-// require('./bootstrap');
-
-// require('./auth/logout');
-// require('./carrito/carrito-store');
-
-// resources/js/app.js
 import './bootstrap';
 import { createIcons, icons } from 'lucide';
 
@@ -12,9 +6,10 @@ import { createIcons, icons } from 'lucide';
 import './auth/logout';
 import './carrito/carrito-store';
 
-// const usedIcons = {
-//     Star,
-//     WheatOff
-// };
 
 createIcons({icons});
+
+// window.lucide = { createIcons };
+window.reinitializeLucideIcons = () => {
+    createIcons({icons});
+};

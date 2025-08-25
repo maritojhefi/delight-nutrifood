@@ -8,34 +8,20 @@
             <p>
                 Encuentra lo que mas te gusta!
             </p>
+            {{-- BARRA DE BUSQUEDA --}}
             <div class="mb-0 input-style input-style-2 has-icon input-required ">
                 <i class="input-icon fa fa-search color-theme"></i>
                 <input type="text" 
-                       id="category-search" 
-                       class="form-control" 
-                       placeholder="Buscar categorías..."
-                       autocomplete="off">
+                    id="category-search" 
+                    class="form-control" 
+                    placeholder="Buscar categorías..."
+                    autocomplete="off">
                 <label for="category-search" class="color-highlight font-10 font-900">BUSCAR CATEGORÍA</label>
             </div>
         </div>
     </div>
 
-    {{-- Search Bar --}}
-    {{-- <div class="card card-style mb-3">
-        <div class="content">
-            <div class="input-style input-style-2 has-icon input-required">
-                <i class="input-icon fa fa-search color-theme"></i>
-                <input type="text" 
-                       id="category-search" 
-                       class="form-control" 
-                       placeholder="Buscar categorías..."
-                       autocomplete="off">
-                <label for="category-search" class="color-highlight font-10 font-900">BUSCAR CATEGORÍA</label>
-            </div>
-        </div>
-    </div> --}}
-
-    {{-- Categories Container --}}
+    {{-- CONTENEDOR DE CATEGORIAS --}}
     <div class="content mb-0" id="categories-container">
         @foreach($subcategorias as $subcategoria)
         <button 
@@ -62,7 +48,7 @@
         @endforeach
     </div>
 
-    {{-- No Results Message --}}
+    {{-- MENSAJE DE SIN-RESULTADOS --}}
     <div id="no-results-message" class="card card-style" style="display: none;">
         <div class="content text-center">
             <i class="fa fa-search fa-3x color-theme mb-3"></i>
@@ -232,8 +218,6 @@
                 return;
             }
 
-
-
             showLoadingState();
 
              if (categoryName) {
@@ -243,6 +227,7 @@
             try {
                 const categorizedProducts = await ProductoService.getProductosCategoria(categoriaId);
                 renderProductItems(categorizedProducts);
+                reinitializeLucideIcons();
             } catch (error) {
                     console.error(`Error al obtener productos para la categoria con ID ${categoriaId}`, error);
                     showErrorState();
@@ -268,6 +253,7 @@
                             </a>
                             <div class="d-flex flex-column w-100 gap-2" style="max-width: 260px">
                                 <h4 class="me-3">${formattedName.length > 50 ? formattedName.substring(0, 50) + '...' : formattedName}</h4>
+                                ${renderTagsRow(item)}
                                 <div class="d-flex flex-row align-items-center justify-content-between gap-4 mb-2">
                                     ${renderPriceSection(item)}
                                     <div class="d-flex flex-row gap-2">
@@ -321,6 +307,27 @@
             return `<p class="font-21 font-weight-bolder color-highlight mb-0">Bs. ${item.precio}</p>`;
         }
 
+        const renderTagsRow = (item) => {
+            if (item.tag && item.tag.length > 0) {
+                return `
+                    <div class="tags-container d-flex flex-row align-items-center justify-content-start gap-2">
+                    ${item.tag.map(tag => `
+                        <button popovertarget="poppytag-${item.id}-${tag.id}" popoveraction="toggle" style="anchor-name: --tag-btn-${item.id}-${tag.id};">
+                            <i data-lucide="${tag.icono}" class="lucide-icon" style="width:1.5rem;height:1.5rem;"></i>
+                        </button>
+                        <div popover
+                            id="poppytag-${item.id}-${tag.id}"
+                            class="tag-info-popover bg-white bg-dtheme-blue p-2 rounded-2 shadow-lg border"
+                            style="position-anchor: --tag-btn-${item.id}-${tag.id}; max-width:250px;">
+                            <p class="color-theme">${tag.nombre}</p>
+                        </div>
+                    `).join('')}
+                    </div>
+                `;
+            }
+            return '';
+        }
+
         if (categorizedProducts.length === 0) {
             container.innerHTML = `
                 <div id="cart-summary-items" class="item-producto-categoria mb-3">
@@ -337,8 +344,6 @@
         });
     }
 
-    
-
     const showErrorState = () => {
         const container = document.getElementById("listado-productos-categoria");
         container.innerHTML = `
@@ -352,8 +357,8 @@
     };
 
     const showLoadingState = () => {
-    const container = document.getElementById("listado-productos-categoria");
-    container.innerHTML = `
+        const container = document.getElementById("listado-productos-categoria");
+        container.innerHTML = `
             <div class="d-flex justify-content-center align-items-center py-4">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Cargando...</span>
