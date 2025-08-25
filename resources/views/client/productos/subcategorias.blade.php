@@ -95,25 +95,17 @@
     async function addToCartHandler() {
         const product_Id = $(this).data('producto-id');
         const product_nombre = $(this).data('producto-nombre')
-
-        // console.log("ID producto a agregar: ", product_Id);
-        // console.log("Nombre del producto a agregar: ", product_nombre);
+        
         try {
             const result = await carritoStorage.addToCart(product_Id, 1);
             if (result.success) {
-                showMessage('success', 'Item agregado al carrito!');
+                console.log("Producto  agregado con exito al carrito.")
             } else {
-                showMessage('error', result.message);
+                console.log(`Error al agregar el producto ${product_nombre} al carrito.`)
             }
         } catch (error) {
             console.error('Error agregando el producto al carrito:', error);
-            showMessage('error', 'Error al agregar el producto al carrito');
         }
-    }
-
-    function showMessage(type, text) {
-        $('#message-container').html(`<div class="alert alert-${type}">${text}</div>`);
-        setTimeout(() => $('#message-container').empty(), 3000);
     }
 </script>
 {{-- FUNCION DE BUSQUEDA  --}}
@@ -220,12 +212,13 @@
 
             showLoadingState();
 
-             if (categoryName) {
+            if (categoryName) {
                 categoryTitle.textContent = `${categoryName}`;
             }
 
             try {
                 const categorizedProducts = await ProductoService.getProductosCategoria(categoriaId);
+                // console.log("Productos categorizados: ", categorizedProducts);
                 renderProductItems(categorizedProducts);
                 reinitializeLucideIcons();
             } catch (error) {
@@ -244,17 +237,17 @@
         const renderProductCard = (item, formattedName) => {
             container.innerHTML += `
                 <div class="col-12">
-                    <div data-card-height="120" class="card card-style mb-4 mx-0 hover-grow-s" style="height: 120px;overflow: hidden">
+                    <div data-card-height="130" class="card card-style mb-4 mx-0 hover-grow-s" style="overflow: hidden">
                         <div class="d-flex flex-row align-items-center gap-3"> 
                             <a href="${item.url_detalle}" class="product-card-image">
                                 <img src="${item.imagen}" 
                                     onerror="this.src='/imagenes/delight/default-bg-1.png';" 
                                     style="background-color: white;" />
                             </a>
-                            <div class="d-flex flex-column w-100 gap-2" style="max-width: 260px">
-                                <h4 class="me-3">${formattedName.length > 50 ? formattedName.substring(0, 50) + '...' : formattedName}</h4>
+                            <div class="d-flex flex-column w-100 gap-2 me-2" style="max-width: 260px">
+                                <h4 class="me-1">${formattedName.length > 50 ? formattedName.substring(0, 50) + '...' : formattedName}</h4>
                                 ${renderTagsRow(item)}
-                                <div class="d-flex flex-row align-items-center justify-content-between gap-4 mb-2">
+                                <div class="d-flex flex-row align-items-center justify-content-between gap-4">
                                     ${renderPriceSection(item)}
                                     <div class="d-flex flex-row gap-2">
                                         <button ruta="${item.url_detalle}" class="btn btn-xs copiarLink rounded-s btn-full shadow-l bg-red-light font-900">
@@ -273,7 +266,7 @@
         const renderActionButton = (item) => {
             if (!item.tiene_stock) {
                 return `
-                    <button class="btn btn-xs me-3 rounded-s btn-full shadow-l bg-gray-dark font-900 text-uppercase" disabled>
+                    <button class="btn btn-xs rounded-s btn-full shadow-l bg-gray-dark font-900 text-uppercase" disabled>
                         <i class="fa fa-ban"></i>
                         Sin Stock
                     </button>
@@ -282,7 +275,7 @@
             
             return `
                 <button
-                    class="add-to-cart btn btn-xs me-3 rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase"
+                    class="add-to-cart btn btn-xs rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase"
                     data-producto-id="${item.id}"
                     data-producto-nombre="${item.nombre}"
                 >
@@ -344,6 +337,8 @@
         });
     }
 
+    
+
     const showErrorState = () => {
         const container = document.getElementById("listado-productos-categoria");
         container.innerHTML = `
@@ -357,8 +352,8 @@
     };
 
     const showLoadingState = () => {
-        const container = document.getElementById("listado-productos-categoria");
-        container.innerHTML = `
+    const container = document.getElementById("listado-productos-categoria");
+    container.innerHTML = `
             <div class="d-flex justify-content-center align-items-center py-4">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Cargando...</span>

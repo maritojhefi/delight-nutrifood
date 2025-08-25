@@ -15,5 +15,6 @@ mix.js('resources/js/app.js', 'public/js')
     .js('resources/js/carrito/index.js', 'public/js/carrito')
     .js('resources/js/carrito/carrito-service.js', 'public/js/carrito-service')
     .js('resources/js/productos/producto-service.js', 'public/js/producto')
+    // .js('resources/js/shared/listado-productos.js', 'public/js/shared')
     .sass('resources/sass/app.scss', 'public/css')
     .sourceMaps();

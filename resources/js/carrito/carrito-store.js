@@ -8,11 +8,11 @@ export const getCart = () => {
 
 // OBTENER PRODUCTO
 export const getCartItem = (productId) => {
-    console.log("retireving cart-item with id: ",productId)
+    // console.log("retireving cart-item with id: ",productId)
     const cart = getCart();
     try {
         const cartItem = cart.items.find(item => item.id ==productId);
-        console.log("Retrieved cart item: ", cartItem);
+        // console.log("Retrieved cart item: ", cartItem);
         return cartItem;
     } catch (error) {
         console.error("Error retrieving cart-item with id: ", productId);
@@ -22,7 +22,7 @@ export const getCartItem = (productId) => {
 
 // VACIAR CARRITO
 export const emptyCart = () => {
-    console.log("emptyCart fue llamado")
+    // console.log("emptyCart fue llamado")
     localStorage.removeItem('cart');
 }
 
@@ -34,7 +34,7 @@ export const removeProduct = (productId) => {
 }
 
 export const showAddedToast = () => {
-    console.log("Showing Added to cart toast");
+    // console.log("Showing Added to cart toast");
     var toaster = document.getElementById('toast-cart-added');
     const cart = new bootstrap.Toast(toaster);
     cart.show()
@@ -44,7 +44,7 @@ export const showAddedToast = () => {
 }
 
 export const showLimitToast = () => {
-    console.log("Showing cart item limit reached toast");
+    // console.log("Showing cart item limit reached toast");
     var toaster = document.getElementById('toast-cart-item-limit');
     const cart = new bootstrap.Toast(toaster);
     cart.show()
@@ -70,9 +70,9 @@ export const updateCartCounterEX = () => {
     const cart = JSON.parse(localStorage.getItem('cart')) || { items: [] };
     const cartCounter = document.getElementById('cart-counter');
     if (cart.items && cart.items.length > 0) {
-        // console.log("CartItemsRender:",cart.items)
+        // // console.log("CartItemsRender:",cart.items)
         const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
-        // console.log("TotalQuantity: ", totalQuantity)
+        // // console.log("TotalQuantity: ", totalQuantity)
         cartCounter.textContent = totalQuantity;
         cartCounter.style.display = 'inline-block'; 
     } else {
@@ -85,23 +85,23 @@ export const updateCartCounterEX = () => {
 export async function addToCart(productId, quantity, isPlan = false, isUpdate = false) {
   const cart = getCart();
 
-  console.log("Carrito actual:", cart);
+  // console.log("Carrito actual:", cart);
 
   const existingItem = cart.items.find(item => item.id == productId);
 
-  console.log("Item a agregar: ", existingItem);
+  // console.log("Item a agregar: ", existingItem);
   const currentQty = existingItem ? existingItem.quantity : 0;
-  console.log("Cantidad actual del item: ", currentQty);
+  // console.log("Cantidad actual del item: ", currentQty);
   const newQty = currentQty + quantity;
-  console.log("Nueva cantidad: ", newQty);
+  // console.log("Nueva cantidad: ", newQty);
 
   try {
     const stockResponse = await checkProductStock(productId);
-    console.log("Respuesta del backend: ", stockResponse);
+    // console.log("Respuesta del backend: ", stockResponse);
     
     // Si el stock es ilimitado, saltar validacion
     if (stockResponse.unlimited) {
-    console.log("El stock del item es ilimitado");
+    // console.log("El stock del item es ilimitado");
         if (existingItem) {
             existingItem.quantity = newQty;
         } else {
@@ -110,7 +110,7 @@ export async function addToCart(productId, quantity, isPlan = false, isUpdate = 
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartCounterEX()
         if (!isUpdate) {
-            console.log("No es update")
+            // console.log("No es update")
                 showAddedToast();
         }
         return {success: true, newQuantity: newQty, cart};
@@ -137,7 +137,7 @@ export async function addToCart(productId, quantity, isPlan = false, isUpdate = 
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCounterEX()
     if (!isUpdate) {
-            console.log("No es update")
+            // console.log("No es update")
             showAddedToast();
     }
     return {success: true, newQuantity: newQty, cart};
@@ -156,12 +156,12 @@ export const substractFromCart = (productId, quantity) => {
         return {success:false,message:"El valor no puede ser menor que 1"}
     }
     const cart = getCart();
-    console.log("Carrito actual:", cart);
-    console.log("Id item a buscar", productId);
+    // console.log("Carrito actual:", cart);
+    // console.log("Id item a buscar", productId);
     const existingItem = cart.items.find(item => item.id == productId); // Use the same cart reference
 
-    console.log("Item encontrado:", existingItem);
-    console.log("Item a reducir: ", existingItem);
+    // console.log("Item encontrado:", existingItem);
+    // console.log("Item a reducir: ", existingItem);
     const currentQty = existingItem.quantity;
     if (quantity >= currentQty) {
         return {success:false,message:"El valor no puede ser menor que 1"}

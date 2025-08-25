@@ -316,6 +316,28 @@
 @endsection
 
 @push('scripts')
+<script> 
+    $(document).ready(function() {
+        $(document).on('click', '.add-to-cart', addToCartHandler);
+    });
+
+    async function addToCartHandler() {
+        const product_Id = $(this).data('producto-id');
+        const product_nombre = $(this).data('producto-nombre')
+
+        try {
+            const result = await carritoStorage.addToCart(product_Id, 1);
+            if (result.success) {
+                console.log("Producto  agregado con exito al carrito.")
+            } else {
+                console.log(`Error al agregar el producto ${product_nombre} al carrito.`)
+            }
+        } catch (error) {
+            console.error('Error agregando el producto al carrito:', error);
+        }
+    }
+</script>
+{{-- SCRIPT CONTROL DEL MODAL PRODUCTOS CATEGORIZADOS [ECO-TIENDA] --}}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         saleProductsModal = new bootstrap.Modal(document.getElementById('saleProductsModal'), {
@@ -338,4 +360,5 @@
         });
     });
 </script>
+
 @endpush

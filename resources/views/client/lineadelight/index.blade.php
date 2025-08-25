@@ -185,8 +185,7 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset(path: 'js/producto/producto-service.js') }}"></script>
-<script src="{{ asset('js/carrito/index.js') }}"></script>
+{{-- SCRIPT CONTROL DE AGREGAR AL CARRITO --}}
 <script> 
     $(document).ready(function() {
         $(document).on('click', '.add-to-cart', addToCartHandler);
@@ -195,32 +194,23 @@
     async function addToCartHandler() {
         const product_Id = $(this).data('producto-id');
         const product_nombre = $(this).data('producto-nombre')
-
-        console.log("ID producto a agregar: ", product_Id);
-        console.log("Nombre del producto a agregar: ", product_nombre);
+        
         try {
-            const result = await addToCart(product_Id, 1);
+            const result = await carritoStorage.addToCart(product_Id, 1);
             if (result.success) {
-                showMessage('success', 'Item agregado al carrito!');
+                console.log("Producto  agregado con exito al carrito.")
             } else {
-                showMessage('error', result.message);
+                console.log(`Error al agregar el producto ${product_nombre} al carrito.`)
             }
         } catch (error) {
-            console.error('Error adding to cart:', error);
-            showMessage('error', 'Error al agregar el producto al carrito');
+            console.error('Error agregando el producto al carrito:', error);
         }
     }
-
-    function showMessage(type, text) {
-        $('#message-container').html(`<div class="alert alert-${type}">${text}</div>`);
-        setTimeout(() => $('#message-container').empty(), 3000);
-    }
 </script>
+{{-- SCRIPT CONTROL DE SLIDER --}}
 <script>
     const subcategoriasPorHorario = @json($horarios);
-</script>
-    {{-- SCRIPT CONTROL DE SLIDER --}}
-<script>
+
     document.addEventListener('DOMContentLoaded', function () {
         const hour = new Date().getHours();
         let defaultTime = '';
@@ -372,10 +362,10 @@
                         <div class="d-flex flex-row align-items-center gap-3"> 
                             <a href="${item.url_detalle}" class="product-card-image">
                                 <img src="${item.imagen}" 
-                                    onerror="this.src='imagenes/delight/default-bg-1.png';" 
+                                    onerror="this.src='/imagenes/delight/default-bg-1.png';" 
                                     style="background-color: white;" />
                             </a>
-                            <div class="d-flex flex-column w-100 gap-1 me-2" style="max-width: 260px">
+                            <div class="d-flex flex-column w-100 gap-2 me-2" style="max-width: 260px">
                                 <h4 class="me-1">${formattedName.length > 50 ? formattedName.substring(0, 50) + '...' : formattedName}</h4>
                                 ${renderTagsRow(item)}
                                 <div class="d-flex flex-row align-items-center justify-content-between gap-4">
