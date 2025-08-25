@@ -91,7 +91,12 @@
         <div class="splide topic-slider slider-no-arrows slider-no-dots pb-2 splide--loop splide--ltr splide--draggable" id="topic-slider-1" style="visibility: visible;">
             <div class="splide__track" id="topic-slider-1-track" style="padding-left: 15px; padding-right: 40px;">
                 <div class="splide__list" id="topic-slider-1-list" style="transform: translateX(-866.592px);">
-                    <div class="splide__slide" id="topic-slider-1-slide01" style="width: 108.333px;">
+                    @foreach ($horarios as $horario)
+                        <div class="splide__slide" id="topic-slider-1-{{$horario->nombre}}" style="width: 108.333px;">
+                            <h1 class="font-16 d-block"><button class="time-btn opacity-50" data-time="{{$horario->nombre}}">{{ucfirst($horario->nombre)}}</button></h1>
+                        </div>
+                    @endforeach
+                    {{-- <div class="splide__slide" id="topic-slider-1-slide01" style="width: 108.333px;">
                         <h1 class="font-16 d-block"><button class="time-btn opacity-50" data-time="manana">Mañana</button></h1>
                     </div>
                     <div class="splide__slide" id="topic-slider-1-slide02 is-active" style="width: 108.333px;">
@@ -99,7 +104,7 @@
                     </div>
                     <div class="splide__slide" id="topic-slider-1-slide03" style="width: 108.333px;">
                         <h1 class="font-16 d-block"><button class="time-btn opacity-50" data-time="noche">Noche</button></h1>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>
@@ -238,18 +243,40 @@
 </script>
 {{-- SCRIPT CONTROL DE SLIDER --}}
 <script>
-    const subcategoriasPorHorario = @json($horarios);
+    const subcategoriasPorHorario = @json($horariosData);
+    const horarios = @json($horarios);
 
     document.addEventListener('DOMContentLoaded', function () {
-        const hour = new Date().getHours();
+        // Determinacion del horario actual basado en la hora del dia
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        const currentTimeInMinutes = currentHour * 60 + currentMinute;
+        
         let defaultTime = '';
 
-        if (hour >= 4 && hour < 11) {
-            defaultTime = 'manana';
-        } else if (hour >= 11 && hour < 19) {
-            defaultTime = 'tarde';
-        } else {
-            defaultTime = 'noche';
+        // Iterar sobre los horarios para encontrar el rango que incluye la hora actual
+        for (const horario of horarios) {
+            const startTime = horario.hora_inicio.split(':');
+            const endTime = horario.hora_fin.split(':');
+            
+            const startMinutes = parseInt(startTime[0]) * 60 + parseInt(startTime[1]);
+            const endMinutes = parseInt(endTime[0]) * 60 + parseInt(endTime[1]);
+            
+            // Manejar casos donde el horario cruze la medianoche (ejm: 19:00 - 03:59)
+            if (startMinutes > endMinutes) {
+                // El rango cruza la medianoche
+                if (currentTimeInMinutes >= startMinutes || currentTimeInMinutes <= endMinutes) {
+                    defaultTime = horario.nombre;
+                    break;
+                }
+            } else {
+                // Rango normal dentro del mismo dia
+                if (currentTimeInMinutes >= startMinutes && currentTimeInMinutes <= endMinutes) {
+                    defaultTime = horario.nombre;
+                    break;
+                }
+            }
         }
 
         // Inicializacion de slider para horarios
@@ -268,10 +295,9 @@
             interval: 3000,
         });
 
-        // items/Categorias por defecto a renderizarse
+        // Items/Categorias por defecto a renderizarse
         const defaultItems = subcategoriasPorHorario[defaultTime];
         updateSliderContent(defaultItems);
-        // renderProductItems(defaultItems);
         doubleSlider.mount();
 
         // Determinacion del boton activo

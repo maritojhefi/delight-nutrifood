@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Horario;
 use App\Models\Plane;
 use App\Models\Producto;
 use App\Models\Subcategoria;
@@ -53,34 +54,21 @@ class LineaDelightController extends Controller
             ->shuffle()
             ->take(10);
 
-        
+        $horarios = Horario::all();
 
-        // $horarios = (object)[
-        //     'manana' => GlobalHelper::processSubcategoriaFoto(Subcategoria::whereIn('id', [3, 4, 8, 10, 12, 13, 54, 56, 57])->get()),
-        //     'tarde' => GlobalHelper::processSubcategoriaFoto(Subcategoria::whereIn('id', [2, 6, 9, 52, 55])->get()),
-        //     'noche' => GlobalHelper::processSubcategoriaFoto(Subcategoria::whereIn('id', [8, 9, 15, 55, 58])->get())
-        // ];
+        $horariosDataArray = [];
 
-        $horarios = (object)[
-            'manana' => GlobalHelper::processSubcategoriaFoto(
-                Subcategoria::whereHas('horarios', function($query) {
-                    $query->where('nombre', 'mañana');
+        foreach ($horarios as $horario) {
+            $horariosDataArray[$horario->nombre] = GlobalHelper::processSubcategoriaFoto(
+                Subcategoria::whereHas('horarios', function($query) use ($horario) {
+                    $query->where('nombre', $horario->nombre);
                 })->get()
-            ),
-            'tarde' => GlobalHelper::processSubcategoriaFoto(
-                Subcategoria::whereHas('horarios', function($query) {
-                    $query->where('nombre', 'tarde');
-                })->get()
-            ),
-            'noche' => GlobalHelper::processSubcategoriaFoto(
-                Subcategoria::whereHas('horarios', function($query) {
-                    $query->where('nombre', 'noche');
-                })->get()
-            )
-        ];
+            );
+        }
 
+        $horariosData = (object) $horariosDataArray;
 
-        return view('client.lineadelight.index', compact('subcategorias', 'masVendidos','masRecientes','enDescuento', 'conMasPuntos', 'productos', 'horarios'));
+        return view('client.lineadelight.index', compact('subcategorias', 'masVendidos','masRecientes','enDescuento', 'conMasPuntos', 'productos', 'horarios','horariosData'));
     }
     public function categoriaPlanes()
     {
