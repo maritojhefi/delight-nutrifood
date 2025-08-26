@@ -1,9 +1,6 @@
 @extends('client.master')
-@section('content-comentado')
-    <x-cabecera-pagina titulo="Productos" cabecera="appkit" />
-
-    {{-- <x-page-construccion/> --}}
-
+{{-- @section('content-comentado')
+    <x-cabecera-pagina titulo="Eco-Tienda" cabecera="appkit" />
     <div class="card card-style bg-transparent mx-0 mb-n2 mt-n3 shadow-0">
         <div class="content mt-2">
             <div class="search-box bg-theme color-theme rounded-m shadow-l">
@@ -19,12 +16,10 @@
                             data-filter-item="{{ Str::of($item->nombre)->lower() }}"
                             data-filter-name="{{ Str::of($item->nombre)->lower() }}">
                             <div class="align-self-center">
-                                <img src="{{ asset($item->pathAttachment()) }}" class="rounded-sm me-3" width="35"
-                                    alt="img">
                             </div>
                             <div class="align-self-center">
                                 <span
-                                    class="color-theme font-15 d-block mb-0">{{ Str::limit(ucfirst(strtolower($item->nombre)), 35, '...') }}</span>
+                                    class="color-theme font-15 d-block p-2 mb-0">{{ Str::limit(ucfirst(strtolower($item->nombre)), 35, '...') }}</span>
                             </div>
                             <div class="ms-auto text-center align-self-center pe-2">
                                 <h5 class="line-height-xs font-16 font-600 mb-0">{{ $item->precio }} Bs<sup
@@ -67,8 +62,6 @@
                         </a>
                     </div>
                 @endforeach
-
-
             </div>
         </div>
         <ul class="splide__pagination">
@@ -87,7 +80,6 @@
         <div class="d-flex px-3 mb-2">
             <h4 class="mb-2 font-600">Productos en descuento!</h4>
         </div>
-      
 
         <div class="splide single-slider slider-no-arrows slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"
             id="single-slider-2" style="visibility: visible;">
@@ -178,7 +170,6 @@
                                 </a>
                             </div>
                         @endforeach
-
                     </div>
                 </div>
             </div>
@@ -186,8 +177,188 @@
             <div class="card-overlay dark-mode-tint"></div>
         </div>
     @endif
-@endsection
+@endsection --}}
 @section('content')
-    <x-cabecera-pagina titulo="En construcción!" cabecera="appkit" />
-    <x-page-construccion />
+    <x-cabecera-pagina-highlight titulo="Eco Tienda" />
+    <div class="content mb-0">
+        <div class="col-12">
+            <div class="card bg-white rounded-xl p-3">
+                Soy una barra de busqueda
+            </div>
+        </div>
+
+        {{-- SLIDER PRODUCTOS MAS VENDIDOS --}}
+        <div id="best-selling-container" class="my-4">
+            <x-slider-productos :productos="$masVendidos" tag="popular" :title="'Los mas vendidos'" />
+        </div>
+
+        {{-- SLIDER PRODUCTOS MAS RECIENTES --}}
+        <div id="recent-container" class="my-4">
+            <x-slider-productos :productos="$masRecientes" tag="recent" title="Novedades" orientation="right" />
+        </div>
+        <a  
+            {{-- data-bs-toggle="modal" 
+            data-bs-target="#subcategoriesModal" --}}
+            href="{{ route('listar.subcategorias.productos') }}"
+            data-card-height="100" class="card card-style col-12 mx-0 mt-2 px-0 round-medium shadow-huge hover-grow-xs"
+            style="height: 100px;background-color: #FF5A5A;">
+            <div class="card-center d-flex flex-row align-items-center justify-content-between ps-4 pe-3">
+                <div class="d-flex flex-row align-items-center gap-3">
+                    {{-- <i data-lucide="apple" class="lucide-icon" style="color: white; width: 3rem; height: 3rem;"></i> --}}
+                    <i class="fa fa-apple-alt fa-3x" style="color: white"></i>
+                    <div class="text-start">
+                        <h2 class="text-white">Todas nuestras categorias</h2>
+                        <p class="mb-0 text-white opacity-75">Descubre todas nustras categorias disponibles</p>
+                    </div>
+                </div>
+                <i class="fa fa-arrow-circle-right fa-2x" style="color: white"></i>
+            </div>
+            <div class="card-overlay dark-mode-tint"></div>
+        </a>
+
+        {{-- CARD PRODUCTOS PUNTUADOS --}}
+        @if ($conMasPuntos->count() > 0)
+        <div class="card card-style rounded-md mx-0 preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
+            style="background-image: url({{ asset('imagenes/delight/default-bg-vertical.jpg') }});">
+            <div class="card-body">
+                <div class="mx-4 mb-0">
+                    <h4 class="color-white pt-3 font-24">Gana Puntos!</h4>
+                    <p class="color-white pt-1 mb-2">
+                        Los productos seleccionados atribuyen puntos por cada compra realizada.
+                        Mientras mas puntos, mas premios!
+                    </p>
+                </div>
+                <div class="card card-style bg-transparent m-0 shadow-0">
+                    <div class="row mb-0 p-2">
+                        @foreach ($conMasPuntos as $item)
+                            <div class="col-6">
+                                <a href="{{ route('delight.detalleproducto', $item->id) }}"
+                                    class="card card-style py-3 d-flex align-items-center hover-grow" data-menu="menu-product">
+                                    <img src="{{ asset('imagenes/delight/optimal_logo.svg')}}" alt="img" width="100"
+                                    class="mx-auto">
+                                    <div class="p-2">
+                                        <p class="mb-0 font-600 text-center">{{ Str::limit($item->nombre(), 40) }}</p>
+                                    </div>
+                                    <div class="divider mb-0"></div>
+                                    <div class="d-flex flex-row justify-content-between gap-4 mb-0">
+                                        <p class="font-600 mb-0">Bs. {{ $item->descuento ? $item->descuento : $item->precio }}</p>
+                                        <p class="bg-blue-dark font-11 px-2 font-600 rounded-xs shadow-xxl mb-0">{{ $item->puntos }} Pts</p>
+                                    </div>
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            <div class="card-overlay bg-highlight opacity-90"></div>
+            <div class="card-overlay dark-mode-tint"></div>
+        </div>
+        @endif
+    </div>
+
+    {{-- MODAL SUPLEMENTOS STARK --}}
+    <div class="modal fade" id="starkSuplementsModal" tabindex="-1" aria-labelledby="starkSuplementsModalLabel" aria-hidden="true" style="z-index: 9999">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header mx-2 mt-2 border-0 gap-4 d-flex align-items-center">
+                    <h4 id="stark-modal-title" class="mb-0 ms-4 align-self-center text-uppercase">STARK SUPLEMENTS</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body pt-0 d-flex flex-column">
+                    <div class="content justify-content-center align-items-center" id="listado-productos-stark">
+                        <!-- Contenedor items individuales-->
+                        @if($suplementosStark->isEmpty())
+                            <div class="d-flex flex-column justify-content-center align-items-center text-center py-5">
+                                <i class="fa fa-question-circle fa-5x mb-3"></i>
+                                <p>Parece que no hay suplementos stark en stock ahora mismo, verifica más tarde.</p>
+                            </div>
+                        @else
+                            @foreach ($suplementosStark as $productoStark)
+                                <x-producto-card :producto="$productoStark" />
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL PRODUCTOS EN OFERTA --}}
+    <div class="modal fade" id="saleProductsModal" tabindex="-1" aria-labelledby="saleProductsModalLabel" aria-hidden="true" style="z-index: 9999">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header mx-2 mt-2 border-0 gap-4 d-flex align-items-center">
+                    <h4 id="sale-modal-title" class="mb-0 ms-4 align-self-center text-uppercase">Productos en Oferta</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body pt-0 d-flex flex-column">
+                    <div class="content justify-content-center align-items-center" id="listado-productos-ofertados">
+                        <!-- Contenedor items individuales-->
+                        @if($enDescuento->isEmpty())
+                            <div class="d-flex flex-column justify-content-center align-items-center text-center py-5">
+                                <i class="fa fa-question-circle fa-5x mb-3"></i>
+                                <p>Parece que no hay productos en oferta ahora mismo, verifica más tarde.</p>
+                            </div>
+                        @else
+                            @foreach ($enDescuento as $ofertado)
+                                <x-producto-card :producto="$ofertado" />
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+
+@push('scripts')
+<script> 
+    $(document).ready(function() {
+        $(document).on('click', '.add-to-cart', addToCartHandler);
+    });
+
+    async function addToCartHandler() {
+        const product_Id = $(this).data('producto-id');
+        const product_nombre = $(this).data('producto-nombre')
+
+        try {
+            const result = await carritoStorage.addToCart(product_Id, 1);
+            if (result.success) {
+                console.log("Producto  agregado con exito al carrito.")
+            } else {
+                console.log(`Error al agregar el producto ${product_nombre} al carrito.`)
+            }
+        } catch (error) {
+            console.error('Error agregando el producto al carrito:', error);
+        }
+    }
+</script>
+{{-- SCRIPT CONTROL DEL MODAL PRODUCTOS CATEGORIZADOS [ECO-TIENDA] --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        saleProductsModal = new bootstrap.Modal(document.getElementById('saleProductsModal'), {
+            focus: true
+        });
+
+        starkProductsModal = new bootstrap.Modal(document.getElementById('starkSuplementsModal'), {
+            focus: true
+        });
+
+        const saleModalElement = document.getElementById('saleProductsModal');
+        const starkModalElement = document.getElementById('starkSuplementsModal');
+
+        saleModalElement.addEventListener('show.bs.modal', async function (event) {
+            const triggerElement = event.relatedTarget;
+        });
+
+        starkModalElement.addEventListener('show.bs.modal', async function (event) {
+            const triggerElement = event.relatedTarget;
+        });
+    });
+</script>
+
+@endpush

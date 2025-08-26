@@ -29,6 +29,10 @@ class Subcategoria extends Model
     {
         return $this->hasMany(Producto::class);
     }
+    public function horarios()
+    {
+        return $this->belongsToMany(Horario::class);    
+    }
     public function adicionales()
     {
         return $this->belongsToMany(Adicionale::class)->withTimestamps()->withPivot('id_grupo');

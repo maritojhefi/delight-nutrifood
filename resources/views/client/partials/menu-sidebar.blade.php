@@ -73,8 +73,16 @@
         </a>
         @endif
         {{-- CERRAR SESION --}}
-        <a id="nav-logout" href="{{ route('logout') }}" 
+        {{-- <a id="nav-logout" href="{{ route('logout') }}" 
         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <i class="fa fa-sign-out-alt gradient-magenta color-white"></i>
+            <span>Cerrar Sesion</span>
+            <i class="fa fa-angle-right"></i>
+        </a>
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form> --}}
+        <a id="nav-logout" href="{{ route('logout') }}" class="logout-link">
             <i class="fa fa-sign-out-alt gradient-magenta color-white"></i>
             <span>Cerrar Sesion</span>
             <i class="fa fa-angle-right"></i>

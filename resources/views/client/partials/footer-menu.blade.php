@@ -22,6 +22,14 @@
                     var titulo = $(this).children('span').html()
                 });
             }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                // Actualizar contenido del carrito de existir al momento de cargarse
+                carritoStorage.updateCartCounterEX();
+                
+                // Optional: Listen for custom events if you update the cart elsewhere
+                // document.addEventListener('cartUpdated', updateCartCounterEX);
+            });
         </script>
     @endpush
     <a id="uno" href="{{ route('miperfil') }}"
@@ -52,6 +60,7 @@
     <a href="{{ route('carrito') }}"
         class="{{ request()->is('carrito' . '*') ? 'active-nav rounded-m' : '' }} cargando">
         <i class="fa fa-shopping-cart"></i>
+        <span id="cart-counter" class="cart-counter-badge"></span>
         <span>Mi carrito</span>
         <em></em>
     </a>

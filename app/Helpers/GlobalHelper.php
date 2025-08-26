@@ -413,4 +413,13 @@ class GlobalHelper
         $atributo = Setting::where('atributo', $atributo)->firstOrFail();
         return $atributo->valor;
     }
+
+    public static function processSubcategoriaFoto($subcategorias) {
+        return $subcategorias->map(function ($sub) {
+            $sub->foto = $sub->foto 
+                ? asset('imagenes/subcategorias/' . $sub->foto) 
+                : asset('imagenes/delight/default-bg-vertical.jpg');
+            return $sub;
+        });
+    }
 }
