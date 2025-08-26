@@ -64,6 +64,7 @@ Route::prefix('/productos')->group(function () {
     Route::get('/add/carrito/{id}', [App\Http\Controllers\CarritoController::class, 'addToCarrito']);
     Route::get('/{id}/stock',[App\Http\Controllers\ProductoController::class, 'checkProductStock']);
     Route::get('/{id}',[App\Http\Controllers\ProductoController::class,'getProduct']);
+    Route::get('/limpiar-fotos/productos',[App\Http\Controllers\ProductoController::class,'limpiarProductos']);
 });
 //promociones
 Route::prefix('/lineadelight')->group(function () {

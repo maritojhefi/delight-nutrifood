@@ -3,37 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Models\Almuerzo;
-use App\Models\Categoria;
-use App\Models\GaleriaFotos;
 use App\Models\Producto;
-use App\Models\Subcategoria;
+use App\Models\Categoria;
 use Illuminate\Support\Str;
+use App\Models\GaleriaFotos;
+use App\Models\Subcategoria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 
 class ProductoController extends Controller
 {
     public function lineadelightsubcategoria($id)
     {
-        $subcategoria=Subcategoria::find($id);
-       
-        return view('client.productos.delight-subcategoria',compact('subcategoria'));
+        $subcategoria = Subcategoria::find($id);
+
+        return view('client.productos.delight-subcategoria', compact('subcategoria'));
     }
     public function lineadelightproducto($id)
     {
         $producto = Producto::findOrFail($id);
         $nombrearray = Str::of($producto->nombre)->explode(' ');
-        
+
         // Procesar la imagen del producto y su url
-        $producto->imagen = $producto->imagen 
-            ? asset('imagenes/productos/' . $producto->imagen) 
+        $producto->imagen = $producto->imagen
+            ? asset('imagenes/productos/' . $producto->imagen)
             : asset('imagenes/delight/default-bg-1.png');
         $producto->url_detalle = route('delight.detalleproducto', $producto->id);
 
         // Obtener productos similares excluyendo el producto ya obtenido
         $similares = $producto->subcategoria->productos
-            ->reject(fn ($p) => $p->id == $id || $p->estado != 'activo')  // Dual filter
+            ->reject(fn($p) => $p->id == $id || $p->estado != 'activo')  // Dual filter
             ->shuffle()
             ->take(5)
             ->map(function ($p) {
@@ -48,38 +49,38 @@ class ProductoController extends Controller
     }
     public function detallesubcategoria($id)
     {
-        $subcategoria=Subcategoria::find($id);
-       
-       return view('client.productos.detallesubcategoria',compact('subcategoria'));
+        $subcategoria = Subcategoria::find($id);
+
+        return view('client.productos.detallesubcategoria', compact('subcategoria'));
     }
-    public function index(){   
+    public function index()
+    {
         try {
             $productos = Producto::select('productos.*')
-                ->leftjoin('subcategorias','subcategorias.id','productos.subcategoria_id')
-                ->leftjoin('categorias','categorias.id','subcategorias.categoria_id')
-                ->where('productos.estado','activo')
-                ->where('categorias.nombre','ECO-TIENDA')
+                ->leftjoin('subcategorias', 'subcategorias.id', 'productos.subcategoria_id')
+                ->leftjoin('categorias', 'categorias.id', 'subcategorias.categoria_id')
+                ->where('productos.estado', 'activo')
+                ->where('categorias.nombre', 'ECO-TIENDA')
                 ->with(['unfilteredSucursale', 'tag'])
-                ->get(); 
+                ->get();
 
             $productos = $productos->map(function ($producto) {
                 $producto->tiene_stock = !($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0);
                 return $producto;
             });
 
-            $subcategorias = Subcategoria::has('productos')->where('categoria_id',1)->orderBy('nombre')->get();
+            $subcategorias = Subcategoria::has('productos')->where('categoria_id', 1)->orderBy('nombre')->get();
             $masVendidos = $productos->sortByDesc('cantidad_vendida')->take(10);
             $masRecientes = $productos->sortByDesc('created_at')->take(10);
-            $enDescuento = $productos->where('descuento','!=',null)->where('descuento','!=',0)->shuffle();
-            $conMasPuntos = $productos->where('puntos','!=',null)->where('puntos','!=',0)->shuffle()->take(10);
+            $enDescuento = $productos->where('descuento', '!=', null)->where('descuento', '!=', 0)->shuffle();
+            $conMasPuntos = $productos->where('puntos', '!=', null)->where('puntos', '!=', 0)->shuffle()->take(10);
             $suplementosStark = $productos->where('subcategoria_id', 24);
 
             // Log::debug('Productos de la Eco Tienda en oferta obtenidos correctamente', [
             //     'productos' => $enDescuento->where('id')
             // ]);
-            
-            return view('client.productos.index',compact('subcategorias','masVendidos','masRecientes','enDescuento','conMasPuntos','suplementosStark'));
-            
+
+            return view('client.productos.index', compact('subcategorias', 'masVendidos', 'masRecientes', 'enDescuento', 'conMasPuntos', 'suplementosStark'));
         } catch (\Throwable $th) {
             // Log::error('Error al obtener los productos de la Eco Tienda', [
             //     'error' => $th->getMessage(),
@@ -87,50 +88,50 @@ class ProductoController extends Controller
             // ]);
         }
     }
-    public function subcategorias() {
+    public function subcategorias()
+    {
         $subcategorias = Subcategoria::has('productos')->where('categoria_id', 1)
-                                    ->orderBy('nombre')
-                                    ->get();
+            ->orderBy('nombre')
+            ->get();
         return view('client.productos.subcategorias', data: compact('subcategorias'));
     }
-    public function detalleproducto($id){
-        $producto=Producto::findOrFail($id);
-        $nombrearray=Str::of($producto->nombre)->explode(delimiter: ' ');
+    public function detalleproducto($id)
+    {
+        $producto = Producto::findOrFail($id);
+        $nombrearray = Str::of($producto->nombre)->explode(delimiter: ' ');
 
         $similares = $producto->subcategoria->productos
-            ->reject(fn ($p) => $p->id == $id || $p->estado != 'activo')  // Dual filter
+            ->reject(fn($p) => $p->id == $id || $p->estado != 'activo')  // Dual filter
             ->shuffle()
             ->take(5)
             ->map(function ($p) {
-                $p->imagen = $p->imagen
-                    ? asset('imagenes/productos/' . $p->imagen)
-                    : asset('imagenes/delight/21.jpeg');
+                $p->imagen = $p->pathAttachment();
                 $p->url_detalle = route('delight.detalleproducto', $p->id);
                 return $p;
             });
         //dd($nombrearray);
-        return view('client.productos.delight-producto',compact('producto','nombrearray','similares'));
+        return view('client.productos.delight-producto', compact('producto', 'nombrearray', 'similares'));
     }
     public function menusemanal()
     {
-        $subcategorias=Subcategoria::has('productos')->inRandomOrder()->get();
-        $almuerzos=Almuerzo::all();
-        $galeria=GaleriaFotos::inRandomOrder()->get();
-        return view('client.productos.menusemanal',compact('galeria','almuerzos','subcategorias'));
+        $subcategorias = Subcategoria::has('productos')->inRandomOrder()->get();
+        $almuerzos = Almuerzo::all();
+        $galeria = GaleriaFotos::inRandomOrder()->get();
+        return view('client.productos.menusemanal', compact('galeria', 'almuerzos', 'subcategorias'));
     }
     public function productosSubcategoria($id)
     {
         try {
             $productos = Producto::select('productos.*')
-                        ->with(['unfilteredSucursale', 'tag']) // Add eager loading here
-                        ->where('subcategoria_id', $id)
-                        ->where('estado', 'activo')
-                        ->orderByRaw('CASE 
+                ->with(['unfilteredSucursale', 'tag']) // Add eager loading here
+                ->where('subcategoria_id', $id)
+                ->where('estado', 'activo')
+                ->orderByRaw('CASE 
                             WHEN descuento IS NOT NULL AND descuento > 0 AND descuento < precio THEN 0 
                             ELSE 1 
                         END')
-                        ->orderBy('nombre')
-                        ->get();
+                ->orderBy('nombre')
+                ->get();
 
             foreach ($productos as $producto) {
                 if ($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0) {
@@ -155,7 +156,8 @@ class ProductoController extends Controller
             ], 500);
         }
     }
-    public function checkProductStock($id) {
+    public function checkProductStock($id)
+    {
         $producto = Producto::findOrFail($id);
 
         if ($producto == null) {
@@ -172,7 +174,8 @@ class ProductoController extends Controller
         }
     }
 
-    public function getProduct($id) {
+    public function getProduct($id)
+    {
         try {
             $producto = Producto::findOrFail($id);
             return response()->json($producto, 200); // Removed the array brackets
