@@ -138,7 +138,7 @@
     <!-- Cart Deletion Confirmation Modal -->
     <div class="modal fade" id="confirmDeleteCartModal" tabindex="-1" aria-labelledby="confirmDeleteCartModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content mx-5">
+            <div class="modal-content mx-2">
                 <div class="modal-header border-0 pb-0 align-self-center">
                     <h1 class="modal-title fw-bold text-danger" id="confirmDeleteCartModalLabel">
                         ¿Estas Seguro?
@@ -150,7 +150,7 @@
                         Todos los productos en tu carrito seran retirados.
                     </p>
                 </div>
-                <div class="modal-footer border-0 pt-0 d-flex flex-row align-items-center justify-content-center gap-5">
+                <div class="modal-footer border-0 pt-0 d-flex flex-row align-items-center justify-content-between px-3">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fa fa-times me-1"></i>
                         Cancelar
@@ -167,12 +167,10 @@
     {{-- CART SUMMARY MODAL --}}
     <div class="modal fade" id="cartSummaryModal" tabindex="-1" aria-labelledby="cartSummaryModalLabel" aria-hidden="true">
         <div class="modal-dialog align-self-center">
-        {{-- <div class="resumen-carrito card  bg-highlight my-4 py-4   d-flex flex-column justify-content-center align-items-center mb-auto"> --}}
-            <div class="content card modal-body rounded-sm d-flex flex-column justify-content-center align-items-center" style="z-index: 10">
-                <h2 class="mt-4">Resumen del pedido</h2>
-                <p class="">El pedido se procesara una vez realizado el pago</p>
-                <div class="card card-style mx-2" style="min-width: 300px;">
-
+            <div class="content card modal-body rounded-sm d-flex flex-column gap-2 justify-content-center align-items-center" style="z-index: 10">
+                <h2>Resumen del pedido</h2>
+                <p class="mb-0">El pedido se procesara una vez realizado el pago</p>
+                <div class="card card-style mx-2 mb-0">
                     <div class="content resumen-carrito-detalles">
                         <!-- Contenedor resumen items individuales-->
                         <div id="cart-summary-items" class="resumen-carrito-detalles mb-3">
@@ -275,45 +273,48 @@
             }
 
             let cartHTML = '';
-            let totalInicial = 0;
+            let totalFinal = 0;
+            let totalDescuento = 0;
+            let totalOriginal = 0;
 
             // Renderizar items disponibles
             if (disponiblesArray.length > 0) {
-                // const stateContainer = renderProductStateContainer('disponible')
-                // cartHTML += stateContainer;
                 availableItemsContainer.innerHTML += `<h5 class="mb-3 color-highlight" id="label-disponible">Productos Disponibles</h5>`;
-                // cartHTML += `<h5 class="mb-3 color-highlight" id="label-disponible">Productos Disponibles</h5>`;
 
                 disponiblesArray.forEach(producto => {
-                    totalInicial += producto.precio * producto.cantidad_solicitada;
+                    totalFinal += producto.precio * producto.cantidad_solicitada;
+                    totalOriginal += producto.precio_original * producto.cantidad_solicitada;
+                    if (producto.tiene_descuento) {
+                        totalDescuento += (producto.precio_original - producto.precio) * producto.cantidad_solicitada;
+                    }
                     availableItemsContainer.innerHTML += renderCartItem(producto, 'disponible', producto.cantidad_solicitada);
                     summaryItemsContainer.innerHTML += renderSummaryItem(producto);
                 });
             }
-            // Renderizar items escasos
-            if (escasosArray.length > 0) {
-                limitedItemsContainer.innerHTML += `<h5 class="mb-3 text-warning" id="label-escaso">Productos con stock limitado</h5>`;
+            // // Renderizar items escasos
+            // if (escasosArray.length > 0) {
+            //     limitedItemsContainer.innerHTML += `<h5 class="mb-3 text-warning" id="label-escaso">Productos con stock limitado</h5>`;
                 
-                escasosArray.forEach(producto => {
-                    limitedItemsContainer.innerHTML += renderCartItem(producto, 'escaso', producto.cantidad_solicitada);
-                });
-            }
-            // Renderizar items agotados
-            if (agotadosArray.length > 0) {
-                unavailableItemsContainer.innerHTML += `<h5 class="mb-3 text-danger" id="label-agotado">Productos agotados</h5>`;
-                agotadosArray.forEach(producto => {
-                    unavailableItemsContainer.innerHTML += renderCartItem(producto, 'agotado', producto.cantidad_solicitada);
-                });
-            }
+            //     escasosArray.forEach(producto => {
+            //         limitedItemsContainer.innerHTML += renderCartItem(producto, 'escaso', producto.cantidad_solicitada);
+            //     });
+            // }
+            // // Renderizar items agotados
+            // if (agotadosArray.length > 0) {
+            //     unavailableItemsContainer.innerHTML += `<h5 class="mb-3 text-danger" id="label-agotado">Productos agotados</h5>`;
+            //     agotadosArray.forEach(producto => {
+            //         unavailableItemsContainer.innerHTML += renderCartItem(producto, 'agotado', producto.cantidad_solicitada);
+            //     });
+            // }
             cartValidationInfo.style.display = 'none';
 
             // cardContentContainer.innerHTML = cartHTML;
             cardContentContainer.innerHTML += `<button id="showSummaryButton" class="summary-btn btn w-30 align-self-center btn-sm rounded-sm bg-highlight font-800 text-uppercase">
                 Realizar Pedido</button>`
             cardContentContainer.innerHTML += `<div class="cart-listing-footer d-flex flex-row">
-                    <button class="delete-cart-btn ms-auto me-2" data-menu="menu-confirm">Eliminar Carrito</button>
+                    <button class="delete-cart-btn ms-auto mt-2 me-2" data-menu="menu-confirm">Eliminar Carrito</button>
                 </div>`;
-            summaryTotalContainer.innerHTML = renderSummaryTotal(totalInicial);
+            summaryTotalContainer.innerHTML = renderSummaryTotal(totalFinal,totalDescuento,totalOriginal);
 
         } catch (error) {
             console.error("Sucedio un error al obtener los productos del carrito:", error);
@@ -357,14 +358,14 @@
                             <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
                             <p class="text-muted mb-3 small product-description">${producto.detalle}</p>
                         </div>
-                        <div class="product-image-container position-relative" style="z-index: 10">
+                        <div class="product-image-container m-0" style="z-index: 10">
                             <img class="product-image rounded"
                                 src="${producto.imagen ?? '/imagenes/delight/default-bg-1.png'}"
                                 alt="${producto.nombre}"
                                 data-product-id="${producto.id}"
                                 onerror="this.onerror=null; this.src='/imagenes/delight/default-bg-1.png';">
                             ${(isUnavailable) ? '':
-                            `<button class="btn btn-xxs  bg-gray-dark opacity-100 delete-item-btn position-absolute"
+                            `<button class="btn btn-xxs bg-highlight opacity-100 delete-item-btn position-absolute"
                                     type="button"
                                     data-product-id="${producto.id}"
                                     title="Eliminar producto"
@@ -376,9 +377,14 @@
                         <div class="item-overlay rounded-sm card-overlay opacity-60"></div>
                     </div>
                     <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
-                        <p class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
-                            Bs. ${producto.precio.toFixed(2)}
-                        </p>
+                        <div>
+                            ${(producto.tiene_descuento ?
+                            `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${producto.precio_original.toFixed(2)}</del>` : ''
+                            )}
+                            <p class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
+                                Bs. ${producto.precio.toFixed(2)}
+                            </p>
+                        </div>
                         ${(isLowStock || isUnavailable) ? actionButton : 
                         `<div class="quantity-controls bg-light border rounded d-flex align-items-center" style="min-width: 120px;">
                             <button class="btn btn-sm btn-outline-secondary border-0 px-2 py-1 qty-decrease"
@@ -415,29 +421,49 @@
         return `
             <div class="mb-2">
                 <div class="item-name text-truncate fw-semibold mb-2" title="${producto.nombre}">
-                    <p class="mb-0 text-dark">${producto.nombre}</p>
+                    <p class="mb-0 font-600 text-dark">${producto.nombre}</p>
                 </div>
                 <div class="d-flex flex-row justify-content-between align-items-center">
-                    <small class="text-muted d-flex align-items-center">
-                        <span class="quantity-badge badge bg-secondary me-2">${producto.cantidad_solicitada}</span>
-                        <span>× Bs. ${producto.precio.toFixed(2)}</span>
+                    <small class="text-muted d-flex align-items-center gap-1">
+                        <span>${producto.cantidad_solicitada}</span>
+                        ×
+                        <span> Bs. ${producto.precio.toFixed(2)}</span>
+                        ${(producto.tiene_descuento ?
+                            `<del>${producto.precio_original.toFixed(2)}</del>` : ''
+                        )}
                     </small>
                     <div class="item-subtotal fw-bold text-success">
                         <p class="mb-0 fs-6">Bs. ${itemSubtotal}</p>
                     </div>
+                    
                 </div>
                 <div class="divider mt-1 mb-0"></div>
             </div>
         `;
     }
 
-    const renderSummaryTotal = (total) => {
-        return `<div class="d-flex flex-row justify-content-between align-items-center mb-3 pt-2 text-black">
-            <p class="fw-bold fs-5 mb-0">Total:</span>
-            <p id="cart-final-total" class="fw-bold fs-5 mb-0">Bs. ${total.toFixed(2)}</span>
-            </div>
-        `;
-    }
+    const renderSummaryTotal = (totalFinal, totalDescuento, totalOriginal) => {
+    return `
+        ${totalDescuento && totalDescuento > 0 
+        ? `
+        <div class="d-flex flex-row justify-content-between align-items-center mb-0 text-gray">
+            <p class="fw-bold mb-0">Costo original:</p>
+            <p class="fw-bold mb-0">Bs. ${totalOriginal.toFixed(2)}</p>
+        </div>
+        <div class="d-flex flex-row justify-content-between align-items-center mb-0 text-gray">
+            <p class="fw-bold mb-0">Descuento total:</p>
+            <p class="fw-bold mb-0">Bs. ${totalDescuento.toFixed(2)}</p>
+        </div>
+        `
+        : ""
+        }
+        <div class="d-flex flex-row justify-content-between align-items-center mb-3 pt-2 text-black">
+        <p class="fw-bold fs-5 mb-0">Total:</p>
+        <p id="cart-final-total" class="fw-bold fs-5 mb-0">Bs. ${totalFinal.toFixed(2)}</p>
+        </div>
+    `;
+    };
+
 
     document.addEventListener('DOMContentLoaded', async function() {
         
