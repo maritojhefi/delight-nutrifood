@@ -31,7 +31,7 @@ class Subcategoria extends Model
     }
     public function horarios()
     {
-        return $this->belongsToMany(Horario::class);    
+        return $this->belongsToMany(Horario::class)->withTimestamps();    
     }
     public function adicionales()
     {
