@@ -21,6 +21,10 @@ class Subcategoria extends Model
         'interacciones'
 
     ];
+    public function getNombreAttribute($value)
+    {
+        return ucfirst(strtolower($value));
+    }
     public function categoria()
     {
         return $this->belongsTo(Categoria::class);

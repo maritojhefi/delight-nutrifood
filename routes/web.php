@@ -62,8 +62,9 @@ Route::prefix('/productos')->group(function () {
     Route::get('/subcategoria/{id}', [App\Http\Controllers\ProductoController::class, 'detallesubcategoria'])->name('listar.productos.subcategoria');
     Route::get('/categorizados/{id}', [App\Http\Controllers\ProductoController::class, 'productosSubcategoria']);
     Route::get('/add/carrito/{id}', [App\Http\Controllers\CarritoController::class, 'addToCarrito']);
-    Route::get('/{id}/stock', [App\Http\Controllers\ProductoController::class, 'checkProductStock']);
-    Route::get('/{id}', [App\Http\Controllers\ProductoController::class, 'getProduct']);
+    Route::get('/{id}/stock',[App\Http\Controllers\ProductoController::class, 'checkProductStock']);
+    Route::get('/{id}',[App\Http\Controllers\ProductoController::class,'getProduct']);
+    Route::get('/limpiar-fotos/productos',[App\Http\Controllers\ProductoController::class,'limpiarProductos']);
 });
 //promociones
 Route::prefix('/lineadelight')->group(function () {

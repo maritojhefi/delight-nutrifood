@@ -43,7 +43,7 @@ class Producto extends Model
 
         return $this->belongsToMany(Sucursale::class)
             ->withTimestamps()
-            ->withPivot('sucursale_id', 'cantidad', 'id', 'fecha_venc','max')
+            ->withPivot('sucursale_id', 'cantidad', 'id', 'fecha_venc', 'max')
             ->wherePivot('cantidad', '!=', 0);
     }
 
@@ -51,7 +51,7 @@ class Producto extends Model
     {
         return $this->belongsToMany(Sucursale::class)
             ->withTimestamps()
-            ->withPivot('sucursale_id', 'cantidad', 'id', 'fecha_venc','max');
+            ->withPivot('sucursale_id', 'cantidad', 'id', 'fecha_venc', 'max');
     }
     public function tag()
     {
@@ -299,7 +299,7 @@ class Producto extends Model
     }
     public function getNombreAttribute($value)
     {
-        return $this->cleanString($value);
+        return ucfirst(strtolower($this->cleanString($value)));
     }
     public function setPrecioAttribute($value)
     {
@@ -387,5 +387,4 @@ class Producto extends Model
             ->wherePivot('cantidad', '>', 0)
             ->sum('producto_sucursale.cantidad');
     }
-    
 }

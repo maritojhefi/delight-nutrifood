@@ -34,34 +34,34 @@
     @endpush
     <a id="uno" href="{{ route('miperfil') }}"
         class="{{ request()->is('miperfil' . '*') ? 'active-nav rounded-m ' : '' }} cargando">
-        <i class="fa fa-heart">
-        </i><span>Mi Perfil</span>
+        <i class="fa fa-heart {{request()->is('miperfil' . '*') ? 'color-highlight' : ''}}">
+        </i><span class="{{request()->is('miperfil' . '*') ? 'color-highlight' : ''}}">Mi Perfil</span>
         <em></em>
     </a>
     <a href="{{ route('linea.delight') }}"
         class="{{ request()->is('lineadelight' . '*') ? 'active-nav rounded-m' : '' }} cargando">
-        <i class="fa fa-leaf"></i>
-        <span>Linea {{GlobalHelper::getValorAtributoSetting('nombre_sistema')}}!</span>
+        <i class="fa fa-leaf {{request()->is('lineadelight' . '*') ? 'color-highlight' : ''}}"></i>
+        <span class="{{request()->is('lineadelight' . '*') ? 'color-highlight' : ''}}">Linea {{GlobalHelper::getValorAtributoSetting('nombre_sistema')}}!</span>
         <em></em>
     </a>
     <a href="{{ route('menusemanal') }}"
         class="circle-nav {{ request()->is('inicio' . '*') ? 'active-nav rounded-m' : '' }} cargando">
-        <i class="fa fa-home"></i>
-        <span>Inicio</span>
+        <i class="fa fa-home {{request()->is('inicio' . '*') ? 'color-highlight' : ''}}"></i>
+        <span class="{{request()->is('inicio' . '*') ? 'color-highlight' : ''}}">Inicio</span>
         <em></em>
         <strong><u></u></strong>
     </a>
     <a href="{{ route('productos') }}"
         class="{{ request()->is('productos' . '*') ? 'active-nav rounded-m' : '' }} cargando">
-        <i class="fa fa-gem"></i>
-        <span>Eco-Tienda</span>
+        <i class="fa fa-gem {{request()->is('productos' . '*') ? 'color-highlight' : ''}}"></i>
+        <span class="{{request()->is('productos' . '*') ? 'color-highlight' : ''}}">Eco-Tienda</span>
         <em></em>
     </a>
     <a href="{{ route('carrito') }}"
         class="{{ request()->is('carrito' . '*') ? 'active-nav rounded-m' : '' }} cargando">
-        <i class="fa fa-shopping-cart"></i>
+        <i class="fa fa-shopping-cart {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i>
         <span id="cart-counter" class="cart-counter-badge"></span>
-        <span>Mi carrito</span>
+        <span class="{{request()->is('carrito' . '*') ? 'color-highlight' : ''}}">Mi carrito</span>
         <em></em>
     </a>
 </div>
