@@ -310,16 +310,15 @@
                 const formattedName = item.nombre.charAt(0).toUpperCase() + item.nombre.slice(1).toLowerCase();
 
                 list.innerHTML += `
-                    <div class="splide__slide hover-grow-s" style="width: 190px;">
+                    <div class="splide__slide hover-grow-s" style="width: 12rem;">
                         <div class="card mx-3 mb-0 card-style bg-20"
-                            data-card-height="250"
                             data-bs-toggle="modal" 
                             data-bs-target="#categorizedProductsModal" 
                             data-category-id="${item.id}"
                             data-category-name="${item.nombre}"
-                            style="height: 250px; background-image: url('${item.foto}');">
+                            style="height: 14rem; background-image: url('${item.foto}');">
                             <div class="card-bottom">
-                                <h3 class="color-white font-15 font-600 mb-3 mx-3">${formattedName}</h3>
+                                <h3 class="color-white font-18 font-600 mb-3 mx-3">${formattedName}</h3>
                             </div>
                             <div class="card-overlay bg-gradient"></div>
                         </div>

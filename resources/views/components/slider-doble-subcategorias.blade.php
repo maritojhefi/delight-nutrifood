@@ -1,6 +1,6 @@
 <div class="splide double-slider slider-no-dots splide--loop splide--ltr splide--draggable mb-4" id="double-slider-1" style="visibility: visible;">
     <div class="splide__track" id="double-slider-1-track">
-        <div class="splide__list" id="double-slider-1-list" style="transform: translateX(-760px);">
+        <div class="splide__list" id="double-slider-1-list" >
             {{-- DLISTADO DE ELEMENTOS A RENDERIZARSE --}}
             
             {{-- Elementos de ejemplo  --}}
