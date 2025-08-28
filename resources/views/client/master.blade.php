@@ -26,6 +26,7 @@
             blurred && (location.reload());
         };
     </script>
+    <script src="{{ asset('js/app.js') }}" defer></script>
     <style>
         .bordeado {
             border-style:dotted;
@@ -150,15 +151,17 @@
     <div id="toast-loading" class="toast toast-tiny toast-top bg-blue-dark fade hide" data-bs-delay="1500"
         data-bs-autohide="true"><i class="fa fa-sync fa-spin me-3"></i>Actualizado!</div>
 
-    <div id="toast-carrito" class="toast toast-tiny toast-top bg-green-dark hide" data-bs-delay="1000"
-        data-bs-autohide="true"><i class="fa fa-check  me-3"></i>Añadido!</div>
+    {{-- <div id="toast-carrito" class="toast toast-tiny toast-top bg-green-dark hide" data-bs-delay="1000"
+        data-bs-autohide="true"><i class="fa fa-check  me-3"></i>Añadido al carrito!</div> --}}
 
-    <div id="saved-to-favorites" class="snackbar-toast bg-green-dark color-white fade hide" data-delay="3000"
-        data-autohide="true"><i class="fa fa-shopping-cart me-3"></i>Añadido al carrito!</div>
+    <div id="toast-cart-added" class="snackbar-toast bg-green-dark color-white fade hide"
+        data-autohide="true" style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Añadido al carrito!</div>
+    <div id="toast-cart-item-limit" class="snackbar-toast bg-yellow-dark color-white fade hide"
+        data-autohide="true" style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Limite alcanzado!</div>
     @include('client.partials.modalredes')
 
     <div id="shared" class="snackbar-toast bg-blue-dark color-white fade hide" data-delay="3000"
-        data-autohide="true"><i class="fa fa-shopping-cart me-3"></i>Link copiado!</div>
+        data-autohide="true" style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Link copiado!</div>
     @auth
         @php
             $perfil = auth()->user();
@@ -182,7 +185,7 @@
     <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}?v=1.0.0"></script>
     <script type="text/javascript" src="{{ asset('scripts/custom.js') }}?v=1.0.0"></script>
 
-    <script>
+    {{-- <script>
         $(document).ready(function() {
             var baseUrl = '{{ env('APP_URL') }}';
             $.ajaxSetup({
@@ -199,16 +202,16 @@
                         if (result == 'logout') {
                             window.location.href = "{{ route('login') }}";
                         } else {
-                            var toaster = document.getElementById('saved-to-favorites');
-                            cart = new bootstrap.Toast(toaster);
-                            cart.show()
+                            // var toaster = document.getElementById('saved-to-favorites');
+                            // cart = new bootstrap.Toast(toaster);
+                            // cart.show()
                         }
                     }
                 })
 
             });
         });
-    </script>
+    </script> --}}
     <script>
         function myFunction() {
             var element = document.body;
@@ -224,25 +227,57 @@
             })
         }
         $(document).ready(function() {
-            $(".copiarLink").click(function() {
-                var $temp = $("<input>");
-                $("body").append($temp);
-                $temp.val($(this).attr('ruta')).select();
-                document.execCommand("copy");
-                $temp.remove();
+            $(document).on('click', '.copiarLink', async function(e) {
+                e.preventDefault();
+                // Obtener el valor de la ruta
+                const rutaValue = this.getAttribute('ruta');
+                
+                // Error en caso de que no exista
+                if (!rutaValue) {
+                    console.error("No se encontro el atributo ruta");
+                    return;
+                }
 
-
-                var toastID = document.getElementById('shared');
-                toastID = new bootstrap.Toast(toastID);
-                toastID.show();
+                try {
+                    // API Moderna de portapapeles
+                    await navigator.clipboard.writeText(rutaValue);
+                    
+                    console.log("Copiado exitoso:", rutaValue);
+                    
+                    // Revelar toast de existir
+                    const toastEl = document.getElementById('shared');
+                    if (toastEl) {
+                        new bootstrap.Toast(toastEl).show();
+                    }
+                } catch (err) {
+                    console.warn("API de portapapeles moderna fallo, utilizando fallback", err);
+                    
+                    // Fallback alternartivo para navegadores viejos (no funcionaria con componentes dinamicos)
+                    const tempInput = document.createElement('input');
+                    tempInput.value = rutaValue;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    
+                    try {
+                        const successful = document.execCommand('copy');
+                        if (!successful) throw new Error('Copy failed');
+                        console.log("Copia mediante fallback exitosa");
+                    } finally {
+                        document.body.removeChild(tempInput);
+                    }
+                    
+                    // Revelar toast de existir
+                    const toastEl = document.getElementById('shared');
+                    if (toastEl) {
+                        new bootstrap.Toast(toastEl).show();
+                    }
+                }
             });
-        })
+        });
     </script>
 
 
     @stack('scripts')
-
-
 </body>
 
 </html>

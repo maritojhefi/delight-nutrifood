@@ -47,7 +47,7 @@
 
 .card.plan-card h2 {
     color: #ffffff;
-    text-shadow: 
+    text-shadow:
         2px 2px 4px rgba(0, 0, 0, 0.8),
         1px 1px 2px rgba(0, 0, 0, 0.9),
         0 0 8px rgba(0, 0, 0, 0.5);
@@ -169,7 +169,7 @@
 }
 
 .input-style.remove-mb {
-    margin-bottom: 0 !important; 
+    margin-bottom: 0 !important;
 }
 
 .theme-light form input:focus {
@@ -177,19 +177,13 @@
     box-shadow: 0 0 0 0.2rem rgba(47, 104, 106, 0.25);
 }
 
-
-
 .theme-light .input-icon  {
     color: #26A69A;
 }
 
-
 hover-blue:hover {
         color: blue !important;
     }
-
-
-
 
 .custom-file-upload-container {
             position: relative;
@@ -342,3 +336,938 @@ hover-blue:hover {
 .input-style.position-relative {
     overflow: visible;
 }
+
+.card.resumen-carrito {
+    background-color: #4ECDC4;
+
+}
+
+.resumen-carrito-detalles button {
+    /* color: #4ECDC4; */
+    background-color: #FF5A5A;
+}
+
+.card-overlay {
+    pointer-events: none;
+}
+
+
+/* Cart Item Styling */
+.cart-item-wrapper {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cart-item-wrapper:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.item-carrito-info {
+    border: 1px solid #e9ecef;
+    transition: border-color 0.2s ease;
+}
+
+.item-carrito-info:hover {
+    border-color: #dee2e6;
+}
+
+
+
+/* Product Image Container */
+.product-image-container {
+    flex-shrink: 0;
+    position: relative;
+}
+
+.product-image {
+    width: 6rem;
+    height: 6rem;
+    object-fit: cover;
+    border: 2px solid #f8f9fa;
+    transition: border-color 0.2s ease;
+}
+
+.product-image:hover {
+    border-color: #dee2e6;
+}
+
+/* UpdateToMax Button */
+.qty-fixer {
+    width: 120px;
+}
+
+.unavailable-fixer {
+    width: 120px;
+}
+
+/* Delete Button */
+/* .delete-item-btn {
+    top: -6px;
+    right: -6px;
+    width: 30px;
+    height: 30px;
+    border: 2px solid #dee2e6;
+    border-radius: 4px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.8);
+    transition: all 0.2s ease;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    background-color: #FF5A5A;
+}
+
+.delete-item-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.delete-item-btn:active {
+    transform: scale(0.95);
+} */
+
+.delete-cart-btn {
+    text-decoration: underline;
+}
+
+
+.delete-cart-btn:hover {
+    color: #FF5A5A;
+}
+
+/* Show delete button on cart item hover */
+.cart-item-wrapper:hover
+ /* .delete-item-btn  */
+ {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
+
+/* Optional: Add a subtle overlay effect when hovering */
+.cart-item-wrapper:hover .product-image {
+    filter: brightness(0.95);
+}
+
+/* Quantity Controls */
+.quantity-controls {
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    min-height: 35px;
+    border-radius: 5px;
+}
+
+.quantity-controls button {
+    color: #6c757d;
+    transition: all 0.2s ease;
+    min-width: 30px;
+}
+
+.quantity-controls button:hover {
+    color: #495057;
+    background-color: #e9ecef;
+    transform: scale(1.1);
+}
+
+.quantity-controls button:active {
+    transform: scale(0.95);
+}
+
+/* Product Details */
+.item-carrito-detalles h5 {
+    color: #212529;
+    line-height: 1.3;
+}
+
+.item-carrito-detalles p {
+    line-height: 1.4;
+}
+
+/* Price Styling */
+.text-success {
+    color: #198754 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+    .item-carrito-info {
+        flex-direction: column;
+    }
+
+    .product-image-container {
+        align-self: center;
+        margin-top: 1rem;
+    }
+
+    .product-image {
+        width: 6rem;
+        height: 6rem;
+    }
+
+    .quantity-controls {
+        align-self: flex-end;
+    }
+}
+
+/* Dark Mode Cart Item Styling */
+
+/* Main card container */
+.theme-dark .item-carrito-info {
+    background-color: #2d3748 !important;
+    border-color: #4a5568 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.theme-dark .item-carrito-info:hover {
+    background-color: #374151 !important;
+    border-color: #6b7280 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Product name */
+.theme-dark .product-name {
+    color: #f7fafc !important;
+}
+
+/* Product description */
+.theme-dark .product-description {
+    color: #a0aec0 !important;
+}
+
+/* Product price */
+.theme-dark .product-price {
+    color: #68d391 !important; /* Lighter green for dark mode */
+}
+
+/* Quantity controls container */
+.theme-dark .quantity-controls {
+    background-color: #4a5568 !important;
+    border-color: #6b7280 !important;
+}
+
+/* Quantity control buttons */
+.theme-dark .quantity-controls button {
+    color: #e2e8f0 !important;
+    border-color: transparent !important;
+}
+
+.theme-dark .quantity-controls button:hover {
+    background-color: #6b7280 !important;
+    color: #ffffff !important;
+}
+
+.theme-dark .quantity-controls button:active {
+    background-color: #374151 !important;
+}
+
+/* Quantity number */
+.theme-dark .product-quantity {
+    color: #f7fafc !important;
+}
+
+/* Product image */
+.theme-dark .product-image {
+    border-color: #4a5568 !important;
+}
+
+.theme-dark .product-image:hover {
+    border-color: #6b7280 !important;
+}
+
+/* Delete button */
+/* .theme-dark .delete-item-btn {
+    background-color: #e53e3e !important;
+    border-color: #c53030 !important;
+}
+
+.theme-dark .delete-item-btn:hover {
+    background-color: #c53030 !important;
+    border-color: #9c2626 !important;
+    box-shadow: 0 3px 6px rgba(197, 48, 48, 0.4) !important;
+} */
+
+/* Item overlay (if used) */
+.theme-dark .item-overlay {
+    background-color: rgba(45, 55, 72, 0.6) !important;
+}
+
+/* Alternative color schemes for dark mode */
+
+/* Option 1: Warmer dark theme */
+.theme-dark.warm .item-carrito-info {
+    background-color: #3c2415 !important;
+    border-color: #8b4513 !important;
+}
+
+.theme-dark.warm .product-name {
+    color: #ffd700 !important;
+}
+
+.theme-dark.warm .quantity-controls {
+    background-color: #8b4513 !important;
+    border-color: #a0522d !important;
+}
+
+/* Option 2: Blue-tinted dark theme */
+.theme-dark.blue .item-carrito-info {
+    background-color: #1a202c !important;
+    border-color: #2d3748 !important;
+}
+
+.theme-dark.blue .product-name {
+    color: #90cdf4 !important;
+}
+
+.theme-dark.blue .product-price {
+    color: #68d391 !important;
+}
+
+/* Option 3: High contrast dark theme */
+.theme-dark.high-contrast .item-carrito-info {
+    background-color: #000000 !important;
+    border: 2px solid #ffffff !important;
+}
+
+.theme-dark.high-contrast .product-name {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+.theme-dark.high-contrast .product-description {
+    color: #cccccc !important;
+}
+
+.theme-dark.high-contrast .quantity-controls {
+    background-color: #333333 !important;
+    border: 1px solid #ffffff !important;
+}
+
+/* Smooth transitions for theme switching */
+.item-carrito-info,
+.product-name,
+.product-description,
+.product-price,
+.product-quantity-controls
+.quantity-controls,
+.quantity-controls button,
+.product-quantity,
+.product-image,
+.delete-item-btn {
+    transition: all 0.3s ease !important;
+}
+
+/* Focus states for accessibility in dark mode */
+.theme-dark .quantity-controls button:focus {
+    outline: 2px solid #90cdf4 !important;
+    outline-offset: 2px;
+}
+
+/* .theme-dark .delete-item-btn:focus {
+    outline: 2px solid #90cdf4 !important;
+    outline-offset: 2px;
+} */
+
+/* Responsive adjustments for dark mode */
+@media (max-width: 576px) {
+    .theme-dark .item-carrito-info {
+        background-color: #2d3748 !important;
+    }
+
+    .theme-dark .quantity-controls {
+        background-color: #4a5568 !important;
+    }
+}
+
+/* Loading state for dark mode */
+.theme-dark .item-carrito-info.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.theme-dark .item-carrito-info.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #4a5568;
+    border-top: 2px solid #90cdf4;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Custom Divider (if you still want to use it) */
+.cart-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #dee2e6, transparent);
+    margin: 1.5rem 0;
+}
+
+/* Cart Summary Item Styling */
+.cart-item-summary {
+    transition: all 0.2s ease;
+    background-color: #f8f9fa !important;
+    border-left: 3px solid #FF5A5A !important;
+}
+
+.cart-item-summary:hover {
+    background-color: #e9ecef !important;
+    transform: translateX(2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Item Name */
+.cart-item-summary .item-name p {
+    color: #212529;
+    font-size: 0.95rem;
+    line-height: 1.3;
+}
+
+/* Quantity Badge */
+.quantity-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* Price Information */
+.cart-item-summary small {
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+.cart-item-summary .item-subtotal {
+    color: #198754 !important;
+}
+
+.cart-item-summary .item-subtotal p {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Dark Mode Cart Item Summary Styling */
+
+/* Main summary container */
+.theme-dark .cart-item-summary {
+    background-color: #374151 !important;
+    border-left: 3px solid #ef4444 !important; /* Slightly adjusted red for dark mode */
+}
+
+.theme-dark .cart-item-summary:hover {
+    background-color: #4b5563 !important;
+    transform: translateX(2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important; /* Stronger shadow for dark mode */
+}
+
+/* Item Name */
+.theme-dark .cart-item-summary .item-name p {
+    color: #f9fafb !important; /* Light text for dark background */
+    font-size: 1.5rem;
+    line-height: 1.3;
+}
+
+/* Quantity Badge */
+/* .theme-dark .quantity-badge {
+    background-color: teal !important;
+    color: #f9fafb !important;
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    min-width: 24px;
+    text-align: center;
+} */
+
+/* Alternative quantity badge colors for dark mode */
+.theme-dark .quantity-badge.bg-secondary {
+    background-color: #6b7280 !important;
+    color: #f9fafb !important;
+}
+
+.theme-dark .quantity-badge.bg-primary {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+/* Price Information */
+.theme-dark .cart-item-summary small {
+    font-size: 0.85rem;
+    color: #9ca3af !important; 
+}
+
+.theme-dark .cart-item-summary .item-subtotal {
+    color: #34d399 !important; 
+}
+
+.theme-dark .cart-item-summary .item-subtotal p {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #34d399 !important;
+}
+
+/* Focus states for accessibility in dark mode */
+.theme-dark .cart-item-summary:focus-within {
+    outline: 2px solid #60a5fa !important;
+    outline-offset: 2px;
+}
+
+/* Loading state for dark mode summary */
+.theme-dark .cart-item-summary.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.theme-dark .cart-item-summary.loading::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(156, 163, 175, 0.2), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Responsive adjustments for dark mode summary */
+@media (max-width: 576px) {
+    .theme-dark .cart-item-summary {
+        background-color: #374151 !important;
+    }
+
+    .theme-dark .cart-item-summary:hover {
+        background-color: #4b5563 !important;
+    }
+
+    .theme-dark .quantity-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+
+
+/* Alternative Styling Options */
+
+/* Option 1: Card-like appearance */
+.cart-item-summary.card-style {
+    background-color: white !important;
+    border: 1px solid #dee2e6;
+    border-left: 4px solid #0d6efd !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .cart-item-summary {
+        padding: 0.75rem !important;
+    }
+
+    .cart-item-summary .item-name p {
+        font-size: 0.9rem;
+    }
+
+    .cart-item-summary .item-subtotal p {
+        font-size: 0.95rem;
+    }
+}
+
+/* Confirm Card Deletion Modal */
+
+/* Modal Styling */
+.modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    /* background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%); */
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-title {
+    color: #dc3545;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.bg-light-warning {
+    background-color: #fff3cd !important;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-radius: 0 0 12px 12px;
+    /* padding: 1rem 1.5rem; */
+}
+
+.delete-cart-btn:active {
+    transform: translateY(0);
+}
+
+/* Modal Animation */
+.modal.fade .modal-dialog {
+    transform: scale(0.8) translateY(-50px);
+    transition: all 0.3s ease;
+}
+
+.modal.show .modal-dialog {
+    transform: scale(1) translateY(0);
+}
+
+
+/* Responsive */
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 1rem;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .bg-light-warning {
+        padding: 1rem;
+    }
+}
+
+/* Dark Mode Modal Styling */
+
+/* Modal content container */
+.theme-dark .modal-content {
+    background-color: #1f2937 !important;
+    border: 1px solid #374151 !important;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important; /* Stronger shadow for dark mode */
+}
+
+/* Modal header */
+.theme-dark .modal-header {
+    background-color: #1f2937 !important;
+}
+
+/* Modal title */
+.theme-dark .modal-title {
+    color: #ef4444 !important; /* Brighter red for dark mode */
+}
+
+/* Modal body */
+.theme-dark .modal-body {
+    background-color: #1f2937 !important;
+    padding: 1.5rem;
+}
+
+.theme-dark .modal-body p {
+    color: #d1d5db !important; /* Light gray text for readability */
+}
+
+.theme-dark .modal-body .text-muted {
+    color: #9ca3af !important; /* Lighter muted text for dark mode */
+}
+
+/* Modal footer */
+.theme-dark .modal-footer {
+    background-color: #1f2937 !important;
+    border-radius: 0 0 12px 12px;
+}
+
+/* Button styling for dark mode */
+.theme-dark .modal-footer .btn-secondary {
+    background-color: #6b7280 !important;
+    border-color: #6b7280 !important;
+    color: #f9fafb !important;
+}
+
+.theme-dark .modal-footer .btn-secondary:hover {
+    background-color: #4b5563 !important;
+    border-color: #4b5563 !important;
+    color: #ffffff !important;
+}
+
+.theme-dark .modal-footer .btn-danger {
+    background-color: #dc2626 !important;
+    border-color: #dc2626 !important;
+    color: #ffffff !important;
+}
+
+.theme-dark .modal-footer .btn-danger:hover {
+    background-color: #b91c1c !important;
+    border-color: #b91c1c !important;
+    color: #ffffff !important;
+}
+
+/* Close button (X) styling */
+.theme-dark .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%) !important;
+    opacity: 0.8;
+}
+
+.theme-dark .btn-close:hover {
+    opacity: 1;
+}
+
+/* Icon styling */
+.theme-dark .modal-title i {
+    color: #fbbf24 !important; /* Warning yellow for the exclamation icon */
+}
+
+.theme-dark .modal-footer i {
+    opacity: 0.9;
+}
+
+.theme-dark .item-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgb(0, 63, 72) ;
+}
+
+.hover-grow {
+    transition: transform 0.3s ease-out; /* Default state (mouse leave) */
+}
+
+.hover-grow:hover {
+    transform: scale(1.1);
+    transition: transform 0.1s ease-in; /* Hover state (mouse enter) */
+}
+
+.hover-grow-xs {
+    transition: transform 0.3s ease-out; /* Default state (mouse leave) */
+}
+
+.hover-grow-xs:hover {
+    transform: scale(1.01);
+    transition: transform 0.1s ease-in; /* Hover state (mouse enter) */
+}
+
+.hover-grow-s {
+    transition: transform 0.3s ease-out; /* Default state (mouse leave) */
+}
+
+.hover-grow-s:hover {
+    transform: scale(1.05);
+    transition: transform 0.1s ease-in; /* Hover state (mouse enter) */
+}
+
+/* Custom cards for subcategory listings */
+
+.product-card-image {
+    overflow: hidden;
+}
+
+.product-card-image img {
+    width: 140px;
+    height: 155px; /* Match the card height */
+    object-fit: cover; /* Ensures image covers the area properly */
+    object-position: center; /* Centers the image */
+    border-top-left-radius: 0.5rem; /* Match the card's border radius */
+    border-bottom-left-radius: 0.5rem; /* Match the card's border radius */
+    border-top-right-radius: 0; /* No radius on the right side */
+    border-bottom-right-radius: 0; /* No radius on the right side */
+}
+
+.subcategory-card-image {
+    overflow: hidden;
+}
+
+.subcategory-card-image img {
+    width: 70px;
+    height: 80px; /* Match the card height */
+    object-fit: cover; /* Ensures image covers the area properly */
+    object-position: center; /* Centers the image */
+    border-top-left-radius: 0.5rem; /* Match the card's border radius */
+    border-bottom-left-radius: 0.5rem; /* Match the card's border radius */
+    border-top-right-radius: 0; /* No radius on the right side */
+    border-bottom-right-radius: 0; /* No radius on the right side */
+}
+
+.subcategory-card-image-lg {
+    overflow: hidden;
+}
+
+.subcategory-card-image-lg img {
+    width: 100px;
+    height: 120px; /* Match the card height */
+    object-fit: cover; /* Ensures image covers the area properly */
+    object-position: center; /* Centers the image */
+    border-top-left-radius: 0.5rem; /* Match the card's border radius */
+    border-bottom-left-radius: 0.5rem; /* Match the card's border radius */
+    border-top-right-radius: 0; /* No radius on the right side */
+    border-bottom-right-radius: 0; /* No radius on the right side */
+}
+
+.theme-dark .bg-dtheme-blue  {
+    background-color:  #374151 !important;
+}
+.theme-dark .tag-icon {
+    color: white !important;
+}
+
+/* Add this to your CSS file */
+.tag-icon {
+    transition: all 0.2s ease;
+}
+
+.tag-icon:hover {
+    color: #0d6efd !important;
+    transform: scale(1.1);
+}
+
+.tag-popover {
+    border: none !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    animation: popoverFadeIn 0.2s ease-out;
+}
+
+@keyframes popoverFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.popover-header {
+    border-bottom: none;
+}
+
+.popover-body {
+    line-height: 1.4;
+}
+
+/* .tags-container {
+    anchor-name: --tag-popover-anchor;
+} */
+
+/* .tag-info-popover {
+    position: absolute;
+    margin: 0;
+    position-anchor: --tag-popover-anchor;
+    top: anchor(top);
+    left: anchor(left);
+    margin-block-start: -45px;
+} */
+
+/* .tag-info-popover:popover-open {
+    position:absolute;
+} */
+
+.tag-info-popover {
+    position: absolute;
+    margin: 0;
+    top: anchor(bottom);
+    left: anchor(left);
+    margin-block-start: 5px; /* Small gap below the button */
+}
+
+.tag-info-popover:popover-open {
+    position: absolute;
+}
+
+/*
+.product-quantity-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    min-height: 38px;
+    border-radius: 5px;
+    padding: 0 6px;
+    gap: 4px;
+}
+
+.product-quantity-controls button {
+    color: #6c757d;
+    transition: all 0.2s ease;
+    min-width: 25px;
+    border: none;
+}
+
+.product-quantity-controls span {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.product-quantity-controls button:hover {
+    color: #495057;
+    background-color: #e9ecef;
+    transform: scale(1.1);
+}
+
+.product-quantity-controls button:active {
+    transform: scale(0.95);
+}
+
+.theme-dark .product-quantity-controls {
+    background-color: #4a5568 !important;
+    border-color: #6b7280 !important;
+}
+
+.theme-dark .product-quantity-controls button {
+    color: #e2e8f0 !important;
+    border-color: transparent !important;
+}
+
+.theme-dark .product-quantity-controls button:hover {
+    background-color: #6b7280 !important;
+    color: #ffffff !important;
+}
+
+.theme-dark .product-quantity-controls button:active {
+    background-color: #374151 !important;
+}
+
+.theme-dark .product-quantity-controls button:focus {
+    outline: 2px solid #90cdf4 !important;
+    outline-offset: 2px;
+} */
+
+/* <div class="product-quantity-controls me-4">
+    <button class="qty-decrease"
+            type="button"
+            data-product-id="${item.id}"
+            title="Disminuir cantidad"
+            ${isDisabled ? 'disabled' : ''}>
+        <i class="fa fa-minus"></i>
+    </button>
+    <span id="item-${item.id}-qty"
+        class="fw-semibold product-quantity"
+        data-product-id="${item.id}">
+        ${cantidadInicial}
+    </span>
+    <button class="qty-increase"
+            type="button"
+            data-product-id="${item.id}"
+            title="Aumentar cantidad"
+            ${isDisabled ? 'disabled' : ''}>
+        <i class="fa fa-plus"></i>
+    </button>
+</div> */

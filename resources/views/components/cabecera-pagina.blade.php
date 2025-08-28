@@ -89,13 +89,19 @@
     </a> --}}
     
     {{-- <button href="#" data-back-button class="page-title-icon shadow-xl bg-theme"><i class="fas fa-chevron-left"></i></button> --}}
-
-
     <button href="#" class="page-title-icon shadow-xl bg-theme cambiarColor"><x-theme-icon/></button>
-
-
-
     <a href="#" class="page-title-icon shadow-xl bg-theme color-theme" data-menu="menu-main"><i class="fa fa-bars"></i></a>
+</div>
+@break
+
+@case('appkit-highlight')
+<div class="card notch-clear rounded-0 gradient-highlight mb-n5">
+    <div class="page-title page-title-small" style="opacity: 1;">
+        <h1>{{$titulo}}</h1>
+        <button href="#" class="page-title-icon shadow-xl bg-theme cambiarColor"><x-theme-icon/></button>
+        <a href="#" class="page-title-icon shadow-xl bg-theme color-theme" data-menu="menu-main"><i class="fa fa-bars"></i></a>
+    </div>
+    {{-- <x-slider-individual /> --}}
 </div>
 @break
 

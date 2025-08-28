@@ -1,4 +1,7 @@
 {
     "/js/app.js": "/js/app.js",
+    "/js/carrito/index.js": "/js/carrito/index.js",
+    "/js/carrito-service/carrito-service.js": "/js/carrito-service/carrito-service.js",
+    "/js/producto/producto-service.js": "/js/producto/producto-service.js",
     "/css/app.css": "/css/app.css"
 }

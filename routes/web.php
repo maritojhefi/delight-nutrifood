@@ -57,22 +57,29 @@ Route::prefix('/404')->group(function () {
 //productos
 Route::prefix('/productos')->group(function () {
     Route::get('', [App\Http\Controllers\ProductoController::class, 'index'])->name('productos');
+    Route::get('/subcategorias', [App\Http\Controllers\ProductoController::class, 'subcategorias'])->name('listar.subcategorias.productos');
     Route::get('/detalle/{id}', [App\Http\Controllers\ProductoController::class, 'detalleproducto'])->name('detalleproducto');
     Route::get('/subcategoria/{id}', [App\Http\Controllers\ProductoController::class, 'detallesubcategoria'])->name('listar.productos.subcategoria');
-
+    Route::get('/categorizados/{id}', [App\Http\Controllers\ProductoController::class, 'productosSubcategoria']);
     Route::get('/add/carrito/{id}', [App\Http\Controllers\CarritoController::class, 'addToCarrito']);
+    Route::get('/{id}/stock',[App\Http\Controllers\ProductoController::class, 'checkProductStock']);
+    Route::get('/{id}',[App\Http\Controllers\ProductoController::class,'getProduct']);
+    Route::get('/limpiar-fotos/productos',[App\Http\Controllers\ProductoController::class,'limpiarProductos']);
 });
 //promociones
 Route::prefix('/lineadelight')->group(function () {
     Route::get('', [App\Http\Controllers\LineaDelightController::class, 'index'])->name('linea.delight');
+    Route::get('/populares', [App\Http\Controllers\LineaDelightController::class, 'lineadelightPopulares'])->name('delight.listar.populares');
     Route::get('/categoria/planes', [App\Http\Controllers\LineaDelightController::class, 'categoriaPlanes'])->name('categoria.planes');
-    Route::get('/lineadelight/{id}', [App\Http\Controllers\ProductoController::class, 'lineadelightsubcategoria'])->name('delight.listar.productos.subcategoria');
-    Route::get('/lineadelight/detalle/{id}', [App\Http\Controllers\ProductoController::class, 'lineadelightproducto'])->name('delight.detalleproducto');
+    Route::get('/categorias/{horario}', [App\Http\Controllers\LineaDelightController::class, 'lineadelightHorario'])->name('delight.listar.subcategorias.horario');
+    Route::get('/categoria/{id}', [App\Http\Controllers\ProductoController::class, 'lineadelightsubcategoria'])->name('delight.listar.productos.subcategoria');
+    Route::get('/detalle/{id}', [App\Http\Controllers\ProductoController::class, 'lineadelightproducto'])->name('delight.detalleproducto');
 });
 Route::prefix('/carrito')
     ->middleware('auth')
     ->group(function () {
-        Route::get('', [App\Http\Controllers\CarritoController::class, 'index'])->name('carrito');
+        Route::get('', action: [App\Http\Controllers\CarritoController::class, 'index'])->name('carrito');
+        Route::post('mi-carrito', [App\Http\Controllers\CarritoController::class, 'validateCarrito']);
     });
 
 Route::prefix('/ventas')
@@ -218,6 +225,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
     });
     Route::prefix('/configuraciones')->group(function () {
         Route::get('/sistema', \App\Http\Livewire\Admin\Configuracion\SistemaIndexComponent::class)->name('sistema.index');
+    });
+
+    Route::prefix('/horarios')->group(function () {
+        Route::get('/index', \App\Http\Livewire\Admin\Horarios\IndexComponent::class)->name('index.horarios');
     });
 });
 

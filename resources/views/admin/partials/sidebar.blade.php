@@ -99,6 +99,10 @@
                 <x-sidebar-elements titulo="Configuraciones" linkglobal="admin/Configuraciones" :lista="['Sistema' => 'sistema.index']">
                     <i class="fa fa-gears"></i>
                 </x-sidebar-elements>
+
+                <x-sidebar-elements-simple titulo="Horarios" linkglobal="admin/Horarios" url="index.horarios">
+                    <i class="fa fa-clock-o"></i>
+                </x-sidebar-elements-simple>
             @endif
 
         </ul>
@@ -106,10 +110,12 @@
 
         <div class="plus-box" style="padding:20px 20px 30px">
             <p class="fs-16 font-w300 mb-4">Estas en el panel principal!</p>
-            <a class="text-white fs-14" href="javascript:void(0);">Eres parte del equipo {{ strtoupper(GlobalHelper::getValorAtributoSetting('nombre_sistema')) }}!</a>
+            <a class="text-white fs-14" href="javascript:void(0);">Eres parte del equipo
+                {{ strtoupper(GlobalHelper::getValorAtributoSetting('nombre_sistema')) }}!</a>
         </div>
         <div class="copyright">
-            <p><strong>{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}</strong> © {{date('Y')}} Todos los derechos reservados</p>
+            <p><strong>{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}</strong> © {{ date('Y') }}
+                Todos los derechos reservados</p>
             <p class="fs-12">Hecho con <span class="heart"></span> por Macrobyte</p>
         </div>
     </div>

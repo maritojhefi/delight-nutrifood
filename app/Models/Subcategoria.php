@@ -21,6 +21,10 @@ class Subcategoria extends Model
         'interacciones'
 
     ];
+    public function getNombreAttribute($value)
+    {
+        return ucfirst(strtolower($value));
+    }
     public function categoria()
     {
         return $this->belongsTo(Categoria::class);
@@ -28,6 +32,10 @@ class Subcategoria extends Model
     public function productos()
     {
         return $this->hasMany(Producto::class);
+    }
+    public function horarios()
+    {
+        return $this->belongsToMany(Horario::class)->withTimestamps();    
     }
     public function adicionales()
     {

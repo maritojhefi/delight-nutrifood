@@ -1,9 +1,8 @@
 @extends('client.master')
-@section('content-comentado')
-    <x-cabecera-pagina titulo="Linea {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!" cabecera="appkit" />
-
-
-
+@section('content')
+    {{-- CABECERA --}}
+    <x-cabecera-pagina titulo="Linea Delight" cabecera="appkit" />
+    {{-- FUNCIONALIDAD DE BUSQUEDA --}}
     <div class="card card-style bg-transparent mx-0 mb-n2 mt-n3 shadow-0">
         <div class="content mt-2">
             <div class="search-box bg-theme color-theme rounded-m shadow-l">
@@ -17,16 +16,14 @@
             </div>
             <div class="search-results disabled-search-list mt-3">
                 <div class="card card-style mx-0 px-2 p-0 mb-0">
-
                     @foreach ($productos as $item)
                         <a href="{{ route('delight.detalleproducto', $item->id) }}" class="d-flex py-2"
                             data-filter-item="{{ Str::of($item->nombre)->lower() }}"
                             data-filter-name="{{ Str::of($item->nombre)->lower() }}">
                             <div class="align-self-center">
-                                <img src="{{ asset($item->pathAttachment()) }}" class="rounded-sm me-3" width="35"
-                                    alt="img">
+                                <i class="fa fa-search"></i>
                             </div>
-                            <div class="align-self-center">
+                            <div class="align-self-center ps-2">
                                 <span
                                     class="color-theme font-15 d-block mb-0">{{ Str::limit(ucfirst(strtolower($item->nombre)), 35, '...') }}</span>
                             </div>
@@ -36,8 +33,6 @@
                             </div>
                         </a>
                     @endforeach
-
-
                 </div>
             </div>
         </div>
@@ -46,182 +41,495 @@
                 <div class="content">
                     <h1>Ups!</h1>
                     <p>
-                        No existe coincidencias <span class="fa-fw select-all fas"></span>
+                        No existen coincidencias <span class="fa-fw select-all fas"></span>
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
-
-    <div class="splide double-slider slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"
-        id="double-slider-1a" style="visibility: visible;">
-        <div class="splide__track" id="double-slider-1a-track">
-            <div class="splide__list" id="double-slider-1a-list"
-                style="transform: translate(-1162px, 0px); transition: transform 400ms cubic-bezier(0.42, 0.65, 0.27, 0.99) 0s;">
-                @foreach ($subcategorias as $item)
-                    <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1" style="width: 166px;">
-                        <a href="{{ route('delight.listar.productos.subcategoria', $item->id) }}" class="mx-3">
-                            <div class="card card-style me-0 mb-0"
-                                style="background-image: url('{{ asset($item->rutaFoto()) }}'); height: 250px;"
-                                data-card-height="250">
-                                <div class="card-bottom p-2 px-3">
-                                    <h4 class="color-white">{{ $item->nombre }}</h4>
-                                </div>
-                                <div class="card-overlay bg-gradient opacity-80"></div>
+    {{-- CONTENIDO DE LA PAGINA --}}
+    <div class="content mb-0">
+        {{-- SLIDER INICIO LINEADELIGHT --}}
+        <div class="my-4 splide single-slider slider-has-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-1" style="visibility: visible">
+            <div class="splide__track" id="single-slider-1-track">
+                <div class="splide__list" id="single-slider-1-list">
+                    {{-- LISTADO DE ELEMENTOS A RENDERIZARSE --}}
+                    
+                    {{-- ITEM POPULARES --}}
+                    <div class="splide__slide mx-2 is-active is-visible" id="single-slider-1-slide01" style="width: 320px;">
+                        <a href='#' data-bs-toggle="modal" data-bs-target="#popularProductsModal" data-category-id="000" data-category-name="Nuestros productos mas populares!" data-card-height="200" class="card bg-6 mb-0 shadow-l rounded-m" style="height: 200px; background-color: #FF5A5A;">
+                            <div class="card-center mt-n4 d-flex flex-column align-items-center">
+                                <i class="fa fa-apple-alt fa-7x text-white"></i>
                             </div>
+                            <div class="card-bottom text-center mb-3">
+                                <h2 class="color-white text-uppercase font-900 mb-0">PRODUCTOS POPULARES</h2>
+                                <p class="under-heading color-white">Descubre nuestros articulos mas vendidos.</p>
+                            </div>
+                            <div class="card-overlay dark-mode-tint"></div>
                         </a>
                     </div>
-                @endforeach
 
-
+                    {{-- ITEM PLANES Y PAQUETES --}}
+                    <div class="splide__slide mx-2 is-active is-visible" id="single-slider-1-slide02" style="width: 320px;">
+                        <a href="{{ route('categoria.planes') }}" data-card-height="200" class="card bg-6 mb-0 shadow-l rounded-m" style="height: 200px;background-color: #4ECDC4;">
+                            <div class="card-center mt-n4 d-flex flex-column align-items-center">
+                                <i class="fa fa-calendar fa-7x text-white"></i>
+                            </div>
+                            <div class="card-bottom text-center mb-3">
+                                <h2 class="color-white text-uppercase font-900 mb-0">PLANES Y PAQUETES</h2>
+                                <p class="under-heading color-white">Encuentra la opcion mas apropiada para ti.</p>
+                            </div>
+                            <div class="card-overlay dark-mode-tint"></div>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-        <ul class="splide__pagination">
-            <li><button class="splide__pagination__page" type="button"
-                    aria-controls="double-slider-1a-slide01 double-slider-1a-slide02" aria-label="Go to page 1"></button>
-            </li>
-            <li><button class="splide__pagination__page" type="button"
-                    aria-controls="double-slider-1a-slide03 double-slider-1a-slide04" aria-label="Go to page 2"></button>
-            </li>
-            <li><button class="splide__pagination__page is-active" type="button"
-                    aria-controls="double-slider-1a-slide04 double-slider-1a-slide05" aria-label="Go to page 3"
-                    aria-current="true"></button></li>
-        </ul>
-    </div>
 
-    <div data-card-height="140" class="card card-style round-medium shadow-huge top-30"
-        style="height: 140px;background-image:url('{{ asset(GlobalHelper::getValorAtributoSetting('inicio_disfruta')) }}')">
-        <div class="card-top mt-3 ms-3">
-            <h2 class="color-white pt-3 pb-3">Planes Saludables!</h2>
-
-        </div>
-        <div class="card-top mt-3 me-3">
-            <a href="{{ route('categoria.planes') }}"
-                class="float-end bg-white color-black btn btn-s rounded-xl font-900 mt-2 text-uppercase font-11">Ver
-                planes</a>
-        </div>
-
-        <div class="card-bottom ms-3 mb-3">
-            <i class="fa fa-heart font-25 color-white"></i>
-        </div>
-        <div class="card-bottom mb-n3 ps-5 ms-4">
-            <h5 class="font-13 color-white mb-n1">Encuentra uno para ti!</h5>
-            <p class="color-white font-10 opacity-70">{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }} by Macrobyte</p>
-        </div>
-
-        <div class="card-overlay bg-gradient opacity-80"></div>
-    </div>
-    @if ($enDescuento->count() > 0)
-        <div class="d-flex px-3 mb-2">
-            <h4 class="mb-2 font-600">Productos en descuento!</h4>
-        </div>
-
-
-        <div class="splide single-slider slider-no-arrows slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"
-            id="single-slider-2" style="visibility: visible;">
-            <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button"
-                    aria-controls="single-slider-2-track" aria-label="Previous slide"><svg
-                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
-                        <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z">
-                        </path>
-                    </svg></button><button class="splide__arrow splide__arrow--next" type="button"
-                    aria-controls="single-slider-2-track" aria-label="Go to first slide"><svg
-                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
-                        <path d="m15.5 0.932-4.3 4.38 14.5 14.6-14.5 14.5 4.3 4.4 14.6-14.6 4.4-4.3-4.4-4.4-14.6-14.6z">
-                        </path>
-                    </svg></button></div>
-            <div class="splide__track" id="single-slider-2-track">
-                <div class="splide__list" id="single-slider-2-list" style="transform: translateX(-1328px);">
-                    @foreach ($enDescuento as $item)
-                        <div class="splide__slide splide__slide--clone" aria-hidden="true" tabindex="-1"
-                            style="width: 332px;">
-                            <div data-card-height="400" class="card mx-3 rounded-m shadow-l"
-                                style="background-image: url({{ asset($item->pathAttachment()) }}); height: 400px;">
-                                <div class="card-top">
-                                    <a href="#"
-                                        class="bg-theme color-theme rounded-sm icon icon-xs float-end m-3"><i
-                                            class="far fa-shopping-bag font-12"></i></a>
-                                </div>
-                                <div class="card-bottom p-3 m-2 rounded-m bg-white">
-                                    <a href="#">
-                                        <h1 class="font-14 line-height-m font-700 mb-0">
-                                            {{ Str::limit($item->nombre(), 50) }}
-                                        </h1>
-                                        <p class="mb-0">
-                                            {{ Str::limit($item->detalle(), 60) }}
-                                        </p>
-                                    </a>
-                                    <div class="d-flex pt-3">
-                                        <div class="align-self-center">
-                                            <strong class="font-800 font-22 color-theme"><small
-                                                    class="text-secondary"><del>{{ $item->precio }}</del></small><span>
-                                                    {{ $item->descuento }} Bs</span> </strong>
-                                        </div>
-                                        <div class="align-self-center ms-auto">
-                                            <a href="#"
-                                                class="btn-s rounded-s btn bg-highlight font-700 text-uppercase mb-1 carrito"
-                                                id="{{ $item->id }}">Añadir <i class="fa fa-shopping-cart"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+        {{-- SLIDER HORARIOS --}}
+        <div class="splide topic-slider slider-no-arrows slider-no-dots pb-2 splide--loop splide--ltr splide--draggable" id="topic-slider-1" style="visibility: visible;">
+            <div class="splide__track" id="topic-slider-1-track" style="padding-left: 15px; padding-right: 40px;">
+                <div class="splide__list" id="topic-slider-1-list" style="transform: translateX(-866.592px);">
+                    @foreach ($horarios as $horario)
+                        <div class="splide__slide" id="topic-slider-1-{{$horario->nombre}}" style="width: 108.333px;">
+                            <h1 class="font-16 d-block"><button class="time-btn opacity-50" data-time="{{$horario->nombre}}">{{ucfirst($horario->nombre)}}</button></h1>
                         </div>
                     @endforeach
                 </div>
             </div>
-            <ul class="splide__pagination">
-                <li><button class="splide__pagination__page" type="button" aria-controls="single-slider-2-slide01"
-                        aria-label="Go to slide 1"></button></li>
-                <li><button class="splide__pagination__page" type="button" aria-controls="single-slider-2-slide02"
-                        aria-label="Go to slide 2"></button></li>
-                <li><button class="splide__pagination__page is-active" type="button"
-                        aria-controls="single-slider-2-slide03" aria-label="Go to slide 3" aria-current="true"></button>
-                </li>
-            </ul>
         </div>
-    @endif
+
+        {{-- SLIDER SUBCATEGORIAS --}}
+        <x-slider-doble-subcategorias/>
+
+        {{-- SLIDER PRODUCTOS MAS VENDIDOS --}}
+        <div id="best-selling-container" class="my-4">
+            <x-slider-productos :productos="$masVendidos" tag="popular" :title="'Los mas vendidos'" />
+        </div>
+
+        {{-- SLIDER PRODUCTOS NUEVOS --}}
+        <div id="recent-container" class="my-4">
+            <x-slider-productos :productos="$masRecientes" tag="recent" title="Novedades" orientation="right" />
+        </div>
+    </div>
+
+    <x-divider-manzana class="mb-4"/>
+
+    {{-- CARD PRODUCTOS PUNTUADOS --}}
     @if ($conMasPuntos->count() > 0)
-        <div class="card preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
-            style="background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('gana_puntos')) }});">
+    <x-seccion-gana-puntos :productos="$conMasPuntos" />
+        {{-- <div class="card card-style rounded-md mx-0 preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
+            style="background-image: url({{ asset('imagenes/delight/default-bg-vertical.jpg') }});">
             <div class="card-body">
-                <h4 class="color-white pt-3 font-24">Gana Puntos!</h4>
-                <p class="color-white pt-1">
-                    Mientras mas puntos, mas premios!
-                </p>
+                <div class="mx-4 mb-0">
+                    <h4 class="color-white pt-3 font-24">Gana Puntos!</h4>
+                    <p class="color-white pt-1 mb-2">
+                        Los productos seleccionados atribuyen puntos por cada compra realizada.
+                        Mientras mas puntos, mas premios!
+                    </p>
+                </div>
                 <div class="card card-style bg-transparent m-0 shadow-0">
-                    <div class="row mb-0">
+                    <div class="row mb-0 p-2">
                         @foreach ($conMasPuntos as $item)
-                            <div class="col-6 ps-2">
+                            <div class="col-6">
                                 <a href="{{ route('delight.detalleproducto', $item->id) }}"
-                                    class="card card-style mx-0 mb-3" data-menu="menu-product">
-                                    <img src="{{ asset($item->pathAttachment()) }}" alt="img" width="100"
-                                        class="mx-auto mt-2">
+                                    class="card card-style py-3 d-flex align-items-center hover-grow" data-menu="menu-product">
+                                    <img src="{{ asset('imagenes/delight/optimal_logo.svg')}}" alt="img" width="100"
+                                    class="mx-auto">
                                     <div class="p-2">
-                                        <h4 class="mb-0 font-600">{{ Str::limit($item->nombre(), 20) }}</h4>
-                                        <p class="mb-0 font-11 mt-n1">Acumula puntos por su compra!</p>
+                                        <p class="mb-0 font-600 text-center">{{ Str::limit($item->nombre(), 22) }}</p>
                                     </div>
                                     <div class="divider mb-0"></div>
-                                    <h5 class="py-3 pb-2 px-2 font-13 font-600">
-                                        {{ $item->descuento ? $item->descuento : $item->precio }} Bs
-                                        <span
-                                            class="bg-blue-dark font-11 px-2 font-600 rounded-xs shadow-xxl float-end">{{ $item->puntos }}
-                                            Pts</span>
-                                    </h5>
+                                    <div class="d-flex flex-row justify-content-between gap-4 mb-0">
+                                        <p class="font-600 mb-0">Bs. {{ $item->descuento ? $item->descuento : $item->precio }}</p>
+                                        <p class="bg-blue-dark font-11 px-2 font-600 rounded-xs shadow-xxl mb-0">{{ $item->puntos }} Pts</p>
+                                    </div>
                                 </a>
                             </div>
                         @endforeach
-
                     </div>
                 </div>
             </div>
             <div class="card-overlay bg-highlight opacity-90"></div>
             <div class="card-overlay dark-mode-tint"></div>
-        </div>
+        </div> --}}
     @endif
+
+    {{-- MODAL PRODUCTOS CATEGORIZADOS --}}
+    <div class="modal fade" id="categorizedProductsModal" tabindex="-1" aria-labelledby="categorizedProductsModalLabel" style="z-index: 9999">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header mt-2 border-0 gap-4 d-flex align-items-center">
+                    <h4 id="categorizer-title" class="mb-0 align-self-center text-uppercase">Todos los productos de esta categoria!</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body mt-0 pt-0 px-3 d-flex flex-column justify-content-center align-items-center">
+                    <div class="w-100" style="min-width: 300px;">
+                        <div class="content" id="listado-productos-categoria">
+                            <!-- Contenedor items individuales-->
+                            <div id="cart-summary-items" class="item-producto-categoria">
+                                <p class="text-muted"><span class="font-bold">Ups!</span> Parece que aun no hay productos agregados a esta categoria, regresa mas tarde.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL PRODUCTOS POPULARES --}}
+    <div class="modal fade" id="popularProductsModal" tabindex="-1" aria-labelledby="popularProductsModalLabel" aria-hidden="true" style="z-index: 9999">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header mt-2 border-0 gap-4 d-flex align-items-center">
+                    <h4 id="popular-modal-title" class="mb-0 align-self-center text-uppercase">Nuestros productos mas populares!</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body pt-0 px-3 mt-0 d-flex flex-column" id="listado-productos-populares">
+                        <!-- Contenedor items individuales-->
+                        @if($masVendidos->isEmpty())
+                            <div class="d-flex flex-column justify-content-center align-items-center text-center py-5">
+                                <i class="fa fa-question-circle fa-5x mb-3"></i>
+                                <p>Parece que no hay productos disponibles en esta categoria, intenta mas tarde.</p>
+                            </div>
+                        @else
+                            @foreach ($masVendidos as $masVendido)
+                                <x-producto-card :producto="$masVendido" />
+                            @endforeach
+                        @endif
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
-@section('content')
-    <x-cabecera-pagina titulo="En construcción!" cabecera="appkit" />
-    <x-page-construccion />
-@endsection
+@push('scripts')
+{{-- SCRIPT CONTROL DE AGREGAR AL CARRITO --}}
+<script> 
+    $(document).ready(function() {
+        $(document).on('click', '.add-to-cart', addToCartHandler);
+    });
+
+    async function addToCartHandler() {
+        const product_Id = $(this).data('producto-id');
+        const product_nombre = $(this).data('producto-nombre')
+        
+        try {
+            const result = await carritoStorage.addToCart(product_Id, 1);
+            if (result.success) {
+                console.log("Producto  agregado con exito al carrito.")
+            } else {
+                console.log(`Error al agregar el producto ${product_nombre} al carrito.`)
+            }
+        } catch (error) {
+            console.error('Error agregando el producto al carrito:', error);
+        }
+    }
+</script>
+{{-- SCRIPT CONTROL DE SLIDER --}}
+<script>
+    const subcategoriasPorHorario = @json($horariosData);
+    const horarios = @json($horarios);
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Determinacion del horario actual basado en la hora del dia
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        const currentTimeInMinutes = currentHour * 60 + currentMinute;
+        
+        let defaultTime = '';
+
+        // Iterar sobre los horarios para encontrar el rango que incluye la hora actual
+        for (const horario of horarios) {
+            const startTime = horario.hora_inicio.split(':');
+            const endTime = horario.hora_fin.split(':');
+            
+            const startMinutes = parseInt(startTime[0]) * 60 + parseInt(startTime[1]);
+            const endMinutes = parseInt(endTime[0]) * 60 + parseInt(endTime[1]);
+            
+            // Manejar casos donde el horario cruze la medianoche (ejm: 19:00 - 03:59)
+            if (startMinutes > endMinutes) {
+                // El rango cruza la medianoche
+                if (currentTimeInMinutes >= startMinutes || currentTimeInMinutes <= endMinutes) {
+                    defaultTime = horario.nombre;
+                    break;
+                }
+            } else {
+                // Rango normal dentro del mismo dia
+                if (currentTimeInMinutes >= startMinutes && currentTimeInMinutes <= endMinutes) {
+                    defaultTime = horario.nombre;
+                    break;
+                }
+            }
+        }
+
+        // Inicializacion de slider para horarios
+        new Splide('#topic-slider-1', {
+            type: 'loop',
+            perPage: 3,
+            arrows: false,
+        }).mount();
+
+        // Inicializacion del slider para categorias
+        const doubleSlider = new Splide('#double-slider-1', {
+            type: 'loop',
+            perPage: 2,
+            arrows: false,
+            autoplay: true,
+            interval: 3000,
+        });
+
+        // Items/Categorias por defecto a renderizarse
+        const defaultItems = subcategoriasPorHorario[defaultTime];
+        updateSliderContent(defaultItems);
+        doubleSlider.mount();
+
+        // Determinacion del boton activo
+        const buttons = document.querySelectorAll('.time-btn');
+        buttons.forEach(btn => {
+            if (btn.getAttribute('data-time') === defaultTime) {
+                btn.classList.add('is-active');
+                btn.classList.remove('opacity-50');
+            } else {
+                btn.classList.add('opacity-50');
+            }
+        });
+
+        function updateSliderContent(items) {
+            const list = document.getElementById('double-slider-1-list');
+
+            // Actualizar contenido del slider
+            list.innerHTML = '';
+            items.forEach(item => {
+                const formattedName = item.nombre.charAt(0).toUpperCase() + item.nombre.slice(1).toLowerCase();
+
+                list.innerHTML += `
+                    <div class="splide__slide hover-grow-s" style="width: 12rem;">
+                        <div class="card mx-3 mb-0 card-style bg-20"
+                            data-bs-toggle="modal" 
+                            data-bs-target="#categorizedProductsModal" 
+                            data-category-id="${item.id}"
+                            data-category-name="${item.nombre}"
+                            style="height: 14rem; background-image: url('${item.foto}');">
+                            <div class="card-bottom">
+                                <h3 class="color-white font-18 font-600 mb-3 mx-3">${formattedName}</h3>
+                            </div>
+                            <div class="card-overlay bg-gradient"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Refrescar el slider para mostrar los nuevos items
+            doubleSlider.refresh();
+
+            // Reiniciar el indice del slider al primer elemento
+            doubleSlider.go(0);
+        }
+
+        // Control seleccion del horario
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const time = btn.getAttribute('data-time');
+                const items = subcategoriasPorHorario[time];
+
+                // Remover clase activa de todos los botones
+                buttons.forEach(b => {
+                    b.classList.add('opacity-50');
+                    b.classList.remove('is-active');
+                });
+
+                // Acivar el boton clickeado
+                btn.classList.remove('opacity-50');
+                btn.classList.add('is-active');
+
+                // Actualizar el contenido del slider
+                updateSliderContent(items);
+            });
+        });
+    });
+</script>
+{{-- SCRIPT CONTROL DEL MODAL PRODUCTOS CATEGORIZADOS [LINEA-DELGIHT] --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        productsModal = new bootstrap.Modal(document.getElementById('categorizedProductsModal'), {
+            focus: true
+        });
+
+        const modalElement = document.getElementById('categorizedProductsModal');
+
+        modalElement.addEventListener('show.bs.modal', async function (event) {
+            const triggerElement = event.relatedTarget; // Elemento que activo el modal
+            const categoriaId = triggerElement.getAttribute('data-category-id');
+            const categoryName = triggerElement.getAttribute('data-category-name');
+            const categoryTitle = document.getElementById('categorizer-title');
+
+            if (!categoriaId) {
+                console.error('No category ID found in the trigger element');
+                return;
+            }
+
+            showLoadingState();
+
+            if (categoryName) {
+                categoryTitle.textContent = `${categoryName}`;
+            }
+
+            try {
+                const categorizedProducts = await ProductoService.getProductosCategoria(categoriaId);
+                // console.log("Productos categorizados: ", categorizedProducts);
+                renderProductItems(categorizedProducts);
+                reinitializeLucideIcons();
+            } catch (error) {
+                    console.error(`Error al obtener productos para la categoria con ID ${categoriaId}`, error);
+                    showErrorState();
+                }
+            });
+    });
+
+    const renderProductItems = (categorizedProducts) => {
+        const container = document.getElementById("listado-productos-categoria");
+        const isDisabled = false;
+        const cantidadInicial = 0;
+        container.innerHTML = '';
+
+        const renderProductCard = (item, formattedName) => {
+            container.innerHTML += `
+                <div class="col-12">
+                    <div data-card-height="140" class="card card-style mb-4 mx-0 hover-grow-s" style="overflow: hidden">
+                        <div class="d-flex flex-row gap-2"> 
+                            <a href="${item.url_detalle}" class="product-card-image">
+                                <img src="${item.imagen}" 
+                                    onerror="this.src='/imagenes/delight/default-bg-1.png';" 
+                                    style="background-color: white;min-width: 130px" />
+                            </a>
+                            <div class="d-flex flex-column w-100 flex-grow-1 justify-content-center me-2">
+                                <h4 class="me-1 font-20" style="max-height: 3rem;overflow: hidden">${formattedName.length > 50 ? formattedName.substring(0, 50) + '...' : formattedName}</h4>
+                                ${renderTagsRow(item)}
+                                <div class="d-flex flex-row align-items-center justify-content-between">
+                                    ${renderPriceSection(item)}
+                                    <div class="d-flex flex-row gap-1">
+                                        <button ruta="${item.url_detalle}" class="btn px-1 copiarLink rounded-s bg-red-light font-900">
+                                            <i class="fa fa-link"></i>
+                                        </button>
+                                        ${renderActionButton(item)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        const renderActionButton = (item) => {
+            if (!item.tiene_stock) {
+                return `
+                    <button class="btn btn-xs  rounded-s btn-full shadow-l bg-gray-dark font-900 text-uppercase" disabled>
+                        <div class="d-flex flex-row align-items-center gap-1">
+                            <i class="fa fa-ban"></i>
+                            <span class="font-10">Sin Stock</span>
+                        </div>
+                    </button>
+                `;
+            }
+            
+            return `
+                <button
+                    class="add-to-cart btn rounded-s px-1 shadow-l bg-highlight font-900 text-uppercase"
+                    data-producto-id="${item.id}"
+                    data-producto-nombre="${item.nombre}"
+                >
+                    <div class="d-flex flex-row align-items-center gap-1">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span class="font-10">Añadir</span>
+                    </div>
+                </button>
+            `;
+        }
+
+        const renderPriceSection = (item) => {
+            const hasDiscount = item.descuento && (item.descuento > 0 && item.descuento < item.precio);
+            
+            if (hasDiscount) {
+                return `
+                    <div class="d-flex flex-column m-0 justify-content-center w-100">
+                        <p class="font-10 m-0"><del>Bs. ${item.precio}</del></p>
+                        <p class="font-18 font-weight-bolder color-highlight mb-0">Bs. ${item.descuento}</p>
+                    </div>
+                `;
+            }
+            
+            return `<p class="font-18 font-weight-bolder color-highlight mb-0">Bs. ${item.precio}</p>`;
+        }
+
+        const renderTagsRow = (item) => {
+            if (item.tag && item.tag.length > 0) {
+                return `
+                    <div class="tags-container d-flex flex-row align-items-center justify-content-start gap-2">
+                    ${item.tag.map(tag => `
+                        <button popovertarget="poppytag-${item.id}-${tag.id}" popoveraction="toggle" style="anchor-name: --tag-btn-${item.id}-${tag.id};">
+                            <i data-lucide="${tag.icono}" class="lucide-icon" style="width:1.5rem;height:1.5rem;"></i>
+                        </button>
+                        <div popover
+                            id="poppytag-${item.id}-${tag.id}"
+                            class="tag-info-popover bg-white bg-dtheme-blue p-2 rounded-2 shadow-lg border"
+                            style="position-anchor: --tag-btn-${item.id}-${tag.id}; max-width:250px;">
+                            <p class="color-theme">${tag.nombre}</p>
+                        </div>
+                    `).join('')}
+                    </div>
+                `;
+            }
+            return '';
+        }
+
+        if (categorizedProducts.length === 0) {
+            container.innerHTML = `
+                <div id="cart-summary-items" class="item-producto-categoria mb-3">
+                    <p class="text-muted"><span>Ups!</span> Parece que aun no hay productos agregados a esta categoria, regresa mas tarde.</p>
+                </div>`;
+        }
+
+        categorizedProducts.forEach(item => {
+            // Condicionar el renderizado en el caso de que el producto disponga de un descuento
+            // En el caso de disponer de descuento, se muestra el precio descontado, con el precio original tachado
+            const formattedName = item.nombre.charAt(0).toUpperCase() + item.nombre.slice(1).toLowerCase();
+
+            renderProductCard(item,formattedName);
+        });
+    }
+
+    
+
+    const showErrorState = () => {
+        const container = document.getElementById("listado-productos-categoria");
+        container.innerHTML = `
+            <div id="cart-summary-items" class="item-producto-categoria mb-3">
+                <p class="text-danger">
+                    <span class="font-bold">Error!</span> 
+                    No se pudieron cargar los productos. Por favor, intenta de nuevo.
+                </p>
+            </div>
+        `;
+    };
+
+    const showLoadingState = () => {
+    const container = document.getElementById("listado-productos-categoria");
+    container.innerHTML = `
+            <div class="d-flex justify-content-center align-items-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <span class="ms-3">Cargando productos...</span>
+            </div>
+        `;
+    };
+</script>
+@endpush

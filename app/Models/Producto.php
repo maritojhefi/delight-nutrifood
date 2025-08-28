@@ -32,8 +32,8 @@ class Producto extends Model
         'contable',
         'observacion',
         'prioridad',
-        'stock_actual'
-
+        'stock_actual',
+        'cantidad_vendida'
     ];
     const PRIORIDADBAJA = "1";
     const PRIORIDADALTA = "2";
@@ -43,10 +43,22 @@ class Producto extends Model
 
         return $this->belongsToMany(Sucursale::class)
             ->withTimestamps()
-            ->withPivot('sucursale_id', 'cantidad', 'id', 'fecha_venc','max')
+            ->withPivot('sucursale_id', 'cantidad', 'id', 'fecha_venc', 'max')
             ->wherePivot('cantidad', '!=', 0);
     }
 
+    public function unfilteredSucursale()
+    {
+        return $this->belongsToMany(Sucursale::class)
+            ->withTimestamps()
+            ->withPivot('sucursale_id', 'cantidad', 'id', 'fecha_venc', 'max');
+    }
+    public function tag()
+    {
+        return $this->belongsToMany(Tag::class)
+            ->withTimestamps()
+            ->withPivot('tag_id', 'producto_id');
+    }
     public function subcategoria()
     {
         return $this->belongsTo(Subcategoria::class);
@@ -135,7 +147,6 @@ class Producto extends Model
             chr(195) . chr(179) => 'o',
             chr(195) . chr(180) => 'o',
             chr(195) . chr(181) => 'o',
-            chr(195) . chr(182) => 'o',
             chr(195) . chr(182) => 'o',
             chr(195) . chr(185) => 'u',
             chr(195) . chr(186) => 'u',
@@ -288,7 +299,7 @@ class Producto extends Model
     }
     public function getNombreAttribute($value)
     {
-        return $this->cleanString($value);
+        return ucfirst(strtolower($this->cleanString($value)));
     }
     public function setPrecioAttribute($value)
     {
