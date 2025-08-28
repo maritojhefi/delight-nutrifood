@@ -181,12 +181,7 @@
 @section('content')
     <x-cabecera-pagina-highlight titulo="Eco Tienda" />
     <div class="content mb-0">
-        <div class="col-12">
-            <i data-lucide="search" class="lucide-icon"></i>
-            <div class="card bg-white rounded-xl p-3">
-                Buscar
-            </div>
-        </div>
+        {{-- <x-barra-busqueda-productos /> --}}
 
         {{-- SLIDER PRODUCTOS MAS VENDIDOS --}}
         <div id="best-selling-container" class="my-4">

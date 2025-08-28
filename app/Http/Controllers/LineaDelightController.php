@@ -14,20 +14,12 @@ class LineaDelightController extends Controller
 {
     public function index()
     {
-        try {
         $productos = Producto::select('productos.*')
             ->join('subcategorias', 'subcategorias.id', 'productos.subcategoria_id')
             ->join('categorias', 'categorias.id', 'subcategorias.categoria_id')
             ->where('productos.estado', 'activo')
             ->whereIn('categorias.nombre', ['Cocina', 'Panaderia/Reposteria'])
-            ->get();        
-        } catch (\Throwable $th) {
-            //throw $th;
-            // Log::error('Error al obtener los prodctos', [
-            //     'error' => $th->getMessage(),
-            //     'trace' => $th->getTraceAsString()
-            // ]);
-        }
+            ->get();
 
         $productos = $productos->map(function ($producto) {
             $producto->tiene_stock = !($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0);

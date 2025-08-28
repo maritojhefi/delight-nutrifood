@@ -596,56 +596,6 @@ hover-blue:hover {
     background-color: rgba(45, 55, 72, 0.6) !important;
 }
 
-/* Alternative color schemes for dark mode */
-
-/* Option 1: Warmer dark theme */
-.theme-dark.warm .item-carrito-info {
-    background-color: #3c2415 !important;
-    border-color: #8b4513 !important;
-}
-
-.theme-dark.warm .product-name {
-    color: #ffd700 !important;
-}
-
-.theme-dark.warm .quantity-controls {
-    background-color: #8b4513 !important;
-    border-color: #a0522d !important;
-}
-
-/* Option 2: Blue-tinted dark theme */
-.theme-dark.blue .item-carrito-info {
-    background-color: #1a202c !important;
-    border-color: #2d3748 !important;
-}
-
-.theme-dark.blue .product-name {
-    color: #90cdf4 !important;
-}
-
-.theme-dark.blue .product-price {
-    color: #68d391 !important;
-}
-
-/* Option 3: High contrast dark theme */
-.theme-dark.high-contrast .item-carrito-info {
-    background-color: #000000 !important;
-    border: 2px solid #ffffff !important;
-}
-
-.theme-dark.high-contrast .product-name {
-    color: #ffffff !important;
-    font-weight: 700 !important;
-}
-
-.theme-dark.high-contrast .product-description {
-    color: #cccccc !important;
-}
-
-.theme-dark.high-contrast .quantity-controls {
-    background-color: #333333 !important;
-    border: 1px solid #ffffff !important;
-}
 
 /* Smooth transitions for theme switching */
 .item-carrito-info,

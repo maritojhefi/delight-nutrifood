@@ -31,6 +31,11 @@ export const getProduct = async (productId) => {
     }
 }
 
+export const getSearchedProducts = async (type,query) => {
+    const response = await axios.get(`/productos/buscar/${type}/${encodeURIComponent(query)}`);
+    return response.data;
+}
+
 export default {
     getProductosCategoria,
     checkProductStock
@@ -39,5 +44,6 @@ export default {
 window.ProductoService = {
     getProductosCategoria,
     checkProductStock,
-    getProduct
+    getProduct,
+    getSearchedProducts
 };
