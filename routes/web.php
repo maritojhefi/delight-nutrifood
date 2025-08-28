@@ -133,6 +133,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
         Route::get('adicionales', \App\Http\Livewire\Admin\Productos\Adicionales::class)->name('producto.adicionales');
         Route::get('agregar/adicional', \App\Http\Livewire\Admin\Productos\AgregarAdicional::class)->name('producto.agregar.adicional');
         Route::get('productos/expiracion', \App\Http\Livewire\Admin\Productos\ProductosPorExpirar::class)->name('producto.expiracion');
+        Route::get('tags', \App\Http\Livewire\Admin\Productos\TagsComponent::class)->name('producto.tags');
     });
     Route::prefix('/usuarios')->group(function () {
         Route::get('/index', \App\Http\Livewire\Admin\Usuarios\UserIndex::class)->name('usuario.listar');
