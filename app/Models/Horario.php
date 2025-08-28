@@ -17,6 +17,6 @@ class Horario extends Model
 
     public function subcategorias()
     {
-        return $this->belongsToMany(Subcategoria::class);
+        return $this->belongsToMany(Subcategoria::class)->withTimestamps();
     }
 }
