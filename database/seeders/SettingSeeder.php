@@ -55,7 +55,7 @@ class SettingSeeder extends Seeder
 
         ];
         foreach ($array as $nombre => $valor) {
-            Setting::updateOrCreate([
+            Setting::firstOrCreate([
                 'atributo' => $nombre
             ], [
                 'valor' => $valor[0],

@@ -60,7 +60,7 @@ Route::prefix('/productos')->group(function () {
     Route::get('/subcategorias', [App\Http\Controllers\ProductoController::class, 'subcategorias'])->name('listar.subcategorias.productos');
     Route::get('/detalle/{id}', [App\Http\Controllers\ProductoController::class, 'detalleproducto'])->name('detalleproducto');
     Route::get('/subcategoria/{id}', [App\Http\Controllers\ProductoController::class, 'detallesubcategoria'])->name('listar.productos.subcategoria');
-    Route::get('/categorizados/{id}',[App\Http\Controllers\ProductoController::class, 'productosSubcategoria']);
+    Route::get('/categorizados/{id}', [App\Http\Controllers\ProductoController::class, 'productosSubcategoria']);
     Route::get('/add/carrito/{id}', [App\Http\Controllers\CarritoController::class, 'addToCarrito']);
     Route::get('/{id}/stock',[App\Http\Controllers\ProductoController::class, 'checkProductStock']);
     Route::get('/{id}',[App\Http\Controllers\ProductoController::class,'getProduct']);
@@ -225,6 +225,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
     });
     Route::prefix('/configuraciones')->group(function () {
         Route::get('/sistema', \App\Http\Livewire\Admin\Configuracion\SistemaIndexComponent::class)->name('sistema.index');
+    });
+
+    Route::prefix('/horarios')->group(function () {
+        Route::get('/index', \App\Http\Livewire\Admin\Horarios\IndexComponent::class)->name('index.horarios');
     });
 });
 
