@@ -24,7 +24,7 @@
                     </div>
                     <div class="card-bottom text-center mb-3">
                         <h2 class="color-white text-uppercase font-900 mb-0">SUMPLEMENTOS STARK</h2>
-                        <p class="under-heading color-white">Complementa tu dieta con ayuda de la linea Stark.</p>
+                        <p class="under-heading color-white mx-2">Complementa tu dieta con ayuda de la linea de SUPLEMENTOS STARK.</p>
                     </div>
                     <div class="card-overlay dark-mode-tint"></div>
                 </div>

@@ -380,8 +380,8 @@ hover-blue:hover {
 }
 
 .product-image {
-    width: 120px;
-    height: 120px;
+    width: 6rem;
+    height: 6rem;
     object-fit: cover;
     border: 2px solid #f8f9fa;
     transition: border-color 0.2s ease;
@@ -505,8 +505,8 @@ hover-blue:hover {
     }
 
     .product-image {
-        width: 100px;
-        height: 100px;
+        width: 6rem;
+        height: 6rem;
     }
 
     .quantity-controls {
@@ -746,7 +746,7 @@ hover-blue:hover {
 
 /* Price Information */
 .cart-item-summary small {
-    font-size: 0.85rem;
+    font-size: 1rem;
     color: #6c757d;
 }
 
@@ -776,20 +776,20 @@ hover-blue:hover {
 /* Item Name */
 .theme-dark .cart-item-summary .item-name p {
     color: #f9fafb !important; /* Light text for dark background */
-    font-size: 0.95rem;
+    font-size: 1.5rem;
     line-height: 1.3;
 }
 
 /* Quantity Badge */
-.theme-dark .quantity-badge {
-    background-color: #6b7280 !important;
+/* .theme-dark .quantity-badge {
+    background-color: teal !important;
     color: #f9fafb !important;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     padding: 0.25rem 0.5rem;
     border-radius: 12px;
     min-width: 24px;
     text-align: center;
-}
+} */
 
 /* Alternative quantity badge colors for dark mode */
 .theme-dark .quantity-badge.bg-secondary {
@@ -805,98 +805,17 @@ hover-blue:hover {
 /* Price Information */
 .theme-dark .cart-item-summary small {
     font-size: 0.85rem;
-    color: #9ca3af !important; /* Lighter muted text for dark mode */
+    color: #9ca3af !important; 
 }
 
 .theme-dark .cart-item-summary .item-subtotal {
-    color: #34d399 !important; /* Lighter green for better contrast in dark mode */
+    color: #34d399 !important; 
 }
 
 .theme-dark .cart-item-summary .item-subtotal p {
     font-size: 1rem;
     font-weight: 600;
     color: #34d399 !important;
-}
-
-/* Enhanced dark mode variations */
-
-/* Option 1: Warmer dark theme for summary */
-.theme-dark.warm .cart-item-summary {
-    background-color: #451a03 !important;
-    border-left: 3px solid #f97316 !important;
-}
-
-.theme-dark.warm .cart-item-summary:hover {
-    background-color: #7c2d12 !important;
-}
-
-.theme-dark.warm .cart-item-summary .item-name p {
-    color: #fed7aa !important;
-}
-
-.theme-dark.warm .quantity-badge {
-    background-color: #ea580c !important;
-    color: #ffffff !important;
-}
-
-/* Option 2: Blue-tinted dark theme for summary */
-.theme-dark.blue .cart-item-summary {
-    background-color: #1e3a8a !important;
-    border-left: 3px solid #3b82f6 !important;
-}
-
-.theme-dark.blue .cart-item-summary:hover {
-    background-color: #1e40af !important;
-}
-
-.theme-dark.blue .cart-item-summary .item-name p {
-    color: #dbeafe !important;
-}
-
-.theme-dark.blue .quantity-badge {
-    background-color: #2563eb !important;
-    color: #ffffff !important;
-}
-
-/* Option 3: High contrast dark theme for summary */
-.theme-dark.high-contrast .cart-item-summary {
-    background-color: #000000 !important;
-    border-left: 4px solid #ffffff !important;
-    border: 1px solid #ffffff !important;
-}
-
-.theme-dark.high-contrast .cart-item-summary:hover {
-    background-color: #1a1a1a !important;
-    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2) !important;
-}
-
-.theme-dark.high-contrast .cart-item-summary .item-name p {
-    color: #ffffff !important;
-    font-weight: 700 !important;
-}
-
-.theme-dark.high-contrast .quantity-badge {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-    border: 1px solid #ffffff !important;
-}
-
-.theme-dark.high-contrast .cart-item-summary small {
-    color: #cccccc !important;
-}
-
-.theme-dark.high-contrast .cart-item-summary .item-subtotal {
-    color: #00ff00 !important; /* Bright green for high contrast */
-}
-
-/* Smooth transitions for theme switching */
-.cart-item-summary,
-.cart-item-summary .item-name p,
-.quantity-badge,
-.cart-item-summary small,
-.cart-item-summary .item-subtotal,
-.cart-item-summary .item-subtotal p {
-    transition: all 0.3s ease !important;
 }
 
 /* Focus states for accessibility in dark mode */
@@ -943,21 +862,6 @@ hover-blue:hover {
     }
 }
 
-/* Special states */
-.theme-dark .cart-item-summary.selected {
-    background-color: #1f2937 !important;
-    border-left: 4px solid #60a5fa !important;
-}
-
-.theme-dark .cart-item-summary.error {
-    background-color: #7f1d1d !important;
-    border-left: 3px solid #ef4444 !important;
-}
-
-.theme-dark .cart-item-summary.success {
-    background-color: #14532d !important;
-    border-left: 3px solid #22c55e !important;
-}
 
 /* Alternative Styling Options */
 
@@ -969,21 +873,6 @@ hover-blue:hover {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Option 2: Minimal style */
-.cart-item-summary.minimal {
-    background-color: transparent !important;
-    border: none !important;
-    border-bottom: 1px solid #dee2e6 !important;
-    border-radius: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
-/* Option 3: Highlighted style */
-.cart-item-summary.highlighted {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
-    border-left: 4px solid #28a745 !important;
-}
 
 /* Responsive adjustments */
 @media (max-width: 576px) {
@@ -1191,8 +1080,8 @@ hover-blue:hover {
 }
 
 .product-card-image img {
-    width: 100px;
-    height: 130px; /* Match the card height */
+    width: 140px;
+    height: 155px; /* Match the card height */
     object-fit: cover; /* Ensures image covers the area properly */
     object-position: center; /* Centers the image */
     border-top-left-radius: 0.5rem; /* Match the card's border radius */
@@ -1301,7 +1190,6 @@ hover-blue:hover {
 .tag-info-popover:popover-open {
     position: absolute;
 }
-
 
 /*
 .product-quantity-controls {

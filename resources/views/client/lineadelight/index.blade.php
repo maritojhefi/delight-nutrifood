@@ -96,15 +96,6 @@
                             <h1 class="font-16 d-block"><button class="time-btn opacity-50" data-time="{{$horario->nombre}}">{{ucfirst($horario->nombre)}}</button></h1>
                         </div>
                     @endforeach
-                    {{-- <div class="splide__slide" id="topic-slider-1-slide01" style="width: 108.333px;">
-                        <h1 class="font-16 d-block"><button class="time-btn opacity-50" data-time="manana">Mañana</button></h1>
-                    </div>
-                    <div class="splide__slide" id="topic-slider-1-slide02 is-active" style="width: 108.333px;">
-                        <h1 class="font-16 d-block"><button class="time-btn opacity-50" data-time="tarde">Tarde</button></h1>
-                    </div>
-                    <div class="splide__slide" id="topic-slider-1-slide03" style="width: 108.333px;">
-                        <h1 class="font-16 d-block"><button class="time-btn opacity-50" data-time="noche">Noche</button></h1>
-                    </div> --}}
                 </div>
             </div>
         </div>
@@ -127,7 +118,8 @@
 
     {{-- CARD PRODUCTOS PUNTUADOS --}}
     @if ($conMasPuntos->count() > 0)
-        <div class="card card-style rounded-md mx-0 preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
+    <x-seccion-gana-puntos :productos="$conMasPuntos" />
+        {{-- <div class="card card-style rounded-md mx-0 preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
             style="background-image: url({{ asset('imagenes/delight/default-bg-vertical.jpg') }});">
             <div class="card-body">
                 <div class="mx-4 mb-0">
@@ -161,7 +153,7 @@
             </div>
             <div class="card-overlay bg-highlight opacity-90"></div>
             <div class="card-overlay dark-mode-tint"></div>
-        </div>
+        </div> --}}
     @endif
 
     {{-- MODAL PRODUCTOS CATEGORIZADOS --}}
@@ -169,12 +161,12 @@
         <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
             <div class="modal-content">
                 <!-- Modal Header -->
-                <div class="modal-header mx-2 mt-2 border-0 gap-4 d-flex align-items-center">
-                    <h4 id="categorizer-title" class="mb-0 ms-4 align-self-center text-uppercase">Todos los productos de esta categoria!</h4>
+                <div class="modal-header mt-2 border-0 gap-4 d-flex align-items-center">
+                    <h4 id="categorizer-title" class="mb-0 align-self-center text-uppercase">Todos los productos de esta categoria!</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!-- Modal Body -->
-                <div class="modal-body mt-0 pt-0 d-flex flex-column justify-content-center align-items-center">
+                <div class="modal-body mt-0 pt-0 px-3 d-flex flex-column justify-content-center align-items-center">
                     <div class="w-100" style="min-width: 300px;">
                         <div class="content" id="listado-productos-categoria">
                             <!-- Contenedor items individuales-->
@@ -193,13 +185,12 @@
         <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
             <div class="modal-content">
                 <!-- Modal Header -->
-                <div class="modal-header mx-2 mt-2 border-0 gap-4 d-flex align-items-center">
-                    <h4 id="popular-modal-title" class="mb-0 ms-4 align-self-center text-uppercase">Nuestros productos mas populares!</h4>
+                <div class="modal-header mt-2 border-0 gap-4 d-flex align-items-center">
+                    <h4 id="popular-modal-title" class="mb-0 align-self-center text-uppercase">Nuestros productos mas populares!</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!-- Modal Body -->
-                <div class="modal-body pt-0 d-flex flex-column">
-                    <div class="content justify-content-center align-items-center" id="listado-productos-populares">
+                <div class="modal-body pt-0 px-3 mt-0 d-flex flex-column" id="listado-productos-populares">
                         <!-- Contenedor items individuales-->
                         @if($masVendidos->isEmpty())
                             <div class="d-flex flex-column justify-content-center align-items-center text-center py-5">
@@ -211,7 +202,6 @@
                                 <x-producto-card :producto="$masVendido" />
                             @endforeach
                         @endif
-                    </div>
                 </div>
             </div>
         </div>
@@ -320,16 +310,15 @@
                 const formattedName = item.nombre.charAt(0).toUpperCase() + item.nombre.slice(1).toLowerCase();
 
                 list.innerHTML += `
-                    <div class="splide__slide hover-grow-s" style="width: 190px;">
+                    <div class="splide__slide hover-grow-s" style="width: 12rem;">
                         <div class="card mx-3 mb-0 card-style bg-20"
-                            data-card-height="250"
                             data-bs-toggle="modal" 
                             data-bs-target="#categorizedProductsModal" 
                             data-category-id="${item.id}"
                             data-category-name="${item.nombre}"
-                            style="height: 250px; background-image: url('${item.foto}');">
+                            style="height: 14rem; background-image: url('${item.foto}');">
                             <div class="card-bottom">
-                                <h3 class="color-white font-800 mb-3 pb-1 mx-3">${formattedName}</h3>
+                                <h3 class="color-white font-18 font-600 mb-3 mx-3">${formattedName}</h3>
                             </div>
                             <div class="card-overlay bg-gradient"></div>
                         </div>
@@ -413,20 +402,20 @@
         const renderProductCard = (item, formattedName) => {
             container.innerHTML += `
                 <div class="col-12">
-                    <div data-card-height="130" class="card card-style mb-4 mx-0 hover-grow-s" style="overflow: hidden">
-                        <div class="d-flex flex-row align-items-center gap-3"> 
+                    <div data-card-height="140" class="card card-style mb-4 mx-0 hover-grow-s" style="overflow: hidden">
+                        <div class="d-flex flex-row gap-2"> 
                             <a href="${item.url_detalle}" class="product-card-image">
                                 <img src="${item.imagen}" 
                                     onerror="this.src='/imagenes/delight/default-bg-1.png';" 
-                                    style="background-color: white;" />
+                                    style="background-color: white;min-width: 130px" />
                             </a>
-                            <div class="d-flex flex-column w-100 gap-2 me-2" style="max-width: 260px">
-                                <h4 class="me-1">${formattedName.length > 50 ? formattedName.substring(0, 50) + '...' : formattedName}</h4>
+                            <div class="d-flex flex-column w-100 flex-grow-1 justify-content-center me-2">
+                                <h4 class="me-1 font-20" style="max-height: 3rem;overflow: hidden">${formattedName.length > 50 ? formattedName.substring(0, 50) + '...' : formattedName}</h4>
                                 ${renderTagsRow(item)}
-                                <div class="d-flex flex-row align-items-center justify-content-between gap-4">
+                                <div class="d-flex flex-row align-items-center justify-content-between">
                                     ${renderPriceSection(item)}
-                                    <div class="d-flex flex-row gap-2">
-                                        <button ruta="${item.url_detalle}" class="btn btn-xs copiarLink rounded-s btn-full shadow-l bg-red-light font-900">
+                                    <div class="d-flex flex-row gap-1">
+                                        <button ruta="${item.url_detalle}" class="btn px-1 copiarLink rounded-s bg-red-light font-900">
                                             <i class="fa fa-link"></i>
                                         </button>
                                         ${renderActionButton(item)}
@@ -442,21 +431,25 @@
         const renderActionButton = (item) => {
             if (!item.tiene_stock) {
                 return `
-                    <button class="btn btn-xs rounded-s btn-full shadow-l bg-gray-dark font-900 text-uppercase" disabled>
-                        <i class="fa fa-ban"></i>
-                        Sin Stock
+                    <button class="btn btn-xs  rounded-s btn-full shadow-l bg-gray-dark font-900 text-uppercase" disabled>
+                        <div class="d-flex flex-row align-items-center gap-1">
+                            <i class="fa fa-ban"></i>
+                            <span class="font-10">Sin Stock</span>
+                        </div>
                     </button>
                 `;
             }
             
             return `
                 <button
-                    class="add-to-cart btn btn-xs rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase"
+                    class="add-to-cart btn rounded-s px-1 shadow-l bg-highlight font-900 text-uppercase"
                     data-producto-id="${item.id}"
                     data-producto-nombre="${item.nombre}"
                 >
-                    <i class="fa fa-shopping-cart"></i>
-                    Añadir
+                    <div class="d-flex flex-row align-items-center gap-1">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span class="font-10">Añadir</span>
+                    </div>
                 </button>
             `;
         }
@@ -466,14 +459,14 @@
             
             if (hasDiscount) {
                 return `
-                    <div class="d-flex flex-column">
-                        <p class="font-10 mb-0 mt-n2"><del>Bs. ${item.precio}</del></p>
-                        <p class="font-21 mt-n2 font-weight-bolder color-highlight mb-0">Bs. ${item.descuento}</p>
+                    <div class="d-flex flex-column m-0 justify-content-center w-100">
+                        <p class="font-10 m-0"><del>Bs. ${item.precio}</del></p>
+                        <p class="font-18 font-weight-bolder color-highlight mb-0">Bs. ${item.descuento}</p>
                     </div>
                 `;
             }
             
-            return `<p class="font-21 font-weight-bolder color-highlight mb-0">Bs. ${item.precio}</p>`;
+            return `<p class="font-18 font-weight-bolder color-highlight mb-0">Bs. ${item.precio}</p>`;
         }
 
         const renderTagsRow = (item) => {

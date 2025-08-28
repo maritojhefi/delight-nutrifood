@@ -8,45 +8,35 @@
         <div class="content">
             {{-- CONTENEDOR PRECIO Y BOTON DE AGREGAR --}}
             <div id="product-info-card" data-producto-id="{{$producto->id}}" class="card card-style bg-dtheme-blue mx-0 my-2 mt-3" style="height: 100px;" data-card-height="100">
-                <div class="card-center px-3 no-click">
-                    {{-- CONDICIONANTE DE TEXTO PARA OFERTAS --}}
-                    @if ($producto->descuento && $producto->descuento > 0 && $producto->descuento < $producto->precio)
-                        {{-- SI El PRODUCTO TIENE DESCUENTO --}}
-                        <div class="d-flex flex-row align-items-center gap-4">
-                            <h1 class="color-theme mb-n2 font-24">Precio unitario de Bs. {{$producto->descuento}}</h1>
-                        </div>
-                        <h5 class="color-theme mt-n1 opacity-80 font-14">Precio fuera de oferta: <del>Bs. {{$producto->precio}}</del></h5>
-                    @else
-                        {{-- SI El PRODUCTO TIENE DESCUENTO --}}
-                        <h1 class="color-theme mb-n2 font-24">Precio unitario de Bs. {{$producto->precio}}</h1>
-                    @endif
-                    <h5 id="order-info-text" class="color-highlight mt-n1 opacity-80 font-14">Unidades en mi carrito: <span class="color-theme" id="details-cart-counter">x</span></h5>
-                </div>              
-                {{-- CONDICIONANTE HABILITACION BOTON POR STOCK --}}
-                <div class="card-center">
+                <div class="card-center d-flex flex-row justify-content-between gap-2 px-3">
+                    <div>
+                        <h1 class="color-theme mb-n2 font-20">Precio unitario de Bs. {{$producto->precio}}</h1>
+                        {{-- CONDICIONANTE DE TEXTO PARA OFERTAS --}}
+                        @if ($producto->descuento && $producto->descuento > 0 && $producto->descuento < $producto->precio)
+                        <h5 class="color-theme mt-n1 opacity-80 font-14">Precio fuera de oferta: <del>Bs. {{$producto->precio}}</del></h5> 
+                        @endif
+                        <h5 id="order-info-text" class="color-highlight mt-n1 opacity-80 font-14">Unidades en mi carrito: <span class="color-theme" id="details-cart-counter">0</span></h5>
+                    </div>
+                    {{-- CONDICIONANTE HABILITACION BOTON POR STOCK --}}
+                    <div class="d-flex align-items-center justify-content-center">
                     @if ($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0)
-                        <button class="float-end mx-3 gradient-gray btn-s rounded-sm shadow-xl text-uppercase text-white font-800">Sin Stock</button>
+                        <button class="gradient-gray btn-xs rounded-sm text-uppercase text-white font-800">Sin Stock</button>
                     @else
                         <button
                         data-producto-id="{{$producto->id}}"
                         data-producto-nombre="{{$producto->nombre}}"
-                        class="add-to-cart bg-highlight float-end hover-grow-s mx-3 btn-s rounded-sm shadow-xl text-uppercase text-white font-800">
-                            <i class="fa fa-shopping-cart"></i>
-                            Añadir
+                        class="add-to-cart bg-highlight hover-grow-s btn-xs rounded-sm text-uppercase text-white font-800">
+                            <div class="d-flex flex-row align-items-center gap-1">    
+                                <i class="fa fa-shopping-cart"></i>
+                                Añadir
+                            </div>
                         </button>
                     @endif
-                </div>
+                    </div>
+                </div>    
                 {{-- Control tonalidad oscura --}}
                 <div class="card-overlay dark-mode-tint opacity-70"></div>
             </div>
-            {{-- PUNTOS DEL PRODUCTO --}}
-            @if ($producto->puntos && $producto->puntos > 0)
-                    <div class="d-flex flex-row align-items-center justify-content-center gap-2 my-3">
-                        <i data-lucide="circle-star" class="lucide-icon" style="color: gold"></i>
-                        <p class="color-theme font-18 mb-0">Gana <span class="font-700">{{$producto->puntos}}</span> puntos por unidad comprada</p>
-                        <i data-lucide="circle-star" class="lucide-icon" style="color: gold"></i>
-                    </div>
-            @endif
             {{-- MENCION A LOS TAGS DEL PRODUCTO --}}
             <ul class="icon-list row row-cols-2 g-1 ms-5 my-3">
                 @if ($producto->tags->isEmpty())

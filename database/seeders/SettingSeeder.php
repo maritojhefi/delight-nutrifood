@@ -24,7 +24,7 @@ class SettingSeeder extends Seeder
 
             'logo_small' => ['imagenes/delight/logo2.png', true],
             'producto_default' => ['imagenes/delight/logo2.png', true],
-
+            'bg_default' => ['imagenes/delight/default-bg-1.png', true],
             'logo_medium' => ['imagenes/delight/logodelight.png', true],
             'diseno_qr' => ['imagenes/delight/QR-DELIGHT.png', true],
 

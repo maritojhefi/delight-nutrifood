@@ -1,13 +1,14 @@
 <div class="col-12">
-    <div data-card-height="130" class="card card-style mb-4 mx-0 hover-grow-s" style="overflow: hidden">
-        <div class="d-flex flex-row align-items-center gap-3"> 
+    <div data-card-height="140" class="card card-style mb-4 mx-0 hover-grow-s" style="overflow: hidden">
+        <div class="d-flex flex-row align-items-center gap-2"> 
             <a href="{{route('detalleproducto',$producto->id)}}" class="product-card-image">
-                <img src="{{asset('imagenes/productos/'.$producto->imagen)}}" 
-                    onerror="this.src='/imagenes/delight/default-bg-1.png';" 
-                    style="background-color: white;" />
+                <img 
+                    src="{{$producto->pathAttachment()}}"
+                    onerror='this.src="{{ GlobalHelper::getValorAtributoSetting("bg_default") }}"'
+                    style="background-color: white;min-width: 130px" />
             </a>
-            <div class="d-flex flex-column w-100 gap-1 me-2" style="max-width: 260px">
-                <h4 class="me-1">{{ucfirst(strtolower($producto->nombre))}}</h4>
+            <div class="d-flex flex-column w-100 gap-1 me-2">
+                <h4 class="me-1 font-20" style="max-height: 8rem;overflow: hidden">{{Str::limit($producto->nombre(),35)}}</h4>
                 <div class="tags-container d-flex flex-row align-items-center justify-content-start gap-2">
                     @if($producto->tag->isNotEmpty())
                         @foreach ($producto->tag as $tag_individual)
@@ -26,39 +27,37 @@
                             </div>
                         @endforeach
                     @endif
-                        {{-- <i  data-lucide="wheat-off" 
-                            class="lucide-icon "
-                            style="width: 1rem; height: 1rem;"></i>
-                        <i  data-lucide="milk-off" 
-                            class="lucide-icon "
-                            style="width: 1rem; height: 1rem;"></i> --}}
                 </div>
-                <div class="d-flex flex-row align-items-center justify-content-between gap-4">
+                <div class="d-flex flex-row align-items-center justify-content-between">
                     @if (($producto->descuento < $producto->precio) && ($producto->descuento > 0))
-                        <div class="d-flex flex-column">
-                            <p class="font-10 mb-0 mt-n2"><del>Bs. {{$producto->precio}}</del></p>
-                            <p class="font-24 mt-n2 font-weight-bolder color-highlight mb-0">Bs. {{$producto->descuento}}</p>
+                        <div class="d-flex flex-column m-0 justify-content-center w-100">
+                            <p class="font-10 m-0"><del>Bs. {{$producto->precio}}</del></p>
+                            <p class="font-18 font-weight-bolder color-highlight mb-0">Bs. {{$producto->descuento}}</p>
                         </div>
                     @else
                         <p class="font-18 font-weight-bolder color-highlight mb-0">Bs. {{$producto->precio}}</p>
                     @endif
-                    <div class="d-flex flex-row gap-2">
-                        <button ruta="{{route('detalleproducto',$producto->id)}}" class="btn btn-xs copiarLink rounded-s btn-full shadow-l bg-red-light font-900">
-                            <i class="fa fa-link"></i>
+                    <div class="d-flex flex-row gap-1">
+                        <button ruta="{{route('detalleproducto',$producto->id)}}" class="btn px-1 copiarLink rounded-s bg-red-light font-900">
+                            <i class="fa fa-link mx-1"></i>
                         </button>
                         @if ($producto->tiene_stock == false)
                                 <button class="btn btn-xs  rounded-s btn-full shadow-l bg-gray-dark font-900 text-uppercase" disabled>
-                                    <i class="fa fa-ban"></i>
-                                    Sin Stock
+                                    <div class="d-flex flex-row align-items-center gap-1">
+                                        <i class="fa fa-ban"></i>
+                                        <span class="font-10">Sin Stock</span>
+                                    </div>
                                 </button>
                         @else
                             <button
-                                class="add-to-cart btn btn-xs  rounded-s btn-full shadow-l bg-highlight font-900 text-uppercase"
+                                class="add-to-cart btn rounded-s px-1 shadow-l bg-highlight font-900 text-uppercase"
                                 data-producto-id="{{$producto->id}}"
                                 data-producto-nombre="{{$producto->nombre}}"
                             >
-                                <i class="fa fa-shopping-cart"></i>
-                                <span class="font-11">Añadir</span>
+                                <div class="d-flex flex-row align-items-center gap-1">
+                                    <i class="fa fa-shopping-cart"></i>
+                                    <span class="font-10">Añadir</span>
+                                </div>
                             </button>
                         @endif
                     </div> 
