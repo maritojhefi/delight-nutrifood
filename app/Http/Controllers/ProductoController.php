@@ -10,8 +10,7 @@ use App\Models\GaleriaFotos;
 use App\Models\Subcategoria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\Cache;
 
 class ProductoController extends Controller
 {
@@ -114,16 +113,146 @@ class ProductoController extends Controller
     }
     public function menusemanal()
     {
-        $subcategorias = Subcategoria::has('productos')->inRandomOrder()->get();
-        $almuerzos = Almuerzo::all();
-        $galeria = GaleriaFotos::inRandomOrder()->get();
-        return view('client.productos.menusemanal', compact('galeria', 'almuerzos', 'subcategorias'));
+        $subcategorias=Subcategoria::has('productos')->inRandomOrder()->get();
+        $almuerzos=Almuerzo::all();
+        $galeria=GaleriaFotos::inRandomOrder()->get();
+        return view('client.productos.menusemanal',compact('galeria','almuerzos','subcategorias'));
+    }
+    protected function cachearProductos()
+    {
+        try {
+            $productos = Producto::where('estado', 'activo')
+                ->with(['subcategoria', 'tag'])->get();
+            // $productos = $query->get();
+
+            $productosTransformados = $productos->map(function ($producto) {
+                return [
+                    'id' => $producto->id,
+                    'nombre' => $producto->nombre,
+                    'url_imagen' => $producto->pathAttachment(),
+                    'url' => route('delight.detalleproducto', $producto->id),
+                    'tiene_descuento' => ($producto->precio == $producto->precioReal()) ? false : true,
+                    'precioOriginal' => $producto->precio,
+                    'precioFinal' => $producto->precioReal(),
+                    'subcategoria' => $producto->subcategoria->nombre ?? '',
+                    'tags' => $producto->tag,
+                    'data-filter-name' => strtolower(
+                        $producto->nombre . ' ' .
+                        ($producto->subcategoria->nombre ?? '') . ' ' .
+                        $producto->tag->pluck('nombre')->join(' ')
+                    ),
+                ];
+            });
+
+            Cache::put('productos_cacheados', $productosTransformados, now()->addDays(1));
+            
+        } catch (\Throwable $th) {
+            Log::error('Error al cachear los productos', [
+                'error' => $th->getMessage(),
+                'trace' => $th->getTraceAsString()
+            ]);
+        }
+    }
+    public function buscarProductos(Request $request, $tipo = null, $query)
+    {
+        function normalizarTexto($texto)
+        {
+            $texto = strtolower($texto);
+            $texto = str_replace(
+                ['á', 'é', 'í', 'ó', 'ú', 'ñ'],
+                ['a', 'e', 'i', 'o', 'u', 'n'],
+                $texto
+            );
+            return $texto;
+        }
+
+        $query = normalizarTexto(trim($query));
+        $cacheKey = 'busqueda_' . $query;
+        $letras = str_split(preg_replace('/\s+/', '', $query));
+
+        Log::debug('Iniciando búsqueda de productos', ['query' => $query, 'cacheKey' => $cacheKey]);
+
+        if (Cache::has($cacheKey)) {
+            return response()->json(Cache::get($cacheKey));
+        }
+
+        $productos = Cache::get('productos_cacheados', collect());
+
+        if (isset($productos)) {
+            $this -> cachearProductos($tipo);
+            $productos = Cache::get('productos_cacheados', collect());
+        }
+
+        Log::debug("The entire productos collection: ", $productos->toArray());
+
+        $productosConPeso = collect($productos)->map(function ($producto) use ($query, $letras) 
+        {
+            $peso = 0;
+            $texto = normalizarTexto($producto['data-filter-name'] ?? '');
+            $nombre = normalizarTexto($producto['nombre'] ?? '');
+            $subcategoria = normalizarTexto($producto['subcategoria'] ?? '');
+
+            if (str_contains($texto, $query)) {
+                $peso += 40;
+            }
+
+            if (str_contains($nombre, $query)) {
+                $peso += 80;
+            }
+
+            if (str_contains($subcategoria, $query)) {
+                $peso += 20;
+            }
+
+            $distancia = levenshtein($query, $nombre);
+            if ($distancia <= 3) {
+                $peso += max(0, 20 - ($distancia * 5));
+            }
+
+            $palabras = explode(' ', $texto);
+            foreach ($palabras as $palabra) {
+                $dist = levenshtein($query, $palabra);
+                if ($dist <= 3) {
+                    $peso += max(0, 10 - ($dist * 3));
+                }
+                if (str_contains($palabra, $query) || str_contains($query, $palabra)) {
+                    $peso += 5;
+                }
+            }
+
+            foreach ($letras as $letra) {
+                if (str_contains($texto, $letra)) {
+                    $peso += 1;
+                }
+                if (str_contains($nombre, $letra)) {
+                    $peso += 10;
+                }
+            }
+
+            return [
+                'producto' => $producto,
+                'peso' => $peso,
+            ];
+        });
+
+        $resultado = $productosConPeso
+            ->filter(fn($item) => $item['peso'] > (strlen($query) * 0))
+            ->sortByDesc('peso')
+            ->values()
+            ->take(10)
+            ->map(function ($item) {
+                return array_merge($item['producto'], ['peso' => $item['peso']]);
+        });
+
+        Cache::put($cacheKey, $resultado, now()->addDay());
+
+        return response()->json($resultado);
     }
     public function productosSubcategoria($id)
     {
         try {
             $productos = Producto::select('productos.*')
-                ->with(['unfilteredSucursale', 'tag']) // Add eager loading here
+                ->with(['unfilteredSucursale', 'tag'])
                 ->where('subcategoria_id', $id)
                 ->where('estado', 'activo')
                 ->orderByRaw('CASE 
@@ -146,11 +275,6 @@ class ProductoController extends Controller
 
             return response()->json($productos, 200);
         } catch (\Throwable $th) {
-
-            // Log::error('Error al obtener los productos de la categoria con id: ' . $id, [
-            //     'error' => $th->getMessage(),
-            //     'trace' => $th->getTraceAsString()
-            // ]);
             return response()->json([
                 'error' => 'Error al obtener los productos de la categoria. Por favor, intente nuevamente.'
             ], 500);
@@ -173,18 +297,12 @@ class ProductoController extends Controller
             return response()->json(["stock" => $producto->stock_actual, "unlimited" => false], 200);
         }
     }
-
-    public function getProduct($id)
-    {
+    public function getProduct($id) {
         try {
             $producto = Producto::findOrFail($id);
-            return response()->json($producto, 200); // Removed the array brackets
+            return response()->json($producto, 200);
         } catch (\Throwable $th) {
-            // Log::error(`Error el producto con id: ` + $id, [
-            //     'error' => $th->getMessage(),
-            //     'trace' => $th->getTraceAsString()
-            // ]);
-            return response()->json(['error' => 'Product not found'], 404);
+            return response()->json(['error' => 'Producto no encontrado'], 404);
         }
     }
 }
