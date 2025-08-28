@@ -76,7 +76,7 @@ class LimpiezaFotosCommand extends Command
         foreach ($productos as $producto) {
             $progressBar->setMessage("Verificando: {$producto->nombre}");
             
-            if (!Storage::disk('public')->exists($producto->pathAttachment()) && $producto->imagen != null) {
+            if (!Storage::disk('public_images')->exists('productos/' . $producto->imagen) && $producto->imagen != null) {
                 $producto->imagen = null;
                 $producto->save();
                 $contProductos++;
@@ -103,7 +103,7 @@ class LimpiezaFotosCommand extends Command
         foreach ($subcategorias as $subcategoria) {
             $progressBar2->setMessage("Verificando: {$subcategoria->nombre}");
             
-            if (!Storage::disk('public')->exists($subcategoria->rutaFoto()) && $subcategoria->foto != null) {
+            if (!Storage::disk('public_images')->exists('subcategorias/' . $subcategoria->foto) && $subcategoria->foto != null) {
                 $subcategoria->foto = null;
                 $subcategoria->save();
                 $contSubcategorias++;
