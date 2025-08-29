@@ -42,12 +42,25 @@ class ProductoObserver
     }
     public function cachearProductos()
     {
-        Log::debug("Called for cachingProducts");
+        Cache::forget('productos'); // Retirar el viejo valor de cache
 
-        Cache::forget('productos'); // First, remove the old cache entry
-
+        // Cacheado de los productos disponibles, incluyendo unicamente la informacion mas relevante
         Cache::remember('productos', 60, function () {
-            return Producto::all();
+            return Producto::select([
+                    'id',
+                    'nombre', 
+                    'precio',
+                    'descuento',
+                    'subcategoria_id',
+                    'imagen',
+                ])
+                ->with([
+                    // Inclusion de registros relacionados necesarios para el manejo comun de los productos
+                    'subcategoria:id,nombre,categoria_id',
+                    'subcategoria.categoria:id,nombre',
+                    'tag:id,icono'
+                ])
+                ->get();
         });
     }
 

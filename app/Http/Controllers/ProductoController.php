@@ -11,6 +11,7 @@ use App\Models\Subcategoria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use App\Observers\ProductoObserver;
 use Exception;
 
 class ProductoController extends Controller
@@ -190,20 +191,14 @@ class ProductoController extends Controller
             }
 
             $query = normalizarTexto(trim($query));
-            $cacheKey = 'busqueda_' . $query;
             $letras = str_split(preg_replace('/\s+/', '', $query));
 
-            Log::debug('Iniciando búsqueda de productos', ['query' => $query, 'cacheKey' => $cacheKey]);
+            $productos = Cache::get('productos', collect());
 
-            // Cacheado de productos temporal, ajustado para obtener productos activos y sus relaciones para la evaluacion
-            // de la categoria a la que pertenecen [LINEADELIGHT,ECO-TIENDA]
-            $productos = Cache::remember('productos', 60, function () {
-                return Producto::with(['subcategoria.categoria'])
-                    ->where('estado', 'activo')
-                    ->get();
-            });
-
-            // Log::info("productos obtenidos: ", [$productos]);
+            if ($productos->isEmpty()) {
+                app(ProductoObserver::class)->cachearProductos();
+                $productos = Cache::get('productos', collect());
+            }
 
             // Filtrar productos de acuerdo al valor del $tipo
             if (!empty($filtro)) {
@@ -216,23 +211,23 @@ class ProductoController extends Controller
             }
 
             $productosTransformados = $productos->map(function ($producto) {
-                    return [
-                        'id' => $producto->id,
-                        'nombre' => $producto->nombre,
-                        'url_imagen' => $producto->pathAttachment(),
-                        'url' => route('delight.detalleproducto', $producto->id),
-                        'tiene_descuento' => ($producto->precio == $producto->precioReal()) ? false : true,
-                        'precioOriginal' => $producto->precio,
-                        'precioFinal' => $producto->precioReal(),
-                        'subcategoria' => $producto->subcategoria->nombre ?? '',
-                        'tags' => $producto->tag,
-                        'data-filter-name' => strtolower(
-                            $producto->nombre . ' ' .
-                            ($producto->subcategoria->nombre ?? '') . ' ' .
-                            $producto->tag->pluck('nombre')->join(' ')
-                        ),
-                    ];
-                });
+                return [
+                    'id' => $producto->id,
+                    'nombre' => $producto->nombre,
+                    'url_imagen' => $producto->pathAttachment(),
+                    'url' => route('delight.detalleproducto', $producto->id),
+                    'tiene_descuento' => ($producto->precio == $producto->precioReal()) ? false : true,
+                    'precioOriginal' => $producto->precio,
+                    'precioFinal' => $producto->precioReal(),
+                    'subcategoria' => $producto->subcategoria->nombre ?? '',
+                    'tags' => $producto->tag,
+                    'data-filter-name' => strtolower(
+                        $producto->nombre . ' ' .
+                        ($producto->subcategoria->nombre ?? '') . ' ' .
+                        $producto->tag->pluck('nombre')->join(' ')
+                    ),
+                ];
+            });
 
             $productosConPeso = collect($productosTransformados)->map(function ($producto) use ($query, $letras) 
             {
