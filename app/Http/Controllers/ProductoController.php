@@ -216,8 +216,10 @@ class ProductoController extends Controller
                 return [
                     'id' => $producto->id,
                     'nombre' => $producto->nombre,
-                    'url_imagen' => $producto->pathAttachment(),
-                    // 'url_imagen' => $producto->imagen ? asset('imagenes/productos/'. $producto->imagen) : asset(GlobalHelper::getValorAtributoSetting('bg_default')),
+                    // 'url_imagen' => $producto->pathAttachment(),
+                    'url_imagen' => $producto->imagen ? 
+                        asset('imagenes/productos/'. $producto->imagen) : 
+                        asset(GlobalHelper::getValorAtributoSetting('busqueda_default')),
                     'url' => route('delight.detalleproducto', $producto->id),
                     'tiene_descuento' => ($producto->precio == $producto->precioReal()) ? false : true,
                     'precioOriginal' => $producto->precio,
@@ -328,7 +330,9 @@ class ProductoController extends Controller
                     $producto->tiene_stock = true;
                 }
 
-                $producto->imagen = $producto->imagen ? asset('imagenes/productos/' . $producto->imagen) : asset('imagenes/delight/default-bg-1.png');
+                // $producto->imagen = $producto->imagen ? asset('imagenes/productos/' . $producto->imagen) : asset('imagenes/delight/default-bg-1.png');
+                $producto->imagen = $producto->pathAttachment();
+
                 $producto->url_detalle = route('delight.detalleproducto', $producto->id);
             }
 

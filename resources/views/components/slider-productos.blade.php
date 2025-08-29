@@ -23,8 +23,9 @@
             @foreach ($productos as $producto)
             <div class="splide__slide" id="{{$tag}}-products-slider-slide{{$producto->id}}" aria-hidden="true" tabindex="-1">
                 <a href="{{route('detalleproducto',$producto->id)}}" class="card rounded-md card-style">
-                    <img src="{{ asset('imagenes/producto/'.$producto->imagen)}}" 
-                        onerror="this.src='/imagenes/delight/default-bg-1.png';" 
+                    <img src="{{asset($producto->pathAttachment())}}" 
+                        {{-- src="{{ asset('imagenes/producto/'.$producto->imagen)}}"  --}}
+                        {{-- onerror="this.src='/imagenes/delight/default-bg-1.png';"  --}}
                         style="max-height: 100px; width: 100%; object-fit: cover;">
                     <div class="position-absolute position-absolute end-0 p-2 bg-theme bg-dtheme-blue rounded-md color-theme" style="border-radius: 0 0 0 0.375rem;">
                         @if ($producto->descuento && $producto->descuento > 0 && $producto->descuento < $producto->precio)

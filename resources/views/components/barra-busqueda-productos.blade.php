@@ -123,7 +123,7 @@
 @push('scripts')
 <script>
     const defaultBgHelper = "{{ GlobalHelper::getValorAtributoSetting('bg_default') }}";
-    const defaultProductImgHelper = "{{ GlobalHelper::getValorAtributoSetting('producto_default') }}";
+    const defaultSearchImgHelper = "{{ GlobalHelper::getValorAtributoSetting('busqueda_default') }}";
 </script>
 {{-- SCRIPT PARA LA BUSQUEDA DE PRODUCTOS  --}}
 <script>
@@ -212,7 +212,7 @@
                                 class="rounded-sm col-2" 
                                 style="width: 4rem; height: 4rem; object-fit: cover;"
                                 src="${producto.url_imagen}"
-                                onerror="this.src = defaultProductImgHelper"
+                                onerror="this.src = defaultSearchImgHelper"
                                 alt="${producto.nombre || 'Producto'}"
                                 loading="lazy">
                             <div class="col-6">

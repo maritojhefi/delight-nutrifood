@@ -358,10 +358,9 @@
                         </div>
                         <div class="product-image-container m-0" style="z-index: 10">
                             <img class="product-image rounded"
-                                src="${producto.imagen ?? '/imagenes/delight/default-bg-1.png'}"
+                                src="${producto.imagen}"
                                 alt="${producto.nombre}"
-                                data-product-id="${producto.id}"
-                                onerror="this.onerror=null; this.src='/imagenes/delight/default-bg-1.png';">
+                                data-product-id="${producto.id}">
                             ${(isUnavailable) ? '':
                             `<button class="btn btn-xxs bg-highlight opacity-100 delete-item-btn position-absolute"
                                     type="button"

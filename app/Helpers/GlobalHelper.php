@@ -419,7 +419,7 @@ class GlobalHelper
         return $subcategorias->map(function ($sub) {
             $sub->foto = $sub->foto 
                 ? asset('imagenes/subcategorias/' . $sub->foto) 
-                : asset('imagenes/delight/default-bg-vertical.jpg');
+                : asset(GlobalHelper::getValorAtributoSetting('bg_default'));
             return $sub;
         });
     }
