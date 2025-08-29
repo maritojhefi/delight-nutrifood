@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\GlobalHelper;
 use App\Models\Almuerzo;
 use App\Models\Producto;
 use App\Models\Categoria;
@@ -196,7 +197,8 @@ class ProductoController extends Controller
             $productos = Cache::get('productos', collect());
 
             if ($productos->isEmpty()) {
-                app(ProductoObserver::class)->cachearProductos();
+                // app(ProductoObserver::class)->cachearProductos();
+                GlobalHelper::cachearProductos();
                 $productos = Cache::get('productos', collect());
             }
 
@@ -215,6 +217,7 @@ class ProductoController extends Controller
                     'id' => $producto->id,
                     'nombre' => $producto->nombre,
                     'url_imagen' => $producto->pathAttachment(),
+                    // 'url_imagen' => $producto->imagen ? asset('imagenes/productos/'. $producto->imagen) : asset(GlobalHelper::getValorAtributoSetting('bg_default')),
                     'url' => route('delight.detalleproducto', $producto->id),
                     'tiene_descuento' => ($producto->precio == $producto->precioReal()) ? false : true,
                     'precioOriginal' => $producto->precio,
