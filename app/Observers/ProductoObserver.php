@@ -2,8 +2,10 @@
 
 namespace App\Observers;
 
+use App\Helpers\GlobalHelper;
 use App\Models\Producto;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class ProductoObserver
 {
@@ -41,9 +43,7 @@ class ProductoObserver
     }
     public function cachearProductos()
     {
-        Cache::remember('productos', 60, function () {
-            return Producto::all();
-        });
+        GlobalHelper::cachearProductos();
     }
 
     /**

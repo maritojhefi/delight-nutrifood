@@ -406,8 +406,7 @@
                     <div data-card-height="140" class="card card-style mb-4 mx-0 hover-grow-s" style="overflow: hidden">
                         <div class="d-flex flex-row gap-2"> 
                             <a href="${item.url_detalle}" class="product-card-image">
-                                <img src="${item.imagen}" 
-                                    onerror="this.src='/imagenes/delight/default-bg-1.png';" 
+                                <img src="${item.imagen}"
                                     style="background-color: white;min-width: 130px" />
                             </a>
                             <div class="d-flex flex-column w-100 flex-grow-1 justify-content-center me-2">
