@@ -27,20 +27,18 @@ class ProductoController extends Controller
         $nombrearray = Str::of($producto->nombre)->explode(' ');
 
         // Procesar la imagen del producto y su url
-        $producto->imagen = $producto->imagen
-            ? asset('imagenes/productos/' . $producto->imagen)
-            : asset('imagenes/delight/default-bg-1.png');
+        $producto->imagen = $producto->pathAttachment();
         $producto->url_detalle = route('delight.detalleproducto', $producto->id);
 
         // Obtener productos similares excluyendo el producto ya obtenido
         $similares = $producto->subcategoria->productos
-            ->reject(fn($p) => $p->id == $id || $p->estado != 'activo')  // Dual filter
+            // Omitir el producto actual entre los similares
+            ->reject(fn($p) => $p->id == $id || $p->estado != 'activo')
             ->shuffle()
             ->take(5)
             ->map(function ($p) {
-                $p->imagen = $p->imagen
-                    ? asset('imagenes/productos/' . $p->imagen)
-                    : asset('imagenes/delight/21.jpeg');
+                $p->imagen = 
+                asset($p->pathAttachment());
                 $p->url_detalle = route('delight.detalleproducto', $p->id);
                 return $p;
             });
@@ -100,8 +98,12 @@ class ProductoController extends Controller
         $producto = Producto::findOrFail($id);
         $nombrearray = Str::of($producto->nombre)->explode(delimiter: ' ');
 
+        // Procesar la imagen del producto y su url
+        $producto->imagen = $producto->pathAttachment();
+        $producto->url_detalle = route('delight.detalleproducto', $producto->id);
+
         $similares = $producto->subcategoria->productos
-            ->reject(fn($p) => $p->id == $id || $p->estado != 'activo')  // Dual filter
+            ->reject(fn($p) => $p->id == $id || $p->estado != 'activo')
             ->shuffle()
             ->take(5)
             ->map(function ($p) {
@@ -200,6 +202,8 @@ class ProductoController extends Controller
                     ->where('estado', 'activo')
                     ->get();
             });
+
+            // Log::info("productos obtenidos: ", [$productos]);
 
             // Filtrar productos de acuerdo al valor del $tipo
             if (!empty($filtro)) {

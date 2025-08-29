@@ -8,9 +8,9 @@
         <div class="content">
             {{-- CONTENEDOR PRECIO Y BOTON DE AGREGAR --}}
             <div id="product-info-card" data-producto-id="{{$producto->id}}" class="card card-style bg-dtheme-blue mx-0 my-2 mt-3" style="height: 100px;" data-card-height="100">
-                <div class="card-center d-flex flex-row justify-content-between gap-2 px-3">
+                <div class="card-center d-flex flex-row justify-content-between gap-3 px-3">
                     <div>
-                        <h1 class="color-theme mb-n2 font-20">Precio unitario de Bs. {{$producto->precioReal()}}</h1>
+                        <h1 class="color-theme mb-n2 font-20 d-flex">Precio unitario de Bs. {{$producto->precioReal()}}</h1>
                         {{-- CONDICIONANTE DE TEXTO PARA OFERTAS --}}
                         @if ($producto->descuento && $producto->descuento > 0 && $producto->descuento < $producto->precio)
                         <h5 class="color-theme mt-n1 opacity-80 font-14">Precio fuera de oferta: <del>Bs. {{$producto->precio}}</del></h5> 
@@ -20,7 +20,7 @@
                     {{-- CONDICIONANTE HABILITACION BOTON POR STOCK --}}
                     <div class="d-flex align-items-center justify-content-center">
                     @if ($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0)
-                        <button class="gradient-gray btn-xs rounded-sm text-uppercase text-white font-800">Sin Stock</button>
+                        <button class="gradient-gray btn-m rounded-sm text-uppercase text-white font-800" style=" line-height: 1rem;">Sin Stock</button>
                     @else
                         <button
                         data-producto-id="{{$producto->id}}"
