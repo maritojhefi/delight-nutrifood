@@ -1,5 +1,6 @@
 <div class="card-fixed mx-auto" style="height: 30rem; width: 100%;">
-    <div class="card rounded-0" style="background-image: url({{asset('imagenes/productos/' . $producto->imagen)}}), url('{{asset('imagenes/delight/default-bg-1.png')}}'); height: 400px;" data-card-height="400">
+    <div class="card rounded-0"
+    style="background-image: url('{{ asset('imagenes/productos/' . $producto->imagen) }}'), url('{{ asset(GlobalHelper::getValorAtributoSetting("bg_default")) }}'); height: 400px;" data-card-height="400">
         <div class="card-bottom px-3 pb-5">
             <h1 class="color-white font-30 mb-0">
                 {{$producto->nombre()}} 

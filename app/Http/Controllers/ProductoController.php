@@ -179,7 +179,7 @@ class ProductoController extends Controller
         $productos = Cache::get('productos_cacheados', collect());
 
         if (isset($productos)) {
-            $this -> cachearProductos($tipo);
+            $this -> cachearProductos();
             $productos = Cache::get('productos_cacheados', collect());
         }
 
