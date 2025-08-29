@@ -12,7 +12,8 @@ class Horario extends Model
     protected $fillable = [
         'nombre',
         'hora_inicio',
-        'hora_fin'
+        'hora_fin',
+        'posicion'
     ];
 
     public function subcategorias()
