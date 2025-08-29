@@ -11,6 +11,7 @@ use App\Models\Subcategoria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Exception;
 
 class ProductoController extends Controller
 {
@@ -118,7 +119,7 @@ class ProductoController extends Controller
         $galeria=GaleriaFotos::inRandomOrder()->get();
         return view('client.productos.menusemanal',compact('galeria','almuerzos','subcategorias'));
     }
-    protected function cachearProductos()
+    protected function cachearProductosX()
     {
         try {
             $productos = Producto::where('estado', 'activo')
@@ -155,98 +156,154 @@ class ProductoController extends Controller
     }
     public function buscarProductos(Request $request, $tipo = null, $query)
     {
-        function normalizarTexto($texto)
-        {
-            $texto = strtolower($texto);
-            $texto = str_replace(
-                ['á', 'é', 'í', 'ó', 'ú', 'ñ'],
-                ['a', 'e', 'i', 'o', 'u', 'n'],
-                $texto
-            );
-            return $texto;
+        try {
+
+            $filtro = [];
+            
+            // Filtro manual para la categoria a utilizarse al momento de realizar la busqueda.
+            switch (strtolower($tipo)) {
+                case 'lineadelight':
+                    $filtro = ['Cocina','Panaderia/Reposteria'];
+                    break;
+                case 'eco-tienda':
+                    $filtro = ['ECO-TIENDA'];
+                    break;
+                case (null || ''):
+                    $filtro = [];
+                    break;
+                default:
+                    $errorMessage = "El tipo utilizado: " . $tipo . " no dispone de categorias asociadas, por favor, verifique el valor establecido para el buscador";
+                    throw new Exception($errorMessage);
+            }
+
+            function normalizarTexto($texto)
+            {
+                $texto = strtolower($texto);
+                $texto = str_replace(
+                    ['á', 'é', 'í', 'ó', 'ú', 'ñ'],
+                    ['a', 'e', 'i', 'o', 'u', 'n'],
+                    $texto
+                );
+                return $texto;
+            }
+
+            $query = normalizarTexto(trim($query));
+            $cacheKey = 'busqueda_' . $query;
+            $letras = str_split(preg_replace('/\s+/', '', $query));
+
+            Log::debug('Iniciando búsqueda de productos', ['query' => $query, 'cacheKey' => $cacheKey]);
+
+            // Cacheado de productos temporal, ajustado para obtener productos activos y sus relaciones para la evaluacion
+            // de la categoria a la que pertenecen [LINEADELIGHT,ECO-TIENDA]
+            $productos = Cache::remember('productos', 60, function () {
+                return Producto::with(['subcategoria.categoria'])
+                    ->where('estado', 'activo')
+                    ->get();
+            });
+
+            // Filtrar productos de acuerdo al valor del $tipo
+            if (!empty($filtro)) {
+                $productos = $productos->filter(function ($producto) use ($filtro) {
+                    // Revisamos existencia de las relaciones y si el nombre de la categoria existe dentro del filtro
+                    return $producto->subcategoria 
+                        && $producto->subcategoria->categoria 
+                        && in_array($producto->subcategoria->categoria->nombre, $filtro);
+                });
+            }
+
+            $productosTransformados = $productos->map(function ($producto) {
+                    return [
+                        'id' => $producto->id,
+                        'nombre' => $producto->nombre,
+                        'url_imagen' => $producto->pathAttachment(),
+                        'url' => route('delight.detalleproducto', $producto->id),
+                        'tiene_descuento' => ($producto->precio == $producto->precioReal()) ? false : true,
+                        'precioOriginal' => $producto->precio,
+                        'precioFinal' => $producto->precioReal(),
+                        'subcategoria' => $producto->subcategoria->nombre ?? '',
+                        'tags' => $producto->tag,
+                        'data-filter-name' => strtolower(
+                            $producto->nombre . ' ' .
+                            ($producto->subcategoria->nombre ?? '') . ' ' .
+                            $producto->tag->pluck('nombre')->join(' ')
+                        ),
+                    ];
+                });
+
+            $productosConPeso = collect($productosTransformados)->map(function ($producto) use ($query, $letras) 
+            {
+                $peso = 0;
+                
+                // Convertir a Array en caso de trabajar con un modelo Eloquent
+                $productoArray = is_array($producto) ? $producto : $producto->toArray();
+                
+                $texto = normalizarTexto($productoArray['data-filter-name'] ?? '');
+                $nombre = normalizarTexto($productoArray['nombre'] ?? '');
+                $subcategoria = normalizarTexto($productoArray['subcategoria'] ?? '');
+
+                if (str_contains($texto, $query)) {
+                    $peso += 40;
+                }
+
+                if (str_contains($nombre, $query)) {
+                    $peso += 80;
+                }
+
+                if (str_contains($subcategoria, $query)) {
+                    $peso += 20;
+                }
+
+                $distancia = levenshtein($query, $nombre);
+                if ($distancia <= 3) {
+                    $peso += max(0, 20 - ($distancia * 5));
+                }
+
+                $palabras = explode(' ', $texto);
+                foreach ($palabras as $palabra) {
+                    $dist = levenshtein($query, $palabra);
+                    if ($dist <= 3) {
+                        $peso += max(0, 10 - ($dist * 3));
+                    }
+                    if (str_contains($palabra, $query) || str_contains($query, $palabra)) {
+                        $peso += 5;
+                    }
+                }
+
+                foreach ($letras as $letra) {
+                    if (str_contains($texto, $letra)) {
+                        $peso += 1;
+                    }
+                    if (str_contains($nombre, $letra)) {
+                        $peso += 10;
+                    }
+                }
+
+                return [
+                    'producto' => $productoArray,
+                    'peso' => $peso,
+                ];
+            });
+
+            $resultado = $productosConPeso
+                ->filter(fn($item) => $item['peso'] > (strlen($query) * 0))
+                ->sortByDesc('peso')
+                ->values()
+                ->take(10)
+                ->map(function ($item) {
+                    // Trabajando con arrays
+                    return array_merge($item['producto'], ['peso' => $item['peso']]);
+                });
+
+            return response()->json($resultado);
+
+        } catch (\Throwable $th) {
+            Log::error("Error al buscar productos: " . $th->getMessage());
+
+            return response()->json([
+                'error' => 'Error al buscar productos',
+                'message' => $th->getMessage()
+            ], 500);
         }
-
-        $query = normalizarTexto(trim($query));
-        $cacheKey = 'busqueda_' . $query;
-        $letras = str_split(preg_replace('/\s+/', '', $query));
-
-        Log::debug('Iniciando búsqueda de productos', ['query' => $query, 'cacheKey' => $cacheKey]);
-
-        if (Cache::has($cacheKey)) {
-            return response()->json(Cache::get($cacheKey));
-        }
-
-        $productos = Cache::get('productos_cacheados', collect());
-
-        if (isset($productos)) {
-            $this -> cachearProductos();
-            $productos = Cache::get('productos_cacheados', collect());
-        }
-
-        Log::debug("The entire productos collection: ", $productos->toArray());
-
-        $productosConPeso = collect($productos)->map(function ($producto) use ($query, $letras) 
-        {
-            $peso = 0;
-            $texto = normalizarTexto($producto['data-filter-name'] ?? '');
-            $nombre = normalizarTexto($producto['nombre'] ?? '');
-            $subcategoria = normalizarTexto($producto['subcategoria'] ?? '');
-
-            if (str_contains($texto, $query)) {
-                $peso += 40;
-            }
-
-            if (str_contains($nombre, $query)) {
-                $peso += 80;
-            }
-
-            if (str_contains($subcategoria, $query)) {
-                $peso += 20;
-            }
-
-            $distancia = levenshtein($query, $nombre);
-            if ($distancia <= 3) {
-                $peso += max(0, 20 - ($distancia * 5));
-            }
-
-            $palabras = explode(' ', $texto);
-            foreach ($palabras as $palabra) {
-                $dist = levenshtein($query, $palabra);
-                if ($dist <= 3) {
-                    $peso += max(0, 10 - ($dist * 3));
-                }
-                if (str_contains($palabra, $query) || str_contains($query, $palabra)) {
-                    $peso += 5;
-                }
-            }
-
-            foreach ($letras as $letra) {
-                if (str_contains($texto, $letra)) {
-                    $peso += 1;
-                }
-                if (str_contains($nombre, $letra)) {
-                    $peso += 10;
-                }
-            }
-
-            return [
-                'producto' => $producto,
-                'peso' => $peso,
-            ];
-        });
-
-        $resultado = $productosConPeso
-            ->filter(fn($item) => $item['peso'] > (strlen($query) * 0))
-            ->sortByDesc('peso')
-            ->values()
-            ->take(10)
-            ->map(function ($item) {
-                return array_merge($item['producto'], ['peso' => $item['peso']]);
-        });
-
-        Cache::put($cacheKey, $resultado, now()->addDay());
-
-        return response()->json($resultado);
     }
     public function productosSubcategoria($id)
     {

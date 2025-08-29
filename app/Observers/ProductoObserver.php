@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Producto;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class ProductoObserver
 {
@@ -41,6 +42,10 @@ class ProductoObserver
     }
     public function cachearProductos()
     {
+        Log::debug("Called for cachingProducts");
+
+        Cache::forget('productos'); // First, remove the old cache entry
+
         Cache::remember('productos', 60, function () {
             return Producto::all();
         });
