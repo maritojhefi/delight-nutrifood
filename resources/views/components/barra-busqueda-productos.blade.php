@@ -1,123 +1,130 @@
 
-<div id="products-search-box" class="bg-theme rounded-xl p-2 mx-3">
-    <div class="d-flex flex-row gap-2 justify-content-start">
-        {{-- Icono lupa --}}
-        <i data-lucide="search" class="lucide-icon color-theme"></i>
-        {{-- Input Buscador --}}
-        <input 
-            type="text" class="border-0 text-black color-black w-100"
-            id="products-search-input" data-search=""
-            data-search-type = "{{$tipo ?? ''}}"
-            placeholder="Buscar productos..." />
+<div class="d-flex flex-column gap-2">
+    {{-- Input Buscador --}}
+    <div id="products-search-box" class="bg-theme rounded-xl p-2 mx-3">
+        <div class="d-flex flex-row gap-2 justify-content-start">
+            {{-- Icono lupa --}}
+            <i data-lucide="search" class="lucide-icon color-theme"></i>
+            {{-- Entrada de texto --}}
+            <input 
+                type="text" class="border-0 text-black color-black w-100"
+                id="products-search-input" data-search=""
+                data-search-type = "{{$tipo ?? ''}}"
+                placeholder="Buscar productos..." />
+        </div>
+    </div>
+    {{-- Contenedor resultados de busqueda --}}
+    <div 
+        class="card card-style bg-theme p-2" 
+        style="display: none;">
+            {{-- Listado de resultados --}}
+            <ol id="products-search-results" class="d-flex flex-column gap-2 list-group list-group-flush">
+                {{-- Resultados de busqueda se cargan aqui --}}
+                {{-- <li id="example-search-result1">
+                    <a class="d-flex flex-row gap-1 justify-content-between align-items-center ">
+                        <img 
+                        class="rounded-sm col-2" style="width: 4rem; height: 4rem; object-fit: cover;"
+                        src="{{GlobalHelper::getValorAtributoSetting('bg_default')}}" alt="Producto">
+                        <div class="col-6">
+                            <h6>{{Str::limit("Producto ofertado",35)}}</h6>
+                            <div class="d-flex flex-row align-items-center justify-content-between">
+                                <small class="text-secondary" style="line-height: 1">{{Str::limit("Panes Integrales",24)}}</small>
+                                <div class="d-flex flex-row align-items-center gap-1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 d-flex flex-column align-items-end">
+                            <p class="mb-0 color-highlight font-900">Bs. 21.00</p>
+                            <del class="text-secondary" style="font-size: 80%">Bs. 60.00</del>
+                        </div>
+                    </a>
+                </li>
+                <li id="example-search-result2">
+                    <a class="d-flex flex-row gap-1 justify-content-between align-items-center ">
+                        <img 
+                        class="rounded-sm col-2" style="width: 4rem; height: 4rem; object-fit: cover;"
+                        src="{{GlobalHelper::getValorAtributoSetting('bg_default')}}" alt="Producto">
+                        <div class="col-6">
+                            <h6>{{Str::limit("Nombre bastante largo de un producto, describiendo mas de lo necesario",35)}}</h6>
+                            <div class="d-flex flex-row align-items-center justify-content-between">
+                                <small class="text-secondary" style="line-height: 1">{{Str::limit("Panes Integrales",24)}}</small>
+                                <div class="d-flex flex-row align-items-center gap-1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 d-flex flex-column align-items-end">
+                            <p class="mb-0 color-highlight font-900">Bs. 75.00</p>
+                        </div>
+                    </a>
+                </li>
+                <li id="example-search-result3">
+                    <a class="d-flex flex-row gap-1 justify-content-between align-items-center ">
+                        <img 
+                        class="rounded-sm col-2" style="width: 4rem; height: 4rem; object-fit: cover;"
+                        src="{{GlobalHelper::getValorAtributoSetting('bg_default')}}" alt="Producto">
+                        <div class="col-6">
+                            <h6>{{Str::limit("Producto sin tags",35)}}</h6>
+                            <div class="d-flex flex-row align-items-center justify-content-between">
+                                <small class="text-secondary" style="line-height: 1">{{Str::limit("Helados saludables, veganos y libres de azúcares",24)}}</small>
+                                <div class="d-flex flex-row align-items-center gap-1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 d-flex flex-column align-items-end">
+                            <p class="mb-0 color-highlight font-900">Bs. 120.00</p>
+                        </div>
+                    </a>
+                </li>
+                <li id="example-search-result4">
+                    <a class="d-flex flex-row gap-1 justify-content-between align-items-center ">
+                        <img 
+                        class="rounded-sm col-2" style="width: 4rem; height: 4rem; object-fit: cover;"
+                        src="{{GlobalHelper::getValorAtributoSetting('bg_default')}}" alt="Producto">
+                        <div class="col-6">
+                            <h6>{{Str::limit("Producto con tags",35)}}</h6>
+                            <div class="d-flex flex-row align-items-center justify-content-between">
+                                <small class="text-secondary" style="line-height: 1">{{Str::limit("Helados saludables, veganos y libres de azúcares",24)}}</small>
+                                <div class="d-flex flex-row align-items-center gap-1">
+                                    <i data-lucide="milk-off" class="lucide-icon color-highlight" style="width: 1rem; height: 1rem;"></i>
+                                    <i data-lucide="wheat-off" class="lucide-icon color-highlight" style="width: 1rem; height: 1rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 d-flex flex-column align-items-end">
+                            <p class="mb-0 color-highlight font-900">Bs. 1000.00</p>
+                        </div>
+                    </a>
+                </li>
+                <li id="example-search-result5">
+                    <a class="d-flex flex-row gap-1 justify-content-between align-items-center ">
+                        <img 
+                        class="rounded-sm col-2" style="width: 4rem; height: 4rem; object-fit: cover;"
+                        src="{{GlobalHelper::getValorAtributoSetting('bg_default')}}" alt="Producto">
+                        <div class="col-6">
+                            <h6>{{Str::limit("Producto tags y subcategoria larga",35)}}</h6>
+                            <div class="d-flex flex-row align-items-center justify-content-between">
+                                <small class="text-secondary" style="line-height: 1">{{Str::limit("Helados saludables, veganos y libres de azúcares",24)}}</small>
+                                <div class="d-flex flex-row align-items-center gap-1">
+                                    <i data-lucide="vegan" class="lucide-icon color-highlight" style="width: 1rem; height: 1rem;"></i>
+                                    <i data-lucide="milk-off" class="lucide-icon color-highlight" style="width: 1rem; height: 1rem;"></i>
+                                    <i data-lucide="wheat-off" class="lucide-icon color-highlight" style="width: 1rem; height: 1rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 d-flex flex-column align-items-end">
+                            <p class="mb-0 color-highlight font-900">Bs. 1000.00</p>
+                            <del class="text-secondary" style="font-size: 80%">Bs. 1200.00</del>
+                        </div>
+                    </a>
+                </li> --}}
+            </ol>
     </div>
 </div>
-{{-- Contenedor resultados de busqueda --}}
-<div 
-    class="card card-style bg-theme p-2" 
-    style="display: none;">
-        {{-- Listado de resultados --}}
-        <ol id="products-search-results" class="d-flex flex-column gap-2 list-group list-group-flush">
-            {{-- Resultados de busqueda se cargan aqui --}}
-            {{-- <li id="example-search-result1">
-                <a class="d-flex flex-row gap-1 justify-content-between align-items-center ">
-                    <img 
-                    class="rounded-sm col-2" style="width: 4rem; height: 4rem; object-fit: cover;"
-                    src="{{GlobalHelper::getValorAtributoSetting('bg_default')}}" alt="Producto">
-                    <div class="col-6">
-                        <h6>{{Str::limit("Producto ofertado",35)}}</h6>
-                        <div class="d-flex flex-row align-items-center justify-content-between">
-                            <small class="text-secondary" style="line-height: 1">{{Str::limit("Panes Integrales",24)}}</small>
-                            <div class="d-flex flex-row align-items-center gap-1">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-3 d-flex flex-column align-items-end">
-                        <p class="mb-0 color-highlight font-900">Bs. 21.00</p>
-                        <del class="text-secondary" style="font-size: 80%">Bs. 60.00</del>
-                    </div>
-                </a>
-            </li>
-            <li id="example-search-result2">
-                <a class="d-flex flex-row gap-1 justify-content-between align-items-center ">
-                    <img 
-                    class="rounded-sm col-2" style="width: 4rem; height: 4rem; object-fit: cover;"
-                    src="{{GlobalHelper::getValorAtributoSetting('bg_default')}}" alt="Producto">
-                    <div class="col-6">
-                        <h6>{{Str::limit("Nombre bastante largo de un producto, describiendo mas de lo necesario",35)}}</h6>
-                        <div class="d-flex flex-row align-items-center justify-content-between">
-                            <small class="text-secondary" style="line-height: 1">{{Str::limit("Panes Integrales",24)}}</small>
-                            <div class="d-flex flex-row align-items-center gap-1">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-3 d-flex flex-column align-items-end">
-                        <p class="mb-0 color-highlight font-900">Bs. 75.00</p>
-                    </div>
-                </a>
-            </li>
-            <li id="example-search-result3">
-                <a class="d-flex flex-row gap-1 justify-content-between align-items-center ">
-                    <img 
-                    class="rounded-sm col-2" style="width: 4rem; height: 4rem; object-fit: cover;"
-                    src="{{GlobalHelper::getValorAtributoSetting('bg_default')}}" alt="Producto">
-                    <div class="col-6">
-                        <h6>{{Str::limit("Producto sin tags",35)}}</h6>
-                        <div class="d-flex flex-row align-items-center justify-content-between">
-                            <small class="text-secondary" style="line-height: 1">{{Str::limit("Helados saludables, veganos y libres de azúcares",24)}}</small>
-                            <div class="d-flex flex-row align-items-center gap-1">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-3 d-flex flex-column align-items-end">
-                        <p class="mb-0 color-highlight font-900">Bs. 120.00</p>
-                    </div>
-                </a>
-            </li>
-            <li id="example-search-result4">
-                <a class="d-flex flex-row gap-1 justify-content-between align-items-center ">
-                    <img 
-                    class="rounded-sm col-2" style="width: 4rem; height: 4rem; object-fit: cover;"
-                    src="{{GlobalHelper::getValorAtributoSetting('bg_default')}}" alt="Producto">
-                    <div class="col-6">
-                        <h6>{{Str::limit("Producto con tags",35)}}</h6>
-                        <div class="d-flex flex-row align-items-center justify-content-between">
-                            <small class="text-secondary" style="line-height: 1">{{Str::limit("Helados saludables, veganos y libres de azúcares",24)}}</small>
-                            <div class="d-flex flex-row align-items-center gap-1">
-                                <i data-lucide="milk-off" class="lucide-icon color-highlight" style="width: 1rem; height: 1rem;"></i>
-                                <i data-lucide="wheat-off" class="lucide-icon color-highlight" style="width: 1rem; height: 1rem;"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-3 d-flex flex-column align-items-end">
-                        <p class="mb-0 color-highlight font-900">Bs. 1000.00</p>
-                    </div>
-                </a>
-            </li>
-            <li id="example-search-result5">
-                <a class="d-flex flex-row gap-1 justify-content-between align-items-center ">
-                    <img 
-                    class="rounded-sm col-2" style="width: 4rem; height: 4rem; object-fit: cover;"
-                    src="{{GlobalHelper::getValorAtributoSetting('bg_default')}}" alt="Producto">
-                    <div class="col-6">
-                        <h6>{{Str::limit("Producto tags y subcategoria larga",35)}}</h6>
-                        <div class="d-flex flex-row align-items-center justify-content-between">
-                            <small class="text-secondary" style="line-height: 1">{{Str::limit("Helados saludables, veganos y libres de azúcares",24)}}</small>
-                            <div class="d-flex flex-row align-items-center gap-1">
-                                <i data-lucide="vegan" class="lucide-icon color-highlight" style="width: 1rem; height: 1rem;"></i>
-                                <i data-lucide="milk-off" class="lucide-icon color-highlight" style="width: 1rem; height: 1rem;"></i>
-                                <i data-lucide="wheat-off" class="lucide-icon color-highlight" style="width: 1rem; height: 1rem;"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-3 d-flex flex-column align-items-end">
-                        <p class="mb-0 color-highlight font-900">Bs. 1000.00</p>
-                        <del class="text-secondary" style="font-size: 80%">Bs. 1200.00</del>
-                    </div>
-                </a>
-            </li> --}}
-        </ol>
-</div>
 @push('scripts')
+<script>
+    const defaultBgHelper = "{{ GlobalHelper::getValorAtributoSetting('bg_default') }}";
+    const defaultProductImgHelper = "{{ GlobalHelper::getValorAtributoSetting('producto_default') }}";
+</script>
 {{-- SCRIPT PARA LA BUSQUEDA DE PRODUCTOS  --}}
 <script>
     document.addEventListener('DOMContentLoaded', async function () {
@@ -199,12 +206,13 @@
             // Construir el HTML de todos los resultados y luego insertarlo de una vez
             const htmlParts = results.map(producto => {
                 return `
-                    <li id="example-search-result-${producto.id}">
+                    <li id="example-search-result-${producto.id}" style="list-style-type: none">
                         <a href="${producto.url}" class="d-flex flex-row gap-1 justify-content-between align-items-center">
                             <img 
                                 class="rounded-sm col-2" 
                                 style="width: 4rem; height: 4rem; object-fit: cover;"
                                 src="${producto.url_imagen}"
+                                onerror="this.src = defaultProductImgHelper"
                                 alt="${producto.nombre || 'Producto'}"
                                 loading="lazy">
                             <div class="col-6">
