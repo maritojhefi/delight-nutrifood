@@ -170,8 +170,7 @@
             <div class="content card modal-body rounded-sm d-flex flex-column gap-2 justify-content-center align-items-center" style="z-index: 10">
                 <h2>Resumen del pedido</h2>
                 <p class="mb-0">El pedido se procesara una vez realizado el pago</p>
-                <div class="card card-style mx-2 mb-0">
-                    <div class="content resumen-carrito-detalles">
+                <div class="card card-style mx-2 p-4 resumen-carrito-detalles w-100 mb-0" >
                         <!-- Contenedor resumen items individuales-->
                         <div id="cart-summary-items" class="resumen-carrito-detalles mb-3">
                             <!-- Los items se renderizan aqui por renderSummaryItems() -->
@@ -186,7 +185,6 @@
                         <button id="checkout-btn" class="btn btn-m rounded-sm text-uppercase font-800 w-100">
                             Realizar Pago Seguro
                         </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -420,7 +418,7 @@
         const itemSubtotal = (producto.precio * producto.cantidad_solicitada).toFixed(2);
         return `
             <div class="mb-2">
-                <div class="item-name text-truncate fw-semibold mb-2" title="${producto.nombre}">
+                <div class="item-name fw-semibold mb-2" title="${producto.nombre}">
                     <p class="mb-0 font-600 text-dark">${producto.nombre}</p>
                 </div>
                 <div class="d-flex flex-row justify-content-between align-items-center">
