@@ -62,9 +62,9 @@ Route::prefix('/productos')->group(function () {
     Route::get('/subcategoria/{id}', [App\Http\Controllers\ProductoController::class, 'detallesubcategoria'])->name('listar.productos.subcategoria');
     Route::get('/categorizados/{id}', [App\Http\Controllers\ProductoController::class, 'productosSubcategoria']);
     Route::get('/add/carrito/{id}', [App\Http\Controllers\CarritoController::class, 'addToCarrito']);
-    Route::get('/{id}/stock',[App\Http\Controllers\ProductoController::class, 'checkProductStock']);
-    Route::get('/{id}',[App\Http\Controllers\ProductoController::class,'getProduct']);
-    Route::get('/limpiar-fotos/productos',[App\Http\Controllers\ProductoController::class,'limpiarProductos']);
+    Route::get('/{id}/stock', [App\Http\Controllers\ProductoController::class, 'checkProductStock']);
+    Route::get('/{id}', [App\Http\Controllers\ProductoController::class, 'getProduct']);
+    Route::get('/limpiar-fotos/productos', [App\Http\Controllers\ProductoController::class, 'limpiarProductos']);
     Route::get('/buscar/{tipo}/{query}', [App\Http\Controllers\ProductoController::class, 'buscarProductos']);
 });
 //promociones
@@ -199,6 +199,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
     });
     Route::prefix('/caja')->group(function () {
         Route::get('/reporte/ventas/v2', \App\Http\Livewire\Admin\Caja\ReporteVentas::class)->name('caja.reportes.v2');
+        Route::get('/reporte/mensual', \App\Http\Livewire\Admin\Caja\ReporteMensual::class)->name('caja.reporte.mensual');
         Route::get('/diaria', \App\Http\Livewire\Admin\Caja\CajaDiaria::class)->name('caja.diaria');
         Route::get('/reportes', \App\Http\Livewire\Admin\Caja\Reportes::class)->name('caja.reportes');
     });

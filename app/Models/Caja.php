@@ -199,4 +199,69 @@ class Caja extends Model
     {
         return CajaReporteHelper::urlGraficoProductosVendidos($this->arrayProductosVendidos($cajeroId));
     }
+
+
+
+
+
+
+
+
+    /**
+     * Obtiene un array con las ventas agrupadas por categoría para esta caja
+     * 
+     * @param int|null $cajeroId - ID del cajero (opcional, para filtrar por cajero específico)
+     * @return array - Array con datos de ventas por categoría
+     */
+    public function arrayVentasPorCategoria($cajeroId = null): array
+    {
+        // Llama al helper que obtiene los datos de ventas por categoría
+        // Si se proporciona cajeroId, filtra solo las ventas de ese cajero
+        return CajaReporteHelper::arrayVentasPorCategoria($this->id, $cajeroId);
+    }
+
+    /**
+     * Genera la URL del gráfico de ventas por categoría para esta caja
+     * 
+     * @param int|null $cajeroId - ID del cajero (opcional, para filtrar por cajero específico)
+     * @return string - URL del gráfico generado por QuickChart
+     */
+    public function urlGraficoVentasPorCategoria($cajeroId = null): string
+    {
+        // Obtiene los datos de ventas por categoría y genera el gráfico
+        return CajaReporteHelper::urlGraficoVentasPorCategoria($this->arrayVentasPorCategoria($cajeroId));
+    }
+
+    /**
+     * MÉTODO DE DEPURACIÓN: Verifica que los totales del gráfico coincidan con totalIngresoAbsoluto
+     * 
+     * @param int|null $cajeroId - ID del cajero (opcional)
+     * @return array - Array con información de depuración
+     */
+    public function debugTotalesGrafico($cajeroId = null): array
+    {
+        $totalIngresoAbsoluto = $this->totalIngresoAbsoluto();
+        $totalIngresoPOS = $this->ingresoVentasPOS();
+        $totalSaldosPagados = $this->totalSaldosPagadosSinVenta();
+        
+        // Obtener totales del gráfico de categorías
+        $categorias = $this->arrayVentasPorCategoria($cajeroId);
+        $totalGraficoCategorias = array_sum(array_column($categorias, 'suma_total'));
+        
+        // Obtener totales del gráfico de productos
+        $productos = $this->arrayProductosVendidos($cajeroId);
+        $totalGraficoProductos = array_sum(array_column($productos, 'suma_total'));
+        
+        return [
+            'totalIngresoAbsoluto' => $totalIngresoAbsoluto,
+            'totalIngresoPOS' => $totalIngresoPOS,
+            'totalSaldosPagados' => $totalSaldosPagados,
+            'totalGraficoCategorias' => $totalGraficoCategorias,
+            'totalGraficoProductos' => $totalGraficoProductos,
+            'diferenciaCategorias' => $totalIngresoAbsoluto - $totalGraficoCategorias,
+            'diferenciaProductos' => $totalIngresoAbsoluto - $totalGraficoProductos,
+            'porcentajeErrorCategorias' => $totalIngresoAbsoluto > 0 ? (($totalIngresoAbsoluto - $totalGraficoCategorias) / $totalIngresoAbsoluto) * 100 : 0,
+            'porcentajeErrorProductos' => $totalIngresoAbsoluto > 0 ? (($totalIngresoAbsoluto - $totalGraficoProductos) / $totalIngresoAbsoluto) * 100 : 0,
+        ];
+    }
 }
