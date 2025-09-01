@@ -418,28 +418,50 @@ class GlobalHelper
         return $atributo->valor;
     }
 
-    public static function processSubcategoriaFoto($subcategorias) {
+    public static function processSubcategoriaFoto($subcategorias)
+    {
         return $subcategorias->map(function ($sub) {
-            $sub->foto = $sub->foto 
-                ? asset('imagenes/subcategorias/' . $sub->foto) 
+            $sub->foto = $sub->foto
+                ? asset('imagenes/subcategorias/' . $sub->foto)
                 : asset(GlobalHelper::getValorAtributoSetting('bg_default'));
             return $sub;
         });
     }
 
-    public static function cachearProductos() {
+
+    public static function formatearNumeroDecimalesMiles($numero)
+    {
+        $numeroFloat = (float) $numero;
+
+        // Si el número es mayor a 1000: sin decimales (pesos chilenos)
+        if ($numeroFloat > 1000) {
+            return number_format($numeroFloat, 0, ',', '.');
+        } else {
+            // Si el número es menor o igual a 1000: con decimales necesarios (UF)
+            // Formatear con 2 decimales y luego eliminar ceros innecesarios
+            $formateado = number_format($numeroFloat, 2, ',', '.');
+
+            // Eliminar ceros al final y coma si no hay decimales
+            $formateado = rtrim($formateado, '0');
+            $formateado = rtrim($formateado, ',');
+
+            return $formateado;
+        }
+    }
+    public static function cachearProductos()
+    {
         Cache::forget('productos'); // Retirar el viejo valor de cache
 
         // Cacheado de los productos disponibles, incluyendo unicamente la informacion mas relevante
         Cache::remember('productos', 60, function () {
             return Producto::select([
-                    'id',
-                    'nombre', 
-                    'precio',
-                    'descuento',
-                    'subcategoria_id',
-                    'imagen',
-                ])
+                'id',
+                'nombre',
+                'precio',
+                'descuento',
+                'subcategoria_id',
+                'imagen',
+            ])
                 ->with([
                     // Inclusion de registros relacionados necesarios para el manejo comun de los productos
                     'subcategoria:id,nombre,categoria_id',
