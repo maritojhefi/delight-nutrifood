@@ -27,13 +27,14 @@
 
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-responsive-md m-0 p-0 letra12">
+                    <table class="table table-bordered table-striped table-responsive-md m-0 p-0 letra12">
                         <thead class="m-0 p-0">
                             <tr class="m-0 p-0">
                                 <th class="m-0 p-0"><strong>Nombre</strong></th>
                                 <th class="m-0 p-0  "><strong>Stock</strong></th>
                                 <th class="m-0 p-0"><strong>Precio</strong></th>
                                 <th class="m-0 p-0  "><strong>Estado</strong></th>
+                                <th class="m-0 p-0  "><strong>En Tienda</strong></th>
                                 <th class="m-0 p-0  "><strong>Contable</strong></th>
 
                                 <th class="m-0 p-0  "><strong>Subcategoria</strong></th>
@@ -79,21 +80,40 @@
                                                 class="">{{ $item->precio }}
                                                 Bs</span></td>
                                     @endif
-                                    <td class="m-0 p-1  d-md"><a href="#"
-                                            wire:click="cambiarestado('{{ $item->id }}')">
-                                            <div class="d-flex align-items-center"><i
-                                                    class="fa fa-circle text-{{ $item->estado == 'activo' ? 'success' : 'danger' }} me-1"></i>
-                                                {{ $item->estado }}</div>
-                                        </a></td>
+                                    <td class="m-0 p-1 d-md">
+                                        <div class="form-check form-switch" >
+                                            <input class="form-check-input" type="checkbox" role="switch" 
+                                                   id="switch_{{ $item->id }}" style="width: 30px !important;cursor: pointer;"
+                                                   {{ $item->estado == 'activo' ? 'checked' : '' }}
+                                                   wire:click="cambiarestado('{{ $item->id }}')"
+                                                  >
+                                           
+                                        </div>
+                                    </td>
+                                    <td class="m-0 p-1 d-md">
+                                        <button class="btn btn-sm border-0 p-2 {{ $item->estado == 'inactivo' && !$item->publico_tienda ? 'disabled' : '' }}" 
+                                                wire:click="cambiarPublicoTienda('{{ $item->id }}')"
+                                                title="{{ $item->estado == 'inactivo' && !$item->publico_tienda ? 'Producto inactivo - Active el producto primero' : ($item->publico_tienda ? 'Visible en tienda - Click para ocultar' : 'Oculto en tienda - Click para mostrar') }}"
+                                                {{ $item->estado == 'inactivo' && !$item->publico_tienda ? 'disabled' : '' }}>
+                                            <i class="fa fa-{{ $item->publico_tienda ? 'eye' : 'eye-slash' }}
+                                                      text-{{ $item->estado == 'inactivo' && !$item->publico_tienda ? 'muted' : ($item->publico_tienda ? 'success' : 'dark') }}"
+                                               style="font-size: 20px !important; cursor: {{ $item->estado == 'inactivo' && !$item->publico_tienda ? 'not-allowed' : 'pointer' }};"></i>
+                                        </button>
+                                    </td>
                                     <td class="m-0 p-1  d-lg"><a href="#"
                                             wire:click="cambiarcontable('{{ $item->id }}')"><span
                                                 class="badge badge-{{ $item->contable == 0 ? 'warning' : 'success' }}">{{ $item->contable == 0 ? 'NO' : 'SI' }}</span></a>
                                     </td>
 
-                                    <td class="m-0 p-1  d-lg"><span
-                                            class="">{{ $item->subcategoria->nombre }}</span></td>
-                                    <td class="m-0 p-1 "><span class="w-space-no">{{ $item->medicion }}</span></td>
-                                    <td class="m-0 p-1 "><span class="w-space-no">{{ $item->puntos }}</span></td>
+                                    <td class="m-0 p-1 d-lg">
+                                        <span class="">{{ $item->subcategoria->nombre }}</span>
+                                    </td>
+                                    <td class="m-0 p-1">
+                                        <span class="w-space-no">{{ $item->medicion }}</span>
+                                    </td>
+                                    <td class="m-0 p-1">
+                                        <span class="w-space-no">{{ $item->puntos }}</span>
+                                    </td>
                                     <td class="m-0 p-1">
                                         @if ($item->tags->count() > 0)
                                             <span class="badge badge-outline-primary badge-xs">
@@ -110,23 +130,7 @@
                                         <td class="m-0 p-1"><span class="badge light badge-danger">Sin codigo</span></td>
                                     @endif --}}
 
-
-
-
                                     <td class="m-0 p-1">
-                                        {{-- <div class="d-flex flex-column flex-sm-row">
-                                            <a href="#"
-                                                class="btn btn-primary shadow btn-xs sharp me-1 mb-1 mb-sm-0"
-                                                data-bs-toggle="modal" data-bs-target="#modalEditar"
-                                                wire:click="editarProducto({{ $item->id }})"><i
-                                                    class="fa fa-pencil"></i></a>
-                                            <a href="#" class="btn btn-danger shadow btn-xs sharp"
-                                                onclick="confirmarEliminacion('{{ $item->id }}', '{{ $item->nombre }}')"><i
-                                                    class="fa fa-trash"></i></a>
-                                        </div> --}}
-
-
-
                                         <div class="d-flex flex-column flex-sm-row">
                                             <div class="dropdown">
                                                 <button type="button" class="btn btn-sm btn-info light sharp"
@@ -173,13 +177,14 @@
                     </table>
                 </div>
             </div>
-            <div class="row mx-auto">
-                <div class="col-12 col-md-8 mb-2 mb-md-0">
-                    {{ $productos->links() }}
+            <div class="d-flex justify-content-between align-items-center flex-wrap mt-3 px-3">
+                <div class="mb-2 mb-md-0">
+                    <small class="text-muted">
+                        Mostrando {{ $productos->count() }} de {{ $productos->total() }} registros
+                    </small>
                 </div>
-                <div class="col-12 col-md-4 text-md-end">
-                    <small class="text-muted">Mostrando {{ $productos->count() }} de {{ $productos->total() }}
-                        registros</small>
+                <div class="d-flex justify-content-center">
+                    {{ $productos->links() }}
                 </div>
             </div>
         </div>

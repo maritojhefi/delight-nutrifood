@@ -195,6 +195,28 @@ class ProductTable extends Component
             'message' => 'Se guardo el cambio!',
         ]);
     }
+
+    public function cambiarPublicoTienda(Producto $producto)
+    {
+        // Si el producto está inactivo y se intenta hacer visible en tienda
+        if ($producto->estado == 'inactivo' && !$producto->publico_tienda) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => 'No se puede hacer visible en tienda un producto inactivo. Active el producto primero.',
+            ]);
+            return;
+        }
+        
+        $producto->publico_tienda = !$producto->publico_tienda;
+        $producto->save();
+        
+        $mensaje = $producto->publico_tienda ? 'visible en la tienda' : 'oculto de la tienda';
+        
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => 'El producto ' . $producto->nombre . ' ahora está ' . $mensaje,
+        ]);
+    }
     public function eliminar(Producto $prod)
     {
         try {

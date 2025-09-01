@@ -33,7 +33,8 @@ class Producto extends Model
         'observacion',
         'prioridad',
         'stock_actual',
-        'cantidad_vendida'
+        'cantidad_vendida',
+        'publico_tienda'
     ];
     const PRIORIDADBAJA = "1";
     const PRIORIDADALTA = "2";
