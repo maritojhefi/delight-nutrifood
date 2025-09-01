@@ -3,7 +3,7 @@
         <div class="card">
             <div class="card-header row">
                 <div class="col">
-                    <h4 class="card-title">Productos por expirar</h4>
+                    <h4 class="card-title">Almacen y stock de productos</h4>
                 </div>
                 <div class="col-2">
                     <div class="d-flex justify-content-center">
@@ -23,6 +23,9 @@
                         {{-- <div class="card-header border-0 mb-0">
                             <h4 class="fs-20 card-title">Listado de productos</h4>
                         </div> --}}
+                        <div class="row mx-auto p-2">
+                            {{ $productos->links() }}
+                        </div>
                         <div class="card-body pb-0  pt-0">
                             @foreach ($productos as $item)
                                 <div class="media align-items-center">
@@ -84,6 +87,11 @@
                                                                             href="javascript:void(0);"
                                                                             onclick="eliminarStock({{ $sucursal->pivot->id }},'{{ $item->nombre }}')">Eliminar
                                                                             lote</a>
+                                                                        <a class="dropdown-item"
+                                                                            href="javascript:void(0);"
+                                                                            onclick="cambiarFechaExpiracion({{ $sucursal->pivot->id }},'{{ $item->nombre }}','{{ $sucursal->pivot->fecha_venc }}')">Cambiar
+                                                                            fecha de expiracion</a>
+                                                                        </a>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -130,13 +138,16 @@
                                                     </div>
                                                 </div>
                                             @endforeach
+
                                         </div>
                                     </div>
 
                                 </div>
                                 <hr class="p-0 m-0">
                             @endforeach
-
+                            <div class="row mx-auto p-2">
+                                {{ $productos->links() }}
+                            </div>
 
                         </div>
 
@@ -150,6 +161,63 @@
 
 @push('scripts')
     <script>
+        function cambiarFechaExpiracion(id, nombreProducto, fechaActual) {
+            Swal.fire({
+                title: "Cambiar fecha de expiración",
+                html: `
+                    <div class="swal2-input-container">
+                        <label for="nueva-fecha" class="swal2-input-label">Nueva fecha de expiración:</label>
+                        <input type="date" id="nueva-fecha" class="swal2-input" value="${fechaActual}" 
+                               min="${new Date().toISOString().split('T')[0]}" 
+                               style="width: 100%; margin: 10px 0; padding: 10px; border: 1px solid #d3d3d3; border-radius: 5px;">
+                        <small class="text-muted">Fecha actual: ${fechaActual}</small>
+                    </div>
+                `,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Sí, cambiar fecha",
+                cancelButtonText: "Cancelar",
+                focusConfirm: false,
+                preConfirm: () => {
+                    const nuevaFecha = document.getElementById('nueva-fecha').value;
+                    
+                    if (!nuevaFecha) {
+                        Swal.showValidationMessage('Debes seleccionar una fecha');
+                        return false;
+                    }
+                    
+                    const fechaSeleccionada = new Date(nuevaFecha);
+                    const fechaActualObj = new Date(fechaActual);
+                    const hoy = new Date();
+                    hoy.setHours(0, 0, 0, 0);
+                    
+                    if (fechaSeleccionada <= hoy) {
+                        Swal.showValidationMessage('La nueva fecha debe ser posterior al día de hoy');
+                        return false;
+                    }
+                    
+                    if (fechaSeleccionada <= fechaActualObj) {
+                        Swal.showValidationMessage(`La nueva fecha debe ser posterior a la fecha actual de expiración (${fechaActual})`);
+                        return false;
+                    }
+                    
+                    return nuevaFecha;
+                }
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    Livewire.emit('cambiarFechaExpiracion', id, result.value);
+                    Swal.fire({
+                        title: "¡Fecha actualizada!",
+                        text: `La fecha de expiración de "${nombreProducto}" ha sido cambiada a ${result.value}.`,
+                        icon: "success",
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
         function eliminarStock(id, nombreProducto) {
             Swal.fire({
                 title: "¿Estás seguro?",

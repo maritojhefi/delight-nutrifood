@@ -1,4 +1,4 @@
-<div class="row">
+{{-- <div class="row">
     @isset($prodlisto)
         <div class="col-xl-4">
             <div class="card">
@@ -109,4 +109,4 @@
             </div>
         </div>
     @endisset
-</div>
+</div> --}}

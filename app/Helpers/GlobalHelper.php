@@ -411,7 +411,10 @@ class GlobalHelper
 
     public static function getValorAtributoSetting($atributo)
     {
-        $atributo = Setting::where('atributo', $atributo)->firstOrFail();
+        $atributo = Setting::where('atributo', $atributo)->first();
+        if (!$atributo) {
+            return null;
+        }
         return $atributo->valor;
     }
 
