@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use Cache;
 use Carbon\Carbon;
 use App\Models\Plane;
 use App\Models\Setting;
@@ -419,7 +420,7 @@ class GlobalHelper
         return $subcategorias->map(function ($sub) {
             $sub->foto = $sub->foto
                 ? asset('imagenes/subcategorias/' . $sub->foto)
-                : asset('imagenes/delight/default-bg-vertical.jpg');
+                : asset(GlobalHelper::getValorAtributoSetting('bg_default'));
             return $sub;
         });
     }
@@ -443,5 +444,28 @@ class GlobalHelper
 
             return $formateado;
         }
+    }
+    public static function cachearProductos()
+    {
+        Cache::forget('productos'); // Retirar el viejo valor de cache
+
+        // Cacheado de los productos disponibles, incluyendo unicamente la informacion mas relevante
+        Cache::remember('productos', 60, function () {
+            return Producto::select([
+                'id',
+                'nombre',
+                'precio',
+                'descuento',
+                'subcategoria_id',
+                'imagen',
+            ])
+                ->with([
+                    // Inclusion de registros relacionados necesarios para el manejo comun de los productos
+                    'subcategoria:id,nombre,categoria_id',
+                    'subcategoria.categoria:id,nombre',
+                    'tag:id,icono'
+                ])
+                ->get();
+        });
     }
 }

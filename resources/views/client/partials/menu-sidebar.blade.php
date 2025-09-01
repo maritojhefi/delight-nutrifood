@@ -1,5 +1,5 @@
 {{-- CARTA ENCABEZADO --}}
-<div class="card rounded-0 bg-6" data-card-height="150" style="height: 150px;background-image:url({{ asset('imagenes/delight/default-bg-1.png') }});">
+<div class="card rounded-0 bg-6" data-card-height="150" style="height: 150px;background-image:url({{ asset(GlobalHelper::getValorAtributoSetting('bg_default')) }});">
     <div class="card-top">
         <a href="#" class="close-menu float-end me-2 text-center mt-3 icon-40 notch-clear"><i class="fa fa-times color-white"></i></a>
     </div>

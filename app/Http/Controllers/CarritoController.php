@@ -105,7 +105,7 @@ class CarritoController extends Controller
                             'tiene_descuento' => ($producto->precio == $producto-> precioReal()) ? false : true,
                             'precio_original' => $producto->precio,
                             'precio' => $producto->precioReal(),
-                            'imagen' => asset('imagenes/productos/' . $producto->imagen),
+                            'imagen' => $producto->pathAttachment(),
                             'sucursale_id' => $sucursaleId,
                             'stock_disponible' => $stockDisponible,
                             'cantidad_solicitada' => $cantidadSolicitada,

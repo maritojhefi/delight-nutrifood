@@ -34,13 +34,13 @@
             style="height: 120px;overflow: hidden">
             <div class="d-flex flex-row align-items-center gap-4"> 
                 <div class="subcategory-card-image-lg card mb-0">
-                    <img src="{{asset($subcategoria->rutaFoto())}}" 
-                         onerror="this.src='/imagenes/delight/default-bg-1.png';" 
-                         style="background-color: white;" />
+                    <img src="{{asset($subcategoria->rutaFoto())}}"
+                        style="background-color: white;"
+                        />
                     <div class="card-overlay rounded-0 dark-mode-tint opacity-70"></div>
                 </div>
-                <div class="d-flex flex-column" style="max-width: 300px">
-                    <h4 class="category-name">{{$subcategoria->nombre}}</h4>
+                <div class="d-flex flex-column w-75">
+                    <h4 class="category-name me-1">{{$subcategoria->nombre}}</h4>
                     <p class="mt-n2 font-12 color-highlight mb-0">Delight</p>
                 </div>
             </div>

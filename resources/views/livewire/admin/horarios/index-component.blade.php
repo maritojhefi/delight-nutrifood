@@ -38,7 +38,20 @@
                 <div class="col-xl-6">
                     <div class="card" wire:key="horario-{{ $horario->id }}">
                         <div class="card-header border-0 pb-0 d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">{{ $horario->nombre }}</h5>
+                            <h5 class="card-title mb-0">{{ $horario->nombre }}
+                                <span class="badge badge-rounded badge-outline-primary badge-sm">
+                                    Posición {{ $horario->posicion }}
+                                </span>
+                                @if ($horario->posicion == 1)
+                                    <span class="badge badge-rounded badge-success badge-sm ms-1">
+                                        <i class="fa fa-star"></i> Primero
+                                    </span>
+                                @elseif($horario->posicion == $horarios->count())
+                                    <span class="badge badge-rounded badge-warning badge-sm ms-1">
+                                        <i class="fa fa-flag-checkered"></i> Último
+                                    </span>
+                                @endif
+                            </h5>
                             <div class="dropdown">
                                 <button type="button" class="btn btn-sm btn-info light sharp"
                                     data-bs-toggle="dropdown">
@@ -76,13 +89,35 @@
                             <i class="fa fa-clock-o position-absolute translate-middle"
                                 style="font-size: 8rem; opacity: 0.2; color: white; z-index: 0; left: 72% !important; top: 4% !important; transform: rotate(45deg) !important;"></i>
                             <div class="card-body row position-relative" style="z-index: 1;">
-                                <div class="col-6 text-center">
+
+
+                                <div class="col-5 text-center">
                                     <span class="badge light badge-info"><i class="fa fa-clock-o me-1"></i>Inicio</span>
                                     <div class="fw-bold text-white">
                                         {{ GlobalHelper::fechaFormateada(9, $horario->hora_inicio) }}</div>
                                 </div>
-                                <div class="col-6 text-center">
-                                    <span class="badge light badge-primary"><i class="fa fa-clock-o me-1"></i>Fin</span>
+
+
+                                <div class="col-2 text-center d-flex justify-content-center align-items-center">
+                                    <button
+                                        class="btn btn-sm btn-info btn-rounded {{ $horario->posicion <= 1 ? 'disabled' : '' }}"
+                                        wire:click="bajarPosicion('{{ $horario->id }}')"
+                                        {{ $horario->posicion <= 1 ? 'disabled' : '' }}
+                                        title="{{ $horario->posicion <= 1 ? 'Ya está en la posición mínima' : 'Bajar posición' }}">
+                                        <i class="fa fa-arrow-up"></i>
+                                    </button>
+                                    <button
+                                        class="btn btn-sm btn-danger btn-rounded {{ $horario->posicion >= $horarios->count() ? 'disabled' : '' }}"
+                                        wire:click="subirPosicion('{{ $horario->id }}')"
+                                        {{ $horario->posicion >= $horarios->count() ? 'disabled' : '' }}
+                                        title="{{ $horario->posicion >= $horarios->count() ? 'Ya está en la posición máxima' : 'Subir posición' }}">
+                                        <i class="fa fa-arrow-down"></i>
+                                    </button>
+                                </div>
+
+                                <div class="col-5 text-center">
+                                    <span class="badge light badge-primary"><i
+                                            class="fa fa-clock-o me-1"></i>Fin</span>
                                     <div class="fw-bold text-white">
                                         {{ GlobalHelper::fechaFormateada(9, $horario->hora_fin) }}</div>
                                 </div>
@@ -99,8 +134,9 @@
                                             class="badge badge-rounded badge-outline-primary">{{ $subcategoria->nombre }}</a>
                                     @endforeach
                                     @if ($subs->count() > 4)
-                                        <a href="javascript:void(0)" class="badge badge-rounded badge-outline-secondary"
-                                            data-bs-toggle="modal" data-bs-target="#modalSubcategorias"
+                                        <a href="javascript:void(0)"
+                                            class="badge badge-rounded badge-outline-secondary" data-bs-toggle="modal"
+                                            data-bs-target="#modalSubcategorias"
                                             wire:click="editarSubCategorias('{{ $horario->id }}')">Ver más
                                             (+{{ $subs->count() - 4 }})
                                         </a>
@@ -239,7 +275,37 @@
 
 </div>
 
+<style>
+    .btn.disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .btn.disabled:hover {
+        transform: none !important;
+    }
+
+    .btn:not(.disabled):hover {
+        transform: scale(1.05);
+        transition: transform 0.2s ease;
+    }
+
+    .btn-info.btn-rounded,
+    .btn-danger.btn-rounded {
+        transition: all 0.2s ease;
+        margin: 0 2px;
+    }
+</style>
+
 <script>
+    // Inicializar tooltips de Bootstrap
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+
     Livewire.on('close-modal-horario', function() {
         var el = document.getElementById('modalHorario');
         if (!el) return;
