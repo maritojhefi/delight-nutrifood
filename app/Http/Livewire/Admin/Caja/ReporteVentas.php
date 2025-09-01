@@ -49,6 +49,9 @@ class ReporteVentas extends Component
     }
     public function mount()
     {
+        // $this->cajaSeleccionada = Caja::find(1072);
+        // $this->buscarCaja($this->cajaSeleccionada->id);
+
         $this->metodosPagos = MetodoPago::where('activo', true)->get();
         $this->cajeros = User::cajeros()->get();
     }
