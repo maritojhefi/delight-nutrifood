@@ -171,6 +171,8 @@ class ProductTable extends Component
     {
         if ($producto->estado == 'activo') {
             $producto->estado = 'inactivo';
+            // Si se vuelve inactivo, automáticamente se oculta de la tienda
+            $producto->publico_tienda = false;
             $producto->save();
         } else {
             $producto->estado = 'activo';
