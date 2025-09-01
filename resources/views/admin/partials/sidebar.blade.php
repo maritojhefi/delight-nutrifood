@@ -15,7 +15,7 @@
                     <i class="flaticon-025-dashboard"></i>
                 </x-sidebar-elements>
 
-                <x-sidebar-elements titulo="Estadisticas" linkglobal="admin/caja" :lista="['Reporte de ventas' => 'caja.reportes.v2']">
+                <x-sidebar-elements titulo="Estadisticas" linkglobal="admin/caja" :lista="['Reporte Diario' => 'caja.reportes.v2', 'Reporte Mensual' => 'caja.reporte.mensual']">
                     <i class="flaticon-041-graph"></i>
                 </x-sidebar-elements>
 
@@ -38,6 +38,7 @@
                 'Adicionales' => 'producto.adicionales',
                 'Agregar adicional a subcategoria' => 'producto.agregar.adicional',
                 'Productos por Expirar' => 'producto.expiracion',
+                'Tags' => 'producto.tags',
             ]">
                 <i class="flaticon-043-menu"></i>
             </x-sidebar-elements>
