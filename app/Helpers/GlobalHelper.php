@@ -454,7 +454,7 @@ class GlobalHelper
 
         // Cacheado de los productos disponibles, incluyendo unicamente la informacion mas relevante
         Cache::remember('productos', 60, function () {
-            return Producto::select([
+            return Producto::publicoTienda()->select([
                 'id',
                 'nombre',
                 'precio',
