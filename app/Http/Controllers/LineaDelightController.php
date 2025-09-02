@@ -17,7 +17,6 @@ class LineaDelightController extends Controller
         $productos = Producto::publicoTienda()->select('productos.*')
         ->join('subcategorias', 'subcategorias.id', 'productos.subcategoria_id')
         ->join('categorias', 'categorias.id', 'subcategorias.categoria_id')
-        ->where('productos.estado', 'activo')
         ->whereIn('categorias.nombre', ['Cocina', 'Panaderia/Reposteria'])
         ->get();
         
