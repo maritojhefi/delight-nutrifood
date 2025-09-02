@@ -234,7 +234,7 @@
                     </div>
                     <div class="card-body py-2">
                         <div class="row">
-                            <div class="col-5">
+                            <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12 mb-3">
                                 <div class="table-responsive">
                                     <div style="max-height: 450px !important; overflow-y: auto;">
                                         <table class="table p-0 m-0 letra12">
@@ -246,6 +246,10 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                @php
+                                                    $cantidadProductosVendidos = 0;
+                                                    $montoTotalProductosVendidos = 0;
+                                                @endphp
                                                 @foreach ($cajaSeleccionada->arrayProductosVendidos($cajeroSeleccionado ? $cajeroSeleccionado->id : null) as $pro)
                                                     <tr>
                                                         <td class="py-1"><span class="float-start"><i
@@ -259,7 +263,22 @@
                                                                 Bs</strong>
                                                         </td>
                                                     </tr>
+                                                    @php
+                                                        $cantidadProductosVendidos += $pro->cantidad_total;
+                                                        $montoTotalProductosVendidos += $pro->suma_total;
+                                                    @endphp
                                                 @endforeach
+                                                <tr style="background-color: #20c99745; font-weight: bold;">
+                                                    <td class="py-1">
+                                                        <strong>Total</strong>
+                                                    </td>
+                                                    <td class="py-1">
+                                                        <strong>{{ $cantidadProductosVendidos }}</strong>
+                                                    </td>
+                                                    <td class="py-1">
+                                                        <strong>{{ $montoTotalProductosVendidos }} Bs</strong>
+                                                    </td>
+                                                </tr>
 
                                             </tbody>
                                         </table>
@@ -267,11 +286,11 @@
                                 </div>
 
                             </div>
-                            <div class="col-7">
-                                <div class="row" style="height: 450px; overflow: hidden;">
+                            <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
+                                <div class="row" style="height: 400px; overflow: hidden;" id="contenedor-grafico">
                                     <!-- Establecemos el tamaño del contenedor y nos aseguramos de que la imagen no se salga -->
-                                    <img src="{{ $cajaSeleccionada->urlGraficoProductosVendidos($cajeroSeleccionado ? $cajeroSeleccionado->id : null) }}"
-                                        style="width: 100%; height: 100%; object-fit: cover;" alt="">
+                                    <img src="{{ $cajaSeleccionada->urlGraficoProductosVendidos($cajeroSeleccionado ? $cajeroSeleccionado->id : null) }}" class="img-graficos"
+                                        style="width: 100%; height: 95%; object-fit: cover;" alt="">
                                 </div>
                             </div>
                         </div>
@@ -279,6 +298,82 @@
                     </div>
                 </div>
             </div>
+
+            <!-- NUEVA SECCIÓN: Ventas por Categoría -->
+            <div class="col-12 pe-1">
+                <div class="card p-0 bordeado">
+                    <div class="card-header py-2">
+                        <strong>Ventas por Categoría</strong>
+                        <strong>{{ App\Helpers\GlobalHelper::fechaFormateada(2, $cajaSeleccionada->created_at) }}</strong>
+                    </div>
+                    <div class="card-body py-2">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12 mb-3">
+                                <div class="table-responsive">
+                                    <div style="max-height: 450px !important; overflow-y: auto;">
+                                        <table class="table p-0 m-0 letra12">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-white bg-primary">Categoría</th>
+                                                    <th class="text-white bg-primary">Cant.</th>
+                                                    <th class="text-white bg-primary">Monto Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @php
+                                                    $cantidadVentasPorCategoria = 0;
+                                                    $montoTotalVentasPorCategoria = 0;
+                                                @endphp
+                                                @foreach ($cajaSeleccionada->arrayVentasPorCategoria($cajeroSeleccionado ? $cajeroSeleccionado->id : null) as $cat)
+                                                    <tr>
+                                                        <td class="py-1">
+                                                            <span class="float-start">
+                                                                <i class="fa fa-stop"
+                                                                    style="color: {{ \App\Helpers\GraficosHelper::obtenerColorPosicion($loop->index) }}"></i>
+                                                                <strong>{{ $cat->nombre_categoria }}</strong>
+                                                            </span>
+                                                        </td>
+                                                        <td class="py-1">
+                                                            <strong>{{ $cat->cantidad_total }}</strong>
+                                                        </td>
+                                                        <td class="py-1">
+                                                            <strong>{{ $cat->suma_total }} Bs</strong>
+                                                        </td>
+                                                    </tr>
+                                                    @php
+                                                        $cantidadVentasPorCategoria += $cat->cantidad_total;
+                                                        $montoTotalVentasPorCategoria += $cat->suma_total;
+                                                    @endphp
+                                                @endforeach
+                                                <tr style="background-color: #20c99745; font-weight: bold;">
+                                                    <td class="py-1">
+                                                        <strong>Total</strong>
+                                                    </td>
+                                                    <td class="py-1">
+                                                        <strong>{{ $cantidadVentasPorCategoria }}</strong>
+                                                    </td>
+                                                    <td class="py-1">
+                                                        <strong>{{ $montoTotalVentasPorCategoria }} Bs</strong>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
+                                <div class="row" style="height: 400px; overflow: hidden;" id="contenedor-grafico">
+                                    <!-- Gráfico de ventas por categoría generado por QuickChart -->
+                                    <img src="{{ $cajaSeleccionada->urlGraficoVentasPorCategoria($cajeroSeleccionado ? $cajeroSeleccionado->id : null) }}" class="img-graficos"
+                                        style="width: 100%; height: 95%; object-fit: cover;"
+                                        alt="Gráfico de ventas por categoría">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
         <div class="col-12 col-md-3 p-0 pe-3">
             <div class="col-12 ps-1">
@@ -334,15 +429,58 @@
 
                             </div>
                         </div>
-                        <div class="row" style="height: 250px; overflow: hidden;">
+                        <div class="row" style="height: 250px; overflow: hidden;" id="contenedor-grafico">
                             <!-- Establecemos el tamaño del contenedor y nos aseguramos de que la imagen no se salga -->
                             <img src="{{ $cajaSeleccionada->generarGraficoIngresosPorCajero() }}"
-                                style="width: 100%; height: 100%; object-fit: cover;" alt="">
+                                style="width: 100%; height: 100%; object-fit: cover;" alt="" class="img-graficos">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        {{-- <!-- SECCIÓN TEMPORAL DE DEPURACIÓN - ELIMINAR DESPUÉS DE VERIFICAR -->
+        <div class="col-12 pe-1">
+            <div class="card p-0 bordeado">
+                <div class="card-header py-2">
+                    <strong>🔍 DEPURACIÓN - Verificar Totales</strong>
+                </div>
+                <div class="card-body py-2">
+                    @php
+                        $debug = $cajaSeleccionada->debugTotalesGrafico($cajeroSeleccionado ? $cajeroSeleccionado->id : null);
+                    @endphp
+                    <div class="row">
+                        <div class="col-6">
+                            <h6>Totales del Sistema (CORRECTOS):</h6>
+                            <ul class="list-unstyled">
+                                <li><strong>Total Ingreso Absoluto:</strong> {{ number_format($debug['totalIngresoAbsoluto'], 2) }} Bs</li>
+                                <li><strong>Ingreso POS:</strong> {{ number_format($debug['totalIngresoPOS'], 2) }} Bs</li>
+                                <li><strong>Saldos Pagados:</strong> {{ number_format($debug['totalSaldosPagados'], 2) }} Bs</li>
+                            </ul>
+                        </div>
+                        <div class="col-6">
+                            <h6>Totales del Gráfico:</h6>
+                            <ul class="list-unstyled">
+                                <li><strong>Total Categorías:</strong> {{ number_format($debug['totalGraficoCategorias'], 2) }} Bs</li>
+                                <li><strong>Total Productos:</strong> {{ number_format($debug['totalGraficoProductos'], 2) }} Bs</li>
+                                <li><strong>Diferencia Categorías:</strong> <span class="badge badge-{{ $debug['diferenciaCategorias'] == 0 ? 'success' : 'danger' }}">{{ number_format($debug['diferenciaCategorias'], 2) }} Bs</span></li>
+                                <li><strong>Diferencia Productos:</strong> <span class="badge badge-{{ $debug['diferenciaProductos'] == 0 ? 'success' : 'danger' }}">{{ number_format($debug['diferenciaProductos'], 2) }} Bs</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <h6>Análisis de Errores:</h6>
+                            <ul class="list-unstyled">
+                                <li><strong>Error Categorías:</strong> {{ number_format($debug['porcentajeErrorCategorias'], 2) }}%</li>
+                                <li><strong>Error Productos:</strong> {{ number_format($debug['porcentajeErrorProductos'], 2) }}%</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> --}}
+
         @include('livewire.admin.caja.includes.modal-detalle-venta')
     @else
         <div class="col-12">
@@ -379,9 +517,9 @@
                                                 detalles</span>
                                         </a>
                                     </div>
-                                    <div class="col-6" style="height: 200px; overflow: hidden;">
+                                    <div class="col-6" style="height: 200px; overflow: hidden;" id="contenedor-grafico">
                                         <!-- Establecemos el tamaño del contenedor y nos aseguramos de que la imagen no se salga -->
-                                        <img src="{{ $caja->urlGraficoComposicionIngresos() }}"
+                                        <img src="{{ $caja->urlGraficoComposicionIngresos() }}" class="img-graficos"
                                             style="width: 100%; height: 100%; object-fit: cover;" alt="">
                                     </div>
                                 </div>

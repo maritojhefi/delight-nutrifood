@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Horario extends Model
 {
@@ -19,5 +20,13 @@ class Horario extends Model
     public function subcategorias()
     {
         return $this->belongsToMany(Subcategoria::class)->withTimestamps();
+    }
+
+    public function getHoraInicioAttribute($value){
+        return Carbon::parse($value)->format('H:i');
+    }
+
+    public function getHoraFinAttribute($value){
+        return Carbon::parse($value)->format('H:i');
     }
 }

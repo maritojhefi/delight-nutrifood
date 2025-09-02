@@ -52,12 +52,12 @@ class CarritoController extends Controller
 
             // $idsPlanes = $itemsCarrito->where('isPlan', true)->pluck('id');
 
-            Log::info('Validating cart items', [
-                'sucursale_id' => $sucursaleId,
-                'product_ids' => $idsProductos,
-                // 'plan_ids' => $idsPlanes,
-                'cart_items' => $itemsCarrito->toArray()
-            ]);
+            // Log::info('Validating cart items', [
+            //     'sucursale_id' => $sucursaleId,
+            //     'product_ids' => $idsProductos,
+            //     // 'plan_ids' => $idsPlanes,
+            //     'cart_items' => $itemsCarrito->toArray()
+            // ]);
 
             // Procesa productos regulares
             $productos = collect();

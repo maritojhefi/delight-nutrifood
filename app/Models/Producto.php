@@ -33,7 +33,8 @@ class Producto extends Model
         'observacion',
         'prioridad',
         'stock_actual',
-        'cantidad_vendida'
+        'cantidad_vendida',
+        'publico_tienda'
     ];
     const PRIORIDADBAJA = "1";
     const PRIORIDADALTA = "2";
@@ -350,6 +351,10 @@ class Producto extends Model
             default:
                 return $query; // Sin restricciones para otros roles
         }
+    }
+    public function scopePublicoTienda($query)
+    {
+        return $query->where('publico_tienda', true)->where('estado', 'activo');
     }
 
     /**

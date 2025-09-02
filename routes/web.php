@@ -200,6 +200,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
     });
     Route::prefix('/caja')->group(function () {
         Route::get('/reporte/ventas/v2', \App\Http\Livewire\Admin\Caja\ReporteVentas::class)->name('caja.reportes.v2');
+        Route::get('/reporte/mensual', \App\Http\Livewire\Admin\Caja\ReporteMensual::class)->name('caja.reporte.mensual');
         Route::get('/diaria', \App\Http\Livewire\Admin\Caja\CajaDiaria::class)->name('caja.diaria');
         Route::get('/reportes', \App\Http\Livewire\Admin\Caja\Reportes::class)->name('caja.reportes');
     });

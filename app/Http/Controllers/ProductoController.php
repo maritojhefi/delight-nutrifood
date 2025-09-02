@@ -56,10 +56,9 @@ class ProductoController extends Controller
     public function index()
     {
         try {
-            $productos = Producto::select('productos.*')
+            $productos = Producto::publicoTienda()->select('productos.*')
                 ->leftjoin('subcategorias', 'subcategorias.id', 'productos.subcategoria_id')
                 ->leftjoin('categorias', 'categorias.id', 'subcategorias.categoria_id')
-                ->where('productos.estado', 'activo')
                 ->where('categorias.nombre', 'ECO-TIENDA')
                 ->with(['unfilteredSucursale', 'tag'])
                 ->get();

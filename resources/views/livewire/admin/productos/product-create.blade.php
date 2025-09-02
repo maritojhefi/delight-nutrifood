@@ -90,7 +90,7 @@
             </div>
         </div> 
         @endisset
-        <div class="col-xl-6 col-lg-12 col-xxl-4">
+        {{-- <div class="col-xl-6 col-lg-12 col-xxl-4">
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title">Productos recientes</h4>
@@ -112,7 +112,7 @@
                 </ul>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
     
 
