@@ -318,6 +318,9 @@
             console.error("Sucedio un error al obtener los productos del carrito:", error);
             cartValidationInfo.style.display = 'none';
             cardContentContainer.innerHTML = "<p class='text-danger text-center'>Error al cargar el carrito. Por favor, intenta nuevamente.</p>";
+            cardContentContainer.innerHTML += `<div class="cart-listing-footer d-flex flex-row">
+                    <button class="delete-cart-btn ms-auto mt-2 me-2" data-menu="menu-confirm">Eliminar Carrito</button>
+                </div>`;
         }
     })
 
@@ -330,22 +333,36 @@
         const isDisabled = estado !== 'disponible';
         const isLowStock = estado === 'escaso';
         const isUnavailable = estado === 'agotado';
+        const adicionalesLimitados = producto.adicionalesLimitados; // Flag true/false en caso de adicionales escasos
         const disabledClass = '';
         const disabledOverlay = isUnavailable ? '<div class="card-overlay rounded-sm dark-mode-tint light-mode-tint"></div>' : '';
 
+        
         let stockMessage = '';
-        let actionButton = ''
+        let actionButton = '';
         if (isLowStock && producto.stock_disponible !== "INFINITO") {
             stockMessage = `<div class="alert alert-warning py-1 px-2 mt-2 mb-0 small">
                 Solo existen ${producto.stock_disponible} unidades disponibles de las ${producto.cantidad_solicitada} solicitadas.
             </div>`;
             actionButton = `<button data-product-id="${producto.id}" class="qty-fixer btn-s  rounded bg-highlight" style="z-index: 10;">
                 Actualizar
-                </button>`;
-            } else if (isUnavailable) {
+            </button>`;
+        }
+        else if (isUnavailable) {
             actionButton = `<button data-product-id="${producto.id}" class="unavailable-fixer btn-s  rounded bg-red-dark" style="z-index: 10;">
                 Eliminar
-                </button>`;
+            </button>`;
+        }
+
+        if(adicionalesLimitados) {
+            stockMessage += `
+                <div class="alert alert-warning py-1 px-2 mt-2 mb-0 small">
+                    Uno o mas de los adicionales no se encuentran disponibles.
+                </div>
+            `
+            actionButton = `<button data-product-id="${producto.id}" class="adicionale-fixer btn-s  rounded bg-highlight" style="z-index: 10;">
+                Actualizar
+            </button>`;
         }
 
         return `
@@ -354,7 +371,7 @@
                     <div class="mb-0 d-flex flex-row justify-content-between">
                         <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
                             <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
-                            <p class="text-muted mb-3 small product-description">${producto.detalle}</p>
+                            ${renderAdicionalesInfo(producto)}
                         </div>
                         <div class="product-image-container m-0" style="z-index: 10">
                             <img class="product-image rounded"
@@ -382,7 +399,7 @@
                                 Bs. ${producto.precio.toFixed(2)}
                             </p>
                         </div>
-                        ${(isLowStock || isUnavailable) ? actionButton : 
+                        ${(isLowStock || isUnavailable || adicionalesLimitados) ? actionButton : 
                         `<div class="quantity-controls bg-light border rounded d-flex align-items-center" style="min-width: 120px;">
                             <button class="btn btn-sm btn-outline-secondary border-0 px-2 py-1 qty-decrease"
                                     type="button"
@@ -413,6 +430,24 @@
         `;
     }
 
+    const renderAdicionalesInfo = (producto) => {
+        const adicionales = producto.adicionales ?? [];
+        if (adicionales.length > 0) {
+            return `
+                <ul class="ps-3">
+                    ${adicionales.map(adicional => `
+                        <li>
+                            <span>${adicional.nombre}</span>
+                            <div class="badge color-theme bg-highlight">
+                            ${adicional.quantity}
+                            </div>
+                        </li>
+                    `).join('')}
+                </ul>
+            `
+        } return 'Mockup informacion adicionales';
+    }
+
     const renderSummaryItem = (producto) => {
         const itemSubtotal = (producto.precio * producto.cantidad_solicitada).toFixed(2);
         return `
@@ -440,25 +475,25 @@
     }
 
     const renderSummaryTotal = (totalFinal, totalDescuento, totalOriginal) => {
-    return `
-        ${totalDescuento && totalDescuento > 0 
-        ? `
-        <div class="d-flex flex-row justify-content-between align-items-center mb-0 text-gray">
-            <p class="fw-bold mb-0">Costo original:</p>
-            <p class="fw-bold mb-0">Bs. ${totalOriginal.toFixed(2)}</p>
-        </div>
-        <div class="d-flex flex-row justify-content-between align-items-center mb-0 text-gray">
-            <p class="fw-bold mb-0">Descuento total:</p>
-            <p class="fw-bold mb-0">Bs. ${totalDescuento.toFixed(2)}</p>
-        </div>
-        `
-        : ""
-        }
-        <div class="d-flex flex-row justify-content-between align-items-center mb-3 pt-2 text-black">
-        <p class="fw-bold fs-5 mb-0">Total:</p>
-        <p id="cart-final-total" class="fw-bold fs-5 mb-0">Bs. ${totalFinal.toFixed(2)}</p>
-        </div>
-    `;
+        return `
+            ${totalDescuento && totalDescuento > 0 
+            ? `
+                <div class="d-flex flex-row justify-content-between align-items-center mb-0 text-gray">
+                    <p class="fw-bold mb-0">Costo original:</p>
+                    <p class="fw-bold mb-0">Bs. ${totalOriginal.toFixed(2)}</p>
+                </div>
+                <div class="d-flex flex-row justify-content-between align-items-center mb-0 text-gray">
+                    <p class="fw-bold mb-0">Descuento total:</p>
+                    <p class="fw-bold mb-0">Bs. ${totalDescuento.toFixed(2)}</p>
+                </div>
+            `
+            : ""
+            }
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3 pt-2 text-black">
+                <p class="fw-bold fs-5 mb-0">Total:</p>
+                <p id="cart-final-total" class="fw-bold fs-5 mb-0">Bs. ${totalFinal.toFixed(2)}</p>
+            </div>
+        `;
     };
 
 
@@ -539,6 +574,17 @@
             removeItemWrapper(productToFixId);  
             renderCartItem(productInfo,'agotado', 0)
         }
+    }
+
+    const handleUpdateLimitedAdittional = async(e) => {
+        e.preventDefault();
+
+        const aditionalFixButton = e.target.closest('.aditionale-fixer');
+        // Determinar cuales son los adicionales cuyas unidades exceden
+        // Una vez identificados 
+        const productToFixId = quantityFixButton.getAttribute('data-product-id');
+        
+        // Logica restante
     }
 
     const handleProductIncrease = async (e) => {
