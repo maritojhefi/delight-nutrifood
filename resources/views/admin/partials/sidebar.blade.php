@@ -29,6 +29,12 @@
                 ]">
                     <i class="fa fa-camera"></i>
                 </x-sidebar-elements>
+
+                <x-sidebar-elements titulo="Gestión de puntos" linkglobal="admin/puntos" :lista="[
+                    'Perfiles Puntos' => 'perfiles.index',
+                ]">
+                    <i class="flaticon-064-pin"></i>
+                </x-sidebar-elements>
             @endif
             <x-sidebar-elements titulo="Productos" linkglobal="admin/productos" :lista="[
                 'Listar Productos' => 'producto.listar',

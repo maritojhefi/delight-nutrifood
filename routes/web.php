@@ -62,9 +62,9 @@ Route::prefix('/productos')->group(function () {
     Route::get('/subcategoria/{id}', [App\Http\Controllers\ProductoController::class, 'detallesubcategoria'])->name('listar.productos.subcategoria');
     Route::get('/categorizados/{id}', [App\Http\Controllers\ProductoController::class, 'productosSubcategoria']);
     Route::get('/add/carrito/{id}', [App\Http\Controllers\CarritoController::class, 'addToCarrito']);
-    Route::get('/{id}/stock',[App\Http\Controllers\ProductoController::class, 'checkProductStock']);
-    Route::get('/{id}',[App\Http\Controllers\ProductoController::class,'getProduct']);
-    Route::get('/limpiar-fotos/productos',[App\Http\Controllers\ProductoController::class,'limpiarProductos']);
+    Route::get('/{id}/stock', [App\Http\Controllers\ProductoController::class, 'checkProductStock']);
+    Route::get('/{id}', [App\Http\Controllers\ProductoController::class, 'getProduct']);
+    Route::get('/limpiar-fotos/productos', [App\Http\Controllers\ProductoController::class, 'limpiarProductos']);
     Route::get('/buscar/{tipo}/{query}', [App\Http\Controllers\ProductoController::class, 'buscarProductos']);
 });
 //promociones
@@ -230,6 +230,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
 
     Route::prefix('/horarios')->group(function () {
         Route::get('/index', \App\Http\Livewire\Admin\Horarios\IndexComponent::class)->name('index.horarios');
+    });
+
+    Route::prefix('/puntos')->group(function () {
+        Route::get('/perfiles/index', \App\Http\Livewire\Admin\PuntosPerfilesComponent::class)->name('perfiles.index');
     });
 });
 

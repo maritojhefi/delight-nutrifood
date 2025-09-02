@@ -154,7 +154,7 @@ class User extends Authenticatable
     }
     public function saldosVigentes()
     {
-        return $this->hasMany(Saldo::class)->whereNull('liquidado')->where('anulado',false)->orderBy('created_at', 'desc');
+        return $this->hasMany(Saldo::class)->whereNull('liquidado')->where('anulado', false)->orderBy('created_at', 'desc');
     }
     public function contrato()
     {
@@ -162,15 +162,18 @@ class User extends Authenticatable
     }
     public function scopeCajeros($query)
     {
-        return $query->whereIn('role_id', [1,2]);
+        return $query->whereIn('role_id', [1, 2]);
     }
     public function scopeSaldoAFavor($query)
     {
-        return $query->where('saldo','<',0);
+        return $query->where('saldo', '<', 0);
     }
     public function scopeSaldoADeuda($query)
     {
-        return $query->where('saldo','>',0);
+        return $query->where('saldo', '>', 0);
     }
-
+    public function perfilesPuntos()
+    {
+        return $this->belongsToMany(PerfilPunto::class, 'perfiles_puntos_users', 'user_id', 'perfil_punto_id')->withTimestamps();
+    }
 }
