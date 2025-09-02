@@ -33,35 +33,35 @@
 
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header mt-0 mb-0 pb-2 pt-2">
                     <h4 class="card-title">Perfiles de Puntos</h4>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-3">
                     <div class="table-responsive">
-                        <table class="table table-responsive-md">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Porcentaje</th>
-                                    <th>Bono</th>
-                                    <th>Usuarios</th>
-                                    <th>Acciones</th>
+                        <table class="table table-bordered table-striped table-responsive-md m-0 p-0 letra12">
+                            <thead class="m-2 p-3 bg-primary text-white">
+                                <tr class="m-2 p-3">
+                                    <th class="m-2 p-3">Nombre</th>
+                                    <th class="m-2 p-3">Porcentaje</th>
+                                    <th class="m-2 p-3">Bono</th>
+                                    <th class="m-2 p-3">Usuarios</th>
+                                    <th class="m-2 p-3">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="m-0 p-0">
                                 @if ($perfiles->isNotEmpty())
                                     @foreach ($perfiles as $perfil)
-                                        <tr wire:key="perfil-{{ $perfil->id }}">
-                                            <td>
-                                                <div class="d-flex align-items-center">
+                                        <tr wire:key="perfil-{{ $perfil->id }}" class="m-0 p-0">
+                                            <td class="m-0 p-0">
+                                                <div class="d-flex align-items-center justify-content-center">
                                                     <span class="w-space-no">{{ $perfil->nombre }}</span>
                                                 </div>
                                             </td>
-                                            <td>{{ $perfil->porcentaje }}%</td>
-                                            <td>{{ $perfil->bono }} Pts</td>
-                                            <td>
+                                            <td class="m-0 p-0 text-center">{{ $perfil->porcentaje }}%</td>
+                                            <td class="m-0 p-0 text-center">{{ $perfil->bono }} Pts</td>
+                                            <td class="m-0 p-0 text-center">
                                                 <button type="button"
-                                                    class="btn btn-md btn-rounded {{ $perfil->usuarios->count() > 0 ? 'btn-primary' : 'btn-info' }}"
+                                                    class="mt-1 mb-1 btn btn-xxs btn-rounded {{ $perfil->usuarios->count() > 0 ? 'btn-primary' : 'btn-info' }}"
                                                     wire:loading.attr="disabled" wire:target="agregarUsuarios"
                                                     wire:click="agregarUsuarios({{ $perfil->id }})">
                                                     <span
@@ -72,8 +72,8 @@
                                                         : 'Agregar <i class="fa fa-plus-circle ms-2"></i>' !!}
                                                 </button>
                                             </td>
-                                            <td>
-                                                <div class="d-flex">
+                                            <td class="m-0 p-0 text-center">
+                                                <div class="d-flex align-items-center justify-content-center">
                                                     <button type="button"
                                                         class="btn btn-primary shadow btn-xs sharp me-1"
                                                         wire:click="editarPerfil({{ $perfil->id }})" title="Editar">
@@ -93,13 +93,26 @@
                                         </tr>
                                     @endforeach
                                 @else
-                                    <tr>
+                                    <tr class="m-0 p-0">
                                         <td colspan="5" class="text-center">No se encontraron perfiles de puntos</td>
                                     </tr>
                                 @endif
                             </tbody>
                         </table>
                     </div>
+                    @if ($perfiles->isNotEmpty())
+                        <div class="row d-flex justify-content-between align-items-center flex-wrap mt-3 px-3"
+                            style="justify-content: center !important;">
+                            <div class="col-12 mb-2 mb-md-0 text-center d-flex justify-content-center">
+                                <small class="text-muted">
+                                    Mostrando {{ $perfiles->count() }} de {{ $perfiles->total() }} registros
+                                </small>
+                            </div>
+                            <div class="col-12 d-flex justify-content-center">
+                                {{ $perfiles->links() }}
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -132,9 +145,10 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="porcentaje" class="form-label">Porcentaje (%) <span
                                             class="text-danger">*</span></label>
-                                    <input type="number" class="form-control @error('porcentaje') is-invalid @enderror"
-                                        id="porcentaje" wire:model="porcentaje" placeholder="0" min="0"
-                                        max="100" step="0.01">
+                                    <input type="number"
+                                        class="form-control @error('porcentaje') is-invalid @enderror" id="porcentaje"
+                                        wire:model="porcentaje" placeholder="0" min="0" max="100"
+                                        step="0.01">
                                     @error('porcentaje')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -170,19 +184,19 @@
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 @if ($showModalUsuarios)
-                    <div class="modal-header">
+                    <div class="modal-header  mt-0 mb-0 pb-2 pt-2">
                         <h5 class="modal-title">
                             <i class="fa fa-users me-2"></i>
                             Gestionar Usuarios - {{ $perfilSeleccionado->nombre ?? '' }}
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body p-3">
                         <div class="row">
                             <!-- Columna izquierda - Usuarios disponibles -->
                             <div class="col-md-6">
                                 <div class="card">
-                                    <div class="card-header bg-primary text-white">
+                                    <div class="card-header bg-primary text-white p-2">
                                         <h6 class="mb-0 text-white">
                                             <i class="fa fa-user-plus me-2"></i>
                                             Usuarios Disponibles
@@ -193,14 +207,11 @@
 
                                         </h6>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body p-3">
                                         <!-- Búsqueda usuarios disponibles -->
                                         <div class="mb-3">
-                                            <div class="input-group">
-                                                <span class="input-group-text">
-                                                    <i class="fa fa-search"></i>
-                                                </span>
-                                                <input type="text" class="form-control"
+                                            <div class="">
+                                                <input type="text" class="form-control form-control-sm"
                                                     placeholder="Buscar usuarios disponibles..."
                                                     wire:model.debounce.500ms="searchUsuariosDisponibles">
                                             </div>
@@ -209,16 +220,17 @@
                                         <!-- Lista de usuarios disponibles -->
                                         <div class="list-group" style="max-height: 400px; overflow-y: auto;">
                                             @forelse($usuariosDisponibles as $usuario)
-                                                <div
-                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div class="list-group-item d-flex justify-content-between align-items-center"
+                                                    style="padding: 2% !important;">
                                                     <div>
-                                                        <h6 class="mb-1">{{ $usuario->name }}</h6>
-                                                        <small class="text-info">
-                                                            <i
-                                                                class="fa fa-phone me-1"></i>{{ $usuario->telf ?? 'Sin teléfono' }}
-                                                        </small>
+                                                        <h6 class="mb-1">{{ $usuario->name }} | <small
+                                                                class="text-info">
+                                                                <i
+                                                                    class="fa fa-phone me-1"></i>{{ $usuario->telf ?? 'Sin teléfono' }}
+                                                            </small></h6>
+
                                                     </div>
-                                                    <button type="button" class="btn btn-success btn-sm"
+                                                    <button type="button" class="btn btn-success btn-sm btn-xxs"
                                                         wire:click="agregarUsuarioAlPerfil({{ $usuario->id }})"
                                                         wire:loading.attr="disabled"
                                                         wire:target="agregarUsuarioAlPerfil"
@@ -240,7 +252,7 @@
                             <!-- Columna derecha - Usuarios asignados -->
                             <div class="col-md-6">
                                 <div class="card">
-                                    <div class="card-header bg-info text-white">
+                                    <div class="card-header bg-info text-white p-2">
                                         <h6 class="mb-0 text-white">
                                             <i class="fa fa-user me-2"></i>
                                             Usuarios Asignados al Perfil
@@ -250,14 +262,12 @@
                                             </div>
                                         </h6>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body p-3">
                                         <!-- Búsqueda usuarios asignados -->
                                         <div class="mb-3">
-                                            <div class="input-group">
-                                                <span class="input-group-text">
-                                                    <i class="fa fa-search"></i>
-                                                </span>
-                                                <input type="text" class="form-control"
+                                            <div class="">
+
+                                                <input type="text" class="form-control form-control-sm"
                                                     placeholder="Buscar usuarios asignados..."
                                                     wire:model.debounce.500ms="searchUsuariosAsignados">
                                             </div>
@@ -266,16 +276,16 @@
                                         <!-- Lista de usuarios asignados -->
                                         <div class="list-group" style="max-height: 400px; overflow-y: auto;">
                                             @forelse($usuariosAsignados as $usuario)
-                                                <div
-                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div class="list-group-item d-flex justify-content-between align-items-center"
+                                                    style="padding: 2% !important;">
                                                     <div>
-                                                        <h6 class="mb-1">{{ $usuario->name }}</h6>
-                                                        <small class="text-info">
+                                                        <h6 class="mb-1">{{ $usuario->name }} | <small class="text-info">
                                                             <i
                                                                 class="fa fa-phone me-1"></i>{{ $usuario->telf ?? 'Sin teléfono' }}
-                                                        </small>
+                                                        </small</h6>
+                                                        >
                                                     </div>
-                                                    <button type="button" class="btn btn-danger btn-sm"
+                                                    <button type="button" class="btn btn-danger btn-xxs"
                                                         wire:click="quitarUsuarioDelPerfil({{ $usuario->id }})"
                                                         wire:loading.attr="disabled"
                                                         wire:target="quitarUsuarioDelPerfil"

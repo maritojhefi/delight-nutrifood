@@ -2,12 +2,15 @@
 
 namespace App\Http\Livewire\Admin;
 
+use App\Models\User;
 use Livewire\Component;
 use App\Models\PerfilPunto;
-use App\Models\User;
+use Livewire\WithPagination;
 
 class PuntosPerfilesComponent extends Component
 {
+    use WithPagination;
+    public $paginationTheme = 'bootstrap';
     // Propiedades para el CRUD
     public $search = '';
     public $perfil_id;
@@ -31,7 +34,7 @@ class PuntosPerfilesComponent extends Component
     protected $rules = [
         'nombre' => 'required|string|min:3|max:255',
         'porcentaje' => 'required|numeric|min:0|max:100',
-        'bono' => 'required|numeric|min:0'
+        'bono' => 'required|numeric|min:0',
     ];
 
     protected $messages = [
@@ -44,18 +47,16 @@ class PuntosPerfilesComponent extends Component
         'porcentaje.max' => 'El porcentaje no puede ser mayor a 100.',
         'bono.required' => 'El bono es obligatorio.',
         'bono.numeric' => 'El bono debe ser un número.',
-        'bono.min' => 'El bono no puede ser menor a 0.'
+        'bono.min' => 'El bono no puede ser menor a 0.',
     ];
 
     public function render()
     {
         $perfiles = PerfilPunto::when($this->search, function ($query) {
             $query->where('nombre', 'like', '%' . $this->search . '%');
-        })->get();
+        })->paginate(10);
 
-        return view('livewire.admin.puntos-perfiles-component', compact('perfiles'))
-            ->extends('admin.master')
-            ->section('content');
+        return view('livewire.admin.puntos-perfiles-component', compact('perfiles'))->extends('admin.master')->section('content');
     }
 
     // Método para crear nuevo perfil
@@ -88,7 +89,7 @@ class PuntosPerfilesComponent extends Component
             $perfil->update([
                 'nombre' => $this->nombre,
                 'porcentaje' => $this->porcentaje,
-                'bono' => $this->bono
+                'bono' => $this->bono,
             ]);
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'success',
@@ -98,7 +99,7 @@ class PuntosPerfilesComponent extends Component
             PerfilPunto::create([
                 'nombre' => $this->nombre,
                 'porcentaje' => $this->porcentaje,
-                'bono' => $this->bono
+                'bono' => $this->bono,
             ]);
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'success',
@@ -149,15 +150,16 @@ class PuntosPerfilesComponent extends Component
     // Método para cargar usuarios disponibles y asignados
     public function cargarUsuarios()
     {
-        if (!$this->perfilSeleccionado) return;
+        if (!$this->perfilSeleccionado) {
+            return;
+        }
 
         // Usuarios con role_id = 4 (disponibles)
         $usuariosDisponiblesQuery = User::where('role_id', 4)->select('id', 'name', 'email', 'telf');
 
         if ($this->searchUsuariosDisponibles) {
             $usuariosDisponiblesQuery->where(function ($query) {
-                $query->where('name', 'like', '%' . $this->searchUsuariosDisponibles . '%')
-                    ->orWhere('email', 'like', '%' . $this->searchUsuariosDisponibles . '%');
+                $query->where('name', 'like', '%' . $this->searchUsuariosDisponibles . '%')->orWhere('email', 'like', '%' . $this->searchUsuariosDisponibles . '%');
             });
         }
 
@@ -174,8 +176,7 @@ class PuntosPerfilesComponent extends Component
 
         if ($this->searchUsuariosAsignados) {
             $usuariosAsignadosQuery->where(function ($query) {
-                $query->where('name', 'like', '%' . $this->searchUsuariosAsignados . '%')
-                    ->orWhere('email', 'like', '%' . $this->searchUsuariosAsignados . '%');
+                $query->where('name', 'like', '%' . $this->searchUsuariosAsignados . '%')->orWhere('email', 'like', '%' . $this->searchUsuariosAsignados . '%');
             });
         }
 
