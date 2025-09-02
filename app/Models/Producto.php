@@ -352,6 +352,10 @@ class Producto extends Model
                 return $query; // Sin restricciones para otros roles
         }
     }
+    public function scopePublicoTienda($query)
+    {
+        return $query->where('publico_tienda', true)->where('estado', 'activo');
+    }
 
     /**
      * Obtiene el stock detallado del producto por sucursal
