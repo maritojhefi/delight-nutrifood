@@ -83,7 +83,7 @@
                                     <td class="m-0 p-1 d-md">
                                         <div class="form-check form-switch" >
                                             <input class="form-check-input" type="checkbox" role="switch" 
-                                                   id="switch_{{ $item->id }}" style="width: 30px !important;cursor: pointer;"
+                                                    style="width: 30px !important;cursor: pointer;"
                                                    {{ $item->estado == 'activo' ? 'checked' : '' }}
                                                    wire:click="cambiarestado('{{ $item->id }}')"
                                                   >
@@ -280,7 +280,11 @@
                 @isset($productoSeleccionado)
                     <div wire:loading.remove class="modal-footer">
                         <div class="row">
-                            <div class="col-4">
+                            <div class="col mx-auto">
+                                <a href="{{route('producto.expiracion',['search'=>$productoSeleccionado->nombre])}}" target="_blank" class="btn  btn-success p-1">Agregar o eliminar stock</a>
+                            </div>
+                            
+                            {{-- <div class="col-4">
                                 <input type="number" class="form-control p-1 bordeado" style="height: 30px"
                                     wire:model.defer="cantidadStock" placeholder="Cantidad">
                                 @error('cantidadStock')
@@ -299,7 +303,7 @@
                             <div class="col-4">
                                 <button wire:click="guardarStock({{ $productoSeleccionado->id }})"
                                     class="btn btn-sm btn-success p-1">Agregar stock</button>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 @endisset

@@ -162,7 +162,7 @@
                 <div class="loader--text"></div>
             </div>
         </div>
-        <div id="main-wrapper" class="show menu-toggle">
+        <div id="main-wrapper" >
             <!--**********************************
             Nav header start
         ***********************************-->

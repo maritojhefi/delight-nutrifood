@@ -48,19 +48,14 @@
                     'Listar Usuarios' => 'usuario.listar',
                     'Roles' => 'usuario.roles',
                     'Colaboradores' => 'usuario.empleo',
-                    'Saldos' => 'usuario.saldos',
+                    'Billeteras y saldos' => 'usuario.saldos',
                     'Asistencia' => 'usuario.asistencia',
                     'Cumpleaños' => 'usuario.cumpleanos',
                 ]">
                     <i class="flaticon-381-user"></i>
                 </x-sidebar-elements>
 
-                <x-sidebar-elements titulo="Convenios" linkglobal="admin/convenios" :lista="[
-                    'Crear' => 'convenio.index',
-                    'Vincular Usuario' => 'convenio.vincular.usuario',
-                ]">
-                    <i class="flaticon-381-panel"></i>
-                </x-sidebar-elements>
+               
 
                 <x-sidebar-elements titulo="Almuerzos" linkglobal="admin/almuerzos" :lista="[
                     'Personalizar dias' => 'almuerzos.listar',
@@ -82,7 +77,12 @@
                 ]">
                     <i class="flaticon-013-checkmark"></i>
                 </x-sidebar-elements>
-
+                <x-sidebar-elements titulo="Convenios" linkglobal="admin/convenios" :lista="[
+                    'Crear' => 'convenio.index',
+                    'Vincular Usuario' => 'convenio.vincular.usuario',
+                ]">
+                    <i class="flaticon-381-panel"></i>
+                </x-sidebar-elements>
                 <x-sidebar-elements titulo="Perifericos" linkglobal="admin/perifericos" :lista="['Impresoras' => 'impresoras.index']">
                     <i class="flaticon-072-printer"></i>
                 </x-sidebar-elements>
