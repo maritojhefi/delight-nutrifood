@@ -186,6 +186,13 @@ class ProductTable extends Component
     public function cambiarcontable(Producto $producto)
     {
         if ($producto->contable == true) {
+            if($producto->sucursale->count() > 0){
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'warning',
+                    'message' => 'Este producto tiene stock, primero elimine el stock para poder cambiar el contable del producto',
+                ]);
+                return;
+            }
             $producto->contable = false;
             $producto->save();
         } else {
