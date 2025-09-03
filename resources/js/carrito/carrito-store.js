@@ -58,7 +58,7 @@ export const updateCartItemDetailCounter = (ProductId) => {
     const detailCounter = document.getElementById('details-cart-counter');
     const itemData = getCartItem(ProductId);
     if (cart.items && cart.items.length > 0) {
-        detailCounter.textContent = itemData.quantity;
+        detailCounter.textContent = itemData ? itemData.quantity : 0;
         detailCounter.style.display = 'inline-block'; 
     } else {
         detailCounter.textContent = '0';

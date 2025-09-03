@@ -32,6 +32,8 @@ class ProductoController extends Controller
         $producto->imagen = $producto->pathAttachment();
         $producto->url_detalle = route('delight.detalleproducto', $producto->id);
 
+        $adicionales = $producto->subcategoria->adicionales;
+
         // Obtener productos similares excluyendo el producto ya obtenido
         $similares = $producto->subcategoria->productos
             // Omitir el producto actual entre los similares
@@ -45,7 +47,7 @@ class ProductoController extends Controller
                 return $p;
             });
 
-        return view('client.productos.delight-producto', compact('producto', 'nombrearray', 'similares'));
+        return view('client.productos.delight-producto', compact('producto', 'nombrearray', 'similares', 'adicionales'));
     }
     public function detallesubcategoria($id)
     {
@@ -103,6 +105,7 @@ class ProductoController extends Controller
         // Procesar la imagen del producto y su url
         $producto->imagen = $producto->pathAttachment();
         $producto->url_detalle = route('delight.detalleproducto', $producto->id);
+
 
         $similares = $producto->subcategoria->productos
             ->reject(fn($p) => $p->id == $id || $p->estado != 'activo')
@@ -363,8 +366,11 @@ class ProductoController extends Controller
     public function getProduct($id) {
         try {
             $producto = Producto::findOrFail($id);
+            $producto->imagen = $producto->pathAttachment();
+            $producto->adicionales = $producto->subcategoria->adicionales;
             return response()->json($producto, 200);
         } catch (\Throwable $th) {
+            Log::error("Error al solicitar producto: ", [$th]);
             return response()->json(['error' => 'Producto no encontrado'], 404);
         }
     }
