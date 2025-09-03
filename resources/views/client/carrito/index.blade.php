@@ -560,7 +560,8 @@
 
         const quantityFixButton = e.target.closest('.qty-fixer');
         const productToFixId = quantityFixButton.getAttribute('data-product-id');
-        const productInfo = await ProductoService.getProduct(productToFixId);
+        const productInfoRequest =  await ProductoService.getProduct(productToFixId);
+        const productInfo = productInfoRequest.data;
         const availableItemsContainer = document.getElementById('container-state-disponible')
 
         // Actualizar el valor al maximo disponible en el carrito

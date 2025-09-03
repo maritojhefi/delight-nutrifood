@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\GlobalHelper;
+use App\Http\Resources\ProductResource;
 use App\Models\Almuerzo;
 use App\Models\Producto;
 use App\Models\Categoria;
@@ -363,12 +364,27 @@ class ProductoController extends Controller
             return response()->json(["stock" => $producto->stock_actual, "unlimited" => false], 200);
         }
     }
-    public function getProduct($id) {
+    // public function getProduct($id) {
+    //     try {
+    //         $producto = Producto::findOrFail($id);
+    //         $producto->tiene_descuento = ($producto->precioReal() < $producto->precio); 
+    //         if ($producto->tiene_descuento) {
+    //             $producto->precioOriginal = $producto->precio;
+    //         }
+    //         $producto->precio = $producto->precioReal();
+    //         $producto->imagen = $producto->pathAttachment();
+    //         $producto->adicionales = $producto->subcategoria->adicionales;
+    //         return response()->json($producto, 200);
+    //     } catch (\Throwable $th) {
+    //         Log::error("Error al solicitar producto: ", [$th]);
+    //         return response()->json(['error' => 'Producto no encontrado'], 404);
+    //     }
+    // }
+    public function getProduct($id)
+    {
         try {
-            $producto = Producto::findOrFail($id);
-            $producto->imagen = $producto->pathAttachment();
-            $producto->adicionales = $producto->subcategoria->adicionales;
-            return response()->json($producto, 200);
+            $producto = Producto::with('subcategoria.adicionales')->findOrFail($id);
+            return new ProductResource($producto);
         } catch (\Throwable $th) {
             Log::error("Error al solicitar producto: ", [$th]);
             return response()->json(['error' => 'Producto no encontrado'], 404);

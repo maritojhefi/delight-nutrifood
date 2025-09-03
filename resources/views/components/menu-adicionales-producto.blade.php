@@ -25,20 +25,8 @@
             </div>
         </div>
         <div id="detalles-menu-adicionales">
+            {{-- RENDERIZADO CONDICIONAL ADICIONALES --}}
         </div>
-        {{-- <h5>Adicionales</h5>
-        <div id="adicionales-row" class="row">
-                @foreach ($adicionales as $adicional)
-                <div class="col-6">
-                    <div class="form-check icon-check mb-0">
-                        <input class="form-check-input" id="check-{{$adicional->id}}" type="checkbox" checked="">
-                        <label class="form-check-label" for="check-{{$adicional->id}}">{{ucfirst($adicional->nombre)}}</label>
-                        <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
-                        <i class="icon-check-2 fa fa-check-square font-16 color-highlight"></i>
-                    </div>
-                </div>
-                @endforeach
-        </div> --}}
         <div class="divider mb-2"></div>
         <div class="d-flex mb-3 pb-1">
             <div class="align-self-center">
@@ -87,40 +75,19 @@
 
             // Cerrar otros menu abiertos
             $(".menu-active").removeClass("menu-active");
-            // document.querySelectorAll('.menu-active').forEach(el => {
-            //     el.classList.remove('menu-active');
-            // });
-            
+
             // Revelar el backdrop
             $(".menu-hider").addClass("menu-active");
-            // const backdrop = document.querySelector('.menu-hider');
-            // if (backdrop) {
-            //     backdrop.classList.add('menu-active');
-            //     $(".menu-hider").addClass("menu-active");
-            // }
-            
-            // Revelar el menu
-            $("#detalles-menu").addClass("menu-active"); 
-            // const menu = document.getElementById('detalles-menu');
-            // if (menu) {
-            //     menu.classList.add('menu-active');
-            // }
-        };
 
-        // // Funcionalidad para cerrar el menu (Ignorada ya que viene incluida en el JS de la plantilla)
-        // document.addEventListener('click', function(e) {
-        //     if (e.target.closest('.close-menu')) {
-        //         e.preventDefault();
-        //         document.querySelectorAll('.menu-active').forEach(el => {
-        //             el.classList.remove('menu-active');
-        //         });
-        //     }
-        // });
+            // Revelar el menu
+            $("#detalles-menu").addClass("menu-active");
+        };
 
         // Preparar la informacion del Menu para el producto seleccionado.
         const prepararMenuProducto = async (productoId) => {
             // Llamado axios solicitando la informacion del producto
-            const infoProducto = await ProductoService.getProduct(productoId);
+            const response = await ProductoService.getProduct(productoId);
+            const infoProducto = response.data;
             const nombreProductoMenu = document.getElementById('detalles-menu-nombre');
             const adicionalesContainer = document.getElementById('detalles-menu-adicionales');
             const elementoCostoUnitario = document.getElementById('detalle-costo-unitario')
@@ -138,19 +105,66 @@
 
             actualizarCostoTotal(infoProducto.precio);
             nombreProductoMenu.innerText = infoProducto.nombre; 
-            elementoCostoUnitario.innerText = `Bs. ${infoProducto.precio.toFixed(2)}`;
+            elementoCostoUnitario.innerText = `Bs. ${(infoProducto.precio).toFixed(2)}`;
             adicionalesContainer.innerHTML = renderAdicionales(infoProducto.adicionales);
+
+            
+            $('input[type="checkbox"]').on('change', function() {
+                $('input[name="' + this.name + '"]').not(this).prop('checked', false);
+            });
         }
 
         const renderAdicionales = (adicionales) => {
             if (adicionales && adicionales.length > 0) {
+                 // Use filter to get items with a non-null id_grupo
+                const adicionalesConGrupo = adicionales.filter(item => item.pivot.id_grupo !== null);
+
+                // Use filter to get items without an id_grupo
+                const adicionalesSinGrupo = adicionales.filter(item => item.pivot.id_grupo === null);
+
+                // You can now work with adicionalesConGrupo and adicionalesSinGrupo
+                console.log("Adicionales con grupo:", adicionalesConGrupo);
+                console.log("Adicionales sin grupo:", adicionalesSinGrupo);
+
+                // Group items by their id_grupo value
+                const adicionalesControlUnico = adicionalesConGrupo.reduce((grupos, item) => {
+                    const grupoId = item.pivot.id_grupo;
+                    
+                    // If the group doesn't exist yet, create it
+                    if (!grupos[grupoId]) {
+                        grupos[grupoId] = [];
+                    }
+                    
+                    // Add the item to the appropriate group
+                    grupos[grupoId].push(item);
+                    
+                    return grupos;
+                }, {});
+
+                console.log("Adicionales agrupados: ", adicionalesControlUnico);
+                
                 return `
-                    <h5>Adicionales</h5>
+                    ${Object.entries(adicionalesControlUnico).map(([grupoId, grupo]) => `
+                        <h6>${grupoId}</h6>
+                        <div class="row mb-2">
+                            ${grupo.map(adicionalUnico => `
+                                <div class="col-6">
+                                    <div class="form-check icon-check mb-0">
+                                        <input class="form-check-input" id="check-${adicionalUnico.id}" type="checkbox" name="${grupoId}[]">
+                                        <label class="form-check-label" for="check-${adicionalUnico.id}">${adicionalUnico.nombre} </label>
+                                        <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
+                                        <i class="icon-check-2 fa fa-check-square font-16 color-highlight"></i>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>    
+                    `).join('')}
+                    <h6>Adicionales</h6>
                     <div class="row">
-                        ${adicionales.map(adicional => `
+                        ${adicionalesSinGrupo.map(adicional => `
                             <div class="col-6">
                                 <div class="form-check icon-check mb-0">
-                                    <input class="form-check-input" id="check-${adicional.id}" type="checkbox" checked="">
+                                    <input class="form-check-input" id="check-${adicional.id}" type="checkbox">
                                     <label class="form-check-label" for="check-${adicional.id}">${adicional.nombre}</label>
                                     <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
                                     <i class="icon-check-2 fa fa-check-square font-16 color-highlight"></i>
@@ -176,17 +190,5 @@
             elementoCostoTotal.innerText = `Bs. ${(precio * cantidad).toFixed(2)}`; 
         }
     });
-</script>
-<script>
-    // $(document).ready(function () {
-
-    // });
-
-    // DEFINIR LA LOGICA PARA EL CONTROL DEL MENU
-    // $(".menu-active").removeClass("menu-active"); //para cerrar cualquier modal posiblemente abierto incluido el backdrop
-    // $(".menu-hider").addClass("menu-active"); //para activar/mostrar backdrop
-    // $("#" + response.modal).addClass("menu-active"); //para activar/mostrar menu
-
-    
 </script>
 @endpush
