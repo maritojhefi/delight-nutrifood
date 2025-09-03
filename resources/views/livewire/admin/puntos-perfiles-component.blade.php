@@ -34,7 +34,7 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header mt-0 mb-0 pb-2 pt-2">
-                    <h4 class="card-title">Perfiles de Puntos</h4>
+                    <h4 class="card-title">Perfiles de Puntos - {{ $perfiles->total() }} perfiles</h4>
                 </div>
                 <div class="card-body p-3">
                     <div class="table-responsive">
@@ -199,7 +199,7 @@
                                     <div class="card-header bg-primary text-white p-2">
                                         <h6 class="mb-0 text-white">
                                             <i class="fa fa-user-plus me-2"></i>
-                                            Usuarios Disponibles
+                                            Usuarios Disponibles - {{ $usuariosDisponibles->count() }} usuarios
                                             <div wire:loading class="spinner-border" role="status"
                                                 style="width: 1.5rem !important; height: 1.5rem !important; margin-left: 5px;">
                                                 <span class="sr-only">Loading...</span>
@@ -255,7 +255,7 @@
                                     <div class="card-header bg-info text-white p-2">
                                         <h6 class="mb-0 text-white">
                                             <i class="fa fa-user me-2"></i>
-                                            Usuarios Asignados al Perfil
+                                            Usuarios Asignados al Perfil - {{ $usuariosAsignados->count() }} usuarios
                                             <div wire:loading class="spinner-border" role="status"
                                                 style="width: 1.5rem !important; height: 1.5rem !important; margin-left: 5px;">
                                                 <span class="sr-only">Loading...</span>
@@ -279,11 +279,12 @@
                                                 <div class="list-group-item d-flex justify-content-between align-items-center"
                                                     style="padding: 2% !important;">
                                                     <div>
-                                                        <h6 class="mb-1">{{ $usuario->name }} | <small class="text-info">
-                                                            <i
-                                                                class="fa fa-phone me-1"></i>{{ $usuario->telf ?? 'Sin teléfono' }}
-                                                        </small</h6>
-                                                        >
+                                                        <h6 class="mb-1">{{ $usuario->name }} | <small
+                                                                class="text-info">
+                                                                <i
+                                                                    class="fa fa-phone me-1"></i>{{ $usuario->telf ?? 'Sin teléfono' }}
+                                                                </small< /h6>
+                                                                >
                                                     </div>
                                                     <button type="button" class="btn btn-danger btn-xxs"
                                                         wire:click="quitarUsuarioDelPerfil({{ $usuario->id }})"
@@ -299,22 +300,6 @@
                                                     <p>No hay usuarios asignados a este perfil</p>
                                                 </div>
                                             @endforelse
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Resumen -->
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <div class="alert alert-info">
-                                    <div class="row text-center">
-                                        <div class="col-md-6">
-                                            <strong>Usuarios Disponibles:</strong> {{ $usuariosDisponibles->count() }}
-                                        </div>
-                                        <div class="col-md-6">
-                                            <strong>Usuarios Asignados:</strong> {{ $usuariosAsignados->count() }}
                                         </div>
                                     </div>
                                 </div>
