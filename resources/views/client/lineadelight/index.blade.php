@@ -58,8 +58,8 @@
                     {{-- LISTADO DE ELEMENTOS A RENDERIZARSE --}}
                     
                     {{-- ITEM POPULARES --}}
-                    <div class="splide__slide mx-2 is-active is-visible" id="single-slider-1-slide01" style="width: 320px;">
-                        <a href='#' data-bs-toggle="modal" data-bs-target="#popularProductsModal" data-category-id="000" data-category-name="Nuestros productos mas populares!" data-card-height="200" class="card bg-6 mb-0 shadow-l rounded-m" style="height: 200px; background-color: #FF5A5A;">
+                    <div class="splide__slide mx-2 is-active is-visible" id="single-slider-populares" style="width: 320px;">
+                        <a href='#' data-bs-toggle="modal" data-bs-target="#popularProductsModal" data-category-id="000" data-category-name="Nuestros productos mas populares!" data-card-height="200" class="card bg-6 mb-0 shadow-l rounded-m" style=" background-color: #FF5A5A;">
                             <div class="card-center mt-n4 d-flex flex-column align-items-center">
                                 <i class="fa fa-apple-alt fa-7x text-white"></i>
                             </div>
@@ -72,8 +72,8 @@
                     </div>
 
                     {{-- ITEM PLANES Y PAQUETES --}}
-                    <div class="splide__slide mx-2 is-active is-visible" id="single-slider-1-slide02" style="width: 320px;">
-                        <a href="{{ route('categoria.planes') }}" data-card-height="200" class="card bg-6 mb-0 shadow-l rounded-m" style="height: 200px;background-color: #4ECDC4;">
+                    <div class="splide__slide mx-2 is-active is-visible" id="single-slider-planes" style="width: 320px;">
+                        <a href="{{ route('categoria.planes') }}" data-card-height="200" class="card mb-0 shadow-l rounded-m" style="background-color: #4ECDC4;">
                             <div class="card-center mt-n4 d-flex flex-column align-items-center">
                                 <i class="fa fa-calendar fa-7x text-white"></i>
                             </div>
@@ -84,6 +84,22 @@
                             <div class="card-overlay dark-mode-tint"></div>
                         </a>
                     </div>
+
+                    {{-- TAGS --}}
+                    @foreach ($tags as $tag)
+                    <div class="splide__slide mx-2 is-active is-visible" id="single-slider-{{$tag->nombre}}" style="width: 320px;">
+                        <div data-card-height="200" class="card mb-0 shadow-l rounded-m" style="background-image: url({{asset('imagenes/delight/mesa_tags.jpg')}});">
+                            <div class="card-center mt-n4 d-flex flex-column align-items-center">
+                                <i data-lucide="{{$tag->icono}}" class="lucide-icon text-white" style="width: 5rem; height: 5rem;"></i>
+                            </div>
+                            <div class="card-bottom text-center mb-3">
+                                <h2 class="color-white text-uppercase font-900 mb-0">{{$tag->nombre}}</h2>
+                                <p class="under-heading color-white">Productos {{strtolower($tag->nombre)}}</p>
+                            </div>
+                            <div class="card-overlay dark-mode-tint light-mode-tint"></div>
+                        </div>
+                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -120,41 +136,6 @@
     {{-- CARD PRODUCTOS PUNTUADOS --}}
     @if ($conMasPuntos->count() > 0)
     <x-seccion-gana-puntos :productos="$conMasPuntos" />
-        {{-- <div class="card card-style rounded-md mx-0 preload-img mt-2 entered loaded" data-src="images/pictures/20s.jpg" data-ll-status="loaded"
-            style="background-image: url({{ asset('imagenes/delight/default-bg-vertical.jpg') }});">
-            <div class="card-body">
-                <div class="mx-4 mb-0">
-                    <h4 class="color-white pt-3 font-24">Gana Puntos!</h4>
-                    <p class="color-white pt-1 mb-2">
-                        Los productos seleccionados atribuyen puntos por cada compra realizada.
-                        Mientras mas puntos, mas premios!
-                    </p>
-                </div>
-                <div class="card card-style bg-transparent m-0 shadow-0">
-                    <div class="row mb-0 p-2">
-                        @foreach ($conMasPuntos as $item)
-                            <div class="col-6">
-                                <a href="{{ route('delight.detalleproducto', $item->id) }}"
-                                    class="card card-style py-3 d-flex align-items-center hover-grow" data-menu="menu-product">
-                                    <img src="{{ asset('imagenes/delight/optimal_logo.svg')}}" alt="img" width="100"
-                                    class="mx-auto">
-                                    <div class="p-2">
-                                        <p class="mb-0 font-600 text-center">{{ Str::limit($item->nombre(), 22) }}</p>
-                                    </div>
-                                    <div class="divider mb-0"></div>
-                                    <div class="d-flex flex-row justify-content-between gap-4 mb-0">
-                                        <p class="font-600 mb-0">Bs. {{ $item->descuento ? $item->descuento : $item->precio }}</p>
-                                        <p class="bg-blue-dark font-11 px-2 font-600 rounded-xs shadow-xxl mb-0">{{ $item->puntos }} Pts</p>
-                                    </div>
-                                </a>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-            <div class="card-overlay bg-highlight opacity-90"></div>
-            <div class="card-overlay dark-mode-tint"></div>
-        </div> --}}
     @endif
 
     {{-- MODAL PRODUCTOS CATEGORIZADOS --}}

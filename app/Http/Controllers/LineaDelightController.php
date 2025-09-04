@@ -7,6 +7,7 @@ use App\Models\Plane;
 use App\Models\Producto;
 use App\Models\Subcategoria;
 use App\Helpers\GlobalHelper;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Log;
 
@@ -30,6 +31,7 @@ class LineaDelightController extends Controller
             ->whereIn('categoria_id', [2,3])
             ->orderBy('subcategorias.nombre')
             ->get();
+
 
         $masVendidos = $productos->sortByDesc('cantidad_vendida')
             ->take(10);
@@ -58,9 +60,11 @@ class LineaDelightController extends Controller
             );
         }
 
+        $tags =Tag::tieneProductosDisponibles()->get();
+
         $horariosData = (object) $horariosDataArray;
 
-        return view('client.lineadelight.index', compact('subcategorias', 'masVendidos','masRecientes','enDescuento', 'conMasPuntos', 'productos', 'horarios','horariosData'));
+        return view('client.lineadelight.index', compact('subcategorias', 'masVendidos','masRecientes','enDescuento', 'conMasPuntos', 'productos', 'horarios','horariosData', 'tags'));
     }
     public function categoriaPlanes()
     {
