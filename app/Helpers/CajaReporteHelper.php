@@ -61,31 +61,26 @@ class CajaReporteHelper
         return GraficosHelper::crearGrafico($ingresosPorMetodoPago);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public static function CategoriasActivasMensual(int $mes, int $anio): array
+    {
+        $query = DB::table('categorias')
+            ->join('subcategorias', 'categorias.id', '=', 'subcategorias.categoria_id')
+            ->join('productos', 'subcategorias.id', '=', 'productos.subcategoria_id')
+            ->join('historial_venta_producto', 'productos.id', '=', 'historial_venta_producto.producto_id')
+            ->join('historial_ventas', 'historial_venta_producto.historial_venta_id', '=', 'historial_ventas.id')
+            ->select(
+                'categorias.id',
+                'categorias.nombre as nombre_categoria',
+                DB::raw('COUNT(historial_ventas.id) as cantidad_total'),
+                DB::raw('ROUND(SUM(historial_venta_producto.precio_subtotal), 2) as monto_total')
+            )
+            ->whereMonth('historial_ventas.created_at', $mes)
+            ->whereYear('historial_ventas.created_at', $anio)
+            ->groupBy('categorias.id', 'categorias.nombre')
+            ->orderByDesc('monto_total')
+            ->get();
+        return $query->toArray();
+    }
 
     /**
      * Obtiene un array con las ventas agrupadas por categoría para una caja específica
@@ -179,6 +174,72 @@ class CajaReporteHelper
         return $query->toArray();
     }
 
+
+    public static function totalSubcategoriasPorCategoria(int $categoriaId, int $mes, int $anio): array
+    {
+        $query = DB::table('historial_ventas')
+            ->join('historial_venta_producto', 'historial_ventas.id', '=', 'historial_venta_producto.historial_venta_id')
+            ->join('productos', 'historial_venta_producto.producto_id', '=', 'productos.id')
+            ->join('subcategorias', 'productos.subcategoria_id', '=', 'subcategorias.id')
+            ->where('subcategorias.categoria_id', $categoriaId)
+            ->whereMonth('historial_ventas.created_at', $mes)
+            ->whereYear('historial_ventas.created_at', $anio)
+            ->groupBy('subcategorias.id', 'subcategorias.nombre')
+            ->orderByDesc('cantidad_total')
+            ->select(
+                'subcategorias.id',
+                'subcategorias.nombre as nombre_subcategoria',
+                DB::raw('COUNT(historial_ventas.id) as cantidad_total'),
+                DB::raw('SUM(historial_venta_producto.cantidad) as cantidad_total'),
+                DB::raw('ROUND(SUM(historial_venta_producto.precio_subtotal), 2) as monto_total')
+            )
+            ->get();
+        return $query->toArray();
+    }
+
+
+
+    public static function CantidadProductosActivosMensual(int $mes, int $anio): array
+    {
+        $query = DB::table('historial_ventas')
+            ->join('historial_venta_producto', 'historial_ventas.id', '=', 'historial_venta_producto.historial_venta_id')
+            ->join('productos', 'historial_venta_producto.producto_id', '=', 'productos.id')
+            ->whereMonth('historial_ventas.created_at', $mes)
+            ->whereYear('historial_ventas.created_at', $anio)
+            ->groupBy('productos.id', 'productos.nombre')
+            ->orderByDesc('cantidad_total')
+            ->select(
+                'productos.id',
+                'productos.nombre',
+                DB::raw('SUM(historial_venta_producto.cantidad) as cantidad_total'),
+                DB::raw('ROUND(SUM(historial_venta_producto.precio_subtotal), 2) as monto_total')
+            )
+            ->orderByDesc('cantidad_total')
+            ->get();
+        return $query->toArray();
+    }
+
+
+    public static function ClientesActivosMensual(int $mes, int $anio): array
+    {
+        $query = DB::table('historial_ventas')
+            ->join('users', 'historial_ventas.cliente_id', '=', 'users.id')
+            ->select(
+                'users.id',
+                'users.name as nombre_cliente',
+                DB::raw('COUNT(historial_ventas.id) as total_compras'),
+                DB::raw('ROUND(SUM(historial_ventas.total_pagado), 2) as monto_total')
+            )
+            ->whereNotNull('historial_ventas.cliente_id')
+            ->whereMonth('historial_ventas.created_at', $mes)
+            ->whereYear('historial_ventas.created_at', $anio)
+            ->groupBy('users.id', 'users.name')
+            ->orderByDesc('monto_total')
+            ->get();
+
+        return $query->toArray();
+    }
+
     /**
      * Obtiene los métodos de pago más usados en un mes específico
      * 
@@ -239,6 +300,31 @@ class CajaReporteHelper
 
         return $query->toArray();
     }
+    public static function ProductosActivosMensual(int $mes, int $anio): array
+    {
+        $query = DB::table('historial_ventas')
+            ->join('historial_venta_producto', 'historial_ventas.id', '=', 'historial_venta_producto.historial_venta_id')
+            ->join('productos', 'historial_venta_producto.producto_id', '=', 'productos.id')
+            ->select(
+                'productos.id',
+                'productos.nombre',
+                DB::raw('SUM(historial_venta_producto.cantidad) as cantidad_total'),
+                DB::raw('ROUND(SUM(
+                    CASE 
+                        WHEN historial_ventas.subtotal > 0 
+                        THEN (historial_venta_producto.precio_subtotal / historial_ventas.subtotal) * historial_ventas.total_pagado
+                        ELSE historial_venta_producto.precio_subtotal
+                    END
+                ), 2) as monto_total')
+            )
+            ->whereMonth('historial_ventas.created_at', $mes)
+            ->whereYear('historial_ventas.created_at', $anio)
+            ->groupBy('productos.id', 'productos.nombre')
+            ->orderByDesc('monto_total')
+            ->get();
+
+        return $query->toArray();
+    }
 
     /**
      * Obtiene las categorías más vendidas en un mes específico
@@ -285,7 +371,7 @@ class CajaReporteHelper
     public static function comparativaMeses(int $mes, int $anio): array
     {
         $meses = [];
-        
+
         // Mes actual
         $meses[] = [
             'mes' => $mes,
@@ -293,7 +379,7 @@ class CajaReporteHelper
             'nombre' => self::obtenerNombreMes($mes),
             'monto' => self::obtenerTotalVentasMensual($mes, $anio)
         ];
-        
+
         // Mes anterior
         $mesAnterior = $mes - 1;
         $anioAnterior = $anio;
@@ -301,14 +387,14 @@ class CajaReporteHelper
             $mesAnterior = 12;
             $anioAnterior = $anio - 1;
         }
-        
+
         $meses[] = [
             'mes' => $mesAnterior,
             'anio' => $anioAnterior,
             'nombre' => self::obtenerNombreMes($mesAnterior),
             'monto' => self::obtenerTotalVentasMensual($mesAnterior, $anioAnterior)
         ];
-        
+
         // Mes anterior al anterior
         $mesAnterior2 = $mesAnterior - 1;
         $anioAnterior2 = $anioAnterior;
@@ -316,14 +402,14 @@ class CajaReporteHelper
             $mesAnterior2 = 12;
             $anioAnterior2 = $anioAnterior - 1;
         }
-        
+
         $meses[] = [
             'mes' => $mesAnterior2,
             'anio' => $anioAnterior2,
             'nombre' => self::obtenerNombreMes($mesAnterior2),
             'monto' => self::obtenerTotalVentasMensual($mesAnterior2, $anioAnterior2)
         ];
-        
+
         return $meses;
     }
 
@@ -340,7 +426,7 @@ class CajaReporteHelper
             ->whereMonth('created_at', $mes)
             ->whereYear('created_at', $anio)
             ->sum('total_pagado');
-            
+
         return round(floatval($total), 2);
     }
 
@@ -353,11 +439,20 @@ class CajaReporteHelper
     public static function obtenerNombreMes(int $mes): string
     {
         $meses = [
-            1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
-            5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
-            9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
+            1 => 'Enero',
+            2 => 'Febrero',
+            3 => 'Marzo',
+            4 => 'Abril',
+            5 => 'Mayo',
+            6 => 'Junio',
+            7 => 'Julio',
+            8 => 'Agosto',
+            9 => 'Septiembre',
+            10 => 'Octubre',
+            11 => 'Noviembre',
+            12 => 'Diciembre'
         ];
-        
+
         return $meses[$mes] ?? 'Desconocido';
     }
 }
