@@ -33,7 +33,9 @@ class Producto extends Model
         'observacion',
         'prioridad',
         'stock_actual',
-        'cantidad_vendida'
+        'cantidad_vendida',
+        'publico_tienda',
+        'producto_stock_id'
     ];
     const PRIORIDADBAJA = "1";
     const PRIORIDADALTA = "2";
@@ -62,6 +64,10 @@ class Producto extends Model
     public function subcategoria()
     {
         return $this->belongsTo(Subcategoria::class);
+    }
+    public function productoVinculadoStock()
+    {
+        return $this->belongsTo(Producto::class, 'producto_stock_id');
     }
     public function pathAttachment()
     {
@@ -351,6 +357,10 @@ class Producto extends Model
                 return $query; // Sin restricciones para otros roles
         }
     }
+    public function scopePublicoTienda($query)
+    {
+        return $query->where('publico_tienda', true)->where('estado', 'activo');
+    }
 
     /**
      * Obtiene el stock detallado del producto por sucursal
@@ -358,7 +368,7 @@ class Producto extends Model
     public function getStockDetallado()
     {
         return $this->sucursale()
-            ->withPivot('sucursale_id', 'cantidad', 'id', 'fecha_venc', 'max')
+            ->withPivot('sucursale_id', 'cantidad', 'id', 'fecha_venc', 'max', 'usuario_id')
             ->wherePivot('cantidad', '>', 0)
             ->get();
     }
@@ -380,11 +390,15 @@ class Producto extends Model
     /**
      * Obtiene el stock total del producto
      */
-    public function getStockTotal()
+    public function stockTotal()
     {
         return $this->sucursale()
             ->withPivot('cantidad')
             ->wherePivot('cantidad', '>', 0)
             ->sum('producto_sucursale.cantidad');
+    }
+    public function productosVinculados()
+    {
+        return $this->hasMany(Producto::class, 'producto_stock_id');
     }
 }

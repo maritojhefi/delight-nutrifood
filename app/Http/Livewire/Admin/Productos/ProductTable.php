@@ -171,6 +171,8 @@ class ProductTable extends Component
     {
         if ($producto->estado == 'activo') {
             $producto->estado = 'inactivo';
+            // Si se vuelve inactivo, automáticamente se oculta de la tienda
+            $producto->publico_tienda = false;
             $producto->save();
         } else {
             $producto->estado = 'activo';
@@ -184,6 +186,13 @@ class ProductTable extends Component
     public function cambiarcontable(Producto $producto)
     {
         if ($producto->contable == true) {
+            if($producto->sucursale->count() > 0){
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'warning',
+                    'message' => 'Este producto tiene stock, primero elimine el stock para poder cambiar el contable del producto',
+                ]);
+                return;
+            }
             $producto->contable = false;
             $producto->save();
         } else {
@@ -193,6 +202,28 @@ class ProductTable extends Component
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
             'message' => 'Se guardo el cambio!',
+        ]);
+    }
+
+    public function cambiarPublicoTienda(Producto $producto)
+    {
+        // Si el producto está inactivo y se intenta hacer visible en tienda
+        if ($producto->estado == 'inactivo' && !$producto->publico_tienda) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => 'No se puede hacer visible en tienda un producto inactivo. Active el producto primero.',
+            ]);
+            return;
+        }
+        
+        $producto->publico_tienda = !$producto->publico_tienda;
+        $producto->save();
+        
+        $mensaje = $producto->publico_tienda ? 'visible en la tienda' : 'oculto de la tienda';
+        
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => 'El producto ' . $producto->nombre . ' ahora está ' . $mensaje,
         ]);
     }
     public function eliminar(Producto $prod)

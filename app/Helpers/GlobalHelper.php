@@ -411,7 +411,10 @@ class GlobalHelper
 
     public static function getValorAtributoSetting($atributo)
     {
-        $atributo = Setting::where('atributo', $atributo)->firstOrFail();
+        $atributo = Setting::where('atributo', $atributo)->first();
+        if (!$atributo) {
+            return null;
+        }
         return $atributo->valor;
     }
 
@@ -451,7 +454,7 @@ class GlobalHelper
 
         // Cacheado de los productos disponibles, incluyendo unicamente la informacion mas relevante
         Cache::remember('productos', 60, function () {
-            return Producto::select([
+            return Producto::publicoTienda()->select([
                 'id',
                 'nombre',
                 'precio',

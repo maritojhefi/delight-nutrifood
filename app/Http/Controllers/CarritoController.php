@@ -49,13 +49,6 @@ class CarritoController extends Controller
             
             $idsProductos = $itemsCarrito->pluck('id');
 
-            Log::info('Validating cart items', [
-                'sucursale_id' => $sucursaleId,
-                'product_ids' => $idsProductos,
-                // 'plan_ids' => $idsPlanes,
-                'cart_items' => $itemsCarrito->toArray()
-            ]);
-
             // Procesa productos regulares
             $productos = collect();
             

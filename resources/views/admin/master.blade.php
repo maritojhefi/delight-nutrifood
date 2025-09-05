@@ -162,7 +162,7 @@
                 <div class="loader--text"></div>
             </div>
         </div>
-        <div id="main-wrapper">
+        <div id="main-wrapper" >
             <!--**********************************
             Nav header start
         ***********************************-->

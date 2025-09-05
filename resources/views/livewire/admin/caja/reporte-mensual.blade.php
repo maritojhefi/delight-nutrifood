@@ -1,51 +1,184 @@
 <div class="row">
+
+
+
+
     <div class="col-12">
         @if (!$mostrarDetalles)
             <!-- VISTA INICIAL: CARDS POR MESES -->
+            <!-- CONTROLES DE PAGINACIÓN SUPERIOR -->
+            @if ($mesesDisponibles && ($mesesDisponibles->hasPages() || !empty($search)))
+
+
+                <div class="form-head mb-1 d-flex flex-wrap align-items-center">
+                    <div class="me-auto">
+                        <h2 class="font-w600 mb-0">Reporte Mensual de Ventas
+                            <div wire:loading="" class="spinner-border" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </h2>
+                    </div>
+                    <div class="input-group search-area2 d-xl-inline-flex mb-2 me-lg-4 me-md-2"
+                        style="width: 40% !important;">
+                        <button class="input-group-text"><i class="flaticon-381-search-2 text-primary"></i></button>
+                        <input type="text" class="form-control"
+                            placeholder="Buscar por mes (ej: enero) o año (ej: 2024)..."
+                            wire:model.debounce.750ms="search">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                @if (!empty($search))
+                                    <span class="text-info">
+                                        <i class="fa fa-search me-1"></i>
+                                        Buscando: "<strong>{{ $search }}</strong>" -
+                                        {{ $mesesDisponibles->total() }} resultado(s) encontrado(s)
+                                        <button type="button" class="btn btn-sm btn-outline-secondary ms-2"
+                                            wire:click="$set('search', '')" title="Limpiar búsqueda">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </span>
+                                    <br>
+                                @endif
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <label class="me-2 mb-0">Meses por página:</label>
+                                <select class="form-select form-select-sm me-3" style="width: auto;"
+                                    wire:change="cambiarMesesPorPagina($event.target.value)">
+                                    <option value="6" {{ $mesesPorPagina == 6 ? 'selected' : '' }}>6</option>
+                                    <option value="12" {{ $mesesPorPagina == 12 ? 'selected' : '' }}>12</option>
+                                    <option value="24" {{ $mesesPorPagina == 24 ? 'selected' : '' }}>24</option>
+                                    <option value="36" {{ $mesesPorPagina == 36 ? 'selected' : '' }}>36</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <div class="row">
-                @foreach ($mesesDisponibles as $mes)
-                    <div class="col-12 col-sm-6 col-md-4 px-1 m-0 py-0">
-                        <div class="card py-0 bordeado">
-                            <div class="card-body py-2">
-                                <div class="row">
-                                    <div class="col-6 letra14">
-                                        <strong>{{ $mes['nombre_completo'] }}</strong>
-                                        <ul class="mt-2 text-center">
-                                            <li><span class="float-start"><i class="fa fa-stop"
-                                                        style="color: {{ \App\Helpers\GraficosHelper::obtenerColorPosicion(0) }}"></i>
-                                                    Total Ventas:</span> <br>
-                                                <strong
-                                                    class="">{{ number_format($this->getTotalVentasMes($mes['mes'], $mes['anio']), 2) }}
-                                                    Bs</strong>
-                                            </li>
-                                            <li><span class="float-start"><i class="fa fa-stop"
-                                                        style="color: {{ \App\Helpers\GraficosHelper::obtenerColorPosicion(1) }}"></i>
-                                                    Clientes Activos:</span> <br>
-                                                <strong
-                                                    class="">{{ $this->getTotalClientesActivos($mes['mes'], $mes['anio']) }}</strong>
-                                            </li>
-                                            <li><span class="float-start"><i class="fa fa-stop text-success"></i>
-                                                    Productos Vendidos:</span> <br>
-                                                <strong
-                                                    class="">{{ $this->getTotalProductosVendidos($mes['mes'], $mes['anio']) }}</strong>
-                                            </li>
-                                        </ul>
-                                        <a href="#"
-                                            wire:click="mostrarDetalles({{ $mes['mes'] }}, {{ $mes['anio'] }})">
-                                            <span class="badge badge-primary badge-xxs letra14 py-1">Ver detalles</span>
-                                        </a>
-                                    </div>
-                                    <div class="col-6" style="height: 200px; overflow: hidden;">
-                                        <!-- Mini-gráfico del mes -->
-                                        <img src="{{ $this->getMiniGraficoMes($mes['mes'], $mes['anio']) }}"
-                                            style="width: 100%; height: 100%; object-fit: cover;" alt="">
+                @if ($mesesDisponibles)
+                    @foreach ($mesesDisponibles as $mes)
+                        <div class="col-12 col-sm-6 col-md-4 px-1 m-0 py-0">
+                            <div class="card py-0 bordeado">
+                                <div class="card-body py-2">
+                                    <div class="row">
+                                        <div class="col-6 letra14">
+                                            <strong>{{ $mes['nombre_completo'] }}</strong>
+                                            {{-- <ul class="mt-2 text-center">
+                                                <li><span class="float-start"><i class="fa fa-stop"
+                                                            style="color: {{ \App\Helpers\GraficosHelper::obtenerColorPosicion(0) }}"></i>
+                                                        Total Ventas:</span> <br>
+                                                    <strong
+                                                        class="">{{ number_format($this->getTotalVentasMes($mes['mes'], $mes['anio']), 2) }}
+                                                        Bs</strong>
+                                                </li>
+                                                <li><span class="float-start"><i class="fa fa-stop"
+                                                            style="color: {{ \App\Helpers\GraficosHelper::obtenerColorPosicion(1) }}"></i>
+                                                        Clientes Activos:</span> <br>
+                                                    <strong
+                                                        class="">{{ $this->getTotalClientesActivos($mes['mes'], $mes['anio']) }}</strong>
+                                                </li>
+                                                <li>
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <span class="float-start"><i
+                                                                    class="fa fa-stop text-success"></i>
+                                                                Productos:</span>
+                                                            <br>
+                                                            <strong
+                                                                class="">{{ $this->getTotalProductosVendidos($mes['mes'], $mes['anio']) }}</strong>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <span class="float-start"><i
+                                                                    class="fa fa-stop text-secondary"></i>
+                                                                Total Unidades Vendidas:</span>
+                                                            <br>
+                                                            <strong
+                                                                class="">{{ number_format($this->getTotalCantidadProductosVendidos($mes['mes'], $mes['anio'])) }}</strong>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul> --}}
+
+
+
+
+
+                                            <div class="basic-list-group mb-2 mt-1">
+                                                <ul class="list-group">
+                                                    <li
+                                                        class="list-group-item d-flex justify-content-between align-items-center p-1">
+                                                        Total ventas <span
+                                                            class="badge badge-sm badge-outline-primary badge-pill badge-rounded">{{ number_format($this->getTotalVentasMes($mes['mes'], $mes['anio']), 2) }}
+                                                            Bs</span>
+                                                    </li>
+                                                    <li
+                                                        class="list-group-item d-flex justify-content-between align-items-center p-1">
+                                                        Clientes <span
+                                                            class="badge badge-sm badge-outline-primary badge-pill badge-rounded">{{ $this->getTotalClientesActivos($mes['mes'], $mes['anio']) }}</span>
+                                                    </li>
+                                                    <li
+                                                        class="list-group-item d-flex justify-content-between align-items-center p-1">
+                                                        Productos<span
+                                                            class="badge badge-sm badge-outline-primary badge-pill badge-rounded">{{ $this->getTotalProductosVendidos($mes['mes'], $mes['anio']) }}</span>
+                                                    </li>
+                                                    <li
+                                                        class="list-group-item d-flex justify-content-between align-items-center p-1">
+                                                        Unidades<span
+                                                            class="badge badge-sm badge-outline-primary badge-pill badge-rounded">{{ \App\Helpers\GlobalHelper::formatearNumeroDecimalesMiles($this->getTotalCantidadProductosVendidos($mes['mes'], $mes['anio'])) }}</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+
+
+
+
+
+
+
+                                            <a href="#"
+                                                wire:click="mostrarDetalles({{ $mes['mes'] }}, {{ $mes['anio'] }})">
+                                                <span class="badge badge-primary badge-xxs letra14 py-1">Ver
+                                                    detalles</span>
+                                            </a>
+                                        </div>
+                                        <div class="col-6" style="height: 200px; overflow: hidden;">
+                                            <!-- Mini-gráfico del mes -->
+                                            <img src="{{ $this->getGraficoCategorias($mes['mes'], $mes['anio']) }} "
+                                                style="width: 100%; height: 100%; object-fit: cover;" alt="">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    @endforeach
+                @else
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            <i class="fa fa-info-circle me-2"></i>
+                            Cargando datos...
+                        </div>
                     </div>
-                @endforeach
+                @endif
             </div>
+            <!-- CONTROLES DE PAGINACIÓN INFERIOR -->
+            @if ($mesesDisponibles && $mesesDisponibles->hasPages())
+                <div class="row mt-3 text-center">
+                    <span class="text-muted">
+                        Mostrando {{ $mesesDisponibles->count() }} de {{ $mesesDisponibles->total() }} meses
+                    </span>
+                    <br>
+                    <div class="col-12">
+                        <div class="d-flex justify-content-center">
+                            {{ $mesesDisponibles->links() }}
+                        </div>
+                    </div>
+                </div>
+            @endif
         @else
             <!-- VISTA DE DETALLES: GRÁFICOS COMPLETOS -->
             <div class="row mb-3">
@@ -58,6 +191,9 @@
                             {{ \App\Helpers\CajaReporteHelper::obtenerNombreMes($mesSeleccionado) }}
                             {{ $anioSeleccionado }}</strong>
                     </span>
+                    <div class="spinner-border" role="status" style="width: 1.5rem; height: 1.5rem;" wire:loading="">
+                        <span class="sr-only">Loading...</span>
+                    </div>
                 </div>
             </div>
 
@@ -129,7 +265,7 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
-                                    <div class="row" style="height: 400px; overflow: hidden;"
+                                    <div class="row" style="height: 103% !important; overflow: hidden;"
                                         id="contenedor-grafico">
                                         <img src="{{ $this->getGraficoTop10Clientes() }}" class="img-graficos"
                                             style="width: 100%; height: 95%; object-fit: cover;"
@@ -210,7 +346,7 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
-                                    <div class="row" style="height: 400px; overflow: hidden;"
+                                    <div class="row" style="height: 103% !important; overflow: hidden;"
                                         id="contenedor-grafico">
                                         <img src="{{ $this->getGraficoMetodosPago() }}" class="img-graficos"
                                             style="width: 100%; height: 95%; object-fit: cover;"
@@ -290,7 +426,7 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
-                                    <div class="row" style="height: 400px; overflow: hidden;"
+                                    <div class="row" style="height: 103% !important; overflow: hidden;"
                                         id="contenedor-grafico">
                                         <img src="{{ $this->getGraficoTop10Productos() }}" class="img-graficos"
                                             style="width: 100%; height: 95%; object-fit: cover;"
@@ -321,6 +457,9 @@
                                                 <thead>
                                                     <tr>
                                                         <th class="text-white bg-primary">Categoría</th>
+
+                                                        {{-- <th class="text-white bg-primary">Subcategoría</th> --}}
+
                                                         <th class="text-white bg-primary">Cant.</th>
                                                         <th class="text-white bg-primary">Monto Total</th>
                                                     </tr>
@@ -339,6 +478,15 @@
                                                                     <strong>{{ Str::limit($categoria->nombre_categoria, 25) }}</strong>
                                                                 </span>
                                                             </td>
+                                                            {{-- 
+                                                            <td class="py-1">
+                                                                <span class="float-start">
+                                                                   
+                                                                    <strong>{{ $this->getTotalSubcategoriasPorCategoria($categoria->id, $mesSeleccionado, $anioSeleccionado) }}</strong>
+                                                                </span>
+                                                            </td> --}}
+
+
                                                             <td class="py-1">
                                                                 <strong>{{ $categoria->cantidad_total }}</strong>
                                                             </td>
@@ -370,7 +518,7 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
-                                    <div class="row" style="height: 400px; overflow: hidden;"
+                                    <div class="row" style="height: 103% !important; overflow: hidden;"
                                         id="contenedor-grafico">
                                         <img src="{{ $this->getGraficoCategorias() }}" class="img-graficos"
                                             style="width: 100%; height: 95%; object-fit: cover;"
@@ -440,7 +588,7 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
-                                    <div class="row" style="height: 400px; overflow: hidden;"
+                                    <div class="row" style="height: 103% !important; overflow: hidden;"
                                         id="contenedor-grafico">
                                         <img src="{{ $this->getGraficoComparativaMeses() }}" class="img-graficos"
                                             style="width: 100%; height: 95%; object-fit: cover;"
@@ -465,4 +613,3 @@
         }, 300000);
     </script>
 @endpush
-

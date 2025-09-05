@@ -19,9 +19,9 @@
                     <i class="flaticon-041-graph"></i>
                 </x-sidebar-elements>
 
-                <x-sidebar-elements titulo="Sucursales" linkglobal="admin/sucursales" :lista="['Todas' => 'sucursal.listar', 'Agregar Stock' => 'sucursal.stock']">
+                {{-- <x-sidebar-elements titulo="Sucursales" linkglobal="admin/sucursales" :lista="['Todas' => 'sucursal.listar', 'Agregar Stock' => 'sucursal.stock']">
                     <i class="flaticon-086-star"></i>
-                </x-sidebar-elements>
+                </x-sidebar-elements> --}}
                 <x-sidebar-elements titulo="Nutri-Tips" linkglobal="admin/tienda" :lista="[
                     'Galeria de fotos' => 'tienda.galeria',
                     'Videos' => 'tienda.tutoriales',
@@ -33,12 +33,13 @@
             <x-sidebar-elements titulo="Productos" linkglobal="admin/productos" :lista="[
                 'Listar Productos' => 'producto.listar',
                 'Crear Nuevo' => 'producto.crear',
+                'Almacen y stock' => 'producto.expiracion',
+                'Tags' => 'producto.tags',
                 'Categorias' => 'producto.categoria',
                 'Subcategorias' => 'producto.subcategoria',
                 'Adicionales' => 'producto.adicionales',
                 'Agregar adicional a subcategoria' => 'producto.agregar.adicional',
-                'Productos por Expirar' => 'producto.expiracion',
-                'Tags' => 'producto.tags',
+               
             ]">
                 <i class="flaticon-043-menu"></i>
             </x-sidebar-elements>
@@ -47,19 +48,14 @@
                     'Listar Usuarios' => 'usuario.listar',
                     'Roles' => 'usuario.roles',
                     'Colaboradores' => 'usuario.empleo',
-                    'Saldos' => 'usuario.saldos',
+                    'Billeteras y saldos' => 'usuario.saldos',
                     'Asistencia' => 'usuario.asistencia',
                     'Cumpleaños' => 'usuario.cumpleanos',
                 ]">
-                    <i class="flaticon-045-heart"></i>
+                    <i class="flaticon-381-user"></i>
                 </x-sidebar-elements>
 
-                <x-sidebar-elements titulo="Convenios" linkglobal="admin/convenios" :lista="[
-                    'Crear' => 'convenio.index',
-                    'Vincular Usuario' => 'convenio.vincular.usuario',
-                ]">
-                    <i class="flaticon-381-panel"></i>
-                </x-sidebar-elements>
+               
 
                 <x-sidebar-elements titulo="Almuerzos" linkglobal="admin/almuerzos" :lista="[
                     'Personalizar dias' => 'almuerzos.listar',
@@ -71,7 +67,7 @@
                     'Cocina' => 'reporte.cocina',
                     'Planes en desarrollo(whatsapp)' => 'reporte.whatsapp',
                 ]">
-                    <i class="flaticon-022-copy"></i>
+                    <i class="flaticon-381-photo"></i>
                 </x-sidebar-elements>
 
                 <x-sidebar-elements titulo="Ventas" linkglobal="admin/ventas" :lista="[
@@ -81,7 +77,12 @@
                 ]">
                     <i class="flaticon-013-checkmark"></i>
                 </x-sidebar-elements>
-
+                <x-sidebar-elements titulo="Convenios" linkglobal="admin/convenios" :lista="[
+                    'Crear' => 'convenio.index',
+                    'Vincular Usuario' => 'convenio.vincular.usuario',
+                ]">
+                    <i class="flaticon-381-panel"></i>
+                </x-sidebar-elements>
                 <x-sidebar-elements titulo="Perifericos" linkglobal="admin/perifericos" :lista="['Impresoras' => 'impresoras.index']">
                     <i class="flaticon-072-printer"></i>
                 </x-sidebar-elements>
