@@ -130,7 +130,7 @@
         @include('client.partials.footer-menu')
 
         {{-- Renderizado del contenido de la pagina --}}
-        <div class="page-content">
+        <div id="contenido-cliente" class="page-content">
             @yield('content')
         </div>
 
@@ -276,7 +276,46 @@
         });
     </script>
 
+    <script>
+        // SCRIPT PARA EVITAR TRANSFORMACIONES INDESEADAS - SOLO MÉTODO 3
+        document.addEventListener('DOMContentLoaded', function() {
+            // Establecer el elemento a proteger
+            const protectedElement = document.getElementById('contenido-cliente');
 
+            if (!protectedElement) {
+                console.error('Elemento protegido no encontrado!');
+                return;
+            }
+
+            console.log('🛡️ Bloqueo transformaciones directas de estilo cargado');
+            console.log('📋 Elemento protegido:', protectedElement);
+
+            // Bloquear transformaciones directas de estilo
+            let originalTransformDescriptor = Object.getOwnPropertyDescriptor(protectedElement.style, 'transform');
+            if (!originalTransformDescriptor) {
+                // De no encontrarse el elemento, obtenerlo del prototipo
+                originalTransformDescriptor = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'transform');
+            }
+
+            Object.defineProperty(protectedElement.style, 'transform', {
+                get: function() {
+                    // Retornar el valor actual o un string vacio.
+                    return originalTransformDescriptor ? originalTransformDescriptor.get.call(this) : '';
+                },
+                set: function(value) {
+                    console.log('🚨 TRANFORMACION DIRECTA BLOQUEADA:');
+                    console.log('   - Valor que se intento implementar:', value);
+                    console.log('   - Call stack (culpable):');
+                    console.trace();
+                    // No setear nada mas, solo bloquear la transformacion -> return;
+                    return;
+                },
+                configurable: true
+            });
+
+            console.log('✅ Bloqueo transformaciones directas de estilo cargado');
+        });
+    </script>
     @stack('scripts')
 </body>
 

@@ -59,7 +59,7 @@
                     
                     {{-- ITEM POPULARES --}}
                     <div class="splide__slide mx-2 is-active is-visible" id="single-slider-populares" style="width: 320px;">
-                        <a href='#' data-bs-toggle="modal" data-bs-target="#popularProductsModal" data-category-id="000" data-category-name="Nuestros productos mas populares!" data-card-height="200" class="card bg-6 mb-0 shadow-l rounded-m" style=" background-color: #FF5A5A;">
+                        <a href='#' data-bs-toggle="modal" data-bs-target="#popularProductsModal" data-category-id="000" data-category-name="Nuestros productos mas populares!" data-card-height="200" class="card mb-0 shadow-l rounded-m" style=" background-color: #FF5A5A;">
                             <div class="card-center mt-n4 d-flex flex-column align-items-center">
                                 <i class="fa fa-apple-alt fa-7x text-white"></i>
                             </div>
@@ -88,7 +88,7 @@
                     {{-- TAGS --}}
                     @foreach ($tags as $tag)
                     <div class="splide__slide mx-2 is-active is-visible" id="single-slider-{{$tag->nombre}}" style="width: 320px;">
-                        <div data-card-height="200" class="card mb-0 shadow-l rounded-m" style="background-image: url({{asset('imagenes/delight/mesa_tags.jpg')}});">
+                        <div data-card-height="200" data-tag-id="{{$tag->id}}" data-tag-nombre="{{$tag->nombre}}"  class="productos-tag-trigger card mb-0 shadow-l rounded-m" style="background-image: url({{asset('imagenes/delight/mesa_tags.jpg')}});">
                             <div class="card-center mt-n4 d-flex flex-column align-items-center">
                                 <i data-lucide="{{$tag->icono}}" class="lucide-icon text-white" style="width: 5rem; height: 5rem;"></i>
                             </div>
@@ -103,6 +103,8 @@
                 </div>
             </div>
         </div>
+        
+        <button id="menu-prueba-btn" class="btn bg-highlight">Prueba modal condicional</button>
 
         {{-- SLIDER HORARIOS --}}
         <div class="splide topic-slider slider-no-arrows slider-no-dots pb-2 splide--loop splide--ltr splide--draggable" id="topic-slider-1" style="visibility: visible;">
@@ -188,6 +190,8 @@
             </div>
         </div>
     </div>
+
+    <x-modal-listado-productos identificador="menu-listado-pruebas" />
 @endsection
 
 @push('scripts')
@@ -512,5 +516,35 @@
             </div>
         `;
     };
+</script>
+{{-- SCRIPT PRUEBA DIALOG LISTADO-PRODUCTOS --}}
+<script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        // ACTIVAR MENU LISTADO 
+        // Para un elemento especifico por ID [detalle-producto]
+        const activadorMenuPrueba = document.getElementById('menu-prueba-btn');
+        if (activadorMenuPrueba) {
+            activadorMenuPrueba.addEventListener('click', async () => {
+                console.log("Clickado en boton prueba")
+                // Consulta axios prueba (panes integrales id=4)
+                const tituloPrueba = "CategoriaX";
+                const productosPrueba = await ProductoService.getProductosCategoria(4)
+                abrirDialogListado(productosPrueba, tituloPrueba);
+            });
+        }
+
+        // document.querySelectorAll('.productos-tag-trigger').forEach(btn => {
+        //     btn.addEventListener('click', async function(e) {
+        //         e.preventDefault();
+        //         const tagElement = e.currentTarget; 
+        //         const tagId = tagElement.getAttribute('data-tag-id');
+        //         const tagNombre = tagElement.getAttribute('data-tag-nombre');
+        //         console.log("Elemento tag: ", tagElement);
+        //         console.log("Hiciste clic en el tag id: ", tagId);
+
+        //         // Your Axios call and other logic go here
+        //     });
+        // });
+    });
 </script>
 @endpush

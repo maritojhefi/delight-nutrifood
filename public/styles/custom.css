@@ -1031,7 +1031,7 @@ hover-blue:hover {
 
 .product-card-image img {
     width: 140px;
-    height: 155px; /* Match the card height */
+    height: 140px; /* Match the card height */
     object-fit: cover; /* Ensures image covers the area properly */
     object-position: center; /* Centers the image */
     border-top-left-radius: 0.5rem; /* Match the card's border radius */
@@ -1071,7 +1071,9 @@ hover-blue:hover {
 }
 
 .theme-dark .bg-dtheme-blue  {
-    background-color:  #374151 !important;
+    background-color:  #1f2937 !important;
+    /* #1f2937 */
+    /* #374151 */
 }
 .theme-dark .tag-icon {
     color: white !important;
