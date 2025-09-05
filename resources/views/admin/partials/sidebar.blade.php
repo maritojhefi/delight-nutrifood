@@ -31,7 +31,8 @@
                 </x-sidebar-elements>
 
                 <x-sidebar-elements titulo="Gestión de puntos" linkglobal="admin/puntos" :lista="[
-                    'Perfiles Puntos' => 'perfiles.index',
+                    'Perfiles' => 'perfiles.index',
+                    'Registros Históricos' => 'registros.index',
                 ]">
                     <i class="flaticon-064-pin"></i>
                 </x-sidebar-elements>
@@ -45,7 +46,6 @@
                 'Subcategorias' => 'producto.subcategoria',
                 'Adicionales' => 'producto.adicionales',
                 'Agregar adicional a subcategoria' => 'producto.agregar.adicional',
-               
             ]">
                 <i class="flaticon-043-menu"></i>
             </x-sidebar-elements>
@@ -61,7 +61,7 @@
                     <i class="flaticon-381-user"></i>
                 </x-sidebar-elements>
 
-               
+
 
                 <x-sidebar-elements titulo="Almuerzos" linkglobal="admin/almuerzos" :lista="[
                     'Personalizar dias' => 'almuerzos.listar',

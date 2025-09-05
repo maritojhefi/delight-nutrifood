@@ -360,7 +360,7 @@ class GlobalHelper
                 $formato = 'D \d\e MMMM';
                 break;
             case 5:
-                $formato = 'D \d\e MMMM \d\e\l Y';
+                $formato = '';
                 break;
             case 6:
                 $formato = 'hh:mm a';
@@ -373,6 +373,9 @@ class GlobalHelper
                 break;
             case 9:
                 $formato = 'hh:mm a';
+                break;
+            case 10:
+                $formato = 'D \d\e MMMM \d\e\l Y \a \l\a\s hh:mm a';
                 break;
             default:
                 $formato = 'dddd D \d\e MMMM \d\e\l Y';
@@ -421,13 +424,10 @@ class GlobalHelper
     public static function processSubcategoriaFoto($subcategorias)
     {
         return $subcategorias->map(function ($sub) {
-            $sub->foto = $sub->foto
-                ? asset('imagenes/subcategorias/' . $sub->foto)
-                : asset(GlobalHelper::getValorAtributoSetting('bg_default'));
+            $sub->foto = $sub->foto ? asset('imagenes/subcategorias/' . $sub->foto) : asset(GlobalHelper::getValorAtributoSetting('bg_default'));
             return $sub;
         });
     }
-
 
     public static function formatearNumeroDecimalesMiles($numero)
     {
@@ -454,19 +454,12 @@ class GlobalHelper
 
         // Cacheado de los productos disponibles, incluyendo unicamente la informacion mas relevante
         Cache::remember('productos', 60, function () {
-            return Producto::select([
-                'id',
-                'nombre',
-                'precio',
-                'descuento',
-                'subcategoria_id',
-                'imagen',
-            ])
+            return Producto::select(['id', 'nombre', 'precio', 'descuento', 'subcategoria_id', 'imagen'])
                 ->with([
                     // Inclusion de registros relacionados necesarios para el manejo comun de los productos
                     'subcategoria:id,nombre,categoria_id',
                     'subcategoria.categoria:id,nombre',
-                    'tag:id,icono'
+                    'tag:id,icono',
                 ])
                 ->get();
         });

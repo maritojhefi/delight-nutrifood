@@ -9,6 +9,7 @@ use App\Http\Livewire\Client\Inicio\Index;
 use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\admin\UsuariosController;
+use App\Http\Livewire\Admin\PuntosRegistrosComponent;
 
 /*
 |--------------------------------------------------------------------------
@@ -235,6 +236,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
 
     Route::prefix('/puntos')->group(function () {
         Route::get('/perfiles/index', \App\Http\Livewire\Admin\PuntosPerfilesComponent::class)->name('perfiles.index');
+        Route::get('/registros/index', PuntosRegistrosComponent::class)->name('registros.index');
     });
 });
 
@@ -253,6 +255,9 @@ Route::prefix('/usuario')
         Route::post('/validar-paso', [UsuarioController::class, 'validarPaso'])->name('validar-paso');
         Route::post('/registrar', [UsuarioController::class, 'registrarUsuario'])->name('registrar');
         Route::post('/verificar', [UsuarioController::class, 'verificarUsuario'])->name('existe');
+
+        Route::post('/verificar-numero', [UsuarioController::class, 'verificarNumero'])->name('verificar-numero');
+
         Route::get('/actualizado', function () {
             return view('auth.registrado');
         });

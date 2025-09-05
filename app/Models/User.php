@@ -44,7 +44,9 @@ class User extends Authenticatable
         'color_page',
         'profesion',
         'direccion_trabajo',
-        'hijos'
+        'hijos',
+        'partner_id',
+        'verificado',
     ];
 
     /**
