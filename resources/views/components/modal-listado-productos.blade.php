@@ -72,10 +72,10 @@
         }
 
         const renderizarFilaTags = (productoTag) => {
-            if (productoTag.tag && productoTag.tag.length > 0) {
+            if (productoTag.tags && productoTag.tags.length > 0) {
                 return `
                     <div class="tags-container d-flex flex-row align-items-center justify-content-start gap-2">
-                    ${productoTag.tag.map(tag => `
+                    ${productoTag.tags.map(tag => `
                         <button popovertarget="poppytag-${productoTag.id}-${tag.id}" popoveraction="toggle" style="anchor-name: --tag-btn-${productoTag.id}-${tag.id};">
                             <i data-lucide="${tag.icono}" class="lucide-icon" style="width:1.5rem;height:1.5rem;"></i>
                         </button>
