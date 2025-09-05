@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\GlobalHelper;
+use App\Http\Resources\Producto\ProductoListado;
 use App\Models\Almuerzo;
 use App\Models\Producto;
 use App\Models\Categoria;
@@ -292,6 +293,23 @@ class ProductoController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'error' => 'Error al obtener los productos de la categoria. Por favor, intente nuevamente.'
+            ], 500);
+        }
+    }
+    public function getProductoTag($id) {
+        try {
+            $productos = Producto::publicoTienda()
+                ->with('tags')
+                ->whereHas('tags', function ($query) use ($id) {
+                    $query->where('tags.id', $id);
+                })
+                ->get();
+
+            return ProductoListado::collection($productos);
+            
+        } catch (\Throwable $th) {
+            return response()->json([
+                'error' => 'Error al obtener los productos del tag seleccionado. Por favor, intente nuevamente.'
             ], 500);
         }
     }
