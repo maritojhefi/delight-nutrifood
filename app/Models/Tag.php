@@ -17,4 +17,18 @@ class Tag extends Model
     {
         return $this->belongsToMany(Producto::class)->withTimestamps();
     }
+
+    public function producto()
+    {
+        return $this->belongsToMany(Producto::class)
+            ->withTimestamps()
+            ->withPivot('tag_id', 'producto_id');
+    }
+    public function scopeTieneProductosDisponibles($query)
+    {
+        // Make sure we're using the correct relationship name and scope
+        return $query->whereHas('productos', function ($query) {
+            $query->publicoTienda();
+        });
+    }
 }

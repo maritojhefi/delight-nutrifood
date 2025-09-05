@@ -66,7 +66,7 @@
             <div class="modal-content">
                 <!-- Modal Header -->
                 <div class="modal-header mx-2 mt-2 border-0 gap-4 d-flex align-items-center">
-                    <h4 id="categorizer-title" class="mb-0 ms-4 align-self-center text-uppercase">Todos los productos de esta categoria!</h4>
+                    <h4 id="categorizer-title" class="mb-0 ms-0 align-self-center text-uppercase">Todos los productos de esta categoria!</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!-- Modal Body -->
@@ -328,7 +328,7 @@
         if (categorizedProducts.length === 0) {
             container.innerHTML = `
                 <div id="cart-summary-items" class="item-producto-categoria mb-3">
-                    <p class="text-muted"><span>Ups!</span> Parece que aun no hay productos agregados a esta categoria, regresa mas tarde.</p>
+                    <p class="text-muted text-justify"><span>Ups!</span> Parece que aun no hay productos agregados a esta categoria, regresa mas tarde.</p>
                 </div>`;
         }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\GlobalHelper;
+use App\Http\Resources\Producto\ProductoListado;
 use App\Models\Almuerzo;
 use App\Models\Producto;
 use App\Models\Categoria;
@@ -25,7 +26,7 @@ class ProductoController extends Controller
     }
     public function lineadelightproducto($id)
     {
-        $producto = Producto::findOrFail($id);
+        $producto = Producto::publicoTienda()->findOrFail($id);
         $nombrearray = Str::of($producto->nombre)->explode(' ');
 
         // Procesar la imagen del producto y su url
@@ -55,37 +56,26 @@ class ProductoController extends Controller
     }
     public function index()
     {
-        try {
-            $productos = Producto::publicoTienda()->select('productos.*')
-                ->leftjoin('subcategorias', 'subcategorias.id', 'productos.subcategoria_id')
-                ->leftjoin('categorias', 'categorias.id', 'subcategorias.categoria_id')
-                ->where('categorias.nombre', 'ECO-TIENDA')
-                ->with(['unfilteredSucursale', 'tag'])
-                ->get();
+        $productos = Producto::publicoTienda()->select('productos.*')
+            ->leftjoin('subcategorias', 'subcategorias.id', 'productos.subcategoria_id')
+            ->leftjoin('categorias', 'categorias.id', 'subcategorias.categoria_id')
+            ->where('categorias.nombre', 'ECO-TIENDA')
+            ->with(['unfilteredSucursale', 'tag'])
+            ->get();
 
-            $productos = $productos->map(function ($producto) {
-                $producto->tiene_stock = !($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0);
-                return $producto;
-            });
+        $productos = $productos->map(function ($producto) {
+            $producto->tiene_stock = !($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0);
+            return $producto;
+        });
 
-            $subcategorias = Subcategoria::has('productos')->where('categoria_id', 1)->orderBy('nombre')->get();
-            $masVendidos = $productos->sortByDesc('cantidad_vendida')->take(10);
-            $masRecientes = $productos->sortByDesc('created_at')->take(10);
-            $enDescuento = $productos->where('descuento', '!=', null)->where('descuento', '!=', 0)->shuffle();
-            $conMasPuntos = $productos->where('puntos', '!=', null)->where('puntos', '!=', 0)->shuffle()->take(10);
-            $suplementosStark = $productos->where('subcategoria_id', 24);
+        $subcategorias = Subcategoria::has('productos')->where('categoria_id', 1)->orderBy('nombre')->get();
+        $masVendidos = $productos->sortByDesc('cantidad_vendida')->take(10);
+        $masRecientes = $productos->sortByDesc('created_at')->take(10);
+        $enDescuento = $productos->where('descuento', '!=', null)->where('descuento', '!=', 0)->shuffle();
+        $conMasPuntos = $productos->where('puntos', '!=', null)->where('puntos', '!=', 0)->shuffle()->take(10);
+        $suplementosStark = $productos->where('subcategoria_id', 24);
 
-            // Log::debug('Productos de la Eco Tienda en oferta obtenidos correctamente', [
-            //     'productos' => $enDescuento->where('id')
-            // ]);
-
-            return view('client.productos.index', compact('subcategorias', 'masVendidos', 'masRecientes', 'enDescuento', 'conMasPuntos', 'suplementosStark'));
-        } catch (\Throwable $th) {
-            // Log::error('Error al obtener los productos de la Eco Tienda', [
-            //     'error' => $th->getMessage(),
-            //     'trace' => $th->getTraceAsString()
-            // ]);
-        }
+        return view('client.productos.index', compact('subcategorias', 'masVendidos', 'masRecientes', 'enDescuento', 'conMasPuntos', 'suplementosStark'));
     }
     public function subcategorias()
     {
@@ -96,19 +86,22 @@ class ProductoController extends Controller
     }
     public function detalleproducto($id)
     {
-        $producto = Producto::findOrFail($id);
-        $nombrearray = Str::of($producto->nombre)->explode(delimiter: ' ');
+        $producto = Producto::publicoTienda()->findOrFail($id);
+        $nombrearray = Str::of($producto->nombre)->explode(' ');
 
         // Procesar la imagen del producto y su url
         $producto->imagen = $producto->pathAttachment();
         $producto->url_detalle = route('delight.detalleproducto', $producto->id);
 
+        // Obtener productos similares excluyendo el producto ya obtenido
         $similares = $producto->subcategoria->productos
+            // Omitir el producto actual entre los similares
             ->reject(fn($p) => $p->id == $id || $p->estado != 'activo')
             ->shuffle()
             ->take(5)
             ->map(function ($p) {
-                $p->imagen = $p->pathAttachment();
+                $p->imagen = 
+                asset($p->pathAttachment());
                 $p->url_detalle = route('delight.detalleproducto', $p->id);
                 return $p;
             });
@@ -121,41 +114,6 @@ class ProductoController extends Controller
         $almuerzos=Almuerzo::all();
         $galeria=GaleriaFotos::inRandomOrder()->get();
         return view('client.productos.menusemanal',compact('galeria','almuerzos','subcategorias'));
-    }
-    protected function cachearProductosX()
-    {
-        try {
-            $productos = Producto::where('estado', 'activo')
-                ->with(['subcategoria', 'tag'])->get();
-            // $productos = $query->get();
-
-            $productosTransformados = $productos->map(function ($producto) {
-                return [
-                    'id' => $producto->id,
-                    'nombre' => $producto->nombre,
-                    'url_imagen' => $producto->pathAttachment(),
-                    'url' => route('delight.detalleproducto', $producto->id),
-                    'tiene_descuento' => ($producto->precio == $producto->precioReal()) ? false : true,
-                    'precioOriginal' => $producto->precio,
-                    'precioFinal' => $producto->precioReal(),
-                    'subcategoria' => $producto->subcategoria->nombre ?? '',
-                    'tags' => $producto->tag,
-                    'data-filter-name' => strtolower(
-                        $producto->nombre . ' ' .
-                        ($producto->subcategoria->nombre ?? '') . ' ' .
-                        $producto->tag->pluck('nombre')->join(' ')
-                    ),
-                ];
-            });
-
-            Cache::put('productos_cacheados', $productosTransformados, now()->addDays(1));
-            
-        } catch (\Throwable $th) {
-            Log::error('Error al cachear los productos', [
-                'error' => $th->getMessage(),
-                'trace' => $th->getTraceAsString()
-            ]);
-        }
     }
     public function buscarProductos(Request $request, $tipo = null, $query)
     {
@@ -311,10 +269,9 @@ class ProductoController extends Controller
     public function productosSubcategoria($id)
     {
         try {
-            $productos = Producto::select('productos.*')
+            $productos = Producto::publicoTienda()->select('productos.*')
                 ->with(['unfilteredSucursale', 'tag'])
                 ->where('subcategoria_id', $id)
-                ->where('estado', 'activo')
                 ->orderByRaw('CASE 
                             WHEN descuento IS NOT NULL AND descuento > 0 AND descuento < precio THEN 0 
                             ELSE 1 
@@ -328,10 +285,7 @@ class ProductoController extends Controller
                 } else {
                     $producto->tiene_stock = true;
                 }
-
-                // $producto->imagen = $producto->imagen ? asset('imagenes/productos/' . $producto->imagen) : asset('imagenes/delight/default-bg-1.png');
                 $producto->imagen = $producto->pathAttachment();
-
                 $producto->url_detalle = route('delight.detalleproducto', $producto->id);
             }
 
@@ -339,6 +293,23 @@ class ProductoController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'error' => 'Error al obtener los productos de la categoria. Por favor, intente nuevamente.'
+            ], 500);
+        }
+    }
+    public function getProductoTag($id) {
+        try {
+            $productos = Producto::publicoTienda()
+                ->with('tags')
+                ->whereHas('tags', function ($query) use ($id) {
+                    $query->where('tags.id', $id);
+                })
+                ->get();
+
+            return ProductoListado::collection($productos);
+            
+        } catch (\Throwable $th) {
+            return response()->json([
+                'error' => 'Error al obtener los productos del tag seleccionado. Por favor, intente nuevamente.'
             ], 500);
         }
     }
