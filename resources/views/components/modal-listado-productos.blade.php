@@ -20,7 +20,6 @@
         const elementoMenu = document.getElementById(identificador);
         // Abrir el menu recibiendo el listado de productos
         window.abrirDialogListado = async function(listado, titulo) {
-            console.log("Contenido del listado:", listado);
             await prepararListado(listado, titulo);
 
             // Cerrar otros menu abiertos
@@ -73,7 +72,6 @@
         }
 
         const renderizarFilaTags = (productoTag) => {
-            console.log("productoTag: ", productoTag);
             if (productoTag.tag && productoTag.tag.length > 0) {
                 return `
                     <div class="tags-container d-flex flex-row align-items-center justify-content-start gap-2">
@@ -121,13 +119,13 @@
         }
 
         const renderizarPrecio = (productoPrecio) => {
-            const hasDiscount = productoPrecio.descuento && (productoPrecio.descuento > 0 && productoPrecio.descuento < productoPrecio.precio);
-            
-            if (hasDiscount) {
+            const tieneDescuento = productoPrecio.precio_original;
+
+            if (tieneDescuento) {
                 return `
                     <div class="d-flex flex-column m-0 justify-content-center w-100">
-                        <p class="font-10 m-0"><del>Bs. ${productoPrecio.precio}</del></p>
-                        <p class="font-17 font-weight-bolder color-highlight mb-0">Bs. ${productoPrecio.descuento}</p>
+                        <p class="font-10 m-0"><del>Bs. ${productoPrecio.precio_original}</del></p>
+                        <p class="font-17 font-weight-bolder color-highlight mb-0">Bs. ${productoPrecio.precio}</p>
                     </div>
                 `;
             }

@@ -104,7 +104,7 @@
             </div>
         </div>
         
-        <button id="menu-prueba-btn" class="btn bg-highlight">Prueba modal condicional</button>
+        {{-- <button id="menu-prueba-btn" class="btn bg-highlight">Prueba modal condijcional</button> --}}
 
         {{-- SLIDER HORARIOS --}}
         <div class="splide topic-slider slider-no-arrows slider-no-dots pb-2 splide--loop splide--ltr splide--draggable" id="topic-slider-1" style="visibility: visible;">
@@ -191,7 +191,7 @@
         </div>
     </div>
 
-    <x-modal-listado-productos identificador="menu-listado-pruebas" />
+    <x-modal-listado-productos identificador="menu-listado-productos" />
 @endsection
 
 @push('scripts')
@@ -522,29 +522,28 @@
     document.addEventListener('DOMContentLoaded', async function() {
         // ACTIVAR MENU LISTADO 
         // Para un elemento especifico por ID [detalle-producto]
-        const activadorMenuPrueba = document.getElementById('menu-prueba-btn');
-        if (activadorMenuPrueba) {
-            activadorMenuPrueba.addEventListener('click', async () => {
-                console.log("Clickado en boton prueba")
-                // Consulta axios prueba (panes integrales id=4)
-                const tituloPrueba = "CategoriaX";
-                const productosPrueba = await ProductoService.getProductosCategoria(4)
-                abrirDialogListado(productosPrueba, tituloPrueba);
-            });
-        }
-
-        // document.querySelectorAll('.productos-tag-trigger').forEach(btn => {
-        //     btn.addEventListener('click', async function(e) {
-        //         e.preventDefault();
-        //         const tagElement = e.currentTarget; 
-        //         const tagId = tagElement.getAttribute('data-tag-id');
-        //         const tagNombre = tagElement.getAttribute('data-tag-nombre');
-        //         console.log("Elemento tag: ", tagElement);
-        //         console.log("Hiciste clic en el tag id: ", tagId);
-
-        //         // Your Axios call and other logic go here
+        // const activadorMenuPrueba = document.getElementById('menu-prueba-btn');
+        // if (activadorMenuPrueba) {
+        //     activadorMenuPrueba.addEventListener('click', async () => {
+        //         console.log("Clickado en boton prueba")
+        //         // Consulta axios prueba (panes integrales id=4)
+        //         const tituloPrueba = "CategoriaX";
+        //         const productosPrueba = await ProductoService.getProductosCategoria(4)
+        //         abrirDialogListado(productosPrueba, tituloPrueba);
         //     });
-        // });
+        // }
+
+        document.querySelectorAll('.productos-tag-trigger').forEach(btn => {
+            btn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                const tagElement = e.currentTarget; 
+                const tagId = tagElement.getAttribute('data-tag-id');
+                const tagNombre = tagElement.getAttribute('data-tag-nombre');
+                const productosTag = await ProductoService.getProductosTag(tagId);
+
+                abrirDialogListado(productosTag.data, tagNombre);
+            });
+        });
     });
 </script>
 @endpush

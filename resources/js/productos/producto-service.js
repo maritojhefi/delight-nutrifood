@@ -31,6 +31,17 @@ export const getProduct = async (productId) => {
     }
 }
 
+// Obtener productos pertenecientes a un tag determinado
+export const getProductosTag = async (tagId) => {
+    try {
+        const response = await axios.get(`/productos/tag/${tagId}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
 export const getSearchedProducts = async (type,query) => {
     const response = await axios.get(`/productos/buscar/${type}/${encodeURIComponent(query)}`);
     return response.data;
@@ -45,5 +56,6 @@ window.ProductoService = {
     getProductosCategoria,
     checkProductStock,
     getProduct,
+    getProductosTag,
     getSearchedProducts
 };
