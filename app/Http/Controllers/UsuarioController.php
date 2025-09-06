@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\NumeroWhatsapp;
+use App\Helpers\WhatsappHelper;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Log;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManagerStatic as Imagk;
+
 Imagk::configure(['driver' => 'imagick']);
 
 class UsuarioController extends Controller
@@ -59,11 +62,11 @@ class UsuarioController extends Controller
                 pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '.jpg', // Forzar extensión .jpg
                 'image/jpeg',
                 null,
-                true
+                true,
             );
         } catch (\Exception $e) {
             // Cambiar a error para que sea visible
-            throw new \Exception("No se pudo convertir la imagen HEIC. Error: " . $e->getMessage());
+            throw new \Exception('No se pudo convertir la imagen HEIC. Error: ' . $e->getMessage());
         }
     }
 
@@ -88,7 +91,7 @@ class UsuarioController extends Controller
             [
                 'name' => 'required|string|max:80',
                 'email' => 'required|email',
-                'codigo_pais'=> 'required|string|max:20',
+                'codigo_pais' => 'required|string|max:20',
                 'telefono' => 'required|string|max:20|min:8',
                 'profesion' => 'required|string|max:40',
                 'dia_nacimiento' => 'required|integer|between:1,31',
@@ -211,14 +214,15 @@ class UsuarioController extends Controller
         );
     }
 
-    public function validarRegistroPaso1(Request $request){
+    public function validarRegistroPaso1(Request $request)
+    {
         $validator = Validator::make(
             $request->all(),
             [
                 'name' => 'required|string|max:80',
                 'email' => 'required|email',
-                'codigo_pais'=> 'required|string|max:20',
-                'telefono' => 'required|string|max:20|min:8',
+                'codigo_pais' => 'required|string|max:20',
+                'telefono' => 'required|string|max:' . $request->digitos_pais . '|min:' . $request->digitos_pais,
                 'foto' => [
                     'nullable', // El campo no es obligatorio
                     'mimetypes:image/jpeg,image/png,image/heic', // Formatos de archivo permitidos
@@ -253,9 +257,9 @@ class UsuarioController extends Controller
 
         if ($userExists) {
             $customErrors = [
-                'email' => ['Este correo electrónico ya está registrado.']
+                'email' => ['Este correo electrónico ya está registrado.'],
             ];
-            
+
             return response()->json(
                 [
                     'status' => 'error',
@@ -265,15 +269,13 @@ class UsuarioController extends Controller
             );
         }
 
-        $telefonoExists = User::where('codigo_pais', $request->codigo_pais)
-                                ->where('telf', $request->telefono)
-                                ->exists();
+        $telefonoExists = User::where('codigo_pais', $request->codigo_pais)->where('telf', $request->telefono)->exists();
 
         if ($telefonoExists) {
             $customErrors = [
-                'telefono' => ['Este número de teléfono ya está registrado.']
+                'telefono' => ['Este número de teléfono ya está registrado.'],
             ];
-            
+
             return response()->json(
                 [
                     'status' => 'error',
@@ -284,13 +286,14 @@ class UsuarioController extends Controller
         }
 
         return response()->json([
-        'status' => 'success',
-        'message' => 'Paso 1 validado correctamente',
-        'user_exists' => $userExists
-    ]);
+            'status' => 'success',
+            'message' => 'Paso 1 validado correctamente',
+            'user_exists' => $userExists,
+        ]);
     }
 
-     public function validarRegistroPaso2(Request $request){
+    public function validarRegistroPaso2(Request $request)
+    {
         $validator = Validator::make(
             $request->all(),
             [
@@ -328,41 +331,46 @@ class UsuarioController extends Controller
         // $userExists = User::where('email', $request->email)->exists();
 
         return response()->json([
-        'status' => 'success',
-        'message' => 'Paso 2 validado correctamente',
-        // 'user_exists' => $userExists
-    ]);
+            'status' => 'success',
+            'message' => 'Paso 2 validado correctamente',
+            // 'user_exists' => $userExists
+        ]);
     }
-
 
     public function validarPaso(Request $request)
     {
+        // dd($request->all());
         try {
             // Determinar el paso a evaluar
-            $formStep = $request->input('formStep');    
+            $formStep = $request->input('formStep');
 
             switch ($formStep) {
                 case 0:
                     return $this->validarRegistroPaso1($request);
                 case 1:
                     return $this->validarRegistroPaso2($request);
-                // case 3:
-                //     return $this->validateStep3($request);
+                    // case 3:
+                    //     return $this->validateStep3($request);
                 default:
-                    return response()->json([
-                        'status' => 'error',
-                        'errors' => ['general' => ['El paso no es válido']]
-                    ], 400);
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'errors' => ['general' => ['El paso no es válido']],
+                        ],
+                        400,
+                    );
             }
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'errors' => ['general' => ['Error interno del servidor']]
-            ], 500);
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'errors' => ['general' => ['Error interno del servidor']],
+                ],
+                500,
+            );
         }
     }
 
-    
     public function inicioRegistro()
     {
         if (Auth::check()) {
@@ -382,6 +390,61 @@ class UsuarioController extends Controller
             }
         } catch (\Throwable $th) {
             return redirect()->route('usuario.inicio.registro');
+        }
+    }
+
+    public function verificarNumero(Request $request)
+    {
+        $telefono = $request->input('telefono');
+        $codigoPais = $request->input('codigoPais');
+        $digitosPais = $request->input('digitosPais');
+        $usuario = User::where('telf', $telefono)->first();
+        $validator = Validator::make(
+            ['telefono' => $telefono],
+            [
+                'telefono' => 'required|string|max:' . $digitosPais . '|min:' . $digitosPais . '|unique:users,telf,' . $usuario->id,
+            ],
+            [
+                // Mensajes personalizados
+                'telefono.required' => 'El número de teléfono es obligatorio.',
+                'telefono.string' => 'Por favor, ingresa un número de teléfono válido.',
+                'telefono.unique' => 'Este número de teléfono ya está registrado.',
+            ]
+        );
+
+        // Si la validación falla, se devuelve la respuesta con los errores en formato JSON
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'errors' => $validator->errors(),
+                ],
+                422,
+            );
+        }
+
+        if ($usuario && $usuario->verificado == true) {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'errors' => ['general' => ['El número de teléfono ya está registrado y verificado']],
+                ],
+                400,
+            );
+        } else {
+            $codigo = random_int(10000, 99999);
+            WhatsappHelper::setNumero(1)
+                ->plantilla('delight_template_verificar_numero')
+                ->para($codigoPais . $telefono)
+                ->variables(['codigo' => $codigo])
+                ->enviar();
+            return response()->json(
+                [
+                    'codigo_generado' => $codigo,
+                    'status' => 'success',
+                ],
+                200,
+            );
         }
     }
 }

@@ -162,7 +162,7 @@
                 <div class="loader--text"></div>
             </div>
         </div>
-        <div id="main-wrapper" >
+        <div id="main-wrapper">
             <!--**********************************
             Nav header start
         ***********************************-->
@@ -173,7 +173,8 @@
                     <img class="logo-abbr" width="54" viewBox="0 0 54 54" fill="none"
                         src="{{ asset(GlobalHelper::getValorAtributoSetting('logo')) }}" />
 
-                    <span class="brand-title" width="97" height="25" fill="none">{{GlobalHelper::getValorAtributoSetting('nombre_sistema')}}
+                    <span class="brand-title" width="97" height="25"
+                        fill="none">{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}
                     </span>
                 </a>
                 <div class="nav-control">
@@ -272,6 +273,81 @@
     </script>
 
     @stack('scripts')
+
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.4/qz-tray.min.js"></script>
+    <script>
+        function cambiarMetodo(nombre, id, pivotId) {
+            // console.log(pivotId);
+
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: 'Cambiaras al metodo ' + nombre,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, confirmar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Enviar evento a Livewire
+                    Livewire.emit('cambiarMetodo', id, pivotId);
+                }
+            });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            Livewire.on('imprimir-recibo-local', (rawbytes) => {
+                const decodedBytes = Uint8Array.from(atob(rawbytes), c => c.charCodeAt(0));
+
+                if (!qz.websocket.isActive()) {
+                    qz.websocket.connect().then(() => {
+                        iniciarImpresion(decodedBytes);
+                    }).catch((err) => {
+                        console.error("Error al conectar con QZ Tray:", err);
+                    });
+                } else {
+                    iniciarImpresion(decodedBytes);
+                }
+            });
+        });
+
+        function iniciarImpresion(decodedBytes) {
+            qz.printers.find().then(printers => {
+                const impresora58 = printers.find(nombre => nombre.toLowerCase().includes('58'));
+                if (!impresora58) {
+                    Toast.fire({
+                        title: "No se encontró ninguna impresora conectada.",
+                        icon: "error"
+                    });
+                    return; // IMPORTANTE: evitar seguir si no hay impresora
+                }
+                const config = qz.configs.create(impresora58);
+                Toast.fire({
+                    title: "Impresora seleccionada no activa, imprimiendo en la impresora local.",
+                    icon: "success"
+                });
+                return qz.print(config, [{
+                    type: 'raw',
+                    format: 'hex',
+                    data: bytesToHex(decodedBytes)
+                }]);
+            }).catch(err => {
+                console.error('Error al imprimir:', err);
+            });
+        }
+
+        function bytesToHex(bytes) {
+            return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+    </script>
 </body>
 
 </html>
