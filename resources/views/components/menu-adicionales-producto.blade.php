@@ -206,11 +206,13 @@
                         <div class="row mb-2">
                             ${grupo.map(ad_obligatorio => `
                                 <div class="col-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="${nombreGrupo}" value="${ad_obligatorio.nombre}">
-                                        <label class="form-check-label" for="flexRadioDefault1">
+                                    <div class="form-check icon-check mb-0">
+                                        <input class="form-check-input" id="radio-${ad_obligatorio.id}" type="radio" name="${nombreGrupo}" value="${ad_obligatorio.nombre}">
+                                        <label class="form-check-label" for="radio-${ad_obligatorio.id}">
                                             ${ad_obligatorio.nombre}
                                         </label>
+                                        <i class="icon-check-1 fa fa-circle color-gray-dark font-16"></i>
+                                        <i class="icon-check-2 fa fa-check-circle font-16 color-highlight"></i>
                                     </div>
                                 </div>
                             `).join('')}
@@ -226,7 +228,9 @@
                                     <div class="form-check icon-check mb-0">
                                         <input class="form-check-input input-single" id="check-${adicionalUnico.id}" type="checkbox" name="${nombreGrupo}" value="${adicionalUnico.nombre}" 
                                         ${adicionalUnico.cantidad == 0 && adicionalUnico.contable == true ? 'disabled': '' }>
-                                        <label class="form-check-label" for="check-${adicionalUnico.id}">${adicionalUnico.nombre} ${adicionalUnico.precio > 0 ? `<span class="badge bg-highlight">Bs. ${adicionalUnico.precio}</span>` : '' }</label>
+                                        <label class="form-check-label" for="check-${adicionalUnico.id}">
+                                            ${adicionalUnico.nombre} ${adicionalUnico.precio > 0 ? `<span class="badge bg-highlight">Bs. ${adicionalUnico.precio}</span>` : '' }
+                                        </label>
                                         <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
                                         <i class="icon-check-2 fa fa-check-square font-16 color-highlight"></i>
                                     </div>
@@ -253,6 +257,7 @@
                             </div>
                         </div>
                     `).join('')}
+                    
                 `
             }
             return '';
