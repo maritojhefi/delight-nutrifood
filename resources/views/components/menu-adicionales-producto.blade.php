@@ -24,9 +24,10 @@
                 </div>
             </div>
         </div>
-        <div id="detalles-menu-adicionales">
+        <form id="detalles-menu-adicionales">
+            
             {{-- RENDERIZADO CONDICIONAL ADICIONALES --}}
-        </div>
+        </form>
         <div class="divider mb-2"></div>
         <div class="d-flex mb-3 pb-1">
             <div class="align-self-center">
@@ -58,9 +59,11 @@
         </div>
         <div class="divider"></div>
         @if ($isUpdate)
+            <!-- <button type="submit" form="detalles-menu-adicionales">Submit check</button> -->
             <button class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm close-menu">Actualizar pedido</buttno>
-        @else   
-            <button class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm close-menu">Agregar al carrito</button>
+        @else
+            <!-- <button type="submit" form="detalles-menu-adicionales">Submit check</button> -->
+            <button type="submit" form="detalles-menu-adicionales" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm">Agregar al carrito</button>
         @endif
     </div>
 </div>
@@ -86,7 +89,6 @@
         // Preparar la informacion del Menu para el producto seleccionado.
         const prepararMenuProducto = async (productoId) => {
             // Llamado axios solicitando la informacion del producto
-            // const response = await ProductoService.getProduct(productoId);
             const response = await ProductoService.getProductoDetalle(productoId);
 
             const infoProducto = response.data;
@@ -110,11 +112,11 @@
             elementoCostoUnitario.innerText = `Bs. ${(infoProducto.precio).toFixed(2)}`;
             adicionalesContainer.innerHTML = renderAdicionales(infoProducto.adicionales);
 
-            // $('input[type="checkbox", class="input-single"]').on('change', function() {
-            //     $('input[name="' + this.name + '"]').not(this).prop('checked', false);
-            // });
+            $('.input-single').on('change', function() {
+                $('input[name="' + this.name + '"]').not(this).prop('checked', false);
+            });
 
-            const formAdicionales = document.getElementById("adicionalesForm");
+            const formAdicionales = document.getElementById("detalles-menu-adicionales");
             
             formAdicionales.addEventListener('submit',(e) => {
                 e.preventDefault();
@@ -167,8 +169,8 @@
                 
                 
                 return `
-                <form id="adicionalesForm">
                     ${Object.entries(adicionalesRadio).map(([nombreGrupo, grupo]) => `
+                    <div>
                         <h6>${nombreGrupo} <span class="font-300">(obligatorio)</span></h6>
                         <div class="row mb-2">
                             ${grupo.map(ad_obligatorio => `
@@ -182,9 +184,11 @@
                                 </div>
                             `).join('')}
                         </div>    
+                    </div>
                     `).join('')}
 
                     ${Object.entries(adicionalesCheck1).map(([nombreGrupo, grupo]) => `
+                    <div>
                         <h6>${nombreGrupo}</h6>
                         <div class="row mb-2">
                             ${grupo.map(adicionalUnico => `
@@ -197,23 +201,24 @@
                                     </div>
                                 </div>
                             `).join('')}
-                        </div>    
+                        </div>  
+                    </div>  
                     `).join('')}
-                    <h6>Adicionales</h6>
-                    <div class="row">
-                        ${adicionalesSinGrupo.map(adicional => `
-                            <div class="col-6">
-                                <div class="form-check icon-check mb-0">
-                                    <input class="form-check-input" id="check-${adicional.id}" type="checkbox" name="adicionales" value="${adicional.nombre}" ${adicional.cantidad == 0 && adicional.contable == true ? 'disabled': '' }>
-                                    <label class="form-check-label" for="check-${adicional.id}">${adicional.nombre}</label>
-                                    <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
-                                    <i class="icon-check-2 fa fa-check-square font-16 color-highlight"></i>
+                    <div>
+                        <h6>Adicionales</h6>
+                        <div class="row">
+                            ${adicionalesSinGrupo.map(adicional => `
+                                <div class="col-6">
+                                    <div class="form-check icon-check mb-0">
+                                        <input class="form-check-input" id="check-${adicional.id}" type="checkbox" name="Adicionales" value="${adicional.nombre}" ${adicional.cantidad == 0 && adicional.contable == true ? 'disabled': '' }>
+                                        <label class="form-check-label" for="check-${adicional.id}">${adicional.nombre}</label>
+                                        <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
+                                        <i class="icon-check-2 fa fa-check-square font-16 color-highlight"></i>
+                                    </div>
                                 </div>
-                            </div>
-                        `).join('')}
+                            `).join('')}
+                        </div>
                     </div>
-                    <button type="submit">Submit check</button>
-                </form>
                 `
             }
             return '';
@@ -231,6 +236,10 @@
             const elementoCostoTotal = document.getElementById('detalle-costo-total')
             elementoCostoTotal.innerText = `Bs. ${(precio * cantidad).toFixed(2)}`; 
         }
+
+        // const handleAgregarProductoConAdicionales = () => {
+
+        // }
     });
 </script>
 @endpush
