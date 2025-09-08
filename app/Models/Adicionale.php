@@ -27,4 +27,11 @@ class Adicionale extends Model
     {
         return $query->where('codigo_cocina', '!=', null);
     }
+    // public function grupoAdicionales() {
+    //     return $this->belongsTo(GrupoAdicionale::class);
+    // }
+    public function grupoAdicionale()
+    {
+        return $this->belongsTo(GrupoAdicionale::class, 'grupo_adicionales_id');
+    }
 }
