@@ -39,7 +39,8 @@ class Subcategoria extends Model
     }
     public function adicionales()
     {
-        return $this->belongsToMany(Adicionale::class)->withTimestamps()->withPivot('grupo_adicionales_id');
+        return $this->belongsToMany(Adicionale::class)->withTimestamps();
+        // ->withPivot('grupo_adicionales_id')
         // ->withPivot('id_grupo');
     }
     public function rutaFoto()
