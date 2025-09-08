@@ -60,7 +60,7 @@
         @if ($isUpdate)
             <button class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm close-menu">Actualizar pedido</buttno>
         @else   
-            <button id="adicionalesForm" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm close-menu">Agregar al carrito</button>
+            <button class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm close-menu">Agregar al carrito</button>
         @endif
     </div>
 </div>
@@ -110,18 +110,20 @@
             elementoCostoUnitario.innerText = `Bs. ${(infoProducto.precio).toFixed(2)}`;
             adicionalesContainer.innerHTML = renderAdicionales(infoProducto.adicionales);
 
-            $('input[type="checkbox"]').on('change', function() {
-                $('input[name="' + this.name + '"]').not(this).prop('checked', false);
-            });
-
-            // const formAdicionales = document.getElementById("adicionalesForm");
-            // formAdicionales.addEventListener('submit',(e) => {
-            //     e.preventDefault();
-            //     const formData = new FormData(formAdicionales);
-            //     for (let [key, value] of formData.entries()) {
-            //         console.log(`${key}: ${value}`);
-            //     }
+            // $('input[type="checkbox", class="input-single"]').on('change', function() {
+            //     $('input[name="' + this.name + '"]').not(this).prop('checked', false);
             // });
+
+            const formAdicionales = document.getElementById("adicionalesForm");
+            
+            formAdicionales.addEventListener('submit',(e) => {
+                e.preventDefault();
+                console.log("clic en submit adicionale")
+                const formData = new FormData(formAdicionales);
+                for (let [key, value] of formData.entries()) {
+                    console.log(`${key}: ${value}`);
+                }
+            });
         }
 
         const renderAdicionales = (adicionales) => {
@@ -172,7 +174,7 @@
                             ${grupo.map(ad_obligatorio => `
                                 <div class="col-6">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="${nombreGrupo}">
+                                        <input class="form-check-input" type="radio" name="${nombreGrupo}" value="${ad_obligatorio.nombre}">
                                         <label class="form-check-label" for="flexRadioDefault1">
                                             ${ad_obligatorio.nombre}
                                         </label>
@@ -188,7 +190,7 @@
                             ${grupo.map(adicionalUnico => `
                                 <div class="col-6">
                                     <div class="form-check icon-check mb-0">
-                                        <input class="form-check-input" id="check-${adicionalUnico.id}" type="checkbox" name="${nombreGrupo}[]">
+                                        <input class="form-check-input input-single" id="check-${adicionalUnico.id}" type="checkbox" name="${nombreGrupo}" value="${adicionalUnico.nombre}">
                                         <label class="form-check-label" for="check-${adicionalUnico.id}">${adicionalUnico.nombre} </label>
                                         <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
                                         <i class="icon-check-2 fa fa-check-square font-16 color-highlight"></i>
@@ -202,7 +204,7 @@
                         ${adicionalesSinGrupo.map(adicional => `
                             <div class="col-6">
                                 <div class="form-check icon-check mb-0">
-                                    <input class="form-check-input" id="check-${adicional.id}" type="checkbox" ${adicional.cantidad == 0 && adicional.contable == true ? 'disabled': '' }>
+                                    <input class="form-check-input" id="check-${adicional.id}" type="checkbox" name="adicionales" value="${adicional.nombre}" ${adicional.cantidad == 0 && adicional.contable == true ? 'disabled': '' }>
                                     <label class="form-check-label" for="check-${adicional.id}">${adicional.nombre}</label>
                                     <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
                                     <i class="icon-check-2 fa fa-check-square font-16 color-highlight"></i>
@@ -210,7 +212,8 @@
                             </div>
                         `).join('')}
                     </div>
-                <form>
+                    <button type="submit">Submit check</button>
+                </form>
                 `
             }
             return '';
