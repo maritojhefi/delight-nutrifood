@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddGrupoAdicionalesIdToAdicionaleTable extends Migration
+class AddAdicionaleGrupoIdToAdicionaleTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddGrupoAdicionalesIdToAdicionaleTable extends Migration
     public function up()
     {
         Schema::table('adicionales', function (Blueprint $table) {
-            $table->foreignId('grupo_adicionales_id')->nullable()->constrained('grupo_adicionales');
+            $table->foreignId('adicionale_grupo_id')->nullable()->constrained('adicionale_grupo');
         });
     }
 
@@ -26,8 +26,8 @@ class AddGrupoAdicionalesIdToAdicionaleTable extends Migration
     public function down()
     {
         Schema::table('adicionales', function (Blueprint $table) {
-            $table->dropForeign(['grupo_adicionales_id']);
-            $table->dropColumn('grupo_adicionales_id');
+            $table->dropForeign(['adicionale_grupo_id']);
+            $table->dropColumn('adicionale_grupo_id');
         });
     }
 }

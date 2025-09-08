@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateGrupoAdicionalesTable extends Migration
+class CreateAdicionaleGrupoTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateGrupoAdicionalesTable extends Migration
      */
     public function up()
     {
-        Schema::create('grupo_adicionales', function (Blueprint $table) {
+        Schema::create('adicionale_grupo', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
             $table->integer('maximo_seleccionable')->unsigned();
@@ -29,6 +29,6 @@ class CreateGrupoAdicionalesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('grupo_adicionales');
+        Schema::dropIfExists('adicionale_grupo');
     }
 }
