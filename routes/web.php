@@ -67,6 +67,8 @@ Route::prefix('/productos')->group(function () {
     Route::get('/tag/{id}',[App\Http\Controllers\ProductoController::class, 'getProductoTag']);
     Route::get('/limpiar-fotos/productos', [App\Http\Controllers\ProductoController::class, 'limpiarProductos']);
     Route::get('/buscar/{tipo}/{query}', [App\Http\Controllers\ProductoController::class, 'buscarProductos']);
+    Route::get('/{id}/detallado',[App\Http\Controllers\ProductoController::class, 'getProductoDetalle']);
+
 });
 //promociones
 Route::prefix('/lineadelight')->group(function () {

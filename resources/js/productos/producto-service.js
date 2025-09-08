@@ -37,6 +37,16 @@ export const getProductosTag = async (tagId) => {
         const response = await axios.get(`/productos/tag/${tagId}`);
         return response.data;
     } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+export const getProductoDetalle = async (productoId) => {
+    try {
+        const response = await axios.get(`/productos/${productoId}/detallado`);
+        return response.data;
+    } catch (error) {
         console.error(error);
         throw error;
     }
@@ -56,6 +66,7 @@ window.ProductoService = {
     getProductosCategoria,
     checkProductStock,
     getProduct,
+    getProductoDetalle,
     getProductosTag,
     getSearchedProducts
 };

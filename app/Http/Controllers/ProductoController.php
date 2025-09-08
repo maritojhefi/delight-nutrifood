@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\GlobalHelper;
+use App\Http\Resources\Producto\ProductoDetalle;
 use App\Http\Resources\Producto\ProductoListado;
 use App\Http\Resources\ProductResource;
 use App\Models\Almuerzo;
@@ -89,15 +90,13 @@ class ProductoController extends Controller
     }
     public function detalleproducto($id)
     {
-        $producto = Producto::publicoTienda()->findOrFail($id);
+        try {
+           $producto = Producto::publicoTienda()->findOrFail($id);
         $nombrearray = Str::of($producto->nombre)->explode(' ');
 
         // Procesar la imagen del producto y su url
         $producto->imagen = $producto->pathAttachment();
         $producto->url_detalle = route('delight.detalleproducto', $producto->id);
-
-
-
         // Obtener productos similares excluyendo el producto ya obtenido
         $similares = $producto->subcategoria->productos
             // Omitir el producto actual entre los similares
@@ -112,6 +111,10 @@ class ProductoController extends Controller
             });
         //dd($nombrearray);
         return view('client.productos.delight-producto', compact('producto', 'nombrearray', 'similares'));
+        } catch (\Throwable $th) {
+            Log::error("Error al renderizar pagina: ", [$th]);
+        }
+        
     }
     public function menusemanal()
     {
@@ -359,6 +362,16 @@ class ProductoController extends Controller
         } catch (\Throwable $th) {
             Log::error("Error al solicitar producto: ", [$th]);
             return response()->json(['error' => 'Producto no encontrado'], 404);
+        }
+    }
+
+    public function getProductoDetalle($id) {
+        try {
+            $producto = Producto::publicoTienda()->with('subcategoria.adicionales')->findOrFail($id);
+            return new ProductoDetalle($producto);
+        } catch (\Throwable $th) {
+            Log::error("Error al solicitar producto: ", [$th]);
+            return response()->json(['error' => 'Error al solicitar el producto'], 500);
         }
     }
 }

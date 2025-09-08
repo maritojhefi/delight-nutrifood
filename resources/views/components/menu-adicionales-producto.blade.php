@@ -60,7 +60,7 @@
         @if ($isUpdate)
             <button class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm close-menu">Actualizar pedido</buttno>
         @else   
-            <button class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm close-menu">Agregar al carrito</button>
+            <button id="adicionalesForm" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm close-menu">Agregar al carrito</button>
         @endif
     </div>
 </div>
@@ -86,7 +86,9 @@
         // Preparar la informacion del Menu para el producto seleccionado.
         const prepararMenuProducto = async (productoId) => {
             // Llamado axios solicitando la informacion del producto
-            const response = await ProductoService.getProduct(productoId);
+            // const response = await ProductoService.getProduct(productoId);
+            const response = await ProductoService.getProductoDetalle(productoId);
+
             const infoProducto = response.data;
             const nombreProductoMenu = document.getElementById('detalles-menu-nombre');
             const adicionalesContainer = document.getElementById('detalles-menu-adicionales');
@@ -108,49 +110,85 @@
             elementoCostoUnitario.innerText = `Bs. ${(infoProducto.precio).toFixed(2)}`;
             adicionalesContainer.innerHTML = renderAdicionales(infoProducto.adicionales);
 
-            
             $('input[type="checkbox"]').on('change', function() {
                 $('input[name="' + this.name + '"]').not(this).prop('checked', false);
             });
+
+            // const formAdicionales = document.getElementById("adicionalesForm");
+            // formAdicionales.addEventListener('submit',(e) => {
+            //     e.preventDefault();
+            //     const formData = new FormData(formAdicionales);
+            //     for (let [key, value] of formData.entries()) {
+            //         console.log(`${key}: ${value}`);
+            //     }
+            // });
         }
 
         const renderAdicionales = (adicionales) => {
             if (adicionales && adicionales.length > 0) {
-                 // Use filter to get items with a non-null id_grupo
-                const adicionalesConGrupo = adicionales.filter(item => item.pivot.id_grupo !== null);
 
-                // Use filter to get items without an id_grupo
-                const adicionalesSinGrupo = adicionales.filter(item => item.pivot.id_grupo === null);
+                const adicionalesOpcional1 = adicionales.filter(item => item.grupo !== null && item.grupo.maximo_seleccionable == 1 && item.grupo.es_obligatorio == false);
 
-                // You can now work with adicionalesConGrupo and adicionalesSinGrupo
-                console.log("Adicionales con grupo:", adicionalesConGrupo);
-                console.log("Adicionales sin grupo:", adicionalesSinGrupo);
+                const adicionalesObligatorios = adicionales.filter(item => item.grupo !== null && item.grupo.es_obligatorio == true);
 
-                // Group items by their id_grupo value
-                const adicionalesControlUnico = adicionalesConGrupo.reduce((grupos, item) => {
-                    const grupoId = item.pivot.id_grupo;
+                const adicionalesSinGrupo = adicionales.filter(item => item.grupo === null);
+
+                // Agrupar adicionales por su nombre
+                const adicionalesCheck1 = adicionalesOpcional1.reduce((grupos, item) => {
+                    const nombreGrupo = item.grupo.nombre;
                     
-                    // If the group doesn't exist yet, create it
-                    if (!grupos[grupoId]) {
-                        grupos[grupoId] = [];
+                    // Si el grupo no existe, crearlo
+                    if (!grupos[nombreGrupo]) {
+                        grupos[nombreGrupo] = [];
                     }
                     
-                    // Add the item to the appropriate group
-                    grupos[grupoId].push(item);
+                    // Agregar el item al grupo apropiado
+                    grupos[nombreGrupo].push(item);
                     
                     return grupos;
                 }, {});
 
-                console.log("Adicionales agrupados: ", adicionalesControlUnico);
+                console.log("Grupo check 1: ", adicionalesCheck1)
+
+                const adicionalesRadio = adicionalesObligatorios.reduce((grupos, item) => {
+                    const nombreGrupo = item.grupo.nombre;
+                    
+                    if (!grupos[nombreGrupo]) {
+                        grupos[nombreGrupo] = [];
+                    }
+                    
+                    grupos[nombreGrupo].push(item);
+                    
+                    return grupos;
+                }, {});
+
+                
                 
                 return `
-                    ${Object.entries(adicionalesControlUnico).map(([grupoId, grupo]) => `
-                        <h6>${grupoId}</h6>
+                <form id="adicionalesForm">
+                    ${Object.entries(adicionalesRadio).map(([nombreGrupo, grupo]) => `
+                        <h6>${nombreGrupo} <span class="font-300">(obligatorio)</span></h6>
+                        <div class="row mb-2">
+                            ${grupo.map(ad_obligatorio => `
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="${nombreGrupo}">
+                                        <label class="form-check-label" for="flexRadioDefault1">
+                                            ${ad_obligatorio.nombre}
+                                        </label>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>    
+                    `).join('')}
+
+                    ${Object.entries(adicionalesCheck1).map(([nombreGrupo, grupo]) => `
+                        <h6>${nombreGrupo}</h6>
                         <div class="row mb-2">
                             ${grupo.map(adicionalUnico => `
                                 <div class="col-6">
                                     <div class="form-check icon-check mb-0">
-                                        <input class="form-check-input" id="check-${adicionalUnico.id}" type="checkbox" name="${grupoId}[]">
+                                        <input class="form-check-input" id="check-${adicionalUnico.id}" type="checkbox" name="${nombreGrupo}[]">
                                         <label class="form-check-label" for="check-${adicionalUnico.id}">${adicionalUnico.nombre} </label>
                                         <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
                                         <i class="icon-check-2 fa fa-check-square font-16 color-highlight"></i>
@@ -164,7 +202,7 @@
                         ${adicionalesSinGrupo.map(adicional => `
                             <div class="col-6">
                                 <div class="form-check icon-check mb-0">
-                                    <input class="form-check-input" id="check-${adicional.id}" type="checkbox">
+                                    <input class="form-check-input" id="check-${adicional.id}" type="checkbox" ${adicional.cantidad == 0 && adicional.contable == true ? 'disabled': '' }>
                                     <label class="form-check-label" for="check-${adicional.id}">${adicional.nombre}</label>
                                     <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
                                     <i class="icon-check-2 fa fa-check-square font-16 color-highlight"></i>
@@ -172,6 +210,7 @@
                             </div>
                         `).join('')}
                     </div>
+                <form>
                 `
             }
             return '';

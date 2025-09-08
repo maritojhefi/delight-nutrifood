@@ -22,7 +22,6 @@ class ProductResource extends JsonResource
                 round((($precioOriginal - $precioFinal) / $precioOriginal) * 100) : null,
             'imagen' => $this->pathAttachment(),
             'adicionales' => $this->subcategoria->adicionales,
-            // ... other fields
         ];
     }
 }
