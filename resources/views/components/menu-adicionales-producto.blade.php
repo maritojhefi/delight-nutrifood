@@ -116,6 +116,18 @@
                 $('input[name="' + this.name + '"]').not(this).prop('checked', false);
             });
 
+            setTimeout(() => {
+                $('.input-multiple').on('change', function() {
+                    const grupoDiv = $(this).closest('[data-grupo]');
+                    const max = parseInt(grupoDiv.data('max'), 10);
+                    const checked = grupoDiv.find('.input-multiple:checked');
+                    if (checked.length > max) {
+                        // Uncheck the last one checked
+                        this.checked = false;
+                    }
+                });
+            }, 0);
+
             const formAdicionales = document.getElementById("detalles-menu-adicionales");
             
             formAdicionales.addEventListener('submit',(e) => {
@@ -132,6 +144,8 @@
             if (adicionales && adicionales.length > 0) {
 
                 const adicionalesOpcional1 = adicionales.filter(item => item.grupo !== null && item.grupo.maximo_seleccionable == 1 && item.grupo.es_obligatorio == false);
+
+                const adicionalesOpcionalX = adicionales.filter(item => item.grupo !== null && item.grupo.maximo_seleccionable > 1 && item.grupo.es_obligatorio == false);
 
                 const adicionalesObligatorios = adicionales.filter(item => item.grupo !== null && item.grupo.es_obligatorio == true);
 
@@ -166,6 +180,18 @@
                     return grupos;
                 }, {});
 
+                // Agrupar por grupo
+                const adicionalesCheckX = adicionalesOpcionalX.reduce((grupos, item) => {
+                    const nombreGrupo = item.grupo.nombre;
+                    if (!grupos[nombreGrupo]) {
+                        grupos[nombreGrupo] = {
+                            items: [],
+                            maximo: item.grupo.maximo_seleccionable
+                        };
+                    }
+                    grupos[nombreGrupo].items.push(item);
+                    return grupos;
+                }, {});
                 
                 
                 return `
@@ -186,10 +212,9 @@
                         </div>    
                     </div>
                     `).join('')}
-
                     ${Object.entries(adicionalesCheck1).map(([nombreGrupo, grupo]) => `
                     <div>
-                        <h6>${nombreGrupo}</h6>
+                        <h6>${nombreGrupo} <span class="font-300">(máx. 1)</span></h6>
                         <div class="row mb-2">
                             ${grupo.map(adicionalUnico => `
                                 <div class="col-6">
@@ -203,6 +228,23 @@
                             `).join('')}
                         </div>  
                     </div>  
+                    `).join('')}
+                    ${Object.entries(adicionalesCheckX).map(([nombreGrupo, grupoObj]) => `
+                        <div>
+                            <h6>${nombreGrupo} <span class="font-300">(máx. ${grupoObj.maximo})</span></h6>
+                            <div class="row mb-2" data-grupo="${nombreGrupo}" data-max="${grupoObj.maximo}">
+                                ${grupoObj.items.map(adicional => `
+                                    <div class="col-6">
+                                        <div class="form-check icon-check mb-0">
+                                            <input class="form-check-input input-multiple" id="check-${adicional.id}" type="checkbox" name="${nombreGrupo}" value="${adicional.nombre}">
+                                            <label class="form-check-label" for="check-${adicional.id}">${adicional.nombre}</label>
+                                            <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
+                                            <i class="icon-check-2 fa fa-check-square font-16 color-highlight"></i>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
                     `).join('')}
                     <div>
                         <h6>Adicionales</h6>
