@@ -5,8 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class GrupoAdicionale extends Model
+class AdicionaleGrupo extends Model
 {
+
+    protected $table = 'adicionale_grupo'; 
+
     use HasFactory;
 
     protected $fillable = [
@@ -14,12 +17,10 @@ class GrupoAdicionale extends Model
         'maximo_seleccionable',
         'es_obligatorio',
     ];
-    // public function adicionales()
-    // {
-    //     return $this->belongsToMany(Adicionale::class)->withTimestamps();
-    // }
+
+    // Se sostiene una relacion de uno a muchos con la tabla Adicionale
     public function adicionales()
     {
-        return $this->hasMany(Adicionale::class, 'grupo_adicionales_id');
+        return $this->hasMany(Adicionale::class, 'adicionale_grupo_id');
     }
 }
