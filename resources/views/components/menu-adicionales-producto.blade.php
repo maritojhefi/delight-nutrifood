@@ -121,10 +121,14 @@
                     const grupoDiv = $(this).closest('[data-grupo]');
                     const max = parseInt(grupoDiv.data('max'), 10);
                     const checked = grupoDiv.find('.input-multiple:checked');
+                    
+                    // Establecer logica para incrementar o reducir el precio final
                     if (checked.length > max) {
                         // Uncheck the last one checked
                         this.checked = false;
                     }
+
+                    
                 });
             }, 0);
 
@@ -145,11 +149,9 @@
 
                 const adicionalesOpcional1 = adicionales.filter(item => item.grupo !== null && item.grupo.maximo_seleccionable == 1 && item.grupo.es_obligatorio == false);
 
-                const adicionalesOpcionalX = adicionales.filter(item => item.grupo !== null && item.grupo.maximo_seleccionable > 1 && item.grupo.es_obligatorio == false);
+                const adicionalesOpcionalX = adicionales.filter(item => (!item.grupo || item.grupo.maximo_seleccionable > 1 && item.grupo.es_obligatorio == false));
 
                 const adicionalesObligatorios = adicionales.filter(item => item.grupo !== null && item.grupo.es_obligatorio == true);
-
-                const adicionalesSinGrupo = adicionales.filter(item => item.grupo === null);
 
                 // Agrupar adicionales por su nombre
                 const adicionalesCheck1 = adicionalesOpcional1.reduce((grupos, item) => {
@@ -166,8 +168,6 @@
                     return grupos;
                 }, {});
 
-                console.log("Grupo check 1: ", adicionalesCheck1)
-
                 const adicionalesRadio = adicionalesObligatorios.reduce((grupos, item) => {
                     const nombreGrupo = item.grupo.nombre;
                     
@@ -182,17 +182,22 @@
 
                 // Agrupar por grupo
                 const adicionalesCheckX = adicionalesOpcionalX.reduce((grupos, item) => {
-                    const nombreGrupo = item.grupo.nombre;
+                    const nombreGrupo = item.grupo?.nombre ?? "Adicionales";
                     if (!grupos[nombreGrupo]) {
                         grupos[nombreGrupo] = {
                             items: [],
-                            maximo: item.grupo.maximo_seleccionable
+                            maximo: item.grupo?.maximo_seleccionable ?? Infinity
                         };
                     }
                     grupos[nombreGrupo].items.push(item);
                     return grupos;
                 }, {});
                 
+                // Organizar listado de adicionales para renderizar ilimitados al ultimo
+                const { Adicionales, ...otherGroups } = adicionalesCheckX;
+                const finalAdicionalesCheckX = Adicionales 
+                    ? { ...otherGroups, Adicionales } 
+                    : adicionalesCheckX;
                 
                 return `
                     ${Object.entries(adicionalesRadio).map(([nombreGrupo, grupo]) => `
@@ -219,8 +224,9 @@
                             ${grupo.map(adicionalUnico => `
                                 <div class="col-6">
                                     <div class="form-check icon-check mb-0">
-                                        <input class="form-check-input input-single" id="check-${adicionalUnico.id}" type="checkbox" name="${nombreGrupo}" value="${adicionalUnico.nombre}">
-                                        <label class="form-check-label" for="check-${adicionalUnico.id}">${adicionalUnico.nombre} </label>
+                                        <input class="form-check-input input-single" id="check-${adicionalUnico.id}" type="checkbox" name="${nombreGrupo}" value="${adicionalUnico.nombre}" 
+                                        ${adicionalUnico.cantidad == 0 && adicionalUnico.contable == true ? 'disabled': '' }>
+                                        <label class="form-check-label" for="check-${adicionalUnico.id}">${adicionalUnico.nombre} ${adicionalUnico.precio > 0 ? `<span class="badge bg-highlight">Bs. ${adicionalUnico.precio}</span>` : '' }</label>
                                         <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
                                         <i class="icon-check-2 fa fa-check-square font-16 color-highlight"></i>
                                     </div>
@@ -229,15 +235,16 @@
                         </div>  
                     </div>  
                     `).join('')}
-                    ${Object.entries(adicionalesCheckX).map(([nombreGrupo, grupoObj]) => `
+                    ${Object.entries(finalAdicionalesCheckX).map(([nombreGrupo, grupoObj]) => `
                         <div>
-                            <h6>${nombreGrupo} <span class="font-300">(máx. ${grupoObj.maximo})</span></h6>
+                            <h6>${nombreGrupo} ${grupoObj.maximo != Infinity ? `<span class="font-300">(máx. ${grupoObj.maximo})</span>` : '' }</h6>
                             <div class="row mb-2" data-grupo="${nombreGrupo}" data-max="${grupoObj.maximo}">
                                 ${grupoObj.items.map(adicional => `
                                     <div class="col-6">
                                         <div class="form-check icon-check mb-0">
-                                            <input class="form-check-input input-multiple" id="check-${adicional.id}" type="checkbox" name="${nombreGrupo}" value="${adicional.nombre}">
-                                            <label class="form-check-label" for="check-${adicional.id}">${adicional.nombre}</label>
+                                            <input class="form-check-input input-multiple" id="check-${adicional.id}" type="checkbox" name="${nombreGrupo}" value="${adicional.nombre}" 
+                                            ${adicional.cantidad == 0 && adicional.contable == true ? 'disabled': '' }>
+                                            <label class="form-check-label" for="check-${adicional.id}">${adicional.nombre} ${adicional.precio > 0 ? adicional.precio : '' }</label>
                                             <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
                                             <i class="icon-check-2 fa fa-check-square font-16 color-highlight"></i>
                                         </div>
@@ -246,21 +253,6 @@
                             </div>
                         </div>
                     `).join('')}
-                    <div>
-                        <h6>Adicionales</h6>
-                        <div class="row">
-                            ${adicionalesSinGrupo.map(adicional => `
-                                <div class="col-6">
-                                    <div class="form-check icon-check mb-0">
-                                        <input class="form-check-input" id="check-${adicional.id}" type="checkbox" name="Adicionales" value="${adicional.nombre}" ${adicional.cantidad == 0 && adicional.contable == true ? 'disabled': '' }>
-                                        <label class="form-check-label" for="check-${adicional.id}">${adicional.nombre}</label>
-                                        <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
-                                        <i class="icon-check-2 fa fa-check-square font-16 color-highlight"></i>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
                 `
             }
             return '';
