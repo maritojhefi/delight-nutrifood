@@ -111,6 +111,9 @@ Route::prefix('/miperfil')
         Route::get('/whatsapp/asistente', [App\Http\Controllers\MiperfilController::class, 'revisarWhatsappAsistente']);
         Route::get('/whatsapp/cambiar/estado', [App\Http\Controllers\MiperfilController::class, 'cambiarEstadoWhatsappAsistente']);
 
+
+        Route::get('/enlace/patrocinador/{id}', [App\Http\Controllers\MiperfilController::class, 'enlacePatrocinador'])->name('enlace.patrocinador');
+
         //rutas para completar perfil ajax
         Route::post('/change/birthday', [App\Http\Controllers\MiperfilController::class, 'actualizarNacimiento']);
     });
@@ -258,6 +261,8 @@ Route::prefix('/usuario')
         Route::post('/verificar', [UsuarioController::class, 'verificarUsuario'])->name('existe');
 
         Route::post('/verificar-numero', [UsuarioController::class, 'verificarNumero'])->name('verificar-numero');
+        Route::post('/enviar-codigo-verificacion', [UsuarioController::class, 'enviarCodigoVerificacion'])->name('enviar-codigo-verificacion');
+        Route::post('/verificar-codigo-otp', [UsuarioController::class, 'verificarCodigoOTP'])->name('verificar-codigo-otp');
 
         Route::get('/actualizado', function () {
             return view('auth.registrado');

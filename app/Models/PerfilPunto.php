@@ -9,6 +9,8 @@ class PerfilPunto extends Model
 {
     use HasFactory;
     protected $table = 'perfiles_puntos';
+    const CODIGO_PATROCINADOR = "REF";
+
     protected $fillable = [
         'nombre',
         'porcentaje',

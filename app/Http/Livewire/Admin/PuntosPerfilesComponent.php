@@ -169,6 +169,9 @@ class PuntosPerfilesComponent extends Component
             $usuariosDisponiblesQuery->whereNotIn('id', $usuariosAsignadosIds);
         }
 
+        //excluir usuarios que ya tienen algun perfil registrado en la tabla intermedia 'perfiles_puntos_users'
+        $usuariosDisponiblesQuery->whereDoesntHave('perfilesPuntos');
+
         $this->usuariosDisponibles = $usuariosDisponiblesQuery->get();
 
         // Usuarios ya asignados al perfil

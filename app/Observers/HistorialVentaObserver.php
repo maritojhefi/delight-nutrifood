@@ -23,22 +23,16 @@ class HistorialVentaObserver
             // Cargar la relación del cliente
             $historial_venta->load('cliente');
 
-            // Log para depuración
-            // Log::info('Observer ejecutado', [
-            //     'historial_venta_id' => $historial_venta->id,
-            //     'cliente_id' => $historial_venta->cliente_id,
-            //     'puntos' => $historial_venta->puntos,
-            //     'partner_id' => $historial_venta->cliente ? $historial_venta->cliente->partner_id : 'cliente no cargado'
-            // ]);
-
-            if ($historial_venta->cliente && $historial_venta->cliente->partner_id) {
-                // CASO 1: El cliente tiene un partner
-                // Log::info('Procesando con partner', ['partner_id' => $historial_venta->cliente->partner_id]);
-                $this->procesarPuntosConPartner($historial_venta);
-            } else {
-                // CASO 2: El cliente no tiene partner
-                // Log::info('Procesando sin partner');
-                $this->procesarPuntosSinPartner($historial_venta);
+            if ($historial_venta->cliente->verificado == 1) {
+                if ($historial_venta->cliente && $historial_venta->cliente->partner_id) {
+                    // CASO 1: El cliente tiene un partner
+                    // Log::info('Procesando con partner', ['partner_id' => $historial_venta->cliente->partner_id]);
+                    $this->procesarPuntosConPartner($historial_venta);
+                } else {
+                    // CASO 2: El cliente no tiene partner
+                    // Log::info('Procesando sin partner');
+                    $this->procesarPuntosSinPartner($historial_venta);
+                }
             }
         }
     }
