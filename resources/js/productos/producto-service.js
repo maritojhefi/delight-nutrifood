@@ -21,6 +21,20 @@ export const checkProductStock = async (productId) => {
     }
 }
 
+export const validarProductoConAdicionales = async (productoID, formData) => {
+    try {
+        console.log("Info solicitud: ")
+        const response = await axios.post(`/productos/validar-adicionales`, {
+            producto_ID: productoID,
+            formData: formData,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error al obtener información sobre productos del carrito:", error);
+        throw error; // re lanza el error para que pueda ser manejado por el llamador
+    }
+}
+
 export const getProduct = async (productId) => {
     try {
         const response = await axios.get(`/productos/${productId}`);
@@ -68,5 +82,6 @@ window.ProductoService = {
     getProduct,
     getProductoDetalle,
     getProductosTag,
-    getSearchedProducts
+    getSearchedProducts,
+    validarProductoConAdicionales
 };

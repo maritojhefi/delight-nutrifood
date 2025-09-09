@@ -24,7 +24,7 @@
                 </div>
             </div>
         </div>
-        <form id="detalles-menu-adicionales" method="post">
+        <form id="detalles-menu-adicionales">
             {{-- RENDERIZADO CONDICIONAL ADICIONALES --}}
         </form>
         <div class="divider mb-2"></div>
@@ -35,7 +35,7 @@
             <div class="ms-auto align-self-center">
                 <div class="stepper rounded-s small-switch me-n2">
                     <a id="detalles-stepper-down" href="#" class="stepper-sub"><i class="fa fa-minus color-theme opacity-40"></i></a>
-                    <input id="detalles-cantidad" type="number" min="1" max="99" value="1">
+                    <input form="detalles-menu-adicionales" id="detalles-cantidad" type="number" min="1" max="99" value="1">
                     <a id="detalles-stepper-up" href="#" class="stepper-add"><i class="fa fa-plus color-theme opacity-40"></i></a>
                 </div>
             </div>
@@ -148,13 +148,49 @@
             }, 0);
 
             const formAdicionales = document.getElementById("detalles-menu-adicionales");
+            console.log("Form Adicionales: ", formAdicionales);
             
-            formAdicionales.addEventListener('submit',(e) => {
+            formAdicionales.addEventListener('submit', async (e) => {
+                console.log("CLICADO FORM")
                 e.preventDefault();
                 // console.log("clic en submit adicionale")
                 const formData = new FormData(formAdicionales);
+                console.log("Form Data: ", ...formData);
                 for (let [key, value] of formData.entries()) {
                     console.log(`${key}: ${value}`);
+                }
+
+                try {
+                    console.log(`ID solicittud ${infoProducto.id}  FormData: ${formData}`);
+                    const formDataObject = Object.fromEntries(formData);
+                    console.log("formDataObject: ", formDataObject);
+                    const response = await ProductoService.validarProductoConAdicionales(infoProducto.id, formDataObject);
+                    console.log("Respuesta", response);
+                } catch (error) {
+                    if (error.response && error.response.status === 422) {
+                        console.log("status 422")
+                        const { unavailable_adicionales } = error.response.data;
+                        console.log("IDs de adicionales no disponibles:", unavailable_adicionales);
+
+                        unavailable_adicionales.forEach(adicionalId => {
+                            const invalidInput = document.getElementById(`adicional-${adicionalId}`);
+                            if (invalidInput) {
+                                invalidInput.disabled = true;
+                                invalidInput.checked = false;
+
+                                const label = document.querySelector(`label[for="adicional-${adicionalId}"]`);
+                                if (label) {
+                                    // Revisar si el label ya contiene el texto (agotado)
+                                    if (!label.textContent.includes('(agotado)')) {
+                                        // Agregar (agotado) al label
+                                        label.textContent += ' (agotado)';
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        console.error("Ocurrió un error inesperado:", error.message);
+                    }
                 }
             });
         }
@@ -222,7 +258,7 @@
                             ${grupo.map(ad_obligatorio => `
                                 <div class="col-6">
                                     <div class="form-check icon-check mb-0">
-                                        <input class="form-check-input input-radio" id="radio-${ad_obligatorio.id}" type="radio" name="${nombreGrupo}" value="${ad_obligatorio.nombre}" required>
+                                        <input class="form-check-input input-radio" id="radio-${ad_obligatorio.id}" type="radio" name="${nombreGrupo}" value="${ad_obligatorio.id}">
                                         <label class="form-check-label" for="radio-${ad_obligatorio.id}">
                                             ${ad_obligatorio.nombre} ${ad_obligatorio.precio > 0 ?  `<span class="badge bg-highlight">Bs. ${ad_obligatorio.precio}</span>` : '' }
                                         </label>
@@ -241,9 +277,9 @@
                             ${grupo.map(adicionalUnico => `
                                 <div class="col-6">
                                     <div class="form-check icon-check mb-0">
-                                        <input class="form-check-input input-single" id="check-${adicionalUnico.id}" type="checkbox" name="${nombreGrupo}" value="${adicionalUnico.nombre}" 
+                                        <input class="form-check-input input-single" id="adicional-${adicionalUnico.id}" type="checkbox" name="${nombreGrupo}" value="${adicionalUnico.id}" 
                                         ${adicionalUnico.cantidad == 0 && adicionalUnico.contable == true ? 'disabled': '' }>
-                                        <label class="form-check-label" for="check-${adicionalUnico.id}">
+                                        <label class="form-check-label" for="adicional-${adicionalUnico.id}">
                                             ${adicionalUnico.nombre} ${adicionalUnico.precio > 0 ? `<span class="badge bg-highlight">Bs. ${adicionalUnico.precio}</span>` : '' }
                                         </label>
                                         <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
@@ -261,9 +297,9 @@
                                 ${grupoObj.items.map(adicional => `
                                     <div class="col-6">
                                         <div class="form-check icon-check mb-0">
-                                            <input class="form-check-input input-multiple" id="check-${adicional.id}" type="checkbox" name="${nombreGrupo}" value="${adicional.nombre}" 
-                                            ${adicional.cantidad == 0 && adicional.contable == true ? 'disabled': '' }>
-                                            <label class="form-check-label" for="check-${adicional.id}">
+                                            <input class="form-check-input input-multiple" id="adicional-${adicional.id}" type="checkbox" name="${nombreGrupo}" value="${adicional.id}" 
+                                            ${adicional.cantidad == 0 && adicional.contable == true ? '': '' }>
+                                            <label class="form-check-label" for="adicional-${adicional.id}">
                                                 ${adicional.nombre} ${adicional.precio > 0 ?  `<span class="badge bg-highlight">Bs. ${adicional.precio}</span>` : '' }
                                             </label>
                                             <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
@@ -342,9 +378,6 @@
 
 
 
-        // const handleAgregarProductoConAdicionales = () => {
-
-        // }
     });
 </script>
 @endpush

@@ -6,16 +6,15 @@ use App\Helpers\GlobalHelper;
 use App\Http\Resources\Producto\ProductoDetalle;
 use App\Http\Resources\Producto\ProductoListado;
 use App\Http\Resources\ProductResource;
+use App\Models\Adicionale;
 use App\Models\Almuerzo;
 use App\Models\Producto;
-use App\Models\Categoria;
 use Illuminate\Support\Str;
 use App\Models\GaleriaFotos;
 use App\Models\Subcategoria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
-use App\Observers\ProductoObserver;
 use Exception;
 
 class ProductoController extends Controller
@@ -338,22 +337,50 @@ class ProductoController extends Controller
             return response()->json(["stock" => $producto->stock_actual, "unlimited" => false], 200);
         }
     }
-    // public function getProduct($id) {
-    //     try {
-    //         $producto = Producto::findOrFail($id);
-    //         $producto->tiene_descuento = ($producto->precioReal() < $producto->precio); 
-    //         if ($producto->tiene_descuento) {
-    //             $producto->precioOriginal = $producto->precio;
-    //         }
-    //         $producto->precio = $producto->precioReal();
-    //         $producto->imagen = $producto->pathAttachment();
-    //         $producto->adicionales = $producto->subcategoria->adicionales;
-    //         return response()->json($producto, 200);
-    //     } catch (\Throwable $th) {
-    //         Log::error("Error al solicitar producto: ", [$th]);
-    //         return response()->json(['error' => 'Producto no encontrado'], 404);
-    //     }
-    // }
+    public function validarProductoAdicionales(Request $request) {
+        try {
+            $sucursaleId = 1;
+
+            $producto_id = collect($request->producto_ID)->first();
+            $formData = collect($request->formData);
+
+            Log::debug('Idproducto a buscar: ', [$producto_id]);
+
+            $producto = Producto::findOrFail($producto_id);
+
+            Log::debug('Producto con adicionales escogido: ', [$producto->nombre]);
+
+            $IdsAdicionales = $formData->except(['_token', '_method'])->values()->toArray();
+
+            Log::debug('IDs de Adicionales: ', $IdsAdicionales);
+
+            $adicionalesAgotados = $this-> obtenerAdicionalesAgotados($IdsAdicionales);
+
+            if (!empty($adicionalesAgotados)) {
+                $agotados = collect($adicionalesAgotados);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => "Los siguientes adicionales ya no están disponibles: {$agotados->pluck('nombre')->implode(', ')}",
+                    'unavailable_adicionales' =>  $agotados->pluck('id')->all()
+                ], 422);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'mensaje' => 'Exito en el chequeo.'
+            ], 200);
+
+        } catch (\Throwable $th) {
+            Log::error('Error al validar orden con adicionales', [
+                'error' => $th->getMessage(),
+                'trace' => $th->getTraceAsString()
+            ]);
+            return response()->json([
+                'error' => 'Error al validar el detalle de la orden.'
+            ], 500);
+        }
+    }
     public function getProduct($id)
     {
         try {
@@ -373,5 +400,42 @@ class ProductoController extends Controller
             Log::error("Error al solicitar producto: ", [$th]);
             return response()->json(['error' => 'Error al solicitar el producto'], 500);
         }
+    }
+
+    // private static function obtenerAdicionalesAgotados($value) {
+    //     $adicionalesAgotados = [];
+
+    //     if (!is_array($value)) {
+    //         $value = [$value];
+    //     }
+    //     foreach ($value as $adicionalId) {
+    //         $adicional = Adicionale::find($adicionalId);
+            
+    //         if (!$adicional || ($adicional->contable && $adicional->cantidad <= 0)) {
+    //             $adicionalesAgotados[] = $adicional ? $adicional->nombre : "Item ID: {$adicionalId}";
+    //         }
+    //     }
+
+    //     return $adicionalesAgotados;
+    // }
+    private static function obtenerAdicionalesAgotados($value) {
+        $adicionalesAgotados = [];
+
+        if (!is_array($value)) {
+            $value = [$value];
+        }
+
+        foreach ($value as $adicionalId) {
+            $adicional = Adicionale::find($adicionalId);
+            
+            if (!$adicional || ($adicional->contable && $adicional->cantidad <= 0)) {
+                $adicionalesAgotados[] = [
+                    'id' => $adicionalId,
+                    'nombre' => $adicional ? $adicional->nombre : "Item ID: {$adicionalId}",
+                ];
+            }
+        }
+
+        return $adicionalesAgotados;
     }
 }
