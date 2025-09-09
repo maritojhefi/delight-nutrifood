@@ -12,7 +12,9 @@ use App\Observers\ProductoObserver;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 use App\Http\Middleware\CheckIfCajaOpen;
+use App\Models\User;
 use App\Observers\HistorialVentaObserver;
+use App\Observers\UserObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,10 +23,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
-    {
-        
-    }
+    public function register() {}
 
     /**
      * Bootstrap any application services.
@@ -36,5 +35,6 @@ class AppServiceProvider extends ServiceProvider
         Saldo::observe(SaldoObserver::class);
         Producto::observe(ProductoObserver::class);
         Historial_venta::observe(HistorialVentaObserver::class);
+        User::observe(UserObserver::class);
     }
 }

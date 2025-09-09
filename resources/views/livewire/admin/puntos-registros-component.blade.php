@@ -195,7 +195,7 @@
                                                     <div class="d-flex align-items-center justify-content-center">
                                                         <button type="button"
                                                             class="btn btn-primary shadow btn-xs sharp me-1"
-                                                            wire:click="verDetalleVenta({{ $registro->id }})"
+                                                            @if ($registro->historial_venta_id) wire:click="verDetalleVenta({{ $registro->id }})"@else wire:click="verDetalleRegistro({{ $registro->id }})" @endif
                                                             title="Ver Detalle de Venta">
                                                             <i class="fa fa-eye"></i>
                                                         </button>
@@ -231,6 +231,76 @@
         @endif
     </div>
     @include('livewire.admin.caja.includes.modal-detalle-venta')
+
+
+    <div class="modal fade" id="modalDetalleRegistro" tabindex="-1" role="dialog" wire:ignore.self>
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content letra14">
+                @isset($registroSeleccionado)
+                    <div class="card">
+                        <div class="modal-header">
+                            <strong>Bono por Registro de Cliente: {{ $registroSeleccionado->cliente->name }}</strong>
+                            <strong>Hora de registro:
+                                {{ App\Helpers\GlobalHelper::fechaFormateada(6, $registroSeleccionado->cliente->created_at) }}</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive ">
+                                <table class="table p-0 m-0 letra12 ">
+                                    <thead>
+                                        <tr>
+                                            {{-- <th scope="col" class="py-1 text-white bg-primary">Cliente Registrado</th> --}}
+                                            <th scope="col" class="py-1 text-white bg-primary">Partner</th>
+                                            <th scope="col" class="py-1 text-white bg-primary">Puntos Partner</th>
+                                            <th scope="col" class="py-1 text-white bg-primary">Puntos Cliente</th>
+                                            <th scope="col" class="py-1 text-white bg-primary">Total Puntos</th>
+                                            <th scope="col" class="py-1 text-white bg-primary">Fecha Registro</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            {{-- <td>
+                                                <span class="">{{ $registroSeleccionado->cliente->name }}</span>
+                                            </td> --}}
+                                            <td class="py-1">
+                                                <span class="">{{ $registroSeleccionado->partner->name }}</span>
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="">{{ $registroSeleccionado->puntos_partner }}</span>
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="">{{ $registroSeleccionado->puntos_cliente }}</span>
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="">{{ $registroSeleccionado->total_puntos }}</span>
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="">
+                                                    {{ App\Helpers\GlobalHelper::fechaFormateada(3, $registroSeleccionado->created_at) }}
+                                                    <br>
+                                                    <small
+                                                        class="text-muted">({{ App\Helpers\GlobalHelper::timeago($registroSeleccionado->created_at) }})</small>
+                                                </span>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="alert alert-warning">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        No se pudo cargar la información de la venta.
+                    </div>
+                @endisset
+            </div>
+        </div>
+    </div>
+
+
+
+
     <!-- Modal Historial de Cliente -->
     <div class="modal fade" id="modalHistorial" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-xl" role="document">
@@ -316,7 +386,13 @@
                                                     <i class="fa fa-eye"></i>
                                                 </button>
                                             @else
-                                                <span class="text-muted">N/A</span>
+                                                <button type="button"
+                                                    class="btn btn-primary shadow btn-xs sharp me-1"
+                                                    wire:click="verDetalleRegistro({{ $registro->id }})"
+                                                    title="Ver Detalle de Registro" data-bs-dismiss="modal">
+                                                    <i class="fa fa-eye"></i>
+                                                </button>
+                                                {{-- <span class="text-muted">N/A</span> --}}
                                             @endif
                                         </td>
                                     </tr>
@@ -514,6 +590,16 @@
             // Esperar un poco para que Livewire actualice la vista
             setTimeout(() => {
                 $('#modalDetalleVenta').modal('show');
+            }, 200);
+        });
+
+
+        Livewire.on('abrirModalDetalleRegistro', () => {
+            // Cerrar cualquier modal abierto
+            $('#modalDetalle').modal('hide');
+            // Esperar un poco para que Livewire actualice la vista
+            setTimeout(() => {
+                $('#modalDetalleRegistro').modal('show');
             }, 200);
         });
 

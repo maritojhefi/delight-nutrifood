@@ -113,7 +113,7 @@ class WhatsappHelper
     public function plantillas()
     {
         return [
-            'delight_template_verificar_numero' => "🔔 *Verificación de Número* 🔔\n\nRecientemente recibimos una solicitude de verificación de número para tu cuenta de Delight. Para confirmar tu número, por favor ingresa el siguiente código: \n\n{{codigo}}",
+            'delight_template_verificar_numero' => "Recibimos una solicitud para verificar tu numero de teléfono en tu cuenta en Delight. \n\nTu código es: {{codigo}}",
         ];
     }
 

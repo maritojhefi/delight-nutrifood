@@ -124,7 +124,12 @@ class PuntosRegistrosComponent extends Component
 
         $this->ventaSeleccionada = $this->detalleVenta;
 
-        $this->cajaSeleccionada = Caja::find($this->ventaSeleccionada->caja_id);
+        // dd($this->ventaSeleccionada);
+
+
+        if (isset($this->ventaSeleccionada)) {
+            $this->cajaSeleccionada = Caja::find($this->ventaSeleccionada->caja_id);
+        }
 
         $this->emit('abrirModalDetalle');
     }
@@ -207,22 +212,6 @@ class PuntosRegistrosComponent extends Component
 
         return view('livewire.admin.puntos-registros-component', compact('registros'))->extends('admin.master')->section('content');
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     protected $listeners = [
         'cambiarMetodo' => 'cambiarMetodo',
@@ -337,5 +326,12 @@ class PuntosRegistrosComponent extends Component
         $this->totalSaldoExcedentes = $caja->totalSaldoExcedentes();
         $this->totalPuntos = $caja->totalPuntos();
         $this->totalSaldosPagados = $caja->totalSaldosPagadosSinVenta();
+    }
+
+    public function verDetalleRegistro($registroId)
+    {
+        $this->cerrarTodosLosModales();
+        $this->registroSeleccionado = RegistroPunto::with(['partner', 'cliente'])->find($registroId);
+        $this->emit('abrirModalDetalleRegistro');
     }
 }

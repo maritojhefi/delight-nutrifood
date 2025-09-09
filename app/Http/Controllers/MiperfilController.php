@@ -7,12 +7,14 @@ use App\Models\User;
 use App\Models\Plane;
 use App\Models\Almuerzo;
 use App\Helpers\CreateList;
+use App\Models\PerfilPunto;
 use App\Models\SwitchPlane;
 use App\Models\Subcategoria;
 use Illuminate\Http\Request;
-use App\Events\CocinaPedidoEvent;
 use App\Helpers\GlobalHelper;
+use App\Events\CocinaPedidoEvent;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Validator;
@@ -71,7 +73,7 @@ class MiperfilController extends Controller
             // $subcategoria = Subcategoria::find(1);
             $planesTodos = Plane::all();
         }
-        return view('client.miperfil.planes', compact('planes','planesTodos', 'usuario'));
+        return view('client.miperfil.planes', compact('planes', 'planesTodos', 'usuario'));
     }
     public function index()
     {
@@ -261,5 +263,19 @@ class MiperfilController extends Controller
         $user->foto = $filename;
         $user->save();
         return back()->with('actualizado', 'Se actualizo tu foto de perfil!');
+    }
+
+
+
+    public function enlacePatrocinador($id)
+    {
+        $usuario = User::find($id);
+        $ruta = URL::to('/register?ref=');
+        $ruta = $ruta . sprintf(PerfilPunto::CODIGO_PATROCINADOR . "%06d", $usuario->id);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Enlace de patrocinador copiado correctamente',
+            'enlace' => $ruta,
+        ], 200);
     }
 }
