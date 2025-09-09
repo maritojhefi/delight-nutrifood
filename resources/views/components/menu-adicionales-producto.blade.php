@@ -24,8 +24,7 @@
                 </div>
             </div>
         </div>
-        <form id="detalles-menu-adicionales">
-            
+        <form id="detalles-menu-adicionales" method="post">
             {{-- RENDERIZADO CONDICIONAL ADICIONALES --}}
         </form>
         <div class="divider mb-2"></div>
@@ -47,6 +46,16 @@
             </div>
             <div class="ms-auto align-self-center">
                 <h5 id="detalle-costo-unitario" class="mb-0">Bs. 2.53</h5>
+            </div>
+        </div>
+        <div id="display-adicionales" style="display: none;">
+            <div class="d-flex mb-3">
+                <div class="align-self-center">
+                    <h5 class="mb-0">Costo Adicionales</h5>
+                </div>
+                <div class="ms-auto align-self-center">
+                    <h5 id="detalle-costo-adicionales" class="mb-0">Bs. 0</h5>
+                </div>
             </div>
         </div>
         <div class="d-flex mb-3">
@@ -73,8 +82,11 @@
     document.addEventListener('DOMContentLoaded', async function() {
         
         // Abrir menu de detalles-producto
-        window.openDetallesMenu = async function(productId) {
-            await prepararMenuProducto(productId);
+        window.openDetallesMenu = async function(productoId) {
+            // Hacer el llamado al producto
+            const response = await ProductoService.getProductoDetalle(productoId);
+
+            await prepararMenuProducto(response.data);
 
             // Cerrar otros menu abiertos
             $(".menu-active").removeClass("menu-active");
@@ -87,11 +99,7 @@
         };
 
         // Preparar la informacion del Menu para el producto seleccionado.
-        const prepararMenuProducto = async (productoId) => {
-            // Llamado axios solicitando la informacion del producto
-            const response = await ProductoService.getProductoDetalle(productoId);
-
-            const infoProducto = response.data;
+        const prepararMenuProducto = async (infoProducto) => {
             const nombreProductoMenu = document.getElementById('detalles-menu-nombre');
             const adicionalesContainer = document.getElementById('detalles-menu-adicionales');
             const elementoCostoUnitario = document.getElementById('detalle-costo-unitario')
@@ -100,20 +108,27 @@
             const reducirProductoBtn = document.getElementById('detalles-stepper-down');
 
             incrementarProductoBtn.addEventListener('click', () => {
-                actualizarCostoTotal(infoProducto.precio);
+                actualizarCostoTotal(infoProducto);
             });
 
             reducirProductoBtn.addEventListener('click', () => {
-                actualizarCostoTotal(infoProducto.precio);
+                actualizarCostoTotal(infoProducto);
             });
 
-            actualizarCostoTotal(infoProducto.precio);
+            actualizarCostoTotal(infoProducto);
             nombreProductoMenu.innerText = infoProducto.nombre; 
             elementoCostoUnitario.innerText = `Bs. ${(infoProducto.precio).toFixed(2)}`;
             adicionalesContainer.innerHTML = renderAdicionales(infoProducto.adicionales);
 
+            $('.input-radio').on('change', function() {
+                // Actualizar el costo al cambiar los adicionales obligatorios
+                actualizarCostoTotal(infoProducto);
+            });
+
             $('.input-single').on('change', function() {
                 $('input[name="' + this.name + '"]').not(this).prop('checked', false);
+                // Actualizar el costo al cambiar los adicionales opcionales (MAX 1)
+                actualizarCostoTotal(infoProducto);
             });
 
             setTimeout(() => {
@@ -124,11 +139,11 @@
                     
                     // Establecer logica para incrementar o reducir el precio final
                     if (checked.length > max) {
-                        // Uncheck the last one checked
+                        // Deseleccionar el ultimo check
                         this.checked = false;
                     }
-
-                    
+                    // Actualizar el costo al cambiar los adicionales opcionales (MAX n)
+                    actualizarCostoTotal(infoProducto);
                 });
             }, 0);
 
@@ -136,7 +151,7 @@
             
             formAdicionales.addEventListener('submit',(e) => {
                 e.preventDefault();
-                console.log("clic en submit adicionale")
+                // console.log("clic en submit adicionale")
                 const formData = new FormData(formAdicionales);
                 for (let [key, value] of formData.entries()) {
                     console.log(`${key}: ${value}`);
@@ -207,7 +222,7 @@
                             ${grupo.map(ad_obligatorio => `
                                 <div class="col-6">
                                     <div class="form-check icon-check mb-0">
-                                        <input class="form-check-input" id="radio-${ad_obligatorio.id}" type="radio" name="${nombreGrupo}" value="${ad_obligatorio.nombre}">
+                                        <input class="form-check-input input-radio" id="radio-${ad_obligatorio.id}" type="radio" name="${nombreGrupo}" value="${ad_obligatorio.nombre}" required>
                                         <label class="form-check-label" for="radio-${ad_obligatorio.id}">
                                             ${ad_obligatorio.nombre}
                                         </label>
@@ -257,24 +272,73 @@
                             </div>
                         </div>
                     `).join('')}
-                    
                 `
             }
             return '';
         };
 
-        const actualizarCostoTotal = (precio) => {
+        const actualizarCostoTotal = (producto) => {
             // Obtener el valor actual del input
             const cantidadInput = document.getElementById('detalles-cantidad');
             const cantidad = parseInt(cantidadInput.value, 10);
+            const totalAdicionalesDisplay = document.getElementById("display-adicionales");
+
             if (cantidad < 1) {
                 cantidadInput.value = 1
                 return;
             }
-            // Actualizar el costo total:
-            const elementoCostoTotal = document.getElementById('detalle-costo-total')
-            elementoCostoTotal.innerText = `Bs. ${(precio * cantidad).toFixed(2)}`; 
+
+            // Obtener el costo de los adicionales seleccionados
+            const costoAdicionales = calcularCostoAdicionales(producto.adicionales);
+            console.log("Costo adicionales: ", costoAdicionales)
+            console.log("Cantidad seleccionada: ", cantidad)
+
+            // Si el costo de los adicionales es 0, ocultar la informacion del costo adicionales
+            if (costoAdicionales > 0) {
+                    totalAdicionalesDisplay.style.display = 'block';
+                } else {
+                    totalAdicionalesDisplay.style.display = 'none';
+                }            
+            
+            // Determinar el costo total de la orden
+            const costoTotalOrden = (producto.precio + costoAdicionales) * cantidad;
+            console.log("Costo Total: ", costoTotalOrden)
+            // Actualizar el costo total de adicionales:
+            const elementoTotalAdicionales = document.getElementById('detalle-costo-adicionales');
+            elementoTotalAdicionales.innerText = `Bs. ${(costoAdicionales).toFixed(2)}`; 
+            // Actualizar el costo total de la orden:
+            const elementoTotalFinal = document.getElementById('detalle-costo-total')
+            elementoTotalFinal.innerText = `Bs. ${(costoTotalOrden).toFixed(2)}`;
         }
+
+        const calcularCostoAdicionales = (adicionales) => {
+            const form = document.getElementById("detalles-menu-adicionales");
+            let costoTotal = 0;
+            
+            // Obtener todos los adicionales seleccionados
+            const inputsSeleccionados = form.querySelectorAll('input[type="radio"]:checked, input[type="checkbox"]:checked');
+            
+            console.log("Inputs: ",inputsSeleccionados);
+            inputsSeleccionados.forEach(input => {
+                // Extraer el id del input correspondiente
+                const adicionalId = input.id.split('-')[1]; // Asumiendo id's como "radio-123" or "check-123"
+                
+                // Encontrar el precio original desde el listado de adicionales
+                const adicional = adicionales.find(item => item.id == adicionalId)
+
+                // Determinar el precio del adicional y sumarlo al total
+                const precio = parseFloat(adicional.precio) ?? 0;
+                if (precio > 0) {
+                    costoTotal += precio;
+                }
+            });
+            
+            console.log("Costo total adicionales: ", costoTotal);
+
+            return costoTotal;
+        }
+
+
 
         // const handleAgregarProductoConAdicionales = () => {
 
