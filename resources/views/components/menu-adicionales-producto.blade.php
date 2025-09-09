@@ -224,7 +224,7 @@
                                     <div class="form-check icon-check mb-0">
                                         <input class="form-check-input input-radio" id="radio-${ad_obligatorio.id}" type="radio" name="${nombreGrupo}" value="${ad_obligatorio.nombre}" required>
                                         <label class="form-check-label" for="radio-${ad_obligatorio.id}">
-                                            ${ad_obligatorio.nombre}
+                                            ${ad_obligatorio.nombre} ${ad_obligatorio.precio > 0 ?  `<span class="badge bg-highlight">Bs. ${ad_obligatorio.precio}</span>` : '' }
                                         </label>
                                         <i class="icon-check-1 fa fa-circle color-gray-dark font-16"></i>
                                         <i class="icon-check-2 fa fa-check-circle font-16 color-highlight"></i>
@@ -263,7 +263,9 @@
                                         <div class="form-check icon-check mb-0">
                                             <input class="form-check-input input-multiple" id="check-${adicional.id}" type="checkbox" name="${nombreGrupo}" value="${adicional.nombre}" 
                                             ${adicional.cantidad == 0 && adicional.contable == true ? 'disabled': '' }>
-                                            <label class="form-check-label" for="check-${adicional.id}">${adicional.nombre} ${adicional.precio > 0 ? adicional.precio : '' }</label>
+                                            <label class="form-check-label" for="check-${adicional.id}">
+                                                ${adicional.nombre} ${adicional.precio > 0 ?  `<span class="badge bg-highlight">Bs. ${adicional.precio}</span>` : '' }
+                                            </label>
                                             <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
                                             <i class="icon-check-2 fa fa-check-square font-16 color-highlight"></i>
                                         </div>
