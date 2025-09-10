@@ -339,22 +339,15 @@ class ProductoController extends Controller
     }
     public function validarProductoAdicionales(Request $request) {
         try {
-            $sucursaleId = 1;
+            $producto_id = $request->producto_ID;
+            $adicionales_ids = $request->adicionales_ids;
 
-            $producto_id = collect($request->producto_ID)->first();
-            $formData = collect($request->formData);
+            // Log::debug('Producto ID: ', [$producto_id]);
+            // Log::debug('IDs de Adicionales: ', $adicionales_ids);
 
-            Log::debug('Idproducto a buscar: ', [$producto_id]);
-
-            $producto = Producto::findOrFail($producto_id);
-
-            Log::debug('Producto con adicionales escogido: ', [$producto->nombre]);
-
-            $IdsAdicionales = $formData->except(['_token', '_method'])->values()->toArray();
-
-            Log::debug('IDs de Adicionales: ', $IdsAdicionales);
-
-            $adicionalesAgotados = $this-> obtenerAdicionalesAgotados($IdsAdicionales);
+            // $producto = Producto::findOrFail($producto_id);
+            
+            $adicionalesAgotados = $this->obtenerAdicionalesAgotados($adicionales_ids);
 
             if (!empty($adicionalesAgotados)) {
                 $agotados = collect($adicionalesAgotados);
@@ -362,22 +355,23 @@ class ProductoController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => "Los siguientes adicionales ya no están disponibles: {$agotados->pluck('nombre')->implode(', ')}",
-                    'unavailable_adicionales' =>  $agotados->pluck('id')->all()
+                    'idsAdicionalesAgotados' => $agotados->pluck('id')->all()
                 ], 422);
             }
             
             return response()->json([
                 'success' => true,
-                'mensaje' => 'Exito en el chequeo.'
+                'mensaje' => 'Éxito en el chequeo.'
             ], 200);
 
         } catch (\Throwable $th) {
-            Log::error('Error al validar orden con adicionales', [
+            Log::error('Error al validar adicionales', [
                 'error' => $th->getMessage(),
                 'trace' => $th->getTraceAsString()
             ]);
+            
             return response()->json([
-                'error' => 'Error al validar el detalle de la orden.'
+                'error' => 'Error al validar adicionales.'
             ], 500);
         }
     }
@@ -401,31 +395,10 @@ class ProductoController extends Controller
             return response()->json(['error' => 'Error al solicitar el producto'], 500);
         }
     }
-
-    // private static function obtenerAdicionalesAgotados($value) {
-    //     $adicionalesAgotados = [];
-
-    //     if (!is_array($value)) {
-    //         $value = [$value];
-    //     }
-    //     foreach ($value as $adicionalId) {
-    //         $adicional = Adicionale::find($adicionalId);
-            
-    //         if (!$adicional || ($adicional->contable && $adicional->cantidad <= 0)) {
-    //             $adicionalesAgotados[] = $adicional ? $adicional->nombre : "Item ID: {$adicionalId}";
-    //         }
-    //     }
-
-    //     return $adicionalesAgotados;
-    // }
-    private static function obtenerAdicionalesAgotados($value) {
+    private function obtenerAdicionalesAgotados($adicionales_ids) {
         $adicionalesAgotados = [];
-
-        if (!is_array($value)) {
-            $value = [$value];
-        }
-
-        foreach ($value as $adicionalId) {
+        
+        foreach ($adicionales_ids as $adicionalId) {
             $adicional = Adicionale::find($adicionalId);
             
             if (!$adicional || ($adicional->contable && $adicional->cantidad <= 0)) {
@@ -435,7 +408,7 @@ class ProductoController extends Controller
                 ];
             }
         }
-
+        
         return $adicionalesAgotados;
     }
 }
