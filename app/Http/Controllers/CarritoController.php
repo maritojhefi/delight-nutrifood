@@ -94,8 +94,8 @@ class CarritoController extends Controller
                         $adicionalesLimitados = false;
 
                         foreach ($adicionalesItemCarrito as $adicionalCarrito) {
-                            $adicional = Adicionale::findOrFail($adicionalCarrito['id']);
-                            if ($adicional->contable == 1 && $adicionalCarrito['quantity'] > $adicional->cantidad ) {
+                            $adicional = Adicionale::findOrFail($adicionalCarrito);
+                            if ($adicional->contable == 1 && $cantidadSolicitada > $adicional->cantidad ) {
                                 $adicionalesLimitados = true;
                                 // throw new Error(`Se solicitaron mas unidades del adicional `. $adicional->nombre . `que las unidades existentes.
                                 // Unidades solicitadas: ` . $adicionalCarrito->quantity. ` Unidades disponibles: ` . $adicional->cantidad);
@@ -103,17 +103,13 @@ class CarritoController extends Controller
                             $newEntry = [
                                 "id" => $adicional->id,
                                 "nombre" => ucfirst($adicional->nombre),
-                                "quantity" => $adicionalCarrito['quantity'],
+                                "quantity" => $cantidadSolicitada,
                                 "id_grupo" => "MockupID",
                             ];
 
                             $infoAdicionales[] = $newEntry;
                         }
-                        
-                        // $infoAdicionales = Adicionale::whereIn('id', $adicionalesItemCarrito->pluck('id'));
-                        
-                        
-                        
+
                         $estado = $this->determinarEstado($stockDisponible, $cantidadSolicitada);
                         
                         return [
@@ -131,7 +127,6 @@ class CarritoController extends Controller
                             'estado' => $estado,
                             'max_permitido' => $stockDisponible === "INFINITO" ? "INFINITO" : $stockDisponible,
                             'adicionalesLimitados' => $adicionalesLimitados
-                            // 'isPlan' => false // Mark as regular product
                         ];
                     });
             }

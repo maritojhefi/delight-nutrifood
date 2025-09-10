@@ -345,7 +345,7 @@ class ProductoController extends Controller
 
             // Log::debug('Producto ID: ', [$producto_id]);
             // Log::debug('IDs de Adicionales: ', $adicionales_ids);
-            Log::debug('Cantidad solicitada: ', [$cantidad]);
+            // Log::debug('Cantidad solicitada: ', [$cantidad]);
             // $producto = Producto::findOrFail($producto_id);
             
             $adicionalesObservados = $this->obtenerAdicionalesAgotados($adicionales_ids,$cantidad);
@@ -373,7 +373,7 @@ class ProductoController extends Controller
             
             return response()->json([
                 'success' => true,
-                'mensaje' => 'Éxito en el chequeo.'
+                'mensaje' => 'Éxito en el chequeo.',
             ], 200);
 
         } catch (\Throwable $th) {

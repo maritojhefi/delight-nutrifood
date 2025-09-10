@@ -382,11 +382,8 @@
             return `
                 <ul class="ps-3">
                     ${adicionales.map(adicional => `
-                        <li>
-                            <span>${adicional.nombre}</span>
-                            <div class="badge color-theme bg-highlight">
-                            ${adicional.quantity}
-                            </div>
+                        <li class=" line-height-s">
+                            <small class=" color-theme">${adicional.nombre}</small>
                         </li>
                     `).join('')}
                 </ul>

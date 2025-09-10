@@ -183,6 +183,7 @@
 
                 try {
                     const response = await ProductoService.validarProductoConAdicionales(infoProducto.id, IdsAdicionalesSeleccionados, cantidad);
+                    const AddAttempt = await carritoStorage.addToCart(infoProducto.id, cantidad, false, IdsAdicionalesSeleccionados);
                 } catch (error) {
                     if (error.response && error.response.status === 422) {
                         // Informacion recibida de validacion inexitosa en backend
