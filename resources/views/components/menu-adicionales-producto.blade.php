@@ -35,14 +35,14 @@
             <div class="ms-auto align-self-center">
                 <div class="stepper rounded-s small-switch me-n2">
                     <a id="detalles-stepper-down" href="#" class="stepper-sub"><i class="fa fa-minus color-theme opacity-40"></i></a>
-                    <input form="detalles-menu-adicionales" id="detalles-cantidad" type="number" min="1" max="99" value="1">
+                    <input form="detalles-menu-adicionales" name="cantidad-orden" id="detalles-cantidad" type="number" min="1" max="99" value="1">
                     <a id="detalles-stepper-up" href="#" class="stepper-add"><i class="fa fa-plus color-theme opacity-40"></i></a>
                 </div>
             </div>
         </div>
         <div class="d-flex mb-3">
             <div class="align-self-center">
-                <h5 class="mb-0">Costo Unitario</h5>
+                <h5 class="mb-0">Costo Unitario Producto</h5>
             </div>
             <div class="ms-auto align-self-center">
                 <h5 id="detalle-costo-unitario" class="mb-0">Bs. 2.53</h5>
@@ -152,20 +152,27 @@
                 e.preventDefault();
                 
                 const formData = new FormData(formAdicionales);
+                let cantidad = 1;
+
+                console.log("formData: ",formData);
                 
                 const IdsAdicionalesSeleccionados = [];
                 for (let [key, value] of formData.entries()) {
-                    IdsAdicionalesSeleccionados.push(parseInt(value)); 
-                }
+                    if (key !== 'cantidad-orden') {
+                        IdsAdicionalesSeleccionados.push(parseInt(value));  
+                    } else {
+                        cantidad = parseInt(value);
+                    }
+                };
                 
                 console.log("IDs Seleccionados:", IdsAdicionalesSeleccionados);
 
                 try {
-                    const response = await ProductoService.validarProductoConAdicionales(infoProducto.id, IdsAdicionalesSeleccionados);
+                    const response = await ProductoService.validarProductoConAdicionales(infoProducto.id, IdsAdicionalesSeleccionados, cantidad);
                     // console.log("Respuesta", response);
                 } catch (error) {
                     if (error.response && error.response.status === 422) {
-                        const { idsAdicionalesAgotados } = error.response.data;
+                        const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaxima } = error.response.data;
                         // console.log("IDs de adicionales no disponibles:", idsAdicionalesAgotados);
 
                         idsAdicionalesAgotados.forEach(adicionalId => {
@@ -183,6 +190,13 @@
                                 }
                             }
                         });
+                        if (idsAdicionalesLimitados.length > 0) {
+                            // DE existir adicionales limitados, establecer la cantidad maxima de orden al maximo disponible
+                            const inputCantidad = document.getElementById('detalles-cantidad');
+                            inputCantidad.value = parseInt(cantidadMaxima, 10);
+                            // console.log("Valor inputCantidad: ",inputCantidad)
+                            actualizarCostoTotal(infoProducto);
+                        }
                     } else {
                         console.error("Ocurrió un error inesperado:", error.message);
                     }
@@ -323,8 +337,8 @@
 
             // Obtener el costo de los adicionales seleccionados
             const costoAdicionales = calcularCostoAdicionales(producto.adicionales);
-            console.log("Costo adicionales: ", costoAdicionales)
-            console.log("Cantidad seleccionada: ", cantidad)
+            // console.log("Costo adicionales: ", costoAdicionales)
+            // console.log("Cantidad seleccionada: ", cantidad)
 
             // Si el costo de los adicionales es 0, ocultar la informacion del costo adicionales
             if (costoAdicionales > 0) {
@@ -335,7 +349,7 @@
             
             // Determinar el costo total de la orden
             const costoTotalOrden = (producto.precio + costoAdicionales) * cantidad;
-            console.log("Costo Total: ", costoTotalOrden)
+            // console.log("Costo Total: ", costoTotalOrden)
             // Actualizar el costo total de adicionales:
             const elementoTotalAdicionales = document.getElementById('detalle-costo-adicionales');
             elementoTotalAdicionales.innerText = `Bs. ${(costoAdicionales).toFixed(2)}`; 
@@ -351,7 +365,7 @@
             // Obtener todos los adicionales seleccionados
             const inputsSeleccionados = form.querySelectorAll('input[type="radio"]:checked, input[type="checkbox"]:checked');
             
-            console.log("Inputs: ",inputsSeleccionados);
+            // console.log("Inputs: ",inputsSeleccionados);
             inputsSeleccionados.forEach(input => {
                 // Extraer el id del input correspondiente
                 const adicionalId = input.id.split('-')[1]; // Asumiendo id's como "radio-123" or "check-123"
@@ -366,13 +380,10 @@
                 }
             });
             
-            console.log("Costo total adicionales: ", costoTotal);
+            // console.log("Costo total adicionales: ", costoTotal);
 
             return costoTotal;
         }
-
-
-
     });
 </script>
 @endpush

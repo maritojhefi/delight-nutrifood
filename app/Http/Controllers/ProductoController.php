@@ -339,25 +339,37 @@ class ProductoController extends Controller
     }
     public function validarProductoAdicionales(Request $request) {
         try {
-            $producto_id = $request->producto_ID;
+            // $producto_id = $request->producto_ID;
             $adicionales_ids = $request->adicionales_ids;
+            $cantidad = $request->cantidad;
 
             // Log::debug('Producto ID: ', [$producto_id]);
             // Log::debug('IDs de Adicionales: ', $adicionales_ids);
-
+            Log::debug('Cantidad solicitada: ', [$cantidad]);
             // $producto = Producto::findOrFail($producto_id);
             
-            $adicionalesAgotados = $this->obtenerAdicionalesAgotados($adicionales_ids);
+            $adicionalesObservados = $this->obtenerAdicionalesAgotados($adicionales_ids,$cantidad);
 
-            if (!empty($adicionalesAgotados)) {
-                $agotados = collect($adicionalesAgotados);
 
-                return response()->json([
-                    'success' => false,
-                    'message' => "Los siguientes adicionales ya no están disponibles: {$agotados->pluck('nombre')->implode(', ')}",
-                    'idsAdicionalesAgotados' => $agotados->pluck('id')->all()
-                ], 422);
+            if (!empty($adicionalesObservados)) {
+                $agotados = collect($adicionalesObservados['agotados']);
+                $limitados = collect($adicionalesObservados['limitados']);
+                $cantidadMaxima = $adicionalesObservados['cantidadMaxima'];
+
+                if (!empty($agotados) || !empty($limitados)) {
+                    return response()->json([
+                        'success' => false,
+                        'messageAgotados' => "Los siguientes adicionales ya no están disponibles: {$agotados->pluck('nombre')->implode(', ')}",
+                        'messageLimitados' => "Los siguientes adicionales disponen de bajo stock: {$limitados->pluck('nombre')->implode(', ')}",
+                        'idsAdicionalesAgotados' => $agotados->pluck('id')->all(),
+                        'idsAdicionalesLimitados' => $limitados->pluck('id')->all(),
+                        'cantidadMaxima' => $cantidadMaxima
+                    ], 422);
+                }
+
             }
+
+
             
             return response()->json([
                 'success' => true,
@@ -395,20 +407,35 @@ class ProductoController extends Controller
             return response()->json(['error' => 'Error al solicitar el producto'], 500);
         }
     }
-    private function obtenerAdicionalesAgotados($adicionales_ids) {
-        $adicionalesAgotados = [];
-        
+    private function obtenerAdicionalesAgotados($adicionales_ids, $cantidadSolicitada) {
+        $agotados = [];
+        $limitados = [];
+        $cantidadMaxima = PHP_FLOAT_MAX;
+
         foreach ($adicionales_ids as $adicionalId) {
             $adicional = Adicionale::find($adicionalId);
             
             if (!$adicional || ($adicional->contable && $adicional->cantidad <= 0)) {
-                $adicionalesAgotados[] = [
+                $agotados[] = [
                     'id' => $adicionalId,
                     'nombre' => $adicional ? $adicional->nombre : "Item ID: {$adicionalId}",
                 ];
+            } else if ($adicional->contable && $adicional->cantidad < $cantidadSolicitada) {
+                $limitados[] = [
+                    'id' => $adicionalId,
+                    'nombre' => $adicional ? $adicional->nombre : "Item ID: {$adicionalId}",
+                ];
+
+                if ($adicional->cantidad < $cantidadMaxima) {
+                    $cantidadMaxima = $adicional->cantidad;
+                }
             }
         }
-        
-        return $adicionalesAgotados;
+
+        if ($cantidadMaxima == PHP_FLOAT_MAX) {
+            $cantidadMaxima = null;
+        }
+
+        return ["agotados" => $agotados, "limitados" => $limitados, "cantidadMaxima" => $cantidadMaxima];    
     }
 }

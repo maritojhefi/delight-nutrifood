@@ -21,11 +21,25 @@ export const checkProductStock = async (productId) => {
     }
 }
 
-export const validarProductoConAdicionales = async (productoID, selectedIds) => {
+// export const validarProductoConAdicionales = async (productoID, selectedIds) => {
+//     try {
+//         const response = await axios.post(`/productos/validar-adicionales`, {
+//             producto_id: productoID,
+//             adicionales_ids: selectedIds
+//         });
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error al validar adicionales:", error);
+//         throw error;
+//     }
+// }
+
+export const validarProductoConAdicionales = async (productoID, selectedIds, quantity) => {
     try {
         const response = await axios.post(`/productos/validar-adicionales`, {
             producto_id: productoID,
-            adicionales_ids: selectedIds
+            adicionales_ids: selectedIds,
+            cantidad: quantity
         });
         return response.data;
     } catch (error) {
