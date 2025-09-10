@@ -459,91 +459,98 @@ class UsuarioController extends Controller
 
     public function enviarCodigoVerificacion(Request $request)
     {
-        $telefono = $request->input('telefono');
-        $codigoPais = $request->input('codigoPais');
-        $digitosPais = $request->input('digitosPais');
 
-        // Validar que el teléfono tenga la longitud correcta
-        if (strlen($telefono) != $digitosPais) {
-            return response()->json(
-                [
-                    'status' => 'error',
-                    'errors' => ['telefono' => ['El número de teléfono debe tener exactamente ' . $digitosPais . ' dígitos.']],
-                ],
-                422,
-            );
-        }
+        $numeroWhatsapp = NumeroWhatsapp::first();
+        if ($numeroWhatsapp) {
+            $idRegistroNumeroWhatsapp = $numeroWhatsapp->id;
+            $telefono = $request->input('telefono');
+            $codigoPais = $request->input('codigoPais');
+            $digitosPais = $request->input('digitosPais');
+            // Validar que el teléfono tenga la longitud correcta
+            if (strlen($telefono) != $digitosPais) {
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'errors' => ['telefono' => ['El número de teléfono debe tener exactamente ' . $digitosPais . ' dígitos.']],
+                    ],
+                    422,
+                );
+            }
+            // Verificar si el teléfono ya existe
+            $usuario = User::where('codigo_pais', $codigoPais)->where('telf', $telefono)->first();
+            if ($usuario && $usuario->verificado == true) {
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'errors' => ['telefono' => ['Este número de teléfono ya está registrado y verificado.']],
+                    ],
+                    400,
+                );
+            }
+            // Generar código de verificación
+            $codigo = random_int(10000, 99999);
+            // Enviar código por WhatsApp
+            try {
+                WhatsappHelper::setNumero($idRegistroNumeroWhatsapp)
+                    ->plantilla('delight_template_verificar_numero')
+                    ->para($codigoPais . $telefono)
+                    ->variables(['codigo' => $codigo])
+                    ->enviar();
 
-        // Verificar si el teléfono ya existe
-        $usuario = User::where('codigo_pais', $codigoPais)->where('telf', $telefono)->first();
-
-        if ($usuario && $usuario->verificado == true) {
-            return response()->json(
-                [
-                    'status' => 'error',
-                    'errors' => ['telefono' => ['Este número de teléfono ya está registrado y verificado.']],
-                ],
-                400,
-            );
-        }
-
-        // Generar código de verificación
-        $codigo = random_int(10000, 99999);
-
-        // Enviar código por WhatsApp
-        try {
-            WhatsappHelper::setNumero(1)
-                ->plantilla('delight_template_verificar_numero')
-                ->para($codigoPais . $telefono)
-                ->variables(['codigo' => $codigo])
-                ->enviar();
-
-            return response()->json(
-                [
-                    'codigo_generado' => $codigo,
-                    'status' => 'success',
-                    'message' => 'Código de verificación enviado exitosamente.',
-                ],
-                200,
-            );
-        } catch (\Exception $e) {
-
-
-            // dd($e->getMessage(), $e->getCode());
-            $codigoError = null;
-            // Buscar número dentro de (Código: X)
-            if (preg_match('/\(Código:\s*(\d+)\)/', $e->getMessage(), $coincidencias) > 0) {
-                $codigoError = $coincidencias[1];
-                // dd($codigoError);
-                if ($codigoError == "401") {
-                    return response()->json(
-                        [
-                            'status' => 'error',
-                            'errors' => ['general' => ['En este momento no se puede enviar el código de verificación al telefono.']],
-                            'codigo_error' => $codigoError,
-                        ],
-                        401,
-                    );
+                return response()->json(
+                    [
+                        'codigo_generado' => $codigo,
+                        'status' => 'success',
+                        'message' => 'Código de verificación enviado exitosamente.',
+                    ],
+                    200,
+                );
+            } catch (\Exception $e) {
+                // dd($e->getMessage(), $e->getCode());
+                $codigoError = null;
+                // Buscar número dentro de (Código: X)
+                if (preg_match('/\(Código:\s*(\d+)\)/', $e->getMessage(), $coincidencias) > 0) {
+                    $codigoError = $coincidencias[1];
+                    // dd($codigoError);
+                    if ($codigoError == "401") {
+                        return response()->json(
+                            [
+                                'status' => 'error',
+                                'errors' => ['general' => ['En este momento no se puede enviar el código de verificación al telefono.']],
+                                'codigo_error' => $codigoError,
+                            ],
+                            401,
+                        );
+                    } else {
+                        return response()->json(
+                            [
+                                'status' => 'error',
+                                'errors' => ['general' => [$e->getMessage()]],
+                                'codigo_error' => $codigoError,
+                            ],
+                            500,
+                        );
+                    }
                 } else {
                     return response()->json(
                         [
                             'status' => 'error',
-                            'errors' => ['general' => [$e->getMessage()]],
+                            'errors' => ['general' => ['Error al enviar el código de verificación. Intenta nuevamente.']],
                             'codigo_error' => $codigoError,
                         ],
                         500,
                     );
                 }
-            } else {
-                return response()->json(
-                    [
-                        'status' => 'error',
-                        'errors' => ['general' => ['Error al enviar el código de verificación. Intenta nuevamente.']],
-                        'codigo_error' => $codigoError,
-                    ],
-                    500,
-                );
             }
+        } else {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'errors' => ['general' => ['El sistema de verificación de teléfono no está disponible en este momento.']],
+                    'codigo_error' => 500,
+                ],
+                500,
+            );
         }
     }
 

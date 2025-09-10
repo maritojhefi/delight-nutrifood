@@ -1007,13 +1007,10 @@
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.log("❌ Error: ", xhr.responseJSON, 'skhfkhgkhkjhgkjhs');
-
+                        // console.log("❌ Error: ", xhr.responseJSON, 'skhfkhgkhkjhgkjhs');
                         var codigo = xhr.responseJSON.codigo_error;
-
-
-
-                        if (codigo == 401) {
+                        // console.log("❌ Error: ", codigo);
+                        if (codigo == 401 || codigo == 500) {
                             $('#menu-verificacion').removeClass('menu-active');
                             $('.menu-hider').removeClass('menu-active');
                             // $('#codigo-incorrecto').addClass('menu-active');
