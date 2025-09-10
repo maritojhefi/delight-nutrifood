@@ -185,33 +185,40 @@
                     const response = await ProductoService.validarProductoConAdicionales(infoProducto.id, IdsAdicionalesSeleccionados, cantidad);
                 } catch (error) {
                     if (error.response && error.response.status === 422) {
-                        const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaxima, messageLimitados, messageAgotados } = error.response.data;
-                        // console.log("IDs de adicionales no disponibles:", idsAdicionalesAgotados);
-
-                        idsAdicionalesAgotados.forEach(adicionalId => {
-                            const invalidInput = document.getElementById(`adicional-${adicionalId}`);
-                            if (invalidInput) {
-                                invalidInput.disabled = true;
-                                invalidInput.checked = false;
-                                const label = document.getElementById(`nombre-adicional-${adicionalId}`);
-                                if (label) {
-                                    if (!label.textContent.includes('(agotado)')) {
-                                        label.textContent += ' (agotado)';
+                        // Informacion recibida de validacion inexitosa en backend
+                        const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaxima,
+                        messageLimitados, messageAgotados } = error.response.data;
+                        // De existir adicionales agotados:
+                        if (idsAdicionalesAgotados.length > 0) {
+                            idsAdicionalesAgotados.forEach(adicionalId => {
+                                // Deseleccion de checks agotados
+                                const invalidInput = document.getElementById(`adicional-${adicionalId}`);
+                                if (invalidInput) {
+                                    invalidInput.disabled = true;
+                                    invalidInput.checked = false;
+                                    const label = document.getElementById(`nombre-adicional-${adicionalId}`);
+                                    if (label) {
+                                        if (!label.textContent.includes('(agotado)')) {
+                                            label.textContent += ' (agotado)';
+                                        }
                                     }
                                 }
-                            }
+                            });
+                            // Renderizar mensaje agotados
                             const containerAdvertencia = document.getElementById('error-agotados-container');
                             containerAdvertencia.style.display = 'block';
                             const textoAdvertencia = document.getElementById('error-agotados-message');
-                        });
+                        }
+                        // De existir adicionales limitados:
                         if (idsAdicionalesLimitados.length > 0) {
+                            // Renderizar mensaje limitados
                             const containerAdvertencia = document.getElementById('error-limitados-container');
                             containerAdvertencia.style.display = 'block';
                             const textoAdvertencia = document.getElementById('error-limitados-message');
-                            console.log(textoAdvertencia)
                             textoAdvertencia.textContent = messageLimitados;
+                            
+                            // Transformar boton para actualizar la orden
                             renderBotonActualizarAdicionales(infoProducto,cantidadMaxima);
-                            actualizarCostoTotal(infoProducto);
                         }
                     } else {
                         console.error("Ocurrió un error inesperado:", error.message);
