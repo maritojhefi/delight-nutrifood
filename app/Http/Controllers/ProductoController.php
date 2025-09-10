@@ -359,8 +359,8 @@ class ProductoController extends Controller
                 if (!empty($agotados) || !empty($limitados)) {
                     return response()->json([
                         'success' => false,
-                        'messageAgotados' => "Los siguientes adicionales ya no están disponibles: {$agotados->pluck('nombre')->implode(', ')}",
-                        'messageLimitados' => "Los siguientes adicionales disponen de bajo stock: {$limitados->pluck('nombre')->implode(', ')}",
+                        'messageAgotados' => "Los siguientes adicionales se encuentran agotados: {$agotados->pluck('nombre')->implode(', ')}",
+                        'messageLimitados' => "El stock para: {$limitados->pluck('nombre')->implode(', ')}; es bajo, puedes actualizar tu orden presionando el boton de abajo.",
                         'idsAdicionalesAgotados' => $agotados->pluck('id')->all(),
                         'idsAdicionalesLimitados' => $limitados->pluck('id')->all(),
                         'cantidadMaxima' => $cantidadMaxima
@@ -434,6 +434,10 @@ class ProductoController extends Controller
 
         if ($cantidadMaxima == PHP_FLOAT_MAX) {
             $cantidadMaxima = null;
+        }
+
+        if (empty($agotados) && empty($limitados)) {
+            return [];
         }
 
         return ["agotados" => $agotados, "limitados" => $limitados, "cantidadMaxima" => $cantidadMaxima];    

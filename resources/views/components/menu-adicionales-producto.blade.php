@@ -28,19 +28,29 @@
             {{-- RENDERIZADO CONDICIONAL ADICIONALES --}}
         </form>
         <div class="divider mb-2"></div>
-        <div class="d-flex mb-3 pb-1">
+        <div class="d-flex mb-0 pb-1">
             <div class="align-self-center">
                 <h5 class="mb-0">Cantidad</h5>
             </div>
             <div class="ms-auto align-self-center">
                 <div class="stepper rounded-s small-switch me-n2">
                     <a id="detalles-stepper-down" href="#" class="stepper-sub"><i class="fa fa-minus color-theme opacity-40"></i></a>
-                    <input form="detalles-menu-adicionales" name="cantidad-orden" id="detalles-cantidad" type="number" min="1" max="99" value="1">
+                    <input style="font-size: 15px !important;" form="detalles-menu-adicionales" name="cantidad-orden" id="detalles-cantidad" type="number" min="1" max="99" value="1">
                     <a id="detalles-stepper-up" href="#" class="stepper-add"><i class="fa fa-plus color-theme opacity-40"></i></a>
                 </div>
             </div>
+            <!-- <div class="error-limitados-container bg-warning border-warning"
+            >
+                <p class="error-limitados-message">Algunos adicionales disponen de stock bajo, se ajusto la cantidad de su orden.</p>
+            </div> -->
         </div>
-        <div class="d-flex mb-3">
+        <div id="error-limitados-container" class="alert alert-warning p-2 rounded-s" style="display: none;">
+            <p id="error-limitados-message">Algunos adicionales disponen de stock bajo, se ajusto la cantidad de su orden.</p>
+        </div>
+        <div id="error-agotados-container" class="alert alert-warning p-2 rounded-s" style="display: none;">
+            <p id="error-agotados-message">Algunos adicionales se encuentran agotados, se ajustaron sus selecciones.</p>
+        </div>
+        <div class="d-flex mb-3 mt-1">
             <div class="align-self-center">
                 <h5 class="mb-0">Costo Unitario Producto</h5>
             </div>
@@ -67,13 +77,16 @@
             </div>
         </div>
         <div class="divider"></div>
-        @if ($isUpdate)
-            <!-- <button type="submit" form="detalles-menu-adicionales">Submit check</button> -->
-            <button class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm close-menu">Actualizar pedido</buttno>
-        @else
-            <!-- <button type="submit" form="detalles-menu-adicionales">Submit check</button> -->
-            <button type="submit" form="detalles-menu-adicionales" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm">Agregar al carrito</button>
-        @endif
+        <div id="boton-accion-container">
+            @if ($isUpdate)
+                <!-- <button type="submit" form="detalles-menu-adicionales">Submit check</button> -->
+                <button class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm close-menu">Actualizar pedido</buttno>
+            @else
+                <!-- <button type="submit" form="detalles-menu-adicionales">Submit check</button> -->
+                <button type="submit" form="detalles-menu-adicionales" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm">Agregar al carrito</button>
+            @endif
+        </div>
+        
     </div>
 </div>
 
@@ -150,7 +163,8 @@
             const formAdicionales = document.getElementById("detalles-menu-adicionales");
             formAdicionales.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                
+                ocultarMensajeLimitados();
+                ocultarMensajeAgotados();
                 const formData = new FormData(formAdicionales);
                 let cantidad = 1;
 
@@ -169,10 +183,9 @@
 
                 try {
                     const response = await ProductoService.validarProductoConAdicionales(infoProducto.id, IdsAdicionalesSeleccionados, cantidad);
-                    // console.log("Respuesta", response);
                 } catch (error) {
                     if (error.response && error.response.status === 422) {
-                        const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaxima } = error.response.data;
+                        const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaxima, messageLimitados, messageAgotados } = error.response.data;
                         // console.log("IDs de adicionales no disponibles:", idsAdicionalesAgotados);
 
                         idsAdicionalesAgotados.forEach(adicionalId => {
@@ -180,8 +193,6 @@
                             if (invalidInput) {
                                 invalidInput.disabled = true;
                                 invalidInput.checked = false;
-
-                                // const label = document.querySelector(`label[for="adicional-${adicionalId}"]`);
                                 const label = document.getElementById(`nombre-adicional-${adicionalId}`);
                                 if (label) {
                                     if (!label.textContent.includes('(agotado)')) {
@@ -189,12 +200,17 @@
                                     }
                                 }
                             }
+                            const containerAdvertencia = document.getElementById('error-agotados-container');
+                            containerAdvertencia.style.display = 'block';
+                            const textoAdvertencia = document.getElementById('error-agotados-message');
                         });
                         if (idsAdicionalesLimitados.length > 0) {
-                            // DE existir adicionales limitados, establecer la cantidad maxima de orden al maximo disponible
-                            const inputCantidad = document.getElementById('detalles-cantidad');
-                            inputCantidad.value = parseInt(cantidadMaxima, 10);
-                            // console.log("Valor inputCantidad: ",inputCantidad)
+                            const containerAdvertencia = document.getElementById('error-limitados-container');
+                            containerAdvertencia.style.display = 'block';
+                            const textoAdvertencia = document.getElementById('error-limitados-message');
+                            console.log(textoAdvertencia)
+                            textoAdvertencia.textContent = messageLimitados;
+                            renderBotonActualizarAdicionales(infoProducto,cantidadMaxima);
                             actualizarCostoTotal(infoProducto);
                         }
                     } else {
@@ -267,7 +283,8 @@
                             ${grupo.map(ad_obligatorio => `
                                 <div class="col-6">
                                     <div class="form-check icon-check mb-0">
-                                        <input class="form-check-input input-radio" id="radio-${ad_obligatorio.id}" type="radio" name="${nombreGrupo}" value="${ad_obligatorio.id}">
+                                        <input class="form-check-input input-radio" id="radio-${ad_obligatorio.id}" type="radio"
+                                        name="${nombreGrupo}" value="${ad_obligatorio.id}">
                                         <label class="form-check-label" for="radio-${ad_obligatorio.id}">
                                             <span id="nombre-adicional-${ad_obligatorio.id}">${ad_obligatorio.nombre}</span> ${ad_obligatorio.precio > 0 ?  `<span class="badge bg-highlight">Bs. ${ad_obligatorio.precio}</span>` : '' }
                                         </label>
@@ -324,6 +341,30 @@
             return '';
         };
 
+        const renderBotonActualizarAdicionales = (producto,cantidadMaxima) => {
+            const containerBotonAccion = document.getElementById('boton-accion-container');
+            containerBotonAccion.innerHTML =  `
+                <button id="btn-actualizar-pedido" class="btn btn-full btn-m bg-red-dark font-700 w-100 text-uppercase rounded-sm">Actualizar mi pedido</button>
+            `;
+
+            $('#btn-actualizar-pedido').on('click', function() {
+                // Actualizar cantidad seleccionada
+                const inputCantidad = document.getElementById('detalles-cantidad');
+                inputCantidad.value = parseInt(cantidadMaxima, 10);
+                actualizarCostoTotal(producto);
+                // Ocultar mensaje de limitados
+                ocultarMensajeLimitados();
+                renderBotonAgregarProducto();
+            });
+        }
+
+        const renderBotonAgregarProducto = () => {
+            const containerBotonAccion = document.getElementById('boton-accion-container');
+            containerBotonAccion.innerHTML =  `
+                <button type="submit" form="detalles-menu-adicionales" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm">Agregar al carrito</button>
+            `;
+        }
+
         const actualizarCostoTotal = (producto) => {
             // Obtener el valor actual del input
             const cantidadInput = document.getElementById('detalles-cantidad');
@@ -337,8 +378,6 @@
 
             // Obtener el costo de los adicionales seleccionados
             const costoAdicionales = calcularCostoAdicionales(producto.adicionales);
-            // console.log("Costo adicionales: ", costoAdicionales)
-            // console.log("Cantidad seleccionada: ", cantidad)
 
             // Si el costo de los adicionales es 0, ocultar la informacion del costo adicionales
             if (costoAdicionales > 0) {
@@ -349,7 +388,6 @@
             
             // Determinar el costo total de la orden
             const costoTotalOrden = (producto.precio + costoAdicionales) * cantidad;
-            // console.log("Costo Total: ", costoTotalOrden)
             // Actualizar el costo total de adicionales:
             const elementoTotalAdicionales = document.getElementById('detalle-costo-adicionales');
             elementoTotalAdicionales.innerText = `Bs. ${(costoAdicionales).toFixed(2)}`; 
@@ -364,8 +402,7 @@
             
             // Obtener todos los adicionales seleccionados
             const inputsSeleccionados = form.querySelectorAll('input[type="radio"]:checked, input[type="checkbox"]:checked');
-            
-            // console.log("Inputs: ",inputsSeleccionados);
+
             inputsSeleccionados.forEach(input => {
                 // Extraer el id del input correspondiente
                 const adicionalId = input.id.split('-')[1]; // Asumiendo id's como "radio-123" or "check-123"
@@ -379,10 +416,17 @@
                     costoTotal += precio;
                 }
             });
-            
-            // console.log("Costo total adicionales: ", costoTotal);
 
             return costoTotal;
+        }
+
+        const ocultarMensajeLimitados = () => {
+            const containerAdvertencia = document.getElementById('error-limitados-container');
+            containerAdvertencia.style.display = 'none';
+        }
+        const ocultarMensajeAgotados = () => {
+            const containerAdvertencia = document.getElementById('error-agotados-container');
+            containerAdvertencia.style.display = 'none';
         }
     });
 </script>
