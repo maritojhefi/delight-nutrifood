@@ -90,12 +90,14 @@ class ProductoController extends Controller
     public function detalleproducto($id)
     {
         try {
-           $producto = Producto::publicoTienda()->findOrFail($id);
+        $producto = Producto::publicoTienda()->findOrFail($id);
         $nombrearray = Str::of($producto->nombre)->explode(' ');
 
         // Procesar la imagen del producto y su url
         $producto->imagen = $producto->pathAttachment();
         $producto->url_detalle = route('delight.detalleproducto', $producto->id);
+        $adicionales = $producto->subcategoria->adicionales;
+
         // Obtener productos similares excluyendo el producto ya obtenido
         $similares = $producto->subcategoria->productos
             // Omitir el producto actual entre los similares
@@ -109,7 +111,7 @@ class ProductoController extends Controller
                 return $p;
             });
         //dd($nombrearray);
-        return view('client.productos.delight-producto', compact('producto', 'nombrearray', 'similares'));
+        return view('client.productos.delight-producto', compact('producto', 'nombrearray', 'similares', 'adicionales'));
         } catch (\Throwable $th) {
             Log::error("Error al renderizar pagina: ", [$th]);
         }
