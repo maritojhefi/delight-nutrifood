@@ -82,7 +82,7 @@ export const updateCartCounterEX = () => {
 }
 
 // AGREGAR ITEMS AL CARRITO
-export async function addToCart(productId, quantity, isPlan = false, isUpdate = false) {
+export async function addToCart(productId, quantity, isUpdate = false) {
   const cart = getCart();
 
   // console.log("Carrito actual:", cart);
@@ -105,7 +105,7 @@ export async function addToCart(productId, quantity, isPlan = false, isUpdate = 
         if (existingItem) {
             existingItem.quantity = newQty;
         } else {
-            cart.items.push({id: productId, quantity, isPlan: isPlan});
+            cart.items.push({id: productId, quantity});
         }
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartCounterEX()
@@ -131,7 +131,7 @@ export async function addToCart(productId, quantity, isPlan = false, isUpdate = 
     if (existingItem) {
         existingItem.quantity = newQty;
     } else {
-        cart.items.push({id: productId, quantity, isPlan: isPlan});
+        cart.items.push({id: productId, quantity});
     }
     
     localStorage.setItem('cart', JSON.stringify(cart));

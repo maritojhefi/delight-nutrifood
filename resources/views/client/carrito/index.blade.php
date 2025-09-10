@@ -540,7 +540,7 @@
         const productToIncreaseId = button.getAttribute('data-product-id');
         const quantitySpan = document.getElementById(`item-${productToIncreaseId}-qty`);
 
-        const IncreaseAttemp = await carritoStorage.addToCart(productToIncreaseId, 1, false, true);
+        const IncreaseAttemp = await carritoStorage.addToCart(productToIncreaseId, 1, true);
 
         if (IncreaseAttemp.success === true) {
             quantitySpan.textContent = IncreaseAttemp.newQuantity;
