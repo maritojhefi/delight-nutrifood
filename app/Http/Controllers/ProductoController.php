@@ -82,9 +82,13 @@ class ProductoController extends Controller
     }
     public function subcategorias()
     {
-        $subcategorias = Subcategoria::has('productos')->where('categoria_id', 1)
+        // Obtener solo subcategorias con productos disponibles y visibles a clientes
+        $subcategorias = Subcategoria::tieneProductosDisponibles()
+        // Pertenecientes a la categoria ECO-TIENDA
+            ->where('categoria_id', 1)
             ->orderBy('nombre')
             ->get();
+            
         return view('client.productos.subcategorias', data: compact('subcategorias'));
     }
     public function detalleproducto($id)

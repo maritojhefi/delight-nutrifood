@@ -26,7 +26,7 @@ class Tag extends Model
     }
     public function scopeTieneProductosDisponibles($query)
     {
-        // Make sure we're using the correct relationship name and scope
+        // Obtener solo tags con productos disponibles y visibles al cliente
         return $query->whereHas('productos', function ($query) {
             $query->publicoTienda();
         });

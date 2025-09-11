@@ -51,4 +51,11 @@ class Subcategoria extends Model
             return "imagenes/subcategorias/" . $this->foto;
         }
     }
+    public function scopeTieneProductosDisponibles($query)
+    {
+        // Obtener solo tags con productos disponibles y visibles al cliente
+        return $query->whereHas('productos', function ($query) {
+            $query->publicoTienda();
+        });
+    }
 }
