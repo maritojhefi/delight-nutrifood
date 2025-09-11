@@ -28,6 +28,9 @@
             {{-- RENDERIZADO CONDICIONAL ADICIONALES --}}
         </form>
         <div class="divider mb-2"></div>
+        <div class="line-height-xs">
+            <small class=" mb-0 color-theme">Los extras seleccionados se veran reflejados en la cantidad de unidades que pidas.</small>
+        </div>
         <div class="d-flex mb-0 pb-1">
             <div class="align-self-center">
                 <h5 class="mb-0">Cantidad</h5>
