@@ -111,28 +111,21 @@
             // Revelar el menu
             $("#detalles-menu").addClass("menu-active");
 
-            // $("#btn-cerrar-detalles").
+            // Cerrar el menu
             $("#btn-cerrar-detalles").off('click').on('click', function() {
-                closeDetallesMenu(); // No need for await here
+                closeDetallesMenu();
             });
         };
 
         const closeDetallesMenu = () => {
-            // console.log("Cerrando Menu Detalles")
             $("#detalles-menu").removeClass("menu-active");
-            // console.log("Menu Detalles deberia estar cerrado")
+            reiniciarCantidadSeleccionada();
 
             // Revisar si otros menus se encuentran ya activos para evitar ocultar el menu-hider
             // Excluir explícitamente el menu-hider y el detalles-menu
             const otherActiveMenus = $(".menu.menu-active:not(#detalles-menu):not(.menu-hider)").length;
-            
-            // console.log("Otros menus activo: ", $(".menu.menu-active:not(#detalles-menu):not(.menu-hider)"));
-
             if (otherActiveMenus === 0) {
-                // console.log("No hay otros menus activos, ocultando el hider");
                 $(".menu-hider").removeClass("menu-active");
-            } else {
-                // console.log(`Menu(s) ${otherActiveMenus} aun activos, manteniendo visible el menu-hider`);
             }
         }
 
@@ -525,6 +518,10 @@
                 .text(booleano ? 'VERIFICANDO...' : 'AGREGAR AL CARRITO')
                 .prop('disabled', booleano);
         };
+        const reiniciarCantidadSeleccionada = () => {
+            const inputCantidad = document.getElementById('detalles-cantidad');
+            inputCantidad.value = 1;
+        }
     });
 </script>
 @endpush
