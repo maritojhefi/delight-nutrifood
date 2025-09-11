@@ -289,8 +289,9 @@
                             <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
                                 <div class="row" style="height: 400px; overflow: hidden;" id="contenedor-grafico">
                                     <!-- Establecemos el tamaño del contenedor y nos aseguramos de que la imagen no se salga -->
-                                    <img src="{{ $cajaSeleccionada->urlGraficoProductosVendidos($cajeroSeleccionado ? $cajeroSeleccionado->id : null) }}" class="img-graficos"
-                                        style="width: 100%; height: 95%; object-fit: cover;" alt="">
+                                    <img src="{{ $cajaSeleccionada->urlGraficoProductosVendidos($cajeroSeleccionado ? $cajeroSeleccionado->id : null) }}"
+                                        class="img-graficos" style="width: 100%; height: 95%; object-fit: cover;"
+                                        alt="">
                                 </div>
                             </div>
                         </div>
@@ -364,8 +365,8 @@
                             <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
                                 <div class="row" style="height: 400px; overflow: hidden;" id="contenedor-grafico">
                                     <!-- Gráfico de ventas por categoría generado por QuickChart -->
-                                    <img src="{{ $cajaSeleccionada->urlGraficoVentasPorCategoria($cajeroSeleccionado ? $cajeroSeleccionado->id : null) }}" class="img-graficos"
-                                        style="width: 100%; height: 95%; object-fit: cover;"
+                                    <img src="{{ $cajaSeleccionada->urlGraficoVentasPorCategoria($cajeroSeleccionado ? $cajeroSeleccionado->id : null) }}"
+                                        class="img-graficos" style="width: 100%; height: 95%; object-fit: cover;"
                                         alt="Gráfico de ventas por categoría">
                                 </div>
                             </div>
@@ -432,56 +433,14 @@
                         <div class="row" style="height: 250px; overflow: hidden;" id="contenedor-grafico">
                             <!-- Establecemos el tamaño del contenedor y nos aseguramos de que la imagen no se salga -->
                             <img src="{{ $cajaSeleccionada->generarGraficoIngresosPorCajero() }}"
-                                style="width: 100%; height: 100%; object-fit: cover;" alt="" class="img-graficos">
+                                style="width: 100%; height: 100%; object-fit: cover;" alt=""
+                                class="img-graficos">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        {{-- <!-- SECCIÓN TEMPORAL DE DEPURACIÓN - ELIMINAR DESPUÉS DE VERIFICAR -->
-        <div class="col-12 pe-1">
-            <div class="card p-0 bordeado">
-                <div class="card-header py-2">
-                    <strong>🔍 DEPURACIÓN - Verificar Totales</strong>
-                </div>
-                <div class="card-body py-2">
-                    @php
-                        $debug = $cajaSeleccionada->debugTotalesGrafico($cajeroSeleccionado ? $cajeroSeleccionado->id : null);
-                    @endphp
-                    <div class="row">
-                        <div class="col-6">
-                            <h6>Totales del Sistema (CORRECTOS):</h6>
-                            <ul class="list-unstyled">
-                                <li><strong>Total Ingreso Absoluto:</strong> {{ number_format($debug['totalIngresoAbsoluto'], 2) }} Bs</li>
-                                <li><strong>Ingreso POS:</strong> {{ number_format($debug['totalIngresoPOS'], 2) }} Bs</li>
-                                <li><strong>Saldos Pagados:</strong> {{ number_format($debug['totalSaldosPagados'], 2) }} Bs</li>
-                            </ul>
-                        </div>
-                        <div class="col-6">
-                            <h6>Totales del Gráfico:</h6>
-                            <ul class="list-unstyled">
-                                <li><strong>Total Categorías:</strong> {{ number_format($debug['totalGraficoCategorias'], 2) }} Bs</li>
-                                <li><strong>Total Productos:</strong> {{ number_format($debug['totalGraficoProductos'], 2) }} Bs</li>
-                                <li><strong>Diferencia Categorías:</strong> <span class="badge badge-{{ $debug['diferenciaCategorias'] == 0 ? 'success' : 'danger' }}">{{ number_format($debug['diferenciaCategorias'], 2) }} Bs</span></li>
-                                <li><strong>Diferencia Productos:</strong> <span class="badge badge-{{ $debug['diferenciaProductos'] == 0 ? 'success' : 'danger' }}">{{ number_format($debug['diferenciaProductos'], 2) }} Bs</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-12">
-                            <h6>Análisis de Errores:</h6>
-                            <ul class="list-unstyled">
-                                <li><strong>Error Categorías:</strong> {{ number_format($debug['porcentajeErrorCategorias'], 2) }}%</li>
-                                <li><strong>Error Productos:</strong> {{ number_format($debug['porcentajeErrorProductos'], 2) }}%</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
-
-        @include('livewire.admin.caja.includes.modal-detalle-venta')
+        @include('livewire.admin.caja.includes.modal-detalle-venta')        
     @else
         <div class="col-12">
             <div class="row m-0 p-0" style="">
@@ -517,7 +476,8 @@
                                                 detalles</span>
                                         </a>
                                     </div>
-                                    <div class="col-6" style="height: 200px; overflow: hidden;" id="contenedor-grafico">
+                                    <div class="col-6" style="height: 200px; overflow: hidden;"
+                                        id="contenedor-grafico">
                                         <!-- Establecemos el tamaño del contenedor y nos aseguramos de que la imagen no se salga -->
                                         <img src="{{ $caja->urlGraficoComposicionIngresos() }}" class="img-graficos"
                                             style="width: 100%; height: 100%; object-fit: cover;" alt="">

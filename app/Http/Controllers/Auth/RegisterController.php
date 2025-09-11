@@ -58,7 +58,7 @@ class RegisterController extends Controller
             // 'direccion' => ['required', 'string', 'min:10', ],
         ]);
     }
-    
+
     /**
      * Create a new user instance after a valid registration.
      *
@@ -75,5 +75,48 @@ class RegisterController extends Controller
             // 'nacimiento' => $data['fecha'],
             // 'direccion' => $data['direccion'],
         ]);
+    }
+    public function showRegistrationForm()
+    {
+        $usuarioReferido = null;
+        $parametros = null;
+        $parametroReferido = null;
+
+        if (request()->query()) {
+            // Tiene parámetros
+            $parametros = request()->query(); // array con todos los parámetros
+            $ref = $parametros['ref'] ?? null;
+
+            if ($ref) {
+                // Extraer el número después de los ceros
+                $parametroReferido = $this->extraerNumeroReferencia($ref);
+            }
+        }
+
+        $usuarioReferido = User::find($parametroReferido);
+
+        return view('auth.register', compact('usuarioReferido')); // tu blade personalizado
+    }
+
+    /**
+     * Extrae el número de referencia después de los ceros
+     * Ejemplos:
+     * "REF000019" -> 19
+     * "REF001019" -> 1019
+     * "REF000600" -> 600
+     * "REF123456" -> 123456
+     */
+    private function extraerNumeroReferencia($referencia)
+    {
+        // Verificar que la referencia tenga el formato correcto
+        if (!preg_match('/^REF\d+$/', $referencia)) {
+            return null;
+        }
+
+        // Remover el prefijo "REF"
+        $numero = substr($referencia, 3);
+
+        // Convertir a entero para eliminar ceros a la izquierda
+        return (int) $numero;
     }
 }

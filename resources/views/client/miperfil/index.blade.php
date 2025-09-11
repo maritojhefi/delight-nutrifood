@@ -120,6 +120,29 @@
                 </div>
             </a>
 
+            @if ($usuario->perfilesPuntos->count() > 0)
+                <a href="#" class="col-12" onclick="copiarEnlacePatrocinador('{{ $usuario->id }}')">
+                    <div class="card card-style mb-3">
+                        <div class="d-flex py-3 my-1">
+                            <div class="align-self-center px-3">
+                                <i class="fa fa-link color-blue-dark font-35 ps-2 pe-1"></i>
+                            </div>
+                            <div class="align-self-center">
+                                <h4 class="text-start color-theme font-600 font-17">Enlace de patrocinador</h4>
+                                <p class="text-start mt-n2 font-11 color-highlight mb-0" style="line-height: normal;">
+                                    Comparte tu enlace de patrocinador con tus amigos, familiares o conocidos para ganar puntos
+                                    delight.
+                                </p>
+                            </div>
+                            <div class="align-self-center ms-auto pe-4">
+                                <i class="fa fa-arrow-right opacity-30"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            @endif
+
+
         </div>
 
         <div id="success" data-menu="menu-success-2"></div>
@@ -127,20 +150,25 @@
         @push('modals')
             <div id="menu-success-2" class="menu menu-box-modal bg-green-dark rounded-m" data-menu-height="350"
                 data-menu-width="310">
-                <h1 class="text-center mt-3 pt-1"><i class="fa fa-3x fa-check-circle color-white shadow-xl rounded-circle"></i></h1>
+                <h1 class="text-center mt-3 pt-1"><i class="fa fa-3x fa-check-circle color-white shadow-xl rounded-circle"></i>
+                </h1>
                 <h1 class="text-center mt-3 font-700 color-white">Activado!</h1>
                 <p class="boxed-text-l color-white opacity-70">
-                    Tienes activado los mensajes automaticos para programar tu plan.<br> (Valido para usuarios suscritos a algun plan.)
+                    Tienes activado los mensajes automaticos para programar tu plan.<br> (Valido para usuarios suscritos a algun
+                    plan.)
                 </p>
                 <a href="#"
                     class="close-menu btn btn-m btn-center-m button-s shadow-l rounded-s text-uppercase font-900 bg-white color-green-dark cambiarEstado">Desactivar</a>
             </div>
 
-            <div id="menu-warning-2" class="menu menu-box-modal bg-red-dark rounded-m" data-menu-height="350" data-menu-width="310">
-                <h1 class="text-center mt-3 pt-1"><i class="fa fa-3x fa-times-circle color-white shadow-xl rounded-circle"></i></h1>
+            <div id="menu-warning-2" class="menu menu-box-modal bg-red-dark rounded-m" data-menu-height="350"
+                data-menu-width="310">
+                <h1 class="text-center mt-3 pt-1"><i class="fa fa-3x fa-times-circle color-white shadow-xl rounded-circle"></i>
+                </h1>
                 <h1 class="text-center mt-3 color-white font-700">Desactivado!</h1>
                 <p class="boxed-text-l color-white opacity-70">
-                    No estas habilitad@ para recibir mensajes whatsapp automaticos.<br> Cambia esta configuracion presionando el boton debajo.
+                    No estas habilitad@ para recibir mensajes whatsapp automaticos.<br> Cambia esta configuracion presionando el
+                    boton debajo.
                 </p>
                 <a href="#"
                     class="close-menu btn btn-m btn-center-m button-s shadow-l rounded-s text-uppercase font-900 bg-white color-red-dark cambiarEstado">Activar</a>
@@ -149,6 +177,11 @@
                 data-autohide="true"><i class="fa fa-times me-3"></i>Desactivaste a tu asistente automatico!</div>
             <div id="whatsapp-true" class="snackbar-toast bg-green-dark color-white fade hide" data-delay="3000"
                 data-autohide="true"><i class="fa fa-check me-3"></i>Tu asistente ahora esta activo!</div>
+            <div id="url-copiada" class="menu menu-box-modal rounded-m"
+                style="display: block; width: 220px; height: auto; padding: 1%;">
+                <h1 class="text-center fa-5x mt-2 pt-3 pb-2"><i class="fa fa-copy color-mint-dark"></i></h1>
+                <h2 class="text-center">Url copiada correctamente</h2>
+            </div>
         @endpush
         @push('scripts')
             <script>
@@ -193,6 +226,33 @@
 
                     });
                 });
+
+                function copiarEnlacePatrocinador(id) {
+                    event.preventDefault();
+                    $.ajax({
+                        method: "get",
+                        url: "/miperfil/enlace/patrocinador/" + id,
+                        success: function(result) {
+                            console.log(result);
+                            copiarAlPortapapelesLink(result.enlace);
+                        }
+                    })
+                }
+
+                function copiarAlPortapapelesLink(enlace) {
+                    var tempInput = document.createElement('input');
+                    tempInput.value = enlace;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                    $('.menu-hider').addClass('menu-active');
+                    $('#url-copiada').addClass('menu-active');
+                    setTimeout(function() {
+                        $('#url-copiada').removeClass('menu-active');
+                        $('.menu-hider').removeClass('menu-active');
+                    }, 3000);
+                }
             </script>
         @endpush
     @endauth

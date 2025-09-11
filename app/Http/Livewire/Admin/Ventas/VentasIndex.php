@@ -1026,9 +1026,9 @@ class VentasIndex extends Component
                     ]);
 
                     $productos = $cuenta->productos;
-                    if ($this->cuenta->cliente_id != null) {
-                        DB::table('users')->where('id', $this->cuenta->cliente_id)->increment('puntos', $this->cuenta->puntos);
-                    }
+                    // if ($this->cuenta->cliente_id != null) {
+                    //     DB::table('users')->where('id', $this->cuenta->cliente_id)->increment('puntos', $this->cuenta->puntos);
+                    // }
                     if ($montoSaldo > 0) {
                         Saldo::create([
                             'user_id' => $this->cuenta->cliente_id,
