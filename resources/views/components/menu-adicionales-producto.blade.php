@@ -1,8 +1,8 @@
-<div id="detalles-menu" class="menu menu-box-bottom rounded-m pb-5">    
+<div id="detalles-menu" class="menu menu-box-bottom rounded-m pb-5" style="z-index: 1053;">    
     <div class="menu-title">
         <p class="color-highlight">Delight-Nutrifood</p>
         <h1 class="font-22">Personaliza tu orden</h1>
-        <a href="#" class="close-menu"><i class="fa fa-times-circle"></i></a>
+        <a href="#" id="btn-cerrar-detalles" class=""><i class="fa fa-times-circle"></i></a>
     </div>
     <div class="divider mb-0"></div>
     <div class="content mt-3">
@@ -39,10 +39,6 @@
                     <a id="detalles-stepper-up" href="#" class="stepper-add"><i class="fa fa-plus color-theme opacity-40"></i></a>
                 </div>
             </div>
-            <!-- <div class="error-limitados-container bg-warning border-warning"
-            >
-                <p class="error-limitados-message">Algunos adicionales disponen de stock bajo, se ajusto la cantidad de su orden.</p>
-            </div> -->
         </div>
         <div id="error-limitados-container" class="alert alert-warning p-2 rounded-s" style="display: none;">
             <p id="error-limitados-message">Algunos adicionales disponen de stock bajo, se ajusto la cantidad de su orden.</p>
@@ -101,15 +97,38 @@
 
             await prepararMenuProducto(response.data);
 
-            // Cerrar otros menu abiertos
-            $(".menu-active").removeClass("menu-active");
+            // // Cerrar otros menu abiertos
+            // $(".menu-active").removeClass("menu-active");
 
             // Revelar el backdrop
+            $(".menu-hider").css("z-index", "1052");
             $(".menu-hider").addClass("menu-active");
 
             // Revelar el menu
             $("#detalles-menu").addClass("menu-active");
+
+            // $("#btn-cerrar-detalles").
+            $("#btn-cerrar-detalles").on('click', function() {
+                // Call the closeDetallesMenu function here
+                closeDetallesMenu();
+            });
         };
+
+        const closeDetallesMenu = () => {
+            console.log("Cerrando Menu Detalles")
+            $("#detalles-menu").removeClass("menu-active");
+            console.log("Menu Detalles deberia estar cerrado")
+
+            // Revisar si otros menus se encuentran ya activos para evitar ocultar el menu-hider
+            const otherActiveMenus = $("[class*='menu']:not(#detalles-menu).menu-active, .menu.menu-active:not(#detalles-menu)").length;
+            
+            if (otherActiveMenus === 0) {
+                console.log("No hay otros menus activos, ocultando el hider");
+                $(".menu-hider").removeClass("menu-active");
+            } else {
+                console.log(`Menu(s) ${otherActiveMenus} aun activos, manteniendo visible el menu-hider`);
+            }
+        }
 
         // Preparar la informacion del Menu para el producto seleccionado.
         const prepararMenuProducto = async (infoProducto) => {
@@ -184,6 +203,7 @@
                 try {
                     const response = await ProductoService.validarProductoConAdicionales(infoProducto.id, IdsAdicionalesSeleccionados, cantidad);
                     const AddAttempt = await carritoStorage.addToCart(infoProducto.id, cantidad, false, IdsAdicionalesSeleccionados);
+                    closeDetallesMenu();
                 } catch (error) {
                     if (error.response && error.response.status === 422) {
                         // Informacion recibida de validacion inexitosa en backend

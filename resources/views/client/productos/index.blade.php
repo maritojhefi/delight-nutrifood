@@ -310,12 +310,23 @@
             </div>
         </div>
     </div>
+
+    <x-menu-adicionales-producto :isUpdate="false"/>
 @endsection
 
 @push('scripts')
 <script> 
+    // $(document).ready(function() {
+    //     $(document).on('click', '.add-to-cart', addToCartHandler);
+    // });
     $(document).ready(function() {
-        $(document).on('click', '.add-to-cart', addToCartHandler);
+        $(document).on('click', '.agregar-unidad', addToCartHandler);
+
+        $(document).on('click', '.menu-adicionales-btn', function() {
+            const productoId = $(this).data('producto-id');
+            console.log("Product ID:", productoId); 
+            openDetallesMenu(productoId);
+        });
     });
 
     async function addToCartHandler() {

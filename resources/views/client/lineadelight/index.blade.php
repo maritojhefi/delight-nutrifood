@@ -141,7 +141,7 @@
     @endif
 
     {{-- MODAL PRODUCTOS CATEGORIZADOS --}}
-    <div class="modal fade" id="categorizedProductsModal" tabindex="-1" aria-labelledby="categorizedProductsModalLabel" style="z-index: 9999">
+    <div class="modal fade" id="categorizedProductsModal" tabindex="-1" aria-labelledby="categorizedProductsModalLabel" style="z-index: 1051">
         <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
             <div class="modal-content">
                 <!-- Modal Header -->
@@ -165,7 +165,7 @@
     </div>
 
     {{-- MODAL PRODUCTOS POPULARES --}}
-    <div class="modal fade" id="popularProductsModal" tabindex="-1" aria-labelledby="popularProductsModalLabel" aria-hidden="true" style="z-index: 9999">
+    <div class="modal fade" id="popularProductsModal" tabindex="-1" aria-labelledby="popularProductsModalLabel" aria-hidden="true" style="z-index: 1051">
         <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
             <div class="modal-content">
                 <!-- Modal Header -->
@@ -192,13 +192,20 @@
     </div>
 
     <x-modal-listado-productos identificador="menu-listado-productos" />
+    <x-menu-adicionales-producto :isUpdate="false"/>
 @endsection
 
 @push('scripts')
 {{-- SCRIPT CONTROL DE AGREGAR AL CARRITO --}}
 <script> 
     $(document).ready(function() {
-        $(document).on('click', '.add-to-cart', addToCartHandler);
+        $(document).on('click', '.agregar-unidad', addToCartHandler);
+
+        $(document).on('click', '.menu-adicionales-btn', function() {
+            const productoId = $(this).data('producto-id');
+            console.log("Product ID:", productoId); 
+            openDetallesMenu(productoId);
+        });
     });
 
     async function addToCartHandler() {
@@ -370,13 +377,13 @@
             try {
                 const categorizedProducts = await ProductoService.getProductosCategoria(categoriaId);
                 // console.log("Productos categorizados: ", categorizedProducts);
-                renderProductItems(categorizedProducts);
+                renderProductItems(categorizedProducts.data);
                 reinitializeLucideIcons();
             } catch (error) {
                     console.error(`Error al obtener productos para la categoria con ID ${categoriaId}`, error);
                     showErrorState();
-                }
-            });
+            }
+        });
     });
 
     const renderProductItems = (categorizedProducts) => {
@@ -427,7 +434,7 @@
             
             return `
                 <button
-                    class="add-to-cart btn rounded-s px-1 shadow-l bg-highlight font-900 text-uppercase"
+                    class="${item.tiene_adicionales ? "menu-adicionales-btn":"agregar-unidad"} btn rounded-s px-1 shadow-l bg-highlight font-900 text-uppercase"
                     data-producto-id="${item.id}"
                     data-producto-nombre="${item.nombre}"
                 >
@@ -439,26 +446,26 @@
             `;
         }
 
-        const renderPriceSection = (item) => {
-            const hasDiscount = item.descuento && (item.descuento > 0 && item.descuento < item.precio);
-            
-            if (hasDiscount) {
+        const renderPriceSection = (productoPrecio) => {
+            const tieneDescuento = productoPrecio.precio_original;
+
+            if (tieneDescuento) {
                 return `
                     <div class="d-flex flex-column m-0 justify-content-center w-100">
-                        <p class="font-10 m-0"><del>Bs. ${item.precio}</del></p>
-                        <p class="font-18 font-weight-bolder color-highlight mb-0">Bs. ${item.descuento}</p>
+                        <p class="font-10 m-0"><del>Bs. ${productoPrecio.precio_original}</del></p>
+                        <p class="font-17 font-weight-bolder color-highlight mb-0">Bs. ${productoPrecio.precio}</p>
                     </div>
                 `;
             }
             
-            return `<p class="font-18 font-weight-bolder color-highlight mb-0">Bs. ${item.precio}</p>`;
+            return `<p class="font-17 font-weight-bolder color-highlight mb-0">Bs. ${productoPrecio.precio}</p>`;
         }
 
         const renderTagsRow = (item) => {
-            if (item.tag && item.tag.length > 0) {
+            if (item.tags && item.tags.length > 0) {
                 return `
                     <div class="tags-container d-flex flex-row align-items-center justify-content-start gap-2">
-                    ${item.tag.map(tag => `
+                    ${item.tags.map(tag => `
                         <button popovertarget="poppytag-${item.id}-${tag.id}" popoveraction="toggle" style="anchor-name: --tag-btn-${item.id}-${tag.id};">
                             <i data-lucide="${tag.icono}" class="lucide-icon" style="width:1.5rem;height:1.5rem;"></i>
                         </button>

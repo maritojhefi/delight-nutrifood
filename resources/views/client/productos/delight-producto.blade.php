@@ -71,7 +71,7 @@
             <x-footer-productos-similares :producto="$producto" :similares="$similares" />
         </div>
     </div>
-    <x-menu-adicionales-producto :identificador="$producto->id" :isUpdate="false" :producto="$producto" :adicionales="$adicionales" />
+    <x-menu-adicionales-producto :isUpdate="false"/>
 @endsection
 
 @push('scripts')

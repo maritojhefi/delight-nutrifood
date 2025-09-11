@@ -278,27 +278,16 @@ class ProductoController extends Controller
     public function productosSubcategoria($id)
     {
         try {
-            $productos = Producto::publicoTienda()->select('productos.*')
-                ->with(['unfilteredSucursale', 'tag'])
+            $productos = Producto::publicoTienda()
+                ->with('tags')
                 ->where('subcategoria_id', $id)
                 ->orderByRaw('CASE 
                             WHEN descuento IS NOT NULL AND descuento > 0 AND descuento < precio THEN 0 
                             ELSE 1 
                         END')
-                ->orderBy('nombre')
                 ->get();
 
-            foreach ($productos as $producto) {
-                if ($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0) {
-                    $producto->tiene_stock = false;
-                } else {
-                    $producto->tiene_stock = true;
-                }
-                $producto->imagen = $producto->pathAttachment();
-                $producto->url_detalle = route('delight.detalleproducto', $producto->id);
-            }
-
-            return response()->json($productos, 200);
+            return ProductoListado::collection($productos);
         } catch (\Throwable $th) {
             return response()->json([
                 'error' => 'Error al obtener los productos de la categoria. Por favor, intente nuevamente.'
