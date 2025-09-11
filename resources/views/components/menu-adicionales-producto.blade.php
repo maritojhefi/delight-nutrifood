@@ -43,11 +43,11 @@
                 </div>
             </div>
         </div>
-        <div id="error-limitados-container" class="alert alert-warning p-2 rounded-s" style="display: none;">
-            <p id="error-limitados-message">Algunos adicionales disponen de stock bajo, se ajusto la cantidad de su orden.</p>
+        <div id="error-limitados-container" class="alert bg-orange-light line-height-s text-white p-2 rounded-s" style="display: none;">
+            <p id="error-limitados-message" class="text-white">Algunos adicionales disponen de stock bajo, se ajusto la cantidad de su orden.</p>
         </div>
-        <div id="error-agotados-container" class="alert alert-warning p-2 rounded-s" style="display: none;">
-            <p id="error-agotados-message">Algunos adicionales se encuentran agotados, se ajustaron sus selecciones.</p>
+        <div id="error-agotados-container" class="alert bg-orange-light p-2 rounded-s" style="display: none;">
+            <p id="error-agotados-message" class="text-white">Algunos adicionales se encuentran agotados.</p>
         </div>
         <div class="d-flex mb-3 mt-1">
             <div class="align-self-center">
@@ -67,7 +67,7 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex mb-3">
+        <div class="d-flex mb-2">
             <div class="align-self-center">
                 <h5 class="mb-0">Costo Total</h5>
             </div>
@@ -75,14 +75,14 @@
                 <h5 id="detalle-costo-total" class="mb-0">Bs. 25.30</h5>
             </div>
         </div>
-        <div class="divider"></div>
+        <div class="divider mb-2"></div>
         <div id="boton-accion-container">
             @if ($isUpdate)
                 <!-- <button type="submit" form="detalles-menu-adicionales">Submit check</button> -->
                 <button class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm close-menu">Actualizar pedido</buttno>
             @else
                 <!-- <button type="submit" form="detalles-menu-adicionales">Submit check</button> -->
-                <button type="submit" form="detalles-menu-adicionales" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm">Agregar al carrito</button>
+                <button type="submit" id="btn-verificar-agregado" form="detalles-menu-adicionales" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm">Agregar al carrito</button>
             @endif
         </div>
         
@@ -92,6 +92,7 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
+        // const [estaVerficiando, setEstaVerificando] = (false);
         
         // Abrir menu de detalles-producto
         window.openDetallesMenu = async function(productoId) {
@@ -261,10 +262,13 @@
                 console.log("IDs Seleccionados:", IdsAdicionalesSeleccionados);
 
                 try {
+                    estaVerificando(true);
                     const respuestaValidacionAdicionales = await ProductoService.validarProductoConAdicionales(infoProducto.id, IdsAdicionalesSeleccionados, cantidad);
                     const AddAttempt = await carritoStorage.addToCart(infoProducto.id, cantidad, false, IdsAdicionalesSeleccionados);
+                    estaVerificando(false);
                     closeDetallesMenu();
                 } catch (error) {
+                    estaVerificando(false);
                     if (error.response && error.response.status === 422) {
                         // Informacion recibida de validacion inexitosa en backend
                         const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaxima,
@@ -516,6 +520,11 @@
             const containerAdvertencia = document.getElementById('error-agotados-container');
             containerAdvertencia.style.display = 'none';
         }
+        const estaVerificando = (booleano) => {
+            $('#btn-verificar-agregado')
+                .text(booleano ? 'VERIFICANDO...' : 'AGREGAR AL CARRITO')
+                .prop('disabled', booleano);
+        };
     });
 </script>
 @endpush

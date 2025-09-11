@@ -351,13 +351,14 @@ class ProductoController extends Controller
                     return response()->json([
                         'success' => false,
                         'messageAgotados' => "Los siguientes adicionales se encuentran agotados: {$agotados->pluck('nombre')->implode(', ')}",
-                        'messageLimitados' => "El stock para: {$limitados->pluck('nombre')->implode(', ')}; es bajo, puedes actualizar tu orden presionando el boton de abajo.",
+                        'messageLimitados' => "Stock disponible: {$limitados->map(fn($item) => "{$item['nombre']} ({$item['stock']})")->implode(', ')}.
+                         Puedes actualizar tu orden presionando el boton de abajo.",
+                         // 'messageLimitados' => "El stock para: {$limitados->pluck('nombre')->implode(', ')}; es bajo, puedes actualizar tu orden presionando el boton de abajo.",
                         'idsAdicionalesAgotados' => $agotados->pluck('id')->all(),
                         'idsAdicionalesLimitados' => $limitados->pluck('id')->all(),
                         'cantidadMaxima' => $cantidadMaxima
                     ], 422);
                 }
-
             }
 
 
@@ -415,6 +416,7 @@ class ProductoController extends Controller
                 $limitados[] = [
                     'id' => $adicionalId,
                     'nombre' => $adicional ? $adicional->nombre : "Item ID: {$adicionalId}",
+                    'stock' => $adicional->cantidad,
                 ];
 
                 if ($adicional->cantidad < $cantidadMaxima) {
