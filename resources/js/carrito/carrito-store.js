@@ -83,64 +83,85 @@ export const updateCartCounterEX = () => {
 
 // AGREGAR ITEMS AL CARRITO
 export async function addToCart(productId, quantity, isUpdate = false, adicionales = null) {
-  const cart = getCart();
+    const cart = getCart();
+    //   const existingItem = cart.items.find(item => item.id == productId && item.adicionales == adicionales );
+    const existingItem = cart.items.find(item => {
+        // Revisar IdProducto
+        if (item.id != productId) {
+            return false;
+        }
 
-  // console.log("Carrito actual:", cart);
+        // Revisar Adicionales Inexistentes
+        if (!item.adicionales && !adicionales) {
+            return true; // Si ambos son null, es la misma orden
+        }
+        if (!item.adicionales || !adicionales) {
+            return false; // Si difieren, son ordenes distintas
+        }
 
-  const existingItem = cart.items.find(item => item.id == productId);
+        // Revisar numero de adicionales
+        if (item.adicionales.length !== adicionales.length) {
+            return false; // Si difieren, son ordenes distintas
+        }
 
-  // console.log("Item a agregar: ", existingItem);
-  const currentQty = existingItem ? existingItem.quantity : 0;
-  // console.log("Cantidad actual del item: ", currentQty);
-  const newQty = currentQty + quantity;
-  // console.log("Nueva cantidad: ", newQty);
+        // Crear copias ordenadas para su comparacion.
+        const existentesAdicionalesOrdenados = [...item.adicionales].sort();
+        const nuevosAdicionalesOrdenados = [...adicionales].sort();
 
-  try {
-    const stockResponse = await checkProductStock(productId);
-    // console.log("Respuesta del backend: ", stockResponse);
-    
-    // Si el stock es ilimitado, saltar validacion
-    if (stockResponse.unlimited) {
-    // console.log("El stock del item es ilimitado");
+        // Revisar si cada adicional coincide
+        return existentesAdicionalesOrdenados.every((value, index) => value === nuevosAdicionalesOrdenados[index]);
+    });
+
+    const currentQty = existingItem ? existingItem.quantity : 0;
+    // console.log("Cantidad actual del item: ", currentQty);
+    const newQty = currentQty + quantity;
+    // console.log("Nueva cantidad: ", newQty);
+
+    try {
+        const stockResponse = await checkProductStock(productId);
+        // console.log("Respuesta del backend: ", stockResponse);
+        
+        // Si el stock es ilimitado, saltar validacion
+        if (stockResponse.unlimited) {
+        // console.log("El stock del item es ilimitado");
+            if (existingItem) {
+                existingItem.quantity = newQty;
+            } else {
+                cart.items.push({id: productId, quantity: quantity, adicionales: adicionales});
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCounterEX()
+            if (!isUpdate) {
+                // console.log("No es update")
+                    showAddedToast();
+            }
+            return {success: true, newQuantity: newQty, cart};
+        }
+        
+        // Comparar con el stock disponible
+        const availableStock = stockResponse.stock;
+        if (newQty > availableStock) {
+            console.error(`El stock del producto es ${availableStock}, la cantidad que se solicita es de ${newQty}`);
+            showLimitToast();
+            return {
+                success: false, 
+                message: `Solo hay ${availableStock}u disponibles`,
+                cart
+            };
+        }
+        
         if (existingItem) {
             existingItem.quantity = newQty;
         } else {
             cart.items.push({id: productId, quantity: quantity, adicionales: adicionales});
         }
+        
         localStorage.setItem('cart', JSON.stringify(cart));
-        updateCartCounterEX()
+        updateCartCounterEX();
         if (!isUpdate) {
-            // console.log("No es update")
                 showAddedToast();
         }
         return {success: true, newQuantity: newQty, cart};
-    }
-    
-    // Comparar con el stock disponible
-    const availableStock = stockResponse.stock;
-    if (newQty > availableStock) {
-        console.error(`El stock del producto es ${availableStock}, la cantidad que se solicita es de ${newQty}`);
-        showLimitToast();
-        return {
-            success: false, 
-            message: `Solo hay ${availableStock}u disponibles`,
-            cart
-        };
-    }
-    
-    if (existingItem) {
-        existingItem.quantity = newQty;
-    } else {
-        cart.items.push({id: productId, quantity: quantity, adicionales: adicionales});
-    }
-    
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCounterEX()
-    if (!isUpdate) {
-            // console.log("No es update")
-            showAddedToast();
-    }
-    return {success: true, newQuantity: newQty, cart};
     } catch (error) {
         console.error('Error checking stock:', error);
         return {

@@ -114,21 +114,21 @@
         };
 
         const closeDetallesMenu = () => {
-            console.log("Cerrando Menu Detalles")
+            // console.log("Cerrando Menu Detalles")
             $("#detalles-menu").removeClass("menu-active");
-            console.log("Menu Detalles deberia estar cerrado")
+            // console.log("Menu Detalles deberia estar cerrado")
 
             // Revisar si otros menus se encuentran ya activos para evitar ocultar el menu-hider
             // Excluir explícitamente el menu-hider y el detalles-menu
             const otherActiveMenus = $(".menu.menu-active:not(#detalles-menu):not(.menu-hider)").length;
             
-            console.log("Otros menus activo: ", $(".menu.menu-active:not(#detalles-menu):not(.menu-hider)"));
+            // console.log("Otros menus activo: ", $(".menu.menu-active:not(#detalles-menu):not(.menu-hider)"));
 
             if (otherActiveMenus === 0) {
-                console.log("No hay otros menus activos, ocultando el hider");
+                // console.log("No hay otros menus activos, ocultando el hider");
                 $(".menu-hider").removeClass("menu-active");
             } else {
-                console.log(`Menu(s) ${otherActiveMenus} aun activos, manteniendo visible el menu-hider`);
+                // console.log(`Menu(s) ${otherActiveMenus} aun activos, manteniendo visible el menu-hider`);
             }
         }
 

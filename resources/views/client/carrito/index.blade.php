@@ -388,7 +388,7 @@
                     `).join('')}
                 </ul>
             `
-        } return 'Mockup informacion adicionales';
+        } return '[Informacion extras]';
     }
 
     const renderSummaryItem = (producto) => {
