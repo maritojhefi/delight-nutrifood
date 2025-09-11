@@ -108,9 +108,8 @@
             $("#detalles-menu").addClass("menu-active");
 
             // $("#btn-cerrar-detalles").
-            $("#btn-cerrar-detalles").on('click', function() {
-                // Call the closeDetallesMenu function here
-                closeDetallesMenu();
+            $("#btn-cerrar-detalles").off('click').on('click', function() {
+                closeDetallesMenu(); // No need for await here
             });
         };
 
@@ -120,8 +119,11 @@
             console.log("Menu Detalles deberia estar cerrado")
 
             // Revisar si otros menus se encuentran ya activos para evitar ocultar el menu-hider
-            const otherActiveMenus = $("[class*='menu']:not(#detalles-menu).menu-active, .menu.menu-active:not(#detalles-menu)").length;
+            // Excluir explícitamente el menu-hider y el detalles-menu
+            const otherActiveMenus = $(".menu.menu-active:not(#detalles-menu):not(.menu-hider)").length;
             
+            console.log("Otros menus activo: ", $(".menu.menu-active:not(#detalles-menu):not(.menu-hider)"));
+
             if (otherActiveMenus === 0) {
                 console.log("No hay otros menus activos, ocultando el hider");
                 $(".menu-hider").removeClass("menu-active");
@@ -163,6 +165,34 @@
                 actualizarCostoTotal(infoProducto);
             });
 
+            // AUTO-SELECCIONAR EL PRIMER RADIO DE CADA GRUPO OBLIGATORIO DE ADICIONALES
+            setTimeout(() => {
+                // Encontrar todos los radiobuttons de un grupo en particular
+                const gruposRadio = {};
+                document.querySelectorAll('.input-radio').forEach(radio => {
+                    const nombreGrupoRadios = radio.name;
+                    if (!gruposRadio[nombreGrupoRadios]) {
+                        gruposRadio[nombreGrupoRadios] = [];
+                    }
+                    gruposRadio[nombreGrupoRadios].push(radio);
+                });
+
+                // Seleccionar el primer radio
+                Object.values(gruposRadio).forEach(grupo => {
+                    if (grupo.length > 0) {
+                        grupo[0].checked = true;
+                    }
+                });
+
+                // Actualizar el costo tras seleccion
+                actualizarCostoTotal(infoProducto);
+            }, 0);
+
+            $('.input-radio').on('change', function() {
+                // Actualizar el costo al cambiar los adicionales obligatorios
+                actualizarCostoTotal(infoProducto);
+            });
+
             setTimeout(() => {
                 $('.input-multiple').on('change', function() {
                     const grupoDiv = $(this).closest('[data-grupo]');
@@ -182,6 +212,33 @@
             const formAdicionales = document.getElementById("detalles-menu-adicionales");
             formAdicionales.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                // VALIDACION: Revisar que todos los radios se encuentren seleccionados 
+                const gruposRadio = {};
+                document.querySelectorAll('.input-radio').forEach(radio => {
+                    const nombreGrupoRadios = radio.name;
+                    if (!gruposRadio[nombreGrupoRadios]) { 
+                        gruposRadio[nombreGrupoRadios] = { radios: [], tieneSeleccion: false };
+                    }
+                    gruposRadio[nombreGrupoRadios].radios.push(radio);
+                    if (radio.checked) {
+                        gruposRadio[nombreGrupoRadios].tieneSeleccion = true;
+                    }
+                });
+
+                // Revisar si falta seleccionar radios en grupos obligatorios
+                const gruposSinSeleccionar = [];
+                Object.entries(gruposRadio).forEach(([nombreGrupoRadios, datosGrupo]) => {
+                    if (!datosGrupo.tieneSeleccion) {
+                        gruposSinSeleccionar.push(nombreGrupoRadios);
+                    }
+                });
+
+                if (gruposSinSeleccionar.length > 0) {
+                    // Mostrar alerta de error en caso de radio faltante
+                    alert(`Por favor selecciona una opción en: ${gruposSinSeleccionar.join(', ')}`);
+                    return; // Prevenir envio del formulario
+                }
+
                 ocultarMensajeLimitados();
                 ocultarMensajeAgotados();
                 const formData = new FormData(formAdicionales);
@@ -201,7 +258,7 @@
                 console.log("IDs Seleccionados:", IdsAdicionalesSeleccionados);
 
                 try {
-                    const response = await ProductoService.validarProductoConAdicionales(infoProducto.id, IdsAdicionalesSeleccionados, cantidad);
+                    const respuestaValidacionAdicionales = await ProductoService.validarProductoConAdicionales(infoProducto.id, IdsAdicionalesSeleccionados, cantidad);
                     const AddAttempt = await carritoStorage.addToCart(infoProducto.id, cantidad, false, IdsAdicionalesSeleccionados);
                     closeDetallesMenu();
                 } catch (error) {
