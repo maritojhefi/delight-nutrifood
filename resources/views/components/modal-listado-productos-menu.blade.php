@@ -1,37 +1,43 @@
-<div class="modal fade" id="listadoProductosModal" tabindex="-1" aria-labelledby="listadoProductosModalLabel" style="z-index: 1051">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
-        <div class="modal-content">
-            <div class="modal-header mt-2 border-0 gap-4 d-flex align-items-center">
-                <h4 id="titulo-listado-productos" class="mb-0 align-self-center text-uppercase">Todos los productos de esta categoria!</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div id="contenedor-listado-productos">
-                <ul id="listado-productos" class="px-3 pt-3">
-                </ul>
-            </div>
-        </div>
+<div id="{{$identificador}}" class="menu menu-box-modal rounded-m bg-dtheme-blue" style="width: 95%; max-height: 90%; z-index: 1053">
+    <!-- Menu Modal Header -->
+    <div class="menu-title d-flex flex-row justify-content-between align-items-center px-3 pt-3">
+        <h2 id="titulo-listado-productos" class="front-22" style="z-index: 10">Titulo del listado</h2>
+        <button href="#" class="close-menu btn-close"></button>
+    </div>
+    
+    <div class="divider mb-0"></div>
+    
+    <!-- Menu Modal Body -->
+    <div id="contenedor-listado-productos">
+        <ul id="listado-{{$identificador}}" class="px-3 pt-3">
+        </ul>
     </div>
 </div>
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
-        // Open the modal with the product list
+        const identificador = "{{$identificador}}";
+        const elementoMenu = document.getElementById(identificador);
+        // Abrir el menu recibiendo el listado de productos
         window.abrirDialogListado = async function(listado, titulo) {
             await prepararListado(listado, titulo);
 
-            // Show the Bootstrap modal
-            const modal = new bootstrap.Modal(document.getElementById('listadoProductosModal'));
-            modal.show();
+            // Cerrar otros menu abiertos
+            $(".menu-active").removeClass("menu-active");
+
+            // Revelar el backdrop
+            $(".menu-hider").addClass("menu-active");
+
+            // Revelar el menu
+            $(`#${identificador}`).addClass("menu-active");
         };
 
         const prepararListado = (listado, titulo) => {
-            console.log("Titulo a usarse: ", titulo);
-            const elementoTitulo = document.getElementById('titulo-listado-productos');
-            const listaPrincipal = document.getElementById(`listado-productos`);
-            console.log("Elm titulo: ", elementoTitulo);
+            const elementoTitulo = document.getElementById(`titulo-listado-productos`);
+            const principalLista = document.getElementById(`listado-${identificador}`);
+            
             elementoTitulo.textContent = titulo;
-            console.log("El titulo deberia haber cambiado");
-            listaPrincipal.innerHTML = renderizarListadoProductos(listado);
+            principalLista.innerHTML = renderizarListadoProductos(listado);
             reinitializeLucideIcons();
         }
 
@@ -39,7 +45,7 @@
             return `
                 ${listado.map(producto => `
                     <li style="list-style-type: none">
-                        <div data-card-height="155" class="card card-style mb-4 mx-0 hover-grow-s" style="overflow: hidden">
+                        <div data-card-height="140" class="card card-style mb-4 mx-0 hover-grow-s" style="overflow: hidden">
                             <div class="d-flex flex-row gap-2"> 
                                 <a href="${producto.url_detalle}" class="product-card-image">
                                     <img src="${producto.imagen}"
@@ -86,8 +92,8 @@
             return '';
         }
 
-        const renderizarAcciones = (producto) => {
-            if (!producto.tiene_stock) {
+        const renderizarAcciones = (item) => {
+            if (!item.tiene_stock) {
                 return `
                     <button class="btn btn-xs rounded-s btn-full shadow-l bg-gray-dark font-900 text-uppercase" disabled>
                         <div class="d-flex flex-row align-items-center gap-1">
@@ -100,9 +106,9 @@
             
             return `
                 <button
-                    class="${ producto.tiene_adicionales ? "menu-adicionales-btn":"agregar-unidad"} btn rounded-s shadow-l bg-highlight font-900 text-uppercase"
-                    data-producto-id="${producto.id}"
-                    data-producto-nombre="${producto.nombre}"
+                    class="${ item.tiene_adicionales ? "menu-adicionales-btn":"agregar-unidad"} btn rounded-s shadow-l bg-highlight font-900 text-uppercase"
+                    data-producto-id="${item.id}"
+                    data-producto-nombre="${item.nombre}"
                 >
                     <div class="d-flex flex-row align-items-center gap-1">
                         <i class="fa fa-shopping-cart"></i>
