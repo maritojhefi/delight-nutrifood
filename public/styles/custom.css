@@ -1031,7 +1031,7 @@ hover-blue:hover {
 
 .product-card-image img {
     width: 140px;
-    height: 140px; /* Match the card height */
+    height: 155px; /* Match the card height */
     object-fit: cover; /* Ensures image covers the area properly */
     object-position: center; /* Centers the image */
     border-top-left-radius: 0.5rem; /* Match the card's border radius */
