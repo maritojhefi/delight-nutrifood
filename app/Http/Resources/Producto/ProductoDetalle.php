@@ -12,8 +12,7 @@ class ProductoDetalle extends JsonResource
         $precioFinal = $this->precioReal();
         $tieneDescuento = $precioFinal < $precioOriginal;
         $tiene_stock = !($this->unfilteredSucursale->isNotEmpty() && $this->stock_actual == 0);
-        $adicionales = $this->subcategoria->adicionales->load('grupoAdicionale');
-
+        $adicionales = $this->subcategoria->adicionalesGrupo();
 
         return [
             'id' => $this->id,
@@ -23,7 +22,6 @@ class ProductoDetalle extends JsonResource
             'precio_original' => $tieneDescuento ? $precioOriginal : null,
             'tiene_stock' => $tiene_stock,
             'url_detalle' => route('delight.detalleproducto', $this->id),
-            // 'adicionales' => $this->subcategoria->adicionales,
             'adicionales' => $adicionales->map(function ($adicional) {
                 return [
                     'id' => $adicional->id,
@@ -31,13 +29,11 @@ class ProductoDetalle extends JsonResource
                     'precio' => $adicional->precio,
                     'cantidad' => $adicional->cantidad,
                     'contable' => $adicional->contable,
-                    // 'pivot' => $adicional->pivot,
-                    // Include grupo information
-                    'grupo' => $adicional->grupoAdicionale ? [
-                        'id' => $adicional->grupoAdicionale->id,
-                        'nombre' => $adicional->grupoAdicionale->nombre,
-                        'maximo_seleccionable' => $adicional->grupoAdicionale->maximo_seleccionable,
-                        'es_obligatorio' => $adicional->grupoAdicionale->es_obligatorio,
+                    'grupo' => $adicional->nombre_grupo ? [
+                        'id' => $adicional->grupo_id,
+                        'nombre' => $adicional->nombre_grupo,
+                        'es_obligatorio' => (bool) $adicional->es_obligatorio,
+                        'maximo_seleccionable' => $adicional->maximo_seleccionable,
                     ] : null,
                 ];
             }),
