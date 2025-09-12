@@ -39,7 +39,9 @@ class Subcategoria extends Model
     }
     public function adicionales()
     {
-        return $this->belongsToMany(Adicionale::class)->withTimestamps()->withPivot('id_grupo');
+        return $this->belongsToMany(Adicionale::class)->withTimestamps();
+        // ->withPivot('grupo_adicionales_id')
+        // ->withPivot('id_grupo');
     }
     public function rutaFoto()
     {
@@ -48,5 +50,12 @@ class Subcategoria extends Model
         } else {
             return "imagenes/subcategorias/" . $this->foto;
         }
+    }
+    public function scopeTieneProductosDisponibles($query)
+    {
+        // Obtener solo tags con productos disponibles y visibles al cliente
+        return $query->whereHas('productos', function ($query) {
+            $query->publicoTienda();
+        });
     }
 }

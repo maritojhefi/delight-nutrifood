@@ -83,13 +83,24 @@
             </div>
         </div>
     </div>
+
+    <x-menu-adicionales-producto :isUpdate="false"/>
 @endsection
 
 @push('scripts')
 {{-- FUNCIONALIDAD AGREGAR AL CARRITO --}}
 <script> 
+    // $(document).ready(function() {
+    //     $(document).on('click', '.add-to-cart', addToCartHandler);
+    // });
     $(document).ready(function() {
-        $(document).on('click', '.add-to-cart', addToCartHandler);
+        $(document).on('click', '.agregar-unidad', addToCartHandler);
+
+        $(document).on('click', '.menu-adicionales-btn', function() {
+            const productoId = $(this).data('producto-id');
+            console.log("Product ID:", productoId); 
+            openDetallesMenu(productoId);
+        });
     });
 
     async function addToCartHandler() {
@@ -219,13 +230,13 @@
             try {
                 const categorizedProducts = await ProductoService.getProductosCategoria(categoriaId);
                 // console.log("Productos categorizados: ", categorizedProducts);
-                renderProductItems(categorizedProducts);
+                renderProductItems(categorizedProducts.data);
                 reinitializeLucideIcons();
             } catch (error) {
                     console.error(`Error al obtener productos para la categoria con ID ${categoriaId}`, error);
                     showErrorState();
-                }
-            });
+            }
+        });
     });
 
     const renderProductItems = (categorizedProducts) => {
@@ -233,15 +244,14 @@
         const isDisabled = false;
         const cantidadInicial = 0;
         container.innerHTML = '';
-
+        
         const renderProductCard = (item, formattedName) => {
             container.innerHTML += `
                 <div class="col-12">
                     <div data-card-height="140" class="card card-style mb-4 mx-0 hover-grow-s" style="overflow: hidden">
                         <div class="d-flex flex-row gap-2"> 
                             <a href="${item.url_detalle}" class="product-card-image">
-                                <img src="${item.imagen}" 
-                                    onerror="this.src='/imagenes/delight/default-bg-1.png';" 
+                                <img src="${item.imagen}"
                                     style="background-color: white;min-width: 130px" />
                             </a>
                             <div class="d-flex flex-column w-100 flex-grow-1 justify-content-center me-2">
@@ -277,7 +287,7 @@
             
             return `
                 <button
-                    class="add-to-cart btn rounded-s px-1 shadow-l bg-highlight font-900 text-uppercase"
+                    class="${item.tiene_adicionales ? "menu-adicionales-btn":"agregar-unidad"} btn rounded-s px-1 shadow-l bg-highlight font-900 text-uppercase"
                     data-producto-id="${item.id}"
                     data-producto-nombre="${item.nombre}"
                 >
@@ -289,26 +299,26 @@
             `;
         }
 
-        const renderPriceSection = (item) => {
-            const hasDiscount = item.descuento && (item.descuento > 0 && item.descuento < item.precio);
-            
-            if (hasDiscount) {
+        const renderPriceSection = (productoPrecio) => {
+            const tieneDescuento = productoPrecio.precio_original;
+
+            if (tieneDescuento) {
                 return `
                     <div class="d-flex flex-column m-0 justify-content-center w-100">
-                        <p class="font-10 m-0"><del>Bs. ${item.precio}</del></p>
-                        <p class="font-18 font-weight-bolder color-highlight mb-0">Bs. ${item.descuento}</p>
+                        <p class="font-10 m-0"><del>Bs. ${productoPrecio.precio_original}</del></p>
+                        <p class="font-17 font-weight-bolder color-highlight mb-0">Bs. ${productoPrecio.precio}</p>
                     </div>
                 `;
             }
             
-            return `<p class="font-18 font-weight-bolder color-highlight mb-0">Bs. ${item.precio}</p>`;
+            return `<p class="font-17 font-weight-bolder color-highlight mb-0">Bs. ${productoPrecio.precio}</p>`;
         }
 
         const renderTagsRow = (item) => {
-            if (item.tag && item.tag.length > 0) {
+            if (item.tags && item.tags.length > 0) {
                 return `
                     <div class="tags-container d-flex flex-row align-items-center justify-content-start gap-2">
-                    ${item.tag.map(tag => `
+                    ${item.tags.map(tag => `
                         <button popovertarget="poppytag-${item.id}-${tag.id}" popoveraction="toggle" style="anchor-name: --tag-btn-${item.id}-${tag.id};">
                             <i data-lucide="${tag.icono}" class="lucide-icon" style="width:1.5rem;height:1.5rem;"></i>
                         </button>
@@ -328,7 +338,7 @@
         if (categorizedProducts.length === 0) {
             container.innerHTML = `
                 <div id="cart-summary-items" class="item-producto-categoria mb-3">
-                    <p class="text-muted text-justify"><span>Ups!</span> Parece que aun no hay productos agregados a esta categoria, regresa mas tarde.</p>
+                    <p class="text-muted"><span>Ups!</span> Parece que aun no hay productos agregados a esta categoria, regresa mas tarde.</p>
                 </div>`;
         }
 

@@ -13,7 +13,7 @@
                         <h1 class="color-theme mb-n2 font-20 d-flex">Precio unitario de Bs. {{$producto->precioReal()}}</h1>
                         {{-- CONDICIONANTE DE TEXTO PARA OFERTAS --}}
                         @if ($producto->descuento && $producto->descuento > 0 && $producto->descuento < $producto->precio)
-                        <h5 class="color-theme mt-n1 opacity-80 font-14">Precio fuera de oferta: <del>Bs. {{$producto->precio}}</del></h5> 
+                        <h5 class="color-theme mt-n1 opacity-80 font-14">Originalmente: <del>Bs. {{$producto->precio}}</del></h5> 
                         @endif
                         <h5 id="order-info-text" class="color-highlight mt-n1 opacity-80 font-14">Unidades en mi carrito: <span class="color-theme" id="details-cart-counter">0</span></h5>
                     </div>
@@ -23,9 +23,10 @@
                         <button class="gradient-gray btn-m rounded-sm text-uppercase text-white font-800" style=" line-height: 1rem;">Sin Stock</button>
                     @else
                         <button
+                        id="{{ $adicionales->isNotEmpty() ? "menu-adicionales-btn" : 'agregar-unidad' }}"
                         data-producto-id="{{$producto->id}}"
                         data-producto-nombre="{{$producto->nombre}}"
-                        class="add-to-cart bg-highlight hover-grow-s btn-xs rounded-sm text-uppercase text-white font-800">
+                        class="bg-highlight hover-grow-s btn-xs rounded-sm text-uppercase text-white font-800">
                             <div class="d-flex flex-row align-items-center gap-1">    
                                 <i class="fa fa-shopping-cart"></i>
                                 Añadir
@@ -70,17 +71,39 @@
             <x-footer-productos-similares :producto="$producto" :similares="$similares" />
         </div>
     </div>
+    <x-menu-adicionales-producto :isUpdate="false"/>
 @endsection
 
 @push('scripts')
 <script> 
-    $(document).ready(function() {
-        // Llamado al handler al momento de hacer click en el elemento add-to-cart
-        $(document).on('click', '.add-to-cart', addToCartHandler);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Llamado al handler al momento de hacer click en el elemento agregar-unidad
+        $('#agregar-unidad').on('click', addToCartHandler);
+
         // Renderizado condicional de informacion del producto en carrito
         const product_Id = $('#product-info-card').data('producto-id');
         renderOrderInfo(product_Id);
         carritoStorage.updateCartItemDetailCounter(product_Id);
+
+        // ACTIVAR MENU DETALLES 
+        // Para un elemento especifico por ID [detalle-producto]
+        const activadorMenu = document.getElementById('menu-adicionales-btn');
+        if (activadorMenu) {
+            const productId = activadorMenu.getAttribute('data-producto-id');
+            activadorMenu.addEventListener('click', () => {
+                openDetallesMenu(productId);
+            });
+        }
+        
+        
+        // Para multiples elementos por clase [carrito]
+        document.querySelectorAll('.menu-trigger').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                openDetallesMenu();
+            });
+        });
     });
 
     async function addToCartHandler() {
@@ -101,7 +124,7 @@
     }
 
     // Renderizado condicional de informacion de la orden existente
-    function renderOrderInfo(productId) {
+    const renderOrderInfo = (productId) => {
         const productData = carritoStorage.getCartItem(productId);
         const orderInfoElement = $('#order-info-text');
         

@@ -231,7 +231,7 @@
                 e.preventDefault();
                 // Obtener el valor de la ruta
                 const rutaValue = this.getAttribute('ruta');
-                
+
                 // Error en caso de que no exista
                 if (!rutaValue) {
                     console.error("No se encontro el atributo ruta");
@@ -241,9 +241,9 @@
                 try {
                     // API Moderna de portapapeles
                     await navigator.clipboard.writeText(rutaValue);
-                    
+
                     console.log("Copiado exitoso:", rutaValue);
-                    
+
                     // Revelar toast de existir
                     const toastEl = document.getElementById('shared');
                     if (toastEl) {
@@ -251,13 +251,13 @@
                     }
                 } catch (err) {
                     console.warn("API de portapapeles moderna fallo, utilizando fallback", err);
-                    
+
                     // Fallback alternartivo para navegadores viejos (no funcionaria con componentes dinamicos)
                     const tempInput = document.createElement('input');
                     tempInput.value = rutaValue;
                     document.body.appendChild(tempInput);
                     tempInput.select();
-                    
+
                     try {
                         const successful = document.execCommand('copy');
                         if (!successful) throw new Error('Copy failed');
@@ -265,7 +265,7 @@
                     } finally {
                         document.body.removeChild(tempInput);
                     }
-                    
+
                     // Revelar toast de existir
                     const toastEl = document.getElementById('shared');
                     if (toastEl) {

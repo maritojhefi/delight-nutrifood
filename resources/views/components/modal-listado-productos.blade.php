@@ -1,4 +1,4 @@
-<div id="{{$identificador}}" class="menu menu-box-modal rounded-m bg-dtheme-blue" style="width: 95%; max-height: 90%;">
+<div id="{{$identificador}}" class="menu menu-box-modal rounded-m bg-dtheme-blue" style="width: 95%; max-height: 90%; z-index: 1053">
     <!-- Menu Modal Header -->
     <div class="menu-title d-flex flex-row justify-content-between align-items-center px-3 pt-3">
         <h2 id="titulo-listado-productos" class="front-22" style="z-index: 10">Titulo del listado</h2>
@@ -106,7 +106,7 @@
             
             return `
                 <button
-                    class="add-to-cart btn rounded-s shadow-l bg-highlight font-900 text-uppercase"
+                    class="${ item.tiene_adicionales ? "menu-adicionales-btn":"agregar-unidad"} btn rounded-s shadow-l bg-highlight font-900 text-uppercase"
                     data-producto-id="${item.id}"
                     data-producto-nombre="${item.nombre}"
                 >

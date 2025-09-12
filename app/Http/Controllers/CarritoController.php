@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\admin\SucursalesController;
+use App\Models\Adicionale;
 use App\Models\Producto;
 use App\Models\User;
+use Error;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -46,18 +47,7 @@ class CarritoController extends Controller
             $sucursaleId = 1; // Hardcodeado por ahora, pero deberia obtenerse de $request->sucursale_id
             $itemsCarrito = collect($request->items);
             
-            // Separa productos de planes
-            // $idsProductos = $itemsCarrito->where('isPlan', false)->pluck('id');
             $idsProductos = $itemsCarrito->pluck('id');
-
-            // $idsPlanes = $itemsCarrito->where('isPlan', true)->pluck('id');
-
-            // Log::info('Validating cart items', [
-            //     'sucursale_id' => $sucursaleId,
-            //     'product_ids' => $idsProductos,
-            //     // 'plan_ids' => $idsPlanes,
-            //     'cart_items' => $itemsCarrito->toArray()
-            // ]);
 
             // Procesa productos regulares
             $productos = collect();
@@ -71,15 +61,16 @@ class CarritoController extends Controller
                     ->map(function ($producto) use ($itemsCarrito, $sucursaleId) {
                         $cartItem = $itemsCarrito->firstWhere('id', $producto->id);
 
-                        // Check if product has stock relations (limited stock) or not (infinite stock)
+                        // Revisar si el producto tiene relaciones de stock (stock limitado)
+                        // o no (stock infinito)
                         $isInfiniteStock = $producto->unfilteredSucursale->isEmpty();
                         
                         if ($isInfiniteStock) {
-                            // Infinite stock product
+                            // Stock infinito del producto
                             $stockSucursal = null;
                             $stockDisponible = "INFINITO";
                         } else {
-                            // Limited stock product
+                            // Stock limitado del producto
                             $stockSucursal = $producto->unfilteredSucursale->firstWhere('pivot.sucursale_id', $sucursaleId);
                             $stockDisponible = $stockSucursal ? $stockSucursal->pivot->cantidad : 0;
                         }
@@ -95,13 +86,37 @@ class CarritoController extends Controller
                         // ]);
                         
                         $cantidadSolicitada = $cartItem['quantity'] ?? 0;
-                        
+
+                        $adicionalesItemCarrito = $cartItem['adicionales'] ?? [];
+
+                        $infoAdicionales = [];
+
+                        $adicionalesLimitados = false;
+
+                        foreach ($adicionalesItemCarrito as $adicionalCarrito) {
+                            $adicional = Adicionale::findOrFail($adicionalCarrito);
+                            if ($adicional->contable == 1 && $cantidadSolicitada > $adicional->cantidad ) {
+                                $adicionalesLimitados = true;
+                                // throw new Error(`Se solicitaron mas unidades del adicional `. $adicional->nombre . `que las unidades existentes.
+                                // Unidades solicitadas: ` . $adicionalCarrito->quantity. ` Unidades disponibles: ` . $adicional->cantidad);
+                            }
+                            $newEntry = [
+                                "id" => $adicional->id,
+                                "nombre" => ucfirst($adicional->nombre),
+                                "quantity" => $cantidadSolicitada,
+                                "id_grupo" => "MockupID",
+                            ];
+
+                            $infoAdicionales[] = $newEntry;
+                        }
+
                         $estado = $this->determinarEstado($stockDisponible, $cantidadSolicitada);
                         
                         return [
                             'id' => $producto->id,
                             'nombre' => $producto->nombre,
                             'detalle' => $producto->detalle,
+                            'adicionales' => $infoAdicionales,
                             'tiene_descuento' => ($producto->precio == $producto-> precioReal()) ? false : true,
                             'precio_original' => $producto->precio,
                             'precio' => $producto->precioReal(),
@@ -111,7 +126,7 @@ class CarritoController extends Controller
                             'cantidad_solicitada' => $cantidadSolicitada,
                             'estado' => $estado,
                             'max_permitido' => $stockDisponible === "INFINITO" ? "INFINITO" : $stockDisponible,
-                            // 'isPlan' => false // Mark as regular product
+                            'adicionalesLimitados' => $adicionalesLimitados
                         ];
                     });
             }

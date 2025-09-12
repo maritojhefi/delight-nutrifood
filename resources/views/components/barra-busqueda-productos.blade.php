@@ -169,7 +169,6 @@
                 lastQuery = query;
                 try {
                     const response = await ProductoService.getSearchedProducts(searchType,query);
-                    console.log("query value when sent:", query);
                     renderSearchResults(response);
 
                 } catch (error) {
@@ -177,14 +176,13 @@
                     resultsContainer.innerHTML += `<li class="text-danger">Error al realizar la busqueda</li>`;
                     throw error;
                 } finally {
-                    console.log('Search attempt finished.');
+                    // console.log('Busqueda completada.');
                 }
             }, 500);
         });
 
         // Limpiar los resultados de busqueda
         const cleanSearchResults = () => {
-            console.log("cleaning search results");
             resultsContainer.innerHTML = '';
         };
 

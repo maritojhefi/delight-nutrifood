@@ -12,15 +12,17 @@ class ProductoListado extends JsonResource
         $precioFinal = $this->precioReal();
         $tieneDescuento = $precioFinal < $precioOriginal;
         $tiene_stock = !($this->unfilteredSucursale->isNotEmpty() && $this->stock_actual == 0);
+        $tiene_adicionales = $this->subcategoria->adicionales->isNotEmpty();
 
         return [
             'id' => $this->id,
             'nombre' => $this->nombre,
-            'imagen'=>  $this->pathAttachment(),
+            'imagen'=>  '/' . $this->pathAttachment(),
             'precio' => $precioFinal,
             'precio_original' => $tieneDescuento ? $precioOriginal : null,
             'tiene_stock' => $tiene_stock,
             'url_detalle' => route('delight.detalleproducto', $this->id),
+            'tiene_adicionales' => $tiene_adicionales,
             'tags' => $this->tag,
         ];
     }
