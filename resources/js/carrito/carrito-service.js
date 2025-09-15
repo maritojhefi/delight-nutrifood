@@ -22,5 +22,9 @@ export const getCartProductsInfo = async ({ sucursaleId, items }) => {
   }
 }
 
+// export const sincronizarCarrito_ProductoVenta = (carrito) => {
+//   const response = await axios.post(`/carrito/sincronizar`)
+// };
+
 
 window.getCartProductsInfo = getCartProductsInfo;

@@ -83,7 +83,7 @@ class CarritoController extends Controller
                         //     ] : 'infinite_stock'
                         // ]);
                         
-                        $cantidadSolicitada = $cartItem['quantity'] ?? 0;
+                        $cantidadSolicitada = $cartItem['cantidad'] ?? 0;
 
                         $adicionalesItemCarrito = $cartItem['adicionales'] ?? [];
 
@@ -96,12 +96,12 @@ class CarritoController extends Controller
                             if ($adicional->contable == 1 && $cantidadSolicitada > $adicional->cantidad ) {
                                 $adicionalesLimitados = true;
                                 // throw new Error(`Se solicitaron mas unidades del adicional `. $adicional->nombre . `que las unidades existentes.
-                                // Unidades solicitadas: ` . $adicionalCarrito->quantity. ` Unidades disponibles: ` . $adicional->cantidad);
+                                // Unidades solicitadas: ` . $adicionalCarrito->cantidad. ` Unidades disponibles: ` . $adicional->cantidad);
                             }
                             $newEntry = [
                                 "id" => $adicional->id,
                                 "nombre" => ucfirst($adicional->nombre),
-                                "quantity" => $cantidadSolicitada,
+                                "cantidad" => $cantidadSolicitada,
                                 "id_grupo" => "MockupID",
                             ];
 
@@ -155,6 +155,18 @@ class CarritoController extends Controller
             ], 500);
         }
     }
+
+    // public function sincronizarCarrito(Request $request) {
+    //     try {
+    //         // Obtener items en el carrito
+    //         $itemsCarrito = collect($request->items);
+
+    //         // Distintos items pueden pertenecer a un mismo producto
+    //     } catch (\Throwable $th) {
+    //         Log::error('Error al sincronizar carrito y producto_venta', [$th]);
+    //         throw $th;
+    //     }
+    // }
 
     protected function determinarEstado($stockDisponible, $cantidadSolicitada)
     {

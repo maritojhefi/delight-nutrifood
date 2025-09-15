@@ -85,6 +85,7 @@ Route::prefix('/carrito')
     ->group(function () {
         Route::get('', action: [App\Http\Controllers\CarritoController::class, 'index'])->name('carrito');
         Route::post('mi-carrito', [App\Http\Controllers\CarritoController::class, 'validateCarrito']);
+        // Route::post('sincronizar', [App\Http\Controllers\CarritoController::class, 'validateCarrito']);
     });
 
 Route::prefix('/ventas')

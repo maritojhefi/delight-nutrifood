@@ -185,6 +185,8 @@
     if (ventaActiva) {
         console.log(`ID de la venta: ${ventaActiva.id}`);
         console.log(`ID del cliente: ${ventaActiva.cliente_id}`);
+        // Sincronizar localStorage con producto_venta
+
     } else {
         console.log("No hay venta activa.");
     }
@@ -242,7 +244,7 @@
             // Renderizar items disponibles
             if (disponiblesArray.length > 0) {
                 availableItemsContainer.innerHTML += `<h5 class="mb-3 color-highlight" id="label-disponible">Productos Disponibles</h5>`;
-
+                console.log("Cantidad disponibles: ", disponiblesArray.length)
                 disponiblesArray.forEach(producto => {
                     totalFinal += producto.precio * producto.cantidad_solicitada;
                     totalOriginal += producto.precio_original * producto.cantidad_solicitada;
@@ -300,6 +302,10 @@
         const adicionalesLimitados = producto.adicionalesLimitados; // Flag true/false en caso de adicionales escasos
         const disabledClass = '';
         const disabledOverlay = isUnavailable ? '<div class="card-overlay rounded-sm dark-mode-tint light-mode-tint"></div>' : '';
+        const adicionalesIds = producto.adicionales && producto.adicionales.length > 0
+            ? producto.adicionales.map(adicional => adicional.id)
+            : 'null';
+        const adicionalesIdsJSON = JSON.stringify(adicionalesIds);
 
         
         let stockMessage = '';
@@ -330,7 +336,7 @@
         }
 
         return `
-            <div class="cart-item-wrapper mb-4 ${disabledClass}" data-product-id="${producto.id}" data-product-state="${estado}" id="cart-item-wrapper-${producto.id}">
+            <div class="cart-item-wrapper mb-4 ${disabledClass}" data-product-id="${producto.id}"  data-product-state="${estado}" id="cart-item-wrapper-${producto.id}">
                 <div class="card mb-0 d-flex flex-column item-carrito-info justify-content-between p-3 bg-white rounded-sm shadow-sm border">
                     <div class="mb-0 d-flex flex-row justify-content-between">
                         <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
@@ -368,6 +374,7 @@
                             <button class="btn btn-sm btn-outline-secondary border-0 px-2 py-1 qty-decrease"
                                     type="button"
                                     data-product-id="${producto.id}"
+                                    data-adicionales="${adicionalesIdsJSON}"
                                     title="Disminuir cantidad"
                                     ${isDisabled ? 'disabled' : ''}>
                                 <i class="fa fa-minus"></i>
@@ -380,6 +387,7 @@
                             <button class="btn btn-sm btn-outline-secondary border-0 px-2 py-1 qty-increase"
                                     type="button"
                                     data-product-id="${producto.id}"
+                                    data-adicionales="${adicionalesIdsJSON}"
                                     title="Aumentar cantidad"
                                     ${isDisabled ? 'disabled' : ''}>
                                 <i class="fa fa-plus"></i>
@@ -520,7 +528,7 @@
         e.preventDefault();
 
         const quantityFixButton = e.target.closest('.qty-fixer');
-        const productToFixId = quantityFixButton.getAttribute('data-product-id');
+        const productToFixId = parseInt(quantityFixButton.getAttribute('data-product-id'), 10);
         const productInfoRequest =  await ProductoService.getProduct(productToFixId);
         const productInfo = productInfoRequest.data;
         const availableItemsContainer = document.getElementById('container-state-disponible')
@@ -528,11 +536,11 @@
         // Actualizar el valor al maximo disponible en el carrito
         const updateResponse = await carritoStorage.updateProductToMax(productToFixId);
         // Usar un getCartProductInfo
-        if (updateResponse.success == true && updateResponse.quantity >= 1) {
+        if (updateResponse.success == true && updateResponse.cantidad >= 1) {
             removeItemWrapper(productToFixId);
-            availableItemsContainer.innerHTML += renderCartItem(productInfo,'disponible', updateResponse.quantity);
+            availableItemsContainer.innerHTML += renderCartItem(productInfo,'disponible', updateResponse.cantidad);
             // noti de ajuste o algo
-        } else if (updateResponse.success == true && updateResponse.quantity == 0) {
+        } else if (updateResponse.success == true && updateResponse.cantidad == 0) {
             removeItemWrapper(productToFixId);  
             renderCartItem(productInfo,'agotado', 0)
         }
@@ -552,10 +560,12 @@
     const handleProductIncrease = async (e) => {
         e.preventDefault();
         const button = e.target.closest('.qty-increase');
-        const productToIncreaseId = button.getAttribute('data-product-id');
+        const productToIncreaseId = parseInt(button.getAttribute('data-product-id'), 10);
+        const adicionalesData = button.getAttribute('data-adicionales');
+        let adicionales = adicionalesData === 'null' ? null : JSON.parse(adicionalesData);
         const quantitySpan = document.getElementById(`item-${productToIncreaseId}-qty`);
 
-        const IncreaseAttemp = await carritoStorage.addToCart(productToIncreaseId, 1, true);
+        const IncreaseAttemp = await carritoStorage.addToCart(productToIncreaseId, 1, true, adicionales);
 
         if (IncreaseAttemp.success === true) {
             quantitySpan.textContent = IncreaseAttemp.newQuantity;
@@ -567,13 +577,15 @@
     const handleProductDecrease = async(e) => {
         e.preventDefault();
         const button = e.target.closest('.qty-decrease');
-        const productToDecreaseId = button.getAttribute('data-product-id');
+        const productToDecreaseId = parseInt(button.getAttribute('data-product-id'), 10);
+        const adicionalesData = button.getAttribute('data-adicionales');
+        let adicionales = adicionalesData === 'null' ? null : JSON.parse(adicionalesData);
         const quantitySpan = document.getElementById(`item-${productToDecreaseId}-qty`);
 
         // Check if quantity is 1 or less before proceeding
         if (parseInt(quantitySpan.textContent, 10) <= 1) return;
 
-        const DecreaseAttemp = await carritoStorage.substractFromCart(productToDecreaseId, 1);
+        const DecreaseAttemp = await carritoStorage.substractFromCart(productToDecreaseId, 1, adicionales);
 
         if (DecreaseAttemp.success === true) {
             quantitySpan.textContent = DecreaseAttemp.newQuantity;
@@ -625,7 +637,7 @@
 
         e.preventDefault();
         // Filtrar el objeto a remover
-        const productId = button.getAttribute('data-product-id');
+        const productId = parseInt(button.getAttribute('data-product-id'), 10);
 
         // Remover el producto del carrito
         carritoStorage.removeProduct(productId);
