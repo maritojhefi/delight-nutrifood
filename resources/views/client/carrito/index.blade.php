@@ -14,6 +14,8 @@
             <div id="container-state-disponible" class="d-flex flex-column justify-content-center"></div>
             <div id="container-state-escaso" class="d-flex flex-column justify-content-center"></div>
             <div id="container-state-agotado" class="d-flex flex-column justify-content-center"></div>
+            <!-- <button id="habilitar-venta-debug">Cerrar Venta Debug</button>
+            <button id="deshabilitar-venta-debug">Abrir Venta Debug</button> -->
         </div>
     </div>
 
@@ -173,6 +175,22 @@
 @endsection
 @push('scripts')
 <script src="{{ asset('js/carrito-service/carrito-service.js') }}"></script>
+<!-- CHECK VENTA EXISTENTE -->
+<script>
+    const ventaActiva = @json($venta_activa ?? null);
+
+    console.log("Venta activa para el usuario:");
+    console.log(ventaActiva);
+
+    if (ventaActiva) {
+        console.log(`ID de la venta: ${ventaActiva.id}`);
+        console.log(`ID del cliente: ${ventaActiva.cliente_id}`);
+    } else {
+        console.log("No hay venta activa.");
+    }
+</script>
+
+<!-- CONTROL DEL RENDERIZADO DE PRODUCTOS EN EL CARRITO -->
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
         // Obtener el carrito
@@ -564,6 +582,7 @@
         }
     }
 </script>
+<!-- CONTROL DE ELIMINACION DE PRODUCTOS-CARRITO -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // handleCartSummaryModal();

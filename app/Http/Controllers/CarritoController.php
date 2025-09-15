@@ -17,12 +17,10 @@ class CarritoController extends Controller
     public function index()
     {
         $user=User::find(auth()->user()->id);
+        
+        $venta_activa = $user->ventaActiva;
 
-        $listado = [
-            ];        
-       
-
-        return view('client.carrito.index',compact('user','listado'));
+        return view('client.carrito.index',compact('user','venta_activa'));
     }
     public function addToCarrito($id)
     {
