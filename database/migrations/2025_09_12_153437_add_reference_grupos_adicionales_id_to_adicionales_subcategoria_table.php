@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class RemoveIdGrupoFromAdicionaleSubcategoriaTable extends Migration
+class AddReferenceGruposAdicionalesIdToAdicionalesSubcategoriaTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,8 @@ class RemoveIdGrupoFromAdicionaleSubcategoriaTable extends Migration
     public function up()
     {
         Schema::table('adicionale_subcategoria', function (Blueprint $table) {
-            $table->dropColumn('id_grupo');
+            $table->unsignedBigInteger('grupo_adicionales_id')->after('subcategoria_id')->nullable();
+            $table->foreign('grupo_adicionales_id')->references('id')->on('grupos_adicionales');
         });
     }
 
@@ -26,7 +27,8 @@ class RemoveIdGrupoFromAdicionaleSubcategoriaTable extends Migration
     public function down()
     {
         Schema::table('adicionale_subcategoria', function (Blueprint $table) {
-            $table->unsignedBigInteger('id_grupo');
+            $table->dropForeign(['grupo_adicionales_id']);
+            $table->dropColumn('grupo_adicionales_id');
         });
     }
 }
