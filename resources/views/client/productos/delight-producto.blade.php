@@ -15,7 +15,9 @@
                         @if ($producto->descuento && $producto->descuento > 0 && $producto->descuento < $producto->precio)
                         <h5 class="color-theme mt-n1 opacity-80 font-14">Originalmente: <del>Bs. {{$producto->precio}}</del></h5> 
                         @endif
-                        <h5 id="order-info-text" class="color-highlight mt-n1 opacity-80 font-14">Unidades en mi carrito: <span class="color-theme" id="details-cart-counter">0</span></h5>
+                        <h5 id="order-info-text" class="color-highlight mt-n1 opacity-80 font-14" style="display: none;">
+                            Unidades en mi carrito: <span class="color-theme" id="details-cart-counter">0</span>
+                        </h5>
                     </div>
                     {{-- CONDICIONANTE HABILITACION BOTON POR STOCK --}}
                     <div class="d-flex align-items-center justify-content-center">
@@ -79,12 +81,11 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         // Llamado al handler al momento de hacer click en el elemento agregar-unidad
-        $('#agregar-unidad').on('click', addToCartHandler);
+        $('#agregar-unidad').on('click', agregarAlCarritoHandler);
 
         // Renderizado condicional de informacion del producto en carrito
         const product_Id = $('#product-info-card').data('producto-id');
-        renderOrderInfo(product_Id);
-        carritoStorage.updateCartItemDetailCounter(product_Id);
+        carritoStorage.actualizarContadorDetalleProducto(product_Id);
 
         // ACTIVAR MENU DETALLES 
         // Para un elemento especifico por ID [detalle-producto]
@@ -106,34 +107,20 @@
         });
     });
 
-    async function addToCartHandler() {
+    async function agregarAlCarritoHandler() {
         const product_Id = $(this).data('producto-id'); 
         try {
             // Solicitud para revisar stock y agregar al carrito
-            const result = await carritoStorage.addToCart(product_Id, 1);
+            const result = await carritoStorage.agregarAlCarrito(product_Id, 1);
             if (result.success) {
                 // En caso de exito, actualizar el contador de unidades
-                carritoStorage.updateCartItemDetailCounter(product_Id);
+                carritoStorage.actualizarContadorDetalleProducto(product_Id);
                 renderOrderInfo(product_Id);
             } else {
                 console.log('Error: ', result.message);
             }
         } catch (error) {
             console.error('Error agregando el producto al carrito:', error);
-        }
-    }
-
-    // Renderizado condicional de informacion de la orden existente
-    const renderOrderInfo = (productId) => {
-        const productData = carritoStorage.getCartItem(productId);
-        const orderInfoElement = $('#order-info-text');
-        
-        if (productData && productData.quantity > 0) {
-            // Mostrar la informacion de unidades en el carrito
-            orderInfoElement.show();
-        } else {
-            // Ocultar el elemento si no hay unidades del producto en el carrito
-            orderInfoElement.hide();
         }
     }
 </script>

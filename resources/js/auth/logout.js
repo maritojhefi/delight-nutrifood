@@ -1,4 +1,4 @@
-import { emptyCart } from "../carrito/carrito-store";
+import { vaciarCarrito } from "../carrito/carrito-store";
 
 export const setupLogoutHandlers = () => {
     document.addEventListener('click', function(e) {
@@ -7,7 +7,7 @@ export const setupLogoutHandlers = () => {
         if (logoutLink) {
             e.preventDefault();
             // console.log("Logout clicado - vaciando carrito");
-            emptyCart();
+            vaciarCarrito();
             document.getElementById('logout-form').submit();
         }
     });
@@ -15,7 +15,7 @@ export const setupLogoutHandlers = () => {
 
 export function handleLogout() {
     // Vaciar el carrito del usuario
-    emptyCart();
+    vaciarCarrito();
     
     // Submit Logout
     setTimeout(() => {

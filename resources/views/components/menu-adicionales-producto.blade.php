@@ -257,7 +257,7 @@
                 try {
                     estaVerificando(true);
                     const respuestaValidacionAdicionales = await ProductoService.validarProductoConAdicionales(infoProducto.id, IdsAdicionalesSeleccionados, cantidad);
-                    const AddAttempt = await carritoStorage.addToCart(infoProducto.id, cantidad, false, IdsAdicionalesSeleccionados);
+                    const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidad, false, IdsAdicionalesSeleccionados);
                     estaVerificando(false);
                     closeDetallesMenu();
                 } catch (error) {

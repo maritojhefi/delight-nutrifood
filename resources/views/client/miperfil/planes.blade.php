@@ -196,22 +196,22 @@
     <script> 
         $(document).ready(function() {
 
-            $('.add-to-cart').on('click', addToCartHandler);
+            $('.add-to-cart').on('click', agregarAlCarritoHandler);
         });
 
-        async function addToCartHandler() {
+        async function agregarAlCarritoHandler() {
             const product_Id = $(this).data('producto-id');
             const product_nombre = $(this).data('producto-nombre')
 
             console.log("ID producto a agregar: ", product_Id);
             console.log("Nombre del producto a agregar: ", product_nombre);
-            // const result = await addToCart(product_Id, 1, true);
+            // const result = await agregarAlCarrito(product_Id, 1, true);
             // if (result.success) {
             //     showMessage('success', 'Item added to cart!');
             //     showMessage('error', result.message);
             // }
             try {
-                const result = await addToCart(product_Id, 1);
+                const result = await agregarAlCarrito(product_Id, 1);
                 if (result.success) {
                     showMessage('success', 'Item agregado al carrito!');
                 } else {

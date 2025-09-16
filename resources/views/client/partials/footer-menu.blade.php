@@ -25,10 +25,10 @@
 
             document.addEventListener('DOMContentLoaded', function() {
                 // Actualizar contenido del carrito de existir al momento de cargarse
-                carritoStorage.updateCartCounterEX();
+                carritoStorage.actualizarContadorCarrito();
                 
-                // Optional: Listen for custom events if you update the cart elsewhere
-                // document.addEventListener('cartUpdated', updateCartCounterEX);
+                // Optional: Escuchar evento para actualizar el carrito en otro lugar
+                // document.addEventListener('cartUpdated', actualizarContadorCarrito);
             });
         </script>
     @endpush

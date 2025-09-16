@@ -196,7 +196,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
         // Obtener el carrito
-        const cart = carritoStorage.getCart();
+        const cart = carritoStorage.obtenerCarrito();
         // console.log("Contenido del carrito: ", cart)
         const cardContentContainer = document.querySelector('.cart-content');
         const cartValidationInfo = document.querySelector('.cart-validation-info');
@@ -493,7 +493,7 @@
     const handleSummaryCheck = async(e) => {
         e.preventDefault();
 
-        const cartToCheck = carritoStorage.getCart();
+        const cartToCheck = carritoStorage.obtenerCarrito();
         const summaryCheckButton = e.target.closest('.summary-btn');
         const summaryModal = new bootstrap.Modal(document.getElementById('cartSummaryModal'));
         const warningModal = new bootstrap.Modal(document.getElementById('stock-warning'));
@@ -565,7 +565,7 @@
         let adicionales = adicionalesData === 'null' ? null : JSON.parse(adicionalesData);
         const quantitySpan = document.getElementById(`item-${productToIncreaseId}-qty`);
 
-        const IncreaseAttemp = await carritoStorage.addToCart(productToIncreaseId, 1, true, adicionales);
+        const IncreaseAttemp = await carritoStorage.agregarAlCarrito(productToIncreaseId, 1, true, adicionales);
 
         if (IncreaseAttemp.success === true) {
             quantitySpan.textContent = IncreaseAttemp.newQuantity;
@@ -620,11 +620,11 @@
         // Manejo del click de confirmacion dentro del modal
         confirmDeleteBtn.addEventListener('click', function() {
             // Limpiar el Carrito
-            carritoStorage.emptyCart();
+            carritoStorage.vaciarCarrito();
             // Renderizado del Carrito Vacio
             renderEmptyCart();
             // Actualizar el contador
-            carritoStorage.updateCartCounterEX();
+            carritoStorage.actualizarContadorCarrito();
             // Ocultar el modal y mostrar mensaje de exito de ser necesario
             confirmModal.hide();
         });
@@ -640,7 +640,7 @@
         const productId = parseInt(button.getAttribute('data-product-id'), 10);
 
         // Remover el producto del carrito
-        carritoStorage.removeProduct(productId);
+        carritoStorage.eliminarProducto(productId);
 
         // Remover el elemento renderizado
         removeItemWrapper(productId);
@@ -653,7 +653,7 @@
         }
 
         // Actualizar el contador del carrito
-        carritoStorage.updateCartCounterEX();
+        carritoStorage.actualizarContadorCarrito();
     }
 
     const removeItemWrapper = (productId) => {
