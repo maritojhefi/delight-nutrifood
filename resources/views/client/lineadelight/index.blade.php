@@ -111,8 +111,8 @@
             <div class="splide__track" id="topic-slider-1-track" style="padding-left: 15px; padding-right: 40px;">
                 <div class="splide__list" id="topic-slider-1-list" style="transform: translateX(-866.592px);">
                     @foreach ($horarios as $horario)
-                        <div class="splide__slide" id="topic-slider-1-{{$horario->nombre}}" style="width: 108.333px;">
-                            <h1 class="font-16 d-block"><button class="time-btn opacity-50" data-time="{{$horario->nombre}}">{{ucfirst($horario->nombre)}}</button></h1>
+                        <div class="splide__slide" id="topic-slider-1-{{trim($horario->nombre)}}" style="width: 108.333px;">
+                            <h1 class="font-16 d-block"><button class="time-btn opacity-50" data-time="{{ trim($horario->nombre) }}">{{ ucfirst(Str::lower(trim($horario->nombre))) }}</button></h1>
                         </div>
                     @endforeach
                 </div>
@@ -180,7 +180,6 @@
 
         $(document).on('click', '.menu-adicionales-btn', function() {
             const productoId = $(this).data('producto-id');
-            console.log("Product ID:", productoId); 
             openDetallesMenu(productoId);
         });
     });
@@ -239,6 +238,40 @@
             }
         }
 
+         // Si no se encontro un horario actual, buscar el siguiente mas cercano
+        if (!defaultTime) {
+            let siguienteHorario = null;
+            let minTimeDiff = Infinity;
+
+            for (const horario of horarios) {
+                const startTime = horario.hora_inicio.split(':');
+                const startMinutes = parseInt(startTime[0]) * 60 + parseInt(startTime[1]);
+                
+                let timeDiff;
+                
+                // Calcular diferencia de tiempo considerando el cambio de dia
+                if (startMinutes >= currentTimeInMinutes) {
+                    // El horario es hoy (mas tarde)
+                    timeDiff = startMinutes - currentTimeInMinutes;
+                } else {
+                    // El horario es mañana (agregar 24 horas)
+                    timeDiff = (24 * 60) - currentTimeInMinutes + startMinutes;
+                }
+                
+                if (timeDiff < minTimeDiff) {
+                    minTimeDiff = timeDiff;
+                    siguienteHorario = horario;
+                }
+            }
+
+            if (siguienteHorario) {
+                defaultTime = siguienteHorario.nombre;
+            } else {
+                // Fallback: usar el primer horario disponible
+                defaultTime = horarios[0]?.nombre || '';
+            }
+        }
+
         // Inicializacion de slider para horarios
         new Splide('#topic-slider-1', {
             type: 'loop',
@@ -256,8 +289,8 @@
         });
 
         // Items/Categorias por defecto a renderizarse
-        const defaultItems = subcategoriasPorHorario[defaultTime];
-        updateSliderContent(defaultItems);
+        const defaultItems = subcategoriasPorHorario[defaultTime] || [];
+        actualizarSliderHorario(defaultItems);
         doubleSlider.mount();
 
         // Determinacion del boton activo
@@ -271,28 +304,32 @@
             }
         });
 
-        function updateSliderContent(items) {
+        function actualizarSliderHorario(items) {
             const list = document.getElementById('double-slider-1-list');
 
             // Actualizar contenido del slider
             list.innerHTML = '';
-            items.forEach(item => {
-                const formattedName = item.nombre.charAt(0).toUpperCase() + item.nombre.slice(1).toLowerCase();
 
-                list.innerHTML += `
-                    <div class="splide__slide hover-grow-s" style="width: 12rem;">
-                        <div class="productos-subcategoria-trigger card mx-3 mb-0 card-style bg-20"
-                            data-subcategoria-id="${item.id}"
-                            data-subcategoria-nombre="${item.nombre}"
-                            style="height: 14rem; background-image: url('${item.foto}');">
-                            <div class="card-bottom">
-                                <h3 class="color-white font-18 font-600 mb-3 mx-3">${formattedName}</h3>
+            // Verificar que items existe y no esta vacio
+            if (items && items.length > 0) {
+                items.forEach(item => {
+                    const formattedName = item.nombre.charAt(0).toUpperCase() + item.nombre.slice(1).toLowerCase();
+
+                    list.innerHTML += `
+                        <div class="splide__slide hover-grow-s" style="width: 12rem;">
+                            <div class="productos-subcategoria-trigger card mx-3 mb-0 card-style bg-20"
+                                data-subcategoria-id="${item.id}"
+                                data-subcategoria-nombre="${item.nombre}"
+                                style="height: 14rem; background-image: url('${item.foto}');">
+                                <div class="card-bottom">
+                                    <h3 class="color-white font-18 font-600 mb-3 mx-3">${formattedName}</h3>
+                                </div>
+                                <div class="card-overlay bg-gradient"></div>
                             </div>
-                            <div class="card-overlay bg-gradient"></div>
                         </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
 
             // Refrescar el slider para mostrar los nuevos items
             doubleSlider.refresh();
@@ -304,8 +341,8 @@
         // Control seleccion del horario
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {
-                const time = btn.getAttribute('data-time');
-                const items = subcategoriasPorHorario[time];
+                const hora = btn.getAttribute('data-time');
+                const items = subcategoriasPorHorario[hora] || [];
 
                 // Remover clase activa de todos los botones
                 buttons.forEach(b => {
@@ -318,7 +355,7 @@
                 btn.classList.add('is-active');
 
                 // Actualizar el contenido del slider
-                updateSliderContent(items);
+                actualizarSliderHorario(items);
             });
         });
     });
@@ -331,8 +368,6 @@
         
         const subcategoriaId = $(this).data('subcategoria-id');
         const subcategoriaNombre = $(this).data('subcategoria-nombre');
-        
-        console.log("Subcategoria ID:", subcategoriaId, "Nombre Subcategoria:", subcategoriaNombre);
         
         try {
             const productosSubcategoria = await ProductoService.getProductosCategoria(subcategoriaId);
@@ -347,8 +382,6 @@
 
         const tagId = $(this).data('tag-id');
         const tagNombre = $(this).data('tag-nombre');
-
-        console.log("Tag ID:", tagId, "Nombre Tag:", tagNombre);
 
         try {
             const productosTag = await ProductoService.getProductosTag(tagId);
