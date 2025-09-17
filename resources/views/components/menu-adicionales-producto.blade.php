@@ -241,7 +241,7 @@
                 const formData = new FormData(formAdicionales);
                 let cantidad = 1;
 
-                console.log("formData: ",formData);
+                console.log(formData);
                 
                 const IdsAdicionalesSeleccionados = [];
                 for (let [key, value] of formData.entries()) {
@@ -257,7 +257,10 @@
                 try {
                     estaVerificando(true);
                     const respuestaValidacionAdicionales = await ProductoService.validarProductoConAdicionales(infoProducto.id, IdsAdicionalesSeleccionados, cantidad);
-                    const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidad, false, IdsAdicionalesSeleccionados);
+                    // Control de Accion, agregar al carrito o agregar a producto_venta
+                    // Call to API in order to check wether venta is active or not
+                    const agregarVentaProducto = await VentaService.agregarProductoVenta(infoProducto.id, IdsAdicionalesSeleccionados, cantidad);
+                    // const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidad, false, IdsAdicionalesSeleccionados);
                     estaVerificando(false);
                     closeDetallesMenu();
                 } catch (error) {

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\VentasClienteHelper;
 use App\Models\Adicionale;
+use App\Models\Producto;
 use App\Models\User;
 use App\Models\Venta;
 use Illuminate\Http\Request;
@@ -169,6 +171,64 @@ class VentasWebController extends Controller
             ], 500);
         }
     }
+    public function agregarProductoVenta(Request $request) {
+        try {
+            // Validar stock existente
+
+            // De existir stock disponible, continuar al chequeo de venta_activa
+            $user = User::find(auth()->user()->id);
+            $venta_activa = $user->ventaActiva;
+            if (! $venta_activa) {
+                // De no existir venta activa, retornar el mensaje de error para ser procesado por el frontend
+                // statuscode 409 Conflict
+                return response()->json([
+                    'message'=> 'El producto se agregara al carrito',
+                    'error' => 'No se encontro una venta activa para el usuario'
+                ],409);
+            }
+
+            // De existir venta activa, agregar la informacion del producto como un nuevo registro dentro de la tabla producto_venta
+            $producto_id = $request->producto_id;
+            $adicionales_ids = $request->adicionales_ids;
+            $cantidad = $request->cantidad;
+
+            // No comparar con detalles existentes, siempre agregar un nuevos registros (orden) dentro de adicionales en
+            // producto_venta
+
+            $producto = Producto::publicoTienda()->findOrFail($producto_id);  
+            $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get();
+
+            $ventasHelper = new VentasClienteHelper($venta_activa);
+
+            Log::debug('Contenido del producto recibido desde frontEnd: 
+            ProductoID: {producto_id}, Adicionales: {adicionales_ids}, Cantidad: {cantidad}', [$producto_id, $adicionales_ids, $cantidad]);
+            
+            for ($i=0; $i < $cantidad; $i++) { 
+                $ventasHelper->adicionar($producto, $adicionales);
+            }
+
+            // Log::debug('Contenido del producto recibido desde frontEnd: 
+            // ProductoID: {producto_id}, Adicionales: {adicionales_ids}, Cantidad: {cantidad}', [$producto_id, $adicionales_ids, $cantidad]);
+            // Espero id del producto y el id de los adicionales que ha seleccionado
+            return response()->json([
+                'message'=> 'Solicitud agregar venta procesada exitosamente',
+            ],200);
+        } catch (\Throwable $th) {
+            //throw $th;
+            Log::error("",[
+                "error"=> $th->getMessage(),
+                'user_id' => auth()->user()->id ?? null,
+                'trace' => $th->getTraceAsString()
+            ]);
+            return response()->json([
+                'message' => 'Error interno del servidor',
+                'error' => 'No se pudo procesar la solicitud'
+            ], 500);
+        }
+    }
+
+    // protected function agregarADicional(Adicionale $adicional, $item)
+
 
     // public function carrito_ProductosVenta(Request $request) {
     //     try {

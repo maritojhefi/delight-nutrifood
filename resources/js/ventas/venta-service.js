@@ -22,7 +22,23 @@ export const generarProductosVenta_Carrito = async (carrito) => {
     }
 }
 
+export const agregarProductoVenta = async (productoID, IDsAdicionales, cantidad) => {
+    try {
+        console.log("Llamado a agregarProductoVenta")
+        const response = await axios.post('/ventas/producto', {
+            producto_id: productoID,
+            adicionales_ids: IDsAdicionales,
+            cantidad: cantidad
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error al agregar el producto a la venta:", error);
+        throw error;
+    }
+}
+
 window.VentaService = {
     generarVentaQR,
-    generarProductosVenta_Carrito
+    generarProductosVenta_Carrito,
+    agregarProductoVenta
 }
