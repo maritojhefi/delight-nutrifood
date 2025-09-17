@@ -10,6 +10,7 @@ use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\admin\UsuariosController;
 use App\Http\Livewire\Admin\PuntosRegistrosComponent;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,6 +93,8 @@ Route::prefix('/ventas')
     ->middleware('auth')
     ->group(function () {
         Route::get('', [App\Http\Controllers\VentasCocinaController::class, 'index'])->name('ventas.cocina.pedido');
+        Route::post('/ventaQR', [App\Http\Controllers\VentasWebController::class, 'generarVentaQR']);
+        Route::post('/sincronizar', [App\Http\Controllers\VentasWebController::class,'carrito_ProductosVenta']);
     });
 Route::prefix('/otros')->group(function () {
     Route::get('/tutoriales', [App\Http\Controllers\OtrosController::class, 'tutorialesIndex'])->name('tutoriales');

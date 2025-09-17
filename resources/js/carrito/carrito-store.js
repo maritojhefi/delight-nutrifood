@@ -54,6 +54,7 @@ export const obtenerItemCarrito = (productId) => {
 // VACIAR CARRITO
 export const vaciarCarrito = () => {
     localStorage.removeItem('carrito');
+    actualizarContadorCarrito();
 }
 
 export function encontrarEnCarrito(carrito, productoID, adicionales = []) {
@@ -127,7 +128,7 @@ export const actualizarContadorDetalleProducto = (ProductId) => {
 
 // ACTUALIZAR CONTADOR GENERAL (FOOTER)
 export const actualizarContadorCarrito = () => {
-    const carrito = JSON.parse(localStorage.getItem('carrito')) || { items: [] };
+    const carrito = obtenerCarrito();
     const elementoContador = document.getElementById('cart-counter');
 
     if (carrito.items && carrito.items.length > 0) {

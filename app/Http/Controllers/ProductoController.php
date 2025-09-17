@@ -393,7 +393,6 @@ class ProductoController extends Controller
             return response()->json(['error' => 'Producto no encontrado'], 404);
         }
     }
-
     public function getProductoDetalle($id) {
         try {
             $producto = Producto::publicoTienda()->with('subcategoria.adicionales')->findOrFail($id);

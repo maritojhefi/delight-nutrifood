@@ -44,6 +44,13 @@
 
     <x-cabecera-pagina titulo="Bienvenidos" cabecera="appkit" />
 
+    @auth
+        <div class="flex d-flex justify-content-between mx-4 my-4">
+            <button id="abrir-venta-qr" class="btn bg-highlight">Abrir Venta Scan QR</button>
+            <button id="cerrar-venta-qr" class="btn bg-red-dark">Cerrar Venta QR</button>
+        </div>
+    @endauth
+
     <a href="#" class="cambiarColor card card-style bg-3" data-card-height="125"
         style="background-image:url({{ asset(GlobalHelper::getValorAtributoSetting('dia_noche_inicio')) }})">
         <div class="card-top">
@@ -353,9 +360,6 @@
 
     </div>
     @auth
-
-
-
         <div data-card-height="140" class="card card-style round-medium shadow-huge top-30"
             style="height: 140px;background-image:url('{{ asset(GlobalHelper::getValorAtributoSetting('inicio_perfil')) }}')">
             <div class="card-top mt-3 ms-3">
@@ -401,3 +405,51 @@
         </div>
     </div>
 @endsection
+@push('scripts')
+<script>
+    $(document).ready( async function() {
+        $(document).on('click', '#abrir-venta-qr', async () => {
+            // Mockup functionalidad escaneado de QR
+            console.log("Simulando escaneado de QR");
+            // Asumiendo escaneado exitoso
+            // Generacion de una nueva venta con el identificador del usuario
+            try {
+                const respuestaQR = await VentaService.generarVentaQR();
+                if (respuestaQR.status === 200) {
+                    await sincronizarCarrito();
+                }
+            } catch (error) {
+                if (error.response && error.response.status === 409) {
+                    // De ya existir una venta, se procede con la sincronizacion del carrito
+                    // Esto puede utilizarse para mencionarle al cliente que ya dispone de atencion a sus pedidos
+                    console.log("Ya existe una venta activa, Procediendo a sincronizar el carrito.");
+                    await sincronizarCarrito();
+                } else {
+                    // Control de Error, puede usarse para mencionarle al cliente que el escaneado
+                    // del QR no funcionó
+                    console.error("Error al procesar el código QR:", error);
+                }
+            }
+
+            
+        });
+
+        $(document).on('click', '#cerrar-venta-qr', () => {
+            console.log("Simulando proceso cerrado de venta");
+            // Culminar ciclo de venta sea aceptando o rechazando los producto_venta relacionados
+            // a la venta activa del cliente
+        });
+
+        const sincronizarCarrito = async () => {
+            const carrito = carritoStorage.obtenerCarrito();
+            console.log("Carrito:", carrito);
+            // Sincronizacion de base de datos con elementos actuales en el carrito
+            const respuestaSincronizacion = await VentaService.generarProductosVenta_Carrito(carrito)
+            console.log("Sincronización de productos exitosa:", respuestaSincronizacion);
+            // Eliminar elmentos existentes en el carrito para evitar nuevos registros indeseados 
+            // y abusos en generacion de producto_venta 
+            carritoStorage.vaciarCarrito();
+        }
+    });
+</script>
+@endpush
