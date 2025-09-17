@@ -227,9 +227,9 @@ class VentasIndex extends Component
             $printer->setTextSize(1, 1);
             $printer->text(GlobalHelper::getValorAtributoSetting('nombre_empresa') . "\n");
             $printer->feed(1);
-            $printer->text("'".strtoupper(GlobalHelper::getValorAtributoSetting('slogan'))."!'" . "\n");
+            $printer->text("'" . strtoupper(GlobalHelper::getValorAtributoSetting('slogan')) . "!'" . "\n");
             $printer->feed(1);
-            $printer->text('Contacto : '.GlobalHelper::getValorAtributoSetting('telefono'). "\n" . GlobalHelper::getValorAtributoSetting('direccion').' ' . "\n");
+            $printer->text('Contacto : ' . GlobalHelper::getValorAtributoSetting('telefono') . "\n" . GlobalHelper::getValorAtributoSetting('direccion') . ' ' . "\n");
             if (isset($this->cuenta->cliente->name)) {
                 $printer->text('Cliente: ' . Str::limit($this->cuenta->cliente->name, '20', '') . "\n");
             }
@@ -372,7 +372,7 @@ class VentasIndex extends Component
     {
         $producto = Producto::find($idprod);
         $response = $this->productoVentaService->guardarObservacion($this->cuenta, $producto, $this->observacion);
-        
+
         $this->dispatchBrowserEvent('alert', [
             'type' => $response->type,
             'message' => $response->message,
@@ -383,7 +383,7 @@ class VentasIndex extends Component
         $this->validate();
 
         $response = $this->ventaService->crearVenta(auth()->user()->id, $this->sucursal, $this->cliente);
-        
+
         $this->dispatchBrowserEvent('alert', [
             'type' => $response->type,
             'message' => $response->message,
@@ -482,18 +482,18 @@ class VentasIndex extends Component
     public function actualizarlista($cuenta)
     {
         $calculos = $this->calculadoraService->calcularVenta($cuenta, $this->descuentoSaldo);
-        
+
         $this->listacuenta = $calculos->listaCuenta;
         $this->subtotal = $calculos->subtotal;
         $this->itemsCuenta = $calculos->itemsCuenta;
         $this->descuentoProductos = $calculos->descuentoProductos;
         $this->subtotalConDescuento = $calculos->subtotalConDescuento;
-        
+
         $this->cuenta->puntos = $calculos->puntos;
-        
+
         // Actualizar totales en BD
         $this->calculadoraService->actualizarTotalesVenta($cuenta);
-        
+
         $this->reset(['adicionales', 'productoapuntado']);
         $this->saldo = false;
         $this->saldoRestante = 0;
@@ -510,12 +510,12 @@ class VentasIndex extends Component
         }
 
         $response = $this->productoVentaService->agregarAdicional(
-            $this->cuenta, 
-            $this->productoapuntado, 
-            $adicional, 
+            $this->cuenta,
+            $this->productoapuntado,
+            $adicional,
             $item
         );
-        
+
         $this->dispatchBrowserEvent('alert', [
             'type' => $response->type,
             'message' => $response->message,
@@ -529,11 +529,11 @@ class VentasIndex extends Component
     public function eliminarItem()
     {
         $response = $this->productoVentaService->eliminarItem(
-            $this->cuenta, 
-            $this->productoapuntado, 
+            $this->cuenta,
+            $this->productoapuntado,
             $this->itemseleccionado
         );
-        
+
         $this->dispatchBrowserEvent('alert', [
             'type' => $response->type,
             'message' => $response->message,
@@ -612,7 +612,7 @@ class VentasIndex extends Component
     public function adicionar(Producto $producto)
     {
         $response = $this->productoVentaService->agregarProducto($this->cuenta, $producto);
-        
+
         $this->dispatchBrowserEvent('alert', [
             'type' => $response->type,
             'message' => $response->message,
@@ -634,7 +634,7 @@ class VentasIndex extends Component
         }
 
         $response = $this->productoVentaService->agregarProducto($this->cuenta, $producto, $this->cantidadespecifica);
-        
+
         $this->dispatchBrowserEvent('alert', [
             'type' => $response->type,
             'message' => $response->message,
@@ -649,7 +649,7 @@ class VentasIndex extends Component
     public function eliminaruno(Producto $producto)
     {
         $response = $this->productoVentaService->eliminarUnoProducto($this->cuenta, $producto);
-        
+
         $this->dispatchBrowserEvent('alert', [
             'type' => $response->type,
             'message' => $response->message,
@@ -663,7 +663,7 @@ class VentasIndex extends Component
     public function eliminarproducto(Producto $producto)
     {
         $response = $this->productoVentaService->eliminarProductoCompleto($this->cuenta, $producto);
-        
+
         $this->dispatchBrowserEvent('alert', [
             'type' => $response->type,
             'message' => $response->message,
@@ -730,6 +730,7 @@ class VentasIndex extends Component
 
     public function cobrar()
     {
+
         $response = $this->ventaService->cobrarVenta(
             $this->cuenta,
             $this->metodosSeleccionados,
@@ -737,6 +738,7 @@ class VentasIndex extends Component
             $this->subtotalConDescuento,
             $this->descuentoSaldo
         );
+
 
         $this->dispatchBrowserEvent('alert', [
             'type' => $response->type,

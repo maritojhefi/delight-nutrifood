@@ -21,12 +21,60 @@ export const checkProductStock = async (productId) => {
     }
 }
 
+// export const validarProductoConAdicionales = async (productoID, selectedIds) => {
+//     try {
+//         const response = await axios.post(`/productos/validar-adicionales`, {
+//             producto_id: productoID,
+//             adicionales_ids: selectedIds
+//         });
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error al validar adicionales:", error);
+//         throw error;
+//     }
+// }
+
+export const validarProductoConAdicionales = async (productoID, selectedIds, quantity) => {
+    try {
+        const response = await axios.post(`/productos/validar-adicionales`, {
+            producto_id: productoID,
+            adicionales_ids: selectedIds,
+            cantidad: quantity
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error al validar adicionales:", error);
+        throw error;
+    }
+}
+
 export const getProduct = async (productId) => {
     try {
         const response = await axios.get(`/productos/${productId}`);
         return response.data;
     } catch (error) {
         console.error(`Error al solicitar el producto de ID: ${productId}`, error);
+        throw error;
+    }
+}
+
+// Obtener productos pertenecientes a un tag determinado
+export const getProductosTag = async (tagId) => {
+    try {
+        const response = await axios.get(`/productos/tag/${tagId}`);
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+export const getProductoDetalle = async (productoId) => {
+    try {
+        const response = await axios.get(`/productos/${productoId}/detallado`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
         throw error;
     }
 }
@@ -45,5 +93,8 @@ window.ProductoService = {
     getProductosCategoria,
     checkProductStock,
     getProduct,
-    getSearchedProducts
+    getProductoDetalle,
+    getProductosTag,
+    getSearchedProducts,
+    validarProductoConAdicionales
 };

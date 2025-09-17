@@ -14,7 +14,7 @@
             @foreach ($usuario->planes as $plane)
                 @if ($plane->id == $item['id'])
                     <div data-card-height="140" class="card card-style rounded-m shadow-xl bg-18 mb-3"
-                        style="height: 140px; background-image:url('{{ asset('imagenes/delight/9.jpeg') }}')">
+                        style="height: 140px; background-image:url('{{ asset('imagenes/delight/9.jpeg') }}');">
                         <div class="card-top mt-4 ms-3">
                             <h2 class="color-white">{{ Str::limit($item['plan'], 30) }}</h2>
                             <p class="color-white font-10 opacity-70 mt-2 mb-n1"><i class="far fa-calendar"></i> Restante:
@@ -211,7 +211,7 @@
             //     showMessage('error', result.message);
             // }
             try {
-                const result = await addToCart(product_Id, 1, true);
+                const result = await addToCart(product_Id, 1);
                 if (result.success) {
                     showMessage('success', 'Item agregado al carrito!');
                 } else {

@@ -1071,7 +1071,9 @@ hover-blue:hover {
 }
 
 .theme-dark .bg-dtheme-blue  {
-    background-color:  #374151 !important;
+    background-color:  #1f2937 !important;
+    /* #1f2937 */
+    /* #374151 */
 }
 .theme-dark .tag-icon {
     color: white !important;

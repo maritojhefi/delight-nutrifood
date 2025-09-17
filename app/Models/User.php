@@ -44,7 +44,9 @@ class User extends Authenticatable
         'color_page',
         'profesion',
         'direccion_trabajo',
-        'hijos'
+        'hijos',
+        'partner_id',
+        'verificado',
     ];
 
     /**
@@ -123,7 +125,7 @@ class User extends Authenticatable
     public function planes()
     {
         return $this->belongsToMany(Plane::class)
-            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'estado');
+            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'estado', 'cocina');
     }
     public function planesPendientes()
     {
@@ -136,12 +138,12 @@ class User extends Authenticatable
     {
         //dd($this->belongsToMany(Plane::class)->wherePivot('start',$fecha));
         return $this->belongsToMany(Plane::class)->wherePivot('start', $fecha) //->wherePivot('detalle','!=',null)
-            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'estado');
+            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'estado', 'cocina');
     }
     public function planesSemana()
     {
         return $this->belongsToMany(Plane::class)->wherePivotBetween('start', [date("y-m-d", strtotime("last sunday")), date("y-m-d", strtotime("next sunday"))])
-            ->withPivot('start', 'end', 'title', 'detalle', 'id');
+            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'cocina');
     }
 
     public function asistencias()
@@ -154,7 +156,7 @@ class User extends Authenticatable
     }
     public function saldosVigentes()
     {
-        return $this->hasMany(Saldo::class)->whereNull('liquidado')->where('anulado',false)->orderBy('created_at', 'desc');
+        return $this->hasMany(Saldo::class)->whereNull('liquidado')->where('anulado', false)->orderBy('created_at', 'desc');
     }
     public function contrato()
     {
@@ -162,15 +164,18 @@ class User extends Authenticatable
     }
     public function scopeCajeros($query)
     {
-        return $query->whereIn('role_id', [1,2]);
+        return $query->whereIn('role_id', [1, 2]);
     }
     public function scopeSaldoAFavor($query)
     {
-        return $query->where('saldo','<',0);
+        return $query->where('saldo', '<', 0);
     }
     public function scopeSaldoADeuda($query)
     {
-        return $query->where('saldo','>',0);
+        return $query->where('saldo', '>', 0);
     }
-
+    public function perfilesPuntos()
+    {
+        return $this->belongsToMany(PerfilPunto::class, 'perfiles_puntos_users', 'user_id', 'perfil_punto_id')->withTimestamps();
+    }
 }

@@ -50,7 +50,7 @@
                                 </button>
                         @else
                             <button
-                                class="add-to-cart btn rounded-s px-1 shadow-l bg-highlight font-900 text-uppercase"
+                                class="{{ $producto->tiene_adicionales ? "menu-adicionales-btn":"agregar-unidad" }} btn rounded-s px-1 shadow-l bg-highlight font-900 text-uppercase"
                                 data-producto-id="{{$producto->id}}"
                                 data-producto-nombre="{{$producto->nombre}}"
                             >

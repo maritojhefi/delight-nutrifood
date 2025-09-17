@@ -3,23 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Horario;
-use App\Models\Plane;
 use App\Models\Producto;
 use App\Models\Subcategoria;
 use App\Helpers\GlobalHelper;
-use Illuminate\Http\Request;
-use Log;
+use App\Models\Tag;
 
 class LineaDelightController extends Controller
 {
     public function index()
     {
-        $productos = Producto::select('productos.*')
-            ->join('subcategorias', 'subcategorias.id', 'productos.subcategoria_id')
-            ->join('categorias', 'categorias.id', 'subcategorias.categoria_id')
-            ->where('productos.estado', 'activo')
-            ->whereIn('categorias.nombre', ['Cocina', 'Panaderia/Reposteria'])
-            ->get();
+        $productos = Producto::publicoTienda()->select('productos.*')
+        ->join('subcategorias', 'subcategorias.id', 'productos.subcategoria_id')
+        ->join('categorias', 'categorias.id', 'subcategorias.categoria_id')
+        ->whereIn('categorias.nombre', ['Cocina', 'Panaderia/Reposteria'])
+        ->get();
+        
 
         $productos = $productos->map(function ($producto) {
             $producto->tiene_stock = !($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0);
@@ -30,6 +28,7 @@ class LineaDelightController extends Controller
             ->whereIn('categoria_id', [2,3])
             ->orderBy('subcategorias.nombre')
             ->get();
+
 
         $masVendidos = $productos->sortByDesc('cantidad_vendida')
             ->take(10);
@@ -46,7 +45,8 @@ class LineaDelightController extends Controller
             ->shuffle()
             ->take(10);
 
-        $horarios = Horario::all();
+        // Horarios ordenados por posicion de manera ascendente
+        $horarios = Horario::orderBy('posicion', 'asc')->get();
 
         $horariosDataArray = [];
 
@@ -58,9 +58,11 @@ class LineaDelightController extends Controller
             );
         }
 
+        $tags =Tag::tieneProductosDisponibles()->get();
+
         $horariosData = (object) $horariosDataArray;
 
-        return view('client.lineadelight.index', compact('subcategorias', 'masVendidos','masRecientes','enDescuento', 'conMasPuntos', 'productos', 'horarios','horariosData'));
+        return view('client.lineadelight.index', compact('subcategorias', 'masVendidos','masRecientes','enDescuento', 'conMasPuntos', 'productos', 'horarios','horariosData', 'tags'));
     }
     public function categoriaPlanes()
     {
