@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Producto;
 use App\Models\Subcategoria;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,12 +25,5 @@ class Adicionale extends Model
     public function scopeCocinaAdicionales($query)
     {
         return $query->where('codigo_cocina', '!=', null);
-    }
-    // public function grupoAdicionales() {
-    //     return $this->belongsTo(AdicionaleGrupo::class);
-    // }
-    public function grupoAdicionale()
-    {
-        return $this->belongsTo(AdicionaleGrupo::class, 'adicionale_grupo_id');
     }
 }
