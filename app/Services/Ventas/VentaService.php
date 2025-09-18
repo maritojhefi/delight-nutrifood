@@ -33,7 +33,6 @@ class VentaService implements VentaServiceInterface
             ]);
 
             return VentaResponse::success($venta, 'Nueva venta creada');
-
         } catch (\Exception $e) {
             return VentaResponse::error('Error al crear venta: ' . $e->getMessage());
         }
@@ -65,10 +64,10 @@ class VentaService implements VentaServiceInterface
             try {
                 // Calcular datos de la venta
                 $calculos = $this->calculadoraService->calcularVenta($venta, $descuentoSaldo);
-                
+
                 // Determinar saldo resultante
                 $saldoResultante = $this->calculadoraService->calcularSaldoResultante($totalAcumulado, $subtotalConDescuento);
-                
+
                 // Actualizar caja
                 DB::table('cajas')
                     ->where('id', $cajaActiva->id)
@@ -128,7 +127,7 @@ class VentaService implements VentaServiceInterface
                 $productos = $venta->productos;
                 foreach ($productos as $producto) {
                     $prodLista = collect($calculos->listaCuenta)->firstWhere('id', $producto->id);
-                    
+
                     $historialVenta->productos()->attach($producto->id, [
                         'cantidad' => $producto->pivot->cantidad,
                         'adicionales' => $producto->pivot->adicionales,
@@ -146,15 +145,13 @@ class VentaService implements VentaServiceInterface
                 DB::commit();
 
                 return VentaResponse::success(
-                    $venta->fresh(), 
+                    $venta->fresh(),
                     'Esta venta ahora se encuentra pagada!'
                 );
-
             } catch (\Exception $e) {
                 DB::rollBack();
                 throw $e;
             }
-
         } catch (VentaException $e) {
             return VentaResponse::error($e->getMessage(), [], null);
         } catch (\Exception $e) {
@@ -177,7 +174,6 @@ class VentaService implements VentaServiceInterface
             $venta->delete();
 
             return VentaResponse::success(null, 'Se finalizó esta venta');
-
         } catch (VentaException $e) {
             return VentaResponse::warning($e->getMessage());
         } catch (\Exception $e) {
@@ -190,7 +186,6 @@ class VentaService implements VentaServiceInterface
         try {
             $venta->delete();
             return VentaResponse::warning('Venta eliminada', null);
-
         } catch (\Exception $e) {
             return VentaResponse::error('Error al eliminar venta: ' . $e->getMessage());
         }
@@ -207,7 +202,6 @@ class VentaService implements VentaServiceInterface
                 $venta->fresh(),
                 "Se asignó a esta venta el cliente: {$cliente->name}"
             );
-
         } catch (\Exception $e) {
             return VentaResponse::error('Error al cambiar cliente: ' . $e->getMessage());
         }
@@ -224,7 +218,6 @@ class VentaService implements VentaServiceInterface
             $venta->save();
 
             return VentaResponse::success($venta->fresh(), 'Hecho!');
-
         } catch (\Exception $e) {
             return VentaResponse::error('Error al agregar usuario manual: ' . $e->getMessage());
         }
@@ -239,7 +232,6 @@ class VentaService implements VentaServiceInterface
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
             return VentaResponse::success($venta->fresh(), 'Descuento actualizado!');
-
         } catch (\Exception $e) {
             return VentaResponse::error('Error al editar descuento: ' . $e->getMessage());
         }
@@ -252,10 +244,9 @@ class VentaService implements VentaServiceInterface
             $venta->cocina_at = Carbon::now();
             $venta->save();
 
-            event(new CocinaPedidoEvent('Se actualizó la lista'));
+            // event(new CocinaPedidoEvent('Se actualizó la lista'));
 
             return VentaResponse::success($venta->fresh(), 'Se envió a cocina!');
-
         } catch (\Exception $e) {
             return VentaResponse::error('Error al enviar a cocina: ' . $e->getMessage());
         }

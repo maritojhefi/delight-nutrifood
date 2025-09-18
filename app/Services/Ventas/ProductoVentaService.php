@@ -35,9 +35,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 }
 
                 $stockResponse = $this->stockService->actualizarStock(
-                    $producto, 
-                    $cantidad === 1 ? 'sumar' : 'sumarvarios', 
-                    $cantidad, 
+                    $producto,
+                    $cantidad === 1 ? 'sumar' : 'sumarvarios',
+                    $cantidad,
                     $venta->sucursale_id
                 );
 
@@ -70,10 +70,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
             return VentaResponse::success(
-                null, 
+                null,
                 "Se agregó {$cantidad} {$producto->nombre} a esta venta"
             );
-
         } catch (VentaException $e) {
             return VentaResponse::error($e->getMessage(), [], null);
         } catch (\Exception $e) {
@@ -119,10 +118,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
             return VentaResponse::success(
-                null, 
+                null,
                 "Se eliminó 1 {$producto->nombre} de esta venta"
             );
-
         } catch (VentaException $e) {
             return VentaResponse::error($e->getMessage(), [], null);
         } catch (\Exception $e) {
@@ -167,14 +165,13 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             // Disparar evento si no es de ECO-TIENDA
             if ($producto->subcategoria->categoria->nombre !== 'ECO-TIENDA') {
-                event(new CocinaPedidoEvent("Se actualizó la mesa {$venta->id}"));
+                // event(new CocinaPedidoEvent("Se actualizó la mesa {$venta->id}"));
             }
 
             return VentaResponse::success(
-                null, 
+                null,
                 "Se eliminó {$producto->nombre} de esta venta"
             );
-
         } catch (VentaException $e) {
             return VentaResponse::warning($e->getMessage());
         } catch (\Exception $e) {
@@ -205,7 +202,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 ->first();
 
             $array = json_decode($pivot->adicionales, true);
-            
+
             // Agregar adicional al item específico
             for ($i = 1; $i <= $item; $i++) {
                 if ($i == $item) {
@@ -230,7 +227,6 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
             return VentaResponse::success(null, 'Adicional agregado correctamente');
-
         } catch (VentaException $e) {
             return VentaResponse::warning($e->getMessage());
         } catch (\Exception $e) {
@@ -286,7 +282,6 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
             return VentaResponse::success(null, 'Item eliminado correctamente');
-
         } catch (VentaException $e) {
             return VentaResponse::warning($e->getMessage());
         } catch (\Exception $e) {
@@ -322,13 +317,13 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     case 'sumar':
                         $json[] = [];
                         break;
-                        
+
                     case 'muchos':
                         for ($i = 0; $i < $cantidadEspecifica; $i++) {
                             $json[] = [];
                         }
                         break;
-                        
+
                     case 'restar':
                         if ($registro->cantidad > 0) {
                             // Restaurar stock de adicionales
@@ -352,7 +347,6 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             }
 
             return VentaResponse::success(null, 'Adicionales actualizados');
-
         } catch (\Exception $e) {
             return VentaResponse::error('Error al actualizar adicionales: ' . $e->getMessage());
         }
@@ -367,7 +361,6 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 ->update(['observacion' => $observacion]);
 
             return VentaResponse::success(null, 'Observación guardada');
-
         } catch (\Exception $e) {
             return VentaResponse::error('Error al guardar observación: ' . $e->getMessage());
         }
@@ -383,7 +376,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 ->decrement('restante', 1);
 
             $producto = Producto::find($productoId);
-            
+
             // Agregar descuento al plan
             $descuentoAdicional = $producto->descuento ?: $producto->precio;
             $venta->descuento = $venta->descuento + $descuentoAdicional;
@@ -393,7 +386,6 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             $this->agregarProducto($venta, $producto);
 
             return VentaResponse::success(null, 'Se restó una unidad al plan y se agregó el producto');
-
         } catch (\Exception $e) {
             return VentaResponse::error('Error al agregar desde plan: ' . $e->getMessage());
         }
