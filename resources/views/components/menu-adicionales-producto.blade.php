@@ -6,21 +6,23 @@
     </div>
     <div class="divider mb-0"></div>
     <div class="content mt-3">
-        <div class="d-flex mb-3">
-            <div class="align-self-center">
-                <img id="detalles-menu-img" src="{{asset(GlobalHelper::getValorAtributoSetting('bg_default'))}}" class="rounded-sm me-3"
-                style="width: 5rem; height: 5rem; object-fit: cover;">
-            </div>
-            <div class="align-self-center">
+        <div class="d-flex mb-3 flex-row gap-4 align-items-center">
+            <img id="detalles-menu-img" src="{{asset(GlobalHelper::getValorAtributoSetting('bg_default'))}}" class="rounded-sm"
+            style="width: 5rem; height: 5rem; object-fit: cover;">
+
+            <div>
                 <h2 id="detalles-menu-nombre" class="font-16 line-height-s mt-1 mb-n1">Nombre del producto</h2>
-                <div class="mb-0 font-11 mt-2 d-flex flex-row align-items-center justify-content-start gap-2">
+                <!-- <div class="mb-0 font-11 mt-2 d-flex flex-row align-items-center justify-content-start gap-2">
                     {{-- @foreach ($producto->tag as $tag)
                     <i  data-lucide="{{$tag->icono}}" 
                         class="lucide-icon tag-icon"
                         style="width: 1rem; height: 1rem;"></i>
                     @endforeach
                     Info --}}
-                    <i class="fa fa-truck color-green-dark pe-1 ps-2"></i>Empacado estandar
+                    <i class="fa fa-truck color-green-dark pe-1 ps-2"></i>Stock Disponible : 
+                </div> -->
+                <div id="error-producto-container" class="alert bg-blue-light p-1 rounded-s mt-3 mb-0" style="display: none;">
+                    <p id="error-producto-message" class="text-white">El stock del producto no parece ser suficiente.</p>
                 </div>
             </div>
         </div>
@@ -29,11 +31,12 @@
         </form>
         <div class="divider mb-2"></div>
         <div class="line-height-xs">
-            <small class=" mb-0 color-theme">Los extras seleccionados se veran reflejados en la cantidad de unidades que pidas.</small>
+            <small class="color-theme">Los extras seleccionados se veran reflejados en la cantidad del pedido.</small>
         </div>
-        <div class="d-flex mb-0 pb-1">
+        <div class="d-flex mb-0 py-1">
             <div class="align-self-center">
                 <h5 class="mb-0">Cantidad</h5>
+                <!-- <small>Disponible(s): <span id="stock-producto-value">x</span></small> -->
             </div>
             <div class="ms-auto align-self-center">
                 <div class="stepper rounded-s small-switch me-n2">
@@ -41,6 +44,7 @@
                     <input style="font-size: 15px !important;" form="detalles-menu-adicionales" name="cantidad-orden" id="detalles-cantidad" type="number" min="1" max="99" value="1">
                     <a id="detalles-stepper-up" href="#" class="stepper-add"><i class="fa fa-plus color-theme opacity-40"></i></a>
                 </div>
+                
             </div>
         </div>
         <div id="error-limitados-container" class="alert bg-orange-light line-height-s text-white p-2 rounded-s" style="display: none;">
@@ -239,7 +243,7 @@
                 ocultarMensajeLimitados();
                 ocultarMensajeAgotados();
                 const formData = new FormData(formAdicionales);
-                let cantidad = 1;
+                let cantidadSolicitada = 1;
 
                 console.log(formData);
                 
@@ -248,7 +252,7 @@
                     if (key !== 'cantidad-orden') {
                         IdsAdicionalesSeleccionados.push(parseInt(value));  
                     } else {
-                        cantidad = parseInt(value);
+                        cantidadSolicitada = parseInt(value);
                     }
                 };
                 
@@ -256,19 +260,19 @@
 
                 try {
                     estaVerificando(true);
-                    const respuestaValidacionAdicionales = await ProductoService.validarProductoConAdicionales(infoProducto.id, IdsAdicionalesSeleccionados, cantidad);
+                    // const respuestaValidacionAdicionales = await ProductoService.validarProductoConAdicionales(infoProducto.id, IdsAdicionalesSeleccionados, cantidad);
                     // Control de Accion, agregar al carrito o agregar a producto_venta
-                    // Call to API in order to check wether venta is active or not
-                    const agregarVentaProducto = await VentaService.agregarProductoVenta(infoProducto.id, IdsAdicionalesSeleccionados, cantidad);
+                    const agregarVentaProducto = await VentaService.agregarProductoVenta(infoProducto.id, cantidadSolicitada, IdsAdicionalesSeleccionados);
                     // const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidad, false, IdsAdicionalesSeleccionados);
                     estaVerificando(false);
                     closeDetallesMenu();
                 } catch (error) {
                     estaVerificando(false);
+                    // CONTROL STOCK INSUFICIENTE
                     if (error.response && error.response.status === 422) {
                         // Informacion recibida de validacion inexitosa en backend
-                        const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaxima,
-                        messageLimitados, messageAgotados } = error.response.data;
+                        const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaximaPosible,
+                        messageLimitados, messageAgotados, messageProducto, stockProducto } = error.response.data;
                         // De existir adicionales agotados:
                         if (idsAdicionalesAgotados.length > 0) {
                             idsAdicionalesAgotados.forEach(adicionalId => {
@@ -299,8 +303,19 @@
                             textoAdvertencia.textContent = messageLimitados;
                             
                             // Transformar boton para actualizar la orden
-                            renderBotonActualizarAdicionales(infoProducto,cantidadMaxima);
+                            renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible);
                         }
+                        if (stockProducto < cantidadSolicitada) {
+                            // Display elemento mensaje stock disponible
+                            const containerAdvertencia = document.getElementById('error-producto-container');
+                            containerAdvertencia.style.display = 'block';
+                            const textoAdvertencia = document.getElementById('error-producto-message');
+                            textoAdvertencia.textContent = messageProducto;
+                            // Actualizar el texto indicando el stock disponible del producto
+                            $('#stock-producto-value').text(`${stockProducto}`);
+                            renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible);
+                        }
+
                     } else {
                         console.error("Ocurrió un error inesperado:", error.message);
                     }
@@ -438,6 +453,7 @@
             $('#btn-actualizar-pedido').on('click', function() {
                 // Actualizar cantidad seleccionada
                 const inputCantidad = document.getElementById('detalles-cantidad');
+                console.log("Debug cantidad maxima: ", cantidadMaxima);
                 inputCantidad.value = parseInt(cantidadMaxima, 10);
                 actualizarCostoTotal(producto);
                 // Ocultar mensaje de limitados

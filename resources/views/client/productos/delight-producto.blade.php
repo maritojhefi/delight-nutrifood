@@ -111,14 +111,15 @@
         const product_Id = $(this).data('producto-id'); 
         try {
             // Solicitud para revisar stock y agregar al carrito
-            const result = await carritoStorage.agregarAlCarrito(product_Id, 1);
-            if (result.success) {
-                // En caso de exito, actualizar el contador de unidades
-                carritoStorage.actualizarContadorDetalleProducto(product_Id);
-                renderOrderInfo(product_Id);
-            } else {
-                console.log('Error: ', result.message);
-            }
+            const agregarProductoVenta = await VentaService.agregarProductoVenta(product_Id, 1);
+            // const result = await carritoStorage.agregarAlCarrito(product_Id, 1);
+            // if (result.success) {
+            //     // En caso de exito, actualizar el contador de unidades
+            //     carritoStorage.actualizarContadorDetalleProducto(product_Id);
+            //     renderOrderInfo(product_Id);
+            // } else {
+            //     console.log('Error: ', result.message);
+            // }
         } catch (error) {
             console.error('Error agregando el producto al carrito:', error);
         }

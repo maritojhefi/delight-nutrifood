@@ -22,7 +22,7 @@ export const generarProductosVenta_Carrito = async (carrito) => {
     }
 }
 
-export const agregarProductoVenta = async (productoID, IDsAdicionales, cantidad) => {
+export const agregarProductoVenta = async (productoID, cantidad, IDsAdicionales = []) => {
     try {
         console.log("Llamado a agregarProductoVenta")
         const response = await axios.post('/ventas/producto', {
