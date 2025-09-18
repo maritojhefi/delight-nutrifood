@@ -97,11 +97,11 @@ class VentaService implements VentaServiceInterface
                 ]);
 
                 // Actualizar puntos del cliente
-                if ($venta->cliente_id) {
-                    DB::table('users')
-                        ->where('id', $venta->cliente_id)
-                        ->increment('puntos', $calculos->puntos);
-                }
+                // if ($venta->cliente_id) {
+                //     DB::table('users')
+                //         ->where('id', $venta->cliente_id)
+                //         ->increment('puntos', $calculos->puntos);
+                // }
 
                 // Crear saldo si es necesario
                 if ($saldoResultante['montoSaldo'] > 0) {
