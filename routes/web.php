@@ -95,8 +95,11 @@ Route::prefix('/ventas')
         Route::get('', [App\Http\Controllers\VentasCocinaController::class, 'index'])->name('ventas.cocina.pedido');
         Route::post('/ventaQR', [App\Http\Controllers\VentasWebController::class, 'generarVentaQR']);
         Route::post('/sincronizar', [App\Http\Controllers\VentasWebController::class,'carrito_ProductosVenta']);
-        Route::post('/producto', [App\Http\Controllers\VentasWebController::class,'agregarProductoVenta']);
+        // Route::post('/producto', [App\Http\Controllers\VentasWebController::class,'agregarProductoVenta']);
     });
+Route::post('/ventas/producto', [App\Http\Controllers\VentasWebController::class, 'agregarProductoVenta']);
+
+
 Route::prefix('/otros')->group(function () {
     Route::get('/tutoriales', [App\Http\Controllers\OtrosController::class, 'tutorialesIndex'])->name('tutoriales');
     Route::get('/cambiarcolor', [App\Http\Controllers\OtrosController::class, 'cambiarColor']);

@@ -258,7 +258,12 @@
 
     <x-cabecera-pagina titulo="Bienvenidos" cabecera="appkit" />
 
-
+    @auth
+        <div class="flex d-flex justify-content-between mx-4 my-4">
+            <button id="abrir-venta-qr" class="btn bg-highlight">Abrir Venta Scan QR</button>
+            <button id="cerrar-venta-qr" class="btn bg-red-dark">Cerrar Venta QR</button>
+        </div>
+    @endauth
     {{-- <div class="splide single-slider slider-no-arrows slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"
         id="single-slider-2" style="visibility: visible;">
         <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button"

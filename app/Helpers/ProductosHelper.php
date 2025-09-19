@@ -37,11 +37,11 @@ class ProductosHelper
     //         }
     //     }
     // }
-        public function verificarStockGeneral(Producto $producto, array $adicionales_ids, int $cantidadSolicitada) 
+        public function verificarStockGeneral(Producto $producto, Collection $adicionales, int $cantidadSolicitada) 
     {
         // Always check both product and adicionales stock to get complete picture
         $stockProductoDisponible = $this->obtenerStockProducto($producto);
-        $adicionalesObservados = empty($adicionales_ids) ? [] : $this->obtenerAdicionalesAgotados($adicionales_ids, $cantidadSolicitada);
+        $adicionalesObservados = ($adicionales->isEmpty()) ? [] : $this->obtenerAdicionalesAgotados($adicionales, $cantidadSolicitada);
         
         // Determine the true maximum quantity possible considering ALL constraints
         $cantidadMaximaPosible = $stockProductoDisponible;
@@ -111,30 +111,30 @@ class ProductosHelper
         return $sumado;
     }   
 
-    private function obtenerAdicionalesAgotados(array $adicionales_ids, int $cantidadSolicitada): array
+    private function obtenerAdicionalesAgotados(Collection $adicionales, int $cantidadSolicitada): array
     {
-        if (empty($adicionales_ids)) {
+        if ($adicionales->isEmpty()) {
             return [];
         }
 
         // Fetch all adicionales in one query instead of individual queries
-        $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get()->keyBy('id');
+        // $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get()->keyBy('id');
         
         $agotados = [];
         $limitados = [];
         $cantidadMaxima = PHP_FLOAT_MAX;
 
-        foreach ($adicionales_ids as $adicionalId) {
-            $adicional = $adicionales->get($adicionalId);
+        foreach ($adicionales as $adicional) {
+            // $adicional = $adicionales->get($adicionalId);
             
-            if (!$adicional) {
-                // Handle missing adicional
-                $agotados[] = [
-                    'id' => $adicionalId,
-                    'nombre' => "Item ID: {$adicionalId} (no encontrado)",
-                ];
-                continue;
-            }
+            // if (!$adicional) {
+            //     // Handle missing adicional
+            //     $agotados[] = [
+            //         'id' => "No encontrado",
+            //         'nombre' => "Item ID: {$adicionalId} (no encontrado)",
+            //     ];
+            //     continue;
+            // }
 
             // Skip non-contable adicionales (infinite stock)
             if (!$adicional->contable) {
@@ -143,12 +143,12 @@ class ProductosHelper
 
             if ($adicional->cantidad <= 0) {
                 $agotados[] = [
-                    'id' => $adicionalId,
+                    'id' => $adicional->id,
                     'nombre' => $adicional->nombre,
                 ];
             } else if ($adicional->cantidad < $cantidadSolicitada) {
                 $limitados[] = [
-                    'id' => $adicionalId,
+                    'id' => $adicional->id,
                     'nombre' => $adicional->nombre,
                     'stock' => $adicional->cantidad,
                 ];

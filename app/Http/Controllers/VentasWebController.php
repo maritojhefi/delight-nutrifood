@@ -185,29 +185,34 @@ class VentasWebController extends Controller
                 'error' => 'No se encontro una registro de producto perteneciente al identificador utilizado'
             ],Response::HTTP_NOT_FOUND);
         }
+        $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get()->keyBy('id');
 
         $productosHelper = new ProductosHelper();
-        $productosHelper->verificarStockGeneral($producto,$adicionales_ids,$cantidad);
+        $productosHelper->verificarStockGeneral($producto,$adicionales,$cantidad);
 
-        // Revisar si existe una venta activa
-        $user = User::find(auth()->user()->id);
-        $venta_activa = $user->ventaActiva;
-        if (! $venta_activa) {
-            // De no existir venta activa, retornar el mensaje de error para ser procesado por el frontend
-            // statuscode 409 Conflict
+        // $productosHelper->verificarStockGeneral($producto,$adicionales_ids,$cantidad);
+
+        // Revisar si el usuario se encuentra autenticado
+        if (!auth()->check()) {
             return response()->json([
-                'message'=> 'El producto se agregara al carrito',
-                'error' => 'No se encontro una venta activa para el usuario'
-            ],Response::HTTP_CONFLICT);
+                'message'=> 'El usuario no ha iniciado sesión. El producto se agregará a su carrito.',
+                'error' => 'El usuario no ha iniciado sesión en la aplicación'
+            ], Response::HTTP_CONFLICT);
         }
 
-        // De existir venta activa, agregar la informacion del producto como un nuevo registro dentro de la tabla producto_venta
+        // Revisar si el usuario tiene una venta activa
+        $user = auth()->user();
+        $venta_activa = $user->ventaActiva;
+        
+        if (! $venta_activa) {
+            return response()->json([
+                'message'=> 'No hay venta activa. El producto se agregará a su carrito.',
+                'error' => 'No se encontró una venta activa para el usuario'
+            ], Response::HTTP_CONFLICT);
+        }
 
-
-        $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get();
-
-        // No comparar con detalles existentes, siempre agregar un nuevos registros (orden) dentro de adicionales en
-        // producto_venta
+        // No comparar con detalles existentes, siempre agregar nuevos registros (orden) 
+        // dentro de adicionales en producto_venta
         $ventasHelper = new VentasClienteHelper($venta_activa);
 
         Log::debug('Contenido del producto recibido desde frontEnd: 

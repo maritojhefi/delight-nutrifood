@@ -259,29 +259,53 @@
                 console.log("IDs Seleccionados:", IdsAdicionalesSeleccionados);
 
                 try {
+                    // SOLICITUD DE AGREGAR PRODUCTO
                     estaVerificando(true);
-                    // const respuestaValidacionAdicionales = await ProductoService.validarProductoConAdicionales(infoProducto.id, IdsAdicionalesSeleccionados, cantidad);
-                    // Control de Accion, agregar al carrito o agregar a producto_venta
                     const agregarVentaProducto = await VentaService.agregarProductoVenta(infoProducto.id, cantidadSolicitada, IdsAdicionalesSeleccionados);
-                    // const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidad, false, IdsAdicionalesSeleccionados);
                     estaVerificando(false);
                     closeDetallesMenu();
                 } catch (error) {
                     estaVerificando(false);
-                    // CONTROL STOCK INSUFICIENTE
-                    if (error.response && error.response.status === 422) {
+                    // CONTROL DE VENTA-CARRITO
+                    if (error.response && error.response.status === 409) {
+                        // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
+                        const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidad, false, IdsAdicionalesSeleccionados);
+                        estaVerificando(false);
+                        closeDetallesMenu();
+                    }
+                    // CONTROL DE STOCK INSUFICIENTE
+                    else if (error.response && error.response.status === 422) {
                         // Informacion recibida de validacion inexitosa en backend
                         const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaximaPosible,
                         messageLimitados, messageAgotados, messageProducto, stockProducto } = error.response.data;
-                        // De existir adicionales agotados:
+                        // PRODUCTO AGOTADO
+                        if (stockProducto <= 0)
+                        {
+                            closeDetallesMenu();
+                            // Mostrar modal disculpa
+                        }
+                        // STOCK INSUFICIENTE PRODUCTO
+                        else if (stockProducto < cantidadSolicitada) {
+                            // Renderizar advertencia stock disponible
+                            const containerAdvertencia = document.getElementById('error-producto-container');
+                            containerAdvertencia.style.display = 'block';
+                            const textoAdvertencia = document.getElementById('error-producto-message');
+                            textoAdvertencia.textContent = messageProducto;
+                            // Actualizar el texto indicando el stock disponible del producto
+                            $('#stock-producto-value').text(`${stockProducto}`);
+                            // Transformar boton para actualizar la orden
+                            renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible);
+                        }
+                        // STOCK AGOTADO ADICIONALELS
                         if (idsAdicionalesAgotados.length > 0) {
                             idsAdicionalesAgotados.forEach(adicionalId => {
-                                // Deseleccion de checks agotados
+                                // Deseleccionar checks agotados
                                 const invalidInput = document.getElementById(`adicional-${adicionalId}`);
                                 if (invalidInput) {
                                     invalidInput.disabled = true;
                                     invalidInput.checked = false;
                                     const label = document.getElementById(`nombre-adicional-${adicionalId}`);
+                                    // Agregar (agotado) a los labels
                                     if (label) {
                                         if (!label.textContent.includes('(agotado)')) {
                                             label.textContent += ' (agotado)';
@@ -289,14 +313,14 @@
                                     }
                                 }
                             });
-                            // Renderizar mensaje agotados
+                            // Renderizar advertencia adicionales agotados
                             const containerAdvertencia = document.getElementById('error-agotados-container');
                             containerAdvertencia.style.display = 'block';
                             const textoAdvertencia = document.getElementById('error-agotados-message');
                         }
-                        // De existir adicionales limitados:
+                        // STOCK INSUFICIENTE ADICIONALES
                         if (idsAdicionalesLimitados.length > 0) {
-                            // Renderizar mensaje limitados
+                            // Renderizar advertencia adicionales limitados
                             const containerAdvertencia = document.getElementById('error-limitados-container');
                             containerAdvertencia.style.display = 'block';
                             const textoAdvertencia = document.getElementById('error-limitados-message');
@@ -305,19 +329,12 @@
                             // Transformar boton para actualizar la orden
                             renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible);
                         }
-                        if (stockProducto < cantidadSolicitada) {
-                            // Display elemento mensaje stock disponible
-                            const containerAdvertencia = document.getElementById('error-producto-container');
-                            containerAdvertencia.style.display = 'block';
-                            const textoAdvertencia = document.getElementById('error-producto-message');
-                            textoAdvertencia.textContent = messageProducto;
-                            // Actualizar el texto indicando el stock disponible del producto
-                            $('#stock-producto-value').text(`${stockProducto}`);
-                            renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible);
-                        }
-
-                    } else {
-                        console.error("Ocurrió un error inesperado:", error.message);
+                    }  else {
+                        // Error interno del servidor
+                        console.error("Ocurrió un error inesperado.")
+                        // Mostrar un dialog sencillo de error
+                        estaVerificando(false);
+                        closeDetallesMenu();
                     }
                 }
             });
