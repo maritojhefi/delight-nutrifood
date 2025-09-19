@@ -29,17 +29,8 @@
         <center style="font-size: 12px">Productos encontrados: {{ $productos->count() }}</center>
         @foreach ($productos as $item)
             @php
-                $total = 0;
+                $total = $item->stockTotal();
             @endphp
-
-            @foreach ($item->sucursale->where('id', $cuenta->sucursale_id) as $relacion)
-                @isset($relacion)
-                    @php
-                        $total += $relacion->pivot->cantidad;
-                    @endphp
-                @endisset
-            @endforeach
-
 
             <div class="card-body product-grid-card col-6 col-sm-6 col-md-4 col-lg-4 col-xl-3 col-xxl-3 m-0 p-1"
                 style="border-style: solid;{{ $total == 0 && $item->contable == true ? 'border-color:red;' : 'border-color:rgb(14, 178, 79);' }}

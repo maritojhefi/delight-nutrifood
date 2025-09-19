@@ -98,7 +98,10 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             // Restaurar stock si es contable
             if ($producto->contable) {
-                $this->stockService->actualizarStock($producto, 'restar', 1, $venta->sucursale_id);
+                $stockResponse = $this->stockService->actualizarStock($producto, 'restar', 1, $venta->sucursale_id);
+                if (!$stockResponse->success) {
+                    return VentaResponse::error('Error al restaurar stock: ' . $stockResponse->message);
+                }
             }
 
             // Actualizar o eliminar registro
@@ -154,7 +157,10 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             // Restaurar stock si es contable
             if ($producto->contable) {
-                $this->stockService->actualizarStock($producto, 'restar', $registro->cantidad, $venta->sucursale_id);
+                $stockResponse = $this->stockService->actualizarStock($producto, 'restar', $registro->cantidad, $venta->sucursale_id);
+                if (!$stockResponse->success) {
+                    return VentaResponse::error('Error al restaurar stock: ' . $stockResponse->message);
+                }
             }
 
             // Eliminar producto
