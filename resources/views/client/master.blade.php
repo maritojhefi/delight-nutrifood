@@ -17,20 +17,23 @@
         rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('fonts/css/fontawesome-all.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_teal.css') }}">
-    <script>
-        var blurred = false;
-        window.onblur = function() {
-            blurred = true;
-        };
-        window.onfocus = function() {
-            blurred && (location.reload());
-        };
-    </script>
+
+    @env('production')
+        <script>
+            var blurred = false;
+            window.onblur = function() {
+                blurred = true;
+            };
+            window.onfocus = function() {
+                blurred && (location.reload());
+            };
+        </script>
+    @endenv
     <script src="{{ asset('js/app.js') }}" defer></script>
     <style>
         .bordeado {
-            border-style:dotted;
-            border-color: #37BC9B ;
+            border-style: dotted;
+            border-color: #37BC9B;
             border-width: 2px;
             /* border-radius: 15px; */
         }
@@ -125,7 +128,7 @@
             <a href="#" data-menu="menu-main" class="header-icon header-icon-4 "><i class="fas fa-bars"></i></a>
         </div> --}}
         {{-- Inclusion del header-bar --}}
-        <x-appkit-header/>
+        <x-appkit-header />
         {{-- Inclusion del footer --}}
         @include('client.partials.footer-menu')
 
@@ -143,8 +146,8 @@
             @include('client.partials.menu-colors')
         </div>
         {{-- Inclusion del Menu Sidebar --}}
-        <div id="menu-main" class="menu menu-box-left menu-box-detached rounded-0 d-flex flex-column" data-menu-width="260"
-            data-menu-active="nav-pages" data-menu-effect="menu-over">
+        <div id="menu-main" class="menu menu-box-left menu-box-detached rounded-0 d-flex flex-column"
+            data-menu-width="260" data-menu-active="nav-pages" data-menu-effect="menu-over">
             @include('client.partials.menu-sidebar')
         </div>
     </div>
@@ -154,14 +157,14 @@
     {{-- <div id="toast-carrito" class="toast toast-tiny toast-top bg-green-dark hide" data-bs-delay="1000"
         data-bs-autohide="true"><i class="fa fa-check  me-3"></i>Añadido al carrito!</div> --}}
 
-    <div id="toast-cart-added" class="snackbar-toast bg-green-dark color-white fade hide"
-        data-autohide="true" style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Añadido al carrito!</div>
-    <div id="toast-cart-item-limit" class="snackbar-toast bg-yellow-dark color-white fade hide"
-        data-autohide="true" style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Limite alcanzado!</div>
+    <div id="toast-cart-added" class="snackbar-toast bg-green-dark color-white fade hide" data-autohide="true"
+        style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Añadido al carrito!</div>
+    <div id="toast-cart-item-limit" class="snackbar-toast bg-yellow-dark color-white fade hide" data-autohide="true"
+        style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Limite alcanzado!</div>
     @include('client.partials.modalredes')
 
-    <div id="shared" class="snackbar-toast bg-blue-dark color-white fade hide" data-delay="3000"
-        data-autohide="true" style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Link copiado!</div>
+    <div id="shared" class="snackbar-toast bg-blue-dark color-white fade hide" data-delay="3000" data-autohide="true"
+        style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Link copiado!</div>
     @auth
         @php
             $perfil = auth()->user();
@@ -294,13 +297,15 @@
             let originalTransformDescriptor = Object.getOwnPropertyDescriptor(protectedElement.style, 'transform');
             if (!originalTransformDescriptor) {
                 // De no encontrarse el elemento, obtenerlo del prototipo
-                originalTransformDescriptor = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'transform');
+                originalTransformDescriptor = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype,
+                    'transform');
             }
 
             Object.defineProperty(protectedElement.style, 'transform', {
                 get: function() {
                     // Retornar el valor actual o un string vacio.
-                    return originalTransformDescriptor ? originalTransformDescriptor.get.call(this) : '';
+                    return originalTransformDescriptor ? originalTransformDescriptor.get.call(this) :
+                    '';
                 },
                 set: function(value) {
                     console.log('🚨 TRANFORMACION DIRECTA BLOQUEADA:');

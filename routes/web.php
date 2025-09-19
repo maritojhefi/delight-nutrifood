@@ -185,6 +185,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
     Route::prefix('/convenios')->group(function () {
         Route::get('/index', \App\Http\Livewire\Admin\ConveniosIndexComponent::class)->name('convenio.index');
         Route::get('/vincular/clientes', \App\Http\Livewire\Admin\ConveniosUsuariosComponent::class)->name('convenio.vincular.usuario');
+        Route::get('/usuarios-disponibles/{convenioId}', [\App\Http\Livewire\Admin\ConveniosUsuariosComponent::class, 'getUsuariosDisponibles'])->name('convenio.usuarios.disponibles');
     });
     Route::prefix('/sucursales')->group(function () {
         Route::get('/index', \App\Http\Livewire\Admin\SucursalesIndex::class)->name('sucursal.listar');

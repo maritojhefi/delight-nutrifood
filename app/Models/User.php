@@ -178,4 +178,8 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(PerfilPunto::class, 'perfiles_puntos_users', 'user_id', 'perfil_punto_id')->withTimestamps();
     }
+    public function convenios()
+    {
+        return $this->belongsToMany(Convenio::class, 'convenio_user', 'user_id', 'convenio_id')->withTimestamps();
+    }
 }

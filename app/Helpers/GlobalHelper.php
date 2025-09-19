@@ -416,7 +416,6 @@ class GlobalHelper
         }
         return $nombre;
     }
-
     public static function getValorAtributoSetting($atributo)
     {
         $atributo = Setting::where('atributo', $atributo)->first();
@@ -459,14 +458,8 @@ class GlobalHelper
 
         // Cacheado de los productos disponibles, incluyendo unicamente la informacion mas relevante
         Cache::remember('productos', 60, function () {
-            return Producto::publicoTienda()->select([
-                'id',
-                'nombre',
-                'precio',
-                'descuento',
-                'subcategoria_id',
-                'imagen',
-            ])
+            return Producto::publicoTienda()
+                ->select(['id', 'nombre', 'precio', 'descuento', 'subcategoria_id', 'imagen'])
                 ->with([
                     // Inclusion de registros relacionados necesarios para el manejo comun de los productos
                     'subcategoria:id,nombre,categoria_id',
@@ -481,9 +474,11 @@ class GlobalHelper
     {
         $usuario = User::find($usuario);
         $planes = $usuario->planesHoy($fecha);
-        $plan = $planes->whereHas('horario', function ($query) use ($hora) {
-            $query->where('hora_inicio', '<=', $hora)->where('hora_fin', '>=', $hora);
-        })->get();
+        $plan = $planes
+            ->whereHas('horario', function ($query) use ($hora) {
+                $query->where('hora_inicio', '<=', $hora)->where('hora_fin', '>=', $hora);
+            })
+            ->get();
         if ($plan->isEmpty()) {
             return null;
         }
@@ -525,7 +520,7 @@ class GlobalHelper
                 'estado' => 'proximo_dia',
                 'tiempo_restante' => $tiempoRestante,
                 'planes_restantes' => $planesSiguiente->count(),
-                'fecha_plan' => $fechaSiguiente
+                'fecha_plan' => $fechaSiguiente,
             ];
         }
 
@@ -585,7 +580,7 @@ class GlobalHelper
                     'estado' => 'proximo_dia',
                     'tiempo_restante' => $tiempoRestante,
                     'planes_restantes' => $planesSiguiente->count(),
-                    'fecha_plan' => $fechaSiguiente
+                    'fecha_plan' => $fechaSiguiente,
                 ];
             }
 
@@ -599,7 +594,7 @@ class GlobalHelper
             'estado' => $estado,
             'tiempo_restante' => $tiempoRestante,
             'planes_restantes' => $planesRestantesHoy,
-            'fecha_plan' => $fecha
+            'fecha_plan' => $fecha,
         ];
     }
 }
