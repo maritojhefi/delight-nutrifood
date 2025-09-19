@@ -494,7 +494,7 @@ class VentasIndex extends Component
         // Actualizar totales en BD
         $this->calculadoraService->actualizarTotalesVenta($cuenta);
 
-        $this->reset(['adicionales', 'productoapuntado']);
+        // $this->reset(['adicionales']);
         $this->saldo = false;
         $this->saldoRestante = 0;
     }
@@ -522,8 +522,11 @@ class VentasIndex extends Component
         ]);
 
         if ($response->success) {
+
             $this->actualizarlista($this->cuenta);
             $this->mostraradicionales($this->productoapuntado);
+            // dd($this->productoapuntado);
+
         }
     }
     public function eliminarItem()
@@ -685,7 +688,7 @@ class VentasIndex extends Component
             return false;
         }
         $this->cuenta = $venta;
-        $this->reset('tipocobro', 'metodosSeleccionados', 'totalAcumuladoMetodos', 'descuentoSaldo', 'saldoSobranteCheck');
+        $this->reset('tipocobro', 'metodosSeleccionados', 'totalAcumuladoMetodos', 'descuentoSaldo', 'saldoSobranteCheck', 'adicionales', 'productoapuntado');
         $this->saldoRestante = 0;
         $this->saldo = false;
         $this->emit('focusInputBuscador');
