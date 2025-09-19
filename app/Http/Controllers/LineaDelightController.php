@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Horario;
-use App\Models\Plane;
 use App\Models\Producto;
 use App\Models\Subcategoria;
 use App\Helpers\GlobalHelper;
 use App\Models\Tag;
-use Illuminate\Http\Request;
-use Log;
 
 class LineaDelightController extends Controller
 {
@@ -48,7 +45,8 @@ class LineaDelightController extends Controller
             ->shuffle()
             ->take(10);
 
-        $horarios = Horario::all();
+        // Horarios ordenados por posicion de manera ascendente
+        $horarios = Horario::orderBy('posicion', 'asc')->get();
 
         $horariosDataArray = [];
 

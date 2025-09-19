@@ -27,6 +27,39 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// ========================================
+// API REST DE VENTAS
+// ========================================
+Route::middleware('auth')->group(function () {
+    
+    // Rutas principales de ventas
+    Route::apiResource('ventas', App\Http\Controllers\Api\VentaController::class);
+    
+    // Rutas específicas de ventas
+    Route::patch('ventas/{venta}/descuento', [App\Http\Controllers\Api\VentaController::class, 'updateDescuento']);
+    Route::patch('ventas/{venta}/cliente', [App\Http\Controllers\Api\VentaController::class, 'updateCliente']);
+    Route::patch('ventas/{venta}/usuario-manual', [App\Http\Controllers\Api\VentaController::class, 'updateUsuarioManual']);
+    Route::post('ventas/{venta}/enviar-cocina', [App\Http\Controllers\Api\VentaController::class, 'enviarCocina']);
+    Route::post('ventas/{venta}/cobrar', [App\Http\Controllers\Api\VentaController::class, 'cobrar']);
+    Route::post('ventas/{venta}/cerrar', [App\Http\Controllers\Api\VentaController::class, 'cerrar']);
+    
+    // Rutas para productos en ventas
+    Route::post('ventas/{venta}/productos', [App\Http\Controllers\Api\ProductoVentaController::class, 'store']);
+    Route::delete('ventas/{venta}/productos/eliminar-uno', [App\Http\Controllers\Api\ProductoVentaController::class, 'eliminarUno']);
+    Route::delete('ventas/{venta}/productos', [App\Http\Controllers\Api\ProductoVentaController::class, 'destroy']);
+    Route::post('ventas/{venta}/productos/adicional', [App\Http\Controllers\Api\ProductoVentaController::class, 'agregarAdicional']);
+    Route::delete('ventas/{venta}/productos/item', [App\Http\Controllers\Api\ProductoVentaController::class, 'eliminarItem']);
+    Route::patch('ventas/{venta}/productos/observacion', [App\Http\Controllers\Api\ProductoVentaController::class, 'guardarObservacion']);
+    Route::post('ventas/{venta}/productos/desde-plan', [App\Http\Controllers\Api\ProductoVentaController::class, 'agregarDesdeplan']);
+    
+    // Rutas para saldos
+    Route::post('ventas/{venta}/saldos', [App\Http\Controllers\Api\SaldoController::class, 'store']);
+    Route::patch('saldos/{saldo}/anular', [App\Http\Controllers\Api\SaldoController::class, 'anular']);
+    Route::get('ventas/{venta}/saldos/maximo-descuento', [App\Http\Controllers\Api\SaldoController::class, 'maximoDescuento']);
+    Route::post('ventas/{venta}/saldos/validar-descuento', [App\Http\Controllers\Api\SaldoController::class, 'validarDescuento']);
+    
+});
+
 
 Route::post('/pruebas/webhook', function (Request $request) {
 

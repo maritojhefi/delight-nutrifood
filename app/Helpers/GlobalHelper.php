@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use Cache;
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Plane;
 use App\Models\Setting;
 use App\Models\Almuerzo;
@@ -377,6 +378,10 @@ class GlobalHelper
             case 10:
                 $formato = 'D \d\e MMMM \d\e\l Y \a \l\a\s hh:mm a';
                 break;
+            case 11:
+                $formato = 'dddd';
+                break;
+
             default:
                 $formato = 'dddd D \d\e MMMM \d\e\l Y';
                 break;
@@ -411,7 +416,6 @@ class GlobalHelper
         }
         return $nombre;
     }
-
     public static function getValorAtributoSetting($atributo)
     {
         $atributo = Setting::where('atributo', $atributo)->first();
@@ -454,14 +458,8 @@ class GlobalHelper
 
         // Cacheado de los productos disponibles, incluyendo unicamente la informacion mas relevante
         Cache::remember('productos', 60, function () {
-            return Producto::publicoTienda()->select([
-                'id',
-                'nombre',
-                'precio',
-                'descuento',
-                'subcategoria_id',
-                'imagen',
-            ])
+            return Producto::publicoTienda()
+                ->select(['id', 'nombre', 'precio', 'descuento', 'subcategoria_id', 'imagen'])
                 ->with([
                     // Inclusion de registros relacionados necesarios para el manejo comun de los productos
                     'subcategoria:id,nombre,categoria_id',
@@ -470,5 +468,133 @@ class GlobalHelper
                 ])
                 ->get();
         });
+    }
+
+    public static function planActualSegunHora($usuario, $fecha, $hora)
+    {
+        $usuario = User::find($usuario);
+        $planes = $usuario->planesHoy($fecha);
+        $plan = $planes
+            ->whereHas('horario', function ($query) use ($hora) {
+                $query->where('hora_inicio', '<=', $hora)->where('hora_fin', '>=', $hora);
+            })
+            ->get();
+        if ($plan->isEmpty()) {
+            return null;
+        }
+        return $plan[0];
+    }
+
+    public static function planInteligenteSegunHora($usuario, $fecha, $hora)
+    {
+        $usuario = User::find($usuario);
+        $horaActual = Carbon::parse($hora);
+        $fechaActual = Carbon::parse($fecha);
+
+        // Obtener planes del día actual con horarios cargados
+        $planesHoy = $usuario->planesHoy($fecha)->get()->load('horario');
+
+        // Si no hay planes hoy, buscar planes del día siguiente
+        if ($planesHoy->isEmpty()) {
+            $fechaSiguiente = $fechaActual->copy()->addDay()->format('Y-m-d');
+            $planesSiguiente = $usuario->planesHoy($fechaSiguiente)->get()->load('horario');
+
+            if ($planesSiguiente->isEmpty()) {
+                return null;
+            }
+
+            // Ordenar planes del día siguiente por hora de inicio
+            $planesSiguienteOrdenados = $planesSiguiente->sortBy(function ($plan) {
+                return Carbon::parse($plan->horario->hora_inicio);
+            });
+
+            $planSiguiente = $planesSiguienteOrdenados->first();
+            $horaInicioSiguiente = Carbon::parse($planSiguiente->horario->hora_inicio);
+
+            // Calcular tiempo hasta el inicio del plan de mañana
+            $fechaHoraInicioSiguiente = $fechaActual->copy()->addDay()->setTimeFromTimeString($planSiguiente->horario->hora_inicio);
+            $tiempoRestante = $horaActual->diffInMinutes($fechaHoraInicioSiguiente);
+
+            return (object) [
+                'plan' => $planSiguiente,
+                'estado' => 'proximo_dia',
+                'tiempo_restante' => $tiempoRestante,
+                'planes_restantes' => $planesSiguiente->count(),
+                'fecha_plan' => $fechaSiguiente,
+            ];
+        }
+
+        // Ordenar planes del día actual por hora de inicio
+        $planesConHorarios = $planesHoy->sortBy(function ($plan) {
+            return Carbon::parse($plan->horario->hora_inicio);
+        });
+
+        $planActual = null;
+        $planProximo = null;
+        $estado = '';
+        $tiempoRestante = 0;
+        $planesRestantesHoy = 0;
+
+        foreach ($planesConHorarios as $plan) {
+            $horaInicio = Carbon::parse($plan->horario->hora_inicio);
+            $horaFin = Carbon::parse($plan->horario->hora_fin);
+
+            // Si estamos dentro del horario del plan
+            if ($horaActual->between($horaInicio, $horaFin)) {
+                $planActual = $plan;
+                $estado = 'en_curso';
+                $tiempoRestante = $horaActual->diffInMinutes($horaFin);
+                break;
+            }
+
+            // Si el plan aún no ha comenzado
+            if ($horaActual->lt($horaInicio)) {
+                if (!$planProximo) {
+                    $planProximo = $plan;
+                    $estado = 'proximo';
+                    $tiempoRestante = $horaActual->diffInMinutes($horaInicio);
+                }
+                $planesRestantesHoy++;
+            }
+        }
+
+        // Si no hay plan actual ni próximo en el día actual, buscar en el día siguiente
+        if (!$planActual && !$planProximo) {
+            $fechaSiguiente = $fechaActual->copy()->addDay()->format('Y-m-d');
+            $planesSiguiente = $usuario->planesHoy($fechaSiguiente)->get()->load('horario');
+
+            if ($planesSiguiente->isNotEmpty()) {
+                // Ordenar planes del día siguiente por hora de inicio
+                $planesSiguienteOrdenados = $planesSiguiente->sortBy(function ($plan) {
+                    return Carbon::parse($plan->horario->hora_inicio);
+                });
+
+                $planSiguiente = $planesSiguienteOrdenados->first();
+
+                // Calcular tiempo hasta el inicio del plan de mañana
+                $fechaHoraInicioSiguiente = $fechaActual->copy()->addDay()->setTimeFromTimeString($planSiguiente->horario->hora_inicio);
+                $tiempoRestante = $horaActual->diffInMinutes($fechaHoraInicioSiguiente);
+
+                return (object) [
+                    'plan' => $planSiguiente,
+                    'estado' => 'proximo_dia',
+                    'tiempo_restante' => $tiempoRestante,
+                    'planes_restantes' => $planesSiguiente->count(),
+                    'fecha_plan' => $fechaSiguiente,
+                ];
+            }
+
+            return null;
+        }
+
+        $planFinal = $planActual ?: $planProximo;
+
+        return (object) [
+            'plan' => $planFinal,
+            'estado' => $estado,
+            'tiempo_restante' => $tiempoRestante,
+            'planes_restantes' => $planesRestantesHoy,
+            'fecha_plan' => $fecha,
+        ];
     }
 }

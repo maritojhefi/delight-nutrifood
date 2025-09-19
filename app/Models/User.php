@@ -125,7 +125,7 @@ class User extends Authenticatable
     public function planes()
     {
         return $this->belongsToMany(Plane::class)
-            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'estado');
+            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'estado', 'cocina');
     }
     public function planesPendientes()
     {
@@ -138,12 +138,12 @@ class User extends Authenticatable
     {
         //dd($this->belongsToMany(Plane::class)->wherePivot('start',$fecha));
         return $this->belongsToMany(Plane::class)->wherePivot('start', $fecha) //->wherePivot('detalle','!=',null)
-            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'estado');
+            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'estado', 'cocina');
     }
     public function planesSemana()
     {
         return $this->belongsToMany(Plane::class)->wherePivotBetween('start', [date("y-m-d", strtotime("last sunday")), date("y-m-d", strtotime("next sunday"))])
-            ->withPivot('start', 'end', 'title', 'detalle', 'id');
+            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'cocina');
     }
 
     public function asistencias()
@@ -181,5 +181,9 @@ class User extends Authenticatable
     public function ventaActiva()
     {
         return $this->hasOne(Venta::class, 'cliente_id');
+    }
+    public function convenios()
+    {
+        return $this->belongsToMany(Convenio::class, 'convenio_user', 'user_id', 'convenio_id')->withTimestamps();
     }
 }

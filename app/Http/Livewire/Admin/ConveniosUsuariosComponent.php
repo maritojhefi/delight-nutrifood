@@ -23,8 +23,13 @@ class ConveniosUsuariosComponent extends Component
     {
         $this->convenio_id = $convenioId;
         $this->cargarUsuariosDisponibles();
-        $this->cargarUsuariosVinculados(); // Nueva función
-        $this->emit('abrirModalUsuarios');
+        $this->cargarUsuariosVinculados();
+
+        // Forzar re-render para asegurar que los datos estén disponibles
+        $this->render();
+
+        // Pequeño delay para asegurar que los datos estén disponibles
+        $this->dispatchBrowserEvent('abrirModalUsuarios');
     }
     public function cargarUsuariosVinculados()
     {
@@ -95,10 +100,9 @@ class ConveniosUsuariosComponent extends Component
                 'id' => $usuario->id,
                 'nombre' => $usuario->name,
                 'telf' => $usuario->telf,
-                'fecha_creacion' => GlobalHelper::fechaFormateada(5, $usuario->pivot->created_at),
+                'fecha_creacion' => GlobalHelper::fechaFormateada(4, $usuario->pivot->created_at),
                 'hora_creacion' => GlobalHelper::fechaFormateada(9, $usuario->pivot->created_at),
                 'hace_tiempo' => GlobalHelper::timeago($usuario->pivot->created_at),
-
             ]);
         }
         $this->emit('mostrar-usuarios', $arrayUsuarios);
@@ -113,6 +117,18 @@ class ConveniosUsuariosComponent extends Component
             'mensaje' => 'Usuario eliminado del convenio correctamente.',
         ]);
         $this->verUsuarios($convenio->id);
+    }
+
+    public function getUsuariosDisponibles($convenioId)
+    {
+        $this->convenio_id = $convenioId;
+        $this->cargarUsuariosDisponibles();
+        $this->cargarUsuariosVinculados();
+
+        return response()->json([
+            'usuariosDisponibles' => $this->usuariosDisponibles,
+            'usuariosSeleccionados' => $this->usuarios_seleccionados
+        ]);
     }
 
     public function render()
