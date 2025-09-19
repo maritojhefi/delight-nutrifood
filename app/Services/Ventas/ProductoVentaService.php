@@ -13,6 +13,7 @@ use App\Services\Ventas\Exceptions\VentaException;
 use App\Services\Ventas\Contracts\StockServiceInterface;
 use App\Services\Ventas\Contracts\ProductoVentaServiceInterface;
 use App\Services\Ventas\Contracts\CalculadoraVentaServiceInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 class ProductoVentaService implements ProductoVentaServiceInterface
 {
@@ -76,7 +77,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         } catch (VentaException $e) {
             return VentaResponse::error($e->getMessage(), [], null);
         } catch (\Exception $e) {
-            return VentaResponse::error('Error al agregar producto: ' . $e->getMessage());
+            return VentaResponse::error('Error al agregar producto: ' . $e ->getMessage());
         }
     }
 
@@ -390,6 +391,161 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             return VentaResponse::error('Error al agregar desde plan: ' . $e->getMessage());
         }
     }
+
+    public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad): VentaResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $existeProductoVenta = $venta->productos()->where('producto_id', $producto->id)->exists();
+            
+            if (!$existeProductoVenta) {
+                $venta->productos()->attach($producto->id, ['cantidad' => $cantidad]);
+            } else {
+                $venta->productos()->updateExistingPivot($producto->id, [
+                    'cantidad' => DB::raw("cantidad + {$cantidad}")
+                ]);
+            }
+
+            // Actualizar adicionales si es necesario
+            if ($producto->medicion == 'unidad') {
+                $this->procesarAdicionalesBatch($venta, $producto->id, $adicionales, $cantidad);
+            }
+
+            $stockResponse = $this->stockService->actualizarStock(
+                $producto,
+                $cantidad === 1 ? 'sumar' : 'sumarvarios',
+                $cantidad,
+                $venta->sucursale_id
+            );
+
+            if (!$stockResponse->success) {
+                return $stockResponse;
+            }
+
+            DB::commit();
+            return VentaResponse::success(null,"ProductoVenta agregado/actualizado exitosamente");
+        } catch (VentaException $e) {
+            DB::rollBack();
+            return VentaResponse::error($e->getMessage(), [], null);
+        } catch (\Exception  $e) {
+            // Rollback en caso de error
+            DB::rollBack();
+            return VentaResponse::error('Error al agregar producto: ' . $e ->getMessage());
+            // Re-throw the exception or handle it appropriately
+            // throw new HttpResponseException(response()->json([
+            //     'message' => 'Error al procesar la orden: ' . $e->getMessage()
+            // ], Response::HTTP_INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    private function procesarAdicionalesBatch(Venta $venta, int $productoId, Collection $extras, int $cantidad)
+    {
+        try {
+            // Obtener el registro de producto_venta necesario
+            $productoVenta = $venta->productos()->where('producto_id', $productoId)->first();
+            
+            if (!$productoVenta) {
+                return VentaResponse::error('Producto no encontrado en la venta');
+            }
+
+            // Obtener el listado de adicionales actual
+            $listaActual = $productoVenta->pivot->adicionales;
+            $json = $listaActual ? json_decode($listaActual, true) : [];
+
+            // En caso de no disponer de adicionales, insertat arrays vacios
+            if ($extras->isEmpty()) {
+                for ($i = 0; $i < $cantidad; $i++) {
+                    $siguiente_clave = count($json) + 1;
+                    $json[$siguiente_clave] = []; // Empty array for each unit
+                }
+            } else {
+                // Validar el stock necesario
+                foreach ($extras as $adicional) {
+                    if ($adicional->contable == true && $adicional->cantidad < $cantidad) {
+                        return VentaResponse::warning("No hay stock suficiente para el adicional: {$adicional->nombre}. Stock disponible: {$adicional->cantidad}, requerido: {$cantidad}");
+                        // throw new \Exception("No hay stock suficiente para el adicional: {$adicional->nombre}. Stock disponible: {$adicional->cantidad}, requerido: {$cantidad}");
+                    }
+                }
+
+                // Procesar las veces determinadas por la cantidad
+                for ($i = 0; $i < $cantidad; $i++) {
+                    $siguiente_clave = count($json) + 1;
+                    $array_extras = [];
+
+                    foreach ($extras as $adicional) {
+                        if ($adicional->contable == true && $i == 0) {
+                            $adicional->decrement('cantidad', $cantidad);
+                        }
+                        $array_extras[] = [$adicional->nombre => $adicional->precio];
+                    }
+
+                    $json[$siguiente_clave] = $array_extras;
+                }
+            }
+            
+            // Actualizar producto_venta
+            DB::table('producto_venta')
+            ->where('venta_id', $venta->id)
+            ->where('producto_id', $productoId)
+            ->update(['adicionales' => json_encode($json)]);
+
+            return VentaResponse::success(null, 'Adicionales actualizados');
+        } catch (\Exception $e) {
+            return VentaResponse::error('Error al actualizar adicionales: ' . $e->getMessage());
+        }
+    }
+
+    // private function actualizarAdicionalesCliente(Venta $venta, $productoVenta, $operacion, $extras) {
+    //     // Obtenemos el primer registro correspondiente al idproducto en producto_venta
+    //     // $productoVenta = $venta->productos()
+    //     // ->where('producto_id', $idproducto)
+    //     // ->first();
+
+    //     if ($productoVenta) {
+    //         // El listado actual son las ordenes registradas en el producto_venta antes
+    //         // de su actualizacion
+    //         $listaActual = $productoVenta->pivot->adicionales;
+
+    //         // Decodificat el JSON si existe, de lo contrario, inicializa un arreglo vacío
+    //         $json = $listaActual ? json_decode($listaActual, true) : [];
+
+    //         // Determina la siguiente clave numérica
+    //         $siguiente_clave = count($json) + 1;
+
+    //         if ($operacion == 'sumar') {
+    //             // Asigna explícitamente la nueva clave numérica.
+    //             // Esto mantiene la estructura de objeto JSON.
+    //             if ($extras->isEmpty()) {
+    //                 // Si extras esta vacio, se agrega una nueva orden sin detalles
+    //                 $json[$siguiente_clave] = [];
+    //             } else {
+    //                 $array_extras = [];
+                    
+    //                 // Validar stock para todos los adicionales
+    //                 foreach ($extras as $adicional) {
+    //                     if ($adicional->contable == true && $adicional->cantidad == 0) {
+    //                         throw new \Exception("No hay stock disponible para el adicional: {$adicional->nombre}");
+    //                     }
+    //                 }
+    //                 // Por cada extra, crear un detalle y asignarlo a una nueva orden (clave en producto_venta.adicionales)
+    //                 foreach ($extras as $adicional) {
+    //                     if ($adicional->contable == true && $adicional->cantidad >= 1) {
+    //                         $adicional->decrement('cantidad');
+    //                     }
+    //                     $array_extras[] = [$adicional->nombre => $adicional->precio];
+    //                 }
+    //                 $json[$siguiente_clave] = $array_extras;
+    //             }
+    //             // Codifica el arreglo de vuelta a JSON antes de guardar
+    //             $venta->productos()
+    //             ->updateExistingPivot($idproducto, [
+    //                 'adicionales' => json_encode($json)
+    //             ]);
+    //         }
+    //     }
+    // }
+
 
     private function verificarAdicionalesVacios($arrayAdicionales): bool
     {

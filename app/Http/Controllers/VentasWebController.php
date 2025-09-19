@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ProductosHelper;
-use App\Helpers\VentasClienteHelper;
 use App\Models\Adicionale;
 use App\Models\Producto;
 use App\Models\User;
 use App\Models\Venta;
+use App\Services\Ventas\Contracts\ProductoVentaServiceInterface;
+use App\Services\Ventas\DTOs\VentaResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +17,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class VentasWebController extends Controller
 {
+    public function __construct(
+        private ProductoVentaServiceInterface $productoVentaService,
+        // private CalculadoraVentaServiceInterface $calculadoraService
+    ) {}
     public function generarVentaQR() {   
         
         try {
@@ -194,36 +200,40 @@ class VentasWebController extends Controller
 
         // Revisar si el usuario se encuentra autenticado
         if (!auth()->check()) {
-            return response()->json([
-                'message'=> 'El usuario no ha iniciado sesión. El producto se agregará a su carrito.',
-                'error' => 'El usuario no ha iniciado sesión en la aplicación'
-            ], Response::HTTP_CONFLICT);
+            $ventaResponse = VentaResponse::error(
+                'El usuario no ha iniciado sesión. El producto se agregará a su carrito.',
+                ['sesion_inactiva' => 'El usuario no ha iniciado sesión en la aplicación']
+            );
+            return new JsonResponse($ventaResponse->toArray(), Response::HTTP_CONFLICT);
         }
-
         // Revisar si el usuario tiene una venta activa
         $user = auth()->user();
         $venta_activa = $user->ventaActiva;
-        
+
         if (! $venta_activa) {
-            return response()->json([
-                'message'=> 'No hay venta activa. El producto se agregará a su carrito.',
-                'error' => 'No se encontró una venta activa para el usuario'
-            ], Response::HTTP_CONFLICT);
+            $ventaResponse =  VentaResponse::error(
+                'No hay venta activa. El producto se agregará a su carrito.',
+                ['venta_activa' => 'No se encontró una venta activa para el usuario']
+            );
+            return new JsonResponse($ventaResponse->toArray(), Response::HTTP_CONFLICT);
         }
 
         // No comparar con detalles existentes, siempre agregar nuevos registros (orden) 
         // dentro de adicionales en producto_venta
-        $ventasHelper = new VentasClienteHelper($venta_activa);
 
         Log::debug('Contenido del producto recibido desde frontEnd: 
         ProductoID: {producto_id}, Adicionales: {adicionales_ids}, Cantidad: {cantidad}', [$producto_id, $adicionales_ids, $cantidad]);
         
-        $ventasHelper->adicionar($producto, $adicionales, $cantidad);
+        $this->productoVentaService->agregarProductoCliente($venta_activa, $producto, $adicionales, $cantidad);
 
         return response()->json([
             'message'=> 'Solicitud agregar venta procesada exitosamente',
         ],Response::HTTP_CREATED);
     }
+
+    // public function agregarProductoVenta() {
+
+    // }
 
     // protected function agregarADicional(Adicionale $adicional, $item)
 

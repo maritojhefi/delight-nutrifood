@@ -269,7 +269,7 @@
                     // CONTROL DE VENTA-CARRITO
                     if (error.response && error.response.status === 409) {
                         // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
-                        const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidad, false, IdsAdicionalesSeleccionados);
+                        const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidadSolicitada, false, IdsAdicionalesSeleccionados);
                         estaVerificando(false);
                         closeDetallesMenu();
                     }

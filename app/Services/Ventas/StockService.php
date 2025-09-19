@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use App\Services\Ventas\DTOs\VentaResponse;
 use App\Services\Ventas\Exceptions\VentaException;
 use App\Services\Ventas\Contracts\StockServiceInterface;
+use App\Services\Ventas\DTOs\StockVerificationResponse;
+use Illuminate\Database\Eloquent\Collection;
 
 class StockService implements StockServiceInterface
 {
@@ -53,6 +55,10 @@ class StockService implements StockServiceInterface
 
     public function obtenerStockTotal(Producto $producto, int $sucursalId): int
     {
+        if (!$producto->contable) {
+            return PHP_INT_MAX;
+        }
+
         return DB::table('producto_sucursale')
             ->where('producto_id', $producto->id)
             ->where('sucursale_id', $sucursalId)
@@ -130,5 +136,89 @@ class StockService implements StockServiceInterface
         }
 
         return VentaResponse::success(null, 'Stock actualizado correctamente');
+    }
+
+    public function verificarStockCompleto(
+        Producto $producto, 
+        Collection $adicionales, 
+        int $cantidadSolicitada, 
+        int $sucursalId = 1
+    ): StockVerificationResponse {
+        
+        $stockProducto = $this->obtenerStockTotal($producto, $sucursalId);
+        $adicionalesInfo = $this->analizarAdicionalesStock($adicionales, $cantidadSolicitada, $sucursalId);
+        
+        // Calcular cantidad máxima posible considerando todas las restricciones
+        $cantidadMaxima = $stockProducto;
+        if ($adicionalesInfo['cantidadMaxima'] !== null) {
+            $cantidadMaxima = min($cantidadMaxima, $adicionalesInfo['cantidadMaxima']);
+        }
+        
+        $stockSuficiente = $stockProducto >= $cantidadSolicitada && 
+                        empty($adicionalesInfo['agotados']) && 
+                        empty($adicionalesInfo['limitados']);
+        
+        return new StockVerificationResponse($stockSuficiente,
+            $stockProducto,
+            $cantidadSolicitada,
+            $cantidadMaxima,
+            [
+                'suficiente' => $stockProducto >= $cantidadSolicitada,
+                'disponible' => $stockProducto
+            ],
+            $adicionalesInfo
+        );
+    }
+
+    public function analizarAdicionalesStock(
+        Collection $adicionales, 
+        int $cantidadSolicitada, 
+        int $sucursalId = 1
+    ): array {
+        
+        if ($adicionales->isEmpty()) {
+            return [
+                'agotados' => [],
+                'limitados' => [],
+                'cantidadMaxima' => null,
+                'todosSuficientes' => true
+            ];
+        }
+
+        $agotados = [];
+        $limitados = [];
+        $cantidadMaxima = PHP_INT_MAX;
+
+        foreach ($adicionales as $adicional) {
+            if (!$adicional->contable) {
+                continue;
+            }
+
+            $stockAdicional = $adicional->cantidad;
+
+            if ($stockAdicional <= 0) {
+                $agotados[] = [
+                    'id' => $adicional->id,
+                    'nombre' => $adicional->nombre,
+                    'stock' => $stockAdicional
+                ];
+            } elseif ($stockAdicional < $cantidadSolicitada) {
+                $limitados[] = [
+                    'id' => $adicional->id,
+                    'nombre' => $adicional->nombre,
+                    'stock' => $stockAdicional,
+                    'solicitado' => $cantidadSolicitada
+                ];
+                
+                $cantidadMaxima = min($cantidadMaxima, $stockAdicional);
+            }
+        }
+
+        return [
+            'agotados' => $agotados,
+            'limitados' => $limitados,
+            'cantidadMaxima' => $cantidadMaxima === PHP_INT_MAX ? null : $cantidadMaxima,
+            'todosSuficientes' => empty($agotados) && empty($limitados)
+        ];
     }
 }

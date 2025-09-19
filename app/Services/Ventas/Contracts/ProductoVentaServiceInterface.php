@@ -6,6 +6,7 @@ use App\Models\Venta;
 use App\Models\Producto;
 use App\Models\Adicionale;
 use App\Services\Ventas\DTOs\VentaResponse;
+use Illuminate\Database\Eloquent\Collection;
 
 interface ProductoVentaServiceInterface
 {
@@ -48,4 +49,7 @@ interface ProductoVentaServiceInterface
      * Agrega producto desde plan de usuario
      */
     public function agregarDesdeplan(Venta $venta, int $userId, int $planId, int $productoId): VentaResponse;
+
+    public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad): VentaResponse;
+
 }

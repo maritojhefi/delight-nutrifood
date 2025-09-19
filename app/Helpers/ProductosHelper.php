@@ -14,30 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ProductosHelper
 {
-    // public function verificarStockGeneral(Producto $producto, $adicionales_ids, $cantidadSolicitada) {
-    //     $stockProductoDisponible = $this->obtenerStockProducto($producto);
-    //     $adicionalesObservados = $this->obtenerAdicionalesAgotados($adicionales_ids,$cantidadSolicitada);
-
-    //     if (!empty($adicionalesObservados)) {
-    //         $agotados = collect($adicionalesObservados['agotados']);
-    //         $limitados = collect($adicionalesObservados['limitados']);
-    //         $cantidadMaxima = $adicionalesObservados['cantidadMaxima'];
-
-    //         if (!empty($agotados) || !empty($limitados) || $stockProductoDisponible < $cantidadSolicitada) {
-    //             throw new HttpResponseException(response()->json([
-    //                 'success' => false,
-    //                 'messageAgotados' => "Los siguientes adicionales se encuentran agotados: {$agotados->pluck('nombre')->implode(', ')}",
-    //                 'messageLimitados' => "Stock disponible: {$limitados->map(fn($item) => "{$item['nombre']} ({$item['stock']})")->implode(', ')}.
-    //                     Puedes actualizar tu orden presionando el boton de abajo.",
-    //                 'idsAdicionalesAgotados' => $agotados->pluck('id')->all(),
-    //                 'idsAdicionalesLimitados' => $limitados->pluck('id')->all(),
-    //                 'stockProducto' => $stockProductoDisponible,
-    //                 'cantidadMaxima' => $cantidadMaxima
-    //             ], Response::HTTP_UNPROCESSABLE_ENTITY));
-    //         }
-    //     }
-    // }
-        public function verificarStockGeneral(Producto $producto, Collection $adicionales, int $cantidadSolicitada) 
+    public function verificarStockGeneral(Producto $producto, Collection $adicionales, int $cantidadSolicitada) 
     {
         // Always check both product and adicionales stock to get complete picture
         $stockProductoDisponible = $this->obtenerStockProducto($producto);
@@ -117,24 +94,11 @@ class ProductosHelper
             return [];
         }
 
-        // Fetch all adicionales in one query instead of individual queries
-        // $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get()->keyBy('id');
-        
         $agotados = [];
         $limitados = [];
         $cantidadMaxima = PHP_FLOAT_MAX;
 
         foreach ($adicionales as $adicional) {
-            // $adicional = $adicionales->get($adicionalId);
-            
-            // if (!$adicional) {
-            //     // Handle missing adicional
-            //     $agotados[] = [
-            //         'id' => "No encontrado",
-            //         'nombre' => "Item ID: {$adicionalId} (no encontrado)",
-            //     ];
-            //     continue;
-            // }
 
             // Skip non-contable adicionales (infinite stock)
             if (!$adicional->contable) {
@@ -176,41 +140,4 @@ class ProductosHelper
             "cantidadMaxima" => $cantidadMaxima
         ];    
     }
-
-    // private function obtenerAdicionalesAgotados($adicionales_ids, $cantidadSolicitada) {
-    //     $agotados = [];
-    //     $limitados = [];
-    //     $cantidadMaxima = PHP_FLOAT_MAX;
-
-    //     foreach ($adicionales_ids as $adicionalId) {
-    //         $adicional = Adicionale::find($adicionalId);
-            
-    //         if (!$adicional || ($adicional->contable && $adicional->cantidad <= 0)) {
-    //             $agotados[] = [
-    //                 'id' => $adicionalId,
-    //                 'nombre' => $adicional ? $adicional->nombre : "Item ID: {$adicionalId}",
-    //             ];
-    //         } else if ($adicional->contable && $adicional->cantidad < $cantidadSolicitada) {
-    //             $limitados[] = [
-    //                 'id' => $adicionalId,
-    //                 'nombre' => $adicional ? $adicional->nombre : "Item ID: {$adicionalId}",
-    //                 'stock' => $adicional->cantidad,
-    //             ];
-
-    //             if ($adicional->cantidad < $cantidadMaxima) {
-    //                 $cantidadMaxima = $adicional->cantidad;
-    //             }
-    //         }
-    //     }
-
-    //     if ($cantidadMaxima == PHP_FLOAT_MAX) {
-    //         $cantidadMaxima = null;
-    //     }
-
-    //     if (empty($agotados) && empty($limitados)) {
-    //         return [];
-    //     }
-
-    //     return ["agotados" => $agotados, "limitados" => $limitados, "cantidadMaxima" => $cantidadMaxima];    
-    // }
 }

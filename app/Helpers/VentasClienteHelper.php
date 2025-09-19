@@ -90,51 +90,6 @@ class VentasClienteHelper
         // Retornamos true (stock suficiente), caso contrario, retornamos false (stock insuficiente)
         return $sumado >= $cantidad;
     }
-
-    // public function verificarStockAdicionales($adicionales_ids, $cantidadSolicitada) {
-    //     $agotados = [];
-    //     $limitados = [];
-    //     $cantidadMaxima = PHP_FLOAT_MAX;
-
-    //     foreach ($adicionales_ids as $adicionalId) {
-    //         $adicional = Adicionale::find($adicionalId);
-            
-    //         if (!$adicional || ($adicional->contable && $adicional->cantidad <= 0)) {
-    //             $agotados[] = [
-    //                 'id' => $adicionalId,
-    //                 'nombre' => $adicional ? $adicional->nombre : "Item ID: {$adicionalId}",
-    //             ];
-    //         } else if ($adicional->contable && $adicional->cantidad < $cantidadSolicitada) {
-    //             $limitados[] = [
-    //                 'id' => $adicionalId,
-    //                 'nombre' => $adicional ? $adicional->nombre : "Item ID: {$adicionalId}",
-    //                 'stock' => $adicional->cantidad,
-    //             ];
-
-    //             if ($adicional->cantidad < $cantidadMaxima) {
-    //                 $cantidadMaxima = $adicional->cantidad;
-    //             }
-    //         }
-    //     }
-
-    //     if ($cantidadMaxima == PHP_FLOAT_MAX) {
-    //         $cantidadMaxima = null;
-    //     }
-
-    //     if (!empty($agotados) || !empty($limitados)) {
-    //         throw new HttpResponseException(response()->json([
-    //             'success' => false,
-    //             'messageAgotados' => "Los siguientes adicionales se encuentran agotados: {$agotados->pluck('nombre')->implode(', ')}",
-    //             'messageLimitados' => "Stock disponible: {$limitados->map(fn($item) => "{$item['nombre']} ({$item['stock']})")->implode(', ')}.
-    //                 Puedes actualizar tu orden presionando el boton de abajo.",
-    //                 // 'messageLimitados' => "El stock para: {$limitados->pluck('nombre')->implode(', ')}; es bajo, puedes actualizar tu orden presionando el boton de abajo.",
-    //             'idsAdicionalesAgotados' => $agotados->pluck('id')->all(),
-    //             'idsAdicionalesLimitados' => $limitados->pluck('id')->all(),
-    //             'cantidadMaxima' => $cantidadMaxima
-    //         ], Response::HTTP_UNPROCESSABLE_ENTITY));
-    //     }
-    // }
-
     protected function actualizarStockProducto(Producto $producto, $operacion, $cantidad)
     {
         $registrosStock = DB::table('producto_sucursale')
@@ -163,7 +118,6 @@ class VentasClienteHelper
 
         return true;
     }
-
     private function reducirStock($registosStock, int $cantidad)
     {
         $pendienteReducir = $cantidad;
@@ -188,7 +142,6 @@ class VentasClienteHelper
             throw new \Exception("Stock insuficiente. Faltan {$pendienteReducir} unidades.");
         }
     }
-
     private function agregarStock($registosStock, int $cantidad)
     {
         $pendienteIncrementar  = $cantidad;
@@ -214,7 +167,6 @@ class VentasClienteHelper
             throw new \Exception("No hay suficiente espacio para devolver {$pendienteIncrementar} unidades.");
         }
     }
-
     protected function actualizarAdicionales($idproducto, $operacion, $extras)
     {
         // Obtenemos el primer registro correspondiente al idproducto en producto_venta
@@ -265,196 +217,4 @@ class VentasClienteHelper
             }
         }
     }
-    
-    // public function adicionar(Producto $producto, Collection $extras)
-    // {
-    //     // if ($this->cuenta->pagado == true) {
-    //     //     $this->dispatchBrowserEvent('alert', [
-    //     //         'type' => 'warning',
-    //     //         'message' => 'La venta ya ha sido pagada, no se puede modificar',
-    //     //     ]);
-    //     //     return false;
-    //     // }
-    //     if ($producto->contable == true) {
-    //         $resultado = $this->actualizarstock($producto, 'sumar', 1);
-    //         if ($resultado == null) {
-    //             // De no existir stock para el producto, devolver error 404
-    //             throw new HttpResponseException(response()->json([
-    //                 'message' => 'El producto solicitado no tiene stock disponible.'
-    //             ],   Response::HTTP_NOT_FOUND));
-    //         } else {
-    //             $cuenta = Venta::find($this->cuenta->id);
-    //             // Buscar registros en producto_venta que coincidan con el producto actual
-    //             $registro = DB::table('producto_venta')->where('producto_id', $producto->id)->where('venta_id', $cuenta->id)->get();
-
-    //             if ($registro->count() == 0) {
-    //                 // De no existir, se genera un nuevo registro en la tabla producto_venta con el id del producto actual
-    //                 $cuenta->productos()->attach($producto->id);
-    //             } else {
-    //                 // De existir, se actualiza el producto_venta existente y se incrementa la cantidad
-    //                 DB::table('producto_venta')->where('venta_id', $cuenta->id)->where('producto_id', $producto->id)->increment('cantidad', 1);
-    //             }
-    //             //actualiza lista de adicionales en el atributo
-    //             if ($producto->medicion == 'unidad') {
-    //                 $this->actualizaradicionales($producto->id, 'sumar', $extras);
-    //             }
-    //         }
-    //     } else {
-    //         $cuenta = Venta::find($this->cuenta->id);
-    //         $registro = DB::table('producto_venta')->where('producto_id', $producto->id)->where('venta_id', $cuenta->id)->get();
-
-    //         if ($registro->count() == 0) {
-    //             $cuenta->productos()->attach($producto->id);
-    //         } else {
-    //             DB::table('producto_venta')->where('venta_id', $cuenta->id)->where('producto_id', $producto->id)->increment('cantidad', 1);
-    //         }
-    //         //actualiza lista de adicionales en el atributo
-    //         if ($producto->medicion == 'unidad') {
-    //             $this->actualizaradicionales($producto->id, 'sumar', $extras);
-    //         }
-    //     }
-    // }
-
-
-    // protected function actualizarstock(Producto $producto, $operacion, $cant)
-    // {
-    //     // Se hace busqueda del producto en la tabla producto_sucursale
-    //     // Tomando en cuenta que pertenezca a la misma sucursal que la venta
-    //     $consulta = DB::table('producto_sucursale')->where('producto_id', $producto->id)->where('sucursale_id', $this->cuenta->sucursale_id)->orderBy('fecha_venc', 'asc')->get();
-    //     // Se obtiene el primer registro con cantidad distinta a 0
-    //     // REFACTORIZAR
-    //     $stock = $consulta->where('cantidad', '!=', 0)->first();
-    //     $cantidadtotal = $consulta->pluck('cantidad');
-    //     $sumado = $cantidadtotal->sum();
-
-    //     if ($consulta == null) {
-    //         return null;
-    //         // Throw new error
-    //     } else {
-    //         switch ($operacion) {
-    //             case 'sumar':
-    //                 if ($stock == null) {
-    //                     return null;
-    //                 } else {
-    //                     $restado = $stock->cantidad - $cant;
-    //                     DB::table('producto_sucursale')
-    //                         ->where('id', $stock->id)
-    //                         ->update(['cantidad' => $restado]);
-    //                 }
-
-    //                 break;
-    //             case 'restar':
-    //                 $consultarestar = $consulta->sortByDesc('fecha_venc');
-
-    //                 foreach ($consultarestar as $array) {
-    //                     $espacio = $array->max - $array->cantidad;
-
-    //                     if ($espacio != 0) {
-    //                         if ($espacio >= $cant) {
-    //                             DB::table('producto_sucursale')->where('id', $array->id)->increment('cantidad', $cant);
-    //                             break;
-    //                         } else {
-    //                             $cant = $cant - $espacio;
-    //                             DB::table('producto_sucursale')
-    //                                 ->where('id', $array->id)
-    //                                 ->update(['cantidad' => $array->max]);
-    //                         }
-    //                     }
-    //                 }
-    //                 break;
-    //             case 'sumarvarios':
-    //                 if ($sumado > $cant) {
-    //                     foreach ($consulta as $array) {
-    //                         if ($array->cantidad > $cant) {
-    //                             DB::table('producto_sucursale')->where('id', $array->id)->decrement('cantidad', $cant);
-    //                             break;
-    //                         } else {
-    //                             $cant = $cant - $array->cantidad;
-    //                             DB::table('producto_sucursale')
-    //                                 ->where('id', $array->id)
-    //                                 ->update(['cantidad' => 0]);
-    //                         }
-    //                     }
-    //                 } else {
-    //                     return false;
-    //                 }
-    //                 break;
-    //         }
-    //         return true;
-    //     }
-    // }
-
-    // public function actualizaradicionales2($idproducto, $operacion, $extras)
-    // {
-    //     // Usa 'first()' para obtener un solo registro, más eficiente que 'get()' y [0]
-    //     $registro = DB::table('producto_venta')
-    //         ->where('producto_id', $idproducto)
-    //         ->where('venta_id', $this->cuenta->id)
-    //         ->first();
-
-    //     if ($registro) {
-    //         $listaadicionales = $registro->adicionales;
-    //         // Decodifica el JSON si existe, de lo contrario, inicializa un arreglo vacío
-    //         if ($listaadicionales) {
-    //             $json = json_decode($listaadicionales, true);
-    //         } else {
-    //             $json = [];
-    //         }
-
-            
-    //         // Determina la siguiente clave numérica
-    //         $siguiente_clave = count($json) + 1;
-
-    //         if ($operacion == 'sumar') {
-    //             // Asigna explícitamente la nueva clave numérica.
-    //             // Esto mantiene la estructura de objeto JSON.
-    //             $json[$siguiente_clave] = [];
-
-    //             // Codifica el arreglo de vuelta a JSON antes de guardar
-    //             $adicionales_json = json_encode($json);
-
-    //             DB::table('producto_venta')
-    //                 ->where('producto_id', $idproducto)
-    //                 ->where('venta_id', $this->cuenta->id)
-    //                 ->update(['adicionales' => $adicionales_json]);
-    //         }
-    //         // elseif ($operacion == 'muchos') {
-    //         //     for ($i = 0; $i < $this->cantidadespecifica; $i++) {
-    //         //         // Asigna nuevas claves numéricas en cada iteración
-    //         //         $json[count($json) + 1] = [];
-    //         //     }
-
-    //         //     $adicionales_json = json_encode($json);
-                
-    //         //     DB::table('producto_venta')
-    //         //         ->where('producto_id', $idproducto)
-    //         //         ->where('venta_id', $this->cuenta->id)
-    //         //         ->update(['adicionales' => $adicionales_json]);
-    //         // }
-    //         elseif ($registro->cantidad > 0) {
-    //             // Esta lógica parece ser para una operación de "restar" o "quitar"
-    //             // Se debe asegurar que $siguiente_clave - 1 es la clave que se quiere eliminar
-    //             $clave_a_eliminar = count($json);
-                
-    //             if (isset($json[$clave_a_eliminar])) {
-    //                 foreach ($json[$clave_a_eliminar] as $pos => $adic) {
-    //                     $adicional = Adicionale::where('nombre', key($adic))->first();
-    //                     if ($adicional && $adicional->contable) {
-    //                         $adicional->increment('cantidad');
-    //                         $adicional->save();
-    //                         GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
-    //                     }
-    //                 }
-    //                 unset($json[$clave_a_eliminar]);
-    //             }
-                
-    //             $adicionales_json = json_encode($json);
-
-    //             DB::table('producto_venta')
-    //                 ->where('producto_id', $idproducto)
-    //                 ->where('venta_id', $this->cuenta->id)
-    //                 ->update(['adicionales' => $adicionales_json]);
-    //         }
-    //     }
-    // }
 }
