@@ -253,6 +253,11 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 return VentaResponse::warning('No puede eliminar el único item disponible');
             }
 
+            // Restaurar stock si es contable
+            if ($producto->contable) {
+                $this->stockService->actualizarStock($producto, 'restar', 1, $venta->sucursale_id);
+            }
+
             // Restaurar stock de adicionales
             foreach ($array[$posicion] as $adic) {
                 $adicional = Adicionale::where('nombre', key($adic))->first();
