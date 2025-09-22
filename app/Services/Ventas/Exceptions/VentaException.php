@@ -55,4 +55,8 @@ class VentaException extends Exception
     {
         return new self('Aún no se despachó el pedido desde cocina.', 'warning');
     }
+    public static function sinStockOrden(array $stockData): self
+    {
+        return new self('Stock insuficiente para completar la solicitud', 'warning', $stockData);
+    }
 }

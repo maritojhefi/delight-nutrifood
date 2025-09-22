@@ -22,6 +22,33 @@ export const getCartProductsInfo = async ({ sucursaleId, items }) => {
   }
 }
 
+// export const handleAgregarUnidad = async () => {
+//   const ProductoID = $(this).data('producto-id');
+//   try {
+//       const agregarVentaProducto = await VentaService.agregarProductoVenta(ProductoID, 1);
+//   } catch (error) {
+//       if (error.response && error.response.status === 409) {
+//           console.log("Pasando a agregar al carrito")
+//           // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
+//           const AddAttempt = await carritoStorage.agregarAlCarrito(ProductoID, 1);
+//           estaVerificando(false);
+//           closeDetallesMenu();
+//       } else if (error.response && error.response.status === 422) {
+//           const { stockProducto, cantidadSolicitada } = error.response.data;
+//           if (stockProducto <= 0)
+//           {
+//               // Re-renderizar listado de productos
+//               // estaVerificando(false);
+//               mostrarAvisoAgotado();
+//           } else if (stockProducto < cantidadSolicitada) {
+//               console.log("No hay suficiente stock disponible para completar la solicitud")
+//           }
+//       } else {
+//           console.error('Error interno del servidor:', error);
+//       }
+//   }
+// }
+
 // export const sincronizarCarrito_ProductoVenta = (carrito) => {
 //   const response = await axios.post(`/carrito/sincronizar`)
 // };

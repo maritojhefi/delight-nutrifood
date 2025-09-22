@@ -83,14 +83,26 @@
         <div id="boton-accion-container">
             @if ($isUpdate)
                 <!-- <button type="submit" form="detalles-menu-adicionales">Submit check</button> -->
-                <button class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm close-menu">Actualizar pedido</buttno>
+                <button class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm close-menu">
+                    Actualizar pedido
+                </buttno>
             @else
                 <!-- <button type="submit" form="detalles-menu-adicionales">Submit check</button> -->
-                <button type="submit" id="btn-verificar-agregado" form="detalles-menu-adicionales" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm">Agregar al carrito</button>
+                <button type="submit" id="btn-verificar-agregado" form="detalles-menu-adicionales" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm">
+                    Agregar al carrito
+                </button>
             @endif
         </div>
-        
     </div>
+</div>
+
+<div id="action-menu-agotado" class="menu menu-box-modal bg-red-dark rounded-m" data-menu-height="310" data-menu-width="350" style="display: block; width: 350px; height: 310px; z-index: 1053;">
+    <h1 class="text-center mt-4"><i class="fa fa-3x fa-times-circle scale-box color-white shadow-xl rounded-circle"></i></h1>
+    <h1 class="text-center mt-3 text-uppercase color-white font-700">Lo sentimos!</h1>
+    <p class="boxed-text-l color-white opacity-70">
+        El producto que escogiste acaba de agotarse, intenta con otras opciones.
+    </p>
+    <a href="#" class="close-menu btn btn-m btn-center-l button-s shadow-l rounded-s text-uppercase font-600 bg-white color-black">Entiendo</a>
 </div>
 
 @push('scripts')
@@ -123,6 +135,10 @@
 
         const closeDetallesMenu = () => {
             $("#detalles-menu").removeClass("menu-active");
+            $("#error-producto-container").css("display", "none");
+            $("#error-agotados-container").css("display", "none");
+            $("#error-limitados-container").css("display", "none");
+
             reiniciarCantidadSeleccionada();
 
             // Revisar si otros menus se encuentran ya activos para evitar ocultar el menu-hider
@@ -132,6 +148,15 @@
                 $(".menu-hider").removeClass("menu-active");
             }
         }
+
+        const mostrarAvisoAgotado = () => {
+            $("#action-menu-agotado").addClass("menu-active");
+            $(".menu-hider").addClass("menu-active");
+            $("#action-menu-agotado .close-menu").off('click').on('click', () => {
+                $('#action-menu-agotado').removeClass("menu-active")
+                $(".menu-hider").remove("menu-active");
+            });
+        } 
 
         // Preparar la informacion del Menu para el producto seleccionado.
         const prepararMenuProducto = async (infoProducto) => {
@@ -155,12 +180,12 @@
             elementoCostoUnitario.innerText = `Bs. ${(infoProducto.precio).toFixed(2)}`;
             adicionalesContainer.innerHTML = renderAdicionales(infoProducto.adicionales);
 
-            $('.input-radio').on('change', function() {
+            $('.input-radio').off('change').on('change', function() {
                 // Actualizar el costo al cambiar los adicionales obligatorios
                 actualizarCostoTotal(infoProducto);
             });
 
-            $('.input-single').on('change', function() {
+            $('.input-single').off('change').on('change', function() {
                 $('input[name="' + this.name + '"]').not(this).prop('checked', false);
                 // Actualizar el costo al cambiar los adicionales opcionales (MAX 1)
                 actualizarCostoTotal(infoProducto);
@@ -210,136 +235,162 @@
                 });
             }, 0);
 
+            // Formulario de adicionales
             const formAdicionales = document.getElementById("detalles-menu-adicionales");
-            formAdicionales.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                // VALIDACION: Revisar que todos los radios se encuentren seleccionados 
-                const gruposRadio = {};
-                document.querySelectorAll('.input-radio').forEach(radio => {
-                    const nombreGrupoRadios = radio.name;
-                    if (!gruposRadio[nombreGrupoRadios]) { 
-                        gruposRadio[nombreGrupoRadios] = { radios: [], tieneSeleccion: false };
-                    }
-                    gruposRadio[nombreGrupoRadios].radios.push(radio);
-                    if (radio.checked) {
-                        gruposRadio[nombreGrupoRadios].tieneSeleccion = true;
-                    }
-                });
-
-                // Revisar si falta seleccionar radios en grupos obligatorios
-                const gruposSinSeleccionar = [];
-                Object.entries(gruposRadio).forEach(([nombreGrupoRadios, datosGrupo]) => {
-                    if (!datosGrupo.tieneSeleccion) {
-                        gruposSinSeleccionar.push(nombreGrupoRadios);
-                    }
-                });
-
-                if (gruposSinSeleccionar.length > 0) {
-                    // Mostrar alerta de error en caso de radio faltante
-                    alert(`Por favor selecciona una opción en: ${gruposSinSeleccionar.join(', ')}`);
-                    return; // Prevenir envio del formulario
-                }
-
-                ocultarMensajeLimitados();
-                ocultarMensajeAgotados();
-                const formData = new FormData(formAdicionales);
-                let cantidadSolicitada = 1;
-
-                console.log(formData);
-                
-                const IdsAdicionalesSeleccionados = [];
-                for (let [key, value] of formData.entries()) {
-                    if (key !== 'cantidad-orden') {
-                        IdsAdicionalesSeleccionados.push(parseInt(value));  
-                    } else {
-                        cantidadSolicitada = parseInt(value);
-                    }
-                };
-                
-                console.log("IDs Seleccionados:", IdsAdicionalesSeleccionados);
-
-                try {
-                    // SOLICITUD DE AGREGAR PRODUCTO
-                    estaVerificando(true);
-                    const agregarVentaProducto = await VentaService.agregarProductoVenta(infoProducto.id, cantidadSolicitada, IdsAdicionalesSeleccionados);
-                    estaVerificando(false);
-                    closeDetallesMenu();
-                } catch (error) {
-                    estaVerificando(false);
-                    // CONTROL DE VENTA-CARRITO
-                    if (error.response && error.response.status === 409) {
-                        // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
-                        const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidadSolicitada, false, IdsAdicionalesSeleccionados);
-                        estaVerificando(false);
-                        closeDetallesMenu();
-                    }
-                    // CONTROL DE STOCK INSUFICIENTE
-                    else if (error.response && error.response.status === 422) {
-                        // Informacion recibida de validacion inexitosa en backend
-                        const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaximaPosible,
-                        messageLimitados, messageAgotados, messageProducto, stockProducto } = error.response.data;
-                        // PRODUCTO AGOTADO
-                        if (stockProducto <= 0)
-                        {
-                            closeDetallesMenu();
-                            // Mostrar modal disculpa
-                        }
-                        // STOCK INSUFICIENTE PRODUCTO
-                        else if (stockProducto < cantidadSolicitada) {
-                            // Renderizar advertencia stock disponible
-                            const containerAdvertencia = document.getElementById('error-producto-container');
-                            containerAdvertencia.style.display = 'block';
-                            const textoAdvertencia = document.getElementById('error-producto-message');
-                            textoAdvertencia.textContent = messageProducto;
-                            // Actualizar el texto indicando el stock disponible del producto
-                            $('#stock-producto-value').text(`${stockProducto}`);
-                            // Transformar boton para actualizar la orden
-                            renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible);
-                        }
-                        // STOCK AGOTADO ADICIONALELS
-                        if (idsAdicionalesAgotados.length > 0) {
-                            idsAdicionalesAgotados.forEach(adicionalId => {
-                                // Deseleccionar checks agotados
-                                const invalidInput = document.getElementById(`adicional-${adicionalId}`);
-                                if (invalidInput) {
-                                    invalidInput.disabled = true;
-                                    invalidInput.checked = false;
-                                    const label = document.getElementById(`nombre-adicional-${adicionalId}`);
-                                    // Agregar (agotado) a los labels
-                                    if (label) {
-                                        if (!label.textContent.includes('(agotado)')) {
-                                            label.textContent += ' (agotado)';
-                                        }
-                                    }
-                                }
-                            });
-                            // Renderizar advertencia adicionales agotados
-                            const containerAdvertencia = document.getElementById('error-agotados-container');
-                            containerAdvertencia.style.display = 'block';
-                            const textoAdvertencia = document.getElementById('error-agotados-message');
-                        }
-                        // STOCK INSUFICIENTE ADICIONALES
-                        if (idsAdicionalesLimitados.length > 0) {
-                            // Renderizar advertencia adicionales limitados
-                            const containerAdvertencia = document.getElementById('error-limitados-container');
-                            containerAdvertencia.style.display = 'block';
-                            const textoAdvertencia = document.getElementById('error-limitados-message');
-                            textoAdvertencia.textContent = messageLimitados;
-                            
-                            // Transformar boton para actualizar la orden
-                            renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible);
-                        }
-                    }  else {
-                        // Error interno del servidor
-                        console.error("Ocurrió un error inesperado.")
-                        // Mostrar un dialog sencillo de error
-                        estaVerificando(false);
-                        closeDetallesMenu();
-                    }
-                }
-            });
+            
+            // Retirar listeners existentes para evitar envios multiples
+            $(formAdicionales).off('submit');
+            
+            // Agregar el handler para el submit del formulario
+            $(formAdicionales).on('submit', (e) => handleFormSubmit(infoProducto, e));
+        
         }
 
+        const handleFormSubmit = async (infoProducto, e) => {
+            e.preventDefault();
+            const formAdicionales = document.getElementById("detalles-menu-adicionales");
+            
+            // VALIDACION: Revisar que todos los radios se encuentren seleccionados 
+            const gruposRadio = {};
+            document.querySelectorAll('.input-radio').forEach(radio => {
+                const nombreGrupoRadios = radio.name;
+                if (!gruposRadio[nombreGrupoRadios]) { 
+                    gruposRadio[nombreGrupoRadios] = { radios: [], tieneSeleccion: false };
+                }
+                gruposRadio[nombreGrupoRadios].radios.push(radio);
+                if (radio.checked) {
+                    gruposRadio[nombreGrupoRadios].tieneSeleccion = true;
+                }
+            });
+
+            // Revisar si falta seleccionar radios en grupos obligatorios
+            const gruposSinSeleccionar = [];
+            Object.entries(gruposRadio).forEach(([nombreGrupoRadios, datosGrupo]) => {
+                if (!datosGrupo.tieneSeleccion) {
+                    gruposSinSeleccionar.push(nombreGrupoRadios);
+                }
+            });
+
+            if (gruposSinSeleccionar.length > 0) {
+                // Mostrar alerta de error en caso de radio faltante
+                alert(`Por favor selecciona una opción en: ${gruposSinSeleccionar.join(', ')}`);
+                return; // Prevenir envio del formulario
+            }
+
+            ocultarMensajeLimitados();
+            ocultarMensajeAgotados();
+            const formData = new FormData(formAdicionales);
+            let cantidadSolicitada = 1;
+
+            console.log(formData);
+            
+            const IdsAdicionalesSeleccionados = [];
+            for (let [key, value] of formData.entries()) {
+                if (key !== 'cantidad-orden') {
+                    IdsAdicionalesSeleccionados.push(parseInt(value));  
+                } else {
+                    cantidadSolicitada = parseInt(value);
+                }
+            };
+            
+            console.log("IDs Seleccionados:", IdsAdicionalesSeleccionados);
+
+            try {
+                // SOLICITUD DE AGREGAR PRODUCTO
+                estaVerificando(true);
+                console.log("Soliciando agregar a ProductoVenta")
+                const agregarVentaProducto = await VentaService.agregarProductoVenta(infoProducto.id, cantidadSolicitada, IdsAdicionalesSeleccionados);
+                estaVerificando(false);
+                closeDetallesMenu();
+            } catch (error) {
+                estaVerificando(false);
+                console.log("Error al agregar producto:", error);
+                // CONTROL DE VENTA-CARRITO
+                if (error.response && error.response.status === 409) {
+                    console.log("Pasando a agregar al carrito")
+                    // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
+                    const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidadSolicitada, false, IdsAdicionalesSeleccionados);
+                    estaVerificando(false);
+                    closeDetallesMenu();
+                }
+                // CONTROL DE STOCK INSUFICIENTE
+                else if (error.response && error.response.status === 422) {
+
+                    console.log("Valor actual de error.response.data: ", error.response.data);
+                    // Informacion recibida de validacion inexitosa en backend
+                    const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaximaPosible,
+                    messageLimitados, messageAgotados, messageProducto, stockProducto } = error.response.data;
+                    // PRODUCTO AGOTADO
+                    if (stockProducto <= 0)
+                    {
+                        console.log("El producto se encuentra agotado, cerrando menu")
+                        // closeDetallesMenu();
+                        // Re-renderizar listado de productos
+
+                        estaVerificando(false);
+                        mostrarAvisoAgotado();
+                        closeDetallesMenu();
+                        // Mostrar modal disculpa
+                    }
+                    // STOCK INSUFICIENTE PRODUCTO
+                    else if (stockProducto < cantidadSolicitada) {
+                        // Renderizar advertencia stock disponible
+                        const containerAdvertencia = document.getElementById('error-producto-container');
+                        containerAdvertencia.style.display = 'block';
+                        const textoAdvertencia = document.getElementById('error-producto-message');
+                        textoAdvertencia.textContent = messageProducto;
+                        // Actualizar el texto indicando el stock disponible del producto
+                        $('#stock-producto-value').text(`${stockProducto}`);
+                        // Transformar boton para actualizar la orden
+                        renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible);
+                    }
+                    // STOCK AGOTADO ADICIONALELS
+                    if (idsAdicionalesAgotados.length > 0) {
+                        idsAdicionalesAgotados.forEach(adicionalId => {
+                            // Deseleccionar checks agotados
+                            const invalidInput = document.getElementById(`adicional-${adicionalId}`);
+                            if (invalidInput) {
+                                invalidInput.disabled = true;
+                                invalidInput.checked = false;
+                                const label = document.getElementById(`nombre-adicional-${adicionalId}`);
+                                // Agregar (agotado) a los labels
+                                if (label) {
+                                    if (!label.textContent.includes('(agotado)')) {
+                                        label.textContent += ' (agotado)';
+                                    }
+                                }
+                            }
+                        });
+                        // Renderizar advertencia adicionales agotados
+                        const containerAdvertencia = document.getElementById('error-agotados-container');
+                        containerAdvertencia.style.display = 'block';
+                        const textoAdvertencia = document.getElementById('error-agotados-message');
+                    }
+                    // STOCK INSUFICIENTE ADICIONALES
+                    if (idsAdicionalesLimitados.length > 0) {
+                        // Renderizar advertencia adicionales limitados
+                        const containerAdvertencia = document.getElementById('error-limitados-container');
+                        containerAdvertencia.style.display = 'block';
+                        const textoAdvertencia = document.getElementById('error-limitados-message');
+                        textoAdvertencia.textContent = messageLimitados;
+                        
+                        // Transformar boton para actualizar la orden
+                        renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible);
+                    }
+                }  else {
+                    // Error interno del servidor
+                    console.error("Ocurrió un error inesperado.")
+                    // Mostrar un dialog sencillo de error
+                    estaVerificando(false);
+                    // closeDetallesMenu();
+                }
+            }
+            // finally {
+            //     estaVerificando(false);
+            //     closeDetallesMenu();
+            // }
+        }
+        
         const renderAdicionales = (adicionales) => {
             if (adicionales && adicionales.length > 0) {
 

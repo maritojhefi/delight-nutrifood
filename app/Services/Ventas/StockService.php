@@ -7,8 +7,9 @@ use Illuminate\Support\Facades\DB;
 use App\Services\Ventas\DTOs\VentaResponse;
 use App\Services\Ventas\Exceptions\VentaException;
 use App\Services\Ventas\Contracts\StockServiceInterface;
-use App\Services\Ventas\DTOs\StockVerificationResponse;
+use App\Services\Ventas\DTOs\VerificacionStockResponse;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
 
 class StockService implements StockServiceInterface
 {
@@ -45,9 +46,10 @@ class StockService implements StockServiceInterface
 
     public function verificarStock(Producto $producto, int $cantidad, int $sucursalId): bool
     {
-        if (!$producto->contable) {
-            return true;
-        }
+        // La verificacion de stock infinito se maneja en obtenerStockTotal
+        // if (!$producto->contable) {
+        //     return true;
+        // }
 
         $stockTotal = $this->obtenerStockTotal($producto, $sucursalId);
         return $stockTotal >= $cantidad;
@@ -88,6 +90,7 @@ class StockService implements StockServiceInterface
 
     private function restarStock($consulta, int $cantidad): VentaResponse
     {
+        Log::debug('Restando stock', ['cantidad' => $cantidad, 'consulta' => $consulta]);
         $consultaRestar = $consulta->sortByDesc('fecha_venc');
 
         foreach ($consultaRestar as $array) {
@@ -143,10 +146,10 @@ class StockService implements StockServiceInterface
         Collection $adicionales, 
         int $cantidadSolicitada, 
         int $sucursalId = 1
-    ): StockVerificationResponse {
+    ): VerificacionStockResponse {
         
         $stockProducto = $this->obtenerStockTotal($producto, $sucursalId);
-        $adicionalesInfo = $this->analizarAdicionalesStock($adicionales, $cantidadSolicitada, $sucursalId);
+        $adicionalesInfo = $this->analizarStockAdicionales($adicionales, $cantidadSolicitada, $sucursalId);
         
         // Calcular cantidad máxima posible considerando todas las restricciones
         $cantidadMaxima = $stockProducto;
@@ -157,8 +160,17 @@ class StockService implements StockServiceInterface
         $stockSuficiente = $stockProducto >= $cantidadSolicitada && 
                         empty($adicionalesInfo['agotados']) && 
                         empty($adicionalesInfo['limitados']);
+
+        // Log::debug('Verificación de stock', [
+        //     'producto_id' => $producto->id,
+        //     'cantidad_solicitada' => $cantidadSolicitada,
+        //     'stock_producto' => $stockProducto,
+        //     'adicionales_info' => $adicionalesInfo,
+        //     'cantidad_maxima' => $cantidadMaxima,
+        //     'stock_suficiente' => $stockSuficiente
+        // ]);
         
-        return new StockVerificationResponse($stockSuficiente,
+        return new VerificacionStockResponse($stockSuficiente,
             $stockProducto,
             $cantidadSolicitada,
             $cantidadMaxima,
@@ -170,7 +182,7 @@ class StockService implements StockServiceInterface
         );
     }
 
-    public function analizarAdicionalesStock(
+    private function analizarStockAdicionales(
         Collection $adicionales, 
         int $cantidadSolicitada, 
         int $sucursalId = 1

@@ -2,7 +2,7 @@
 
 namespace App\Services\Ventas\DTOs;
 
-class StockVerificationResponse
+class VerificacionStockResponse
 {
     public function __construct(
         public bool $success,
@@ -60,7 +60,7 @@ class StockVerificationResponse
             return null;
         }
         
-        return "Stock disponible: {$this->stockProducto}, Solicitado: {$this->cantidadSolicitada}";
+        return "Solicitado: {$this->cantidadSolicitada}, Stock disponible: {$this->stockProducto}";
     }
 
     // Método de conveniencia para convertir a VentaResponse en caso de error

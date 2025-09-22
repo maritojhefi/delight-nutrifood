@@ -170,12 +170,15 @@
 
     <x-menu-adicionales-producto :isUpdate="false"/>
     <x-modal-listado-productos />
+    <!-- MODAL ACCIONES PRODUCTO INDIVIDUAL -->
+
 @endsection
 
 @push('scripts')
 {{-- SCRIPT CONTROL DE AGREGAR AL CARRITO --}}
 <script> 
     $(document).ready(function() {
+        $(".menu-hider").css("z-index", "1052");
         $(document).on('click', '.agregar-unidad', agregarAlCarritoHandler);
 
         $(document).on('click', '.menu-adicionales-btn', function() {
@@ -184,19 +187,42 @@
         });
     });
 
+    const mostrarAvisoAgotado = () => {
+        $("#action-menu-agotado").addClass("menu-active");
+        
+        $(".menu-hider").addClass("menu-active");
+        $("#action-menu-agotado .close-menu").off('click').on('click', () => {
+            $('#action-menu-agotado').removeClass("menu-active")
+            $(".menu-hider").remove("menu-active");
+        });
+    } 
+
     async function agregarAlCarritoHandler() {
-        const product_Id = $(this).data('producto-id');
-        const product_nombre = $(this).data('producto-nombre')
+        const ProductoID = $(this).data('producto-id');
+        // const product_nombre = $(this).data('producto-nombre')
         
         try {
-            const result = await carritoStorage.agregarAlCarrito(product_Id, 1);
-            if (result.success) {
-                console.log("Producto  agregado con exito al carrito.")
-            } else {
-                console.log(`Error al agregar el producto ${product_nombre} al carrito.`)
-            }
+            const agregarVentaProducto = await VentaService.agregarProductoVenta(ProductoID, 1);
         } catch (error) {
-            console.error('Error agregando el producto al carrito:', error);
+            if (error.response && error.response.status === 409) {
+                console.log("Pasando a agregar al carrito")
+                // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
+                const AddAttempt = await carritoStorage.agregarAlCarrito(ProductoID, 1);
+                estaVerificando(false);
+                closeDetallesMenu();
+            } else if (error.response && error.response.status === 422) {
+                const { stockProducto, cantidadSolicitada } = error.response.data;
+                if (stockProducto <= 0)
+                {
+                    // Re-renderizar listado de productos
+                    // estaVerificando(false);
+                    mostrarAvisoAgotado();
+                } else if (stockProducto < cantidadSolicitada) {
+                    console.log("No hay suficiente stock disponible para completar la solicitud")
+                }
+            } else {
+                console.error('Error interno del servidor:', error);
+            }
         }
     }
 </script>

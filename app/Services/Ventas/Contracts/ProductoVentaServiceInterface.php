@@ -50,6 +50,9 @@ interface ProductoVentaServiceInterface
      */
     public function agregarDesdeplan(Venta $venta, int $userId, int $planId, int $productoId): VentaResponse;
 
+    /**
+     * Agrega un producto a la venta, considerando adicionales y cantidad (caso uso cliente)
+     */
     public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad): VentaResponse;
 
 }

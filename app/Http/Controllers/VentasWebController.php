@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\ProductosHelper;
 use App\Models\Adicionale;
 use App\Models\Producto;
 use App\Models\User;
 use App\Models\Venta;
 use App\Services\Ventas\Contracts\ProductoVentaServiceInterface;
+use App\Services\Ventas\Contracts\StockServiceInterface;
 use App\Services\Ventas\DTOs\VentaResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,6 +19,7 @@ class VentasWebController extends Controller
 {
     public function __construct(
         private ProductoVentaServiceInterface $productoVentaService,
+        private StockServiceInterface $stockService
         // private CalculadoraVentaServiceInterface $calculadoraService
     ) {}
     public function generarVentaQR() {   
@@ -193,10 +194,12 @@ class VentasWebController extends Controller
         }
         $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get()->keyBy('id');
 
-        $productosHelper = new ProductosHelper();
-        $productosHelper->verificarStockGeneral($producto,$adicionales,$cantidad);
+        // De momento trabajamos con un sucursale_id = 1;
+        $verificacionStock = $this->stockService->verificarStockCompleto($producto, $adicionales, $cantidad, 1);
 
-        // $productosHelper->verificarStockGeneral($producto,$adicionales_ids,$cantidad);
+        if (!$verificacionStock->success) {
+            return response()->json($verificacionStock->toArray(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
         // Revisar si el usuario se encuentra autenticado
         if (!auth()->check()) {
@@ -221,8 +224,8 @@ class VentasWebController extends Controller
         // No comparar con detalles existentes, siempre agregar nuevos registros (orden) 
         // dentro de adicionales en producto_venta
 
-        Log::debug('Contenido del producto recibido desde frontEnd: 
-        ProductoID: {producto_id}, Adicionales: {adicionales_ids}, Cantidad: {cantidad}', [$producto_id, $adicionales_ids, $cantidad]);
+        // Log::debug('Contenido del producto recibido desde frontEnd: 
+        // ProductoID: {producto_id}, Adicionales: {adicionales_ids}, Cantidad: {cantidad}', [$producto_id, $adicionales_ids, $cantidad]);
         
         $this->productoVentaService->agregarProductoCliente($venta_activa, $producto, $adicionales, $cantidad);
 
@@ -230,76 +233,4 @@ class VentasWebController extends Controller
             'message'=> 'Solicitud agregar venta procesada exitosamente',
         ],Response::HTTP_CREATED);
     }
-
-    // public function agregarProductoVenta() {
-
-    // }
-
-    // protected function agregarADicional(Adicionale $adicional, $item)
-
-
-    // public function carrito_ProductosVenta(Request $request) {
-    //     try {
-    //         // Log::info('Llamado a la funcion carrito_ProductosVenta');
-    //         $user=User::find(auth()->user()->id);
-    //         // Log::debug('Contenido de request recibido desde frontEnd',[$request]);
-    //         $carrito = collect($request->carrito['items']);
-    //         // Log::debug('Contenido del carrito recibido desde frontEnd',[$carrito]);
-    //         $venta_activa = $user->ventaActiva;
-
-    //         // Verificar que existe una venta activa
-    //         if (!$venta_activa) {
-    //             return response()->json([
-    //                 'message' => 'No se encontró una venta activa para el usuario',
-    //                 'error' => 'Venta activa requerida'
-    //             ], 404);
-    //         }
-            
-    //         DB::transaction(function() use ($carrito, $venta_activa)
-    //         {
-    //             foreach ($carrito as $item) {
-    //                 $main_id = $item['id'];
-    //                 $detalles = $item['detalles'];
-                    
-    //                 // Iterar a través de cada detalle del item
-    //                 foreach ($detalles as $detalle) {
-    //                     $adicionales = $detalle['adicionales'];
-    //                     $cantidad = $detalle['cantidad'];
-                        
-    //                     $venta_activa->productos()->attach($main_id, [
-    //                         'cantidad' => $cantidad,
-    //                         'adicionales' => json_encode($adicionales), // Store as JSON
-    //                         'estado_actual' => 'pendiente',
-    //                         'observacion' => null,
-    //                     ]);
-
-    //                     Log::info("Procesando item del carrito", [
-    //                         'main_id' => $main_id,
-    //                         'adicionales' => $adicionales,
-    //                         'cantidad' => $cantidad,
-    //                         'key' => $detalle['key']
-    //                     ]);
-    //                 }
-    //             }                
-    //         });
-
-    //         return response()->json([
-    //             'message' => 'Carrito procesado exitosamente',
-    //             'items_procesados' => $carrito->sum(function ($item) {
-    //             return count($item['detalles']);
-    //         })
-    //         ], 200);
-
-    //     } catch (\Throwable $th) {
-    //         Log::error("Error al generar nuevos producto_venta para el carrito", [
-    //             'error' => $th->getMessage(),
-    //             'user_id' => auth()->user()->id ?? null,
-    //             'trace' => $th->getTraceAsString()
-    //         ]);
-    //         return response()->json([
-    //             'message' => 'Error interno del servidor',
-    //             'error' => 'No se pudo procesar la solicitud'
-    //         ], 500);
-    //     }
-    // }
 }
