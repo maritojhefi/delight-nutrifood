@@ -16,6 +16,12 @@ class StockService implements StockServiceInterface
     public function actualizarStock(Producto $producto, string $operacion, int $cantidad, int $sucursalId): VentaResponse
     {
         try {
+            // Si el producto tiene un producto vinculado, actualizar el stock del producto vinculado
+            $siProductoVinculado = $producto->productoVinculadoStock;
+            if ($siProductoVinculado) {
+                return $this->actualizarStockProductoVinculado($siProductoVinculado, $operacion, $cantidad, $sucursalId);
+            }
+
             $consulta = DB::table('producto_sucursale')
                 ->where('producto_id', $producto->id)
                 ->where('sucursale_id', $sucursalId)
@@ -29,13 +35,13 @@ class StockService implements StockServiceInterface
             switch ($operacion) {
                 case 'sumar':
                     return $this->sumarStock($consulta, $cantidad);
-                    
+
                 case 'restar':
                     return $this->restarStock($consulta, $cantidad);
-                    
+
                 case 'sumarvarios':
                     return $this->sumarVariosStock($consulta, $cantidad);
-                    
+
                 default:
                     return VentaResponse::error('Operación de stock no válida');
             }
@@ -50,6 +56,12 @@ class StockService implements StockServiceInterface
         // if (!$producto->contable) {
         //     return true;
         // }
+
+        $siProductoVinculado = $producto->productoVinculadoStock;
+        if ($siProductoVinculado) {
+            $stockTotal = $this->obtenerStockTotal($siProductoVinculado, $sucursalId);
+            return $stockTotal >= $cantidad;
+        }
 
         $stockTotal = $this->obtenerStockTotal($producto, $sucursalId);
         return $stockTotal >= $cantidad;
@@ -70,13 +82,13 @@ class StockService implements StockServiceInterface
     private function sumarStock($consulta, int $cantidad): VentaResponse
     {
         $stock = $consulta->where('cantidad', '!=', 0)->first();
-        
+
         if (!$stock) {
             return VentaResponse::error('No hay stock disponible');
         }
 
         $restado = $stock->cantidad - $cantidad;
-        
+
         if ($restado < 0) {
             return VentaResponse::error('Stock insuficiente');
         }
@@ -117,14 +129,14 @@ class StockService implements StockServiceInterface
     private function sumarVariosStock($consulta, int $cantidad): VentaResponse
     {
         $cantidadTotal = $consulta->sum('cantidad');
-        
+
         if ($cantidadTotal < $cantidad) {
             return VentaResponse::error('Stock insuficiente para la cantidad solicitada');
         }
 
         foreach ($consulta as $array) {
             if ($cantidad <= 0) break;
-            
+
             if ($array->cantidad >= $cantidad) {
                 DB::table('producto_sucursale')
                     ->where('id', $array->id)
@@ -232,5 +244,36 @@ class StockService implements StockServiceInterface
             'cantidadMaxima' => $cantidadMaxima === PHP_INT_MAX ? null : $cantidadMaxima,
             'todosSuficientes' => empty($agotados) && empty($limitados)
         ];
+    }
+
+    private function actualizarStockProductoVinculado(Producto $productoVinculado, string $operacion, int $cantidad, int $sucursalId): VentaResponse
+    {
+        try {
+            $consulta = DB::table('producto_sucursale')
+                ->where('producto_id', $productoVinculado->id)
+                ->where('sucursale_id', $sucursalId)
+                ->orderBy('fecha_venc', 'asc')
+                ->get();
+
+            if ($consulta->isEmpty()) {
+                return VentaResponse::error("No hay registros de stock para el producto vinculado {$productoVinculado->nombre}");
+            }
+
+            switch ($operacion) {
+                case 'sumar':
+                    return $this->sumarStock($consulta, $cantidad);
+
+                case 'restar':
+                    return $this->restarStock($consulta, $cantidad);
+
+                case 'sumarvarios':
+                    return $this->sumarVariosStock($consulta, $cantidad);
+
+                default:
+                    return VentaResponse::error('Operación de stock no válida');
+            }
+        } catch (\Exception $e) {
+            return VentaResponse::error('Error al actualizar stock del producto vinculado: ' . $e->getMessage());
+        }
     }
 }

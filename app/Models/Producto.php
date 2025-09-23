@@ -392,6 +392,9 @@ class Producto extends Model
      */
     public function stockTotal()
     {
+        if ($this->productoVinculadoStock) {
+            return $this->productoVinculadoStock->stockTotal();
+        }
         return $this->sucursale()
             ->withPivot('cantidad')
             ->wherePivot('cantidad', '>', 0)
