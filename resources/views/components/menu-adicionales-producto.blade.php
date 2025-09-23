@@ -127,7 +127,7 @@
                     const { stockProducto, cantidadSolicitada } = error.response.data;
                     if (stockProducto <= 0)
                     {
-                        actualizarBotonAgregado(infoProducto.id);
+                        actualizarBotonAgregado(ProductoID);
                         // Re-renderizar listado de productos
                         // estaVerificando(false);
                         mostrarAvisoAgotado();
@@ -142,11 +142,7 @@
 
         // Control abrir menu
         $(document).on('click', '.menu-adicionales-btn', function() {
-            console.log("click en menu-adicionales-btn unidad");
-
-            // 'this' now refers to the button element that was clicked
             const productoId = $(this).data('producto-id');
-            console.log("Product ID:", productoId); 
             openDetallesMenu(productoId);
         });
         // $(document).on('click', '.menu-adicionales-btn', async () => {
@@ -159,7 +155,6 @@
         // Abrir menu de detalles-producto
         window.openDetallesMenu = async function(productoId) {
             // Hacer el llamado al producto
-            console.log("ProductoID para getProductoDetalle: ", productoId);
             const response = await ProductoService.getProductoDetalle(productoId);
 
             await prepararMenuProducto(response.data);
@@ -206,9 +201,7 @@
         } 
 
         window.deshabilitarBoton = async (productoID) => {
-            console.log("llamado a actualizarBotonAgregado");
             const botonActual = $(`[data-producto-id="${productoID}"]`);
-            console.log("Boton a reemplazar: ", botonActual);
             if (botonActual.length) {
                 const nuevoContenido = `
                     <div class="d-flex flex-row align-items-center gap-1">
@@ -346,8 +339,6 @@
             ocultarMensajeAgotados();
             const formData = new FormData(formAdicionales);
             let cantidadSolicitada = 1;
-
-            console.log(formData);
             
             const IdsAdicionalesSeleccionados = [];
             for (let [key, value] of formData.entries()) {
@@ -357,8 +348,6 @@
                     cantidadSolicitada = parseInt(value);
                 }
             };
-            
-            console.log("IDs Seleccionados:", IdsAdicionalesSeleccionados);
 
             try {
                 // SOLICITUD DE AGREGAR PRODUCTO
@@ -369,7 +358,6 @@
                 closeDetallesMenu();
             } catch (error) {
                 estaVerificando(false);
-                console.log("Error al agregar producto:", error);
                 // CONTROL DE VENTA-CARRITO
                 if (error.response && error.response.status === 409) {
                     console.log("Pasando a agregar al carrito")

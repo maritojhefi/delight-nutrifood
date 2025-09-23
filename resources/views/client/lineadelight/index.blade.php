@@ -175,22 +175,6 @@
 @endsection
 
 @push('scripts')
-{{-- SCRIPT CONTROL DE AGREGAR AL CARRITO --}}
-<script> 
-    $(document).ready(function() {
-        $(".menu-hider").css("z-index", "1052");
-    });
-
-    const mostrarAvisoAgotado = () => {
-        $("#action-menu-agotado").addClass("menu-active");
-        
-        $(".menu-hider").addClass("menu-active");
-        $("#action-menu-agotado .close-menu").off('click').on('click', () => {
-            $('#action-menu-agotado').removeClass("menu-active")
-            $(".menu-hider").remove("menu-active");
-        });
-    } 
-</script>
 {{-- SCRIPT CONTROL DE SLIDER DE HORARIOS --}}
 <script>
     const subcategoriasPorHorario = @json($horariosData);

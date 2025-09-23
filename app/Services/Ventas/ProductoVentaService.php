@@ -465,9 +465,6 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             $listaActual = $productoVenta->pivot->adicionales;
             $json = $listaActual ? json_decode($listaActual, true) : [];
 
-            Log::debug("IdProducto a incluirse: ", [$productoId]);
-            Log::debug("json actual: ", [$json]);
-
             // En caso de no disponer de adicionales, insertat arrays vacios
             if ($extras->isEmpty()) {
                 for ($i = 0; $i < $cantidad; $i++) {
