@@ -223,12 +223,12 @@ class VentasWebController extends Controller
 
         // No comparar con detalles existentes, siempre agregar nuevos registros (orden) 
         // dentro de adicionales en producto_venta
-
-        // Log::debug('Contenido del producto recibido desde frontEnd: 
-        // ProductoID: {producto_id}, Adicionales: {adicionales_ids}, Cantidad: {cantidad}', [$producto_id, $adicionales_ids, $cantidad]);
         
-        $this->productoVentaService->agregarProductoCliente($venta_activa, $producto, $adicionales, $cantidad);
-
+        $respuestaVenta = $this->productoVentaService->agregarProductoCliente($venta_activa, $producto, $adicionales, $cantidad);
+        if (!$respuestaVenta->success) {
+            return response()->json($respuestaVenta->toArray(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        
         return response()->json([
             'message'=> 'Solicitud agregar venta procesada exitosamente',
         ],Response::HTTP_CREATED);

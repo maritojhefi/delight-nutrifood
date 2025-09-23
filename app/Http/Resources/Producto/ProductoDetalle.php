@@ -16,7 +16,6 @@ class ProductoDetalle extends JsonResource
         // sucursalID se encuentra hardcodeado
         // $tiene_stock = app(StockService::class)->verificarStock($this->resource,1,1);
         $tiene_stock = $this->resource->contable ? $this->resource->stockTotal() > 0 : true;
-        Log::debug("El producto " .$this->nombre ." tiene stock de: ",[app(StockService::class)->obtenerStockTotal($this->resource,1)]);
 
         $adicionales = $this->subcategoria->adicionalesGrupo();
 

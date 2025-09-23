@@ -109,10 +109,57 @@
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
         // const [estaVerficiando, setEstaVerificando] = (false);
+
+        // Control agregar unidad individual
+        $(document).on('click', '.agregar-unidad', async function () {
+            const ProductoID = $(this).data('producto-id');
+            
+            try {
+                const agregarVentaProducto = await VentaService.agregarProductoVenta(ProductoID, 1);
+            } catch (error) {
+                if (error.response && error.response.status === 409) {
+                    console.log("Pasando a agregar al carrito")
+                    // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
+                    const AddAttempt = await carritoStorage.agregarAlCarrito(ProductoID, 1);
+                    estaVerificando(false);
+                    closeDetallesMenu();
+                } else if (error.response && error.response.status === 422) {
+                    const { stockProducto, cantidadSolicitada } = error.response.data;
+                    if (stockProducto <= 0)
+                    {
+                        actualizarBotonAgregado(infoProducto.id);
+                        // Re-renderizar listado de productos
+                        // estaVerificando(false);
+                        mostrarAvisoAgotado();
+                    } else if (stockProducto < cantidadSolicitada) {
+                        console.log("No hay suficiente stock disponible para completar la solicitud")
+                    }
+                } else {
+                    console.error('Error interno del servidor:', error);
+                }
+            }
+        });
+
+        // Control abrir menu
+        $(document).on('click', '.menu-adicionales-btn', function() {
+            console.log("click en menu-adicionales-btn unidad");
+
+            // 'this' now refers to the button element that was clicked
+            const productoId = $(this).data('producto-id');
+            console.log("Product ID:", productoId); 
+            openDetallesMenu(productoId);
+        });
+        // $(document).on('click', '.menu-adicionales-btn', async () => {
+        //     console.log("click en menu-adicionales-btn unidad");
+
+        //     const productoId = $(this).data('producto-id');
+        //     openDetallesMenu(productoId);
+        // });
         
         // Abrir menu de detalles-producto
         window.openDetallesMenu = async function(productoId) {
             // Hacer el llamado al producto
+            console.log("ProductoID para getProductoDetalle: ", productoId);
             const response = await ProductoService.getProductoDetalle(productoId);
 
             await prepararMenuProducto(response.data);
@@ -157,6 +204,24 @@
                 $(".menu-hider").remove("menu-active");
             });
         } 
+
+        window.deshabilitarBoton = async (productoID) => {
+            console.log("llamado a actualizarBotonAgregado");
+            const botonActual = $(`[data-producto-id="${productoID}"]`);
+            console.log("Boton a reemplazar: ", botonActual);
+            if (botonActual.length) {
+                const nuevoContenido = `
+                    <div class="d-flex flex-row align-items-center gap-1">
+                        <i class="fa fa-ban"></i>
+                        AGOTADO
+                    </div>
+                `
+                botonActual.html(nuevoContenido)
+                .prop('disabled', true)
+                .removeClass('bg-highlight hover-grow-s')
+                .addClass('bg-gray-dark');
+            }
+        }
 
         // Preparar la informacion del Menu para el producto seleccionado.
         const prepararMenuProducto = async (infoProducto) => {
@@ -328,8 +393,11 @@
                         // Re-renderizar listado de productos
 
                         estaVerificando(false);
+                        // actualizarBotonAgregado(infoProducto.id);
+                        deshabilitarBoton(infoProducto.id);
                         mostrarAvisoAgotado();
                         closeDetallesMenu();
+
                         // Mostrar modal disculpa
                     }
                     // STOCK INSUFICIENTE PRODUCTO
@@ -379,7 +447,8 @@
                     }
                 }  else {
                     // Error interno del servidor
-                    console.error("Ocurrió un error inesperado.")
+                    console.error("Ocurrió un error inesperado al procesar su solicitud.")
+                    // Toast error general
                     // Mostrar un dialog sencillo de error
                     estaVerificando(false);
                     // closeDetallesMenu();

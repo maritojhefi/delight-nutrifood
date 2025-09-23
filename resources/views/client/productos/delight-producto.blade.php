@@ -7,7 +7,7 @@
         <div class="drag-line"></div>
         <div class="content">
             {{-- CONTENEDOR PRECIO Y BOTON DE AGREGAR --}}
-            <div id="product-info-card" data-producto-id="{{$producto->id}}" class="card card-style bg-dtheme-blue mx-0 my-2 mt-3" style="height: 100px;" data-card-height="100">
+            <div id="product-info-card" class="card card-style bg-dtheme-blue mx-0 my-2 mt-3" style="height: 100px;" data-card-height="100">
                 <div class="card-center d-flex flex-row justify-content-between gap-3 px-3">
                     <div>
                         <h1 class="color-theme mb-n2 font-20 d-flex">Precio unitario de Bs. {{$producto->precioReal()}}</h1>
@@ -21,7 +21,7 @@
                     </div>
                     {{-- CONDICIONANTE HABILITACION BOTON POR STOCK --}}
                     <div class="d-flex align-items-center justify-content-center">
-                    @if (!$stockDisponible)
+                    <!-- @if (!$stockDisponible)
                         <button class="gradient-gray btn-m rounded-sm text-uppercase text-white font-800" style=" line-height: 1rem;">Sin Stock</button>
                     @else
                         <button
@@ -34,7 +34,17 @@
                                 Añadir
                             </div>
                         </button>
-                    @endif
+                    @endif -->
+                            <button
+                                id="agregar-btn"
+                                data-producto-id="{{$producto->id}}"
+                                data-producto-nombre="{{$producto->nombre}}"
+                                class="{{ $adicionales->isNotEmpty() ? 'menu-adicionales-btn' : 'agregar-unidad' }}  bg-highlight hover-grow-s btn-xs rounded-sm text-uppercase text-white font-800">
+                                    <div class="d-flex flex-row align-items-center gap-1">    
+                                        <i class="fa fa-shopping-cart"></i>
+                                        Añadir
+                                    </div>
+                                </button>
                     </div>
                 </div>    
                 {{-- Control tonalidad oscura --}}
@@ -78,51 +88,28 @@
 
 @push('scripts')
 <script> 
-
     document.addEventListener('DOMContentLoaded', function() {
-        // Llamado al handler al momento de hacer click en el elemento agregar-unidad
-        $('#agregar-unidad').on('click', agregarAlCarritoHandler);
-
         // Renderizado condicional de informacion del producto en carrito
-        const product_Id = $('#product-info-card').data('producto-id');
-        carritoStorage.actualizarContadorDetalleProducto(product_Id);
+        // const product_Id = $('#product-info-card').data('producto-id');
+        // carritoStorage.actualizarContadorDetalleProducto(product_Id);
 
         // ACTIVAR MENU DETALLES 
         // Para un elemento especifico por ID [detalle-producto]
-        const activadorMenu = document.getElementById('menu-adicionales-btn');
-        if (activadorMenu) {
-            const productId = activadorMenu.getAttribute('data-producto-id');
-            activadorMenu.addEventListener('click', () => {
-                openDetallesMenu(productId);
-            });
-        }
+        // const activadorMenu = document.getElementById('menu-adicionales-btn');
+        // if (activadorMenu) {
+        //     const productId = activadorMenu.getAttribute('data-producto-id');
+        //     activadorMenu.addEventListener('click', () => {
+        //         openDetallesMenu(productId);
+        //     });
+        // }
         
-        
-        // Para multiples elementos por clase [carrito]
-        document.querySelectorAll('.menu-trigger').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                openDetallesMenu();
-            });
-        });
+        // // Para multiples elementos por clase [carrito]
+        // document.querySelectorAll('.menu-trigger').forEach(btn => {
+        //     btn.addEventListener('click', function(e) {
+        //         e.preventDefault();
+        //         openDetallesMenu();
+        //     });
+        // });
     });
-
-    async function agregarAlCarritoHandler() {
-        const product_Id = $(this).data('producto-id'); 
-        try {
-            // Solicitud para revisar stock y agregar al carrito
-            const agregarProductoVenta = await VentaService.agregarProductoVenta(product_Id, 1);
-            // const result = await carritoStorage.agregarAlCarrito(product_Id, 1);
-            // if (result.success) {
-            //     // En caso de exito, actualizar el contador de unidades
-            //     carritoStorage.actualizarContadorDetalleProducto(product_Id);
-            //     renderOrderInfo(product_Id);
-            // } else {
-            //     console.log('Error: ', result.message);
-            // }
-        } catch (error) {
-            console.error('Error agregando el producto al carrito:', error);
-        }
-    }
 </script>
 @endpush

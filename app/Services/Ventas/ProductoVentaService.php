@@ -14,6 +14,7 @@ use App\Services\Ventas\Contracts\StockServiceInterface;
 use App\Services\Ventas\Contracts\ProductoVentaServiceInterface;
 use App\Services\Ventas\Contracts\CalculadoraVentaServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
 
 class ProductoVentaService implements ProductoVentaServiceInterface
 {
@@ -411,8 +412,10 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             $existeProductoVenta = $venta->productos()->where('producto_id', $producto->id)->exists();
             
             if (!$existeProductoVenta) {
+                // Log::debug("No existe registro en producto_venta, creando para ",[$producto->id]);
                 $venta->productos()->attach($producto->id, ['cantidad' => $cantidad]);
             } else {
+                // Log::debug("Existe registro en producto_venta, creando para ",[$producto->id]);
                 $venta->productos()->updateExistingPivot($producto->id, [
                     'cantidad' => DB::raw("cantidad + {$cantidad}")
                 ]);
@@ -423,15 +426,18 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 $this->procesarAdicionalesBatch($venta, $producto->id, $adicionales, $cantidad);
             }
 
-            $stockResponse = $this->stockService->actualizarStock(
-                $producto,
-                $cantidad === 1 ? 'sumar' : 'sumarvarios',
-                $cantidad,
-                $venta->sucursale_id
-            );
+            if ($producto->contable) {
+                $stockResponse = $this->stockService->actualizarStock(
+                    $producto,
+                    $cantidad === 1 ? 'sumar' : 'sumarvarios',
+                    $cantidad,
+                    $venta->sucursale_id
+                );
 
-            if (!$stockResponse->success) {
-                return $stockResponse;
+                if (!$stockResponse->success) {
+                    // Log::debug("Error en stockResponse, realizando rollback: ", [$stockResponse]);
+                    return $stockResponse;
+                }
             }
 
             DB::commit();
@@ -440,13 +446,8 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             DB::rollBack();
             return VentaResponse::error($e->getMessage(), [], null);
         } catch (\Exception  $e) {
-            // Rollback en caso de error
             DB::rollBack();
             return VentaResponse::error('Error al agregar producto: ' . $e ->getMessage());
-            // Re-throw the exception or handle it appropriately
-            // throw new HttpResponseException(response()->json([
-            //     'message' => 'Error al procesar la orden: ' . $e->getMessage()
-            // ], Response::HTTP_INTERNAL_SERVER_ERROR));
         }
     }
 
@@ -463,6 +464,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             // Obtener el listado de adicionales actual
             $listaActual = $productoVenta->pivot->adicionales;
             $json = $listaActual ? json_decode($listaActual, true) : [];
+
+            Log::debug("IdProducto a incluirse: ", [$productoId]);
+            Log::debug("json actual: ", [$json]);
 
             // En caso de no disponer de adicionales, insertat arrays vacios
             if ($extras->isEmpty()) {

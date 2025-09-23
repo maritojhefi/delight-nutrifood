@@ -179,12 +179,6 @@
 <script> 
     $(document).ready(function() {
         $(".menu-hider").css("z-index", "1052");
-        $(document).on('click', '.agregar-unidad', agregarAlCarritoHandler);
-
-        $(document).on('click', '.menu-adicionales-btn', function() {
-            const productoId = $(this).data('producto-id');
-            openDetallesMenu(productoId);
-        });
     });
 
     const mostrarAvisoAgotado = () => {
@@ -196,35 +190,6 @@
             $(".menu-hider").remove("menu-active");
         });
     } 
-
-    async function agregarAlCarritoHandler() {
-        const ProductoID = $(this).data('producto-id');
-        // const product_nombre = $(this).data('producto-nombre')
-        
-        try {
-            const agregarVentaProducto = await VentaService.agregarProductoVenta(ProductoID, 1);
-        } catch (error) {
-            if (error.response && error.response.status === 409) {
-                console.log("Pasando a agregar al carrito")
-                // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
-                const AddAttempt = await carritoStorage.agregarAlCarrito(ProductoID, 1);
-                estaVerificando(false);
-                closeDetallesMenu();
-            } else if (error.response && error.response.status === 422) {
-                const { stockProducto, cantidadSolicitada } = error.response.data;
-                if (stockProducto <= 0)
-                {
-                    // Re-renderizar listado de productos
-                    // estaVerificando(false);
-                    mostrarAvisoAgotado();
-                } else if (stockProducto < cantidadSolicitada) {
-                    console.log("No hay suficiente stock disponible para completar la solicitud")
-                }
-            } else {
-                console.error('Error interno del servidor:', error);
-            }
-        }
-    }
 </script>
 {{-- SCRIPT CONTROL DE SLIDER DE HORARIOS --}}
 <script>

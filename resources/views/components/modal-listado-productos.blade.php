@@ -15,14 +15,24 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
-        // Open the modal with the product list
+        // Abrir el modal con el listado de productos
         window.abrirDialogListado = async function(listado, titulo) {
             await prepararListado(listado, titulo);
-
             // Show the Bootstrap modal
             const modal = new bootstrap.Modal(document.getElementById('listadoProductosModal'));
             modal.show();
         };
+
+        window.actualizarBotonAgregado = async (productoID) => {
+            console.log("llamado a actualizarBotonAgregado");
+            const botonActual = $(`[data-producto-id="${productoID}"`);
+            console.log("Boton a reemplazar: ", botonActual);
+            if (botonActual.length) {
+                const nuevoBoton = $(renderizarBotonAgotado());
+                botonActual.replaceWith(nuevoBoton);
+                console.log("El boton deberia haber sido reemplazado")
+            }
+        }
 
         const prepararListado = (listado, titulo) => {
             console.log("Titulo a usarse: ", titulo);
@@ -88,19 +98,20 @@
 
         const renderizarAcciones = (producto) => {
             if (!producto.tiene_stock) {
-                return `
-                    <button class="btn btn-xs rounded-s btn-full shadow-l bg-gray-dark font-900 text-uppercase" disabled>
-                        <div class="d-flex flex-row align-items-center gap-1">
-                            <i class="fa fa-ban"></i>
-                            <span class="font-10">Sin Stock</span>
-                        </div>
-                    </button>
-                `;
+                return renderizarBotonAgotado();
+                // return `
+                //     <button class="btn btn-xs rounded-s btn-full shadow-l bg-gray-dark font-900 text-uppercase" disabled>
+                //         <div class="d-flex flex-row align-items-center gap-1">
+                //             <i class="fa fa-ban"></i>
+                //             <span class="font-10">Sin Stock</span>
+                //         </div>
+                //     </button>
+                // `;
             }
             
             return `
                 <button
-                    class="${ producto.tiene_adicionales ? "menu-adicionales-btn":"agregar-unidad"} btn rounded-s shadow-l bg-highlight font-900 text-uppercase"
+                    class="${ producto.tiene_adicionales ? "menu-adicionales-btn":"agregar-unidad"} btn rounded-s shadow-l bg-highlight font-900 text-uppercase font-10"
                     data-producto-id="${producto.id}"
                     data-producto-nombre="${producto.nombre}"
                 >
@@ -110,6 +121,17 @@
                     </div>
                 </button>
             `;
+        }
+
+        const renderizarBotonAgotado = () => {
+            return `
+                    <button class="btn btn-xs rounded-s btn-full shadow-l bg-gray-dark font-900 text-uppercase font-10" disabled>
+                        <div class="d-flex flex-row align-items-center gap-1 font-10">
+                            <i class="fa fa-ban"></i>
+                            <span class="font-10">Agotado</span>
+                        </div>
+                    </button>
+                `;
         }
 
         const renderizarPrecio = (productoPrecio) => {
