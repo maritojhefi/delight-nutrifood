@@ -21,7 +21,7 @@
                     </div>
                     {{-- CONDICIONANTE HABILITACION BOTON POR STOCK --}}
                     <div class="d-flex align-items-center justify-content-center">
-                    @if ($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0)
+                    @if (!$stockDisponible)
                         <button class="gradient-gray btn-m rounded-sm text-uppercase text-white font-800" style=" line-height: 1rem;">Sin Stock</button>
                     @else
                         <button

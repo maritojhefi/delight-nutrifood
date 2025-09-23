@@ -28,12 +28,11 @@ class ProductoController extends Controller
     public function lineadelightproducto($id)
     {
         $producto = Producto::publicoTienda()->findOrFail($id);
-        $nombrearray = Str::of($producto->nombre)->explode(' ');
+        $stockDisponible = $producto->stockTotal() > 0;
 
         // Procesar la imagen del producto y su url
         $producto->imagen = $producto->pathAttachment();
         $producto->url_detalle = route('delight.detalleproducto', $producto->id);
-
         $adicionales = $producto->subcategoria->adicionales;
 
         // Obtener productos similares excluyendo el producto ya obtenido
@@ -49,7 +48,7 @@ class ProductoController extends Controller
                 return $p;
             });
 
-        return view('client.productos.delight-producto', compact('producto', 'nombrearray', 'similares', 'adicionales'));
+        return view('client.productos.delight-producto', compact('producto', 'stockDisponible', 'similares', 'adicionales'));
     }
     public function detallesubcategoria($id)
     {
@@ -63,11 +62,12 @@ class ProductoController extends Controller
             ->leftjoin('subcategorias', 'subcategorias.id', 'productos.subcategoria_id')
             ->leftjoin('categorias', 'categorias.id', 'subcategorias.categoria_id')
             ->where('categorias.nombre', 'ECO-TIENDA')
-            ->with(['unfilteredSucursale', 'tag'])
+            ->with(['tag'])
             ->get();
 
         $productos = $productos->map(function ($producto) {
-            $producto->tiene_stock = !($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0);
+            // $producto->tiene_stock = !($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0);
+            $producto->tiene_stock = $producto->contable ? $producto->stockTotal() > 0 : true;
             return $producto;
         });
 
@@ -95,8 +95,7 @@ class ProductoController extends Controller
     {
         try {
         $producto = Producto::publicoTienda()->findOrFail($id);
-        $nombrearray = Str::of($producto->nombre)->explode(' ');
-
+        $stockDisponible = $producto->stockTotal() > 0;
         // Procesar la imagen del producto y su url
         $producto->imagen = $producto->pathAttachment();
         $producto->url_detalle = route('delight.detalleproducto', $producto->id);
@@ -114,8 +113,8 @@ class ProductoController extends Controller
                 $p->url_detalle = route('delight.detalleproducto', $p->id);
                 return $p;
             });
-        //dd($nombrearray);
-        return view('client.productos.delight-producto', compact('producto', 'nombrearray', 'similares', 'adicionales'));
+
+        return view('client.productos.delight-producto', compact('producto', 'stockDisponible', 'similares', 'adicionales'));
         } catch (\Throwable $th) {
             Log::error("Error al renderizar pagina: ", [$th]);
         }
@@ -323,14 +322,24 @@ class ProductoController extends Controller
             return response()->json(["error" => "No existe un producto con el id proporcionado"], 404);
         }
 
-        // Verificar si el producto no dispone de una sucursal
-        if ($producto->unfilteredSucursale->isEmpty()) {
+        // Verificar si el producto es contable
+        if (!$producto->contable) {
             // Al no disponer, se asume que tiene productos infinitos
             return response()->json(["stock" => -1, "unlimited" => true], 200);
         } else {
             // Retornamos la cantidad de stock disponible
-            return response()->json(["stock" => $producto->stock_actual, "unlimited" => false], 200);
+            return response()->json(["stock" => $producto->stockTotal(), "unlimited" => false], 200);
+            // Retornar el stock disponbile para su su
         }
+
+        // // Verificar si el producto no dispone de una sucursal
+        // if ($producto->unfilteredSucursale->isEmpty()) {
+        //     // Al no disponer, se asume que tiene productos infinitos
+        //     return response()->json(["stock" => -1, "unlimited" => true], 200);
+        // } else {
+        //     // Retornamos la cantidad de stock disponible
+        //     return response()->json(["stock" => $producto->stock_actual, "unlimited" => false], 200);
+        // }
     }
     public function validarProductoAdicionales(Request $request) {
         try {
