@@ -108,14 +108,13 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
-        // const [estaVerficiando, setEstaVerificando] = (false);
-
         // Control agregar unidad individual
         $(document).on('click', '.agregar-unidad', async function () {
             const ProductoID = $(this).data('producto-id');
             
             try {
                 const agregarVentaProducto = await VentaService.agregarProductoVenta(ProductoID, 1);
+                await carritoStorage.mostrarToastAgregado();
             } catch (error) {
                 if (error.response && error.response.status === 409) {
                     console.log("Pasando a agregar al carrito")
@@ -128,8 +127,7 @@
                     if (stockProducto <= 0)
                     {
                         actualizarBotonAgregado(ProductoID);
-                        // Re-renderizar listado de productos
-                        // estaVerificando(false);
+                        estaVerificando(false);
                         mostrarAvisoAgotado();
                     } else if (stockProducto < cantidadSolicitada) {
                         console.log("No hay suficiente stock disponible para completar la solicitud")
@@ -145,12 +143,6 @@
             const productoId = $(this).data('producto-id');
             openDetallesMenu(productoId);
         });
-        // $(document).on('click', '.menu-adicionales-btn', async () => {
-        //     console.log("click en menu-adicionales-btn unidad");
-
-        //     const productoId = $(this).data('producto-id');
-        //     openDetallesMenu(productoId);
-        // });
         
         // Abrir menu de detalles-producto
         window.openDetallesMenu = async function(productoId) {
@@ -354,6 +346,7 @@
                 estaVerificando(true);
                 console.log("Soliciando agregar a ProductoVenta")
                 const agregarVentaProducto = await VentaService.agregarProductoVenta(infoProducto.id, cantidadSolicitada, IdsAdicionalesSeleccionados);
+                await carritoStorage.mostrarToastAgregado();
                 estaVerificando(false);
                 closeDetallesMenu();
             } catch (error) {
