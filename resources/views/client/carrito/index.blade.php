@@ -1,6 +1,6 @@
 @extends('client.master')
 @section('content')
-    <x-cabecera-pagina titulo="Mi Carrito" cabecera="appkit" />
+    <x-cabecera-pagina :titulo="$tiene_venta_activa ? 'Mi Pedido' : 'Mi Carrito'" cabecera="appkit" />
     <div class="listado-carrito card card-style">
         <div class="content cart-content d-flex flex-column justify-content-center">
             {{-- MENSAJE DE VALIDACION EN CURSO --}}
@@ -8,7 +8,7 @@
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Cargando...</span>
                 </div>
-                <p class="mt-2">Validando tu carrito...</p>
+                <p class="mt-2">Validando tu {{ $venta_activa ? "pedido" : "carrito" }}...</p>
             </div>
             {{-- CONTENEDORES DE PRODCUTOS SEGUN DISPONIBILIDAD --}}
             <div id="container-state-disponible" class="d-flex flex-column justify-content-center"></div>
@@ -26,7 +26,7 @@
                     <div class="splide__slide splide__slide--clone" style="width: 380px;" >
                         <div data-card-height="250" class="bg-red-dark card mx-3 bg-14 rounded-m shadow-l">
                             <div class="card-top mt-4 d-flex flex-column align-items-center">
-                                    <a href="{{route("miperfil")}}"" class="text-white">
+                                    <a href="{{route("miperfil")}}" class="text-white">
                                         <i class="fa fa-heart fa-9x"></i>
                                     </a>
                             </div>

@@ -15,6 +15,8 @@ use App\Http\Middleware\CheckIfCajaOpen;
 use App\Models\User;
 use App\Observers\HistorialVentaObserver;
 use App\Observers\UserObserver;
+use App\View\Composers\UserDataComposer;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,5 +38,7 @@ class AppServiceProvider extends ServiceProvider
         Producto::observe(ProductoObserver::class);
         Historial_venta::observe(HistorialVentaObserver::class);
         User::observe(UserObserver::class);
+        View::composer('*', UserDataComposer::class);
+
     }
 }

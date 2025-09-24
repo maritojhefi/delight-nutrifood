@@ -124,7 +124,7 @@ class VentasWebController extends Controller
                 }
             });
 
-            Log::info('Carrito procesado exitosamente en transacción');
+            // Log::info('Carrito procesado exitosamente en transacción');
 
             return response()->json([
                 'message' => 'Carrito procesado exitosamente',

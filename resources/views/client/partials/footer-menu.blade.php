@@ -59,9 +59,13 @@
     </a>
     <a href="{{ route('carrito') }}"
         class="{{ request()->is('carrito' . '*') ? 'active-nav rounded-m' : '' }} cargando">
-        <i class="fa fa-shopping-cart {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i>
+        @if ($tiene_venta_activa)
+            <i data-lucide="hand-platter" class="lucide-icon {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i>
+        @else
+            <i class="fa fa-shopping-cart {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i>
+        @endif
         <span id="cart-counter" class="cart-counter-badge"></span>
-        <span class="{{request()->is('carrito' . '*') ? 'color-highlight' : ''}}">Mi carrito</span>
+        <span class="{{request()->is('carrito' . '*') ? 'color-highlight' : ''}}">{{ $tiene_venta_activa ? "Mi Pedido" : "Mi Carrito" }}</span>
         <em></em>
     </a>
 </div>
