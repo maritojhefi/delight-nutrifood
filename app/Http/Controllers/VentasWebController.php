@@ -77,11 +77,11 @@ class VentasWebController extends Controller
 
     public function carrito_ProductosVenta(Request $request) {
         try {
-            Log::info('Llamado a la funcion carrito_ProductosVenta');
+            // Log::info('Llamado a la funcion carrito_ProductosVenta');
             $user = User::find(auth()->user()->id);
 
             $carrito = collect($request->carrito['items']);
-            Log::debug('Contenido del carrito recibido desde frontEnd', [$carrito]);
+            // Log::debug('Contenido del carrito recibido desde frontEnd', [$carrito]);
 
             $adicionales_generales = Adicionale::all()->keyBy('id'); // Indexar por ID para acceso rápido
 
@@ -98,63 +98,29 @@ class VentasWebController extends Controller
             // Usar transacción para asegurar consistencia de datos
             DB::transaction(function () use ($carrito, $venta_activa, $adicionales_generales, $user) {
                 foreach ($carrito as $item) {
-                    $main_id = $item['id'];
+                    $producto_id = $item['id'];
                     $detalles = $item['detalles'];
 
-                    // Calcular cantidad total para este producto
-                    $cantidad_total = array_sum(array_column($detalles, 'cantidad'));
-
-                    // Construir estructura de adicionales esperada por el sistema
-                    $adicionales_estructura = [];
-                    $orden_counter = 1;
+                    $producto = Producto::publicoTienda()->findOrFail($producto_id); 
 
                     foreach ($detalles as $detalle) {
-                        $adicionales_detalle = $detalle['adicionales'];
+                        $adicionales_ids = $detalle['adicionales'] ?? [];
                         $cantidad_detalle = $detalle['cantidad'];
+                        $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get()->keyBy('id');
 
-                        // Para cada cantidad de este detalle, crear una entrada separada
-                        for ($i = 0; $i < $cantidad_detalle; $i++) {
-                            if ($adicionales_detalle === null) {
-                                // Para items sin adicionales (como base)
-                                $adicionales_estructura[(string)$orden_counter] = [];
-                            } else {
-                                // Para items con adicionales, crear objetos mockup
-                                $extras_array = [];
-                                foreach ($adicionales_detalle as $adicional_id) {
-                                    $infoAdicional = $adicionales_generales->get($adicional_id);
-                                    if ($infoAdicional) {
-                                        // Crear estructura como en producción: {"nombre_adicional": "precio"}
-                                        $extras_array[] = [
-                                            $infoAdicional->nombre => $infoAdicional->precio
-                                        ];
-                                    } else {
-                                        // Log si no se encuentra el adicional
-                                        Log::warning("Adicional ID no encontrado al sincronizar carrito con QR Venta para el usuario con id {user_id}", [
-                                            'user_id' => $user->id,
-                                            'adicional_id' => $adicional_id
-                                        ]);
-                                    }
-                                }
-                                $adicionales_estructura[(string)$orden_counter] = $extras_array;
-                            }
-                            $orden_counter++;
-                        }
+                        $respuestaAdicion = $this->productoVentaService
+                        ->agregarProductoCliente($venta_activa, 
+                                                $producto, 
+                                                $adicionales, 
+                                                $cantidad_detalle );
                     }
 
-                    // Crear una sola entrada por producto
-                    $venta_activa->productos()->attach($main_id, [
-                        'cantidad' => $cantidad_total,
-                        'adicionales' => json_encode($adicionales_estructura),
-                        'estado_actual' => 'pendiente',
-                        'observacion' => null,
-                    ]);
-
-                    Log::info("Procesando producto del carrito", [
-                        'producto_id' => $main_id,
-                        'cantidad_total' => $cantidad_total,
-                        'adicionales_estructura' => $adicionales_estructura,
-                        'detalles_count' => count($detalles)
-                    ]);
+                    // Log::info("Procesando producto del carrito", [
+                    //     'producto_id' => $producto_id,
+                    //     'cantidad_total' => $cantidad_total,
+                    //     'adicionales_estructura' => $adicionales_estructura,
+                    //     'detalles_count' => count($detalles)
+                    // ]);
                 }
             });
 

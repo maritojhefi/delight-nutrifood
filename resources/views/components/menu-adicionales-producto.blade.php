@@ -344,7 +344,6 @@
             try {
                 // SOLICITUD DE AGREGAR PRODUCTO
                 estaVerificando(true);
-                console.log("Soliciando agregar a ProductoVenta")
                 const agregarVentaProducto = await VentaService.agregarProductoVenta(infoProducto.id, cantidadSolicitada, IdsAdicionalesSeleccionados);
                 await carritoStorage.mostrarToastAgregado();
                 estaVerificando(false);
@@ -356,7 +355,6 @@
                     console.log("Pasando a agregar al carrito")
                     // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
                     const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidadSolicitada, false, IdsAdicionalesSeleccionados);
-                    estaVerificando(false);
                     closeDetallesMenu();
                 }
                 // CONTROL DE STOCK INSUFICIENTE
@@ -370,11 +368,6 @@
                     if (stockProducto <= 0)
                     {
                         console.log("El producto se encuentra agotado, cerrando menu")
-                        // closeDetallesMenu();
-                        // Re-renderizar listado de productos
-
-                        estaVerificando(false);
-                        // actualizarBotonAgregado(infoProducto.id);
                         deshabilitarBoton(infoProducto.id);
                         mostrarAvisoAgotado();
                         closeDetallesMenu();
@@ -428,17 +421,13 @@
                     }
                 }  else {
                     // Error interno del servidor
-                    console.error("Ocurrió un error inesperado al procesar su solicitud.")
+                    console.error("Ocurrió un error inesperado al procesar su solicitud.", error)
                     // Toast error general
                     // Mostrar un dialog sencillo de error
                     estaVerificando(false);
                     // closeDetallesMenu();
                 }
             }
-            // finally {
-            //     estaVerificando(false);
-            //     closeDetallesMenu();
-            // }
         }
         
         const renderAdicionales = (adicionales) => {

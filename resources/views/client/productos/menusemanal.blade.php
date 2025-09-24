@@ -1447,9 +1447,11 @@
             // Generacion de una nueva venta con el identificador del usuario
             try {
                 const respuestaQR = await VentaService.generarVentaQR();
-                if (respuestaQR.status === 200) {
-                    await sincronizarCarrito();
-                }
+                await sincronizarCarrito();
+                // if (respuestaQR.status === 200) {
+                //     console.log("La creacion de la venta fue un exito");
+                //     await sincronizarCarrito();
+                // }
             } catch (error) {
                 if (error.response && error.response.status === 409) {
                     // De ya existir una venta, se procede con la sincronizacion del carrito
