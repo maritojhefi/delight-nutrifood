@@ -21,30 +21,26 @@
                     </div>
                     {{-- CONDICIONANTE HABILITACION BOTON POR STOCK --}}
                     <div class="d-flex align-items-center justify-content-center">
-                    <!-- @if (!$stockDisponible)
-                        <button class="gradient-gray btn-m rounded-sm text-uppercase text-white font-800" style=" line-height: 1rem;">Sin Stock</button>
+                    @if (!$stockDisponible)
+                        <button class="bg-gray-dark btn-m rounded-sm text-uppercase text-white font-800" style="line-height: 1rem;">
+                            <div class="d-flex flex-row align-items-center gap-1">
+                                <i class="fa fa-ban"></i>
+                                AGOTADO
+                            </div>
+                        </button>
                     @else
                         <button
-                        id="{{ $adicionales->isNotEmpty() ? "menu-adicionales-btn" : 'agregar-unidad' }}"
+                        id="agregar-btn"
                         data-producto-id="{{$producto->id}}"
                         data-producto-nombre="{{$producto->nombre}}"
-                        class="bg-highlight hover-grow-s btn-xs rounded-sm text-uppercase text-white font-800">
+                        class="{{ $adicionales->isNotEmpty() ? 'menu-adicionales-btn' : 'agregar-unidad' }}  bg-highlight hover-grow-s btn-m rounded-sm text-uppercase text-white font-800" style="line-height: 1rem;">
                             <div class="d-flex flex-row align-items-center gap-1">    
                                 <i class="fa fa-shopping-cart"></i>
                                 Añadir
                             </div>
                         </button>
-                    @endif -->
-                            <button
-                                id="agregar-btn"
-                                data-producto-id="{{$producto->id}}"
-                                data-producto-nombre="{{$producto->nombre}}"
-                                class="{{ $adicionales->isNotEmpty() ? 'menu-adicionales-btn' : 'agregar-unidad' }}  bg-highlight hover-grow-s btn-xs rounded-sm text-uppercase text-white font-800">
-                                    <div class="d-flex flex-row align-items-center gap-1">    
-                                        <i class="fa fa-shopping-cart"></i>
-                                        Añadir
-                                    </div>
-                                </button>
+                    @endif
+                            
                     </div>
                 </div>    
                 {{-- Control tonalidad oscura --}}
