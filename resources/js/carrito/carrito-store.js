@@ -89,6 +89,7 @@ export const vaciarCarrito = () => {
     actualizarContadorCarrito();
 }
 
+
 export function encontrarEnCarrito(carrito, productoID, adicionales = []) {
     const checkKey = (adicionales && adicionales.length > 0) 
     ? adicionales.slice().sort((a, b) => a - b).join("-") 
@@ -137,19 +138,22 @@ export const mostrarToastLimite = () => {
 
 // ACTUALIZAR CONTADOR EN DETALLE-PRODUCTO
 export const actualizarContadorDetalleProducto = (ProductId) => {
+    if (!ProductId) {
+        return;
+    }
     const elementoNumero = document.getElementById('details-cart-counter');
     const elementoTextoOrden = document.getElementById('order-info-text');
 
     // Buscar el producto a contarse en el carrito
     const productoContable = obtenerItemCarrito(ProductId);
 
-    if (productoContable && productoContable.detalles) {
-        // Si existe el producto correspondiente, sumar las cantidades
-        const totalQuantity = productoContable.detalles.reduce((sum, detail) => {
-            return sum + (detail.cantidad || 0);
-        }, 0);
+    
+    if (productoContable && productoContable.cantidad > 0) {
+        // Si existe el producto correspondiente, usar la cantidad directamente
+        const cantidadProducto = productoContable.cantidad;
+        
         // Actualizar el contador y revelar el texto
-        elementoNumero.textContent = totalQuantity;
+        elementoNumero.textContent = cantidadProducto;
         elementoTextoOrden.style.display = 'inline-block';
     } else {
         // De no encontrarse, cambiar el contador a 0 y ocultar el texto
@@ -164,22 +168,12 @@ export const actualizarContadorCarrito = () => {
     const elementoContador = document.getElementById('cart-counter');
 
     if (carrito.items && carrito.items.length > 0) {
-        // Iterar los registros del carrito usando un reduce
+        // Sumar los valores de cantidad de cada producto
         const cantidadTotal = carrito.items.reduce((sum, item) => {
-            // Revisar si en cada item existe un array "detalles"
-            if (item.detalles && Array.isArray(item.detalles)) {
-                // De existir, usar otro reduce para sumar las 'cantidad' de 'detalles'
-                const cantidadDetalles = item.detalles.reduce((detSum, detail) => {
-                    return detSum + (detail.cantidad || 0);
-                }, 0);
-                // Adicionar la suma de detalles al total general
-                return sum + cantidadDetalles;
-            }
-            // De no existir "detalles", retornar el valor actual sin modificar
-            return sum;
+            return sum + (item.cantidad || 0);
         }, 0);
 
-        console.log("Cantidad Carrito: ",cantidadTotal)
+        // // console.log("Cantidad Carrito: ", cantidadTotal);
 
         elementoContador.textContent = cantidadTotal;
         elementoContador.style.display = 'inline-block';
@@ -189,110 +183,30 @@ export const actualizarContadorCarrito = () => {
     }
 }
 
-// // AGREGAR ITEMS AL CARRITO
-// export async function agregarAlCarrito(productId, cantidad, isUpdate = false, adicionales = null) {
-//     const carrito = obtenerCarrito();
-//     console.log("Adicionales: ", adicionales);
-
-//     const checkKey = (adicionales && adicionales.length > 0) 
-//     ? adicionales.slice().sort((a, b) => a - b).join("-") 
-//     : "base";
-
-//     const resultado = encontrarEnCarrito(carrito, productId, adicionales);
-//     const { producto, detalle } = resultado;
-//     const cantidadActual = detalle ? detalle.cantidad : 0;
-//     console.log("Cantidad Actual: ", cantidadActual)
-//     const cantidadNueva = cantidadActual + cantidad;
-//     console.log("Cantidad Nueva: ", cantidadNueva);
-
-//     try {
-//         const stockResponse = await checkProductStock(productId);
-        
-//         // Validar stock solo si es limitado
-//         if (!stockResponse.unlimited) {
-//             const stockDisponible = stockResponse.stock;
-//             if (cantidadNueva > stockDisponible) {
-//                 console.error(`El stock del producto es ${stockDisponible}, la cantidad que se solicita es de ${cantidadNueva}`);
-//                 mostrarToastLimite();
-//                 return {
-//                     success: false, 
-//                     message: `Solo hay ${stockDisponible}u disponibles`,
-//                     cart: carrito
-//                 };
-//             }
-//         }
-        
-//         // Agregar o actualizar el item en el carrito
-//         if (producto && detalle) {
-//             // Existe registro, actualizar cantidad
-//             detalle.cantidad = cantidadNueva;
-//             console.log("Actualizando cantidad");
-//             console.log("Detalle después del update:", detalle);
-//             console.log("Cart después del update:", carrito);
-//         } else if (producto && !detalle) {
-//             // Existe producto, agregar nuevo detalle
-//             producto.detalles.push({
-//                 key: checkKey,
-//                 adicionales,
-//                 cantidad
-//             });
-//         } else {
-//             // Crear nuevo producto con detalle
-//             carrito.items.push({
-//                 id: productId,
-//                 detalles: [{
-//                     key: checkKey,
-//                     adicionales,
-//                     cantidad
-//                 }]
-//             });
-//         }
-        
-//         // Guardar cambios y mostrar notificación
-//         console.log("Cart before save:", JSON.stringify(carrito))
-//         localStorage.setItem('carrito', JSON.stringify(carrito));
-//         console.log("Los cambios se deberian haber guardado")
-//         actualizarContadorCarrito();
-//         if (!isUpdate) {
-//             mostrarToastAgregado();
-//         }
-        
-//         return {success: true, newQuantity: cantidadNueva, cart: carrito};
-        
-//     } catch (error) {
-//         console.error('Error agregando el producto al carrito:', error);
-//         return {
-//             success: false, 
-//             message: 'Error al agregar el producto al carrito',
-//             cart: carrito
-//         };
-//     }
-// }
-
 // AGREGAR ITEMS AL CARRITO
-export async function agregarAlCarrito(productId, cantidad, isUpdate = false, adicionales = null) {
+export async function agregarAlCarrito(productId, cantidad, isUpdate = false, adicionales = []) {
     const carrito = obtenerCarrito();
     console.log("Adicionales: ", adicionales);
 
-    // Normalize adicionales to empty array if null/undefined
+    // Normalizar los adicionales a un arrau vacío en caso de que se obtenga null o undefined
     const adicionalesNormalized = adicionales || [];
     
     try {
-        // Find existing product in cart
+        // Encontrar el producto si es que ya existe en el carrito
         const productoIndex = carrito.items.findIndex(item => item.id === productId);
         let producto = productoIndex !== -1 ? carrito.items[productoIndex] : null;
         
-        // Calculate current total quantity for this product
+        // Calcular la cantidad total del producto
         const cantidadActual = producto ? producto.cantidad : 0;
         const cantidadNueva = cantidadActual + cantidad;
         
-        console.log("Cantidad Actual: ", cantidadActual);
-        console.log("Cantidad Nueva: ", cantidadNueva);
+        // // console.log("Cantidad Actual: ", cantidadActual);
+        // // console.log("Cantidad Nueva: ", cantidadNueva);
 
-        // Check stock if product exists
+        // Obtener el stock del producto
         const stockResponse = await checkProductStock(productId);
         
-        // Validate stock only if limited
+        // Validar el stock solo si es limitado
         if (!stockResponse.unlimited) {
             const stockDisponible = stockResponse.stock;
             if (cantidadNueva > stockDisponible) {
@@ -306,43 +220,43 @@ export async function agregarAlCarrito(productId, cantidad, isUpdate = false, ad
             }
         }
         
-        // Add or update item in cart
+        // Agregar o actualizar el item en el carrito
         if (producto) {
-            // Product exists, find next available index
-            const existingIndexes = Object.keys(producto.adicionales).map(Number);
-            const nextIndex = existingIndexes.length > 0 ? Math.max(...existingIndexes) + 1 : 1;
+            // Si el producto existe, encontrar el próximo indice disponible.
+            const indicesExistentes = Object.keys(producto.adicionales).map(Number);
+            const proximoIndice = indicesExistentes.length > 0 ? Math.max(...indicesExistentes) + 1 : 1;
             
-            // Add new indexes for the requested quantity
+            // Agregar nuevos indices según la cantidad solicitada
             for (let i = 0; i < cantidad; i++) {
-                producto.adicionales[nextIndex + i] = adicionalesNormalized;
+                producto.adicionales[proximoIndice + i] = adicionalesNormalized;
             }
             
-            // Update total quantity
+            // Actualizar la cantidad total
             producto.cantidad = cantidadNueva;
             
-            console.log("Actualizando producto existente");
-            console.log("Producto después del update:", producto);
+            // // console.log("Actualizando producto existente");
+            // // console.log("Producto después del update:", producto);
         } else {
-            // Create new product entry
-            const newProducto = {
+            // Crear un nuevo registro en carrito del producto
+            const nuevoProducto = {
                 id: productId,
                 cantidad: cantidad,
                 adicionales: {}
             };
             
-            // Add indexes for the requested quantity
+            // Agregar tantos indices como la cantidad solicitada
             for (let i = 1; i <= cantidad; i++) {
-                newProducto.adicionales[i] = adicionalesNormalized;
+                nuevoProducto.adicionales[i] = adicionalesNormalized;
             }
             
-            carrito.items.push(newProducto);
-            console.log("Creando nuevo producto en carrito");
+            carrito.items.push(nuevoProducto);
+            // // console.log("Creando nuevo producto en carrito");
         }
         
-        // Save changes and show notification
-        console.log("Cart before save:", JSON.stringify(carrito, null, 2));
+        // Guardar los cambios y mostrar la notificacion
+        // // console.log("Cart before save:", JSON.stringify(carrito, null, 2));
         localStorage.setItem('carrito', JSON.stringify(carrito));
-        console.log("Los cambios se deberían haber guardado");
+        // // console.log("Los cambios se deberían haber guardado");
         
         actualizarContadorCarrito();
         if (!isUpdate) {
@@ -352,7 +266,7 @@ export async function agregarAlCarrito(productId, cantidad, isUpdate = false, ad
         return { success: true, newQuantity: cantidadNueva, cart: carrito };
         
     } catch (error) {
-        console.error('Error agregando el producto al carrito:', error);
+        // // console.error('Error agregando el producto al carrito:', error);
         return {
             success: false, 
             message: 'Error al agregar el producto al carrito',

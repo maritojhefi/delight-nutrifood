@@ -86,8 +86,8 @@
 <script> 
     document.addEventListener('DOMContentLoaded', function() {
         // Renderizado condicional de informacion del producto en carrito
-        // const product_Id = $('#product-info-card').data('producto-id');
-        // carritoStorage.actualizarContadorDetalleProducto(product_Id);
+        const product_Id = @json($producto->id ?? null);
+        carritoStorage.actualizarContadorDetalleProducto(product_Id);
 
         // ACTIVAR MENU DETALLES 
         // Para un elemento especifico por ID [detalle-producto]
