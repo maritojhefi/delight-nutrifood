@@ -22,6 +22,21 @@ export const getCartProductsInfo = async ({ sucursaleId, items }) => {
   }
 }
 
+
+export const obtenerInfoItemCarrito = async (itemCarrito, sucursaleID) => {
+    try {
+        const response = await axios.post(`/carrito/validar-item`, {
+          sucursale_id: sucursaleID,
+          id: itemCarrito.id,
+          cantidad: itemCarrito.cantidad,
+          adicionales: itemCarrito.adicionales
+        }); 
+        return response.data;
+    } catch (error) {
+        console.error('Error interno del servidor:', error);
+    }
+}
+
 // export const handleAgregarUnidad = async () => {
 //   const ProductoID = $(this).data('producto-id');
 //   try {
@@ -54,4 +69,9 @@ export const getCartProductsInfo = async ({ sucursaleId, items }) => {
 // };
 
 
-window.getCartProductsInfo = getCartProductsInfo;
+// window.getCartProductsInfo = getCartProductsInfo;
+
+window.CarritoService = {
+    getCartProductsInfo,
+    obtenerInfoItemCarrito
+};

@@ -31,36 +31,6 @@ import { checkProductStock } from "../productos/producto-service";
 //   }
 // ]
 
-items: [
-  {
-    // Producto con adicionales, ordenes de un mismo producto varian entre si
-    id: 280, // ID del Producto
-    detalles: [ // Separacion de productos por orden
-      {
-        key: "1-2-3",
-        adicionales: [1, 2, 3], // IDs of extras
-        cantidad: 2 // Cantidad correspondiente a la orden
-      },
-      {
-        key: "1-2",
-        adicionales: [1, 2],
-        cantidad: 3
-      }
-    ]
-  },
-  {
-    // Producto sin adicionales
-    id: 263,
-    detalles: [
-        {
-            key: "base", 
-            adicionales : [],
-            cantidad: 4
-        }
-    ]
-  }
-]
-
 
 
 
@@ -90,30 +60,32 @@ export const vaciarCarrito = () => {
 }
 
 
-export function encontrarEnCarrito(carrito, productoID, adicionales = []) {
-    const checkKey = (adicionales && adicionales.length > 0) 
-    ? adicionales.slice().sort((a, b) => a - b).join("-") 
-    : "base";
+// export function encontrarEnCarrito(carrito, productoID, adicionales = []) {
+//     const checkKey = (adicionales && adicionales.length > 0) 
+//     ? adicionales.slice().sort((a, b) => a - b).join("-") 
+//     : "base";
 
-    // Buscar el producto por ID (Es importante usar un carrito proporcionado como parametro)
-    // De tal manera que se devuelvan producto y detalle pertenecientes a la misma instancia.
-    const producto = carrito.items.find(item => item.id === productoID);
-    if (!producto) {
-        return { producto: null, detalle: null }; // No existe el producto
-    }
+//     // Buscar el producto por ID (Es importante usar un carrito proporcionado como parametro)
+//     // De tal manera que se devuelvan producto y detalle pertenecientes a la misma instancia.
+//     const producto = carrito.items.find(item => item.id === productoID);
+//     if (!producto) {
+//         return { producto: null, detalle: null }; // No existe el producto
+//     }
 
-    // De existir el producto, buscar entre sus detalles
-    const detalle = producto.detalles.find(d => d.key === checkKey) || null;
+//     // De existir el producto, buscar entre sus detalles
+//     const detalle = producto.detalles.find(d => d.key === checkKey) || null;
 
-    // Retornar los objetos
-    return { producto, detalle };
-}
+//     // Retornar los objetos
+//     return { producto, detalle };
+// }
 
 // REMOVER PRODUCTO
 export const eliminarProducto = (productId) => {
     const carrito = obtenerCarrito();
-    carrito.items = carrito.items.filter(item => item.id.toString() !== productId);
+    // // console.log("Eliminando el producto con id", productId);
+    carrito.items = carrito.items.filter(item => item.id !== productId);
     localStorage.setItem('carrito', JSON.stringify(carrito));
+    // // console.log("El producto deberia haber sido eliminado");
 }
 
 // MOSTRAR TOAST PRODUCTO AGREGADO AL CARRITO
@@ -184,9 +156,11 @@ export const actualizarContadorCarrito = () => {
 }
 
 // AGREGAR ITEMS AL CARRITO
-export async function agregarAlCarrito(productId, cantidad, isUpdate = false, adicionales = []) {
+export async function agregarAlCarrito(productId, cantidad, isUpdate = false, adicionales = null) {
     const carrito = obtenerCarrito();
     console.log("Adicionales: ", adicionales);
+
+    // // const clave = adicionales ? "complejo" : "simple";
 
     // Normalizar los adicionales a un arrau vacío en caso de que se obtenga null o undefined
     const adicionalesNormalized = adicionales || [];
@@ -241,7 +215,8 @@ export async function agregarAlCarrito(productId, cantidad, isUpdate = false, ad
             const nuevoProducto = {
                 id: productId,
                 cantidad: cantidad,
-                adicionales: {}
+                adicionales: {},
+                // // key: clave
             };
             
             // Agregar tantos indices como la cantidad solicitada
@@ -275,64 +250,98 @@ export async function agregarAlCarrito(productId, cantidad, isUpdate = false, ad
     }
 }
 
-export const substractFromCart = (productId, cantidad) => {
-    try {
-        if (cantidad <= 0) {
-        return {success:false,message:"El valor no puede ser menor que 1"}
-    }
-    const carrito = obtenerCarrito();
-    console.log("Carrito actual:", carrito);
-    console.log("Id item a buscar", productId);
-    // const existingItem = carrito.items.find(item => item.id == productId); // Use the same cart reference
-    const resultado = encontrarEnCarrito(carrito, productId, adicionales);
-    const { producto, detalle } = resultado;
 
-    // console.log("Item encontrado:", existingItem);
-    // console.log("Item existente: ", existingItem);
-    console.log("Item existente: ", producto);
-    const cantidadActual = detalle.cantidad;
-    // const currentQty = existingItem.cantidad;
-    if (cantidad >= cantidadActual) {
-        return {success:false,message:"El valor no puede ser menor que 1"};
+const reconstruirAdicionales = (item, newQuantity) => {
+    item.adicionales = {};
+    for (let i = 1; i <= newQuantity; i++) {
+        item.adicionales[i.toString()] = [];
     }
-    // if (cantidad >= currentQty) {
-    //     return {success:false,message:"El valor no puede ser menor que 1"}
-    // }
-    const newQty = currentQty - cantidad;
-    const cantidadNueva = cantidadActual - cantidad;
-    detalle.cantidad = cantidadNueva;
-    // existingItem.cantidad = newQty;
-    localStorage.setItem('carrito', JSON.stringify(carrito));
-    actualizarContadorCarrito();
-    // console.log("Substraccion Exitosa, nueva cantidad: ", existingItem.cantidad)
-    console.log("Substraccion Exitosa, nueva cantidad: ", detalle.cantidad)
-    return {success: true,message:"Substraccion exitosa",newQuantity: newQty}
-    } catch (error) {
-        console.log(error)
-    }
-
-}
+};
 
 export const updateProductToMax = async (productId) => {
     const cart = obtenerCarrito();
     const itemToMax = cart.items.find(item => item.id == productId); 
+    
+    if (!itemToMax) {
+        return {success: false, message: "Producto no encontrado en el carrito"};
+    }
+    
     try {
         const itemStockResponse = await checkProductStock(productId);
-        const availableStock = Number(itemStockResponse.stock);
-        itemToMax.cantidad = availableStock;
+        const stockDisponible = Number(itemStockResponse.stock);
+        
+        // Actualizar cantidad
+        itemToMax.cantidad = stockDisponible;
+        
+        // Reconstruir adicionales segun la nueva cantidad
+        reconstruirAdicionales(itemToMax, stockDisponible);
+        
         localStorage.setItem('carrito', JSON.stringify(cart));
-        return {success: true, cantidad: itemToMax.cantidad}
+        actualizarContadorCarrito(); // Actualizar el contador general del carrito.
+        
+        return {
+            success: true, 
+            cantidad: itemToMax.cantidad,
+            adicionales: itemToMax.adicionales
+        };
+        
     } catch (error) {
-        console.error("Ocurrio un error al actualizar el stock solicitado al maximo: ", productId);
-        return {success: false}
+        console.error("Ocurrio un error al actualizar el stock solicitado al maximo: ", productId, error);
+        return {success: false, message: "Error al obtener el stock disponible"};
     }
 }
+
+export const restarDelCarrito = (productId, cantidad) => {
+    try {
+        if (cantidad <= 0) {
+            return {success: false, message: "El valor no puede ser menor que 1"};
+        }
+        
+        const carrito = obtenerCarrito();
+        
+        // Encontrar el item por su ID
+        const itemExistente = carrito.items.find(item => item.id == productId);
+        
+        if (!itemExistente) {
+            return {success: false, message: "Producto no encontrado en el carrito"};
+        }
+        
+        const cantidadActual = itemExistente.cantidad;
+        
+        if (cantidad >= cantidadActual) {
+            return {success: false, message: "No se puede reducir más, la cantidad resultante sería menor que 1"};
+        }
+        
+        const cantidadNueva = cantidadActual - cantidad;
+        
+        // Actualizar la cantidad
+        itemExistente.cantidad = cantidadNueva;
+        
+        // Reconstruir adicionales segun la nueva cantidad
+        reconstruirAdicionales(itemExistente, cantidadNueva);
+        
+        // Save updated cart
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+        actualizarContadorCarrito();
+        
+        return {
+            success: true, 
+            message: "Substraccion exitosa", 
+            newQuantity: cantidadNueva
+        };
+        
+    } catch (error) {
+        console.log(error);
+        return {success: false, message: "Error al procesar la substracción"};
+    }
+}
+
 
 window.carritoStorage = {
     obtenerCarrito,
     obtenerItemCarrito,
     agregarAlCarrito,
-    substractFromCart,
+    restarDelCarrito,
     eliminarProducto,
     updateProductToMax,
     vaciarCarrito,
