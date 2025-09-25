@@ -117,7 +117,7 @@
                 await carritoStorage.mostrarToastAgregado();
             } catch (error) {
                 if (error.response && error.response.status === 409) {
-                    console.log("Pasando a agregar al carrito")
+                    // console.log("Pasando a agregar al carrito")
                     // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
                     const AddAttempt = await carritoStorage.agregarAlCarrito(ProductoID, 1);
                     estaVerificando(false);
@@ -130,7 +130,7 @@
                         estaVerificando(false);
                         mostrarAvisoAgotado();
                     } else if (stockProducto < cantidadSolicitada) {
-                        console.log("No hay suficiente stock disponible para completar la solicitud")
+                        // console.log("No hay suficiente stock disponible para completar la solicitud")
                     }
                 } else {
                     console.error('Error interno del servidor:', error);
@@ -217,6 +217,12 @@
             const incrementarProductoBtn = document.getElementById('detalles-stepper-up');
             const reducirProductoBtn = document.getElementById('detalles-stepper-down');
 
+            nombreProductoMenu.innerText = infoProducto.nombre; 
+            elementoCostoUnitario.innerText = `Bs. ${(infoProducto.precio).toFixed(2)}`;
+            adicionalesContainer.innerHTML = renderAdicionales(infoProducto.adicionales);
+
+            // console.log("InfoProducto del producto a abrir menu: ", infoProducto);
+
             incrementarProductoBtn.addEventListener('click', () => {
                 actualizarCostoTotal(infoProducto);
             });
@@ -226,9 +232,7 @@
             });
 
             actualizarCostoTotal(infoProducto);
-            nombreProductoMenu.innerText = infoProducto.nombre; 
-            elementoCostoUnitario.innerText = `Bs. ${(infoProducto.precio).toFixed(2)}`;
-            adicionalesContainer.innerHTML = renderAdicionales(infoProducto.adicionales);
+            
 
             $('.input-radio').off('change').on('change', function() {
                 // Actualizar el costo al cambiar los adicionales obligatorios
@@ -352,7 +356,7 @@
                 estaVerificando(false);
                 // CONTROL DE VENTA-CARRITO
                 if (error.response && error.response.status === 409) {
-                    console.log("Pasando a agregar al carrito")
+                    // console.log("Pasando a agregar al carrito")
                     // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
                     const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidadSolicitada, false, IdsAdicionalesSeleccionados);
                     closeDetallesMenu();
@@ -360,14 +364,14 @@
                 // CONTROL DE STOCK INSUFICIENTE
                 else if (error.response && error.response.status === 422) {
 
-                    console.log("Valor actual de error.response.data: ", error.response.data);
+                    // console.log("Valor actual de error.response.data: ", error.response.data);
                     // Informacion recibida de validacion inexitosa en backend
                     const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaximaPosible,
                     messageLimitados, messageAgotados, messageProducto, stockProducto } = error.response.data;
                     // PRODUCTO AGOTADO
                     if (stockProducto <= 0)
                     {
-                        console.log("El producto se encuentra agotado, cerrando menu")
+                        // console.log("El producto se encuentra agotado, cerrando menu")
                         deshabilitarBoton(infoProducto.id);
                         mostrarAvisoAgotado();
                         closeDetallesMenu();
@@ -560,7 +564,7 @@
             $('#btn-actualizar-pedido').on('click', function() {
                 // Actualizar cantidad seleccionada
                 const inputCantidad = document.getElementById('detalles-cantidad');
-                console.log("Debug cantidad maxima: ", cantidadMaxima);
+                // console.log("Debug cantidad maxima: ", cantidadMaxima);
                 inputCantidad.value = parseInt(cantidadMaxima, 10);
                 actualizarCostoTotal(producto);
                 // Ocultar mensaje de limitados
@@ -586,7 +590,7 @@
                 cantidadInput.value = 1
                 return;
             }
-
+            // console.log("valor de producto pasado a actualizarCostoTotal: ", producto);
             // Obtener el costo de los adicionales seleccionados
             const costoAdicionales = calcularCostoAdicionales(producto.adicionales);
 
@@ -610,16 +614,18 @@
         const calcularCostoAdicionales = (adicionales) => {
             const form = document.getElementById("detalles-menu-adicionales");
             let costoTotal = 0;
-            
+            // console.log("Adicionales en calcularCostoAdicionales: ", adicionales);
             // Obtener todos los adicionales seleccionados
             const inputsSeleccionados = form.querySelectorAll('input[type="radio"]:checked, input[type="checkbox"]:checked');
+
+            // console.log("inputs seleccionados: ", inputsSeleccionados)
 
             inputsSeleccionados.forEach(input => {
                 // Extraer el id del input correspondiente
                 const adicionalId = input.id.split('-')[1]; // Asumiendo id's como "radio-123" or "check-123"
-                
                 // Encontrar el precio original desde el listado de adicionales
                 const adicional = adicionales.find(item => item.id == adicionalId)
+                // console.log("adicional del error: ", adicional);
 
                 // Determinar el precio del adicional y sumarlo al total
                 const precio = parseFloat(adicional.precio) ?? 0;

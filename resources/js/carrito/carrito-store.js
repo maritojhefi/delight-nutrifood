@@ -31,6 +31,38 @@ import { checkProductStock } from "../productos/producto-service";
 //   }
 // ]
 
+items: [
+  {
+    // Producto con adicionales, ordenes de un mismo producto varian entre si
+    id: 280, // ID del Producto
+    detalles: [ // Separacion de productos por orden
+      {
+        key: "1-2-3",
+        adicionales: [1, 2, 3], // IDs of extras
+        cantidad: 2 // Cantidad correspondiente a la orden
+      },
+      {
+        key: "1-2",
+        adicionales: [1, 2],
+        cantidad: 3
+      }
+    ]
+  },
+  {
+    // Producto sin adicionales
+    id: 263,
+    detalles: [
+        {
+            key: "base", 
+            adicionales : [],
+            cantidad: 4
+        }
+    ]
+  }
+]
+
+
+
 
 
 // OBTENER CARRITO
@@ -157,26 +189,110 @@ export const actualizarContadorCarrito = () => {
     }
 }
 
+// // AGREGAR ITEMS AL CARRITO
+// export async function agregarAlCarrito(productId, cantidad, isUpdate = false, adicionales = null) {
+//     const carrito = obtenerCarrito();
+//     console.log("Adicionales: ", adicionales);
+
+//     const checkKey = (adicionales && adicionales.length > 0) 
+//     ? adicionales.slice().sort((a, b) => a - b).join("-") 
+//     : "base";
+
+//     const resultado = encontrarEnCarrito(carrito, productId, adicionales);
+//     const { producto, detalle } = resultado;
+//     const cantidadActual = detalle ? detalle.cantidad : 0;
+//     console.log("Cantidad Actual: ", cantidadActual)
+//     const cantidadNueva = cantidadActual + cantidad;
+//     console.log("Cantidad Nueva: ", cantidadNueva);
+
+//     try {
+//         const stockResponse = await checkProductStock(productId);
+        
+//         // Validar stock solo si es limitado
+//         if (!stockResponse.unlimited) {
+//             const stockDisponible = stockResponse.stock;
+//             if (cantidadNueva > stockDisponible) {
+//                 console.error(`El stock del producto es ${stockDisponible}, la cantidad que se solicita es de ${cantidadNueva}`);
+//                 mostrarToastLimite();
+//                 return {
+//                     success: false, 
+//                     message: `Solo hay ${stockDisponible}u disponibles`,
+//                     cart: carrito
+//                 };
+//             }
+//         }
+        
+//         // Agregar o actualizar el item en el carrito
+//         if (producto && detalle) {
+//             // Existe registro, actualizar cantidad
+//             detalle.cantidad = cantidadNueva;
+//             console.log("Actualizando cantidad");
+//             console.log("Detalle después del update:", detalle);
+//             console.log("Cart después del update:", carrito);
+//         } else if (producto && !detalle) {
+//             // Existe producto, agregar nuevo detalle
+//             producto.detalles.push({
+//                 key: checkKey,
+//                 adicionales,
+//                 cantidad
+//             });
+//         } else {
+//             // Crear nuevo producto con detalle
+//             carrito.items.push({
+//                 id: productId,
+//                 detalles: [{
+//                     key: checkKey,
+//                     adicionales,
+//                     cantidad
+//                 }]
+//             });
+//         }
+        
+//         // Guardar cambios y mostrar notificación
+//         console.log("Cart before save:", JSON.stringify(carrito))
+//         localStorage.setItem('carrito', JSON.stringify(carrito));
+//         console.log("Los cambios se deberian haber guardado")
+//         actualizarContadorCarrito();
+//         if (!isUpdate) {
+//             mostrarToastAgregado();
+//         }
+        
+//         return {success: true, newQuantity: cantidadNueva, cart: carrito};
+        
+//     } catch (error) {
+//         console.error('Error agregando el producto al carrito:', error);
+//         return {
+//             success: false, 
+//             message: 'Error al agregar el producto al carrito',
+//             cart: carrito
+//         };
+//     }
+// }
+
 // AGREGAR ITEMS AL CARRITO
 export async function agregarAlCarrito(productId, cantidad, isUpdate = false, adicionales = null) {
     const carrito = obtenerCarrito();
     console.log("Adicionales: ", adicionales);
 
-    const checkKey = (adicionales && adicionales.length > 0) 
-    ? adicionales.slice().sort((a, b) => a - b).join("-") 
-    : "base";
-
-    const resultado = encontrarEnCarrito(carrito, productId, adicionales);
-    const { producto, detalle } = resultado;
-    const cantidadActual = detalle ? detalle.cantidad : 0;
-    console.log("Cantidad Actual: ", cantidadActual)
-    const cantidadNueva = cantidadActual + cantidad;
-    console.log("Cantidad Nueva: ", cantidadNueva);
-
+    // Normalize adicionales to empty array if null/undefined
+    const adicionalesNormalized = adicionales || [];
+    
     try {
+        // Find existing product in cart
+        const productoIndex = carrito.items.findIndex(item => item.id === productId);
+        let producto = productoIndex !== -1 ? carrito.items[productoIndex] : null;
+        
+        // Calculate current total quantity for this product
+        const cantidadActual = producto ? producto.cantidad : 0;
+        const cantidadNueva = cantidadActual + cantidad;
+        
+        console.log("Cantidad Actual: ", cantidadActual);
+        console.log("Cantidad Nueva: ", cantidadNueva);
+
+        // Check stock if product exists
         const stockResponse = await checkProductStock(productId);
         
-        // Validar stock solo si es limitado
+        // Validate stock only if limited
         if (!stockResponse.unlimited) {
             const stockDisponible = stockResponse.stock;
             if (cantidadNueva > stockDisponible) {
@@ -190,42 +306,50 @@ export async function agregarAlCarrito(productId, cantidad, isUpdate = false, ad
             }
         }
         
-        // Agregar o actualizar el item en el carrito
-        if (producto && detalle) {
-            // Existe registro, actualizar cantidad
-            detalle.cantidad = cantidadNueva;
-            console.log("Actualizando cantidad");
-            console.log("Detalle después del update:", detalle);
-            console.log("Cart después del update:", carrito);
-        } else if (producto && !detalle) {
-            // Existe producto, agregar nuevo detalle
-            producto.detalles.push({
-                key: checkKey,
-                adicionales,
-                cantidad
-            });
+        // Add or update item in cart
+        if (producto) {
+            // Product exists, find next available index
+            const existingIndexes = Object.keys(producto.adicionales).map(Number);
+            const nextIndex = existingIndexes.length > 0 ? Math.max(...existingIndexes) + 1 : 1;
+            
+            // Add new indexes for the requested quantity
+            for (let i = 0; i < cantidad; i++) {
+                producto.adicionales[nextIndex + i] = adicionalesNormalized;
+            }
+            
+            // Update total quantity
+            producto.cantidad = cantidadNueva;
+            
+            console.log("Actualizando producto existente");
+            console.log("Producto después del update:", producto);
         } else {
-            // Crear nuevo producto con detalle
-            carrito.items.push({
+            // Create new product entry
+            const newProducto = {
                 id: productId,
-                detalles: [{
-                    key: checkKey,
-                    adicionales,
-                    cantidad
-                }]
-            });
+                cantidad: cantidad,
+                adicionales: {}
+            };
+            
+            // Add indexes for the requested quantity
+            for (let i = 1; i <= cantidad; i++) {
+                newProducto.adicionales[i] = adicionalesNormalized;
+            }
+            
+            carrito.items.push(newProducto);
+            console.log("Creando nuevo producto en carrito");
         }
         
-        // Guardar cambios y mostrar notificación
-        console.log("Cart before save:", JSON.stringify(carrito))
+        // Save changes and show notification
+        console.log("Cart before save:", JSON.stringify(carrito, null, 2));
         localStorage.setItem('carrito', JSON.stringify(carrito));
-        console.log("Los cambios se deberian haber guardado")
+        console.log("Los cambios se deberían haber guardado");
+        
         actualizarContadorCarrito();
         if (!isUpdate) {
             mostrarToastAgregado();
         }
         
-        return {success: true, newQuantity: cantidadNueva, cart: carrito};
+        return { success: true, newQuantity: cantidadNueva, cart: carrito };
         
     } catch (error) {
         console.error('Error agregando el producto al carrito:', error);

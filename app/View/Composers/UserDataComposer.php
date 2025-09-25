@@ -14,11 +14,8 @@ class UserDataComposer
             
             $view->with([
                 'tiene_venta_activa' => $user->ventaActiva !== null,
-                // 'user_role' => $user->role,
-                // Add other commonly needed user data
             ]);
         } else {
-            // Always provide the variable, even for guests
             $view->with([
                 'tiene_venta_activa' => false,
             ]);
