@@ -75,16 +75,13 @@ class VentasWebController extends Controller
         }
     }
 
+
+
     public function carrito_ProductosVenta(Request $request) {
         try {
-            // Log::info('Llamado a la funcion carrito_ProductosVenta');
             $user = User::find(auth()->user()->id);
 
             $carrito = collect($request->carrito['items']);
-            // Log::debug('Contenido del carrito recibido desde frontEnd', [$carrito]);
-
-            $adicionales_generales = Adicionale::all()->keyBy('id'); // Indexar por ID para acceso rápido
-
             $venta_activa = $user->ventaActiva;
 
             // Verificar que existe una venta activa
@@ -95,41 +92,36 @@ class VentasWebController extends Controller
                 ], 404);
             }
 
-            // Usar transacción para asegurar consistencia de datos
-            DB::transaction(function () use ($carrito, $venta_activa, $adicionales_generales, $user) {
-                foreach ($carrito as $item) {
-                    $producto_id = $item['id'];
-                    $detalles = $item['detalles'];
+            foreach ($carrito as $item) {
+                $producto_id = $item['id'];
+                $adicionales = $item['adicionales'];
+                $cantidad = $item['cantidad'];
 
-                    $producto = Producto::publicoTienda()->findOrFail($producto_id); 
+                $producto = Producto::publicoTienda()->findOrFail($producto_id); 
 
-                    foreach ($detalles as $detalle) {
-                        $adicionales_ids = $detalle['adicionales'] ?? [];
-                        $cantidad_detalle = $detalle['cantidad'];
-                        $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get()->keyBy('id');
+                foreach ($adicionales as $orden) {
+                    $adicionales = Adicionale::whereIn('id', $orden)->get()->keyBy('id');
 
-                        $respuestaAdicion = $this->productoVentaService
-                        ->agregarProductoCliente($venta_activa, 
-                                                $producto, 
-                                                $adicionales, 
-                                                $cantidad_detalle );
-                    }
-
-                    // Log::info("Procesando producto del carrito", [
-                    //     'producto_id' => $producto_id,
-                    //     'cantidad_total' => $cantidad_total,
-                    //     'adicionales_estructura' => $adicionales_estructura,
-                    //     'detalles_count' => count($detalles)
-                    // ]);
+                    $respuestaAdicion = $this->productoVentaService
+                    ->agregarProductoCliente($venta_activa, 
+                                            $producto, 
+                                            $adicionales, 
+                                            $cantidad );
+                    Log::debug("Respuesta adicion:", [$respuestaAdicion]);
                 }
-            });
 
-            // Log::info('Carrito procesado exitosamente en transacción');
-
+                // Log::info("Procesando producto del carrito", [
+                //     'producto_id' => $producto_id,
+                //     'cantidad_total' => $cantidad_total,
+                //     'adicionales_estructura' => $adicionales_estructura,
+                //     'detalles_count' => count($detalles)
+                // ]);
+            }
+            
             return response()->json([
                 'message' => 'Carrito procesado exitosamente',
                 'items_procesados' => $carrito->sum(function ($item) {
-                    return count($item['detalles']);
+                    return count($item['adicionales']);
                 })
             ], 200);
 
