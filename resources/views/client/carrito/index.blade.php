@@ -148,33 +148,50 @@
     </div> --}}
 
     {{-- SUMMARY WARNING MODAL --}}
-<div class="modal fade" id="stock-warning" tabindex="-1" aria-labelledby="stockWarningLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered d-flex justify-content-center rounded-m">
-        <div class="modal-content" style="max-width: 350px">
-            <div class="modal-body text-center p-4 rounded-m">
-                <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 250px;">
-                    <div class="mb-3">
-                        <i class="fa fa-3x fa-apple-alt color-red-dark shadow-xl rounded-circle"></i>
+    <div class="modal fade" id="stock-warning" tabindex="-1" aria-labelledby="stockWarningLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered d-flex justify-content-center rounded-m">
+            <div class="modal-content" style="max-width: 350px">
+                <div class="modal-body text-center p-4 rounded-m">
+                    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 250px;">
+                        <div class="mb-3">
+                            <i class="fa fa-3x fa-apple-alt color-red-dark shadow-xl rounded-circle"></i>
+                        </div>
+                        <h2 class="text-uppercase font-700 mb-3">Oooops!</h2>
+                        <p class="opacity-70 mb-4 text-center">
+                            Parece que tienes productos agotados o con poco stock en tu carrito.<br> 
+                            Por favor, verifica que tus productos esten disponibles.
+                        </p>
+                        <button type="button" class="btn btn-center-l button-s shadow-l rounded-s text-uppercase font-600 bg-highlight color-black hover-grow-s" data-bs-dismiss="modal">
+                            Entiendo
+                        </button>
                     </div>
-                    <h2 class="text-uppercase font-700 mb-3">Oooops!</h2>
-                    <p class="opacity-70 mb-4 text-center">
-                        Parece que tienes productos agotados o con poco stock en tu carrito.<br> 
-                        Por favor, verifica que tus productos esten disponibles.
-                    </p>
-                    <button type="button" class="btn btn-center-l button-s shadow-l rounded-s text-uppercase font-600 bg-highlight color-black hover-grow-s" data-bs-dismiss="modal">
-                        Entiendo
-                    </button>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
+    <!-- MODAL LISTADO ORDENES-PRODUCTO -->
+    <x-modal-listado-ordenes-carrito />
 
 
 @endsection
 @push('scripts')
 <script src="{{ asset('js/carrito-service/carrito-service.js') }}"></script>
+<script>
+    $(document).on('click', '.listado-ordenes-trigger', async function(e) {
+        e.preventDefault();
+        
+        const productoID = $(this).data('producto-id');
+        const itemCarrito = carritoStorage.obtenerItemCarrito(productoID);
+        const infoProducto = await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
+        
+        try {
+            abrirDialogDetalleOrden(infoProducto.item);
+        } catch (error) {
+            console.error('Error abriendo el modal:', error);
+        }
+    });
+</script>
 <!-- CHECK VENTA EXISTENTE -->
 <script>
     const ventaActiva = @json($venta_activa ?? null);
@@ -491,7 +508,10 @@
             `
         } else if (tipo == "complejo") {
             return `
-                <button class="btn btn-s bg-highlight font-500" style="z-index: 10">
+                <button
+                    data-producto-id="${producto.id}"
+                    data-producto-nombre="${producto.nombre}"
+                    class="btn btn-s bg-highlight font-500 listado-ordenes-trigger" style="z-index: 10">
                     Mi Pedido
                 </button>
             `

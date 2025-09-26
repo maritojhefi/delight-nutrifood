@@ -300,19 +300,27 @@ private function processAdicionales(array $adicionalesCarrito): array
         return [[], false];
     }
     
-    // Flatten and count adicionales
     $adicionalesContados = collect($adicionalesCarrito)
         ->flatten()
-        ->filter() // Remove null/empty values
+        ->filter()
         ->countBy();
+    
+    $adicionales = [];
+    if ($adicionalesContados->isNotEmpty()) {
+        $adicionales = Adicionale::whereIn('id', $adicionalesContados->keys())->get()->keyBy('id');
+    }
     
     $infoAdicionales = [];
     $adicionalesLimitados = false;
     
-    if ($adicionalesContados->isNotEmpty()) {
-        $adicionales = Adicionale::whereIn('id', $adicionalesContados->keys())->get()->keyBy('id');
+    foreach ($adicionalesCarrito as $groupIndex => $adicionalesGroup) {
+        $infoAdicionales[$groupIndex] = [];
         
-        foreach ($adicionalesContados as $adicionalId => $cantidadSolicitada) {
+        $groupContados = collect($adicionalesGroup)
+            ->filter()
+            ->countBy();
+        
+        foreach ($groupContados as $adicionalId => $cantidadSolicitada) {
             $adicional = $adicionales->get($adicionalId);
             
             if ($adicional) {
@@ -320,7 +328,7 @@ private function processAdicionales(array $adicionalesCarrito): array
                     $adicionalesLimitados = true;
                 }
                 
-                $infoAdicionales[] = [
+                $infoAdicionales[$groupIndex][] = [
                     'id' => $adicional->id,
                     'nombre' => ucfirst($adicional->nombre),
                     'cantidad' => $cantidadSolicitada,
