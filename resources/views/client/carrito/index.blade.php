@@ -169,7 +169,7 @@
     </div>
 
     <!-- MODAL LISTADO ORDENES-PRODUCTO -->
-    <x-modal-listado-ordenes-carrito />
+    <!-- <x-modal-listado-ordenes-carrito /> -->
     <x-modal-listado-ordenes-venta />
 
 
@@ -256,63 +256,59 @@
     // }
 
     const renderizarPrincipalPedidos = async () => {
-    const contenedorPrincipal = $('#contenedor-principal');
-    const contenedorAceptados = $('#contenedor-aceptados');
-    const contenedorPendientes = $('#contenedor-pendientes');
+        const contenedorPrincipal = $('#contenedor-principal');
+        const contenedorAceptados = $('#contenedor-aceptados');
+        const contenedorPendientes = $('#contenedor-pendientes');
 
-    // Obtener informacion venta
-    const response = await VentaService.productosVenta();
-    const productosVenta = response.data;
+        // Obtener informacion venta
+        const response = await VentaService.productosVenta();
+        const productosVenta = response.data;
 
-    const productosPendientes = productosVenta.filter(producto => {
-        return producto.aceptado == false;
-    });
+        const productosPendientes = productosVenta.filter(producto => {
+            return producto.aceptado == false;
+        });
 
-    if (productosPendientes.length > 0) {
-        contenedorPendientes.css('display', 'block'); 
+        if (productosPendientes.length > 0) {
+            contenedorPendientes.css('display', 'block'); 
+        }
+
+        const productosAceptados = productosVenta.filter(producto => {
+            return producto.aceptado == true;
+        });
+
+        if (productosAceptados.length > 0) {
+            contenedorAceptados.css('display', 'block');
+        }
+
+        // --- FIX START ---
+
+        // 1. Clear the container *before* rendering new content
+        // contenedorPendientes.empty(); 
+
+        // 2. Build the HTML string outside of the loop for better performance
+        // let htmlContent = '';
+        // productosPendientes.forEach(producto => {
+        //     // Concatenate the new HTML strings
+        //     htmlContent += renderizarProductoVenta(producto, false);
+        // });
+
+        // 3. Append the *entire* string once to the container
+        // contenedorPendientes.append(htmlContent); 
+
+        const htmlContentPendientes = productosPendientes
+        .map(producto => renderizarProductoVenta(producto, false))
+        .join('');
+
+        contenedorPendientes.append(htmlContentPendientes);
+
+        const htmlContentAceptados = productosAceptados
+        .map(producto => renderizarProductoVenta(producto, false))
+        .join('');
+
+        contenedorAceptados.append(htmlContentAceptados);
+        
+        console.log("ProductosVenta: ", productosVenta);
     }
-
-    const productosAceptados = productosVenta.filter(producto => {
-        return producto.aceptado == true;
-    });
-
-    if (productosAceptados.length > 0) {
-        contenedorAceptados.css('display', 'block');
-    }
-
-    // --- FIX START ---
-
-    // 1. Clear the container *before* rendering new content
-    // contenedorPendientes.empty(); 
-
-    // 2. Build the HTML string outside of the loop for better performance
-    // let htmlContent = '';
-    // productosPendientes.forEach(producto => {
-    //     // Concatenate the new HTML strings
-    //     htmlContent += renderizarProductoVenta(producto, false);
-    // });
-
-    // 3. Append the *entire* string once to the container
-    // contenedorPendientes.append(htmlContent); 
-
-    const htmlContentPendientes = productosPendientes
-    .map(producto => renderizarProductoVenta(producto, false))
-    .join(''); // Joins the array of strings into a single large HTML string
-
-    contenedorPendientes.append(htmlContentPendientes);
-
-    const htmlContentAceptados = productosAceptados
-    .map(producto => renderizarProductoVenta(producto, false))
-    .join(''); // Joins the array of strings into a single large HTML string
-
-    contenedorAceptados.append(htmlContentAceptados);
-
-
-
-    // --- FIX END ---
-    
-    console.log("ProductosVenta: ", productosVenta);
-}
 
     const renderizarProductoVenta = (producto, esta_aceptado) => {
         return `
@@ -321,6 +317,7 @@
                     <div class="mb-0 d-flex flex-row justify-content-between">
                         <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
                             <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
+                            <small>${`Unidades: ${producto.cantidad}`}</small>
                         </div>
                         <div class="product-image-container m-0" style="z-index: 10">
                             <img class="product-image rounded"

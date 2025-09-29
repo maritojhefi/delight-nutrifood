@@ -46,6 +46,11 @@ interface ProductoVentaServiceInterface
     public function guardarObservacion(Venta $venta, Producto $producto, string $observacion): VentaResponse;
 
     /**
+     * Guarda observación de un producto_venta indentificandolo por su id pivot
+     */
+    public function guardarObservacionPivotID(int $producto_venta_id, string $observacion): VentaResponse;
+    
+    /**
      * Agrega producto desde plan de usuario
      */
     public function agregarDesdeplan(Venta $venta, int $userId, int $planId, int $productoId): VentaResponse;

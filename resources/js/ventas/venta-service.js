@@ -46,10 +46,19 @@ export const productoVenta = async(producto_venta_ID) => {
     return response.data;
 }
 
+export const actualizarObservacionPorID = async (pivotID,texto) => {
+    const response = await axios.post(`ventas/producto/observacion`, {
+        texto: texto,
+        pivot_id: pivotID,
+    })
+    return response;
+}
+
 window.VentaService = {
     generarVentaQR,
     generarProductosVenta_Carrito,
     agregarProductoVenta,
     productosVenta,
-    productoVenta
+    productoVenta,
+    actualizarObservacionPorID
 }

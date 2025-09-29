@@ -405,6 +405,19 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
+    public function guardarObservacionPivotID(int $producto_venta_id, ?string $observacion): VentaResponse
+    {
+        try {
+            DB::table('producto_venta')
+                ->where('id', $producto_venta_id)
+                ->update(['observacion' => $observacion]);
+
+            return VentaResponse::success(null, 'Observación guardada');
+        } catch (\Exception $e) {
+            return VentaResponse::error('Error al guardar observación: ' . $e->getMessage());
+        }
+    }
+
     public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad): VentaResponse
     {
         try {

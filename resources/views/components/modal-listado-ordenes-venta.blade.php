@@ -8,10 +8,13 @@
             <div id="contenedor-listado-ordenes">
                 <ul id="listado-ordenes" class="px-3 pt-3">
                 </ul>
+                <div id="contenedor-observacion" class="mb-4 px-4">
+                </div>
             </div>
         </div>
     </div>
 </div>
+
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
@@ -27,7 +30,62 @@
             console.log("Valor de info: ", info)
             elementoTitulo.textContent = info.nombre;
             console.log("Informacion obtenida sobre el producto: ", info);
+            renderizarObservacionPedido(info);
             listaPrincipal.innerHTML = renderizarListadoOrdenes(info);
+        }
+
+        const renderizarObservacionPedido = (info) => {
+            const initialText = info.observacion ? info.observacion : ''; 
+
+            const contenedorObservacion = $('#contenedor-observacion');
+            contenedorObservacion.html(`
+                <label for="observacion-pv-${info.pivot_id}" class="color-highlight">Detalles para tu orden</label>
+                <div class="input-style has-borders no-icon d-flex flex-row gap-2 align-items-center">
+                    <textarea id="observacion-pv-${info.pivot_id}" placeholder="Detalles para tu orden">${initialText}</textarea>
+                    <button 
+                        data-pventa-id="${info.pivot_id}"
+                        class="btn btn-md bg-highlight my-3 btn-guardar-observacion">Guardar</button>
+                </div>
+            `);
+            
+            // Asignar evento para actualizar observacion
+            contenedorObservacion.off('click', '.btn-guardar-observacion').on('click', '.btn-guardar-observacion', async function() {
+                const pivotID = $(this).data('pventa-id');
+                const texto = $(`#observacion-pv-${pivotID}`).val();
+                
+                await actualizarObservacion(pivotID, texto);
+            });
+        };
+
+        const actualizarObservacion = async(pivotID, texto) => {
+            try {
+                await VentaService.actualizarObservacionPorID(pivotID, texto);
+                mostrarToastSuccess("Nota actualizada con éxito");
+                console.log('Observación actualizada correctamente');
+            } catch (error) {
+                mostrarToastError("Ha sucedido un error al actualizar la nota.");
+                console.error('Error al actualizar observación:', error);
+            }
+        }
+
+        const mostrarToastSuccess = (mensaje) => {
+            const toastsuccess = $('#toast-success');
+            toastsuccess.text(mensaje);
+            const toast = new bootstrap.Toast(toastsuccess);
+            toast.show()
+            setTimeout(() => {
+                toast.hide();
+            }, 3000);
+        }
+
+        const mostrarToastError = (mensaje) => {
+            const toasterror = $('#toast-error');
+            toasterror.text(mensaje);
+            const toast = new bootstrap.Toast(toasterror);
+            toast.show()
+            setTimeout(() => {
+                toast.hide();
+            }, 3000);
         }
 
         const renderizarListadoOrdenes = (info) => {
@@ -45,6 +103,9 @@
                             </div>
                             
                             <div class="card-body">
+                                ${adicionales.length <= 0 ? `
+                                    Sin extras
+                                `:`
                                 <h5>Adicionales</h5>
                                 <ul class="row mb-0">
                                     ${adicionales.map(adicional => `
@@ -55,6 +116,8 @@
                                         </li>
                                     `).join('')}
                                 </ul>
+                                `}
+                                
                             </div>
                         </div>
                     </li>

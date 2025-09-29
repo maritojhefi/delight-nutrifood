@@ -99,7 +99,7 @@ Route::prefix('/ventas')
         Route::post('/sincronizar', [App\Http\Controllers\VentasWebController::class,'carrito_ProductosVenta']);
         Route::get('/productos', [App\Http\Controllers\VentasWebController::class,'obtenerProductosVenta']);
         Route::get('/productos/{producto_venta_ID}', [App\Http\Controllers\VentasWebController::class,'obtenerProductoVenta']);
-
+        Route::post('/producto/observacion', [App\Http\Controllers\VentasWebController::class,'actualizarObservacionVenta']);
     });
 Route::post('/ventas/producto', [App\Http\Controllers\VentasWebController::class, 'agregarProductoVenta']);
 

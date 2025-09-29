@@ -126,12 +126,27 @@ class VentasWebController extends Controller
             ], 404);
         }
 
-        // Now $producto_venta_ID is correctly defined and contains the ID from the URL
         $response = $this->productoVentaService->obtenerProductoVentaIndividual($ventaActiva, $producto_venta_ID);
 
         $statusCode = $response->success ? 200 : ($response->type === 'error' ? 500 : 404);
 
         return response()->json($response->toArray(), $statusCode);
+    }
+
+    public function actualizarObservacionVenta(Request $request): JsonResponse
+    {
+        $ventaActiva = $this->validarVentaActiva();
+
+        $texto = $request->texto;
+        $pivot_id = $request->pivot_id;
+        // $producto = Producto::find($$request->producto_id);
+        $respuesta = $this->productoVentaService->guardarObservacionPivotID($pivot_id, $texto);
+
+        if (!$respuesta->success) {
+            return response()->json($respuesta->toArray(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return new JsonResponse($respuesta->toArray(), Response::HTTP_OK);
     }
 
     public function carrito_ProductosVenta(Request $request) {
@@ -247,5 +262,22 @@ class VentasWebController extends Controller
         return response()->json([
             'message'=> 'Solicitud agregar venta procesada exitosamente',
         ],Response::HTTP_CREATED);
+    }
+
+    private function validarVentaActiva()
+    {
+        $user = auth()->user();
+    
+        if (!$user) {
+            abort(401, 'Usuario no autenticado');
+        }
+
+        $ventaActiva = $user->ventaActiva;
+
+        if (!$ventaActiva) {
+            abort(404, 'No tienes una venta activa');
+        }
+
+        return $ventaActiva;
     }
 }
