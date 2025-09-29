@@ -527,6 +527,71 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
+    public function eliminarItemPivotID(Venta $venta, int $producto_venta_id, int $posicion): VentaResponse {
+        try {
+            if ($venta->pagado) {
+                throw VentaException::ventaPagada();
+            }
+
+            return DB::transaction(function () use ($venta, $producto_venta_id, $posicion) {
+                $pivot = DB::table('producto_venta')
+                    ->where('id', $producto_venta_id)
+                    ->first();
+
+                if (!$pivot) {
+                    throw new \Exception('Pivot no encontrado');
+                }
+
+                $producto = Producto::find($pivot->producto_id);
+                $array = json_decode($pivot->adicionales, true);
+
+                // Optional: Check if it's the last item
+                if (count($array) == 1) {
+                    return VentaResponse::warning('No puede eliminar el único item disponible');
+                }
+
+                // Restaurar stock si es contable
+                if ($producto->contable) {
+                    $this->stockService->actualizarStock($producto, 'restar', 1, $venta->sucursale_id);
+                }
+
+                // Restaurar stock de adicionales
+                foreach ($array[$posicion] as $nombreAdicional) {
+                    $adicional = Adicionale::where('nombre', key($nombreAdicional))->first();
+                    if ($adicional && $adicional->contable) {
+                        $adicional->increment('cantidad');
+                        $adicional->save();
+                        // GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
+                    }
+                }
+
+                // Eliminar item y reorganizar
+                unset($array[$posicion]);
+                $array = array_values($array);
+                $nuevoArray = array_combine(range(1, count($array)), array_values($array));
+
+                // Actualizar en base de datos
+                DB::table('producto_venta')
+                    ->where('id', $producto_venta_id)
+                    ->update(['adicionales' => json_encode($nuevoArray)]);
+
+                DB::table('producto_venta')
+                    ->where('id', $producto_venta_id)
+                    ->decrement('cantidad');
+
+                // // Actualizar totales
+                // $this->calculadoraService->actualizarTotalesVenta($venta);
+
+                return VentaResponse::success(null, 'Item eliminado correctamente');
+            });
+
+        } catch (VentaException $e) {
+            return VentaResponse::warning($e->getMessage());
+        } catch (\Exception $e) {
+            return VentaResponse::error('Error al eliminar item: ' . $e->getMessage());
+        }
+    }
+
     // #region Transformar ProductoVenta para visualiacion en [CLIENTE-MI_PEDIDO]
 
     public function obtenerProductosVenta(Venta $venta): VentaResponse

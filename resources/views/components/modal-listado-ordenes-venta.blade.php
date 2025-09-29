@@ -26,12 +26,13 @@
         
         const prepararListadoOrdenes = (info) => {
             const elementoTitulo = document.getElementById('titulo-listado-ordenes');
-            const listaPrincipal = document.getElementById(`listado-ordenes`);
+            
             console.log("Valor de info: ", info)
             elementoTitulo.textContent = info.nombre;
             console.log("Informacion obtenida sobre el producto: ", info);
             renderizarObservacionPedido(info);
-            listaPrincipal.innerHTML = renderizarListadoOrdenes(info);
+            renderizarListadoOrdenes(info);
+            reinitializeLucideIcons();
         }
 
         const renderizarObservacionPedido = (info) => {
@@ -68,6 +69,35 @@
             }
         }
 
+        const eliminarOrden = async (pivotID, index) => {
+            try {
+                console.log(`Intento de eliminar la orden ${index} del producto_venta: ${pivotID}`);
+                
+                // 'response' is only defined inside 'try'
+                const response = await VentaService.eliminarOrdenIndex(pivotID, index); 
+                console.log("response al eliminar el item:", response);
+                renderizarListadoOrdenes(response.data);
+                mostrarToastSuccess("Orden eliminada con éxito");
+                console.log('Orden eliminada correctamente');
+            } catch (error) {
+                // 1. Check if the error is an Axios error with a server response
+                const serverResponse = error.response?.data; 
+                
+                // 2. Default error message
+                let errorMessage = "Ha sucedido un error al eliminar la orden."; 
+
+                // 3. Check if the server response contains a 'message'
+                if (serverResponse && serverResponse.message) {
+                    console.log("Hay message en la respuesta del servidor");
+                    errorMessage = serverResponse.message;
+                } 
+                
+                // Display the correct error message
+                mostrarToastError(errorMessage);
+                console.error('Error al eliminar orden:', error);
+            }
+        }
+
         const mostrarToastSuccess = (mensaje) => {
             const toastsuccess = $('#toast-success');
             toastsuccess.text(mensaje);
@@ -91,14 +121,22 @@
         const renderizarListadoOrdenes = (info) => {
             // Convertir al objeto info en un array de pares [key, value]
             const ordenesEntries = Object.entries(info.adicionales);
-            
-            return `
+            const listaPrincipal = $(`#listado-ordenes`);
+
+            listaPrincipal.html(`
                 ${ordenesEntries.map(([ordenKey, adicionales]) => `
                     <li style="list-style-type: none">
                         <div class="card card-style">
                             <div class="card-header bg-teal-light">
-                                <div class="card-title mb-0">
+                                <div class="card-title mb-0 d-flex flex-row justify-content-between">
                                     <h4 class="mb-0">Orden N° ${ordenKey}</h4>
+                                    <button
+                                        data-pventa-id="${info.pivot_id}"
+                                        data-orden-index="${ordenKey}"
+                                        class="borrar-orden-pventa"
+                                    >
+                                        <i class="lucide-icon" data-lucide="trash-2"></i>
+                                    </button>
                                 </div>
                             </div>
                             
@@ -122,7 +160,19 @@
                         </div>
                     </li>
                 `).join('')}
-            `;
+            `);
+            
+            listaPrincipal.off('click', '.borrar-orden-pventa').on('click', '.borrar-orden-pventa', async function(e) {
+                e.preventDefault();
+
+                const pivotID = $(this).data('pventa-id');
+                const index = $(this).data('orden-index');
+                // const tagNombre = $(this).data('tag-nombre');
+                await eliminarOrden(pivotID, index);
+                // const infoActualizada = await VentaService.productoVenta(pivotID)
+                // const infoProducto = response.data;
+                // renderizarListadoOrdenes(infoActualizada.data);
+            });
         };
     });
 </script>

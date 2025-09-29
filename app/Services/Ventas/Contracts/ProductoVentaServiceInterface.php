@@ -36,6 +36,11 @@ interface ProductoVentaServiceInterface
     public function eliminarItem(Venta $venta, Producto $producto, int $posicion): VentaResponse;
 
     /**
+     * Elimina un item específico de un producto_venta indentificandolo por su id pivote
+     */
+    public function eliminarItemPivotID(Venta $venta, int $producto_venta_id, int $posicion): VentaResponse;
+
+    /**
      * Actualiza los adicionales de un producto
      */
     public function actualizarAdicionales(Venta $venta, Producto $producto, string $operacion, ?int $cantidadEspecifica = null): VentaResponse;
@@ -46,7 +51,7 @@ interface ProductoVentaServiceInterface
     public function guardarObservacion(Venta $venta, Producto $producto, string $observacion): VentaResponse;
 
     /**
-     * Guarda observación de un producto_venta indentificandolo por su id pivot
+     * Guarda observación de un producto_venta indentificandolo por su id pivote
      */
     public function guardarObservacionPivotID(int $producto_venta_id, string $observacion): VentaResponse;
     

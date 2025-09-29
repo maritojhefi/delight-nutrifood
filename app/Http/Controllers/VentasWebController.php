@@ -149,6 +149,25 @@ class VentasWebController extends Controller
         return new JsonResponse($respuesta->toArray(), Response::HTTP_OK);
     }
 
+    public function eliminarOrdenIndice(Request $request): JsonResponse 
+    {
+        $ventaActiva = $this->validarVentaActiva();
+        $pivot_id = $request->pivot_id;
+        $target_index = $request->target_index;
+
+        $respuesta = $this->productoVentaService->eliminarItemPivotID($ventaActiva,$pivot_id, $target_index);
+        if (!$respuesta->success) {
+            return response()->json($respuesta->toArray(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $respuestaActualizada = $this->productoVentaService->obtenerProductoVentaIndividual($ventaActiva, $pivot_id);
+        if ($respuestaActualizada->success) {
+            return new JsonResponse($respuestaActualizada->data, Response::HTTP_OK);
+        } else {
+            return new JsonResponse($respuestaActualizada->errors, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function carrito_ProductosVenta(Request $request) {
         try {
             $user = User::find(auth()->user()->id);

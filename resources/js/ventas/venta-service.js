@@ -54,11 +54,22 @@ export const actualizarObservacionPorID = async (pivotID,texto) => {
     return response;
 }
 
+export const eliminarOrdenIndex = async (pivotID, index) => {
+    const response = await axios.patch(`ventas/producto/eliminar-orden`, {
+        // data: {
+        pivot_id: pivotID,
+        target_index: index
+        // }
+    });
+    return response;
+}
+
 window.VentaService = {
     generarVentaQR,
     generarProductosVenta_Carrito,
     agregarProductoVenta,
     productosVenta,
     productoVenta,
-    actualizarObservacionPorID
+    actualizarObservacionPorID,
+    eliminarOrdenIndex
 }
