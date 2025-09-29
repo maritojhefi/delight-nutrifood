@@ -1,7 +1,7 @@
 <div class="modal fade" id="listadoOrdenesProducto" tabindex="-1" aria-labelledby="listadoOrdenesProductoModalLabel">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
-        <div class="modal-content">
-            <div class="modal-header mt-2 border-0 gap-4 d-flex align-items-center">
+        <div class="modal-content bg-dtheme-dkblue">
+            <div class="modal-header bg-dtheme-dkblue mt-2 border-0 gap-4 d-flex align-items-center">
                 <h4 id="titulo-listado-ordenes" class="mb-0 align-self-center text-uppercase">Detalles del pedido</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -102,14 +102,14 @@
                                 </div>
                             </div>
                             
-                            <div class="card-body">
+                            <div class="card-body bg-dtheme-blue">
                                 ${adicionales.length <= 0 ? `
-                                    Sin extras
+                                    <span class="color-theme">Sin extras</span>
                                 `:`
-                                <h5>Adicionales</h5>
-                                <ul class="row mb-0">
+                                <h5 class="color-teal-light">Adicionales</h5>
+                                <ul class="row mb-0 ps-1">
                                     ${adicionales.map(adicional => `
-                                        <li class="col-6">
+                                        <li class="col-6 color-theme" style="list-style-type: none">
                                             ${adicional.nombre}
                                             ${adicional.limitado ? '<span class="text-danger"> (Limitado)</span>' : ''}
                                             ${adicional.cantidad > 1 ? ` (x${adicional.cantidad})` : ''}
