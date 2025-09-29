@@ -2,13 +2,20 @@
 @section('content')
     <x-cabecera-pagina :titulo="$tiene_venta_activa ? 'Mi Pedido' : 'Mi Carrito'" cabecera="appkit" />
     <div class="listado-carrito card card-style">
-        <div class="content cart-content d-flex flex-column justify-content-center">
+        <div id="contenedor-principal" class="content cart-content d-flex flex-column justify-content-center">
             {{-- MENSAJE DE VALIDACION EN CURSO --}}
-            <div class="cart-validation-info text-center py-5" style="display: none;">
+            <div id="info-validacion-carrito" class="cart-validation-info text-center py-5" style="display: none;">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Cargando...</span>
                 </div>
                 <p class="mt-2">Validando tu {{ $venta_activa ? "pedido" : "carrito" }}...</p>
+            </div>
+            <!-- CONTENEDORES PEDEIDOS SEGUN ESTADO -->
+            <div id="contenedor-aceptados" class="d-flex flex-column justify-content-center" style="display: none;">
+                <h3>Pedidos Aceptados</h3>
+            </div>
+            <div id="contenedor-pendientes" class="d-flex flex-column justify-content-center" style="display: none;">
+                <h3>Pedidos Pendientes</h3>
             </div>
             {{-- CONTENEDORES DE PRODCUTOS SEGUN DISPONIBILIDAD --}}
             <div id="container-state-agotado" class="d-flex flex-column justify-content-center"></div>
@@ -19,7 +26,7 @@
         </div>
     </div>
 
-    <div class="cart-slider-container">
+    <div id="contenedor-sliders-carrito" class="cart-slider-container">
         <div class="splide single-slider slider-has-dots slider-no-arrows splide--loop splide--ltr splide--draggable" id="single-slider-6">
             <div class="splide__track" id="single-slider-6-track">
                 <div class="splide__list" id="single-slider-6-list" style="transform: translateX(-1520px);">
@@ -139,15 +146,6 @@
     </div>
 
     {{-- SUMMARY WARNING MODAL --}}
-{{-- <div id="stock-warning" class="menu menu-box-modal bg-yellow-dark rounded-m" tabindex="-1" aria-hidden="true" data-menu-height="310" data-menu-width="350" style="display: none; width: 350px; height: 310px;">        <h1 class="text-center mt-4"><i class="fa fa-3x fa-times-circle scale-box color-white shadow-xl rounded-circle"></i></h1>
-        <h1 class="text-center mt-3 text-uppercase color-white font-700">Oooops!</h1>
-        <p class="boxed-text-l color-white opacity-70">x
-             Parece que tienes productos agotados o con poco stock en tu carrito.<br> Por favor, verifica que tus productos esten disponibles.
-        </p>
-        <a href="#" class="close-menu btn btn-m btn-center-l button-s shadow-l rounded-s text-uppercase font-600 bg-white color-black">Hmmm, Check again?</a>
-    </div> --}}
-
-    {{-- SUMMARY WARNING MODAL --}}
     <div class="modal fade" id="stock-warning" tabindex="-1" aria-labelledby="stockWarningLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered d-flex justify-content-center rounded-m">
             <div class="modal-content" style="max-width: 350px">
@@ -172,12 +170,15 @@
 
     <!-- MODAL LISTADO ORDENES-PRODUCTO -->
     <x-modal-listado-ordenes-carrito />
+    <x-modal-listado-ordenes-venta />
 
 
 @endsection
 @push('scripts')
 <script src="{{ asset('js/carrito-service/carrito-service.js') }}"></script>
-<script>
+<!-- REVELAR LISTADO DE ADICIONALES-PRODUCTOS -->
+<!-- CARRITO -->
+<!-- <script>
     $(document).on('click', '.listado-ordenes-trigger', async function(e) {
         e.preventDefault();
         
@@ -191,27 +192,212 @@
             console.error('Error abriendo el modal:', error);
         }
     });
+</script> -->
+<!-- VENTA -->
+<script>
+    $(document).on('click', '.listado-ordenes-trigger', async function(e) {
+        e.preventDefault();
+        
+        const producto_venta_ID = $(this).data('producto-venta-id');
+        // const itemCarrito = carritoStorage.obtenerItemCarrito(productoID);
+        // const infoProducto = await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
+        const response = await VentaService.productoVenta(producto_venta_ID)
+        const infoProducto = response.data;
+
+        console.log("Informacion obtenida del producto_venta: ", infoProducto);
+        
+        try {
+            abrirDialogDetalleOrden(infoProducto);
+        } catch (error) {
+            console.error('Error abriendo el modal:', error);
+        }
+    });
 </script>
 <!-- CHECK VENTA EXISTENTE -->
 <script>
     const ventaActiva = @json($venta_activa ?? null);
 
-    if (ventaActiva) {
-        // Sincronizar localStorage con producto_venta
+    $(document).ready( async function() {
 
-    } else {
+        if (ventaActiva) {
+        // axios para venta activa
+        await renderizarPrincipalPedidos();
+    } 
+    });
+
+    // if (ventaActiva) {
+    //     // axios para venta activa
+    //     await renderizarPrincipalPedidos();
+    // } 
+    // // else {
+    // //     renderizarPrincipalCarrito();
+    // // }
+
+    // const renderizarPrincipalPedidos = async () => {
+    //     const contenedorPrincipal = $('#contenedor-principal');
+    //     // const contenedorDisponibles = $('#container-state-disponible');
+    //     // const contenedorEscasos = $('#container-state-escaso');
+    //     // const contenedorAgotados = $('#container-state-agotado');
+    //     const contenedorAceptados = $('#contenedor-aceptados');
+    //     const contenedorPendientes = $('#contenedor-pendientes');
+
+    //     // Obtener informacion venta
+    //     const response = await VentaService.productosVenta();
+    //     const productosVenta = response.data;
+
+    //     const productosPendientes = productosVenta.filter(producto => {
+    //         return producto.estado_actual === "pendiente";
+    //     });
+    //     // Renderizar listados
+    //     productosPendientes.forEach(producto => {
+    //         contenedorPendientes.innerHTML += renderizarProductoVenta(producto, false);
+    //     });
+    //     console.log("ProductosVenta: ", productosVenta);
+    // }
+
+    const renderizarPrincipalPedidos = async () => {
+    const contenedorPrincipal = $('#contenedor-principal');
+    const contenedorAceptados = $('#contenedor-aceptados');
+    const contenedorPendientes = $('#contenedor-pendientes');
+
+    // Obtener informacion venta
+    const response = await VentaService.productosVenta();
+    const productosVenta = response.data;
+
+    const productosPendientes = productosVenta.filter(producto => {
+        return producto.aceptado == false;
+    });
+
+    if (productosPendientes.length > 0) {
+        contenedorPendientes.css('display', 'block'); 
+    }
+
+    const productosAceptados = productosVenta.filter(producto => {
+        return producto.aceptado == true;
+    });
+
+    if (productosAceptados.length > 0) {
+        contenedorAceptados.css('display', 'block');
+    }
+
+    // --- FIX START ---
+
+    // 1. Clear the container *before* rendering new content
+    // contenedorPendientes.empty(); 
+
+    // 2. Build the HTML string outside of the loop for better performance
+    // let htmlContent = '';
+    // productosPendientes.forEach(producto => {
+    //     // Concatenate the new HTML strings
+    //     htmlContent += renderizarProductoVenta(producto, false);
+    // });
+
+    // 3. Append the *entire* string once to the container
+    // contenedorPendientes.append(htmlContent); 
+
+    const htmlContentPendientes = productosPendientes
+    .map(producto => renderizarProductoVenta(producto, false))
+    .join(''); // Joins the array of strings into a single large HTML string
+
+    contenedorPendientes.append(htmlContentPendientes);
+
+    const htmlContentAceptados = productosAceptados
+    .map(producto => renderizarProductoVenta(producto, false))
+    .join(''); // Joins the array of strings into a single large HTML string
+
+    contenedorAceptados.append(htmlContentAceptados);
+
+
+
+    // --- FIX END ---
+    
+    console.log("ProductosVenta: ", productosVenta);
+}
+
+    const renderizarProductoVenta = (producto, esta_aceptado) => {
+        return `
+            <div class="cart-item-wrapper mb-4" data-producto-id="${producto.id}"  data-pedido-aceptado="${esta_aceptado}" id="pedido-item-wrapper-${producto.id}">
+                <div class="card mb-0 d-flex flex-column item-carrito-info justify-content-between p-3 bg-white rounded-sm shadow-sm border">
+                    <div class="mb-0 d-flex flex-row justify-content-between">
+                        <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
+                            <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
+                        </div>
+                        <div class="product-image-container m-0" style="z-index: 10">
+                            <img class="product-image rounded"
+                                src="${producto.imagen}"
+                                alt="${producto.nombre}"
+                                data-producto-id="${producto.id}">
+                            ${(producto.aceptado) ? '':
+                            `<button class="btn btn-xxs bg-highlight opacity-100 delete-producto-venta-btn position-absolute"
+                                    type="button"
+                                    data-producto-venta-id="${producto.pivot_id}"
+                                    title="Eliminar producto"
+                                    style="top: 0.1rem; right: 0.01rem; z-index: 20;"
+                                    >
+                                <i class="fa fa-times"></i>
+                            </button>`}
+                        </div>
+                        <div class="item-overlay rounded-sm card-overlay opacity-60"></div>
+                    </div>
+                    <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
+                        <div>
+                            ${(producto.tiene_descuento ?
+                            `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${producto.precio_original.toFixed(2)}</del>` : ''
+                            )}
+                            <p class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
+                                Bs. ${producto.precio.toFixed(2)}
+                            </p>
+                        </div>
+                        ${renderizarBotonAccion(producto)}
+                    </div>
+                </div>
+            </div>
+        `
+    }
+
+    const renderizarBotonAccion = (producto) => {
+        if (producto.tipo == "simple") {
+            return `
+            
+            `
+        } else if (producto.tipo == "complejo") {
+            return `
+                <button
+                    data-producto-id="${producto.id}"
+                    data-producto-venta-id="${producto.pivot_id}"
+                    data-producto-nombre="${producto.nombre}"
+                    class="btn btn-s bg-highlight font-500 listado-ordenes-trigger" style="z-index: 10">
+                    Mi Pedido
+                </button>
+            `
+        }
+
+        return ''
+    }
+
+    const renderizarCarritoVentaVacio = (termino) => {
+        return `
+            <div class="empty-cart text-center py-5">
+                <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Tu ${termino} está vacío</h5>
+                <p class="text-muted">Agrega algunos productos para comenzar</p>
+            </div>
+        `
     }
 </script>
 
 <!-- CONTROL DEL RENDERIZADO DE PRODUCTOS EN EL CARRITO -->
-<script>
+<!-- <script>
     document.addEventListener('DOMContentLoaded', async function() {
         // Obtener el carrito
         const cart = carritoStorage.obtenerCarrito();
         // console.log("Contenido del carrito: ", cart)
         const cardContentContainer = document.querySelector('.cart-content');
+        // const cardContentContainer = $('#contenedor-principal');
         const cartValidationInfo = document.querySelector('.cart-validation-info');
+        // const cartValidationInfo =  $('#info-validacion-carrito');
         const cardSliderContainer = document.querySelector('.cart-slider-container');
+        // const cardSliderContainer = $('contenedor-sliders-carrito');
         const summaryItemsContainer = document.getElementById('cart-summary-items');
         const summaryTotalContainer = document.getElementById('cart-totals');
         const availableItemsContainer = document.getElementById('container-state-disponible');
@@ -648,9 +834,9 @@
             console.error("No se pudo reducir el valor del producto: ", productToDecreaseId);
         }
     }
-</script>
+</script> -->
 <!-- CONTROL DE ELIMINACION DE PRODUCTOS-CARRITO -->
-<script>
+<!-- <script>
     document.addEventListener('DOMContentLoaded', function() {
         // handleCartSummaryModal();
         handleCartDeletion();
@@ -745,5 +931,5 @@
                 </div>`
         }
     };
-</script>
+</script> -->
 @endpush

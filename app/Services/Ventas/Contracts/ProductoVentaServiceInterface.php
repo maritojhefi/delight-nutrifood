@@ -55,4 +55,13 @@ interface ProductoVentaServiceInterface
      */
     public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad): VentaResponse;
 
+    /**
+     * Obtener información detallada de los productos registrados para una venta
+     */
+    public function obtenerProductosVenta(Venta $venta_activa): VentaResponse;
+
+    /**
+     * Obtener información detallada de un producto registrado para una venta
+     */
+    public function obtenerProductoVentaIndividual(Venta $venta, $idProducto): VentaResponse;
 }

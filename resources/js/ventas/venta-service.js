@@ -24,7 +24,6 @@ export const generarProductosVenta_Carrito = async (carrito) => {
 
 export const agregarProductoVenta = async (productoID, cantidad, IDsAdicionales = []) => {
     try {
-        console.log("Llamado a agregarProductoVenta")
         const response = await axios.post('/ventas/producto', {
             producto_id: productoID,
             adicionales_ids: IDsAdicionales,
@@ -37,8 +36,20 @@ export const agregarProductoVenta = async (productoID, cantidad, IDsAdicionales 
     }
 }
 
+export const productosVenta = async() => {
+    const response = await axios.get('/ventas/productos');
+    return response.data;
+}
+
+export const productoVenta = async(producto_venta_ID) => {
+    const response = await axios.get(`/ventas/productos/${producto_venta_ID}`);
+    return response.data;
+}
+
 window.VentaService = {
     generarVentaQR,
     generarProductosVenta_Carrito,
-    agregarProductoVenta
+    agregarProductoVenta,
+    productosVenta,
+    productoVenta
 }

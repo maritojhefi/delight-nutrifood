@@ -346,5 +346,7 @@ window.carritoStorage = {
     updateProductToMax,
     vaciarCarrito,
     actualizarContadorCarrito,
-    actualizarContadorDetalleProducto
+    actualizarContadorDetalleProducto,
+    mostrarToastAgregado,
+    mostrarToastLimite
 }

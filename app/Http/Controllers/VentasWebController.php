@@ -75,7 +75,64 @@ class VentasWebController extends Controller
         }
     }
 
+    public function obtenerProductosVenta(Request $request): JsonResponse
+    {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no autenticado',
+                'type' => 'error'
+            ], 401);
+        }
 
+        $ventaActiva = $user->ventaActiva;
+        
+        if (!$ventaActiva) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes una venta activa',
+                'type' => 'warning'
+            ], 404);
+        }
+
+        $response = $this->productoVentaService->obtenerProductosVenta($ventaActiva);
+
+        $statusCode = $response->success ? 200 : ($response->type === 'error' ? 500 : 404);
+
+        return response()->json($response->toArray(), $statusCode);
+    }
+
+    public function obtenerProductoVenta(Request $request, $producto_venta_ID): JsonResponse 
+    {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no autenticado',
+                'type' => 'error'
+            ], 401);
+        }
+
+        $ventaActiva = $user->ventaActiva;
+
+        if (!$ventaActiva) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes una venta activa',
+                'type' => 'warning'
+            ], 404);
+        }
+
+        // Now $producto_venta_ID is correctly defined and contains the ID from the URL
+        $response = $this->productoVentaService->obtenerProductoVentaIndividual($ventaActiva, $producto_venta_ID);
+
+        $statusCode = $response->success ? 200 : ($response->type === 'error' ? 500 : 404);
+
+        return response()->json($response->toArray(), $statusCode);
+    }
 
     public function carrito_ProductosVenta(Request $request) {
         try {
@@ -107,7 +164,6 @@ class VentasWebController extends Controller
                                             $producto, 
                                             $adicionales, 
                                             $cantidad );
-                    Log::debug("Respuesta adicion:", [$respuestaAdicion]);
                 }
 
                 // Log::info("Procesando producto del carrito", [
@@ -117,7 +173,7 @@ class VentasWebController extends Controller
                 //     'detalles_count' => count($detalles)
                 // ]);
             }
-            
+
             return response()->json([
                 'message' => 'Carrito procesado exitosamente',
                 'items_procesados' => $carrito->sum(function ($item) {
@@ -138,6 +194,7 @@ class VentasWebController extends Controller
             ], 500);
         }
     }
+
     public function agregarProductoVenta(Request $request) {
         $producto_id = $request->producto_id;
         $adicionales_ids = $request->adicionales_ids;

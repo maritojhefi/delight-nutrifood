@@ -14,6 +14,7 @@ use App\Services\Ventas\Contracts\StockServiceInterface;
 use App\Services\Ventas\Contracts\ProductoVentaServiceInterface;
 use App\Services\Ventas\Contracts\CalculadoraVentaServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Log;
 
 class ProductoVentaService implements ProductoVentaServiceInterface
@@ -508,56 +509,201 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
-    // private function actualizarAdicionalesCliente(Venta $venta, $productoVenta, $operacion, $extras) {
-    //     // Obtenemos el primer registro correspondiente al idproducto en producto_venta
-    //     // $productoVenta = $venta->productos()
-    //     // ->where('producto_id', $idproducto)
-    //     // ->first();
+    // #region Transformar ProductoVenta para visualiacion en [CLIENTE-MI_PEDIDO]
 
-    //     if ($productoVenta) {
-    //         // El listado actual son las ordenes registradas en el producto_venta antes
-    //         // de su actualizacion
-    //         $listaActual = $productoVenta->pivot->adicionales;
+    public function obtenerProductosVenta(Venta $venta): VentaResponse
+    {
+        try {
+            if (!$venta) {
+                return VentaResponse::error('No se encontró una venta activa');
+            }
 
-    //         // Decodificat el JSON si existe, de lo contrario, inicializa un arreglo vacío
-    //         $json = $listaActual ? json_decode($listaActual, true) : [];
+            $productos = $venta->productos()->get();
+            
+            if ($productos->isEmpty()) {
+                return VentaResponse::success([], 'No hay productos en esta venta');
+            }
 
-    //         // Determina la siguiente clave numérica
-    //         $siguiente_clave = count($json) + 1;
+            $productosProcessed = $this->procesarProductosVenta($productos);
 
-    //         if ($operacion == 'sumar') {
-    //             // Asigna explícitamente la nueva clave numérica.
-    //             // Esto mantiene la estructura de objeto JSON.
-    //             if ($extras->isEmpty()) {
-    //                 // Si extras esta vacio, se agrega una nueva orden sin detalles
-    //                 $json[$siguiente_clave] = [];
-    //             } else {
-    //                 $array_extras = [];
+            return VentaResponse::success($productosProcessed);
+
+        } catch (\Exception $e) {
+            Log::error('Error obteniendo productos de venta', [
+                'venta_id' => $venta->id ?? null,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return VentaResponse::error('Error interno del servidor');
+        }
+    }
+
+    public function obtenerProductoVentaIndividual(Venta $venta, $pivotId): VentaResponse
+    {
+        try {
+            if (!$venta) {
+                return VentaResponse::error('No se encontró una venta activa');
+            }
+
+            // Consultar por el registro del producto especifico para el pivot solicitado
+            $producto = $venta->productos()
+                ->wherePivot('id', $pivotId)
+                ->first();
+
+            if (!$producto) {
+                return VentaResponse::success([], 'El producto buscado no existe en producto_venta');
+            }
+
+            // Procesar un unico ProductoVenta
+            $productoProcesado = $this->procesarProductoVentaIndividual($producto);
+
+            return VentaResponse::success($productoProcesado);
+
+        } catch (\Exception $e) {
+            Log::error('Error obteniendo el producto correspondiente a la venta', [
+                'venta_id' => $venta->id ?? null,
+                'pivot_id' => $pivotId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return VentaResponse::error('Error interno del servidor');
+        }
+    }
+
+    private function procesarProductosVenta(Collection $productos): array
+    {
+        // Pre-cargado de todos los adicionales necesarios para el proceso
+        $allAdicionalesNames = $this->extraerNombresAdicionales($productos);
+        $adicionales = $this->adicionalesPorNombre($allAdicionalesNames);
+
+        return $productos->map(function ($producto) use ($adicionales) {
+            return $this->transformarProducto($producto, $adicionales);
+        })->toArray();
+    }
+
+    private function procesarProductoVentaIndividual($producto): array
+    {
+        $adicionalesData = json_decode($producto->pivot->adicionales ?? '{}', true);
+        $adicionalesNames = $this->extraerNombresDeAdicionalesData($adicionalesData);
+        
+        $adicionales = $this->adicionalesPorNombre(collect($adicionalesNames));
+        
+        return $this->transformarProducto($producto, $adicionales);
+    }
+
+    private function extraerNombresAdicionales(Collection $productos): SupportCollection
+    {
+        return $productos
+            ->map(function ($producto) {
+                $adicionalesData = json_decode($producto->pivot->adicionales ?? '{}', true);
+                return $this->extraerNombresDeAdicionalesData($adicionalesData);
+            })
+            ->flatten()
+            ->unique()
+            ->filter();
+    }
+
+    private function extraerNombresDeAdicionalesData(array $adicionalesData): array
+    {
+        if (empty($adicionalesData)) {
+            return [];
+        }
+
+        $names = [];
+        foreach ($adicionalesData as $group) {
+            if (is_array($group)) {
+                foreach ($group as $adicional) {
+                    if (is_array($adicional)) {
+                        $names = array_merge($names, array_keys($adicional));
+                    }
+                }
+            }
+        }
+
+        return $names;
+    }
+
+    private function adicionalesPorNombre(SupportCollection $names): Collection
+    {
+        if ($names->isEmpty()) {
+            return new Collection();
+        }
+
+        return Adicionale::whereIn('nombre', $names->toArray())
+            ->get()
+            ->keyBy('nombre');
+    }
+
+    private function transformarProducto($producto, Collection $adicionales): array
+    {
+        $adicionalesData = json_decode($producto->pivot->adicionales ?? '{}', true);
+        $processedAdicionales = $this->procesarAdicionales($adicionalesData, $adicionales);
+
+        return [
+            'id' => $producto->id,
+            'nombre' => $producto->nombre,
+            'detalle' => $producto->detalle,
+            'adicionales' => $processedAdicionales,
+            'tiene_descuento' => $producto->precio !== $producto->precioReal(),
+            'precio_original' => $producto->precio,
+            'precio' => $producto->precioReal(),
+            'imagen' => $producto->pathAttachment(),
+            'cantidad' => $producto->pivot->cantidad,
+            'estado_actual' => $producto->pivot->estado_actual,
+            'aceptado' => $producto->pivot->aceptado,
+            'observacion' => $producto->pivot->observacion,
+            'pivot_id' => $producto->pivot->id,
+            'tipo' => ($producto->subcategoria && $producto->subcategoria->adicionales->isNotEmpty()) 
+            ? 'complejo' 
+            : 'simple'
+        ];
+    }
+
+    private function procesarAdicionales(array $adicionalesData, Collection $adicionales): array
+    {
+        if (empty($adicionalesData)) {
+            return [];
+        }
+
+        $processed = [];
+
+        foreach ($adicionalesData as $groupIndex => $group) {
+            $processed[$groupIndex] = [];
+            
+            if (!is_array($group)) {
+                continue;
+            }
+
+            foreach ($group as $adicionalItem) {
+                if (!is_array($adicionalItem)) {
+                    continue;
+                }
+
+                foreach ($adicionalItem as $nombre => $precio) {
+                    $adicional = $adicionales->get($nombre);
                     
-    //                 // Validar stock para todos los adicionales
-    //                 foreach ($extras as $adicional) {
-    //                     if ($adicional->contable == true && $adicional->cantidad == 0) {
-    //                         throw new \Exception("No hay stock disponible para el adicional: {$adicional->nombre}");
-    //                     }
-    //                 }
-    //                 // Por cada extra, crear un detalle y asignarlo a una nueva orden (clave en producto_venta.adicionales)
-    //                 foreach ($extras as $adicional) {
-    //                     if ($adicional->contable == true && $adicional->cantidad >= 1) {
-    //                         $adicional->decrement('cantidad');
-    //                     }
-    //                     $array_extras[] = [$adicional->nombre => $adicional->precio];
-    //                 }
-    //                 $json[$siguiente_clave] = $array_extras;
-    //             }
-    //             // Codifica el arreglo de vuelta a JSON antes de guardar
-    //             $venta->productos()
-    //             ->updateExistingPivot($idproducto, [
-    //                 'adicionales' => json_encode($json)
-    //             ]);
-    //         }
-    //     }
-    // }
+                    if ($adicional) {
+                        $processed[$groupIndex][] = [
+                            'id' => $adicional->id,
+                            'nombre' => ucfirst($adicional->nombre),
+                            'precio' => (float) $precio
+                        ];
+                    } else {
+                        Log::warning('Adicional no encontrado', [
+                            'nombre' => $nombre,
+                            'available_adicionales' => $adicionales->keys()->take(10)->toArray()
+                        ]);
+                    }
+                }
+            }
+        }
 
+        return $processed;
+    }
+
+    // #endregion
 
     private function verificarAdicionalesVacios($arrayAdicionales): bool
     {
