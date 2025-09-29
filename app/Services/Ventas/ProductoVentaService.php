@@ -410,14 +410,16 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         try {
             DB::beginTransaction();
 
-            $existeProductoVenta = $venta->productos()->where('producto_id', $producto->id)->exists();
+            $existeProductoVenta = $venta->productos()
+                    ->where('producto_id', $producto->id)
+                    ->wherePivot('aceptado', false)->exists();
             
             if (!$existeProductoVenta) {
                 // Log::debug("No existe registro en producto_venta, creando para ",[$producto->id]);
                 $venta->productos()->attach($producto->id, ['cantidad' => $cantidad]);
             } else {
                 // Log::debug("Existe registro en producto_venta, creando para ",[$producto->id]);
-                $venta->productos()->updateExistingPivot($producto->id, [
+                $venta->productos()->wherePivot('aceptado', false)->updateExistingPivot($producto->id, [
                     'cantidad' => DB::raw("cantidad + {$cantidad}")
                 ]);
             }
@@ -456,7 +458,10 @@ class ProductoVentaService implements ProductoVentaServiceInterface
     {
         try {
             // Obtener el registro de producto_venta necesario
-            $productoVenta = $venta->productos()->where('producto_id', $productoId)->first();
+            $productoVenta = $venta->productos()
+                    ->where('producto_id', $productoId)
+                    ->wherePivot('aceptado', false)      // Obtener solo pedidos no aceptados
+                    ->first();
             
             if (!$productoVenta) {
                 return VentaResponse::error('Producto no encontrado en la venta');
