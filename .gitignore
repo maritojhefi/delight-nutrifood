@@ -20,3 +20,5 @@ yarn-error.log
 /public/imagenes/subcategorias/
 /public/imagenes/almuerzo/
 /public/imagenes/galeria/
+/public/logs.txt
+/public/logsAdmin.txt
