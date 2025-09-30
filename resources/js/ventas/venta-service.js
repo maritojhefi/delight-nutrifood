@@ -47,7 +47,7 @@ export const productoVenta = async(producto_venta_ID) => {
 }
 
 export const actualizarObservacionPorID = async (pivotID,texto) => {
-    const response = await axios.post(`ventas/producto/observacion`, {
+    const response = await axios.post(`/ventas/producto/observacion`, {
         texto: texto,
         pivot_id: pivotID,
     })
@@ -55,12 +55,17 @@ export const actualizarObservacionPorID = async (pivotID,texto) => {
 }
 
 export const eliminarOrdenIndex = async (pivotID, index) => {
-    const response = await axios.patch(`ventas/producto/eliminar-orden`, {
+    const response = await axios.patch(`/ventas/producto/eliminar-orden`, {
         // data: {
         pivot_id: pivotID,
         target_index: index
         // }
     });
+    return response;
+}
+
+export const eliminarPedidoCompleto = async (pivotID) => {
+    const response = await axios.delete(`/ventas/producto/${pivotID}`);
     return response;
 }
 
@@ -71,5 +76,6 @@ window.VentaService = {
     productosVenta,
     productoVenta,
     actualizarObservacionPorID,
-    eliminarOrdenIndex
+    eliminarOrdenIndex,
+    eliminarPedidoCompleto
 }

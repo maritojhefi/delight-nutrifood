@@ -168,6 +168,24 @@ class VentasWebController extends Controller
         }
     }
 
+    public function eliminarPedido(Request $request): JsonResponse
+    {
+        $ventaActiva = $this->validarVentaActiva();
+        $pivot_id = $request->producto_venta_ID;
+
+        $respuesta = $this->productoVentaService->eliminarProductoCompletoCliente($ventaActiva,$pivot_id);
+        if (!$respuesta->success) {
+            return response()->json($respuesta->toArray(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $pedidosActualizados = $this->productoVentaService->obtenerProductosVenta($ventaActiva);
+        if ($pedidosActualizados->success) {
+            return new JsonResponse($pedidosActualizados->data, Response::HTTP_OK);
+        } else {
+            return new JsonResponse($pedidosActualizados->errors, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function carrito_ProductosVenta(Request $request) {
         try {
             $user = User::find(auth()->user()->id);

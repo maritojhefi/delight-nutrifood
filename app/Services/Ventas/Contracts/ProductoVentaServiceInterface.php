@@ -41,6 +41,11 @@ interface ProductoVentaServiceInterface
     public function eliminarItemPivotID(Venta $venta, int $producto_venta_id, int $posicion): VentaResponse;
 
     /**
+     * Elimina un pedido por completo identificandolo por su id pivote
+     */
+    public function eliminarProductoCompletoCliente(Venta $venta, int $producto_venta_id);
+
+    /**
      * Actualiza los adicionales de un producto
      */
     public function actualizarAdicionales(Venta $venta, Producto $producto, string $operacion, ?int $cantidadEspecifica = null): VentaResponse;

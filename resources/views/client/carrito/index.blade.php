@@ -13,9 +13,11 @@
             <!-- CONTENEDORES PEDEIDOS SEGUN ESTADO -->
             <div id="contenedor-aceptados" class="d-flex flex-column justify-content-center d-none">
                 <h3>Pedidos Aceptados</h3>
+                <ul id="lista-aceptados" class="list-unstyled"></ul>
             </div>
             <div id="contenedor-pendientes" class="d-flex flex-column justify-content-center d-none">
                 <h3>Pedidos Pendientes</h3>
+                <ul id="lista-pendientes" class="list-unstyled"></ul>
             </div>
             {{-- CONTENEDORES DE PRODCUTOS SEGUN DISPONIBILIDAD --}}
             <div id="container-state-agotado" class="d-flex flex-column justify-content-center"></div>
@@ -257,62 +259,80 @@
 
     const renderizarPrincipalPedidos = async () => {
         const contenedorPrincipal = $('#contenedor-principal');
-        const contenedorAceptados = $('#contenedor-aceptados');
-        const contenedorPendientes = $('#contenedor-pendientes');
 
         // Obtener informacion venta
         const response = await VentaService.productosVenta();
         const productosVenta = response.data;
 
-        const productosPendientes = productosVenta.filter(producto => {
-            return producto.aceptado == false;
-        });
+        renderizarProductosVenta(productosVenta);
+    }
+
+    const renderizarProductosVenta = (productosVenta) => {
+        const contenedorAceptados = $('#contenedor-aceptados');
+        const contenedorPendientes = $('#contenedor-pendientes');
+        const listaAceptados = $('#lista-aceptados');
+        const listaPendientes = $('#lista-pendientes');
+
+        const productosPendientes = productosVenta.filter(producto => producto.aceptado == false);
+        const productosAceptados = productosVenta.filter(producto => producto.aceptado == true);
 
         if (productosPendientes.length > 0) {
             contenedorPendientes.removeClass('d-none');
+            const htmlContentPendientes = productosPendientes
+                .map(producto => `<li>${construirCardProductoVenta(producto)}</li>`)
+                .join('');
+            listaPendientes.html(htmlContentPendientes);
+        } else {
+            contenedorPendientes.addClass('d-none');
         }
-
-        const productosAceptados = productosVenta.filter(producto => {
-            return producto.aceptado == true;
-        });
 
         if (productosAceptados.length > 0) {
             contenedorAceptados.removeClass('d-none');
+            const htmlContentAceptados = productosAceptados
+                .map(producto => `<li>${construirCardProductoVenta(producto)}</li>`)
+                .join('');
+            listaAceptados.html(htmlContentAceptados);
+        } else {
+            contenedorAceptados.addClass('d-none');
         }
 
-        // --- FIX START ---
-
-        // 1. Clear the container *before* rendering new content
-        // contenedorPendientes.empty(); 
-
-        // 2. Build the HTML string outside of the loop for better performance
-        // let htmlContent = '';
-        // productosPendientes.forEach(producto => {
-        //     // Concatenate the new HTML strings
-        //     htmlContent += renderizarProductoVenta(producto, false);
-        // });
-
-        // 3. Append the *entire* string once to the container
-        // contenedorPendientes.append(htmlContent); 
-
-        const htmlContentPendientes = productosPendientes
-        .map(producto => renderizarProductoVenta(producto, false))
-        .join('');
-
-        contenedorPendientes.append(htmlContentPendientes);
-
-        const htmlContentAceptados = productosAceptados
-        .map(producto => renderizarProductoVenta(producto, false))
-        .join('');
-
-        contenedorAceptados.append(htmlContentAceptados);
-        
-        console.log("ProductosVenta: ", productosVenta);
+        listaPendientes.off('click', '.borrar-pventa-btn').on('click', '.borrar-pventa-btn', async function(e) {
+            e.preventDefault();
+            const pivotID = $(this).data('producto-venta-id');
+            await eliminarPedido(pivotID);
+        });
     }
 
-    const renderizarProductoVenta = (producto, esta_aceptado) => {
+    const eliminarPedido = async (pivotID) => {
+        try {
+            console.log(`Intento de eliminar el producto_venta: ${pivotID}`);
+            const response = await VentaService.eliminarPedidoCompleto(pivotID); 
+            console.log("response al eliminar el item:", response);
+            renderizarProductosVenta(response.data);
+            mostrarToastSuccess("Pedido eliminado con éxito");
+            console.log('Orden eliminada correctamente');
+        } catch (error) {
+            // 1. Check if the error is an Axios error with a server response
+            const serverResponse = error.response?.data; 
+            
+            // 2. Default error message
+            let errorMessage = "Ha sucedido un error al eliminar el pedido."; 
+
+            // 3. Check if the server response contains a 'message'
+            if (serverResponse && serverResponse.message) {
+                console.log("Hay message en la respuesta del servidor");
+                errorMessage = serverResponse.message;
+            } 
+            
+            // Display the correct error message
+            mostrarToastError(errorMessage);
+            console.error('Error al eliminar pedido:', error);
+        }
+    }
+
+    const construirCardProductoVenta = (producto) => {
         return `
-            <div class="cart-item-wrapper mb-4" data-producto-id="${producto.id}"  data-pedido-aceptado="${esta_aceptado}" id="pedido-item-wrapper-${producto.id}">
+            <div class="cart-item-wrapper mb-4" data-producto-id="${producto.id}"  data-pedido-aceptado="${producto.aceptado}" id="pedido-item-wrapper-${producto.id}">
                 <div class="card mb-0 d-flex flex-column item-carrito-info justify-content-between p-3 bg-white rounded-sm shadow-sm border">
                     <div class="mb-0 d-flex flex-row justify-content-between">
                         <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
@@ -325,7 +345,7 @@
                                 alt="${producto.nombre}"
                                 data-producto-id="${producto.id}">
                             ${(producto.aceptado) ? '':
-                            `<button class="btn btn-xxs bg-highlight opacity-100 delete-producto-venta-btn position-absolute"
+                            `<button class="btn btn-xxs bg-highlight opacity-100 borrar-pventa-btn position-absolute"
                                     type="button"
                                     data-producto-venta-id="${producto.pivot_id}"
                                     title="Eliminar producto"
@@ -339,10 +359,10 @@
                     <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
                         <div>
                             ${(producto.tiene_descuento ?
-                            `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${producto.precio_original.toFixed(2)}</del>` : ''
+                            `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${producto.precio_original.toFixed(2) * producto.cantidad}</del>` : ''
                             )}
                             <p class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
-                                Bs. ${producto.precio.toFixed(2)}
+                                Bs. ${producto.precio.toFixed(2) * producto.cantidad}
                             </p>
                         </div>
                         ${renderizarBotonAccion(producto)}
@@ -350,6 +370,28 @@
                 </div>
             </div>
         `
+    }
+
+
+
+    const mostrarToastSuccess = (mensaje) => {
+        const toastsuccess = $('#toast-success');
+        toastsuccess.text(mensaje);
+        const toast = new bootstrap.Toast(toastsuccess);
+        toast.show()
+        setTimeout(() => {
+            toast.hide();
+        }, 3000);
+    }
+
+    const mostrarToastError = (mensaje) => {
+        const toasterror = $('#toast-error');
+        toasterror.text(mensaje);
+        const toast = new bootstrap.Toast(toasterror);
+        toast.show()
+        setTimeout(() => {
+            toast.hide();
+        }, 3000);
     }
 
     const renderizarBotonAccion = (producto) => {

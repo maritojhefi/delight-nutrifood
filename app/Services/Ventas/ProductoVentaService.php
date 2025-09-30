@@ -572,7 +572,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                         $adicional->increment('cantidad');
                         $adicional->save();
                         // GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
-                    }
+                    }  
                 }
 
                 // Eliminar item y reorganizar
@@ -599,6 +599,83 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             return VentaResponse::warning($e->getMessage());
         } catch (\Exception $e) {
             return VentaResponse::error('Error al eliminar item: ' . $e->getMessage());
+        }
+    }
+
+    public function eliminarProductoCompletoCliente(Venta $venta, int $producto_venta_id)    
+    {
+        try {
+            if ($venta->pagado) {
+                throw VentaException::ventaPagada();
+            }
+
+            $habilitadoAceptados = auth()->check() && in_array(auth()->user()->role->nombre, ['admin', 'cajero']);
+
+            return DB::transaction(function () use ($venta, $producto_venta_id, $habilitadoAceptados) { 
+
+                $consultaPV = DB::table('producto_venta')
+                    ->where('id', $producto_venta_id);
+
+                if(!$habilitadoAceptados) {
+                    $consultaPV->where('aceptado', false);
+                }
+                
+                $pivot = $consultaPV->first();
+
+                if (!$pivot) {
+                    throw new \Exception('ProductoVenta no encontrado');
+                }
+
+                $producto = Producto::find($pivot->producto_id);
+                $arrayOrdenes = json_decode($pivot->adicionales, true);
+
+                // Restaurar stock si es contable
+                if ($producto->contable) {
+                    $this->stockService->actualizarStock($producto, 'restar', $pivot->cantidad, $venta->sucursale_id);
+                }
+
+                Log::debug("Producto a evaluarse: ", [$producto->nombre]);
+                Log::debug("Cantidad de pventa: ", [$pivot->cantidad]);
+                Log::debug("Valor de Array Ordenes: ", [$arrayOrdenes]);
+
+                // Extraer todos los nombres de adicionales
+                $nombresAdicionales = [];
+                foreach ($arrayOrdenes as $orden) {
+                    foreach ($orden as $adicionalData) {
+                        $nombresAdicionales[] = key($adicionalData);
+                    }
+                }
+
+                // Cargar todos los adicionales de una vez, indexados por nombre
+                $adicionales = Adicionale::whereIn('nombre', array_unique($nombresAdicionales))
+                    ->get()
+                    ->keyBy('nombre');
+
+                // Restaurar el stock de los adicionales del producto_venta
+                for ($i = 1; $i <= count($arrayOrdenes); $i++) {
+                    foreach ($arrayOrdenes[$i] as $nombreAdicional) {
+                        $nombre = key($nombreAdicional);
+                        $adicional = $adicionales->get($nombre);
+                        
+                        Log::debug("Adicionale key: $i, ", [$adicional]);
+                        if ($adicional && $adicional->contable) {
+                            Log::debug("El adicional de arriba es contable y recuperaria su stock tras la eliminacion: ", []);
+                            $adicional->increment('cantidad');
+                            $adicional->save();
+                            // GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
+                        }  
+                    }
+                }
+
+                // Eliminar registrod de la tabla pivote
+                DB::table('producto_venta')->where('id', $pivot->id)->delete();
+
+                return VentaResponse::success(null, "solicitud realizada exitosamente");
+            });
+        } catch (VentaException $e) {
+            return VentaResponse::warning($e->getMessage());
+        } catch (\Exception $e) {
+            return VentaResponse::error('Error al eliminar el pedido: ' . $e->getMessage());
         }
     }
 
