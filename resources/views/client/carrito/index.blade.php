@@ -11,10 +11,10 @@
                 <p class="mt-2">Validando tu {{ $venta_activa ? "pedido" : "carrito" }}...</p>
             </div>
             <!-- CONTENEDORES PEDEIDOS SEGUN ESTADO -->
-            <div id="contenedor-aceptados" class="d-flex flex-column justify-content-center" style="display: none;">
+            <div id="contenedor-aceptados" class="d-flex flex-column justify-content-center d-none">
                 <h3>Pedidos Aceptados</h3>
             </div>
-            <div id="contenedor-pendientes" class="d-flex flex-column justify-content-center" style="display: none;">
+            <div id="contenedor-pendientes" class="d-flex flex-column justify-content-center d-none">
                 <h3>Pedidos Pendientes</h3>
             </div>
             {{-- CONTENEDORES DE PRODCUTOS SEGUN DISPONIBILIDAD --}}
@@ -269,7 +269,7 @@
         });
 
         if (productosPendientes.length > 0) {
-            contenedorPendientes.css('display', 'block'); 
+            contenedorPendientes.removeClass('d-none');
         }
 
         const productosAceptados = productosVenta.filter(producto => {
@@ -277,7 +277,7 @@
         });
 
         if (productosAceptados.length > 0) {
-            contenedorAceptados.css('display', 'block');
+            contenedorAceptados.removeClass('d-none');
         }
 
         // --- FIX START ---

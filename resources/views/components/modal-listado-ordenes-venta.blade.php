@@ -32,7 +32,7 @@
             console.log("Informacion obtenida sobre el producto: ", info);
             renderizarObservacionPedido(info);
             renderizarListadoOrdenes(info);
-            reinitializeLucideIcons();
+            // reinitializeLucideIcons();
         }
 
         const renderizarObservacionPedido = (info) => {
@@ -130,6 +130,7 @@
                             <div class="card-header bg-teal-light">
                                 <div class="card-title mb-0 d-flex flex-row justify-content-between">
                                     <h4 class="mb-0">Orden N° ${ordenKey}</h4>
+                                    ${info.aceptado ? `` : `
                                     <button
                                         data-pventa-id="${info.pivot_id}"
                                         data-orden-index="${ordenKey}"
@@ -137,6 +138,8 @@
                                     >
                                         <i class="lucide-icon" data-lucide="trash-2"></i>
                                     </button>
+                                    `}
+                                    
                                 </div>
                             </div>
                             
@@ -161,6 +164,8 @@
                     </li>
                 `).join('')}
             `);
+
+            reinitializeLucideIcons();
             
             listaPrincipal.off('click', '.borrar-orden-pventa').on('click', '.borrar-orden-pventa', async function(e) {
                 e.preventDefault();

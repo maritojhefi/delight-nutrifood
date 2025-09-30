@@ -519,6 +519,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             DB::table('producto_venta')
             ->where('venta_id', $venta->id)
             ->where('producto_id', $productoId)
+            ->where('aceptado', false)
             ->update(['adicionales' => json_encode($json)]);
 
             return VentaResponse::success(null, 'Adicionales actualizados');
@@ -533,19 +534,28 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 throw VentaException::ventaPagada();
             }
 
-            return DB::transaction(function () use ($venta, $producto_venta_id, $posicion) {
-                $pivot = DB::table('producto_venta')
-                    ->where('id', $producto_venta_id)
-                    ->first();
+
+            $habilitadoAceptados = auth()->check() && in_array(auth()->user()->role->nombre, ['admin', 'cajero']);
+
+            return DB::transaction(function () use ($venta, $producto_venta_id, $posicion, $habilitadoAceptados) {
+                
+                $consultaPV = DB::table('producto_venta')
+                    ->where('id', $producto_venta_id);
+
+                if(!$habilitadoAceptados) {
+                    $consultaPV->where('aceptado', false);
+                }
+                
+                $pivot = $consultaPV->first();
 
                 if (!$pivot) {
-                    throw new \Exception('Pivot no encontrado');
+                    throw new \Exception('ProductoVenta no encontrado');
                 }
 
                 $producto = Producto::find($pivot->producto_id);
                 $array = json_decode($pivot->adicionales, true);
 
-                // Optional: Check if it's the last item
+                // Revisar si es el ultimo item
                 if (count($array) == 1) {
                     return VentaResponse::warning('No puede eliminar el único item disponible');
                 }
