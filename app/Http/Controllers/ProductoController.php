@@ -28,7 +28,7 @@ class ProductoController extends Controller
     public function lineadelightproducto($id)
     {
         $producto = Producto::publicoTienda()->findOrFail($id);
-        $stockDisponible = $producto->stockTotal() > 0;
+        $stockDisponible = $producto->contable ? $producto->stockTotal() > 0 : true;
 
         // Procesar la imagen del producto y su url
         $producto->imagen = $producto->pathAttachment();
@@ -95,7 +95,7 @@ class ProductoController extends Controller
     {
         try {
         $producto = Producto::publicoTienda()->findOrFail($id);
-        $stockDisponible = $producto->stockTotal() > 0;
+        $stockDisponible = $producto->contable ? $producto->stockTotal() > 0 : true;
         // Procesar la imagen del producto y su url
         $producto->imagen = $producto->pathAttachment();
         $producto->url_detalle = route('delight.detalleproducto', $producto->id);
