@@ -634,10 +634,6 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     $this->stockService->actualizarStock($producto, 'restar', $pivot->cantidad, $venta->sucursale_id);
                 }
 
-                Log::debug("Producto a evaluarse: ", [$producto->nombre]);
-                Log::debug("Cantidad de pventa: ", [$pivot->cantidad]);
-                Log::debug("Valor de Array Ordenes: ", [$arrayOrdenes]);
-
                 // Extraer todos los nombres de adicionales
                 $nombresAdicionales = [];
                 foreach ($arrayOrdenes as $orden) {
@@ -657,9 +653,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                         $nombre = key($nombreAdicional);
                         $adicional = $adicionales->get($nombre);
                         
-                        Log::debug("Adicionale key: $i, ", [$adicional]);
                         if ($adicional && $adicional->contable) {
-                            Log::debug("El adicional de arriba es contable y recuperaria su stock tras la eliminacion: ", []);
                             $adicional->increment('cantidad');
                             $adicional->save();
                             // GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
@@ -809,13 +803,14 @@ class ProductoVentaService implements ProductoVentaServiceInterface
     private function transformarProducto($producto, Collection $adicionales): array
     {
         $adicionalesData = json_decode($producto->pivot->adicionales ?? '{}', true);
-        $processedAdicionales = $this->procesarAdicionales($adicionalesData, $adicionales);
+        [$processedAdicionales, $precioTotalAdicionales] = $this->procesarAdicionales($adicionalesData, $adicionales);
 
         return [
             'id' => $producto->id,
             'nombre' => $producto->nombre,
             'detalle' => $producto->detalle,
             'adicionales' => $processedAdicionales,
+            'precio_final' => ($producto->precioReal() * $producto->pivot->cantidad) + $precioTotalAdicionales,  // You can add this if needed
             'tiene_descuento' => $producto->precio !== $producto->precioReal(),
             'precio_original' => $producto->precio,
             'precio' => $producto->precioReal(),
@@ -826,18 +821,19 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             'observacion' => $producto->pivot->observacion,
             'pivot_id' => $producto->pivot->id,
             'tipo' => ($producto->subcategoria && $producto->subcategoria->adicionales->isNotEmpty()) 
-            ? 'complejo' 
-            : 'simple'
+                ? 'complejo' 
+                : 'simple'
         ];
     }
 
     private function procesarAdicionales(array $adicionalesData, Collection $adicionales): array
     {
         if (empty($adicionalesData)) {
-            return [];
+            return [[], 0];
         }
 
         $processed = [];
+        $precioTotal = 0;
 
         foreach ($adicionalesData as $groupIndex => $group) {
             $processed[$groupIndex] = [];
@@ -858,8 +854,10 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                         $processed[$groupIndex][] = [
                             'id' => $adicional->id,
                             'nombre' => ucfirst($adicional->nombre),
-                            'precio' => (float) $precio
+                            'precio' => (float) $adicional->precio  // Using $adicional->precio
                         ];
+                        
+                        $precioTotal += (float) $adicional->precio;
                     } else {
                         Log::warning('Adicional no encontrado', [
                             'nombre' => $nombre,
@@ -870,11 +868,10 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             }
         }
 
-        return $processed;
+        return [$processed, $precioTotal];
     }
 
     // #endregion
-
     private function verificarAdicionalesVacios($arrayAdicionales): bool
     {
         if (is_null($arrayAdicionales)) {

@@ -279,7 +279,7 @@
         if (productosPendientes.length > 0) {
             contenedorPendientes.removeClass('d-none');
             const htmlContentPendientes = productosPendientes
-                .map(producto => `<li>${construirCardProductoVenta(producto)}</li>`)
+                .map(producto => construirCardProductoVenta(producto))
                 .join('');
             listaPendientes.html(htmlContentPendientes);
         } else {
@@ -289,7 +289,7 @@
         if (productosAceptados.length > 0) {
             contenedorAceptados.removeClass('d-none');
             const htmlContentAceptados = productosAceptados
-                .map(producto => `<li>${construirCardProductoVenta(producto)}</li>`)
+                .map(producto => construirCardProductoVenta(producto))
                 .join('');
             listaAceptados.html(htmlContentAceptados);
         } else {
@@ -330,49 +330,58 @@
         }
     }
 
+    const reemplazarCardProductoVenta = (productoVenta) => {
+        const cardAntiguo = $(`#pedido-item-${productoVenta.pivot_id}`);
+        const cardNuevo = construirCardProductoVenta(productoVenta);
+        cardAntiguo.replaceWith(cardNuevo);
+    }
+
     const construirCardProductoVenta = (producto) => {
         return `
-            <div class="cart-item-wrapper mb-4" data-producto-id="${producto.id}"  data-pedido-aceptado="${producto.aceptado}" id="pedido-item-wrapper-${producto.id}">
-                <div class="card mb-0 d-flex flex-column item-carrito-info justify-content-between p-3 bg-white rounded-sm shadow-sm border">
-                    <div class="mb-0 d-flex flex-row justify-content-between">
-                        <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
-                            <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
-                            <small>${`Unidades: ${producto.cantidad}`}</small>
+            <li id="pedido-item-${producto.pivot_id}">
+                <div class="cart-item-wrapper mb-4" data-producto-id="${producto.id}"  data-pedido-aceptado="${producto.aceptado}">
+                    <div class="card mb-0 d-flex flex-column item-carrito-info justify-content-between p-3 bg-white rounded-sm shadow-sm border">
+                        <div class="mb-0 d-flex flex-row justify-content-between">
+                            <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
+                                <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
+                                <small>${`Unidades: ${producto.cantidad}`}</small>
+                            </div>
+                            <div class="product-image-container m-0" style="z-index: 10">
+                                <img class="product-image rounded"
+                                    src="${producto.imagen}"
+                                    alt="${producto.nombre}"
+                                    data-producto-id="${producto.id}">
+                                ${(producto.aceptado) ? '':
+                                `<button class="btn btn-xxs bg-highlight opacity-100 borrar-pventa-btn position-absolute"
+                                        type="button"
+                                        data-producto-venta-id="${producto.pivot_id}"
+                                        title="Eliminar producto"
+                                        style="top: 0.1rem; right: 0.01rem; z-index: 20;"
+                                        >
+                                    <i class="fa fa-times"></i>
+                                </button>`}
+                            </div>
+                            <div class="item-overlay rounded-sm card-overlay opacity-60"></div>
                         </div>
-                        <div class="product-image-container m-0" style="z-index: 10">
-                            <img class="product-image rounded"
-                                src="${producto.imagen}"
-                                alt="${producto.nombre}"
-                                data-producto-id="${producto.id}">
-                            ${(producto.aceptado) ? '':
-                            `<button class="btn btn-xxs bg-highlight opacity-100 borrar-pventa-btn position-absolute"
-                                    type="button"
-                                    data-producto-venta-id="${producto.pivot_id}"
-                                    title="Eliminar producto"
-                                    style="top: 0.1rem; right: 0.01rem; z-index: 20;"
-                                    >
-                                <i class="fa fa-times"></i>
-                            </button>`}
+                        <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
+                            <div>
+                                ${(producto.tiene_descuento ?
+                                `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${producto.precio_original.toFixed(2) * producto.cantidad}</del>` : ''
+                                )}
+                                <p class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
+                                    Bs. ${producto.precio_final.toFixed(2)}
+                                </p>
+                            </div>
+                            ${renderizarBotonAccion(producto)}
                         </div>
-                        <div class="item-overlay rounded-sm card-overlay opacity-60"></div>
-                    </div>
-                    <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
-                        <div>
-                            ${(producto.tiene_descuento ?
-                            `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${producto.precio_original.toFixed(2) * producto.cantidad}</del>` : ''
-                            )}
-                            <p class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
-                                Bs. ${producto.precio.toFixed(2) * producto.cantidad}
-                            </p>
-                        </div>
-                        ${renderizarBotonAccion(producto)}
                     </div>
                 </div>
-            </div>
+            </li>
         `
     }
 
-
+    window.reemplazarCardProductoVenta = reemplazarCardProductoVenta;
+    window.construirCardProductoVenta = construirCardProductoVenta;
 
     const mostrarToastSuccess = (mensaje) => {
         const toastsuccess = $('#toast-success');
