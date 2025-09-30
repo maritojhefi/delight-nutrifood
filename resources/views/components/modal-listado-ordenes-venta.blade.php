@@ -39,15 +39,25 @@
             const initialText = info.observacion ? info.observacion : ''; 
 
             const contenedorObservacion = $('#contenedor-observacion');
-            contenedorObservacion.html(`
-                <label for="observacion-pv-${info.pivot_id}" class="color-highlight">Detalles para tu orden</label>
-                <div class="input-style has-borders no-icon d-flex flex-row gap-2 align-items-center">
-                    <textarea id="observacion-pv-${info.pivot_id}" placeholder="Detalles para tu orden">${initialText}</textarea>
-                    <button 
-                        data-pventa-id="${info.pivot_id}"
-                        class="btn btn-md bg-highlight my-3 btn-guardar-observacion">Guardar</button>
-                </div>
-            `);
+            if (!info.aceptado) {
+                contenedorObservacion.html(`
+                    <label for="observacion-pv-${info.pivot_id}" class="color-highlight">Detalles para tu orden</label>
+                    <div class="input-style has-borders no-icon d-flex flex-row gap-2 align-items-center">
+                        <textarea id="observacion-pv-${info.pivot_id}" placeholder="Detalles para tu orden">${initialText}</textarea>
+                        <button 
+                            data-pventa-id="${info.pivot_id}"
+                            class="btn btn-md bg-highlight my-3 btn-guardar-observacion">Guardar</button>
+                    </div>
+                `);
+            } else if (info.aceptado && info.observacion) {
+                contenedorObservacion.html(`
+                    <label for="observacion-pv-${info.pivot_id}" class="color-highlight">Detalles para tu orden</label>
+                    <div class="input-style has-borders no-icon">
+                        <textarea readonly id="observacion-pv-${info.pivot_id}" placeholder="">${initialText}</textarea>
+                    </div>
+                `);
+            }
+            
             
             // Asignar evento para actualizar observacion
             contenedorObservacion.off('click', '.btn-guardar-observacion').on('click', '.btn-guardar-observacion', async function() {
