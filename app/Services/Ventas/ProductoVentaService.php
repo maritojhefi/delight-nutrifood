@@ -810,6 +810,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             'nombre' => $producto->nombre,
             'detalle' => $producto->detalle,
             'adicionales' => $processedAdicionales,
+            'costo_adicionales' => $precioTotalAdicionales,
             'precio_final' => ($producto->precioReal() * $producto->pivot->cantidad) + $precioTotalAdicionales,  // You can add this if needed
             'tiene_descuento' => $producto->precio !== $producto->precioReal(),
             'precio_original' => $producto->precio,

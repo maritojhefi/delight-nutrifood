@@ -76,7 +76,13 @@
                 // 'response' is only defined inside 'try'
                 const response = await VentaService.eliminarOrdenIndex(pivotID, index); 
                 console.log("response al eliminar el item:", response);
+                // Se renderizan nuevamente los listados, debido a que los indices de producto_venta.adicionales
+                // se reorganizaron
+                
+                // Renderizar el listado permite reatribuirle los Indices ya modificados
                 renderizarListadoOrdenes(response.data);
+                // En caso de desear solo eliminar el card de la orden seleccionada, usar la funcion comentada
+                // // eliminarCardOrdenIndice(pivotID, index);
                 window.reemplazarCardProductoVenta(response.data);
                 mostrarToastSuccess("Orden eliminada con éxito");
                 console.log('Orden eliminada correctamente');
@@ -97,6 +103,12 @@
                 mostrarToastError(errorMessage);
                 console.error('Error al eliminar orden:', error);
             }
+        }
+
+        const eliminarCardOrdenIndice = (pivotID,index) => {
+            // console.log("card a eliminar: ", pivotID);
+            const cardEliminar = $(`#pedido-${pivotID}-orden-${index}`);
+            cardEliminar.remove();
         }
 
         const mostrarToastSuccess = (mensaje) => {
@@ -132,7 +144,7 @@
                     }, 0);
                     
                     return `
-                        <li style="list-style-type: none">
+                        <li id="pedido-${info.pivot_id}-orden-${ordenKey}" style="list-style-type: none">
                             <div class="card card-style">
                                 <div class="card-header bg-teal-light">
                                     <div class="card-title mb-0 d-flex flex-row justify-content-between">

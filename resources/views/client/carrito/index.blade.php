@@ -308,7 +308,8 @@
             console.log(`Intento de eliminar el producto_venta: ${pivotID}`);
             const response = await VentaService.eliminarPedidoCompleto(pivotID); 
             console.log("response al eliminar el item:", response);
-            renderizarProductosVenta(response.data);
+            // renderizarProductosVenta(response.data);
+            eliminarCardProductoVenta(pivotID);
             mostrarToastSuccess("Pedido eliminado con éxito");
             console.log('Orden eliminada correctamente');
         } catch (error) {
@@ -336,6 +337,12 @@
         cardAntiguo.replaceWith(cardNuevo);
     }
 
+    const eliminarCardProductoVenta = (pivotID) => {
+        console.log("card a eliminar: ", pivotID);
+        const cardEliminar = $(`#pedido-item-${pivotID}`);
+        cardEliminar.remove();
+    }
+
     const construirCardProductoVenta = (producto) => {
         return `
             <li id="pedido-item-${producto.pivot_id}">
@@ -344,7 +351,8 @@
                         <div class="mb-0 d-flex flex-row justify-content-between">
                             <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
                                 <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
-                                <small>${`Unidades: ${producto.cantidad}`}</small>
+                                <small class="color-theme">${`Unidades: ${producto.cantidad}`}</small>
+                                ${producto.costo_adicionales > 0 ? `<small class="color-theme">Extras: Bs. ${producto.costo_adicionales}</small>` : ''}
                             </div>
                             <div class="product-image-container m-0" style="z-index: 10">
                                 <img class="product-image rounded"
