@@ -296,9 +296,7 @@ class VentasWebController extends Controller
             return response()->json($respuestaVenta->toArray(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         
-        return response()->json([
-            'message'=> 'Solicitud agregar venta procesada exitosamente',
-        ],Response::HTTP_CREATED);
+        return response()->json($respuestaVenta, Response::HTTP_CREATED);
     }
 
     private function validarVentaActiva()

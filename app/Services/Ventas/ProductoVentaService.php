@@ -455,9 +455,18 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     return $stockResponse;
                 }
             }
-
             DB::commit();
-            return VentaResponse::success(null,"ProductoVenta agregado/actualizado exitosamente");
+
+            $productoVenta = $venta->productos()
+            ->where('producto_id', $producto->id)
+            ->wherePivot('aceptado', false)
+            ->withPivot('id', 'cantidad')
+            ->first();
+
+            return VentaResponse::success(
+                $productoVenta ? $productoVenta->pivot : null,
+                "ProductoVenta agregado/actualizado exitosamente"
+            );
         } catch (VentaException $e) {
             DB::rollBack();
             return VentaResponse::error($e->getMessage(), [], null);

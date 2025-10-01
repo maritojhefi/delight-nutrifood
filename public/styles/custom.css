@@ -458,7 +458,9 @@ hover-blue:hover {
 .quantity-controls {
     background-color: #f8f9fa !important;
     border: 1px solid #dee2e6 !important;
-    min-height: 35px;
+    min-height: 2rem;
+    max-height: 2rem;
+    max-width: 6rem;
     border-radius: 5px;
 }
 

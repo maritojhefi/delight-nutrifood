@@ -97,21 +97,16 @@
                 mostrarToastSuccess("Orden eliminada con éxito");
                 console.log('Orden eliminada correctamente');
             } catch (error) {
-                // 1. Check if the error is an Axios error with a server response
                 const serverResponse = error.response?.data; 
                 
-                // 2. Default error message
                 let errorMessage = "Ha sucedido un error al eliminar la orden."; 
 
-                // 3. Check if the server response contains a 'message'
                 if (serverResponse && serverResponse.message) {
                     console.log("Hay message en la respuesta del servidor");
                     errorMessage = serverResponse.message;
                 } 
                 
-                // Display the correct error message
                 mostrarToastError(errorMessage);
-                console.error('Error al eliminar orden:', error);
             }
         }
 

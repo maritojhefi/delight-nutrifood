@@ -227,36 +227,6 @@
     } 
     });
 
-    // if (ventaActiva) {
-    //     // axios para venta activa
-    //     await renderizarPrincipalPedidos();
-    // } 
-    // // else {
-    // //     renderizarPrincipalCarrito();
-    // // }
-
-    // const renderizarPrincipalPedidos = async () => {
-    //     const contenedorPrincipal = $('#contenedor-principal');
-    //     // const contenedorDisponibles = $('#container-state-disponible');
-    //     // const contenedorEscasos = $('#container-state-escaso');
-    //     // const contenedorAgotados = $('#container-state-agotado');
-    //     const contenedorAceptados = $('#contenedor-aceptados');
-    //     const contenedorPendientes = $('#contenedor-pendientes');
-
-    //     // Obtener informacion venta
-    //     const response = await VentaService.productosVenta();
-    //     const productosVenta = response.data;
-
-    //     const productosPendientes = productosVenta.filter(producto => {
-    //         return producto.estado_actual === "pendiente";
-    //     });
-    //     // Renderizar listados
-    //     productosPendientes.forEach(producto => {
-    //         contenedorPendientes.innerHTML += renderizarProductoVenta(producto, false);
-    //     });
-    //     console.log("ProductosVenta: ", productosVenta);
-    // }
-
     const renderizarPrincipalPedidos = async () => {
         const contenedorPrincipal = $('#contenedor-principal');
 
@@ -265,6 +235,15 @@
         const productosVenta = response.data;
 
         renderizarProductosVenta(productosVenta);
+
+        const pedidosPendientes = productosVenta.filter(producto => producto.aceptado == false);
+
+        if (pedidosPendientes.length > 0) {
+            
+            // Consultar con Product Owner
+            // Renderizar Checkout? Una vez pagado el pedido pasara a aceptado?
+            // Una vez pagado, podra continuar agregando pedidos en la misma venta?
+        }
     }
 
     const renderizarProductosVenta = (productosVenta) => {
@@ -296,11 +275,43 @@
             contenedorAceptados.addClass('d-none');
         }
 
-        listaPendientes.off('click', '.borrar-pventa-btn').on('click', '.borrar-pventa-btn', async function(e) {
-            e.preventDefault();
-            const pivotID = $(this).data('producto-venta-id');
-            await eliminarPedido(pivotID);
-        });
+        listaPendientes.off('.pedidos-pendientes');
+
+        listaPendientes 
+            .on('click.pedidos-pendientes', '.borrar-pventa-btn', async function(e) {
+                e.preventDefault();
+                const pivotID = $(this).data('producto-venta-id');
+                await eliminarPedido(pivotID);
+            })
+            .on('click.pedidos-pendientes', '.incrementar-simple', async function(e) {
+                e.preventDefault();
+                const productoIncrementarID = parseInt(this.dataset.productoId, 10);
+                const productoVentaId = parseInt(this.dataset.pventaId, 10);
+                await handleIncrementarProductoSimple(productoIncrementarID, productoVentaId);
+            })
+            .on('click.pedidos-pendientes', '.reducir-simple', async function(e) {
+                e.preventDefault();
+                const productoReducirID = parseInt(this.dataset.productoId, 10);
+                const productoVentaId = parseInt(this.dataset.pventaId, 10);
+                await handleReducirProductoSimple(productoReducirID, productoVentaId);
+            });
+    }
+
+    const handleIncrementarProductoSimple = async (productoIncrementarID, productoVentaId) => {
+        try {
+            const respuestaIncremento = await VentaService.agregarProductoVenta(productoIncrementarID, 1);
+            $(`#cantidad-pventa-${productoVentaId}`).text(respuestaIncremento.data.cantidad);
+        } catch (error) {
+            if (error.response?.data?.stockProducto === 0) {
+                mostrarToastAdvertencia("Límite alcanzado");
+                return;
+            }
+            mostrarToastError("Ha sucedido un error al incrementar el pedido.");
+        }
+    }
+
+    const handleReducirProductoSimple = (productoReducirID, productoVentaId) => {
+        console.log(`Intento de disminuir el producto simple: ${productoReducirID}, con pventaID: ${productoVentaId}`);
     }
 
     const eliminarPedido = async (pivotID) => {
@@ -313,23 +324,20 @@
             mostrarToastSuccess("Pedido eliminado con éxito");
             console.log('Orden eliminada correctamente');
         } catch (error) {
-            // 1. Check if the error is an Axios error with a server response
             const serverResponse = error.response?.data; 
             
-            // 2. Default error message
             let errorMessage = "Ha sucedido un error al eliminar el pedido."; 
 
-            // 3. Check if the server response contains a 'message'
             if (serverResponse && serverResponse.message) {
                 console.log("Hay message en la respuesta del servidor");
                 errorMessage = serverResponse.message;
             } 
             
-            // Display the correct error message
             mostrarToastError(errorMessage);
             console.error('Error al eliminar pedido:', error);
         }
     }
+
 
     const reemplazarCardProductoVenta = (productoVenta) => {
         const cardAntiguo = $(`#pedido-item-${productoVenta.pivot_id}`);
@@ -401,6 +409,16 @@
         }, 3000);
     }
 
+    const mostrarToastAdvertencia = (mensaje) => {
+        const toasterror = $('#toast-warning');
+        toasterror.text(mensaje);
+        const toast = new bootstrap.Toast(toasterror);
+        toast.show()
+        setTimeout(() => {
+            toast.hide();
+        }, 3000);
+    }
+
     const mostrarToastError = (mensaje) => {
         const toasterror = $('#toast-error');
         toasterror.text(mensaje);
@@ -411,18 +429,40 @@
         }, 3000);
     }
 
-    const renderizarBotonAccion = (producto) => {
-        if (producto.tipo == "simple") {
+    const renderizarBotonAccion = (prod_venta) => {
+        if (prod_venta.tipo == "simple" && prod_venta.aceptado == false) {
+            // De ser un producto simple y estar pendiente la orden, renderizar el stepper
             return `
-            
+                <div class="quantity-controls bg-light border rounded d-flex align-items-center">
+                    <button class="btn btn-xs btn-outline-secondary border-0 reducir-simple"
+                            type="button"
+                            data-producto-id="${prod_venta.id}"
+                            data-pventa-id=${prod_venta.pivot_id}
+                            title="Disminuir cantidad">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <span id="cantidad-pventa-${prod_venta.pivot_id}"
+                        class="px-1 fw-semibold product-quantity"
+                        data-producto-id="${prod_venta.id}">
+                        ${prod_venta.cantidad}
+                    </span>
+                    <button class="btn btn-xs btn-outline-secondary border-0 incrementar-simple"
+                            type="button"
+                            data-producto-id="${prod_venta.id}"
+                            data-pventa-id=${prod_venta.pivot_id}
+                            title="Aumentar cantidad">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
             `
-        } else if (producto.tipo == "complejo") {
+        } else if (prod_venta.tipo == "complejo") {
+            // De ser un producto complejo, renderizar el listado de ordenes
             return `
                 <button
-                    data-producto-id="${producto.id}"
-                    data-producto-venta-id="${producto.pivot_id}"
-                    data-producto-nombre="${producto.nombre}"
-                    class="btn btn-s bg-highlight font-500 listado-ordenes-trigger" style="z-index: 10">
+                    data-producto-id="${prod_venta.id}"
+                    data-producto-venta-id="${prod_venta.pivot_id}"
+                    data-producto-nombre="${prod_venta.nombre}"
+                    class="btn btn-s bg-highlight font-500 listado-ordenes-trigger" style="z-index: 10; min-width: 6rem;">
                     Mi Pedido
                 </button>
             `
