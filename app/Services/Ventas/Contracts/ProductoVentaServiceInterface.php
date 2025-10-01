@@ -71,6 +71,11 @@ interface ProductoVentaServiceInterface
     public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad): VentaResponse;
 
     /**
+     * Disminuye ordenes de un producto sin aceptar por parte del cliente
+     */
+    public function disminuirProductoCLiente(Venta $venta, int $producto_venta_id): VentaResponse;
+
+    /**
      * Obtener información detallada de los productos registrados para una venta
      */
     public function obtenerProductosVenta(Venta $venta_activa): VentaResponse;

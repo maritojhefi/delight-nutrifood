@@ -299,6 +299,17 @@ class VentasWebController extends Controller
         return response()->json($respuestaVenta, Response::HTTP_CREATED);
     }
 
+    public function disminuirProductoVenta(Request $request): JsonResponse {
+        $producto_venta_id = $request->producto_venta_id;
+        $ventaActiva = $this->validarVentaActiva();
+
+        $respuestaDisminucion = $this->productoVentaService->disminuirProductoCLiente($ventaActiva, $producto_venta_id);
+        if (!$respuestaDisminucion->success) {
+            return response()->json($respuestaDisminucion, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json($respuestaDisminucion, Response::HTTP_OK);
+    }
     private function validarVentaActiva()
     {
         $user = auth()->user();

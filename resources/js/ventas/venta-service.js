@@ -36,6 +36,14 @@ export const agregarProductoVenta = async (productoID, cantidad, IDsAdicionales 
     }
 }
 
+
+export const disminuirProductoVenta = async(producto_venta_ID) => {
+    const response = await axios.patch(`/ventas/producto/disminuir-orden`, {
+        producto_venta_id: producto_venta_ID,
+    });
+    return response.data;
+}
+
 export const productosVenta = async() => {
     const response = await axios.get('/ventas/productos');
     return response.data;
@@ -77,5 +85,6 @@ window.VentaService = {
     productoVenta,
     actualizarObservacionPorID,
     eliminarOrdenIndex,
-    eliminarPedidoCompleto
+    eliminarPedidoCompleto,
+    disminuirProductoVenta
 }

@@ -123,8 +123,14 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             // Actualizar totales
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
+            $productoVenta = $venta->productos()
+                ->where('producto_id', $producto->id)
+                ->wherePivot('aceptado', false)
+                ->withPivot('id', 'cantidad', 'adicionales')
+                ->first();
+
             return VentaResponse::success(
-                null,
+                $productoVenta ? $productoVenta->pivot : null,
                 "Se eliminó 1 {$producto->nombre} de esta venta"
             );
         } catch (VentaException $e) {
@@ -534,6 +540,76 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             return VentaResponse::success(null, 'Adicionales actualizados');
         } catch (\Exception $e) {
             return VentaResponse::error('Error al actualizar adicionales: ' . $e->getMessage());
+        }
+    }
+
+    public function disminuirProductoCLiente(Venta $venta, int $producto_venta_id): VentaResponse 
+    {
+        try {
+            return DB::transaction(function () use ($venta, $producto_venta_id) {
+                // $habilitadoAceptados = auth()->check() && in_array(auth()->user()->role->nombre, ['admin', 'cajero']);
+
+                if ($venta->pagado) {
+                    throw VentaException::ventaPagada();
+                }
+
+                Log::debug("consulta disminuirProductoCliente con pventa id : $producto_venta_id, y producto_id: $venta->id.", []);
+
+                $registro = DB::table('producto_venta')
+                        ->where('id', $producto_venta_id)
+                        ->where('venta_id', $venta->id)
+                        ->where('aceptado', false)
+                        ->lockForUpdate() // Add pessimistic locking
+                        ->first();
+
+                
+
+                if (!$registro) {
+                    throw new \Exception('El producto no existe en esta venta');
+                }
+
+                $producto = Producto::publicoTienda()->find($registro->producto_id);
+
+                // Restaurar stock si es contable
+                if ($producto->contable) {
+                    $stockResponse = $this->stockService->actualizarStock($producto, 'restar', 1, $venta->sucursale_id);
+                    if (!$stockResponse->success) {
+                        throw new \Exception('Error al restaurar stock: ' . $stockResponse->message);
+                    }
+                }
+
+                if ($registro->cantidad <= 1) {
+                    throw new VentaException("No puede disminuir mas", "warning");
+                }
+
+                DB::table('producto_venta')
+                    ->where('venta_id', $venta->id)
+                    ->where('producto_id', $producto->id)
+                    ->decrement('cantidad', 1);
+
+                $this->actualizarAdicionales($venta, $producto, 'restar');
+
+                // Actualizar totales
+                $this->calculadoraService->actualizarTotalesVenta($venta);
+                
+                $productoVenta = $venta->productos()
+                    ->where('producto_id', $producto->id)
+                    ->wherePivot('aceptado', false)
+                    ->withPivot('id', 'cantidad', 'adicionales')
+                    ->first();
+
+                return VentaResponse::success(
+                    $productoVenta ? $productoVenta->pivot : null,
+                    "Se eliminó 1 {$producto->nombre} de esta venta"
+                );
+            });
+        } catch (VentaException $e) {
+            if ($e->type == "warning") {
+                return VentaResponse::warning($e->getMessage());
+            }
+            return VentaResponse::error($e->getMessage(), [], null);
+        } catch (\Exception $e) {
+            return VentaResponse::error('Error al eliminar producto: ' . $e->getMessage());
         }
     }
 

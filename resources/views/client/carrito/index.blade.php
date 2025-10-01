@@ -310,8 +310,17 @@
         }
     }
 
-    const handleReducirProductoSimple = (productoReducirID, productoVentaId) => {
-        console.log(`Intento de disminuir el producto simple: ${productoReducirID}, con pventaID: ${productoVentaId}`);
+    const handleReducirProductoSimple = async (productoVentaId) => {
+        try {
+            const respuestaReduccion = await VentaService.disminuirProductoVenta(productoVentaId);
+            $(`#cantidad-pventa-${productoVentaId}`).text(respuestaReduccion.data.cantidad);
+        } catch (error) {
+            if (error.response?.data.type == "warning") {
+                // // mostrarToastAdvertencia("Límite alcanzado");
+                return;
+            }
+            mostrarToastError("Ha sucedido un error al disminuir el pedido.");
+        }
     }
 
     const eliminarPedido = async (pivotID) => {
