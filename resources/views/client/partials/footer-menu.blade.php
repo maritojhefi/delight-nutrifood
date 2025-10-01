@@ -60,7 +60,7 @@
     <a href="{{ route('carrito') }}"
         class="{{ request()->is('carrito' . '*') ? 'active-nav rounded-m' : '' }} cargando">
         @if ($tiene_venta_activa)
-            <i data-lucide="hand-platter" class="lucide-icon {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i>
+            <i><i data-lucide="hand-platter" class="lucide-icon color {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i></i>
         @else
             <i class="fa fa-shopping-cart {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i>
         @endif
