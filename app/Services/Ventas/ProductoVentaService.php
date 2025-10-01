@@ -552,9 +552,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 if ($venta->pagado) {
                     throw VentaException::ventaPagada();
                 }
-
-                Log::debug("consulta disminuirProductoCliente con pventa id : $producto_venta_id, y producto_id: $venta->id.", []);
-
+                
                 $registro = DB::table('producto_venta')
                         ->where('id', $producto_venta_id)
                         ->where('venta_id', $venta->id)

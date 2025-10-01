@@ -293,7 +293,7 @@
                 e.preventDefault();
                 const productoReducirID = parseInt(this.dataset.productoId, 10);
                 const productoVentaId = parseInt(this.dataset.pventaId, 10);
-                await handleReducirProductoSimple(productoReducirID, productoVentaId);
+                await handleReducirProductoSimple(productoVentaId);
             });
     }
 
