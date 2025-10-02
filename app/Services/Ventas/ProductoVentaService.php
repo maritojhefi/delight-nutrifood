@@ -482,6 +482,75 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
+    public function actualizarOrdenVentaCliente($productoVenta, Producto $producto, Collection $adicionalesNuevos, int $indice): VentaResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $adicionalesOriginales = json_decode($productoVenta->adicionales, true);
+
+            if (isset($adicionalesOriginales[$indice])) {
+                foreach ($adicionalesOriginales[$indice] as $nombreAdicional) {
+                    $adicional = Adicionale::where('nombre', key($nombreAdicional))->first();
+                    if ($adicional) {
+                        Log::debug("Incrementando stock para adicional a reemplazar: {$adicional->nombre}");
+                        if ($adicional->contable) {
+                            $adicional->increment('cantidad');
+                            $adicional->save();
+                        }
+                    }
+                }
+            }
+
+            $adicionalesNuevos = $adicionalesNuevos->fresh();
+            $verificacionStock = $this->stockService->verificarStockCompleto($producto, $adicionalesNuevos, 1, 1);
+
+            if (!$verificacionStock->success) {
+                DB::rollBack();
+                return VentaResponse::error("stock-insuficiente", [422],$verificacionStock->toArray() );
+            }
+
+            if ($adicionalesNuevos->isEmpty()) {
+                $adicionalesOriginales[$indice] = []; 
+            } else {
+                foreach ($adicionalesNuevos as $adicional) {
+                    if ($adicional->contable == true && $adicional->cantidad == 0) {
+                        DB::rollBack();
+                        return VentaResponse::warning("No hay stock suficiente para el extra: {$adicional->nombre}.");
+                    }
+                }
+
+                $nuevoArray = [];
+                foreach ($adicionalesNuevos as $adicional) {
+                    if ($adicional->contable == true) {
+                        $adicional->decrement('cantidad', 1);
+                        $adicional->save();
+                    }
+                    $nuevoArray[] = [$adicional->nombre => $adicional->precio];
+                }
+                
+                $adicionalesOriginales[$indice] = $nuevoArray;
+            }
+
+            DB::table('producto_venta')
+                ->where('id', $productoVenta->id)
+                ->update(['adicionales' => json_encode($adicionalesOriginales)]);
+
+            DB::commit();
+
+            // Pendiente, retornar informacion transformada incluyendo datos para re-renderizar el card
+            return VentaResponse::success($adicionalesOriginales, "Adicionales actualizados correctamente");
+            
+        } catch (VentaException $e) {
+            DB::rollBack();
+            return VentaResponse::error($e->getMessage(), [], null);
+        } catch (\Exception  $e) {
+            DB::rollBack();
+            return VentaResponse::error('Error al actualizar adicionales: ' . $e->getMessage());
+        }
+    }
+
+
     private function procesarAdicionalesBatch(Venta $venta, int $productoId, Collection $extras, int $cantidad)
     {
         try {
@@ -815,6 +884,42 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 'trace' => $e->getTraceAsString()
             ]);
 
+            return VentaResponse::error('Error interno del servidor');
+        }
+    }
+
+    public function obtenerOrdenPorIndice(Venta $venta, int $producto_venta_id, int $indice): VentaResponse 
+    {
+        try {
+            if (!$venta) {
+                return VentaResponse::error('No se encontró una venta activa');
+            }
+
+            // Consultar por el registro del producto especifico para el pivot solicitado
+            $registro = DB::table('producto_venta')
+            ->where('aceptado',false)
+            ->find($producto_venta_id);
+
+            $adicionalesProductoVenta = json_decode($registro->adicionales, true);;
+            $adicionalesIndice = $adicionalesProductoVenta[$indice];
+
+            // Log::debug("Adicionales para el ProductoVenta escogido: ", [$adicionalesProductoVenta]);
+            // Log::debug("Adicionales para el Indice escogido: ", [$adicionalesIndice]);
+            
+            $adicionales = [];
+            
+            foreach ($adicionalesIndice as $adic) {
+                $adicional = Adicionale::where('nombre', key($adic))->first();
+                // Log::debug("valor del adicional $adicional->nombre:" , [$adicional]);
+                $adicionales[] = [
+                    "id" => $adicional->id,
+                    "nombre" => $adicional->nombre,
+                    "precio" => $adicional->precio
+                ];
+            }
+            return VentaResponse::success($adicionales,"Exito en el llamado al servicio");
+            
+        } catch (\Throwable $th) {
             return VentaResponse::error('Error interno del servidor');
         }
     }

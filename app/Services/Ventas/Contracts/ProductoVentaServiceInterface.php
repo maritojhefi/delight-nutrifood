@@ -84,4 +84,14 @@ interface ProductoVentaServiceInterface
      * Obtener información detallada de un producto registrado para una venta
      */
     public function obtenerProductoVentaIndividual(Venta $venta, $idProducto): VentaResponse;
+
+    /**
+     * Obtener información detallada de una orden segun el indice y el identificador de producto_venta
+     */
+    public function obtenerOrdenPorIndice(Venta $venta, int $producto_venta_id, int $indice): VentaResponse;
+
+    /**
+     * Actualiza los adicionales asignados a una orden en un registro de producto_venta segun su indice;
+     */
+    public function actualizarOrdenVentaCliente($productoVenta, Producto $producto, Collection $adicionalesNuevos, int $indice): VentaResponse;
 }

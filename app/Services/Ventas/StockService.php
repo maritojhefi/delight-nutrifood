@@ -182,7 +182,8 @@ class StockService implements StockServiceInterface
         //     'stock_suficiente' => $stockSuficiente
         // ]);
         
-        return new VerificacionStockResponse($stockSuficiente,
+        return new VerificacionStockResponse(
+            $stockSuficiente,
             $stockProducto,
             $cantidadSolicitada,
             $cantidadMaxima,

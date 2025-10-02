@@ -133,6 +133,61 @@ class VentasWebController extends Controller
         return response()->json($response->toArray(), $statusCode);
     }
 
+    public function obtenerOrdenIndice(int $producto_venta_id, int $indice): JsonResponse 
+    {
+        $ventaActiva = $this->validarVentaActiva();
+
+        $response = $this->productoVentaService->obtenerOrdenPorIndice($ventaActiva, $producto_venta_id, $indice);
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+    public function actualizarOrdenIndice(Request $request): JsonResponse 
+    {
+        $ventaActiva = $this->validarVentaActiva();
+
+        $producto_venta_id = $request->producto_venta_id;
+
+        $habilitadoAceptados = auth()->check() && in_array(auth()->user()->role->nombre, ['admin', 'cajero']);
+
+        $consultaPV = DB::table('producto_venta')
+            ->where('id', $producto_venta_id,);
+
+        if(!$habilitadoAceptados) {
+            $consultaPV->where('aceptado', false);
+        }
+
+        $productoVenta = $consultaPV->first();
+
+        if (!$productoVenta) {
+            throw new \Exception('ProductoVenta no encontrado');
+        }
+
+        $indice = $request->indice;
+        $adicionales_ids = $request->adicionalesIds;
+
+        $producto = Producto::publicoTienda()->findOrFail($productoVenta->producto_id); 
+        if (! $producto) {
+            return response()->json([
+                'message'=> 'El producto solicitado no existe',
+                'error' => 'No se encontro una registro de producto perteneciente al identificador utilizado'
+            ],Response::HTTP_NOT_FOUND);
+        }
+        $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get()->keyBy('id');
+
+        $response = $this->productoVentaService
+            ->actualizarOrdenVentaCliente($productoVenta,$producto,$adicionales, $indice);
+
+        if (!$response->success) {
+            if (in_array(422, $response->errors)) {
+                return response()->json($response->data, Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+            return response()->json($response, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
     public function actualizarObservacionVenta(Request $request): JsonResponse
     {
         $ventaActiva = $this->validarVentaActiva();
@@ -310,6 +365,7 @@ class VentasWebController extends Controller
 
         return response()->json($respuestaDisminucion, Response::HTTP_OK);
     }
+
     private function validarVentaActiva()
     {
         $user = auth()->user();

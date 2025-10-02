@@ -15,6 +15,8 @@
     </div>
 </div>
 
+<x-menu-adicionales-producto :isUpdate="true" />
+
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
@@ -136,6 +138,56 @@
             }, 3000);
         }
 
+        const renderizarCardOrden = (info, adicionales, indice) => {
+            const precioAdicionalesItem = adicionales.reduce((sum, adicional) => {
+                return sum + (parseFloat(adicional.precio) || 0);
+            }, 0);
+
+            return `
+                <li id="pedido-${info.pivot_id}-orden-${indice}"
+                    data-producto-id=${info.id}
+                    data-pventa-id=${info.pivot_id}
+                    data-orden-index="${indice}"
+                    class="actualizar-orden-venta"
+                    style="list-style-type: none">
+                    <div class="card card-style">
+                        <div class="card-header bg-teal-light">
+                            <div class="card-title mb-0 d-flex flex-row justify-content-between">
+                                <h4 class="mb-0">Orden N° ${indice}</h4>
+                                ${info.aceptado ? `` : `
+                                <button
+                                    data-pventa-id="${info.pivot_id}"
+                                    data-orden-index="${indice}"
+                                    class="borrar-orden-pventa"
+                                >
+                                    <i class="lucide-icon" data-lucide="trash-2"></i>
+                                </button>
+                                `}
+                            </div>
+                        </div>
+                        
+                        <div class="card-body bg-dtheme-blue">
+                            ${adicionales.length <= 0 ? `
+                                <span class="color-theme">Sin extras</span>
+                            `:`
+                            <h5 class="color-teal-light">Adicionales ${precioAdicionalesItem > 0 ? `(Bs. ${precioAdicionalesItem.toFixed(2)})` : ''}</h5>
+                            <ul class="row mb-0 ps-1">
+                                ${adicionales.map(adicional => `
+                                    <li class="col-6 color-theme" style="list-style-type: none">
+                                        ${adicional.nombre}
+                                        ${adicional.precio > 0 ? ` <span class="text-muted">(${parseFloat(adicional.precio).toFixed(2)})</span>` : ''}
+                                        ${adicional.limitado ? '<span class="text-danger"> (Limitado)</span>' : ''}
+                                        ${adicional.cantidad > 1 ? ` (x${adicional.cantidad})` : ''}
+                                    </li>
+                                `).join('')}
+                            </ul>
+                            `}
+                        </div>
+                    </div>
+                </li>
+            `;
+        }
+
         const renderizarListadoOrdenes = (info) => {
             // Convertir al objeto info en un array de pares [key, value]
             const ordenesEntries = Object.entries(info.adicionales);
@@ -144,48 +196,56 @@
             listaPrincipal.html(`
                 ${ordenesEntries.map(([ordenKey, adicionales]) => {
                     // Calcular el costo de adicionales para la orden
-                    const precioAdicionalesItem = adicionales.reduce((sum, adicional) => {
-                        return sum + (parseFloat(adicional.precio) || 0);
-                    }, 0);
+                    // const precioAdicionalesItem = adicionales.reduce((sum, adicional) => {
+                    //     return sum + (parseFloat(adicional.precio) || 0);
+                    // }, 0);
+
+                    return renderizarCardOrden(info, adicionales, ordenKey);
                     
-                    return `
-                        <li id="pedido-${info.pivot_id}-orden-${ordenKey}" style="list-style-type: none">
-                            <div class="card card-style">
-                                <div class="card-header bg-teal-light">
-                                    <div class="card-title mb-0 d-flex flex-row justify-content-between">
-                                        <h4 class="mb-0">Orden N° ${ordenKey}</h4>
-                                        ${info.aceptado ? `` : `
-                                        <button
-                                            data-pventa-id="${info.pivot_id}"
-                                            data-orden-index="${ordenKey}"
-                                            class="borrar-orden-pventa"
-                                        >
-                                            <i class="lucide-icon" data-lucide="trash-2"></i>
-                                        </button>
-                                        `}
-                                    </div>
-                                </div>
+                    // return `
+                    //     <li id="pedido-${info.pivot_id}-orden-${ordenKey}"
+                    //         data-producto-id=${info.id}
+                    //         data-pventa-id=${info.pivot_id}
+                    //         data-orden-index="${ordenKey}"
+                    //         class="actualizar-orden-venta"
+                    //         style="list-style-type: none">
+                    //         <div class="card card-style">
+                    //             <div class="card-header bg-teal-light">
+                    //                 <div class="card-title mb-0 d-flex flex-row justify-content-between">
+                    //                     <h4 class="mb-0">Orden N° ${ordenKey}</h4>
+                    //                     ${info.aceptado ? `` : `
+                    //                     <button
+                    //                         data-pventa-id="${info.pivot_id}"
+                    //                         data-orden-index="${ordenKey}"
+                    //                         class="borrar-orden-pventa"
+                    //                     >
+                    //                         <i class="lucide-icon" data-lucide="trash-2"></i>
+                    //                     </button>
+                    //                     `}
+                    //                 </div>
+                    //             </div>
                                 
-                                <div class="card-body bg-dtheme-blue">
-                                    ${adicionales.length <= 0 ? `
-                                        <span class="color-theme">Sin extras</span>
-                                    `:`
-                                    <h5 class="color-teal-light">Adicionales ${precioAdicionalesItem > 0 ? `(Bs. ${precioAdicionalesItem.toFixed(2)})` : ''}</h5>
-                                    <ul class="row mb-0 ps-1">
-                                        ${adicionales.map(adicional => `
-                                            <li class="col-6 color-theme" style="list-style-type: none">
-                                                ${adicional.nombre}
-                                                ${adicional.precio > 0 ? ` <span class="text-muted">(${parseFloat(adicional.precio).toFixed(2)})</span>` : ''}
-                                                ${adicional.limitado ? '<span class="text-danger"> (Limitado)</span>' : ''}
-                                                ${adicional.cantidad > 1 ? ` (x${adicional.cantidad})` : ''}
-                                            </li>
-                                        `).join('')}
-                                    </ul>
-                                    `}
-                                </div>
-                            </div>
-                        </li>
-                    `;
+                    //             <div class="card-body bg-dtheme-blue">
+                    //                 ${adicionales.length <= 0 ? `
+                    //                     <span class="color-theme">Sin extras</span>
+                    //                 `:`
+                    //                 <h5 class="color-teal-light">Adicionales ${precioAdicionalesItem > 0 ? `(Bs. ${precioAdicionalesItem.toFixed(2)})` : ''}</h5>
+                    //                 <ul class="row mb-0 ps-1">
+                    //                     ${adicionales.map(adicional => `
+                    //                         <li class="col-6 color-theme" style="list-style-type: none">
+                    //                             ${adicional.nombre}
+                    //                             ${adicional.precio > 0 ? ` <span class="text-muted">(${parseFloat(adicional.precio).toFixed(2)})</span>` : ''}
+                    //                             ${adicional.limitado ? '<span class="text-danger"> (Limitado)</span>' : ''}
+                    //                             ${adicional.cantidad > 1 ? ` (x${adicional.cantidad})` : ''}
+                    //                         </li>
+                    //                     `).join('')}
+                    //                 </ul>
+                    //                 `}
+                    //             </div>
+                    //         </div>
+                    //     </li>
+                    // `;
+                
                 }).join('')}
             `);
 

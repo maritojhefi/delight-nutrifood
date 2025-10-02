@@ -103,6 +103,8 @@ Route::prefix('/ventas')
         Route::patch('/producto/eliminar-orden', [App\Http\Controllers\VentasWebController::class,'eliminarOrdenIndice']);
         Route::patch('/producto/disminuir-orden', [App\Http\Controllers\VentasWebController::class,'disminuirProductoVenta']);
         Route::delete('/producto/{producto_venta_ID}', [App\Http\Controllers\VentasWebController::class,'eliminarPedido']);
+        Route::get('/producto/{producto_venta_id}/orden/{indice}', [App\Http\Controllers\VentasWebController::class,'obtenerOrdenIndice']);
+        Route::patch('/productos/actualizar-orden', [App\Http\Controllers\VentasWebController::class,'actualizarOrdenIndice']);
     });
 Route::post('/ventas/producto', [App\Http\Controllers\VentasWebController::class, 'agregarProductoVenta']);
 

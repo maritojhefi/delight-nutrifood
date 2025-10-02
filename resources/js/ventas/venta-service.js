@@ -72,6 +72,20 @@ export const eliminarOrdenIndex = async (pivotID, index) => {
     return response;
 }
 
+export const ordenVentaIndex = async(producto_venta_id, indice) => {
+    const response = await axios.get(`/ventas/producto/${producto_venta_id}/orden/${indice}`);
+    return response.data;
+}
+
+export const actualizarOrdenVentaIndex = async(productoVentaId, indice, adicionalesIds) => {
+    const response = await axios.patch(`/ventas/productos/actualizar-orden`, {
+        producto_venta_id: productoVentaId,
+        indice: indice,
+        adicionalesIds: adicionalesIds,
+    });
+    return response.data;
+}
+
 export const eliminarPedidoCompleto = async (pivotID) => {
     const response = await axios.delete(`/ventas/producto/${pivotID}`);
     return response;
@@ -86,5 +100,7 @@ window.VentaService = {
     actualizarObservacionPorID,
     eliminarOrdenIndex,
     eliminarPedidoCompleto,
-    disminuirProductoVenta
+    disminuirProductoVenta,
+    ordenVentaIndex,
+    actualizarOrdenVentaIndex
 }
