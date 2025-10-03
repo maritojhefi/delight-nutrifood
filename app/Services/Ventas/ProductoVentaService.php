@@ -474,6 +474,8 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 throw new VentaException("Error al obtener el registro correspondiente", "error", [],404);
             }
 
+            $this->calculadoraService->actualizarTotalesVenta($venta);
+
             return VentaResponse::success(
                 $productoVenta ? $productoVentaInfo->data : null,
                 "ProductoVenta agregado/actualizado exitosamente"
@@ -539,6 +541,8 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             if (!$solicitudInfoProducto->success) {
                 throw new VentaException("No se pudo obtener la informacion del pedido.", 'error', [], 500);
             }
+
+            $this->calculadoraService->actualizarTotalesVenta($venta);
 
             return VentaResponse::success($solicitudInfoProducto->toArray(), "Adicionales actualizados correctamente");
         } catch (VentaException $e) {
@@ -667,6 +671,8 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     ->withPivot('id', 'cantidad', 'adicionales')
                     ->first();
 
+                $this->calculadoraService->actualizarTotalesVenta($venta);
+
                 return VentaResponse::success(
                     $productoVenta ? $productoVenta->pivot : null,
                     "Se eliminó 1 {$producto->nombre} de esta venta"
@@ -743,8 +749,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     ->where('id', $producto_venta_id)
                     ->decrement('cantidad');
 
-                // // Actualizar totales
-                // $this->calculadoraService->actualizarTotalesVenta($venta);
+                $this->calculadoraService->actualizarTotalesVenta($venta);
 
                 return VentaResponse::success(null, 'Item eliminado correctamente');
             });
@@ -817,6 +822,8 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
                 // Eliminar registrod de la tabla pivote
                 DB::table('producto_venta')->where('id', $pivot->id)->delete();
+
+                $this->calculadoraService->actualizarTotalesVenta($venta);
 
                 return VentaResponse::success(null, "solicitud realizada exitosamente");
             });
