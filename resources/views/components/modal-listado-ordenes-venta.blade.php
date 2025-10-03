@@ -112,6 +112,13 @@
             }
         }
 
+        window.reemplazarCardOrdenIndice = (infoProductoVenta, indice) => {
+            const adicionalesIndice = infoProductoVenta.adicionales[indice];
+            const cardAntiguo = $(`#pedido-${infoProductoVenta.pivot_id}-orden-${indice}`);
+            const cardNuevo = renderizarCardOrden(infoProductoVenta, adicionalesIndice, indice);
+            cardAntiguo.replaceWith(cardNuevo);
+        }
+
         const eliminarCardOrdenIndice = (pivotID,index) => {
             // console.log("card a eliminar: ", pivotID);
             const cardEliminar = $(`#pedido-${pivotID}-orden-${index}`);

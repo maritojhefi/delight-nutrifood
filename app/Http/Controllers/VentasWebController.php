@@ -9,6 +9,7 @@ use App\Models\Venta;
 use App\Services\Ventas\Contracts\ProductoVentaServiceInterface;
 use App\Services\Ventas\Contracts\StockServiceInterface;
 use App\Services\Ventas\DTOs\VentaResponse;
+use App\Services\Ventas\Exceptions\VentaException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -144,48 +145,50 @@ class VentasWebController extends Controller
 
     public function actualizarOrdenIndice(Request $request): JsonResponse 
     {
-        $ventaActiva = $this->validarVentaActiva();
+        try {
+            $ventaActiva = $this->validarVentaActiva();
 
-        $producto_venta_id = $request->producto_venta_id;
+            $producto_venta_id = $request->producto_venta_id;
 
-        $habilitadoAceptados = auth()->check() && in_array(auth()->user()->role->nombre, ['admin', 'cajero']);
+            $habilitadoAceptados = auth()->check() && in_array(auth()->user()->role->nombre, ['admin', 'cajero']);
 
-        $consultaPV = DB::table('producto_venta')
-            ->where('id', $producto_venta_id,);
+            $consultaPV = DB::table('producto_venta')
+                ->where('id', $producto_venta_id);
 
-        if(!$habilitadoAceptados) {
-            $consultaPV->where('aceptado', false);
-        }
+            if(!$habilitadoAceptados) {
+                $consultaPV->where('aceptado', false);
+            } 
+            // else {
+            //     $consultaPV->where('cliente_id', '!=', auth()->user()->id); 
+            // }
 
-        $productoVenta = $consultaPV->first();
+            $productoVenta = $consultaPV->first();
 
-        if (!$productoVenta) {
-            throw new \Exception('ProductoVenta no encontrado');
-        }
-
-        $indice = $request->indice;
-        $adicionales_ids = $request->adicionalesIds;
-
-        $producto = Producto::publicoTienda()->findOrFail($productoVenta->producto_id); 
-        if (! $producto) {
-            return response()->json([
-                'message'=> 'El producto solicitado no existe',
-                'error' => 'No se encontro una registro de producto perteneciente al identificador utilizado'
-            ],Response::HTTP_NOT_FOUND);
-        }
-        $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get()->keyBy('id');
-
-        $response = $this->productoVentaService
-            ->actualizarOrdenVentaCliente($productoVenta,$producto,$adicionales, $indice);
-
-        if (!$response->success) {
-            if (in_array(422, $response->errors)) {
-                return response()->json($response->data, Response::HTTP_UNPROCESSABLE_ENTITY);
+            if (!$productoVenta) {
+                throw new VentaException("No se pudo obtener la informacion del pedido.", 'error', ["id"=>$producto_venta_id], 500);
             }
-            return response()->json($response, Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
 
-        return response()->json($response, Response::HTTP_OK);
+            $indice = $request->indice;
+            $adicionales_ids = $request->adicionalesIds;
+
+            $producto = Producto::publicoTienda()->findOrFail($productoVenta->producto_id); 
+            if (! $producto) {
+                throw new VentaException("No se pudo obtener la informacion del producto.", 'error', ["id_producto"=>$productoVenta->producto_id],404);
+            }
+            $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get()->keyBy('id');
+
+            $response = $this->productoVentaService
+                ->actualizarOrdenVentaCliente($ventaActiva,$productoVenta,$producto,$adicionales, $indice);
+
+            return response()->json($response->data, Response::HTTP_OK);
+        } catch (VentaException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'type' => $e->type,
+                ...$e->data
+            ], $e->getHttpCode());
+        }
     }
 
     public function actualizarObservacionVenta(Request $request): JsonResponse

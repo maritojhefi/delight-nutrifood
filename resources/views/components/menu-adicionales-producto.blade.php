@@ -747,33 +747,6 @@
         e.preventDefault();
         console.log("LLamado al submit handler");
         const formAdicionales = $(`#detalles-menu-adicionales`);
-        
-        // // VALIDACION: Revisar que todos los radios se encuentren seleccionados 
-        // const gruposRadio = {};
-        // document.querySelectorAll('.input-radio').forEach(radio => {
-        //     const nombreGrupoRadios = radio.name;
-        //     if (!gruposRadio[nombreGrupoRadios]) { 
-        //         gruposRadio[nombreGrupoRadios] = { radios: [], tieneSeleccion: false };
-        //     }
-        //     gruposRadio[nombreGrupoRadios].radios.push(radio);
-        //     if (radio.checked) {
-        //         gruposRadio[nombreGrupoRadios].tieneSeleccion = true;
-        //     }
-        // });
-
-        // // Revisar si falta seleccionar radios en grupos obligatorios
-        // const gruposSinSeleccionar = [];
-        // Object.entries(gruposRadio).forEach(([nombreGrupoRadios, datosGrupo]) => {
-        //     if (!datosGrupo.tieneSeleccion) {
-        //         gruposSinSeleccionar.push(nombreGrupoRadios);
-        //     }
-        // });
-
-        // if (gruposSinSeleccionar.length > 0) {
-        //     // Mostrar alerta de error en caso de radio faltante
-        //     alert(`Por favor selecciona una opción en: ${gruposSinSeleccionar.join(', ')}`);
-        //     return; // Prevenir envio del formulario
-        // }
 
         ocultarMensajeLimitados();
         ocultarMensajeAgotados();
@@ -799,6 +772,7 @@
             estaActualizando(true);
             // const agregarVentaProducto = await VentaService.agregarProductoVenta(infoProducto.id, cantidadSolicitada, IdsAdicionalesSeleccionados);
             const responseActualizarOdenVenta = await VentaService.actualizarOrdenVentaIndex(infoOrden.pventaId, infoOrden.indice, IdsAdicionalesSeleccionados);
+            reemplazarCardOrdenIndice(responseActualizarOdenVenta.data, infoOrden.indice);
             mostrarToastSuccess("Su pedido fue actualizado");
             estaActualizando(false);
             closeDetallesMenu();
@@ -806,6 +780,7 @@
             console.log("Error al actualizar la info: ", error)
             if (error.response && error.response.status == 422) {
                 console.log("Error capturado stock")
+                console.log("Error.response: ", error.response);
                 // console.log("Valor actual de error.response.data: ", error.response.data);
                 // Informacion recibida de validacion inexitosa en backend
                 const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaximaPosible,
@@ -862,7 +837,6 @@
             }
         }
     }
-
 
     const ocultarMensajeLimitados = () => {
         const containerAdvertencia = document.getElementById('error-limitados-container');

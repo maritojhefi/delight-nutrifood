@@ -10,11 +10,16 @@ class VentaException extends Exception
         string $message = "",
         public ?string $type = 'error',
         public array $data = [],
-        int $code = 0,
+        int $code = 500,
         ?Exception $previous = null
     ) {
         parent::__construct($message, $code, $previous);
     }
+
+    public function getHttpCode(): int
+    {
+        return $this->getCode();
+    }    
 
     public static function ventaPagada(): self
     {
@@ -55,8 +60,8 @@ class VentaException extends Exception
     {
         return new self('Aún no se despachó el pedido desde cocina.', 'warning');
     }
-    public static function sinStockOrden(array $stockData): self
+    public static function sinStockOrden(array $stockData, int $code): self
     {
-        return new self('Stock insuficiente para completar la solicitud', 'warning', $stockData);
+        return new self('Stock insuficiente para completar la solicitud', 'warning', $stockData, $code);
     }
 }

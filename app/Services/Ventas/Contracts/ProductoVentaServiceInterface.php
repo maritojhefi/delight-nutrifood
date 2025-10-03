@@ -93,5 +93,5 @@ interface ProductoVentaServiceInterface
     /**
      * Actualiza los adicionales asignados a una orden en un registro de producto_venta segun su indice;
      */
-    public function actualizarOrdenVentaCliente($productoVenta, Producto $producto, Collection $adicionalesNuevos, int $indice): VentaResponse;
+    public function actualizarOrdenVentaCliente(Venta $venta, $productoVenta, Producto $producto, Collection $adicionalesNuevos, int $indice): VentaResponse;
 }

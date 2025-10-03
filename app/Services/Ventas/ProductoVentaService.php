@@ -482,7 +482,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
-    public function actualizarOrdenVentaCliente($productoVenta, Producto $producto, Collection $adicionalesNuevos, int $indice): VentaResponse
+    public function actualizarOrdenVentaCliente(Venta $venta, $productoVenta, Producto $producto, Collection $adicionalesNuevos, int $indice): VentaResponse
     {
         try {
             DB::beginTransaction();
@@ -493,7 +493,6 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 foreach ($adicionalesOriginales[$indice] as $nombreAdicional) {
                     $adicional = Adicionale::where('nombre', key($nombreAdicional))->first();
                     if ($adicional) {
-                        Log::debug("Incrementando stock para adicional a reemplazar: {$adicional->nombre}");
                         if ($adicional->contable) {
                             $adicional->increment('cantidad');
                             $adicional->save();
@@ -503,23 +502,17 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             }
 
             $adicionalesNuevos = $adicionalesNuevos->fresh();
-            $verificacionStock = $this->stockService->verificarStockCompleto($producto, $adicionalesNuevos, 1, 1);
+            $verificacionStock = $this->stockService
+                ->verificarStockCompleto($producto, $adicionalesNuevos, 1, $venta->sucursale->id);
 
             if (!$verificacionStock->success) {
                 DB::rollBack();
-                return VentaResponse::error("stock-insuficiente", [422],$verificacionStock->toArray() );
+                throw VentaException::sinStockOrden($verificacionStock->toArray(), 422);
             }
 
             if ($adicionalesNuevos->isEmpty()) {
                 $adicionalesOriginales[$indice] = []; 
             } else {
-                foreach ($adicionalesNuevos as $adicional) {
-                    if ($adicional->contable == true && $adicional->cantidad == 0) {
-                        DB::rollBack();
-                        return VentaResponse::warning("No hay stock suficiente para el extra: {$adicional->nombre}.");
-                    }
-                }
-
                 $nuevoArray = [];
                 foreach ($adicionalesNuevos as $adicional) {
                     if ($adicional->contable == true) {
@@ -528,7 +521,6 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     }
                     $nuevoArray[] = [$adicional->nombre => $adicional->precio];
                 }
-                
                 $adicionalesOriginales[$indice] = $nuevoArray;
             }
 
@@ -538,18 +530,23 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             DB::commit();
 
-            // Pendiente, retornar informacion transformada incluyendo datos para re-renderizar el card
-            return VentaResponse::success($adicionalesOriginales, "Adicionales actualizados correctamente");
-            
+            $solicitudInfoProducto = $this->obtenerProductoVentaIndividual($venta, $productoVenta->id);
+            if (!$solicitudInfoProducto->success) {
+                throw new VentaException("No se pudo obtener la informacion del pedido.", 'error', [], 500);
+            }
+
+            return VentaResponse::success($solicitudInfoProducto->toArray(), "Adicionales actualizados correctamente");
         } catch (VentaException $e) {
             DB::rollBack();
-            return VentaResponse::error($e->getMessage(), [], null);
-        } catch (\Exception  $e) {
+            throw $e;
+        } catch (\Exception $e) {
             DB::rollBack();
-            return VentaResponse::error('Error al actualizar adicionales: ' . $e->getMessage());
+            Log::error('Error al actualizar adicionales: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw new VentaException('Error al actualizar adicionales: ' . $e->getMessage(), 'error', [], 500);
         }
     }
-
 
     private function procesarAdicionalesBatch(Venta $venta, int $productoId, Collection $extras, int $cantidad)
     {
@@ -855,7 +852,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
-    public function obtenerProductoVentaIndividual(Venta $venta, $pivotId): VentaResponse
+    public function obtenerProductoVentaIndividual(Venta $venta, $producto_venta_id): VentaResponse
     {
         try {
             if (!$venta) {
@@ -864,7 +861,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             // Consultar por el registro del producto especifico para el pivot solicitado
             $producto = $venta->productos()
-                ->wherePivot('id', $pivotId)
+                ->wherePivot('id', $producto_venta_id)
                 ->first();
 
             if (!$producto) {
@@ -879,7 +876,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         } catch (\Exception $e) {
             Log::error('Error obteniendo el producto correspondiente a la venta', [
                 'venta_id' => $venta->id ?? null,
-                'pivot_id' => $pivotId,
+                'pivot_id' => $producto_venta_id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
