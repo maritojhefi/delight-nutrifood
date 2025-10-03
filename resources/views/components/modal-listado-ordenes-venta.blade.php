@@ -28,13 +28,9 @@
         
         const prepararListadoOrdenes = (info) => {
             const elementoTitulo = document.getElementById('titulo-listado-ordenes');
-            
-            console.log("Valor de info: ", info)
             elementoTitulo.textContent = info.nombre;
-            console.log("Informacion obtenida sobre el producto: ", info);
             renderizarObservacionPedido(info);
             renderizarListadoOrdenes(info);
-            // reinitializeLucideIcons();
         }
 
         const renderizarObservacionPedido = (info) => {
@@ -74,7 +70,6 @@
             try {
                 await VentaService.actualizarObservacionPorID(pivotID, texto);
                 mostrarToastSuccess("Nota actualizada con éxito");
-                console.log('Observación actualizada correctamente');
             } catch (error) {
                 mostrarToastError("Ha sucedido un error al actualizar la nota.");
                 console.error('Error al actualizar observación:', error);
@@ -83,11 +78,7 @@
 
         const eliminarOrden = async (pivotID, index) => {
             try {
-                console.log(`Intento de eliminar la orden ${index} del producto_venta: ${pivotID}`);
-                
-                // 'response' is only defined inside 'try'
                 const response = await VentaService.eliminarOrdenIndex(pivotID, index); 
-                console.log("response al eliminar el item:", response);
                 // Se renderizan nuevamente los listados, debido a que los indices de producto_venta.adicionales
                 // se reorganizaron
                 
@@ -95,9 +86,9 @@
                 renderizarListadoOrdenes(response.data);
                 // En caso de desear solo eliminar el card de la orden seleccionada, usar la funcion comentada
                 // // eliminarCardOrdenIndice(pivotID, index);
+                // Actualizar la informacion del pedido general
                 window.reemplazarCardProductoVenta(response.data);
                 mostrarToastSuccess("Orden eliminada con éxito");
-                console.log('Orden eliminada correctamente');
             } catch (error) {
                 const serverResponse = error.response?.data; 
                 
@@ -260,14 +251,11 @@
             
             listaPrincipal.off('click', '.borrar-orden-pventa').on('click', '.borrar-orden-pventa', async function(e) {
                 e.preventDefault();
-
+                e.stopPropagation();
+                
                 const pivotID = $(this).data('pventa-id');
                 const index = $(this).data('orden-index');
-                // const tagNombre = $(this).data('tag-nombre');
                 await eliminarOrden(pivotID, index);
-                // const infoActualizada = await VentaService.productoVenta(pivotID)
-                // const infoProducto = response.data;
-                // renderizarListadoOrdenes(infoActualizada.data);
             });
         };
     });

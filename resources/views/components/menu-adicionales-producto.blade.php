@@ -151,7 +151,6 @@
         });
         
         $(document).off('click', '.actualizar-orden-venta').on('click', '.actualizar-orden-venta', async function() {
-            // // console.log("Click en actualizar-orden-venta");
             const informacionOrden = {
                 productoId: $(this).data('producto-id'),
                 pventaId: $(this).data('pventa-id'),
