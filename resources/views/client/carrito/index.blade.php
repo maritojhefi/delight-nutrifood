@@ -180,8 +180,8 @@
 <script src="{{ asset('js/carrito-service/carrito-service.js') }}"></script>
 <!-- REVELAR LISTADO DE ADICIONALES-PRODUCTOS -->
 <!-- CARRITO -->
-<!-- <script>
-    $(document).on('click', '.listado-ordenes-trigger', async function(e) {
+<script>
+    $(document).on('click', '.listado-ordenes-carrito-trigger', async function(e) {
         e.preventDefault();
         
         const productoID = $(this).data('producto-id');
@@ -194,7 +194,7 @@
             console.error('Error abriendo el modal:', error);
         }
     });
-</script> -->
+</script>
 <!-- VENTA -->
 <script>
     $(document).on('click', '.listado-ordenes-trigger', async function(e) {
@@ -492,7 +492,7 @@
 </script>
 
 <!-- CONTROL DEL RENDERIZADO DE PRODUCTOS EN EL CARRITO -->
-<!-- <script>
+<script>
     document.addEventListener('DOMContentLoaded', async function() {
         // Obtener el carrito
         const cart = carritoStorage.obtenerCarrito();
@@ -755,8 +755,10 @@
             return `
                 <button
                     data-product-id="${producto.id}"
-                    class="btn btn-s bg-warning font-500 ${tipo == "simple" ? "qty-fixer" : "idk" }"
-                    style="z-index: 10">
+                    data-producto-id="${producto.id}"
+                    data-producto-nombre="${producto.nombre}"
+                    class="btn btn-s bg-warning font-500 ${tipo == "simple" ? "qty-fixer" : "listado-ordenes-carrito-trigger" } "
+                    style="z-index: 10; min-width: 6rem;">
                     Ajustar
                 </button>
             `
@@ -767,7 +769,7 @@
                 <button 
                     data-product-id="${producto.id}"
                     class="btn btn-s bg-danger font-500 delete-item-btn"
-                    style="z-index: 10">
+                    style="z-index: 10; min-width: 6rem;">
                     Eliminar
                 </button>
             `
@@ -802,7 +804,7 @@
                 <button
                     data-producto-id="${producto.id}"
                     data-producto-nombre="${producto.nombre}"
-                    class="btn btn-s bg-highlight font-500 listado-ordenes-trigger" style="z-index: 10">
+                    class="btn btn-s bg-highlight font-500 listado-ordenes-carrito-trigger" style="z-index: 10; min-width: 6rem;">
                     Mi Pedido
                 </button>
             `
@@ -870,6 +872,7 @@
     }
 
     const handleActualizarProductoLimitado = async (e) => {
+        console.log("Llamado a actualizarProductoLimitado.");
         e.preventDefault();
 
         const botonFixCantidad = e.target.closest('.qty-fixer');
@@ -939,9 +942,9 @@
             console.error("No se pudo reducir el valor del producto: ", productToDecreaseId);
         }
     }
-</script> -->
+</script>
 <!-- CONTROL DE ELIMINACION DE PRODUCTOS-CARRITO -->
-<!-- <script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
         // handleCartSummaryModal();
         handleCartDeletion();
@@ -1036,5 +1039,5 @@
                 </div>`
         }
     };
-</script> -->
+</script>
 @endpush

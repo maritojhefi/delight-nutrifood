@@ -37,6 +37,11 @@ export const obtenerInfoItemCarrito = async (itemCarrito, sucursaleID) => {
     }
 }
 
+export const obtenerIndiceItemCarrito = async(producto_venta_id, indice) => {
+    const response = await axios.get(`/ventas/producto/${producto_venta_id}/orden/${indice}`);
+    return response.data;
+}
+
 // export const handleAgregarUnidad = async () => {
 //   const ProductoID = $(this).data('producto-id');
 //   try {

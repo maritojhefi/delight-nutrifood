@@ -140,6 +140,9 @@
         }
 
         const renderizarCardOrden = (info, adicionales, indice) => {
+            console.log("InfoProducto: ", info);
+            console.log("Adicionales: ", adicionales);
+            console.log("Indice: ", indice)
             const precioAdicionalesItem = adicionales.reduce((sum, adicional) => {
                 return sum + (parseFloat(adicional.precio) || 0);
             }, 0);
@@ -237,6 +240,8 @@
                 await eliminarOrden(pivotID, index);
             });
         };
+
+
     });
 </script>
 @endpush

@@ -90,17 +90,6 @@
 </div>
 
 @push('scripts')
-<!-- <script>
-    $(document).on('click.actualizar-orden-venta', '.actualizar-orden-venta', async function() {
-        const productoId = $(this).data('producto-id');
-        iniciarMenuOrdenVenta(productoId);
-    });
-
-    const iniciarMenuOrdenVenta = async () => {
-        // Llamado axios para obtener detalle de la orden (incluyendo adicionales)
-        const response = await ProductoService.getProductoDetalle(productoId);
-    }
-</script> -->
 <script>
     const esActualizacion = @json($isUpdate ?? null);
 
@@ -147,7 +136,19 @@
                 pventaId: $(this).data('pventa-id'),
                 indice: $(this).data('orden-index')
             }
+            console.log("Es venta a actualizar ?: ", false);
             await openActualizarOrdenMenu(informacionOrden);
+        });
+
+        $(document).off('click', '.actualizar-orden-carrito').on('click', '.actualizar-orden-carrito', async function() {
+            console.log("Tratando de abrir el ActualizarOdenMenu con carrito");
+
+            // const informacionOrden = {
+            //     productoId: $(this).data('producto-id'),
+            //     pventaId: $(this).data('pventa-id'),
+            //     indice: $(this).data('orden-index')
+            // }
+            // await openActualizarOrdenMenu(informacionOrden);
         });
 
         // Abrir menu de detalles-producto
@@ -229,13 +230,6 @@
             elementoCostoUnitario.innerText = `Bs. ${(infoProducto.precio).toFixed(2)}`;
             adicionalesContainer.innerHTML = renderAdicionales(infoProducto.adicionales);
 
-            // console.log
-            console.log("Sin problemas hasta ahora");
-
-            console.log(incrementarProductoBtn);
-                console.log(reducirProductoBtn);
-
-
             incrementarProductoBtn.addEventListener('click', () => {
                 actualizarCostoTotal(infoProducto);
             });
@@ -243,9 +237,6 @@
             reducirProductoBtn.addEventListener('click', () => {
                 actualizarCostoTotal(infoProducto);
             });
-
-            console.log("Sigue sin haber problemas");
-
 
             actualizarCostoTotal(infoProducto);
 
@@ -313,11 +304,11 @@
             $(formAdicionales).off('submit');
             
             // Agregar el handler para el submit del formulario
-            $(formAdicionales).on('submit', (e) => handleFormSubmit(infoProducto, e));
+            $(formAdicionales).on('submit', (e) => handleAdicionarProductoSubmit(infoProducto, e));
         
         }
 
-        const handleFormSubmit = async (infoProducto, e) => {
+        const handleAdicionarProductoSubmit = async (infoProducto, e) => {
             e.preventDefault();
             const formAdicionales = document.getElementById("detalles-menu-adicionales");
             

@@ -1,4 +1,4 @@
-<div class="modal fade" id="listadoOrdenesProducto" tabindex="-1" aria-labelledby="listadoOrdenesProductoModalLabel">
+<!-- <div class="modal fade" id="listadoOrdenesProducto" tabindex="-1" aria-labelledby="listadoOrdenesProductoModalLabel">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
         <div class="modal-content">
             <div class="modal-header mt-2 border-0 gap-4 d-flex align-items-center">
@@ -15,11 +15,11 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
-        window.abrirDialogDetalleOrden = async (info) => {
-            await prepararListadoOrdenes(info);
-            const modal = new bootstrap.Modal(document.getElementById('listadoOrdenesProducto'));
-            modal.show();
-        };
+        // window.abrirDialogDetalleOrden = async (info) => {
+        //     await prepararListadoOrdenes(info);
+        //     const modal = new bootstrap.Modal(document.getElementById('listadoOrdenesProducto'));
+        //     modal.show();
+        // };
         
         const prepararListadoOrdenes = (info) => {
             const elementoTitulo = document.getElementById('titulo-listado-ordenes');
@@ -62,4 +62,4 @@
         };
     });
 </script>
-@endpush
+@endpush -->
