@@ -21,9 +21,7 @@
             {{-- RENDERIZADO CONDICIONAL ADICIONALES --}}
         </form>
         <div class="divider mb-2"></div>
-        @if ($isUpdate)
-                
-        @else
+        <div id="controladores-cantidad">
             <div class="line-height-xs">
                 <small class="color-theme">Los extras seleccionados se veran reflejados en la cantidad del pedido.</small>
             </div>
@@ -38,10 +36,9 @@
                         <input style="font-size: 15px !important;" form="detalles-menu-adicionales" name="cantidad-orden" id="detalles-cantidad" type="number" min="1" max="99" value="1">
                         <a id="detalles-stepper-up" href="#" class="stepper-add"><i class="fa fa-plus color-theme opacity-40"></i></a>
                     </div>
-                    
                 </div>
             </div>
-        @endif
+        </div>
         <div id="error-limitados-container" class="alert bg-orange-light line-height-s text-white p-2 rounded-s" style="display: none;">
             <p id="error-limitados-message" class="text-white">Algunos adicionales disponen de stock bajo, se ajusto la cantidad de su orden.</p>
         </div>
@@ -76,17 +73,9 @@
         </div>
         <div class="divider mb-2"></div>
         <div id="boton-accion-container">
-            @if ($isUpdate)
-                <!-- <button type="submit" form="detalles-menu-adicionales">Submit check</button> -->
-                <button type="submit" id="btn-verificar-actualizacion" form="detalles-menu-adicionales" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm">
-                    Actualizar pedido
-                </buttno>
-            @else
-                <!-- <button type="submit" form="detalles-menu-adicionales">Submit check</button> -->
-                <button type="submit" id="btn-verificar-agregado" form="detalles-menu-adicionales" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm">
-                    Agregar al carrito
-                </button>
-            @endif
+            <button type="submit" id="btn-verificar-agregado" form="detalles-menu-adicionales" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm">
+                Agregar al carrito
+            </button>
         </div>
     </div>
 </div>
@@ -113,6 +102,8 @@
     }
 </script> -->
 <script>
+    const esActualizacion = @json($isUpdate ?? null);
+
     document.addEventListener('DOMContentLoaded', async function() {
         // Control agregar unidad individual
         $(document).on('click', '.agregar-unidad', async function () {
@@ -238,6 +229,13 @@
             elementoCostoUnitario.innerText = `Bs. ${(infoProducto.precio).toFixed(2)}`;
             adicionalesContainer.innerHTML = renderAdicionales(infoProducto.adicionales);
 
+            // console.log
+            console.log("Sin problemas hasta ahora");
+
+            console.log(incrementarProductoBtn);
+                console.log(reducirProductoBtn);
+
+
             incrementarProductoBtn.addEventListener('click', () => {
                 actualizarCostoTotal(infoProducto);
             });
@@ -246,8 +244,10 @@
                 actualizarCostoTotal(infoProducto);
             });
 
+            console.log("Sigue sin haber problemas");
+
+
             actualizarCostoTotal(infoProducto);
-            
 
             $('.input-radio').off('change').on('change', function() {
                 // Actualizar el costo al cambiar los adicionales obligatorios
@@ -259,6 +259,8 @@
                 // Actualizar el costo al cambiar los adicionales opcionales (MAX 1)
                 actualizarCostoTotal(infoProducto);
             });
+
+
 
             // AUTO-SELECCIONAR EL PRIMER RADIO DE CADA GRUPO OBLIGATORIO DE ADICIONALES
             setTimeout(() => {
@@ -346,8 +348,6 @@
                 return; // Prevenir envio del formulario
             }
 
-            console.log("gruposRadio: ", gruposRadio);
-
             ocultarMensajeLimitados();
             ocultarMensajeAgotados();
             const formData = new FormData(formAdicionales);
@@ -366,6 +366,9 @@
                 // SOLICITUD DE AGREGAR PRODUCTO
                 estaVerificando(true);
                 const agregarVentaProducto = await VentaService.agregarProductoVenta(infoProducto.id, cantidadSolicitada, IdsAdicionalesSeleccionados);
+                if (esActualizacion) {
+                    renderizarListadoOrdenesVenta(agregarVentaProducto.data);
+                }
                 await carritoStorage.mostrarToastAgregado();
                 estaVerificando(false);
                 closeDetallesMenu();
@@ -488,6 +491,7 @@
 
     const prepararMenuActualizarOrdenVenta = async (infoProducto, infoOrden) => {
         $(`#detalles-menu-nombre`).text(infoProducto.nombre);
+        reemplazarBotonConActualizar();
         const formAdicionales = $(`#detalles-menu-adicionales`);
         $(`#detalle-costo-unitario`).text(`Bs. ${(infoProducto.precio).toFixed(2)}`);
         formAdicionales.html(renderAdicionales(infoProducto.adicionales));
@@ -686,6 +690,7 @@
     }
 
     const actualizarCostoTotal = (producto) => {
+        console.log("trabajando listener actualizar costoTotal");
         // Obtener el valor actual del input
         const cantidadInput = document.getElementById('detalles-cantidad');
         const totalAdicionalesDisplay = document.getElementById("display-adicionales");
@@ -736,6 +741,16 @@
         });
     }
 
+
+    const reemplazarBotonConActualizar = () => {
+        const botonAdicionar = $(`#btn-verificar-agregado`);
+        const botonActualizar = `                
+                <button type="submit" id="btn-verificar-actualizacion" form="detalles-menu-adicionales" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm">
+                    Actualizar pedido
+                </button>`;
+
+        botonAdicionar.replaceWith(botonActualizar);
+    }
     const estaActualizando = (booleano) => {
         $('#btn-verificar-actualizacion')
             .text(booleano ? 'ACTUALIZANDO...' : 'ACTUALIZAR PEDIDO')
@@ -760,9 +775,10 @@
             if (key !== 'cantidad-orden') {
                 // Incluir IDs adicionales seleccionados
                 IdsAdicionalesSeleccionados.push(parseInt(value));  
-            } else {
+            } 
+            else {
                 // ActualizarCantidadSolicitada de ser necesario
-                cantidadSolicitada = parseInt(value);
+                // // cantidadSolicitada = parseInt(value);
             }
         };
 

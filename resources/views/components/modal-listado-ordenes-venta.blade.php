@@ -5,9 +5,13 @@
                 <h4 id="titulo-listado-ordenes" class="mb-0 align-self-center text-uppercase">Detalles del pedido</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div id="contenedor-listado-ordenes">
-                <ul id="listado-ordenes" class="px-3 pt-3">
+            <div id="contenedor-listado-ordenes" class="d-flex align-content-center flex-column">
+                <ul id="listado-ordenes" class="px-3 pt-3 mb-0">
                 </ul>
+                <!-- <div id="contenedor-boton-agregar" class="">
+
+                </div> -->
+                    <button id="boton-agregar-orden-venta" class="d-none">Agregar Orden</button>
                 <div id="contenedor-observacion" class="mb-4 px-4">
                 </div>
             </div>
@@ -30,7 +34,7 @@
             const elementoTitulo = document.getElementById('titulo-listado-ordenes');
             elementoTitulo.textContent = info.nombre;
             renderizarObservacionPedido(info);
-            renderizarListadoOrdenes(info);
+            renderizarListadoOrdenesVenta(info);
         }
 
         const renderizarObservacionPedido = (info) => {
@@ -83,7 +87,7 @@
                 // se reorganizaron
                 
                 // Renderizar el listado permite reatribuirle los Indices ya modificados
-                renderizarListadoOrdenes(response.data);
+                renderizarListadoOrdenesVenta(response.data);
                 // En caso de desear solo eliminar el card de la orden seleccionada, usar la funcion comentada
                 // // eliminarCardOrdenIndice(pivotID, index);
                 // Actualizar la informacion del pedido general
@@ -111,7 +115,6 @@
         }
 
         const eliminarCardOrdenIndice = (pivotID,index) => {
-            // console.log("card a eliminar: ", pivotID);
             const cardEliminar = $(`#pedido-${pivotID}-orden-${index}`);
             cardEliminar.remove();
         }
@@ -186,66 +189,42 @@
             `;
         }
 
-        const renderizarListadoOrdenes = (info) => {
+        const renderizarBotonOrden = (infoProductoVenta) => {
+            const tipo = infoProductoVenta.tipo;
+            return `
+                <button 
+                id="boton-agregar-orden-venta"
+                data-producto-id=${infoProductoVenta.id}
+                class="${tipo == "complejo" ? 'menu-adicionales-btn' : 'agregar-unidad'}
+                btn btn-xs mx-5 mb-3 mt-n1 rounded-s bg-teal-light d-flex flex-row gap-2 align-items-center justify-content-center">Argregar orden<i class="lucide-icon" data-lucide="circle-plus"></i></button>
+            `;
+        }
+
+        window.renderizarListadoOrdenesVenta = (info) => {
+            console.log("Llamado a renderizar listado de ordenes venta")
             // Convertir al objeto info en un array de pares [key, value]
             const ordenesEntries = Object.entries(info.adicionales);
             const listaPrincipal = $(`#listado-ordenes`);
-
+            const contenedorBotonAgregar = $(`#contenedor-boton-agregar`);
+            const botonBase = $(`#boton-agregar-orden-venta`);
+            const botonAgregar = renderizarBotonOrden(info);
+            
             listaPrincipal.html(`
-                ${ordenesEntries.map(([ordenKey, adicionales]) => {
-                    // Calcular el costo de adicionales para la orden
-                    // const precioAdicionalesItem = adicionales.reduce((sum, adicional) => {
-                    //     return sum + (parseFloat(adicional.precio) || 0);
-                    // }, 0);
-
+            ${ordenesEntries.map(([ordenKey, adicionales]) => {
                     return renderizarCardOrden(info, adicionales, ordenKey);
-                    
-                    // return `
-                    //     <li id="pedido-${info.pivot_id}-orden-${ordenKey}"
-                    //         data-producto-id=${info.id}
-                    //         data-pventa-id=${info.pivot_id}
-                    //         data-orden-index="${ordenKey}"
-                    //         class="actualizar-orden-venta"
-                    //         style="list-style-type: none">
-                    //         <div class="card card-style">
-                    //             <div class="card-header bg-teal-light">
-                    //                 <div class="card-title mb-0 d-flex flex-row justify-content-between">
-                    //                     <h4 class="mb-0">Orden N° ${ordenKey}</h4>
-                    //                     ${info.aceptado ? `` : `
-                    //                     <button
-                    //                         data-pventa-id="${info.pivot_id}"
-                    //                         data-orden-index="${ordenKey}"
-                    //                         class="borrar-orden-pventa"
-                    //                     >
-                    //                         <i class="lucide-icon" data-lucide="trash-2"></i>
-                    //                     </button>
-                    //                     `}
-                    //                 </div>
-                    //             </div>
-                                
-                    //             <div class="card-body bg-dtheme-blue">
-                    //                 ${adicionales.length <= 0 ? `
-                    //                     <span class="color-theme">Sin extras</span>
-                    //                 `:`
-                    //                 <h5 class="color-teal-light">Adicionales ${precioAdicionalesItem > 0 ? `(Bs. ${precioAdicionalesItem.toFixed(2)})` : ''}</h5>
-                    //                 <ul class="row mb-0 ps-1">
-                    //                     ${adicionales.map(adicional => `
-                    //                         <li class="col-6 color-theme" style="list-style-type: none">
-                    //                             ${adicional.nombre}
-                    //                             ${adicional.precio > 0 ? ` <span class="text-muted">(${parseFloat(adicional.precio).toFixed(2)})</span>` : ''}
-                    //                             ${adicional.limitado ? '<span class="text-danger"> (Limitado)</span>' : ''}
-                    //                             ${adicional.cantidad > 1 ? ` (x${adicional.cantidad})` : ''}
-                    //                         </li>
-                    //                     `).join('')}
-                    //                 </ul>
-                    //                 `}
-                    //             </div>
-                    //         </div>
-                    //     </li>
-                    // `;
-                
                 }).join('')}
             `);
+
+            if (info.aceptado == false) {
+                // contenedorBotonAgregar.html(botonAgregar);
+                botonBase.replaceWith(botonAgregar);
+            } else {
+                botonBase.addClass('d-none');
+            }
+            // else {
+            //     contenedorBotonAgregar.html('');
+            // }
+            
 
             reinitializeLucideIcons();
             

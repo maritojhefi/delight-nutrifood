@@ -469,8 +469,13 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             ->withPivot('id', 'cantidad')
             ->first();
 
+            $productoVentaInfo = $this->obtenerProductoVentaIndividual($venta,$productoVenta->pivot->id);
+            if (!$productoVentaInfo->success) {
+                throw new VentaException("Error al obtener el registro correspondiente", "error", [],404);
+            }
+
             return VentaResponse::success(
-                $productoVenta ? $productoVenta->pivot : null,
+                $productoVenta ? $productoVentaInfo->data : null,
                 "ProductoVenta agregado/actualizado exitosamente"
             );
         } catch (VentaException $e) {

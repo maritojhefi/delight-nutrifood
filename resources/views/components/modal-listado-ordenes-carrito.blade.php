@@ -26,10 +26,10 @@
             const listaPrincipal = document.getElementById(`listado-ordenes`);
             elementoTitulo.textContent = info.nombre;
             console.log("Informacion obtenida sobre el producto: ", info);
-            listaPrincipal.innerHTML = renderizarListadoOrdenes(info);
+            listaPrincipal.innerHTML = renderizarListadoOrdenesCarrito(info);
         }
 
-        const renderizarListadoOrdenes = (info) => {
+        const renderizarListadoOrdenesCarrito = (info) => {
             // Convertir al objeto info en un array de pares [key, value]
             const ordenesEntries = Object.entries(info.adicionales);
             
