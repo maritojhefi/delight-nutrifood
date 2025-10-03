@@ -155,7 +155,7 @@
                     data-producto-id=${info.id}
                     data-pventa-id=${info.pivot_id}
                     data-orden-index="${indice}"
-                    class="actualizar-orden-venta"
+                    class=" ${info.aceptado ? '':'actualizar-orden-venta'}"
                     style="list-style-type: none">
                     <div class="card card-style">
                         <div class="card-header bg-teal-light">
