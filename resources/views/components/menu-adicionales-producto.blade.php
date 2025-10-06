@@ -21,6 +21,7 @@
             {{-- RENDERIZADO CONDICIONAL ADICIONALES --}}
         </form>
         <div class="divider mb-2"></div>
+        @if (!$isUpdate)
         <div id="controladores-cantidad">
             <div class="line-height-xs">
                 <small class="color-theme">Los extras seleccionados se veran reflejados en la cantidad del pedido.</small>
@@ -39,6 +40,8 @@
                 </div>
             </div>
         </div>
+        @endif
+        
         <div id="error-limitados-container" class="alert bg-orange-light line-height-s text-white p-2 rounded-s" style="display: none;">
             <p id="error-limitados-message" class="text-white">Algunos adicionales disponen de stock bajo, se ajusto la cantidad de su orden.</p>
         </div>
@@ -103,7 +106,6 @@
                 await carritoStorage.mostrarToastAgregado();
             } catch (error) {
                 if (error.response && error.response.status === 409) {
-                    // console.log("Pasando a agregar al carrito")
                     // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
                     const AddAttempt = await carritoStorage.agregarAlCarrito(ProductoID, 1);
                     estaVerificando(false);
@@ -116,6 +118,7 @@
                         estaVerificando(false);
                         mostrarAvisoAgotado();
                     } else if (stockProducto < cantidadSolicitada) {
+                        mostrarToastError("No hay stock suficiente.");
                         // console.log("No hay suficiente stock disponible para completar la solicitud")
                     }
                 } else {
@@ -136,20 +139,12 @@
                 pventaId: $(this).data('pventa-id'),
                 indice: $(this).data('orden-index')
             }
-            console.log("Es venta a actualizar ?: ", false);
             await openActualizarOrdenMenu(informacionOrden);
         });
 
-        $(document).off('click', '.actualizar-orden-carrito').on('click', '.actualizar-orden-carrito', async function() {
-            console.log("Tratando de abrir el ActualizarOdenMenu con carrito");
-
-            // const informacionOrden = {
-            //     productoId: $(this).data('producto-id'),
-            //     pventaId: $(this).data('pventa-id'),
-            //     indice: $(this).data('orden-index')
-            // }
-            // await openActualizarOrdenMenu(informacionOrden);
-        });
+        // // $(document).off('click', '.actualizar-orden-carrito').on('click', '.actualizar-orden-carrito', async function() {
+        // //     console.log("Tratando de abrir el ActualizarOdenMenu con carrito");
+        // // });
 
         // Abrir menu de detalles-producto
         window.openDetallesMenu = async function(productoId, esActualizacion = false) {
@@ -367,7 +362,6 @@
                 estaVerificando(false);
                 // CONTROL DE VENTA-CARRITO
                 if (error.response && error.response.status === 409) {
-                    // console.log("Pasando a agregar al carrito")
                     // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
                     const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidadSolicitada, false, IdsAdicionalesSeleccionados);
                     closeDetallesMenu();
@@ -375,14 +369,12 @@
                 // CONTROL DE STOCK INSUFICIENTE
                 else if (error.response && error.response.status === 422) {
 
-                    // console.log("Valor actual de error.response.data: ", error.response.data);
                     // Informacion recibida de validacion inexitosa en backend
                     const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaximaPosible,
                     messageLimitados, messageAgotados, messageProducto, stockProducto } = error.response.data;
                     // PRODUCTO AGOTADO
                     if (stockProducto <= 0)
                     {
-                        // console.log("El producto se encuentra agotado, cerrando menu")
                         deshabilitarBoton(infoProducto.id);
                         mostrarAvisoAgotado();
                         closeDetallesMenu();
@@ -454,7 +446,7 @@
             $('#btn-actualizar-pedido').on('click', function() {
                 // Actualizar cantidad seleccionada
                 const inputCantidad = document.getElementById('detalles-cantidad');
-                // console.log("Debug cantidad maxima: ", cantidadMaxima);
+                // // console.log("Debug cantidad maxima: ", cantidadMaxima);
                 inputCantidad.value = parseInt(cantidadMaxima, 10);
                 actualizarCostoTotal(producto);
                 // Ocultar mensaje de limitados
@@ -487,7 +479,6 @@
         $(`#detalle-costo-unitario`).text(`Bs. ${(infoProducto.precio).toFixed(2)}`);
         formAdicionales.html(renderAdicionales(infoProducto.adicionales));
         // LLamado al backend para obtener los adicionales para el indice de la orden
-        // // console.log("valor de infoProducto: " , infoProducto)
         $('.input-radio').off('change').on('change', function() {
             // Actualizar el costo al cambiar los adicionales obligatorios
             actualizarCostoTotal(infoProducto);
@@ -516,13 +507,20 @@
         }, 0);
 
         try {
-            const respuestaProdVentaInfo = await VentaService.ordenVentaIndex(infoOrden.pventaId,infoOrden.indice);
-            // // console.log("respuestaProdVentaInfo:", respuestaProdVentaInfo);
-            const adicionalesOrden = respuestaProdVentaInfo.data;
-            preseleccionarDefaults(adicionalesOrden);
-            actualizarCostoTotal(infoProducto);
+            // En caso de no encontrar venta activa, retornar un error especifico
+            if (!infoOrden.pventaID) {
+                const adicionalesOrden = carritoStorage.adicionalesOrdenIndice(infoOrden.productoId,infoOrden.indice);
+                preseleccionarDefaultsCarrito(adicionalesOrden);
+                actualizarCostoTotal(infoProducto);
+            } else {
+                const respuestaProdVentaInfo = await VentaService.ordenVentaIndex(infoOrden.pventaId,infoOrden.indice);
+                const adicionalesOrden = respuestaProdVentaInfo.data;
+                preseleccionarDefaultsVenta(adicionalesOrden);
+                actualizarCostoTotal(infoProducto);
+            }
         } catch (error) {
-            console.log("Error al solicitar respuestaProdVentaInfo", error);
+            // Capturar el error especifico y realizar la preseleccion de adicionales correspondientes al item en localStorage
+            console.log("Error al solicitar informacion sobre adicionales", error);
         }
         
         // Retirar listeners existentes para evitar envios multiples
@@ -530,7 +528,6 @@
         
         // Agregar el handler para el submit del formulario
         $(formAdicionales).on('submit', (e) => handleActualizarOrdenVentaSubmit(infoProducto, infoOrden, e));
-        console.log("Los listeners deberian estar listos")
     }
 
     const renderAdicionales = (adicionales) => {
@@ -657,18 +654,14 @@
     const calcularCostoAdicionales = (adicionales) => {
         const form = document.getElementById("detalles-menu-adicionales");
         let costoTotal = 0;
-        // console.log("Adicionales en calcularCostoAdicionales: ", adicionales);
         // Obtener todos los adicionales seleccionados
         const inputsSeleccionados = form.querySelectorAll('input[type="radio"]:checked, input[type="checkbox"]:checked');
-
-        // // console.log("inputs seleccionados: ", inputsSeleccionados);
 
         inputsSeleccionados.forEach(input => {
             // Extraer el id del input correspondiente
             const adicionalId = input.id.split('-')[1]; // Asumiendo id's como "radio-123" or "check-123"
             // Encontrar el precio original desde el listado de adicionales
             const adicional = adicionales.find(item => item.id == adicionalId)
-            // console.log("adicional del error: ", adicional);
 
             // Determinar el precio del adicional y sumarlo al total
             const precio = parseFloat(adicional.precio) ?? 0;
@@ -681,7 +674,6 @@
     }
 
     const actualizarCostoTotal = (producto) => {
-        console.log("trabajando listener actualizar costoTotal");
         // Obtener el valor actual del input
         const cantidadInput = document.getElementById('detalles-cantidad');
         const totalAdicionalesDisplay = document.getElementById("display-adicionales");
@@ -696,7 +688,6 @@
             }
         }
         
-        // console.log("valor de producto pasado a actualizarCostoTotal: ", producto);
         // Obtener el costo de los adicionales seleccionados
         const costoAdicionales = calcularCostoAdicionales(producto.adicionales);
 
@@ -722,10 +713,18 @@
         elementoTotalFinal.innerText = `Bs. ${(costoTotalOrden).toFixed(2)}`;
     }
 
-    const preseleccionarDefaults = (adicionales) => {
-        // // console.log("valor de adicionales en preseleccionarDefaults: ", adicionales)
+    const preseleccionarDefaultsVenta = (adicionales) => {
         adicionales.forEach(adicional => {
             const input = $(`#adicional-${adicional.id}`);
+            if (input) {
+                input.prop('checked', true);
+            }
+        });
+    }
+
+    const preseleccionarDefaultsCarrito = (adicionales) => {
+        adicionales.forEach(adicional => {
+            const input = $(`#adicional-${adicional}`);
             if (input) {
                 input.prop('checked', true);
             }
@@ -750,7 +749,9 @@
 
     const handleActualizarOrdenVentaSubmit = async (infoProducto, infoOrden, e) => {
         e.preventDefault();
-        console.log("LLamado al submit handler");
+        // // console.log("LLamado al submit handler");
+        // // console.log("infoProductoHandler:", infoProducto);
+        // // console.log("infoOrdenHandler:", infoOrden);
         const formAdicionales = $(`#detalles-menu-adicionales`);
 
         ocultarMensajeLimitados();
@@ -776,25 +777,39 @@
         try {
             // SOLICITUD DE ACTUALIZAR ORDEN
             estaActualizando(true);
+            // if (!infoOrden.pventaId) {
+            //     await carritoStorage.actualizarOrdenPedido(infoProducto.id, infoOrden.indice, nuevosAdicionales);
+            // }
             // const agregarVentaProducto = await VentaService.agregarProductoVenta(infoProducto.id, cantidadSolicitada, IdsAdicionalesSeleccionados);
-            const responseActualizarOdenVenta = await VentaService.actualizarOrdenVentaIndex(infoOrden.pventaId, infoOrden.indice, IdsAdicionalesSeleccionados);
+            
+            // Reemplazar pventaID con el identificador para producto
+            const responseActualizarOdenVenta = await VentaService.actualizarOrdenVentaIndex(infoProducto.id, infoOrden.indice, IdsAdicionalesSeleccionados, 1);
+            // En caso de error controlado, actualizar orden en el carrito
+            
             reemplazarCardOrdenIndice(responseActualizarOdenVenta.data, infoOrden.indice);
             mostrarToastSuccess("Su pedido fue actualizado");
             estaActualizando(false);
             closeDetallesMenu();
         } catch (error) {
-            console.log("Error al actualizar la info: ", error)
-            if (error.response && error.response.status == 422) {
-                console.log("Error capturado stock")
-                console.log("Error.response: ", error.response);
-                // console.log("Valor actual de error.response.data: ", error.response.data);
+            if (error.response && error.response.status === 409) {
+                    // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se actualiza la orden del producto en carrito
+                    carritoStorage.actualizarOrdenCarrito(infoProducto.id, infoOrden.indice, IdsAdicionalesSeleccionados);
+                    const itemCarrito = carritoStorage.obtenerItemCarrito(infoProducto.id);
+                    const infoProductoActualizado = await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
+                    reemplazarCardOrdenIndice(infoProductoActualizado.item, infoOrden.indice);
+                    closeDetallesMenu();
+                    estaActualizando(false);
+            } else if (error.response && error.response.status == 422) {
                 // Informacion recibida de validacion inexitosa en backend
                 const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaximaPosible,
                 messageLimitados, messageAgotados, messageProducto, stockProducto } = error.response.data;
                 // PRODUCTO AGOTADO
                 if (stockProducto <= 0)
                 {
-                    // console.log("El producto se encuentra agotado, cerrando menu")
+                    console.error("El producto se ha agotado: ", error);
+                    // mostrar iun mo
+
+                    // // console.log("El producto se encuentra agotado, cerrando menu")
                     // deshabilitarBoton(infoProducto.id);
                     // mostrarAvisoAgotado();
                     closeDetallesMenu();

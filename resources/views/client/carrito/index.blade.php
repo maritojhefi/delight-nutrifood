@@ -187,6 +187,7 @@
         const productoID = $(this).data('producto-id');
         const itemCarrito = carritoStorage.obtenerItemCarrito(productoID);
         const infoProducto = await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
+        // // console.log("La informacion obtenida llego del carrito")
         
         try {
             abrirDialogDetalleOrden(infoProducto.item);
@@ -205,8 +206,6 @@
         // const infoProducto = await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
         const response = await VentaService.productoVenta(producto_venta_ID)
         const infoProducto = response.data;
-
-        console.log("Informacion obtenida del producto_venta: ", infoProducto);
         
         try {
             abrirDialogDetalleOrden(infoProducto);
@@ -325,20 +324,16 @@
 
     const eliminarPedido = async (pivotID) => {
         try {
-            console.log(`Intento de eliminar el producto_venta: ${pivotID}`);
             const response = await VentaService.eliminarPedidoCompleto(pivotID); 
-            console.log("response al eliminar el item:", response);
             // renderizarProductosVenta(response.data);
             eliminarCardProductoVenta(pivotID);
             mostrarToastSuccess("Pedido eliminado con éxito");
-            console.log('Orden eliminada correctamente');
         } catch (error) {
             const serverResponse = error.response?.data; 
             
             let errorMessage = "Ha sucedido un error al eliminar el pedido."; 
 
             if (serverResponse && serverResponse.message) {
-                console.log("Hay message en la respuesta del servidor");
                 errorMessage = serverResponse.message;
             } 
             
@@ -496,7 +491,6 @@
     document.addEventListener('DOMContentLoaded', async function() {
         // Obtener el carrito
         const cart = carritoStorage.obtenerCarrito();
-        // console.log("Contenido del carrito: ", cart)
         const cardContentContainer = document.querySelector('.cart-content');
         // const cardContentContainer = $('#contenedor-principal');
         const cartValidationInfo = document.querySelector('.cart-validation-info');
@@ -872,7 +866,6 @@
     }
 
     const handleActualizarProductoLimitado = async (e) => {
-        console.log("Llamado a actualizarProductoLimitado.");
         e.preventDefault();
 
         const botonFixCantidad = e.target.closest('.qty-fixer');

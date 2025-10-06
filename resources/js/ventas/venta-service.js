@@ -77,11 +77,13 @@ export const ordenVentaIndex = async(producto_venta_id, indice) => {
     return response.data;
 }
 
-export const actualizarOrdenVentaIndex = async(productoVentaId, indice, adicionalesIds) => {
+export const actualizarOrdenVentaIndex = async(producto_id, indice, adicionalesIds, sucursale_id) => {
     const response = await axios.patch(`/ventas/productos/actualizar-orden`, {
-        producto_venta_id: productoVentaId,
+        producto_id: producto_id,
+        // producto_venta_id: productoVentaId,
         indice: indice,
         adicionalesIds: adicionalesIds,
+        sucursale_id: sucursale_id,
     });
     return response.data;
 }

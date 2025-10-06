@@ -44,12 +44,24 @@ export const obtenerCarrito = () => {
 // OBTENER ITEM CARRITO
 export const obtenerItemCarrito = (productId) => {
     const carrito = obtenerCarrito();
-    try {
+    // try {
         const itemCarrito = carrito.items.find(item => item.id ==productId);
         return itemCarrito;
+    // } catch (error) {
+    //     console.error("Error al intentar obtener el item en carrito con ID: ", productId);
+    //     throw new Error(error);
+    // }
+}
+
+// OBTENER ADICIONALES PERTENECIENTES A UN ITEM CARRITO EN UN INDICE ESPECIFICO
+export const adicionalesOrdenIndice = (id_producto, indice) => {
+    try {
+        const itemCarrito = obtenerItemCarrito(id_producto);
+        const adicionales = itemCarrito.adicionales[indice.toString()];
+        return adicionales || [];
     } catch (error) {
-        console.error("Error al intentar obtener el item en carrito con ID: ", productId);
-        throw new Error(error);
+        console.error(`Error al obtener adicionales del producto ${id_producto}, índice ${indice}:`, error);
+        return [];
     }
 }
 
@@ -86,6 +98,65 @@ export const eliminarProducto = (productId) => {
     carrito.items = carrito.items.filter(item => item.id !== productId);
     localStorage.setItem('carrito', JSON.stringify(carrito));
     // // console.log("El producto deberia haber sido eliminado");
+}
+
+export const eliminarOrdenProducto = (productId, indice) => {
+    try {
+        const carrito = obtenerCarrito();
+        
+        // Encontrar el item en el carrito
+        const itemIndex = carrito.items.findIndex(item => item.id == productId);
+        
+        if (itemIndex === -1) {
+            throw new Error(`Producto con ID ${productId} no encontrado en el carrito`);
+        }
+        
+        const item = carrito.items[itemIndex];
+        
+        // Verificar que el índice existe
+        if (!item.adicionales[indice.toString()]) {
+            throw new Error(`Índice ${indice} no encontrado en producto ${productId}`);
+        }
+        
+        // Crear nuevo objeto de adicionales reindexados
+        const nuevosAdicionales = {};
+        let nuevoIndice = 1;
+        
+        // Obtener el número de entradas en adicionales
+        const totalEntradas = Object.keys(item.adicionales).length;
+        
+        // Recorrer los índices en orden y reindexar, saltando el que se elimina
+        for (let i = 1; i <= totalEntradas; i++) {
+            if (i !== indice) {
+                nuevosAdicionales[nuevoIndice.toString()] = item.adicionales[i.toString()];
+                nuevoIndice++;
+            }
+        }
+        
+        // Contar cuántas entradas quedan en adicionales
+        const nuevaCantidad = Object.keys(nuevosAdicionales).length;
+        
+        // Si no quedan órdenes, eliminar el producto completo
+        if (nuevaCantidad === 0) {
+            const err = new Error("No se puede eliminar el unico pedido existente.");
+            err.name = "LastOrderCartDeletionError"; 
+            throw err;
+            // La línea siguiente (carrito.items = ...) nunca se ejecutará, de momento
+            carrito.items = carrito.items.filter(item => item.id !== productId);
+        } else {
+            // Actualizar el item con la nueva cantidad basada en las entradas reales
+            carrito.items[itemIndex].adicionales = nuevosAdicionales;
+            carrito.items[itemIndex].cantidad = nuevaCantidad;
+        }
+        
+        // Guardar el carrito actualizado
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+        
+        return carrito;
+    } catch (error) {
+        console.error(`Error al eliminar orden del producto ${productId}, índice ${indice}:`, error);
+        throw error;
+    }
 }
 
 // MOSTRAR TOAST PRODUCTO AGREGADO AL CARRITO
@@ -250,6 +321,30 @@ export async function agregarAlCarrito(productId, cantidad, isUpdate = false, ad
     }
 }
 
+export const actualizarOrdenCarrito = (producto_id, indice, adicionales = []) => {
+    try {
+        const carrito = obtenerCarrito();
+        
+        // Encontrar el item en el carrito
+        const itemIndex = carrito.items.findIndex(item => item.id == producto_id);
+        
+        if (itemIndex === -1) {
+            throw new Error(`Producto con ID ${producto_id} no encontrado en el carrito`);
+        }
+        
+        // Actualizar los adicionales en el índice específico
+        carrito.items[itemIndex].adicionales[indice.toString()] = adicionales;
+        
+        // Guardar el carrito actualizado en localStorage
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+        
+        return carrito.items[itemIndex];
+    } catch (error) {
+        console.error(`Error al actualizar orden del producto ${producto_id}, índice ${indice}:`, error);
+        throw error;
+    }
+}
+
 
 const reconstruirAdicionales = (item, newQuantity) => {
     item.adicionales = {};
@@ -341,12 +436,15 @@ window.carritoStorage = {
     obtenerCarrito,
     obtenerItemCarrito,
     agregarAlCarrito,
+    actualizarOrdenCarrito,
     restarDelCarrito,
     eliminarProducto,
+    eliminarOrdenProducto,
     updateProductToMax,
     vaciarCarrito,
     actualizarContadorCarrito,
     actualizarContadorDetalleProducto,
     mostrarToastAgregado,
-    mostrarToastLimite
+    mostrarToastLimite,
+    adicionalesOrdenIndice
 }

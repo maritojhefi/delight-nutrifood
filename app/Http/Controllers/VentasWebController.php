@@ -146,36 +146,65 @@ class VentasWebController extends Controller
     public function actualizarOrdenIndice(Request $request): JsonResponse 
     {
         try {
-            $ventaActiva = $this->validarVentaActiva();
+            $producto_id = $request->producto_id;
+            $sucursal_id = $request->sucursale_id;
+            $indice = $request->indice;
+            $adicionales_ids = $request->adicionalesIds;
+            // $producto_venta_id = $request->producto_venta_id;
 
-            $producto_venta_id = $request->producto_venta_id;
+            // Revisar si el usuario tiene una venta activa
+            $user = auth()->user();
+            $ventaActiva = $user->ventaActiva;
 
-            $habilitadoAceptados = auth()->check() && in_array(auth()->user()->role->nombre, ['admin', 'cajero']);
+            Log::debug("valor de user:", [$user]);
+            Log::debug("valor de ventaActiva:", [$ventaActiva]);
 
-            $consultaPV = DB::table('producto_venta')
-                ->where('id', $producto_venta_id);
+            // $ventaActiva = $this->validarVentaActiva();
 
-            if(!$habilitadoAceptados) {
-                $consultaPV->where('aceptado', false);
-            } 
+
+            $producto = Producto::publicoTienda()->findOrFail($producto_id); 
+            if (! $producto) {
+                throw new VentaException("No se pudo obtener la informacion del producto.", 'error', ["id_producto"=>$producto_id],404);
+            }
+            $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get()->keyBy('id');
+
+            if (!$ventaActiva) {
+                Log::debug("No hay venta activa, revisando stock para carrito localStorage:", [$ventaActiva]);
+                $verificacionStock = $this->stockService
+                ->verificarStockCompleto($producto, $adicionales, 1, $sucursal_id);
+
+                if (!$verificacionStock->success) {
+                    throw VentaException::sinStockOrden($verificacionStock->toArray(), 422);
+                }
+
+                $ventaResponse =  VentaResponse::error(
+                    'No hay venta activa. El producto se agregará a su carrito.',
+                    ['venta_activa' => 'No se encontró una venta activa para el usuario']
+                );
+                return new JsonResponse($ventaResponse->toArray(), Response::HTTP_CONFLICT);
+            }
+            
+
+            
+            // $habilitadoAceptados = auth()->check() && in_array(auth()->user()->role->nombre, ['admin', 'cajero']);
+
+            $productoVenta = DB::table('producto_venta')
+                ->where('producto_id', $producto_id)
+                ->where('venta_id', $ventaActiva->id)
+                ->where('aceptado', 'false')->first();
+
+            // if(!$habilitadoAceptados) {
+            //     $consultaPV->where('aceptado', false);
+            // } 
             // else {
             //     $consultaPV->where('cliente_id', '!=', auth()->user()->id); 
             // }
 
-            $productoVenta = $consultaPV->first();
+            // $productoVenta = $consultaPV->first();
 
             if (!$productoVenta) {
-                throw new VentaException("No se pudo obtener la informacion del pedido.", 'error', ["id"=>$producto_venta_id], 500);
+                throw new VentaException("No se pudo obtener la informacion del pedido.", 'error', ["producto_id"=>$producto_id,"venta_id"=>$ventaActiva->id], 500);
             }
-
-            $indice = $request->indice;
-            $adicionales_ids = $request->adicionalesIds;
-
-            $producto = Producto::publicoTienda()->findOrFail($productoVenta->producto_id); 
-            if (! $producto) {
-                throw new VentaException("No se pudo obtener la informacion del producto.", 'error', ["id_producto"=>$productoVenta->producto_id],404);
-            }
-            $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get()->keyBy('id');
 
             $response = $this->productoVentaService
                 ->actualizarOrdenVentaCliente($ventaActiva,$productoVenta,$producto,$adicionales, $indice);

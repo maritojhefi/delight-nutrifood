@@ -99,12 +99,36 @@
                 let errorMessage = "Ha sucedido un error al eliminar la orden."; 
 
                 if (serverResponse && serverResponse.message) {
-                    console.log("Hay message en la respuesta del servidor");
                     errorMessage = serverResponse.message;
                 } 
                 
                 mostrarToastError(errorMessage);
             }
+        }
+
+        const eliminarOrdenCarrito = async (producto_id, indice) => {
+            try {
+                carritoStorage.eliminarOrdenProducto(producto_id, indice);
+                const itemCarrito = carritoStorage.obtenerItemCarrito(producto_id);
+                if (!itemCarrito) {
+                    console.warn("No existe registro en itemCarrito")
+                    mostrarToastError("El producto ya no existe en el carrito");
+                }
+                const infoProductoActualizado = await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
+                // // reemplazarCardOrdenIndice(infoProductoActualizado.item, infoOrden.indice);
+                renderizarListadoOrdenesVenta(infoProductoActualizado.item)
+            } catch (error) {
+                if (error.name === "LastOrderCartDeletionError") {
+                    console.warn("🚫 ADVERTENCIA: No se puede eliminar la única orden restante.");
+                    mostrarToastError(error.message);
+                } else {
+                    console.error("❌ Ocurrió otro error inesperado:", error.message);
+                    mostrarToastError("Ha ocurrido un error inesperado");
+                }
+            }
+            
+            // obtener la informacion actualizada para reiniciar el listado.
+            
         }
 
         window.reemplazarCardOrdenIndice = (infoProductoVenta, indice) => {
@@ -140,9 +164,9 @@
         }
 
         const renderizarCardOrden = (info, adicionales, indice) => {
-            console.log("InfoProducto: ", info);
-            console.log("Adicionales: ", adicionales);
-            console.log("Indice: ", indice)
+            // // console.log("InfoProducto: ", info);
+            // // console.log("Adicionales: ", adicionales);
+            // // console.log("Indice: ", indice);
             const precioAdicionalesItem = adicionales.reduce((sum, adicional) => {
                 return sum + (parseFloat(adicional.precio) || 0);
             }, 0);
@@ -161,6 +185,7 @@
                                 ${info.aceptado ? `` : `
                                 <button
                                     data-pventa-id="${info.pivot_id}"
+                                    data-producto-id="${info.id}"
                                     data-orden-index="${indice}"
                                     class="borrar-orden-pventa"
                                 >
@@ -204,7 +229,6 @@
         }
 
         window.renderizarListadoOrdenesVenta = (info) => {
-            console.log("Llamado a renderizar listado de ordenes venta")
             // Convertir al objeto info en un array de pares [key, value]
             const ordenesEntries = Object.entries(info.adicionales);
             const listaPrincipal = $(`#listado-ordenes`);
@@ -236,8 +260,17 @@
                 e.stopPropagation();
                 
                 const pivotID = $(this).data('pventa-id');
+                const productoID = $(this).data('producto-id');
                 const index = $(this).data('orden-index');
-                await eliminarOrden(pivotID, index);
+                if (!pivotID || pivotID == "undefined") {
+                    // // console.log("PivotID: ", pivotID);
+                    // // console.log("Eliminado orden del carrito")
+                    await eliminarOrdenCarrito(productoID, index);
+                } else {
+                    // // console.log("PivotID: ", pivotID);
+                    // // console.log("Eliminando orden en venta activa")
+                    await eliminarOrden(pivotID, index);
+                }
             });
         };
 
