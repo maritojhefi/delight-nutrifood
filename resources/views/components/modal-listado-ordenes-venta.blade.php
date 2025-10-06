@@ -38,16 +38,29 @@
         }
 
         const renderizarObservacionPedido = (info) => {
-            const initialText = info.observacion ? info.observacion : ''; 
+            
+            let textoInicial = '';
+
+
+            if (typeof info.observacion === 'undefined') {
+                console.log("Propiedad 'observacion' no existe. obteniendo de localStorage.");
+                const itemCarrito = carritoStorage.obtenerItemCarrito(info.id);
+                textoInicial = itemCarrito.observacion ?? '';
+                // return null; 
+            } else {
+                const textoInicial = info.observacion ?? ''; 
+            }
 
             const contenedorObservacion = $('#contenedor-observacion');
+
             if (!info.aceptado) {
                 contenedorObservacion.html(`
                     <label for="observacion-pv-${info.pivot_id}" class="color-highlight">Detalles para tu orden</label>
                     <div class="input-style has-borders no-icon d-flex flex-row gap-2 align-items-center">
-                        <textarea id="observacion-pv-${info.pivot_id}" placeholder="Detalles para tu orden">${initialText}</textarea>
+                        <textarea id="observacion-pv-${info.pivot_id}" placeholder="Detalles para tu orden">${textoInicial}</textarea>
                         <button 
                             data-pventa-id="${info.pivot_id}"
+                            data-producto-id="${info.id}"
                             class="btn btn-md bg-highlight my-3 btn-guardar-observacion">Guardar</button>
                     </div>
                 `);
@@ -59,18 +72,21 @@
                     </div>
                 `);
             }
-            
-            
+
             // Asignar evento para actualizar observacion
             contenedorObservacion.off('click', '.btn-guardar-observacion').on('click', '.btn-guardar-observacion', async function() {
                 const pivotID = $(this).data('pventa-id');
                 const texto = $(`#observacion-pv-${pivotID}`).val();
-                
-                await actualizarObservacion(pivotID, texto);
+                if (!pivotID || pivotID == "undefined") {
+                    const productoID = $(this).data('producto-id');
+                    actualizarObservacionCarrito(productoID, texto);
+                } else {
+                    await actualizarObservacionVenta(pivotID, texto);
+                }
             });
         };
 
-        const actualizarObservacion = async(pivotID, texto) => {
+        const actualizarObservacionVenta = async(pivotID, texto) => {
             try {
                 await VentaService.actualizarObservacionPorID(pivotID, texto);
                 mostrarToastSuccess("Nota actualizada con éxito");
@@ -78,6 +94,10 @@
                 mostrarToastError("Ha sucedido un error al actualizar la nota.");
                 console.error('Error al actualizar observación:', error);
             }
+        }
+        const actualizarObservacionCarrito = async (productoID, texto) => {
+            carritoStorage.actualizarObservacion(productoID, texto);
+            mostrarToastSuccess("Nota actualizada con éxito");
         }
 
         const eliminarOrden = async (pivotID, index) => {

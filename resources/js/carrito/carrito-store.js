@@ -321,6 +321,15 @@ export async function agregarAlCarrito(productId, cantidad, isUpdate = false, ad
     }
 }
 
+// ACTUALIZAR OBSERVACION DEL PEDIDO
+export const actualizarObservacion = (producto_id, observacion) => {
+    // // console.log(`Observacion a establecerse para el producto con id ${producto_id}: `, observacion);
+    const carrito = obtenerCarrito();
+    const itemCarrito = carrito.items.find(item => item.id == producto_id);
+    itemCarrito.observacion = observacion;
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+}
+
 export const actualizarOrdenCarrito = (producto_id, indice, adicionales = []) => {
     try {
         const carrito = obtenerCarrito();
@@ -437,6 +446,7 @@ window.carritoStorage = {
     obtenerItemCarrito,
     agregarAlCarrito,
     actualizarOrdenCarrito,
+    actualizarObservacion,
     restarDelCarrito,
     eliminarProducto,
     eliminarOrdenProducto,
