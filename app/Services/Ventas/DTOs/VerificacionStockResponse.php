@@ -60,7 +60,7 @@ class VerificacionStockResponse
             return null;
         }
         
-        return "Solicitado: {$this->cantidadSolicitada}, Stock disponible: {$this->stockProducto}";
+        return "Total solicitado: {$this->cantidadSolicitada}    Disponible: {$this->stockProducto}";
     }
 
     // Método de conveniencia para convertir a VentaResponse en caso de error

@@ -771,8 +771,8 @@
 
         if (tipo == "simple") {
             return `
-                <div class="quantity-controls bg-light border rounded d-flex align-items-center" style="min-width: 120px;">
-                    <button class="btn btn-sm btn-outline-secondary border-0 px-2 py-1 qty-decrease"
+                <div class="quantity-controls bg-light border rounded d-flex align-items-center">
+                    <button class="btn btn-xs btn-outline-secondary border-0 qty-decrease"
                             type="button"
                             data-product-id="${producto.id}"
                             title="Disminuir cantidad"
@@ -780,11 +780,11 @@
                         <i class="fa fa-minus"></i>
                     </button>
                     <span id="item-${producto.id}-qty"
-                        class="px-3 fw-semibold product-quantity"
+                        class="px-1 fw-semibold product-quantity"
                         data-product-id="${producto.id}">
                         ${cantidad}
                     </span>
-                    <button class="btn btn-sm btn-outline-secondary border-0 px-2 py-1 qty-increase"
+                    <button class="btn btn-xs btn-outline-secondary border-0 qty-increase"
                             type="button"
                             data-product-id="${producto.id}"
                             title="Aumentar cantidad"

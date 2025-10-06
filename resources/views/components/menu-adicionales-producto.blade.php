@@ -12,8 +12,11 @@
 
             <div>
                 <h2 id="detalles-menu-nombre" class="font-16 line-height-s mt-1 mb-n1">Nombre del producto</h2>
-                <div id="error-producto-container" class="alert bg-blue-light p-1 rounded-s mt-3 mb-0" style="display: none;">
-                    <p id="error-producto-message" class="text-white">El stock del producto no parece ser suficiente.</p>
+                <div id="contenedor-cantidad-encarrito" class="d-none">
+                    <small>Unidades en carrito: <span id="contador-cantidad-encarrito">0</span></small>
+                </div>
+                <div id="error-producto-container" class="alert bg-red-light p-1 rounded-s mt-1 mb-0" style="display: none;">
+                    <p id="error-producto-message" class="text-white text-center">El stock del producto no parece ser suficiente.</p>
                 </div>
             </div>
         </div>
@@ -214,26 +217,43 @@
 
         // Preparar la informacion del Menu para el producto seleccionado.
         const prepararMenuAdicionarProducto = async (infoProducto) => {
+            console.log("InfoProducto MenuAdicionarProducto:", infoProducto);
             const nombreProductoMenu = document.getElementById('detalles-menu-nombre');
             const adicionalesContainer = document.getElementById('detalles-menu-adicionales');
             const elementoCostoUnitario = document.getElementById('detalle-costo-unitario')
             const elementoCostoTotal = document.getElementById('detalle-costo-total');
-            const incrementarProductoBtn = document.getElementById('detalles-stepper-up');
-            const reducirProductoBtn = document.getElementById('detalles-stepper-down');
+            const contenedorCantidadesCarrito = $('#contenedor-cantidad-encarrito');
+            contenedorCantidadesCarrito.addClass('d-none');
+            const $incrementarProductoBtn = $('#detalles-stepper-up');
+            const $reducirProductoBtn = $('#detalles-stepper-down');
+
+            if(!esActualizacion)
+            {
+                const productoCarrito = carritoStorage.obtenerItemCarrito(infoProducto.id);
+                const totalEnCarrito = productoCarrito ? Object.keys(productoCarrito.adicionales).length : 0;
+                if (totalEnCarrito > 0) {
+                    console.log("Total en carrito: ", totalEnCarrito);
+                    console.log("Se revelara la cuenta de unidades en carrito");
+                    $('#contador-cantidad-encarrito').text(totalEnCarrito);
+                    contenedorCantidadesCarrito.removeClass('d-none');
+                }
+            }
 
             nombreProductoMenu.innerText = infoProducto.nombre; 
             elementoCostoUnitario.innerText = `Bs. ${(infoProducto.precio).toFixed(2)}`;
             adicionalesContainer.innerHTML = renderAdicionales(infoProducto.adicionales);
 
-            incrementarProductoBtn.addEventListener('click', () => {
-                actualizarCostoTotal(infoProducto);
+            console.log("$incrementarProductoBtn", $incrementarProductoBtn);
+            $incrementarProductoBtn.on('click', () => {
+                actualizarCostoTotal(infoProducto); 
             });
 
-            reducirProductoBtn.addEventListener('click', () => {
-                actualizarCostoTotal(infoProducto);
+            console.log("$reducirProductoBtn", $reducirProductoBtn);
+            $reducirProductoBtn.on('click', () => {
+                actualizarCostoTotal(infoProducto); 
             });
 
-            actualizarCostoTotal(infoProducto);
+            // actualizarCostoTotal(infoProducto);
 
             $('.input-radio').off('change').on('change', function() {
                 // Actualizar el costo al cambiar los adicionales obligatorios
@@ -348,23 +368,39 @@
                 }
             };
 
+            const enCarrito = carritoStorage.obtenerItemCarrito(infoProducto.id);
+            const cantidadCarrito = enCarrito ? Object.keys(enCarrito.adicionales).length : 0;
+
             try {
                 // SOLICITUD DE AGREGAR PRODUCTO
+                if (enCarrito) {
+                    cantidadSolicitada += cantidadCarrito;
+                    // Object.keys(enCarrito.adicionales).length;
+                }
                 estaVerificando(true);
                 const agregarVentaProducto = await VentaService.agregarProductoVenta(infoProducto.id, cantidadSolicitada, IdsAdicionalesSeleccionados);
                 if (esActualizacion) {
                     renderizarListadoOrdenesVenta(agregarVentaProducto.data);
                 }
-                await carritoStorage.mostrarToastAgregado();
-                estaVerificando(false);
+                // await carritoStorage.mostrarToastAgregado();
                 closeDetallesMenu();
-            } catch (error) {
                 estaVerificando(false);
+                mostrarToastSuccess("Se agregó la orden a su pedido.");
+            } catch (error) {
+                // estaVerificando(false);
                 // CONTROL DE VENTA-CARRITO
                 if (error.response && error.response.status === 409) {
                     // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
                     const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidadSolicitada, false, IdsAdicionalesSeleccionados);
+                    if (esActualizacion) {
+                        const itemCarrito = carritoStorage.obtenerItemCarrito(infoProducto.id);
+                        const infoActualizada = await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
+                        renderizarListadoOrdenesVenta(infoActualizada.item);
+                    }
+                    
                     closeDetallesMenu();
+                    estaVerificando(false);
+                    // mostrarToastSuccess("Se agregó la orden a su carrito.");
                 }
                 // CONTROL DE STOCK INSUFICIENTE
                 else if (error.response && error.response.status === 422) {
@@ -372,6 +408,7 @@
                     // Informacion recibida de validacion inexitosa en backend
                     const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaximaPosible,
                     messageLimitados, messageAgotados, messageProducto, stockProducto } = error.response.data;
+
                     // PRODUCTO AGOTADO
                     if (stockProducto <= 0)
                     {
@@ -391,7 +428,7 @@
                         // Actualizar el texto indicando el stock disponible del producto
                         $('#stock-producto-value').text(`${stockProducto}`);
                         // Transformar boton para actualizar la orden
-                        renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible);
+                        renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible - cantidadCarrito);
                     }
                     // STOCK AGOTADO ADICIONALELS
                     if (idsAdicionalesAgotados.length > 0) {
@@ -424,7 +461,7 @@
                         textoAdvertencia.textContent = messageLimitados;
                         
                         // Transformar boton para actualizar la orden
-                        renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible);
+                        renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible - cantidadCarrito);
                     }
                 }  else {
                     // Error interno del servidor
@@ -434,6 +471,7 @@
                     estaVerificando(false);
                     // closeDetallesMenu();
                 }
+                estaVerificando(false);
             }
         }
 

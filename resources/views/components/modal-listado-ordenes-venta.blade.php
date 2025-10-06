@@ -134,9 +134,10 @@
                     console.warn("No existe registro en itemCarrito")
                     mostrarToastError("El producto ya no existe en el carrito");
                 }
+                carritoStorage.actualizarContadorCarrito();
                 const infoProductoActualizado = await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
                 // // reemplazarCardOrdenIndice(infoProductoActualizado.item, infoOrden.indice);
-                renderizarListadoOrdenesVenta(infoProductoActualizado.item)
+                renderizarListadoOrdenesVenta(infoProductoActualizado.item);
             } catch (error) {
                 if (error.name === "LastOrderCartDeletionError") {
                     console.warn("🚫 ADVERTENCIA: No se puede eliminar la única orden restante.");
@@ -238,6 +239,7 @@
         }
 
         const renderizarBotonOrden = (infoProductoVenta) => {
+            console.log("infoProductoVentaBotonOrden: ", infoProductoVenta);
             const tipo = infoProductoVenta.tipo;
             return `
                 <button 
@@ -262,7 +264,7 @@
                 }).join('')}
             `);
 
-            if (info.aceptado == false) {
+            if (info.aceptado == false || !info.aceptado) {
                 // contenedorBotonAgregar.html(botonAgregar);
                 botonBase.replaceWith(botonAgregar);
             } else {
