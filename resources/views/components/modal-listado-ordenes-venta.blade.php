@@ -5,6 +5,9 @@
                 <h4 id="titulo-listado-ordenes" class="mb-0 align-self-center text-uppercase">Detalles del pedido</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <div id="contenedor-mensaje-validacion-ordenes" class="alert alert-warning mt-2 mb-0 mx-4 p-1 small d-none">
+                <p id="mensaje-validacion-listado-ordenes" class="mb-0"></p>
+            </div>
             <div id="contenedor-listado-ordenes" class="d-flex align-content-center flex-column">
                 <ul id="listado-ordenes" class="px-3 pt-3 mb-0">
                 </ul>
@@ -38,9 +41,7 @@
         }
 
         const renderizarObservacionPedido = (info) => {
-            
             let textoInicial = '';
-
 
             if (typeof info.observacion === 'undefined') {
                 console.log("Propiedad 'observacion' no existe. obteniendo de localStorage.");
@@ -95,6 +96,7 @@
                 console.error('Error al actualizar observación:', error);
             }
         }
+
         const actualizarObservacionCarrito = async (productoID, texto) => {
             carritoStorage.actualizarObservacion(productoID, texto);
             mostrarToastSuccess("Nota actualizada con éxito");
@@ -108,6 +110,11 @@
                 
                 // Renderizar el listado permite reatribuirle los Indices ya modificados
                 renderizarListadoOrdenesVenta(response.data);
+                
+                // const validacionProductoPrincipal = estadoValidacionCarrito.productosLimitados[infoProductoObjetivo.id];
+                // if (validacionProductoPrincipal) {
+                    
+                // }
                 // En caso de desear solo eliminar el card de la orden seleccionada, usar la funcion comentada
                 // // eliminarCardOrdenIndice(pivotID, index);
                 // Actualizar la informacion del pedido general
@@ -135,8 +142,12 @@
                     console.warn("No existe registro en itemCarrito")
                     mostrarToastError("El producto ya no existe en el carrito");
                 }
+                
                 carritoStorage.actualizarContadorCarrito();
                 const infoProductoActualizado = await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
+
+                // const infoProductoObjetivo = response.data.find(producto => producto.pivot_id = pivotID);
+                // console.log(`Informacion del producto cuya orden ${indice} acaba de ser eliminada: `, infoProductoActualizado.item);
                 // console.log("Valor de carrito tras eliminacion de orden: ", response.data);
                 
                 // // reemplazarCardOrdenIndice(infoProductoActualizado.item, infoOrden.indice);
@@ -299,6 +310,7 @@
             const contenedorBotonAgregar = $(`#contenedor-boton-agregar`);
             const botonBase = $(`#boton-agregar-orden-venta`);
             const botonAgregar = renderizarBotonOrden(info);
+            controlMensajeValidacion(info);
             
             listaPrincipal.html(`
             ${ordenesEntries.map(([ordenKey, adicionales]) => {
@@ -349,7 +361,34 @@
                 // De otra forma, rehabilitarlo
         };
 
+        const controlMensajeValidacion = (info) => {
+            const validacionProductoPrincipal = estadoValidacionCarrito.productosLimitados[info.id];
+            const contenedorMensajeValidacion = $('#contenedor-mensaje-validacion-ordenes');
+            const mensajeValidacion = $('#mensaje-validacion-listado-ordenes');
 
+            const contenedorDisponibles = $('#contenedor-productos-disponibles-carrito');
+
+            if (validacionProductoPrincipal && validacionProductoPrincipal.stockDisponible < info.cantidad_solicitada) {
+                mensajeValidacion.text(validacionProductoPrincipal.mensaje);
+                contenedorMensajeValidacion.removeClass('d-none');
+                contenedorMensajeValidacion.addClass('d-block');
+                
+
+
+                // contenedorItemsDisponibles.innerHTML += renderCartItem(info,'disponible', info.cantidad_solicitada);
+            } else if (validacionProductoPrincipal && validacionProductoPrincipal.stockDisponible >= info.cantidad_solicitada) {
+                eliminarCardProductoCarrito(info.id);
+                const newCardHtml = renderCartItem(info, 'disponible', info.cantidad_solicitada);
+                contenedorDisponibles.append(newCardHtml);
+                mensajeValidacion.text('')
+                contenedorMensajeValidacion.removeClass('d-block');
+                contenedorMensajeValidacion.addClass('d-none');
+            } else {
+                mensajeValidacion.text('')
+                contenedorMensajeValidacion.removeClass('d-block');
+                contenedorMensajeValidacion.addClass('d-none');
+            }
+        }
     });
 </script>
 @endpush

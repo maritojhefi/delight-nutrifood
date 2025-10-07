@@ -10,7 +10,11 @@ import './ventas/venta-service'
 
 createIcons({icons});
 
-// window.lucide = { createIcons };
+// Reinicializacion global de iconos lucide
 window.reinitializeLucideIcons = () => {
     createIcons({icons});
+};
+
+window.estadoValidacionCarrito = {
+    productosLimitados: {}
 };
