@@ -394,9 +394,10 @@
                 const agregarVentaProducto = await VentaService.agregarProductoVenta(infoProducto.id, cantidadSolicitada, IdsAdicionalesSeleccionados);
                 if (esActualizacion) {
                     renderizarListadoOrdenesVenta(agregarVentaProducto.data);
+                    reemplazarCardProductoVenta(agregarVentaProducto.data);
                 }
 
-
+                
                 closeDetallesMenu();
                 estaVerificando(false);
                 mostrarToastSuccess("Se agregó la orden a su pedido.");
