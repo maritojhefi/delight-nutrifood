@@ -15,7 +15,7 @@
                 <div id="contenedor-cantidad-encarrito" class="d-none">
                     <small>Unidades en carrito: <span id="contador-cantidad-encarrito">0</span></small>
                 </div>
-                <div id="error-producto-container" class="alert bg-red-light p-1 rounded-s mt-1 mb-0" style="display: none;">
+                <div id="error-producto-container" class="alert bg-red-light p-1 rounded-s mt-2 mb-0" style="display: none;">
                     <p id="error-producto-message" class="text-white text-center">El stock del producto no parece ser suficiente.</p>
                 </div>
             </div>
@@ -80,7 +80,7 @@
         <div class="divider mb-2"></div>
         <div id="boton-accion-container">
             <button type="submit" id="btn-verificar-agregado" form="detalles-menu-adicionales" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm">
-                Agregar al carrito
+                AGREGAR PEDIDO
             </button>
         </div>
     </div>
@@ -200,20 +200,24 @@
         } 
 
         window.deshabilitarBoton = async (productoID) => {
-            const botonActual = $(`[data-producto-id="${productoID}"]`);
+            const botonActual = $(`.add-disabler[data-producto-id="${productoID}"]`);
+            
             if (botonActual.length) {
                 const nuevoContenido = `
                     <div class="d-flex flex-row align-items-center gap-1">
                         <i class="fa fa-ban"></i>
                         AGOTADO
                     </div>
-                `
-                botonActual.html(nuevoContenido)
-                .prop('disabled', true)
-                .removeClass('bg-highlight hover-grow-s')
-                .addClass('bg-gray-dark');
+                `;
+                
+                botonActual
+                    .html(nuevoContenido)
+                    .prop('disabled', true)
+                    .removeClass('bg-highlight hover-grow-s')
+                    .addClass('bg-gray-dark');
             }
-        }
+        };
+
 
         // Preparar la informacion del Menu para el producto seleccionado.
         const prepararMenuAdicionarProducto = async (infoProducto) => {
@@ -226,6 +230,10 @@
             contenedorCantidadesCarrito.addClass('d-none');
             const $incrementarProductoBtn = $('#detalles-stepper-up');
             const $reducirProductoBtn = $('#detalles-stepper-down');
+            // // console.log("Ocultando mensaje error producto");
+            const containerAdvertencia = $('#error-producto-container');
+            containerAdvertencia.removeClass('d-block');
+            containerAdvertencia.addClass('d-none');
 
             if(!esActualizacion)
             {
@@ -312,6 +320,8 @@
                 });
             }, 0);
 
+            renderBotonAgregarProducto();
+
             // Formulario de adicionales
             const formAdicionales = document.getElementById("detalles-menu-adicionales");
             
@@ -364,25 +374,29 @@
                 if (key !== 'cantidad-orden') {
                     IdsAdicionalesSeleccionados.push(parseInt(value));  
                 } else {
+                    console.log("Valor de cantidad-orden: ", value);
                     cantidadSolicitada = parseInt(value);
                 }
             };
 
+            
+
             const enCarrito = carritoStorage.obtenerItemCarrito(infoProducto.id);
             const cantidadCarrito = enCarrito ? Object.keys(enCarrito.adicionales).length : 0;
-
+            console.log("Cantidad Solicitada entrando al formulario sin contar carrito: ", cantidadSolicitada);
             try {
-                // SOLICITUD DE AGREGAR PRODUCTO
-                if (enCarrito) {
-                    cantidadSolicitada += cantidadCarrito;
-                    // Object.keys(enCarrito.adicionales).length;
-                }
+                // // SOLICITUD DE AGREGAR PRODUCTO
+                // if (enCarrito) {
+                //     cantidadSolicitada += cantidadCarrito;
+                //     console.log("Cantidad Solicitada entrando al formulario con carrito: ", cantidadSolicitada);
+                // }
                 estaVerificando(true);
                 const agregarVentaProducto = await VentaService.agregarProductoVenta(infoProducto.id, cantidadSolicitada, IdsAdicionalesSeleccionados);
                 if (esActualizacion) {
                     renderizarListadoOrdenesVenta(agregarVentaProducto.data);
                 }
-                // await carritoStorage.mostrarToastAgregado();
+
+
                 closeDetallesMenu();
                 estaVerificando(false);
                 mostrarToastSuccess("Se agregó la orden a su pedido.");
@@ -391,15 +405,54 @@
                 // CONTROL DE VENTA-CARRITO
                 if (error.response && error.response.status === 409) {
                     // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
-                    const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidadSolicitada, false, IdsAdicionalesSeleccionados);
-                    if (esActualizacion) {
-                        const itemCarrito = carritoStorage.obtenerItemCarrito(infoProducto.id);
-                        const infoActualizada = await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
-                        renderizarListadoOrdenesVenta(infoActualizada.item);
-                    }
+                    try {
+                        const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidadSolicitada, false, IdsAdicionalesSeleccionados);
+                        if (AddAttempt.success == false) {
+                            if (AddAttempt.stockDisponible <= 0)
+                            {
+                                deshabilitarBoton(infoProducto.id);
+                                mostrarAvisoAgotado();
+                                closeDetallesMenu();
+                            } else if (AddAttempt.stockDisponible < AddAttempt.totalSolicitado) 
+                            {
+                                if (AddAttempt.stockDisponible == cantidadCarrito) {
+                                    console.log("Se deberia mostrar el toast");
+                                    carritoStorage.mostrarToastLimite();
+                                    closeDetallesMenu();
+                                }
+                                const containerAdvertencia = $('#error-producto-container');
+                                containerAdvertencia.removeClass('d-none');
+                                containerAdvertencia.addClass('d-block');
+                                const textoAdvertencia = document.getElementById('error-producto-message');
+                                textoAdvertencia.textContent = `Total solicitado: ${AddAttempt.totalSolicitado}    Disponible: ${AddAttempt.stockDisponible}`;
+                                $('#stock-producto-value').text(`${AddAttempt.stockDisponible}`);
+                                if (!esActualizacion) {
+                                    renderBotonActualizarAdicionales(infoProducto, AddAttempt.stockDisponible - cantidadCarrito);
+                                } else {
+                                    deshabilitarBotonAgregadoOrden();
+                                }
+                            }
+                        } else {
+                            if (esActualizacion) {
+                                const itemCarrito = carritoStorage.obtenerItemCarrito(infoProducto.id);
+                                const infoActualizada = await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
+                                renderizarListadoOrdenesVenta(infoActualizada.item);
+                            }
+                            closeDetallesMenu();
+                            estaVerificando(false);
+                        }
+                    } catch (error) {
+                        // MostrarToastError
+                        console.log("Error al agregar producto a carrito: ", error);
+                    }   
+
+
                     
-                    closeDetallesMenu();
-                    estaVerificando(false);
+                    // const cantidadCarrito = carritoStorage.cantidadOrdenesProducto(infoProducto.id);
+                    // if (cantidadCarrito >= ) {
+                        
+                    // }
+                    
                     // mostrarToastSuccess("Se agregó la orden a su carrito.");
                 }
                 // CONTROL DE STOCK INSUFICIENTE
@@ -408,6 +461,8 @@
                     // Informacion recibida de validacion inexitosa en backend
                     const { idsAdicionalesAgotados, idsAdicionalesLimitados, cantidadMaximaPosible,
                     messageLimitados, messageAgotados, messageProducto, stockProducto } = error.response.data;
+
+
 
                     // PRODUCTO AGOTADO
                     if (stockProducto <= 0)
@@ -420,15 +475,29 @@
                     }
                     // STOCK INSUFICIENTE PRODUCTO
                     else if (stockProducto < cantidadSolicitada) {
+                        if (stockProducto == cantidadCarrito) {
+                            console.log("Se deberia mostrar el toast");
+                            carritoStorage.mostrarToastLimite();
+                            closeDetallesMenu();
+                        }
                         // Renderizar advertencia stock disponible
-                        const containerAdvertencia = document.getElementById('error-producto-container');
-                        containerAdvertencia.style.display = 'block';
+                        const containerAdvertencia = $('#error-producto-container');
+                        containerAdvertencia.removeClass('d-none');
+                        containerAdvertencia.addClass('d-block');
+
+                        // const containerAdvertencia = document.getElementById('error-producto-container');
+                        // containerAdvertencia.style.display = 'block';
                         const textoAdvertencia = document.getElementById('error-producto-message');
                         textoAdvertencia.textContent = messageProducto;
                         // Actualizar el texto indicando el stock disponible del producto
                         $('#stock-producto-value').text(`${stockProducto}`);
                         // Transformar boton para actualizar la orden
-                        renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible - cantidadCarrito);
+                        if (!esActualizacion) {
+                            renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible - cantidadCarrito);
+                        } else {
+                            // dehabilitar boton agregar ordenes
+                            deshabilitarBotonAgregadoOrden();
+                        }
                     }
                     // STOCK AGOTADO ADICIONALELS
                     if (idsAdicionalesAgotados.length > 0) {
@@ -461,7 +530,9 @@
                         textoAdvertencia.textContent = messageLimitados;
                         
                         // Transformar boton para actualizar la orden
-                        renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible - cantidadCarrito);
+                        if (!esActualizacion) {
+                            renderBotonActualizarAdicionales(infoProducto,cantidadMaximaPosible - cantidadCarrito);
+                        }
                     }
                 }  else {
                     // Error interno del servidor
@@ -496,13 +567,13 @@
         const renderBotonAgregarProducto = () => {
             const containerBotonAccion = document.getElementById('boton-accion-container');
             containerBotonAccion.innerHTML =  `
-                <button type="submit" form="detalles-menu-adicionales" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm">Agregar al carrito</button>
+                <button type="submit" id="btn-verificar-agregado" form="detalles-menu-adicionales" class="btn btn-full btn-m bg-highlight font-700 w-100 text-uppercase rounded-sm">Agregar pedido</button>
             `;
         }
 
         const estaVerificando = (booleano) => {
             $('#btn-verificar-agregado')
-                .text(booleano ? 'VERIFICANDO...' : 'AGREGAR AL CARRITO')
+                .text(booleano ? 'VERIFICANDO...' : 'AGREGAR PEDIDO')
                 .prop('disabled', booleano);
         };
 
@@ -521,6 +592,9 @@
             // Actualizar el costo al cambiar los adicionales obligatorios
             actualizarCostoTotal(infoProducto);
         });
+        const containerAdvertencia = $('#error-producto-container');
+        containerAdvertencia.removeClass('d-block');
+        containerAdvertencia.addClass('d-none');
 
         $('.input-single').off('change').on('change', function() {
             $('input[name="' + this.name + '"]').not(this).prop('checked', false);
@@ -546,7 +620,8 @@
 
         try {
             // En caso de no encontrar venta activa, retornar un error especifico
-            if (!infoOrden.pventaID) {
+            if (!infoOrden.pventaId || infoOrden.pventaId == "undefined") {
+                // // console.log("infoOrden:", infoOrden);
                 const adicionalesOrden = carritoStorage.adicionalesOrdenIndice(infoOrden.productoId,infoOrden.indice);
                 preseleccionarDefaultsCarrito(adicionalesOrden);
                 actualizarCostoTotal(infoProducto);
@@ -779,6 +854,8 @@
 
         botonAdicionar.replaceWith(botonActualizar);
     }
+
+
     const estaActualizando = (booleano) => {
         $('#btn-verificar-actualizacion')
             .text(booleano ? 'ACTUALIZANDO...' : 'ACTUALIZAR PEDIDO')

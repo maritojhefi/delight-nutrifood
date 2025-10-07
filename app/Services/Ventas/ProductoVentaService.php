@@ -849,7 +849,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 return VentaResponse::success([], 'No hay productos en esta venta');
             }
 
-            $productosProcessed = $this->procesarProductosVenta($productos);
+            $productosProcessed = $this->procesarProductosVenta($productos, $venta->sucursale_id);
 
             return VentaResponse::success($productosProcessed);
 
@@ -881,7 +881,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             }
 
             // Procesar un unico ProductoVenta
-            $productoProcesado = $this->procesarProductoVentaIndividual($producto);
+            $productoProcesado = $this->procesarProductoVentaIndividual($producto, $venta->sucursale_id);
 
             return VentaResponse::success($productoProcesado);
 
@@ -933,25 +933,25 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
-    private function procesarProductosVenta(Collection $productos): array
+    private function procesarProductosVenta(Collection $productos, int $sucursaleId): array
     {
         // Pre-cargado de todos los adicionales necesarios para el proceso
         $allAdicionalesNames = $this->extraerNombresAdicionales($productos);
         $adicionales = $this->adicionalesPorNombre($allAdicionalesNames);
 
-        return $productos->map(function ($producto) use ($adicionales) {
-            return $this->transformarProducto($producto, $adicionales);
+        return $productos->map(function ($producto) use ($adicionales, $sucursaleId) {
+            return $this->transformarProducto($producto, $adicionales, $sucursaleId);
         })->toArray();
     }
 
-    private function procesarProductoVentaIndividual($producto): array
+    private function procesarProductoVentaIndividual(Producto $producto, int $sucursaleId): array
     {
         $adicionalesData = json_decode($producto->pivot->adicionales ?? '{}', true);
         $adicionalesNames = $this->extraerNombresDeAdicionalesData($adicionalesData);
         
         $adicionales = $this->adicionalesPorNombre(collect($adicionalesNames));
         
-        return $this->transformarProducto($producto, $adicionales);
+        return $this->transformarProducto($producto, $adicionales, $sucursaleId);
     }
 
     private function extraerNombresAdicionales(Collection $productos): SupportCollection
@@ -997,10 +997,11 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             ->keyBy('nombre');
     }
 
-    private function transformarProducto($producto, Collection $adicionales): array
+    private function transformarProducto($producto, Collection $adicionales, int $sucursaleId): array
     {
         $adicionalesData = json_decode($producto->pivot->adicionales ?? '{}', true);
         [$processedAdicionales, $precioTotalAdicionales] = $this->procesarAdicionales($adicionalesData, $adicionales);
+        $stockDisponible = $this->stockService->obtenerStockTotal($producto, $sucursaleId);
 
         return [
             'id' => $producto->id,
@@ -1008,6 +1009,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             'detalle' => $producto->detalle,
             'adicionales' => $processedAdicionales,
             'costo_adicionales' => $precioTotalAdicionales,
+            'stock_disponible' => $stockDisponible,
             'precio_final' => ($producto->precioReal() * $producto->pivot->cantidad) + $precioTotalAdicionales,  // You can add this if needed
             'tiene_descuento' => $producto->precio !== $producto->precioReal(),
             'precio_original' => $producto->precio,

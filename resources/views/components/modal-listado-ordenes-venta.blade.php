@@ -111,6 +111,7 @@
                 // En caso de desear solo eliminar el card de la orden seleccionada, usar la funcion comentada
                 // // eliminarCardOrdenIndice(pivotID, index);
                 // Actualizar la informacion del pedido general
+                console.log("Valor de respuesta tras eliminacion venta: ", response.data);
                 window.reemplazarCardProductoVenta(response.data);
                 mostrarToastSuccess("Orden eliminada con éxito");
             } catch (error) {
@@ -136,6 +137,8 @@
                 }
                 carritoStorage.actualizarContadorCarrito();
                 const infoProductoActualizado = await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
+                // console.log("Valor de carrito tras eliminacion de orden: ", response.data);
+                
                 // // reemplazarCardOrdenIndice(infoProductoActualizado.item, infoOrden.indice);
                 renderizarListadoOrdenesVenta(infoProductoActualizado.item);
             } catch (error) {
@@ -153,6 +156,7 @@
         }
 
         window.reemplazarCardOrdenIndice = (infoProductoVenta, indice) => {
+            console.log("Informacion al reemplazar card: ", infoProductoVenta);
             const adicionalesIndice = infoProductoVenta.adicionales[indice];
             const cardAntiguo = $(`#pedido-${infoProductoVenta.pivot_id}-orden-${indice}`);
             const cardNuevo = renderizarCardOrden(infoProductoVenta, adicionalesIndice, indice);
@@ -185,33 +189,33 @@
         }
 
         const renderizarCardOrden = (info, adicionales, indice) => {
-            // // console.log("InfoProducto: ", info);
-            // // console.log("Adicionales: ", adicionales);
-            // // console.log("Indice: ", indice);
             const precioAdicionalesItem = adicionales.reduce((sum, adicional) => {
                 return sum + (parseFloat(adicional.precio) || 0);
             }, 0);
 
+            // Explicitly check for aceptado - treat undefined, null, and false as "not accepted"
+            const esAceptado = info.aceptado === true;
+
             return `
                 <li id="pedido-${info.pivot_id}-orden-${indice}"
-                    data-producto-id=${info.id}
-                    data-pventa-id=${info.pivot_id}
+                    data-producto-id="${info.id}"
+                    data-pventa-id="${info.pivot_id}"
                     data-orden-index="${indice}"
-                    class=" ${info.aceptado ? '':'actualizar-orden-venta'}"
+                    class="${esAceptado ? '' : 'actualizar-orden-venta'}"
                     style="list-style-type: none">
                     <div class="card card-style">
                         <div class="card-header bg-teal-light">
                             <div class="card-title mb-0 d-flex flex-row justify-content-between">
                                 <h4 class="mb-0">Orden N° ${indice}</h4>
-                                ${info.aceptado ? `` : `
-                                <button
-                                    data-pventa-id="${info.pivot_id}"
-                                    data-producto-id="${info.id}"
-                                    data-orden-index="${indice}"
-                                    class="borrar-orden-pventa"
-                                >
-                                    <i class="lucide-icon" data-lucide="trash-2"></i>
-                                </button>
+                                ${esAceptado ? '' : `
+                                    <button
+                                        data-pventa-id="${info.pivot_id}"
+                                        data-producto-id="${info.id}"
+                                        data-orden-index="${indice}"
+                                        class="borrar-orden-pventa"
+                                    >
+                                        <i class="lucide-icon" data-lucide="trash-2"></i>
+                                    </button>
                                 `}
                             </div>
                         </div>
@@ -219,18 +223,18 @@
                         <div class="card-body bg-dtheme-blue">
                             ${adicionales.length <= 0 ? `
                                 <span class="color-theme">Sin extras</span>
-                            `:`
-                            <h5 class="color-teal-light">Adicionales ${precioAdicionalesItem > 0 ? `(Bs. ${precioAdicionalesItem.toFixed(2)})` : ''}</h5>
-                            <ul class="row mb-0 ps-1">
-                                ${adicionales.map(adicional => `
-                                    <li class="col-6 color-theme" style="list-style-type: none">
-                                        ${adicional.nombre}
-                                        ${adicional.precio > 0 ? ` <span class="text-muted">(${parseFloat(adicional.precio).toFixed(2)})</span>` : ''}
-                                        ${adicional.limitado ? '<span class="text-danger"> (Limitado)</span>' : ''}
-                                        ${adicional.cantidad > 1 ? ` (x${adicional.cantidad})` : ''}
-                                    </li>
-                                `).join('')}
-                            </ul>
+                            ` : `
+                                <h5 class="color-teal-light">Adicionales ${precioAdicionalesItem > 0 ? `(Bs. ${precioAdicionalesItem.toFixed(2)})` : ''}</h5>
+                                <ul class="row mb-0 ps-1">
+                                    ${adicionales.map(adicional => `
+                                        <li class="col-6 color-theme" style="list-style-type: none">
+                                            ${adicional.nombre}
+                                            ${adicional.precio > 0 ? ` <span class="text-muted">(${parseFloat(adicional.precio).toFixed(2)})</span>` : ''}
+                                            ${adicional.limitado ? '<span class="text-danger"> (Limitado)</span>' : ''}
+                                            ${adicional.cantidad > 1 ? ` (x${adicional.cantidad})` : ''}
+                                        </li>
+                                    `).join('')}
+                                </ul>
                             `}
                         </div>
                     </div>
@@ -239,15 +243,53 @@
         }
 
         const renderizarBotonOrden = (infoProductoVenta) => {
-            console.log("infoProductoVentaBotonOrden: ", infoProductoVenta);
-            const tipo = infoProductoVenta.tipo;
+            // // console.log("infoProductoVentaBotonOrden: ", infoProductoVenta);
+            
+            const { id, tipo, stock_disponible } = infoProductoVenta;
+            const enCarrito = carritoStorage.cantidadOrdenesProducto(id);
+            const esLimitado = stock_disponible !== "INFINITO";
+            const limiteAlcanzado = esLimitado && (stock_disponible <= enCarrito || stock_disponible === 0);
+            
+            const buttonClass = tipo === "complejo" ? "menu-adicionales-btn" : "agregar-unidad";
+            const disabledAttr = limiteAlcanzado ? "disabled" : "";
+            const textoBoton = limiteAlcanzado ? "Límite actual alcanzado" : "Agregar orden";
+            
             return `
                 <button 
-                id="boton-agregar-orden-venta"
-                data-producto-id=${infoProductoVenta.id}
-                class="${tipo == "complejo" ? 'menu-adicionales-btn' : 'agregar-unidad'}
-                btn btn-xs mx-5 mb-3 mt-n1 rounded-s bg-teal-light d-flex flex-row gap-2 align-items-center justify-content-center">Argregar orden<i class="lucide-icon" data-lucide="circle-plus"></i></button>
+                    id="boton-agregar-orden-venta"
+                    data-producto-id="${id}"
+                    ${disabledAttr}
+                    class="${buttonClass} btn btn-xs add-disabler mx-5 mb-3 mt-n1 rounded-s bg-teal-light d-flex flex-row gap-2 align-items-center text-uppercase justify-content-center">
+                    ${textoBoton}
+                    <i class="lucide-icon" data-lucide="circle-plus"></i>
+                </button>
             `;
+        }
+
+        window.deshabilitarBotonAgregadoOrden = (mensaje = "Límite actual alcanzado") => {
+            const botonAgregadoOrden = $('#boton-agregar-orden-venta');
+            
+            botonAgregadoOrden
+                .prop('disabled', true)
+                // .removeClass('bg-teal-light')
+                // .addClass('bg-gray-dark')
+                .html(`
+                    ${mensaje}
+                    <i class="lucide-icon" data-lucide="ban"></i>
+                `);
+        }
+
+        window.habilitarBotonAgregadoOrden = () => {
+            const botonAgregadoOrden = $('#boton-agregar-orden-venta');
+            
+            botonAgregadoOrden
+                .prop('disabled', false)
+                // .removeClass('bg-gray-dark')
+                // .addClass('bg-teal-light')
+                .html(`
+                    Agregar orden
+                    <i class="lucide-icon" data-lucide="circle-plus"></i>
+                `);
         }
 
         window.renderizarListadoOrdenesVenta = (info) => {
@@ -274,8 +316,6 @@
             //     contenedorBotonAgregar.html('');
             // }
             
-
-            reinitializeLucideIcons();
             
             listaPrincipal.off('click', '.borrar-orden-pventa').on('click', '.borrar-orden-pventa', async function(e) {
                 e.preventDefault();
@@ -294,6 +334,19 @@
                     await eliminarOrden(pivotID, index);
                 }
             });
+
+            cantidadEnCarrito = carritoStorage.cantidadOrdenesProducto(info.id);
+            // Si existe el item en carrito
+            
+            if (cantidadEnCarrito > 0 && cantidadEnCarrito >= info.stock_disponible) {
+                deshabilitarBotonAgregadoOrden();
+                // Verificar el stock del producto, si es menor o igual a las unidades en el carrito, deshabilitar el boton
+            } else if (cantidadEnCarrito > 0 && cantidadEnCarrito < info.stock_disponible) {
+                habilitarBotonAgregadoOrden();
+            }
+
+            reinitializeLucideIcons();
+                // De otra forma, rehabilitarlo
         };
 
 

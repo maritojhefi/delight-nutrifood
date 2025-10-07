@@ -261,9 +261,7 @@ private function processIndividualItem($producto, array $itemData, int $sucursal
     $cantidadSolicitada = max(0, (int) ($itemData['cantidad'] ?? 0));
     
     // Calculate available stock
-    $stockDisponible = $producto->contable 
-        ? $this->stockService->obtenerStockTotal($producto, $sucursaleId)
-        : "INFINITO";
+    $stockDisponible = $this->stockService->obtenerStockTotal($producto, $sucursaleId);
     
     // Process adicionales
     [$infoAdicionales, $adicionalesLimitados] = $this->processAdicionales(
@@ -286,6 +284,7 @@ private function processIndividualItem($producto, array $itemData, int $sucursal
         'cantidad_solicitada' => $cantidadSolicitada,
         'estado' => $estado,
         'max_permitido' => $stockDisponible === "INFINITO" ? "INFINITO" : $stockDisponible,
+        'stock_disponible' => $stockDisponible,
         'adicionalesLimitados' => $adicionalesLimitados,
         'tipo' => $this->determinarTipoProducto($producto),
     ];
@@ -394,7 +393,7 @@ private function buildCartValidationResponse(Collection $productos): \Illuminate
     
     protected function determinarEstado($stockDisponible, $cantidadSolicitada)
     {
-        if ($stockDisponible === "INFINITO") {
+        if ($stockDisponible === PHP_INT_MAX) {
             return 'disponible';
         }
         

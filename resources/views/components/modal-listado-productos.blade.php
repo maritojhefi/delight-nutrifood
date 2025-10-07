@@ -111,7 +111,7 @@
             
             return `
                 <button
-                    class="${ producto.tiene_adicionales ? "menu-adicionales-btn":"agregar-unidad"} btn rounded-s shadow-l bg-highlight font-900 text-uppercase font-10"
+                    class="${ producto.tiene_adicionales ? "menu-adicionales-btn":"agregar-unidad"} add-disabler btn rounded-s shadow-l bg-highlight font-900 text-uppercase font-10"
                     data-producto-id="${producto.id}"
                     data-producto-nombre="${producto.nombre}"
                 >

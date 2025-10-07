@@ -53,6 +53,18 @@ export const obtenerItemCarrito = (productId) => {
     // }
 }
 
+// CONTAR LAS EXISTENCIAS EN EL CARRITO
+export const cantidadOrdenesProducto = (producto_id) => {
+    const itemCarrito = obtenerItemCarrito(producto_id);
+
+    if (itemCarrito && itemCarrito.adicionales) {
+        const cantidad = Object.keys(itemCarrito.adicionales).length;
+        return cantidad;
+    }
+
+    return 0;
+}
+
 // OBTENER ADICIONALES PERTENECIENTES A UN ITEM CARRITO EN UN INDICE ESPECIFICO
 export const adicionalesOrdenIndice = (id_producto, indice) => {
     try {
@@ -229,7 +241,9 @@ export const actualizarContadorCarrito = () => {
 // AGREGAR ITEMS AL CARRITO
 export async function agregarAlCarrito(productId, cantidad, isUpdate = false, adicionales = null) {
     const carrito = obtenerCarrito();
-    console.log("Adicionales: ", adicionales);
+    // // console.log("ID Producto a agregar al carrito: ", productId);
+    // // console.log("cantidad a agregarse: ", cantidad);
+    // // console.log("Adicionales Agregar: ", adicionales);
 
     // // const clave = adicionales ? "complejo" : "simple";
 
@@ -260,7 +274,9 @@ export async function agregarAlCarrito(productId, cantidad, isUpdate = false, ad
                 return {
                     success: false, 
                     message: `Solo hay ${stockDisponible}u disponibles`,
-                    cart: carrito
+                    cart: carrito,
+                    totalSolicitado: cantidadNueva,
+                    stockDisponible: stockDisponible
                 };
             }
         }
@@ -316,7 +332,9 @@ export async function agregarAlCarrito(productId, cantidad, isUpdate = false, ad
         return {
             success: false, 
             message: 'Error al agregar el producto al carrito',
-            cart: carrito
+            cart: carrito,
+            totalSolicitado: cantidadNueva,
+            stockDisponible: stockDisponible
         };
     }
 }
@@ -456,5 +474,6 @@ window.carritoStorage = {
     actualizarContadorDetalleProducto,
     mostrarToastAgregado,
     mostrarToastLimite,
-    adicionalesOrdenIndice
+    adicionalesOrdenIndice,
+    cantidadOrdenesProducto
 }

@@ -33,7 +33,7 @@
                         id="agregar-btn"
                         data-producto-id="{{$producto->id}}"
                         data-producto-nombre="{{$producto->nombre}}"
-                        class="{{ $adicionales->isNotEmpty() ? 'menu-adicionales-btn' : 'agregar-unidad' }}  bg-highlight hover-grow-s btn-m rounded-sm text-uppercase text-white font-800" style="line-height: 1rem;">
+                        class="{{ $adicionales->isNotEmpty() ? 'menu-adicionales-btn' : 'agregar-unidad' }} add-disabler bg-highlight hover-grow-s btn-m rounded-sm text-uppercase text-white font-800" style="line-height: 1rem;">
                             <div class="d-flex flex-row align-items-center gap-1">    
                                 <i class="fa fa-shopping-cart"></i>
                                 Añadir
