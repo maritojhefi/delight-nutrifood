@@ -264,7 +264,7 @@ private function processIndividualItem($producto, array $itemData, int $sucursal
     $stockDisponible = $this->stockService->obtenerStockTotal($producto, $sucursaleId);
     
     // Process adicionales
-    [$infoAdicionales, $adicionalesLimitados] = $this->processAdicionales(
+    [$infoAdicionales, $adicionalesLimitados, $precioTotalAdicionales] = $this->processAdicionales(
         $itemData['adicionales'] ?? []
     );
     
@@ -275,9 +275,11 @@ private function processIndividualItem($producto, array $itemData, int $sucursal
         'nombre' => $producto->nombre,
         'detalle' => $producto->detalle,
         'adicionales' => $infoAdicionales,
+        'costo_adicionales' => $precioTotalAdicionales,
         'tiene_descuento' => $producto->precio !== $producto->precioReal(),
         'precio_original' => $producto->precio,
         'precio' => $producto->precioReal(),
+        'precio_final' => ($producto->precioReal() * $cantidadSolicitada) + $precioTotalAdicionales,
         'imagen' => $producto->pathAttachment(),
         'sucursale_id' => $sucursaleId,
         'stock_disponible' => $stockDisponible,
@@ -296,9 +298,10 @@ private function processIndividualItem($producto, array $itemData, int $sucursal
 private function processAdicionales(array $adicionalesCarrito): array
 {
     if (empty($adicionalesCarrito)) {
-        return [[], false];
+        return [[], false, 0];
     }
-    
+    $precioTotal = 0;
+
     $adicionalesContados = collect($adicionalesCarrito)
         ->flatten()
         ->filter()
@@ -326,7 +329,7 @@ private function processAdicionales(array $adicionalesCarrito): array
                 if ($adicional->contable && $cantidadSolicitada > $adicional->cantidad) {
                     $adicionalesLimitados = true;
                 }
-                
+
                 $infoAdicionales[$groupIndex][] = [
                     'id' => $adicional->id,
                     'nombre' => ucfirst($adicional->nombre),
@@ -334,11 +337,13 @@ private function processAdicionales(array $adicionalesCarrito): array
                     'cantidad_disponible' => $adicional->contable ? $adicional->cantidad : 'INFINITO',
                     'limitado' => $adicional->contable && $cantidadSolicitada > $adicional->cantidad,
                 ];
+
+                $precioTotal += (float) $adicional->precio;
             }
         }
     }
     
-    return [$infoAdicionales, $adicionalesLimitados];
+    return [$infoAdicionales, $adicionalesLimitados, $precioTotal];
 }
 
 /**
