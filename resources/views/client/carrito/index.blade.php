@@ -214,7 +214,7 @@
         }
     });
 </script>
-<!-- CHECK VENTA EXISTENTE -->
+<!-- CONTROL DE VENTA (Y LISTADO DE ORDENES -->
 <script>
     const ventaActiva = @json($venta_activa ?? null);
 
@@ -485,552 +485,556 @@
         `
     }
 </script>
+@endpush
+<!-- CHECK VENTA EXISTENTE -->
+@if (!$venta_activa)
+    @push('scripts')
+    <!-- CONTROL DEL RENDERIZADO DE PRODUCTOS EN EL CARRITO -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Obtener el carrito
+            const cart = carritoStorage.obtenerCarrito();
+            const cardContentContainer = document.querySelector('.cart-content');
+            // const cardContentContainer = $('#contenedor-principal');
+            const cartValidationInfo = document.querySelector('.cart-validation-info');
+            // const cartValidationInfo =  $('#info-validacion-carrito');
+            const cardSliderContainer = document.querySelector('.cart-slider-container');
+            // const cardSliderContainer = $('contenedor-sliders-carrito');
+            const summaryItemsContainer = document.getElementById('cart-summary-items');
+            const summaryTotalContainer = document.getElementById('cart-totals');
+            const availableItemsContainer = document.getElementById('container-state-disponible');
+            const limitedItemsContainer = document.getElementById('container-state-escaso');
+            const unavailableItemsContainer = document.getElementById('container-state-agotado');
 
-<!-- CONTROL DEL RENDERIZADO DE PRODUCTOS EN EL CARRITO -->
-<script>
-    document.addEventListener('DOMContentLoaded', async function() {
-        // Obtener el carrito
-        const cart = carritoStorage.obtenerCarrito();
-        const cardContentContainer = document.querySelector('.cart-content');
-        // const cardContentContainer = $('#contenedor-principal');
-        const cartValidationInfo = document.querySelector('.cart-validation-info');
-        // const cartValidationInfo =  $('#info-validacion-carrito');
-        const cardSliderContainer = document.querySelector('.cart-slider-container');
-        // const cardSliderContainer = $('contenedor-sliders-carrito');
-        const summaryItemsContainer = document.getElementById('cart-summary-items');
-        const summaryTotalContainer = document.getElementById('cart-totals');
-        const availableItemsContainer = document.getElementById('container-state-disponible');
-        const limitedItemsContainer = document.getElementById('container-state-escaso');
-        const unavailableItemsContainer = document.getElementById('container-state-agotado');
-
-        const emptyCartHTML = `
-            <div class="empty-cart text-center py-5">
-                <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">Tu carrito está vacío</h5>
-                <p class="text-muted">Agrega algunos productos para comenzar</p>
-            </div>
-        `;
-
-        try {
-            cartValidationInfo.style.display = 'block';
-
-            const response = await CarritoService.getCartProductsInfo({
-                sucursaleId: 1,
-                items: cart.items,
-            })
-
-            const disponiblesArray = Object.values(response.disponibles || {});
-            const escasosArray = Object.values(response.escasos || {});
-            const agotadosArray = Object.values(response.agotados || {});
-
-
-            if (disponiblesArray.length === 0 &&
-                escasosArray.length === 0 &&
-                agotadosArray.length === 0) {
-                cardContentContainer.innerHTML = emptyCartHTML;
-                cartValidationInfo.style.display = 'none';
-                return;
-            }
-
-            let cartHTML = '';
-            let totalFinal = 0;
-            let totalDescuento = 0;
-            let totalOriginal = 0;
-
-            // Renderizar items disponibles
-            if (disponiblesArray.length > 0) {
-                availableItemsContainer.innerHTML += `<h5 class="mb-3 color-highlight" id="label-disponible">Productos Disponibles</h5>`;
-                disponiblesArray.forEach(producto => {
-                    totalFinal += producto.precio * producto.cantidad_solicitada;
-                    totalOriginal += producto.precio_original * producto.cantidad_solicitada;
-                    if (producto.tiene_descuento) {
-                        totalDescuento += (producto.precio_original - producto.precio) * producto.cantidad_solicitada;
-                    }
-                    availableItemsContainer.innerHTML += renderCartItem(producto, 'disponible', producto.cantidad_solicitada);
-                    summaryItemsContainer.innerHTML += renderSummaryItem(producto);
-                });
-            }
-            // Renderizar items escasos
-            if (escasosArray.length > 0) {
-                limitedItemsContainer.innerHTML += `<h5 class="mb-3 text-warning" id="label-escaso">Productos con stock limitado</h5>`;
-                
-                escasosArray.forEach(producto => {
-                    limitedItemsContainer.innerHTML += renderCartItem(producto, 'escaso', producto.cantidad_solicitada);
-                });
-            }
-            // Renderizar items agotados
-            if (agotadosArray.length > 0) {
-                unavailableItemsContainer.innerHTML += `<h5 class="mb-3 text-danger" id="label-agotado">Productos agotados</h5>`;
-                agotadosArray.forEach(producto => {
-                    unavailableItemsContainer.innerHTML += renderCartItem(producto, 'agotado', producto.cantidad_solicitada);
-                });
-            }
-            cartValidationInfo.style.display = 'none';
-
-            // cardContentContainer.innerHTML = cartHTML;
-            cardContentContainer.innerHTML += `<button id="showSummaryButton" class="summary-btn btn w-30 align-self-center btn-sm rounded-sm bg-highlight font-800 text-uppercase">
-                Realizar Pedido</button>`
-            cardContentContainer.innerHTML += `<div class="cart-listing-footer d-flex flex-row">
-                    <button class="delete-cart-btn ms-auto mt-2 me-2" data-menu="menu-confirm">Eliminar Carrito</button>
-                </div>`;
-            summaryTotalContainer.innerHTML = renderSummaryTotal(totalFinal,totalDescuento,totalOriginal);
-
-        } catch (error) {
-            console.error("Sucedio un error al obtener los productos del carrito:", error);
-            cartValidationInfo.style.display = 'none';
-            cardContentContainer.innerHTML = "<p class='text-danger text-center'>Error al cargar el carrito. Por favor, intenta nuevamente.</p>";
-            cardContentContainer.innerHTML += `<div class="cart-listing-footer d-flex flex-row">
-                    <button class="delete-cart-btn ms-auto mt-2 me-2" data-menu="menu-confirm">Eliminar Carrito</button>
-                </div>`;
-        }
-    })
-
-    const renderProductStateContainer = (estado) => {
-        return `<div id={container-state-${estado}}>
-            </div>`
-    }
-
-    const renderCartItem = (producto, estado, cantidad) => {
-        const isDisabled = estado !== 'disponible';
-        const isLowStock = estado === 'escaso';
-        const isUnavailable = estado === 'agotado';
-        const adicionalesLimitados = producto.adicionalesLimitados; // Flag true/false en caso de adicionales escasos
-        const disabledClass = '';
-        const disabledOverlay = isUnavailable ? '<div class="card-overlay rounded-sm dark-mode-tint"></div>' : '';
-        const adicionalesIds = producto.adicionales && producto.adicionales.length > 0
-            ? producto.adicionales.map(adicional => adicional.id)
-            : 'null';
-        const adicionalesIdsJSON = JSON.stringify(adicionalesIds);
-
-        
-        let stockMessage = '';
-        let actionButton = '';
-        if (isLowStock && producto.stock_disponible !== "INFINITO") {
-            stockMessage = `<div class="alert alert-warning py-1 px-2 mt-2 mb-0 small">
-                Solo existen ${producto.stock_disponible} unidades disponibles de las ${producto.cantidad_solicitada} solicitadas.
-            </div>`;
-            actionButton = `<button data-product-id="${producto.id}" class="qty-fixer btn-s  rounded bg-highlight" style="z-index: 10;">
-                Actualizar
-            </button>`;
-        }
-        else if (isUnavailable) {
-            actionButton = `<button data-product-id="${producto.id}" class="unavailable-fixer btn-s  rounded bg-red-dark" style="z-index: 10;">
-                Eliminar
-            </button>`;
-        }
-
-        if(adicionalesLimitados) {
-            stockMessage += `
-                <div class="alert alert-warning py-1 px-2 mt-2 mb-0 small">
-                    Uno o mas de los adicionales no se encuentran disponibles.
-                </div>
-            `
-            actionButton = `<button data-product-id="${producto.id}" class="adicionale-fixer btn-s  rounded bg-highlight" style="z-index: 10;">
-                Actualizar
-            </button>`;
-        }
-
-        return `
-            <div class="cart-item-wrapper mb-4 ${disabledClass}" data-product-id="${producto.id}"  data-product-state="${estado}" id="cart-item-wrapper-${producto.id}">
-                <div class="card mb-0 d-flex flex-column item-carrito-info justify-content-between p-3 bg-white rounded-sm shadow-sm border">
-                    <div class="mb-0 d-flex flex-row justify-content-between">
-                        <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
-                            <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
-                        </div>
-                        <div class="product-image-container m-0" style="z-index: 10">
-                            <img class="product-image rounded"
-                                src="${producto.imagen}"
-                                alt="${producto.nombre}"
-                                data-product-id="${producto.id}">
-                            ${(isUnavailable) ? '':
-                            `<button class="btn btn-xxs bg-highlight opacity-100 delete-item-btn position-absolute"
-                                    type="button"
-                                    data-product-id="${producto.id}"
-                                    title="Eliminar producto"
-                                    style="top: 0.1rem; right: 0.01rem; z-index: 20;"
-                                    >
-                                <i class="fa fa-times"></i>
-                            </button>`}
-                        </div>
-                        <div class="item-overlay rounded-sm card-overlay opacity-60"></div>
-                    </div>
-                    <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
-                        <div>
-                            ${(producto.tiene_descuento ?
-                            `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${producto.precio_original.toFixed(2)}</del>` : ''
-                            )}
-                            <p class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
-                                Bs. ${producto.precio.toFixed(2)}
-                            </p>
-                        </div>
-                        ${renderActions(producto, isDisabled, cantidad, estado)}
-                    </div>
-                    ${stockMessage}
-                    ${disabledOverlay}
-                </div>
-            </div>
-        `;
-    }
-
-    // const renderAdicionalesInfo = (producto) => {
-    //     const adicionales = producto.adicionales ?? [];
-    //     if (adicionales.length > 0) {
-    //         return `
-    //             <ul class="ps-3">
-    //                 ${adicionales.map(adicional => `
-    //                     <li class=" line-height-s">
-    //                         <small class=" color-theme">${adicional.nombre}</small>
-    //                     </li>
-    //                 `).join('')}
-    //             </ul>
-    //         `
-    //     } return '[Informacion extras]';
-    // }
-
-    const renderSummaryItem = (producto) => {
-        const itemSubtotal = (producto.precio * producto.cantidad_solicitada).toFixed(2);
-        return `
-            <div class="mb-2">
-                <div class="item-name fw-semibold mb-2" title="${producto.nombre}">
-                    <p class="mb-0 font-600 text-dark">${producto.nombre}</p>
-                </div>
-                <div class="d-flex flex-row justify-content-between align-items-center">
-                    <small class="text-muted d-flex align-items-center gap-1">
-                        <span>${producto.cantidad_solicitada}</span>
-                        ×
-                        <span> Bs. ${producto.precio.toFixed(2)}</span>
-                        ${(producto.tiene_descuento ?
-                            `<del>${producto.precio_original.toFixed(2)}</del>` : ''
-                        )}
-                    </small>
-                    <div class="item-subtotal fw-bold text-success">
-                        <p class="mb-0 fs-6">Bs. ${itemSubtotal}</p>
-                    </div>
-                    
-                </div>
-                <div class="divider mt-1 mb-0"></div>
-            </div>
-        `;
-    }
-
-    const renderSummaryTotal = (totalFinal, totalDescuento, totalOriginal) => {
-        return `
-            ${totalDescuento && totalDescuento > 0 
-            ? `
-                <div class="d-flex flex-row justify-content-between align-items-center mb-0 text-gray">
-                    <p class="fw-bold mb-0">Costo original:</p>
-                    <p class="fw-bold mb-0">Bs. ${totalOriginal.toFixed(2)}</p>
-                </div>
-                <div class="d-flex flex-row justify-content-between align-items-center mb-0 text-gray">
-                    <p class="fw-bold mb-0">Descuento total:</p>
-                    <p class="fw-bold mb-0">Bs. ${totalDescuento.toFixed(2)}</p>
-                </div>
-            `
-            : ""
-            }
-            <div class="d-flex flex-row justify-content-between align-items-center mb-3 pt-2 text-black">
-                <p class="fw-bold fs-5 mb-0">Total:</p>
-                <p id="cart-final-total" class="fw-bold fs-5 mb-0">Bs. ${totalFinal.toFixed(2)}</p>
-            </div>
-        `;
-    };
-
-    const renderActions = (producto, isDisabled, cantidad, estado) => {
-        const tipo = producto.tipo;
-
-
-        // return `
-        //         <button class="btn btn-s bg-yellow-dark font-500">
-        //             Ajustar
-        //         </button>
-        //     `
-
-        if (estado == "escaso") {
-            return `
-                <button
-                    data-product-id="${producto.id}"
-                    data-producto-id="${producto.id}"
-                    data-producto-nombre="${producto.nombre}"
-                    class="btn btn-s bg-warning font-500 ${tipo == "simple" ? "qty-fixer" : "listado-ordenes-carrito-trigger" } "
-                    style="z-index: 10; min-width: 6rem;">
-                    Ajustar
-                </button>
-            `
-        }
-
-        if (estado == "agotado" ) {
-            return `
-                <button 
-                    data-product-id="${producto.id}"
-                    class="btn btn-s bg-danger font-500 delete-item-btn"
-                    style="z-index: 10; min-width: 6rem;">
-                    Eliminar
-                </button>
-            `
-        }
-
-        if (tipo == "simple") {
-            return `
-                <div class="quantity-controls bg-light border rounded d-flex align-items-center">
-                    <button class="btn btn-xs btn-outline-secondary border-0 qty-decrease"
-                            type="button"
-                            data-product-id="${producto.id}"
-                            title="Disminuir cantidad"
-                            ${isDisabled ? 'disabled' : ''}>
-                        <i class="fa fa-minus"></i>
-                    </button>
-                    <span id="item-${producto.id}-qty"
-                        class="px-1 fw-semibold product-quantity"
-                        data-product-id="${producto.id}">
-                        ${cantidad}
-                    </span>
-                    <button class="btn btn-xs btn-outline-secondary border-0 qty-increase"
-                            type="button"
-                            data-product-id="${producto.id}"
-                            title="Aumentar cantidad"
-                            ${isDisabled ? 'disabled' : ''}>
-                        <i class="fa fa-plus"></i>
-                    </button>
-                </div>
-            `
-        } else if (tipo == "complejo") {
-            return `
-                <button
-                    data-producto-id="${producto.id}"
-                    data-producto-nombre="${producto.nombre}"
-                    class="btn btn-s bg-highlight font-500 listado-ordenes-carrito-trigger" style="z-index: 10; min-width: 6rem;">
-                    Mi Pedido
-                </button>
-            `
-        }
-
-        return '';
-    }
-
-    document.addEventListener('DOMContentLoaded', async function() {
-        
-        document.addEventListener('click', async function(e) {
-            // INCREMENTO DE CANTIDAD
-            if (e.target.closest('.qty-increase')) {
-                await handleProductIncrease(e);
-            }
-            // REDUCCION DE CANTIDAD
-            if (e.target.closest('.qty-decrease')) {
-                await handleProductDecrease(e);
-            }
-            // AJUSTAR CANTIDAD A DISPONIBLES
-            if (e.target.closest('.qty-fixer')) {
-                await handleActualizarProductoLimitado(e);
-            }
-            // ACTIVAR MODAL RESUMEN
-            if (e.target.closest('.summary-btn')) {
-                await handleSummaryCheck(e);
-            }
-        });
-    });
-
-
-
-    const handleSummaryCheck = async(e) => {
-        e.preventDefault();
-
-        const cartToCheck = carritoStorage.obtenerCarrito();
-        const summaryCheckButton = e.target.closest('.summary-btn');
-        const summaryModal = new bootstrap.Modal(document.getElementById('cartSummaryModal'));
-        const warningModal = new bootstrap.Modal(document.getElementById('stock-warning'));
-
-        const modalElement = document.getElementById('cartSummaryModal');
-        if (modalElement && modalElement.parentNode !== document.body) {
-            document.body.appendChild(modalElement);
-        }
-
-        try {
-            const cartCheckResponse = await CarritoService.getCartProductsInfo({
-                sucursaleId: 1,
-                items: cartToCheck.items,
-            })
-
-            const escasosArray = Object.values(cartCheckResponse.escasos || {});
-            const agotadosArray = Object.values(cartCheckResponse.agotados || {});
-            if (escasosArray.length == 0 && agotadosArray.length == 0) {
-                // Continuar con el resumen
-                summaryModal.show();
-                return;
-            } else {
-                // Renderizar modal de curar carrito
-                warningModal.show()
-            }
-        } catch (error) {
-            console.error("Error validanto carrito para resumen: ",error);
-        }
-    }
-
-    const handleActualizarProductoLimitado = async (e) => {
-        e.preventDefault();
-
-        const botonFixCantidad = e.target.closest('.qty-fixer');
-        const idProductoArreglar = parseInt(botonFixCantidad.getAttribute('data-product-id'), 10);
-        const itemCarrito = carritoStorage.obtenerItemCarrito(idProductoArreglar);
-        const productInfoRequest =  await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
-
-        const productInfo = productInfoRequest.item;
-        const contenedorItemsDisponibles = document.getElementById('container-state-disponible')
-
-        // Actualizar el valor al maximo disponible en el carrito
-        const intentoActualizacion = await carritoStorage.updateProductToMax(idProductoArreglar);
-        if (intentoActualizacion.success == true && intentoActualizacion.cantidad >= 1) {
-            removeItemWrapper(idProductoArreglar);
-            contenedorItemsDisponibles.innerHTML += renderCartItem(productInfo,'disponible', intentoActualizacion.cantidad);
-            // notificacion de ajuste exitoso
-        } else if (intentoActualizacion.success == true && intentoActualizacion.cantidad == 0) {
-            removeItemWrapper(idProductoArreglar);  
-            renderCartItem(productInfo,'agotado', 0)
-        }
-    }
-
-    const handleUpdateLimitedAdittional = async(e) => {
-        e.preventDefault();
-
-        const aditionalFixButton = e.target.closest('.aditionale-fixer');
-        // Determinar cuales son los adicionales cuyas unidades exceden
-        // Una vez identificados 
-        const productToFixId = quantityFixButton.getAttribute('data-product-id');
-        
-        // Logica restante
-    }
-
-    const handleProductIncrease = async (e) => {
-        e.preventDefault();
-        const button = e.target.closest('.qty-increase');
-        const productToIncreaseId = parseInt(button.getAttribute('data-product-id'), 10);
-        const adicionalesData = button.getAttribute('data-adicionales');
-        let adicionales = adicionalesData === 'null' ? null : JSON.parse(adicionalesData);
-        const quantitySpan = document.getElementById(`item-${productToIncreaseId}-qty`);
-
-        const IncreaseAttemp = await carritoStorage.agregarAlCarrito(productToIncreaseId, 1, true, adicionales);
-
-        if (IncreaseAttemp.success === true) {
-            quantitySpan.textContent = IncreaseAttemp.newQuantity;
-        } else {
-            console.error("No se pudo incrementar el valor del producto: ", productToIncreaseId);
-        }
-    }
-
-    const handleProductDecrease = async(e) => {
-        e.preventDefault();
-        const button = e.target.closest('.qty-decrease');
-        const productToDecreaseId = parseInt(button.getAttribute('data-product-id'), 10);
-        // const adicionalesData = button.getAttribute('data-adicionales');
-        // let adicionales = adicionalesData === 'null' ? null : JSON.parse(adicionalesData);
-        const quantitySpan = document.getElementById(`item-${productToDecreaseId}-qty`);
-
-        // Check if quantity is 1 or less before proceeding
-        if (parseInt(quantitySpan.textContent, 10) <= 1) return;
-
-        const DecreaseAttemp = await carritoStorage.restarDelCarrito(productToDecreaseId, 1);
-
-        if (DecreaseAttemp.success === true) {
-            quantitySpan.textContent = DecreaseAttemp.newQuantity;
-        } else {
-            console.error("No se pudo reducir el valor del producto: ", productToDecreaseId);
-        }
-    }
-</script>
-<!-- CONTROL DE ELIMINACION DE PRODUCTOS-CARRITO -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // handleCartSummaryModal();
-        handleCartDeletion();
-        document.addEventListener('click', handleProductRemoval);
-    });
-
-    // Control para la eliminacion del carrito
-    const handleCartDeletion = () => {
-        // Obtener el modal de confirmacion de eliminacion
-        const confirmModal = new bootstrap.Modal(document.getElementById('confirmDeleteCartModal'));
-        // Obtener el boton de confirmacion de eliminacion
-        const confirmDeleteBtn = document.getElementById('confirmDeleteCart');
-
-        // Revelar el modal de confirmacion al hacer click en el boton de eliminacion
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.delete-cart-btn')) {
-                e.preventDefault();
-                confirmModal.show();
-            }
-        });
-
-        // Manejo del click de confirmacion dentro del modal
-        confirmDeleteBtn.addEventListener('click', function() {
-            // Limpiar el Carrito
-            carritoStorage.vaciarCarrito();
-            // Renderizado del Carrito Vacio
-            renderEmptyCart();
-            // Actualizar el contador
-            carritoStorage.actualizarContadorCarrito();
-            // Ocultar el modal y mostrar mensaje de exito de ser necesario
-            confirmModal.hide();
-        });
-    }
-
-    // Control para retirar productos del carrito
-    const handleProductRemoval = (e) => {
-        const button = e.target.closest('.delete-item-btn, .unavailable-fixer');
-        if (!button) return; // nothing matched
-
-        e.preventDefault();
-        // Filtrar el objeto a remover
-        const productId = parseInt(button.getAttribute('data-product-id'), 10);
-
-        // Remover el producto del carrito
-        carritoStorage.eliminarProducto(productId);
-
-        // Remover el elemento renderizado
-        removeItemWrapper(productId);
-
-        // Revisar si el carrito esta vacio
-        const remainingItems = document.querySelectorAll('.cart-item-wrapper');
-        if (remainingItems.length === 0) {
-            // De estar vacio, renderizar el carrito vacio
-            renderEmptyCart();
-        }
-
-        // Actualizar el contador del carrito
-        carritoStorage.actualizarContadorCarrito();
-    }
-
-    const removeItemWrapper = (productId) => {
-        // Localizar el wrapper a remover
-
-        const wrapperToRemove = document.getElementById(`cart-item-wrapper-${productId}`);
-
-        // Obtener el estado del wrapper/producto
-        const wrapperState = wrapperToRemove.getAttribute('data-product-state');
-        // De existir el elemento, retirarlo
-        if (wrapperToRemove) {
-            wrapperToRemove.remove();
-        }
-
-        // Revisar si existen elementos del mismo estado
-        const remainingItemsWithState = document.querySelectorAll(`.cart-item-wrapper[data-product-state="${wrapperState}"]`);
-        if (remainingItemsWithState.length === 0) {
-            // De no existir, elminar el label correspondiente
-            const labelToRemove = document.getElementById(`label-${wrapperState}`);
-            if (labelToRemove) {
-                labelToRemove.remove();
-            }
-        }
-    }
-
-       // Renderizardo de Carrito Vacio
-    const renderEmptyCart = () => {
-        const cartContent = document.querySelector('.cart-content');
-        if (cartContent) {
-            cartContent.innerHTML = `<div class="empty-cart text-center py-5">
+            const emptyCartHTML = `
+                <div class="empty-cart text-center py-5">
                     <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
                     <h5 class="text-muted">Tu carrito está vacío</h5>
                     <p class="text-muted">Agrega algunos productos para comenzar</p>
+                </div>
+            `;
+
+            try {
+                cartValidationInfo.style.display = 'block';
+
+                const response = await CarritoService.getCartProductsInfo({
+                    sucursaleId: 1,
+                    items: cart.items,
+                })
+
+                const disponiblesArray = Object.values(response.disponibles || {});
+                const escasosArray = Object.values(response.escasos || {});
+                const agotadosArray = Object.values(response.agotados || {});
+
+
+                if (disponiblesArray.length === 0 &&
+                    escasosArray.length === 0 &&
+                    agotadosArray.length === 0) {
+                    cardContentContainer.innerHTML = emptyCartHTML;
+                    cartValidationInfo.style.display = 'none';
+                    return;
+                }
+
+                let cartHTML = '';
+                let totalFinal = 0;
+                let totalDescuento = 0;
+                let totalOriginal = 0;
+
+                // Renderizar items disponibles
+                if (disponiblesArray.length > 0) {
+                    availableItemsContainer.innerHTML += `<h5 class="mb-3 color-highlight" id="label-disponible">Productos Disponibles</h5>`;
+                    disponiblesArray.forEach(producto => {
+                        totalFinal += producto.precio * producto.cantidad_solicitada;
+                        totalOriginal += producto.precio_original * producto.cantidad_solicitada;
+                        if (producto.tiene_descuento) {
+                            totalDescuento += (producto.precio_original - producto.precio) * producto.cantidad_solicitada;
+                        }
+                        availableItemsContainer.innerHTML += renderCartItem(producto, 'disponible', producto.cantidad_solicitada);
+                        summaryItemsContainer.innerHTML += renderSummaryItem(producto);
+                    });
+                }
+                // Renderizar items escasos
+                if (escasosArray.length > 0) {
+                    limitedItemsContainer.innerHTML += `<h5 class="mb-3 text-warning" id="label-escaso">Productos con stock limitado</h5>`;
+                    
+                    escasosArray.forEach(producto => {
+                        limitedItemsContainer.innerHTML += renderCartItem(producto, 'escaso', producto.cantidad_solicitada);
+                    });
+                }
+                // Renderizar items agotados
+                if (agotadosArray.length > 0) {
+                    unavailableItemsContainer.innerHTML += `<h5 class="mb-3 text-danger" id="label-agotado">Productos agotados</h5>`;
+                    agotadosArray.forEach(producto => {
+                        unavailableItemsContainer.innerHTML += renderCartItem(producto, 'agotado', producto.cantidad_solicitada);
+                    });
+                }
+                cartValidationInfo.style.display = 'none';
+
+                // cardContentContainer.innerHTML = cartHTML;
+                cardContentContainer.innerHTML += `<button id="showSummaryButton" class="summary-btn btn w-30 align-self-center btn-sm rounded-sm bg-highlight font-800 text-uppercase">
+                    Realizar Pedido</button>`
+                cardContentContainer.innerHTML += `<div class="cart-listing-footer d-flex flex-row">
+                        <button class="delete-cart-btn ms-auto mt-2 me-2" data-menu="menu-confirm">Eliminar Carrito</button>
+                    </div>`;
+                summaryTotalContainer.innerHTML = renderSummaryTotal(totalFinal,totalDescuento,totalOriginal);
+
+            } catch (error) {
+                console.error("Sucedio un error al obtener los productos del carrito:", error);
+                cartValidationInfo.style.display = 'none';
+                cardContentContainer.innerHTML = "<p class='text-danger text-center'>Error al cargar el carrito. Por favor, intenta nuevamente.</p>";
+                cardContentContainer.innerHTML += `<div class="cart-listing-footer d-flex flex-row">
+                        <button class="delete-cart-btn ms-auto mt-2 me-2" data-menu="menu-confirm">Eliminar Carrito</button>
+                    </div>`;
+            }
+        })
+
+        const renderProductStateContainer = (estado) => {
+            return `<div id={container-state-${estado}}>
                 </div>`
         }
-    };
-</script>
-@endpush
+
+        const renderCartItem = (producto, estado, cantidad) => {
+            const isDisabled = estado !== 'disponible';
+            const isLowStock = estado === 'escaso';
+            const isUnavailable = estado === 'agotado';
+            const adicionalesLimitados = producto.adicionalesLimitados; // Flag true/false en caso de adicionales escasos
+            const disabledClass = '';
+            const disabledOverlay = isUnavailable ? '<div class="card-overlay rounded-sm dark-mode-tint"></div>' : '';
+            const adicionalesIds = producto.adicionales && producto.adicionales.length > 0
+                ? producto.adicionales.map(adicional => adicional.id)
+                : 'null';
+            const adicionalesIdsJSON = JSON.stringify(adicionalesIds);
+
+            
+            let stockMessage = '';
+            let actionButton = '';
+            if (isLowStock && producto.stock_disponible !== "INFINITO") {
+                stockMessage = `<div class="alert alert-warning py-1 px-2 mt-2 mb-0 small">
+                    Solo existen ${producto.stock_disponible} unidades disponibles de las ${producto.cantidad_solicitada} solicitadas.
+                </div>`;
+                actionButton = `<button data-product-id="${producto.id}" class="qty-fixer btn-s  rounded bg-highlight" style="z-index: 10;">
+                    Actualizar
+                </button>`;
+            }
+            else if (isUnavailable) {
+                actionButton = `<button data-product-id="${producto.id}" class="unavailable-fixer btn-s  rounded bg-red-dark" style="z-index: 10;">
+                    Eliminar
+                </button>`;
+            }
+
+            if(adicionalesLimitados) {
+                stockMessage += `
+                    <div class="alert alert-warning py-1 px-2 mt-2 mb-0 small">
+                        Uno o mas de los adicionales no se encuentran disponibles.
+                    </div>
+                `
+                actionButton = `<button data-product-id="${producto.id}" class="adicionale-fixer btn-s  rounded bg-highlight" style="z-index: 10;">
+                    Actualizar
+                </button>`;
+            }
+
+            return `
+                <div class="cart-item-wrapper mb-4 ${disabledClass}" data-product-id="${producto.id}"  data-product-state="${estado}" id="cart-item-wrapper-${producto.id}">
+                    <div class="card mb-0 d-flex flex-column item-carrito-info justify-content-between p-3 bg-white rounded-sm shadow-sm border">
+                        <div class="mb-0 d-flex flex-row justify-content-between">
+                            <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
+                                <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
+                            </div>
+                            <div class="product-image-container m-0" style="z-index: 10">
+                                <img class="product-image rounded"
+                                    src="${producto.imagen}"
+                                    alt="${producto.nombre}"
+                                    data-product-id="${producto.id}">
+                                ${(isUnavailable) ? '':
+                                `<button class="btn btn-xxs bg-highlight opacity-100 delete-item-btn position-absolute"
+                                        type="button"
+                                        data-product-id="${producto.id}"
+                                        title="Eliminar producto"
+                                        style="top: 0.1rem; right: 0.01rem; z-index: 20;"
+                                        >
+                                    <i class="fa fa-times"></i>
+                                </button>`}
+                            </div>
+                            <div class="item-overlay rounded-sm card-overlay opacity-60"></div>
+                        </div>
+                        <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
+                            <div>
+                                ${(producto.tiene_descuento ?
+                                `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${producto.precio_original.toFixed(2)}</del>` : ''
+                                )}
+                                <p class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
+                                    Bs. ${producto.precio.toFixed(2)}
+                                </p>
+                            </div>
+                            ${renderActions(producto, isDisabled, cantidad, estado)}
+                        </div>
+                        ${stockMessage}
+                        ${disabledOverlay}
+                    </div>
+                </div>
+            `;
+        }
+
+        // const renderAdicionalesInfo = (producto) => {
+        //     const adicionales = producto.adicionales ?? [];
+        //     if (adicionales.length > 0) {
+        //         return `
+        //             <ul class="ps-3">
+        //                 ${adicionales.map(adicional => `
+        //                     <li class=" line-height-s">
+        //                         <small class=" color-theme">${adicional.nombre}</small>
+        //                     </li>
+        //                 `).join('')}
+        //             </ul>
+        //         `
+        //     } return '[Informacion extras]';
+        // }
+
+        const renderSummaryItem = (producto) => {
+            const itemSubtotal = (producto.precio * producto.cantidad_solicitada).toFixed(2);
+            return `
+                <div class="mb-2">
+                    <div class="item-name fw-semibold mb-2" title="${producto.nombre}">
+                        <p class="mb-0 font-600 text-dark">${producto.nombre}</p>
+                    </div>
+                    <div class="d-flex flex-row justify-content-between align-items-center">
+                        <small class="text-muted d-flex align-items-center gap-1">
+                            <span>${producto.cantidad_solicitada}</span>
+                            ×
+                            <span> Bs. ${producto.precio.toFixed(2)}</span>
+                            ${(producto.tiene_descuento ?
+                                `<del>${producto.precio_original.toFixed(2)}</del>` : ''
+                            )}
+                        </small>
+                        <div class="item-subtotal fw-bold text-success">
+                            <p class="mb-0 fs-6">Bs. ${itemSubtotal}</p>
+                        </div>
+                        
+                    </div>
+                    <div class="divider mt-1 mb-0"></div>
+                </div>
+            `;
+        }
+
+        const renderSummaryTotal = (totalFinal, totalDescuento, totalOriginal) => {
+            return `
+                ${totalDescuento && totalDescuento > 0 
+                ? `
+                    <div class="d-flex flex-row justify-content-between align-items-center mb-0 text-gray">
+                        <p class="fw-bold mb-0">Costo original:</p>
+                        <p class="fw-bold mb-0">Bs. ${totalOriginal.toFixed(2)}</p>
+                    </div>
+                    <div class="d-flex flex-row justify-content-between align-items-center mb-0 text-gray">
+                        <p class="fw-bold mb-0">Descuento total:</p>
+                        <p class="fw-bold mb-0">Bs. ${totalDescuento.toFixed(2)}</p>
+                    </div>
+                `
+                : ""
+                }
+                <div class="d-flex flex-row justify-content-between align-items-center mb-3 pt-2 text-black">
+                    <p class="fw-bold fs-5 mb-0">Total:</p>
+                    <p id="cart-final-total" class="fw-bold fs-5 mb-0">Bs. ${totalFinal.toFixed(2)}</p>
+                </div>
+            `;
+        };
+
+        const renderActions = (producto, isDisabled, cantidad, estado) => {
+            const tipo = producto.tipo;
+
+
+            // return `
+            //         <button class="btn btn-s bg-yellow-dark font-500">
+            //             Ajustar
+            //         </button>
+            //     `
+
+            if (estado == "escaso") {
+                return `
+                    <button
+                        data-product-id="${producto.id}"
+                        data-producto-id="${producto.id}"
+                        data-producto-nombre="${producto.nombre}"
+                        class="btn btn-s bg-warning font-500 ${tipo == "simple" ? "qty-fixer" : "listado-ordenes-carrito-trigger" } "
+                        style="z-index: 10; min-width: 6rem;">
+                        Ajustar
+                    </button>
+                `
+            }
+
+            if (estado == "agotado" ) {
+                return `
+                    <button 
+                        data-product-id="${producto.id}"
+                        class="btn btn-s bg-danger font-500 delete-item-btn"
+                        style="z-index: 10; min-width: 6rem;">
+                        Eliminar
+                    </button>
+                `
+            }
+
+            if (tipo == "simple") {
+                return `
+                    <div class="quantity-controls bg-light border rounded d-flex align-items-center">
+                        <button class="btn btn-xs btn-outline-secondary border-0 qty-decrease"
+                                type="button"
+                                data-product-id="${producto.id}"
+                                title="Disminuir cantidad"
+                                ${isDisabled ? 'disabled' : ''}>
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <span id="item-${producto.id}-qty"
+                            class="px-1 fw-semibold product-quantity"
+                            data-product-id="${producto.id}">
+                            ${cantidad}
+                        </span>
+                        <button class="btn btn-xs btn-outline-secondary border-0 qty-increase"
+                                type="button"
+                                data-product-id="${producto.id}"
+                                title="Aumentar cantidad"
+                                ${isDisabled ? 'disabled' : ''}>
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                `
+            } else if (tipo == "complejo") {
+                return `
+                    <button
+                        data-producto-id="${producto.id}"
+                        data-producto-nombre="${producto.nombre}"
+                        class="btn btn-s bg-highlight font-500 listado-ordenes-carrito-trigger" style="z-index: 10; min-width: 6rem;">
+                        Mi Pedido
+                    </button>
+                `
+            }
+
+            return '';
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            
+            document.addEventListener('click', async function(e) {
+                // INCREMENTO DE CANTIDAD
+                if (e.target.closest('.qty-increase')) {
+                    await handleProductIncrease(e);
+                }
+                // REDUCCION DE CANTIDAD
+                if (e.target.closest('.qty-decrease')) {
+                    await handleProductDecrease(e);
+                }
+                // AJUSTAR CANTIDAD A DISPONIBLES
+                if (e.target.closest('.qty-fixer')) {
+                    await handleActualizarProductoLimitado(e);
+                }
+                // ACTIVAR MODAL RESUMEN
+                if (e.target.closest('.summary-btn')) {
+                    await handleSummaryCheck(e);
+                }
+            });
+        });
+
+
+
+        const handleSummaryCheck = async(e) => {
+            e.preventDefault();
+
+            const cartToCheck = carritoStorage.obtenerCarrito();
+            const summaryCheckButton = e.target.closest('.summary-btn');
+            const summaryModal = new bootstrap.Modal(document.getElementById('cartSummaryModal'));
+            const warningModal = new bootstrap.Modal(document.getElementById('stock-warning'));
+
+            const modalElement = document.getElementById('cartSummaryModal');
+            if (modalElement && modalElement.parentNode !== document.body) {
+                document.body.appendChild(modalElement);
+            }
+
+            try {
+                const cartCheckResponse = await CarritoService.getCartProductsInfo({
+                    sucursaleId: 1,
+                    items: cartToCheck.items,
+                })
+
+                const escasosArray = Object.values(cartCheckResponse.escasos || {});
+                const agotadosArray = Object.values(cartCheckResponse.agotados || {});
+                if (escasosArray.length == 0 && agotadosArray.length == 0) {
+                    // Continuar con el resumen
+                    summaryModal.show();
+                    return;
+                } else {
+                    // Renderizar modal de curar carrito
+                    warningModal.show()
+                }
+            } catch (error) {
+                console.error("Error validanto carrito para resumen: ",error);
+            }
+        }
+
+        const handleActualizarProductoLimitado = async (e) => {
+            e.preventDefault();
+
+            const botonFixCantidad = e.target.closest('.qty-fixer');
+            const idProductoArreglar = parseInt(botonFixCantidad.getAttribute('data-product-id'), 10);
+            const itemCarrito = carritoStorage.obtenerItemCarrito(idProductoArreglar);
+            const productInfoRequest =  await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
+
+            const productInfo = productInfoRequest.item;
+            const contenedorItemsDisponibles = document.getElementById('container-state-disponible')
+
+            // Actualizar el valor al maximo disponible en el carrito
+            const intentoActualizacion = await carritoStorage.updateProductToMax(idProductoArreglar);
+            if (intentoActualizacion.success == true && intentoActualizacion.cantidad >= 1) {
+                removeItemWrapper(idProductoArreglar);
+                contenedorItemsDisponibles.innerHTML += renderCartItem(productInfo,'disponible', intentoActualizacion.cantidad);
+                // notificacion de ajuste exitoso
+            } else if (intentoActualizacion.success == true && intentoActualizacion.cantidad == 0) {
+                removeItemWrapper(idProductoArreglar);  
+                renderCartItem(productInfo,'agotado', 0)
+            }
+        }
+
+        const handleUpdateLimitedAdittional = async(e) => {
+            e.preventDefault();
+
+            const aditionalFixButton = e.target.closest('.aditionale-fixer');
+            // Determinar cuales son los adicionales cuyas unidades exceden
+            // Una vez identificados 
+            const productToFixId = quantityFixButton.getAttribute('data-product-id');
+            
+            // Logica restante
+        }
+
+        const handleProductIncrease = async (e) => {
+            e.preventDefault();
+            const button = e.target.closest('.qty-increase');
+            const productToIncreaseId = parseInt(button.getAttribute('data-product-id'), 10);
+            const adicionalesData = button.getAttribute('data-adicionales');
+            let adicionales = adicionalesData === 'null' ? null : JSON.parse(adicionalesData);
+            const quantitySpan = document.getElementById(`item-${productToIncreaseId}-qty`);
+
+            const IncreaseAttemp = await carritoStorage.agregarAlCarrito(productToIncreaseId, 1, true, adicionales);
+
+            if (IncreaseAttemp.success === true) {
+                quantitySpan.textContent = IncreaseAttemp.newQuantity;
+            } else {
+                console.error("No se pudo incrementar el valor del producto: ", productToIncreaseId);
+            }
+        }
+
+        const handleProductDecrease = async(e) => {
+            e.preventDefault();
+            const button = e.target.closest('.qty-decrease');
+            const productToDecreaseId = parseInt(button.getAttribute('data-product-id'), 10);
+            // const adicionalesData = button.getAttribute('data-adicionales');
+            // let adicionales = adicionalesData === 'null' ? null : JSON.parse(adicionalesData);
+            const quantitySpan = document.getElementById(`item-${productToDecreaseId}-qty`);
+
+            // Check if quantity is 1 or less before proceeding
+            if (parseInt(quantitySpan.textContent, 10) <= 1) return;
+
+            const DecreaseAttemp = await carritoStorage.restarDelCarrito(productToDecreaseId, 1);
+
+            if (DecreaseAttemp.success === true) {
+                quantitySpan.textContent = DecreaseAttemp.newQuantity;
+            } else {
+                console.error("No se pudo reducir el valor del producto: ", productToDecreaseId);
+            }
+        }
+    </script>
+    <!-- CONTROL DE ELIMINACION DE PRODUCTOS-CARRITO -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // handleCartSummaryModal();
+            handleCartDeletion();
+            document.addEventListener('click', handleProductRemoval);
+        });
+
+        // Control para la eliminacion del carrito
+        const handleCartDeletion = () => {
+            // Obtener el modal de confirmacion de eliminacion
+            const confirmModal = new bootstrap.Modal(document.getElementById('confirmDeleteCartModal'));
+            // Obtener el boton de confirmacion de eliminacion
+            const confirmDeleteBtn = document.getElementById('confirmDeleteCart');
+
+            // Revelar el modal de confirmacion al hacer click en el boton de eliminacion
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.delete-cart-btn')) {
+                    e.preventDefault();
+                    confirmModal.show();
+                }
+            });
+
+            // Manejo del click de confirmacion dentro del modal
+            confirmDeleteBtn.addEventListener('click', function() {
+                // Limpiar el Carrito
+                carritoStorage.vaciarCarrito();
+                // Renderizado del Carrito Vacio
+                renderEmptyCart();
+                // Actualizar el contador
+                carritoStorage.actualizarContadorCarrito();
+                // Ocultar el modal y mostrar mensaje de exito de ser necesario
+                confirmModal.hide();
+            });
+        }
+
+        // Control para retirar productos del carrito
+        const handleProductRemoval = (e) => {
+            const button = e.target.closest('.delete-item-btn, .unavailable-fixer');
+            if (!button) return; // nothing matched
+
+            e.preventDefault();
+            // Filtrar el objeto a remover
+            const productId = parseInt(button.getAttribute('data-product-id'), 10);
+
+            // Remover el producto del carrito
+            carritoStorage.eliminarProducto(productId);
+
+            // Remover el elemento renderizado
+            removeItemWrapper(productId);
+
+            // Revisar si el carrito esta vacio
+            const remainingItems = document.querySelectorAll('.cart-item-wrapper');
+            if (remainingItems.length === 0) {
+                // De estar vacio, renderizar el carrito vacio
+                renderEmptyCart();
+            }
+
+            // Actualizar el contador del carrito
+            carritoStorage.actualizarContadorCarrito();
+        }
+
+        const removeItemWrapper = (productId) => {
+            // Localizar el wrapper a remover
+
+            const wrapperToRemove = document.getElementById(`cart-item-wrapper-${productId}`);
+
+            // Obtener el estado del wrapper/producto
+            const wrapperState = wrapperToRemove.getAttribute('data-product-state');
+            // De existir el elemento, retirarlo
+            if (wrapperToRemove) {
+                wrapperToRemove.remove();
+            }
+
+            // Revisar si existen elementos del mismo estado
+            const remainingItemsWithState = document.querySelectorAll(`.cart-item-wrapper[data-product-state="${wrapperState}"]`);
+            if (remainingItemsWithState.length === 0) {
+                // De no existir, elminar el label correspondiente
+                const labelToRemove = document.getElementById(`label-${wrapperState}`);
+                if (labelToRemove) {
+                    labelToRemove.remove();
+                }
+            }
+        }
+
+        // Renderizardo de Carrito Vacio
+        const renderEmptyCart = () => {
+            const cartContent = document.querySelector('.cart-content');
+            if (cartContent) {
+                cartContent.innerHTML = `<div class="empty-cart text-center py-5">
+                        <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Tu carrito está vacío</h5>
+                        <p class="text-muted">Agrega algunos productos para comenzar</p>
+                    </div>`
+            }
+        };
+    </script>
+    @endpush('scripts')
+@endif
