@@ -25,10 +25,10 @@
 
             document.addEventListener('DOMContentLoaded', function() {
                 // Actualizar contenido del carrito de existir al momento de cargarse
-                carritoStorage.updateCartCounterEX();
+                carritoStorage.actualizarContadorCarrito();
                 
-                // Optional: Listen for custom events if you update the cart elsewhere
-                // document.addEventListener('cartUpdated', updateCartCounterEX);
+                // Optional: Escuchar evento para actualizar el carrito en otro lugar
+                // document.addEventListener('cartUpdated', actualizarContadorCarrito);
             });
         </script>
     @endpush
@@ -59,9 +59,13 @@
     </a>
     <a href="{{ route('carrito') }}"
         class="{{ request()->is('carrito' . '*') ? 'active-nav rounded-m' : '' }} cargando">
-        <i class="fa fa-shopping-cart {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i>
+        @if ($tiene_venta_activa)
+            <i><i data-lucide="hand-platter" class="lucide-icon color {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i></i>
+        @else
+            <i class="fa fa-shopping-cart {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i>
+        @endif
         <span id="cart-counter" class="cart-counter-badge"></span>
-        <span class="{{request()->is('carrito' . '*') ? 'color-highlight' : ''}}">Mi carrito</span>
+        <span class="{{request()->is('carrito' . '*') ? 'color-highlight' : ''}}">{{ $tiene_venta_activa ? "Mi Pedido" : "Mi Carrito" }}</span>
         <em></em>
     </a>
 </div>

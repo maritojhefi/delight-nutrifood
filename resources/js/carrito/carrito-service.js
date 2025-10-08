@@ -23,4 +23,60 @@ export const getCartProductsInfo = async ({ sucursaleId, items }) => {
 }
 
 
-window.getCartProductsInfo = getCartProductsInfo;
+export const obtenerInfoItemCarrito = async (itemCarrito, sucursaleID) => {
+    try {
+        const response = await axios.post(`/carrito/validar-item`, {
+          sucursale_id: sucursaleID,
+          id: itemCarrito.id,
+          cantidad: itemCarrito.cantidad,
+          adicionales: itemCarrito.adicionales
+        }); 
+        return response.data;
+    } catch (error) {
+        console.error('Error interno del servidor:', error);
+    }
+}
+
+export const obtenerIndiceItemCarrito = async(producto_venta_id, indice) => {
+    const response = await axios.get(`/ventas/producto/${producto_venta_id}/orden/${indice}`);
+    return response.data;
+}
+
+// export const handleAgregarUnidad = async () => {
+//   const ProductoID = $(this).data('producto-id');
+//   try {
+//       const agregarVentaProducto = await VentaService.agregarProductoVenta(ProductoID, 1);
+//   } catch (error) {
+//       if (error.response && error.response.status === 409) {
+//           console.log("Pasando a agregar al carrito")
+//           // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
+//           const AddAttempt = await carritoStorage.agregarAlCarrito(ProductoID, 1);
+//           estaVerificando(false);
+//           closeDetallesMenu();
+//       } else if (error.response && error.response.status === 422) {
+//           const { stockProducto, cantidadSolicitada } = error.response.data;
+//           if (stockProducto <= 0)
+//           {
+//               // Re-renderizar listado de productos
+//               // estaVerificando(false);
+//               mostrarAvisoAgotado();
+//           } else if (stockProducto < cantidadSolicitada) {
+//               console.log("No hay suficiente stock disponible para completar la solicitud")
+//           }
+//       } else {
+//           console.error('Error interno del servidor:', error);
+//       }
+//   }
+// }
+
+// export const sincronizarCarrito_ProductoVenta = (carrito) => {
+//   const response = await axios.post(`/carrito/sincronizar`)
+// };
+
+
+// window.getCartProductsInfo = getCartProductsInfo;
+
+window.CarritoService = {
+    getCartProductsInfo,
+    obtenerInfoItemCarrito
+};

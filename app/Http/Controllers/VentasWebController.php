@@ -1,0 +1,409 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Adicionale;
+use App\Models\Producto;
+use App\Models\User;
+use App\Models\Venta;
+use App\Services\Ventas\Contracts\ProductoVentaServiceInterface;
+use App\Services\Ventas\Contracts\StockServiceInterface;
+use App\Services\Ventas\DTOs\VentaResponse;
+use App\Services\Ventas\Exceptions\VentaException;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
+
+class VentasWebController extends Controller
+{
+    public function __construct(
+        private ProductoVentaServiceInterface $productoVentaService,
+        private StockServiceInterface $stockService
+        // private CalculadoraVentaServiceInterface $calculadoraService
+    ) {}
+    public function generarVentaQR() {   
+        
+        try {
+            $user=User::find(auth()->user()->id);
+            
+            // Determinar si el usuario dispone de una venta activa
+            $venta_activa = $user->ventaActiva;
+
+            if ($venta_activa) {
+                // Ya existe una venta activa para el usuario
+                return response()->json([
+                    'message' => 'Ya existe una venta activa para este usuario',
+                    'venta_id' => $venta_activa->id,    
+                ], 409);
+            } else {
+                // No existe una venta activa para el usuario
+                $nueva_venta = Venta::create([
+                    
+                    'usuario_id' => 1,
+                    'sucursale_id' => 1, // Basado en el JSON proporcionado
+                    'cliente_id' => $user->id, // Asumiendo que el usuario es también el cliente
+                    'total' => 0.00,
+                    'puntos' => 0,
+                    'descuento' => 0.00,
+                    'tipo' => null,
+                    'usuario_manual' => 'prueba',
+                    'impreso' => 0,
+                    'pagado' => 0,
+                    'cocina' => 0,
+                    'cocina_at' => null,
+                    'despachado_cocina' => 0,
+                    'historial_venta_id' => null,
+                    'tipo_entrega' => null
+                ]);
+                return response()->json([
+                    'message'=> 'La nueva venta para el usuario fue generada exitosamente',
+                    'venta_id' => $nueva_venta->id,
+                    'data' => $nueva_venta,
+                ], 200);
+            }
+        } catch (\Throwable $th) {
+            Log::error("Error al tratar de revisar/generar venta para el cliente-usuario", [
+                'error' => $th->getMessage(),
+                'user_id' => auth()->user()->id ?? null,
+                'trace' => $th->getTraceAsString()
+            ]);
+            return response()->json([
+                'message' => 'Error interno del servidor',
+                'error' => 'No se pudo procesar la solicitud'
+            ], 500);
+        }
+    }
+
+    public function obtenerProductosVenta(Request $request): JsonResponse
+    {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no autenticado',
+                'type' => 'error'
+            ], 401);
+        }
+
+        $ventaActiva = $user->ventaActiva;
+        
+        if (!$ventaActiva) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes una venta activa',
+                'type' => 'warning'
+            ], 404);
+        }
+
+        $response = $this->productoVentaService->obtenerProductosVenta($ventaActiva);
+
+        $statusCode = $response->success ? 200 : ($response->type === 'error' ? 500 : 404);
+
+        return response()->json($response->toArray(), $statusCode);
+    }
+
+    public function obtenerProductoVenta(Request $request, $producto_venta_ID): JsonResponse 
+    {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no autenticado',
+                'type' => 'error'
+            ], 401);
+        }
+
+        $ventaActiva = $user->ventaActiva;
+
+        if (!$ventaActiva) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes una venta activa',
+                'type' => 'warning'
+            ], 404);
+        }
+
+        $response = $this->productoVentaService->obtenerProductoVentaIndividual($ventaActiva, $producto_venta_ID);
+
+        $statusCode = $response->success ? 200 : ($response->type === 'error' ? 500 : 404);
+
+        return response()->json($response->toArray(), $statusCode);
+    }
+
+    public function obtenerOrdenIndice(int $producto_venta_id, int $indice): JsonResponse 
+    {
+        $ventaActiva = $this->validarVentaActiva();
+
+        $response = $this->productoVentaService->obtenerOrdenPorIndice($ventaActiva, $producto_venta_id, $indice);
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+    public function actualizarOrdenIndice(Request $request): JsonResponse 
+    {
+        try {
+            $producto_id = $request->producto_id;
+            $sucursal_id = $request->sucursale_id;
+            $indice = $request->indice;
+            $adicionales_ids = $request->adicionalesIds;
+            // $producto_venta_id = $request->producto_venta_id;
+
+            // Revisar si el usuario tiene una venta activa
+            $user = auth()->user();
+            $ventaActiva = $user->ventaActiva;
+
+            // // Log::debug("valor de user:", [$user]);
+            // // Log::debug("valor de ventaActiva:", [$ventaActiva]);
+
+
+            $producto = Producto::publicoTienda()->findOrFail($producto_id); 
+            if (! $producto) {
+                throw new VentaException("No se pudo obtener la informacion del producto.", 'error', ["id_producto"=>$producto_id],404);
+            }
+            $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get()->keyBy('id');
+
+            if (!$ventaActiva) {
+                // Log::debug("No hay venta activa, revisando stock para carrito localStorage:", [$ventaActiva]);
+                $verificacionStock = $this->stockService
+                ->verificarStockCompleto($producto, $adicionales, 1, $sucursal_id);
+
+                if (!$verificacionStock->success) {
+                    throw VentaException::sinStockOrden($verificacionStock->toArray(), 422);
+                }
+
+                $ventaResponse =  VentaResponse::error(
+                    'No hay venta activa. El producto se agregará a su carrito.',
+                    ['venta_activa' => 'No se encontró una venta activa para el usuario']
+                );
+                return new JsonResponse($ventaResponse->toArray(), Response::HTTP_CONFLICT);
+            }
+            
+
+            
+            // $habilitadoAceptados = auth()->check() && in_array(auth()->user()->role->nombre, ['admin', 'cajero']);
+
+            $productoVenta = DB::table('producto_venta')
+                ->where('producto_id', $producto_id)
+                ->where('venta_id', $ventaActiva->id)
+                ->where('aceptado', 'false')->first();
+
+            // if(!$habilitadoAceptados) {
+            //     $consultaPV->where('aceptado', false);
+            // } 
+            // else {
+            //     $consultaPV->where('cliente_id', '!=', auth()->user()->id); 
+            // }
+
+            // $productoVenta = $consultaPV->first();
+
+            if (!$productoVenta) {
+                throw new VentaException("No se pudo obtener la informacion del pedido.", 'error', ["producto_id"=>$producto_id,"venta_id"=>$ventaActiva->id], 500);
+            }
+
+            $response = $this->productoVentaService
+                ->actualizarOrdenVentaCliente($ventaActiva,$productoVenta,$producto,$adicionales, $indice);
+
+            return response()->json($response->data, Response::HTTP_OK);
+        } catch (VentaException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'type' => $e->type,
+                ...$e->data
+            ], $e->getHttpCode());
+        }
+    }
+
+    public function actualizarObservacionVenta(Request $request): JsonResponse
+    {
+        $ventaActiva = $this->validarVentaActiva();
+
+        $texto = $request->texto;
+        $pivot_id = $request->pivot_id;
+        // $producto = Producto::find($$request->producto_id);
+        $respuesta = $this->productoVentaService->guardarObservacionPivotID($pivot_id, $texto);
+
+        if (!$respuesta->success) {
+            return response()->json($respuesta->toArray(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return new JsonResponse($respuesta->toArray(), Response::HTTP_OK);
+    }
+
+    public function eliminarOrdenIndice(Request $request): JsonResponse 
+    {
+        $ventaActiva = $this->validarVentaActiva();
+        $pivot_id = $request->pivot_id;
+        $target_index = $request->target_index;
+
+        $respuesta = $this->productoVentaService->eliminarItemPivotID($ventaActiva,$pivot_id, $target_index);
+        if (!$respuesta->success) {
+            return response()->json($respuesta->toArray(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $respuestaActualizada = $this->productoVentaService->obtenerProductoVentaIndividual($ventaActiva, $pivot_id);
+        if ($respuestaActualizada->success) {
+            return new JsonResponse($respuestaActualizada->data, Response::HTTP_OK);
+        } else {
+            return new JsonResponse($respuestaActualizada->errors, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function eliminarPedido(Request $request): JsonResponse
+    {
+        $ventaActiva = $this->validarVentaActiva();
+        $pivot_id = $request->producto_venta_ID;
+
+        $respuesta = $this->productoVentaService->eliminarProductoCompletoCliente($ventaActiva,$pivot_id);
+        if (!$respuesta->success) {
+            return response()->json($respuesta->toArray(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $pedidosActualizados = $this->productoVentaService->obtenerProductosVenta($ventaActiva);
+        if ($pedidosActualizados->success) {
+            return new JsonResponse($pedidosActualizados->data, Response::HTTP_OK);
+        } else {
+            return new JsonResponse($pedidosActualizados->errors, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function carrito_ProductosVenta(Request $request) {
+        try {
+            $user = User::find(auth()->user()->id);
+
+            $carrito = collect($request->carrito['items']);
+            $venta_activa = $user->ventaActiva;
+
+            // Verificar que existe una venta activa
+            if (!$venta_activa) {
+                return response()->json([
+                    'message' => 'No se encontró una venta activa para el usuario',
+                    'error' => 'Venta activa requerida'
+                ], 404);
+            }
+
+            foreach ($carrito as $item) {
+                $producto_id = $item['id'];
+                $adicionales = $item['adicionales'];
+                // $cantidad = $item['cantidad'];
+
+                $producto = Producto::publicoTienda()->findOrFail($producto_id); 
+
+                foreach ($adicionales as $orden) {
+                    $adicionales = Adicionale::whereIn('id', $orden)->get()->keyBy('id');
+
+                    $respuestaAdicion = $this->productoVentaService
+                    ->agregarProductoCliente($venta_activa, 
+                                            $producto, 
+                                            $adicionales, 
+                                            1 );
+                }
+            }
+
+            return response()->json([
+                'message' => 'Carrito procesado exitosamente',
+                'items_procesados' => $carrito->sum(function ($item) {
+                    return count($item['adicionales']);
+                }),
+                'respuesta_adicion' =>  $respuestaAdicion,
+            ], 200);
+
+        } catch (\Throwable $th) {
+            Log::error("Error al generar nuevos producto_venta para el carrito", [
+                'error' => $th->getMessage(),
+                'user_id' => auth()->user()->id ?? null,
+                'trace' => $th->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'message' => 'Error interno del servidor',
+                'error' => 'No se pudo procesar la solicitud'
+            ], 500);
+        }
+    }
+
+    public function agregarProductoVenta(Request $request) {
+        $producto_id = $request->producto_id;
+        $adicionales_ids = $request->adicionales_ids;
+        $cantidad = $request->cantidad;
+
+        $producto = Producto::publicoTienda()->findOrFail($producto_id); 
+        if (! $producto) {
+            return response()->json([
+                'message'=> 'El producto solicitado no existe',
+                'error' => 'No se encontro una registro de producto perteneciente al identificador utilizado'
+            ],Response::HTTP_NOT_FOUND);
+        }
+        $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get()->keyBy('id');
+
+        // De momento trabajamos con un sucursale_id = 1;
+        $verificacionStock = $this->stockService->verificarStockCompleto($producto, $adicionales, $cantidad, 1);
+
+        if (!$verificacionStock->success) {
+            return response()->json($verificacionStock->toArray(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        // Revisar si el usuario se encuentra autenticado
+        if (!auth()->check()) {
+            $ventaResponse = VentaResponse::error(
+                'El usuario no ha iniciado sesión. El producto se agregará a su carrito.',
+                ['sesion_inactiva' => 'El usuario no ha iniciado sesión en la aplicación']
+            );
+            return new JsonResponse($ventaResponse->toArray(), Response::HTTP_CONFLICT);
+        }
+        // Revisar si el usuario tiene una venta activa
+        $user = auth()->user();
+        $venta_activa = $user->ventaActiva;
+
+        if (! $venta_activa) {
+            $ventaResponse =  VentaResponse::error(
+                'No hay venta activa. El producto se agregará a su carrito.',
+                ['venta_activa' => 'No se encontró una venta activa para el usuario']
+            );
+            return new JsonResponse($ventaResponse->toArray(), Response::HTTP_CONFLICT);
+        }
+
+        // No comparar con detalles existentes, siempre agregar nuevos registros (orden) 
+        // dentro de adicionales en producto_venta
+        
+        $respuestaVenta = $this->productoVentaService->agregarProductoCliente($venta_activa, $producto, $adicionales, $cantidad);
+        if (!$respuestaVenta->success) {
+            return response()->json($respuestaVenta->toArray(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        
+        return response()->json($respuestaVenta, Response::HTTP_CREATED);
+    }
+
+    public function disminuirProductoVenta(Request $request): JsonResponse {
+        $producto_venta_id = $request->producto_venta_id;
+        $ventaActiva = $this->validarVentaActiva();
+
+        $respuestaDisminucion = $this->productoVentaService->disminuirProductoCLiente($ventaActiva, $producto_venta_id);
+        if (!$respuestaDisminucion->success) {
+            return response()->json($respuestaDisminucion, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json($respuestaDisminucion, Response::HTTP_OK);
+    }
+
+    private function validarVentaActiva()
+    {
+        $user = auth()->user();
+    
+        if (!$user) {
+            abort(401, 'Usuario no autenticado');
+        }
+
+        $ventaActiva = $user->ventaActiva;
+
+        if (!$ventaActiva) {
+            abort(404, 'No tienes una venta activa');
+        }
+
+        return $ventaActiva;
+    }
+}

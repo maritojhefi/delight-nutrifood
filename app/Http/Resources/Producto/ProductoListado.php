@@ -11,7 +11,9 @@ class ProductoListado extends JsonResource
         $precioOriginal = $this->precio;
         $precioFinal = $this->precioReal();
         $tieneDescuento = $precioFinal < $precioOriginal;
-        $tiene_stock = !($this->unfilteredSucursale->isNotEmpty() && $this->stock_actual == 0);
+        // $tiene_stock = app(StockService::class)->verificarStock($this->resource,1,1);
+        $tiene_stock = $this->resource->contable ? $this->resource->stockTotal() > 0 : true;
+
         $tiene_adicionales = $this->subcategoria->adicionales->isNotEmpty();
 
         return [

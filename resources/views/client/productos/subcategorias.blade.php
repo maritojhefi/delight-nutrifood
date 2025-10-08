@@ -66,7 +66,7 @@
 {{-- FUNCIONALIDAD AGREGAR AL CARRITO --}}
 <script> 
     $(document).ready(function() {
-        $(document).on('click', '.agregar-unidad', addToCartHandler);
+        $(document).on('click', '.agregar-unidad', agregarAlCarritoHandler);
 
         $(document).on('click', '.menu-adicionales-btn', function() {
             const productoId = $(this).data('producto-id');
@@ -75,12 +75,12 @@
         });
     });
 
-    async function addToCartHandler() {
+    async function agregarAlCarritoHandler() {
         const product_Id = $(this).data('producto-id');
         const product_nombre = $(this).data('producto-nombre')
         
         try {
-            const result = await carritoStorage.addToCart(product_Id, 1);
+            const result = await carritoStorage.agregarAlCarrito(product_Id, 1);
             if (result.success) {
                 console.log("Producto  agregado con exito al carrito.")
             } else {

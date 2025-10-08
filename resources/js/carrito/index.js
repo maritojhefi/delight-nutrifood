@@ -1,4 +1,2 @@
-import { addToCart } from './carrito-store.js';
-// import { getCartProductsInfo } from './carrito-service.js';
-window.addToCart = addToCart;
-// window.getCartProductsInfo = getCartProductsInfo;
+import { agregarAlCarrito } from './carrito-store.js';
+window.agregarAlCarrito = agregarAlCarrito;

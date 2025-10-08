@@ -10,6 +10,7 @@ use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\admin\UsuariosController;
 use App\Http\Livewire\Admin\PuntosRegistrosComponent;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,13 +86,29 @@ Route::prefix('/carrito')
     ->group(function () {
         Route::get('', action: [App\Http\Controllers\CarritoController::class, 'index'])->name('carrito');
         Route::post('mi-carrito', [App\Http\Controllers\CarritoController::class, 'validateCarrito']);
+        Route::post('validar-item', [App\Http\Controllers\CarritoController::class, 'validateCartItem']);
+
+        // Route::post('sincronizar', [App\Http\Controllers\CarritoController::class, 'validateCarrito']);
     });
 
 Route::prefix('/ventas')
     ->middleware('auth')
     ->group(function () {
         Route::get('', [App\Http\Controllers\VentasCocinaController::class, 'index'])->name('ventas.cocina.pedido');
+        Route::post('/ventaQR', [App\Http\Controllers\VentasWebController::class, 'generarVentaQR']);
+        Route::post('/sincronizar', [App\Http\Controllers\VentasWebController::class,'carrito_ProductosVenta']);
+        Route::get('/productos', [App\Http\Controllers\VentasWebController::class,'obtenerProductosVenta']);
+        Route::get('/productos/{producto_venta_ID}', [App\Http\Controllers\VentasWebController::class,'obtenerProductoVenta']);
+        Route::post('/producto/observacion', [App\Http\Controllers\VentasWebController::class,'actualizarObservacionVenta']);
+        Route::patch('/producto/eliminar-orden', [App\Http\Controllers\VentasWebController::class,'eliminarOrdenIndice']);
+        Route::patch('/producto/disminuir-orden', [App\Http\Controllers\VentasWebController::class,'disminuirProductoVenta']);
+        Route::delete('/producto/{producto_venta_ID}', [App\Http\Controllers\VentasWebController::class,'eliminarPedido']);
+        Route::get('/producto/{producto_venta_id}/orden/{indice}', [App\Http\Controllers\VentasWebController::class,'obtenerOrdenIndice']);
+        Route::patch('/productos/actualizar-orden', [App\Http\Controllers\VentasWebController::class,'actualizarOrdenIndice']);
     });
+Route::post('/ventas/producto', [App\Http\Controllers\VentasWebController::class, 'agregarProductoVenta']);
+
+
 Route::prefix('/otros')->group(function () {
     Route::get('/tutoriales', [App\Http\Controllers\OtrosController::class, 'tutorialesIndex'])->name('tutoriales');
     Route::get('/cambiarcolor', [App\Http\Controllers\OtrosController::class, 'cambiarColor']);
