@@ -446,14 +446,6 @@
                         // MostrarToastError
                         console.log("Error al agregar producto a carrito: ", error);
                     }   
-
-
-                    
-                    // const cantidadCarrito = carritoStorage.cantidadOrdenesProducto(infoProducto.id);
-                    // if (cantidadCarrito >= ) {
-                        
-                    // }
-                    
                     // mostrarToastSuccess("Se agregó la orden a su carrito.");
                 }
                 // CONTROL DE STOCK INSUFICIENTE

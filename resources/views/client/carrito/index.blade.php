@@ -222,9 +222,9 @@
     $(document).ready( async function() {
 
         if (ventaActiva) {
-        // axios para venta activa
-        await renderizarPrincipalPedidos();
-    } 
+            // axios para venta activa
+            await renderizarPrincipalPedidos();
+        }
     });
 
     const renderizarPrincipalPedidos = async () => {
@@ -234,7 +234,12 @@
         const response = await VentaService.productosVenta();
         const productosVenta = response.data;
 
-        renderizarProductosVenta(productosVenta);
+        if (productosVenta.length > 0) {
+            renderizarProductosVenta(productosVenta);
+        } else {
+            console.log("NO hay productos en la venta")
+            renderizarPedidoVacio();
+        }
 
         const pedidosPendientes = productosVenta.filter(producto => producto.aceptado == false);
 
@@ -295,13 +300,21 @@
                 const productoVentaId = parseInt(this.dataset.pventaId, 10);
                 await handleReducirProductoSimple(productoVentaId);
             });
+
+        
     }
 
     const handleIncrementarProductoSimple = async (productoIncrementarID, productoVentaId) => {
         try {
             const respuestaIncremento = await VentaService.agregarProductoVenta(productoIncrementarID, 1);
-            $(`#cantidad-pventa-${productoVentaId}`).text(respuestaIncremento.data.cantidad);
+            const cantidad = respuestaIncremento.data.cantidad;
+            const precioFinal = respuestaIncremento.data.precio_final.toFixed(2);
+            $(`#cantidad-pventa-${productoVentaId}`).text(cantidad);
+            $(`#precio-pventa-${productoVentaId}`).text(`Bs. ${precioFinal}`);
+            $(`#unidades-pventa-${productoVentaId}`).text(`Unidades: ${cantidad}`);
+            $(`#pviejo-pventa-${productoVentaId}`).text(`Bs. ${respuestaIncremento.data.precio_original.toFixed(2) * cantidad}`);
         } catch (error) {
+            console.log(error);
             if (error.response?.data?.stockProducto === 0) {
                 mostrarToastAdvertencia("Límite alcanzado");
                 return;
@@ -313,8 +326,14 @@
     const handleReducirProductoSimple = async (productoVentaId) => {
         try {
             const respuestaReduccion = await VentaService.disminuirProductoVenta(productoVentaId);
-            $(`#cantidad-pventa-${productoVentaId}`).text(respuestaReduccion.data.cantidad);
+            const cantidad = respuestaReduccion.data.cantidad;
+            const precioFinal = respuestaReduccion.data.precio_final.toFixed(2);
+            $(`#cantidad-pventa-${productoVentaId}`).text(cantidad);
+            $(`#precio-pventa-${productoVentaId}`).text(`Bs. ${precioFinal}`);
+            $(`#unidades-pventa-${productoVentaId}`).text(`Unidades: ${cantidad}`);
+            $(`#pviejo-pventa-${productoVentaId}`).text(`Bs. ${respuestaReduccion.data.precio_original.toFixed(2) * cantidad}`);
         } catch (error) {
+            console.log(error);
             if (error.response?.data.type == "warning") {
                 // // mostrarToastAdvertencia("Límite alcanzado");
                 return;
@@ -327,8 +346,18 @@
         try {
             const response = await VentaService.eliminarPedidoCompleto(pivotID); 
             // renderizarProductosVenta(response.data);
+            console.log("Respuesta tras eliminacion: ", response);
             eliminarCardProductoVenta(pivotID);
             mostrarToastSuccess("Pedido eliminado con éxito");
+            if (response.data.length == 0) {
+                // Ocultar listados de pedidos
+                const contenedorAceptados = $('#contenedor-aceptados');
+                const contenedorPendientes = $('#contenedor-pendientes');
+                contenedorAceptados.removeClass('d-block');
+                contenedorPendientes.addClass('d-none');
+                // Renderizar PedidoVacio
+                renderizarPedidoVacio();
+            }
         } catch (error) {
             const serverResponse = error.response?.data; 
             
@@ -341,6 +370,14 @@
             mostrarToastError(errorMessage);
             console.error('Error al eliminar pedido:', error);
         }
+    }
+
+    const renderizarPedidoVacio = () => {
+        const contenedor = $('#contenedor-principal');
+        const termino = "pedido";
+        const lucideIcon = "hand-platter";
+        contenedor.html(construirCarritoVentaVacio(termino, lucideIcon));
+        reinitializeLucideIcons();
     }
 
 
@@ -364,7 +401,7 @@
                         <div class="mb-0 d-flex flex-row justify-content-between">
                             <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
                                 <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
-                                <small class="color-theme">${`Unidades: ${producto.cantidad}`}</small>
+                                <small id="unidades-pventa-${producto.pivot_id}" class="color-theme">${`Unidades: ${producto.cantidad}`}</small>
                                 ${producto.costo_adicionales > 0 ? `<small class="color-theme">Extras: Bs. ${producto.costo_adicionales}</small>` : ''}
                             </div>
                             <div class="product-image-container m-0" style="z-index: 10">
@@ -387,9 +424,9 @@
                         <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
                             <div>
                                 ${(producto.tiene_descuento ?
-                                `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${producto.precio_original.toFixed(2) * producto.cantidad}</del>` : ''
+                                `<del id="pviejo-pventa-${producto.pivot_id}" class="badge bg-highlight mb-1 product-price-old">Bs. ${(producto.precio_original.toFixed(2) * producto.cantidad) + producto.costo_adicionales}</del>` : ''
                                 )}
-                                <p class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
+                                <p id="precio-pventa-${producto.pivot_id}" class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
                                     Bs. ${producto.precio_final.toFixed(2)}
                                 </p>
                             </div>
@@ -403,36 +440,6 @@
 
     window.reemplazarCardProductoVenta = reemplazarCardProductoVenta;
     window.construirCardProductoVenta = construirCardProductoVenta;
-
-    const mostrarToastSuccess = (mensaje) => {
-        const toastsuccess = $('#toast-success');
-        toastsuccess.text(mensaje);
-        const toast = new bootstrap.Toast(toastsuccess);
-        toast.show()
-        setTimeout(() => {
-            toast.hide();
-        }, 3000);
-    }
-
-    const mostrarToastAdvertencia = (mensaje) => {
-        const toasterror = $('#toast-warning');
-        toasterror.text(mensaje);
-        const toast = new bootstrap.Toast(toasterror);
-        toast.show()
-        setTimeout(() => {
-            toast.hide();
-        }, 3000);
-    }
-
-    const mostrarToastError = (mensaje) => {
-        const toasterror = $('#toast-error');
-        toasterror.text(mensaje);
-        const toast = new bootstrap.Toast(toasterror);
-        toast.show()
-        setTimeout(() => {
-            toast.hide();
-        }, 3000);
-    }
 
     const renderizarBotonAccion = (prod_venta) => {
         if (prod_venta.tipo == "simple" && prod_venta.aceptado == false) {
@@ -476,10 +483,10 @@
         return ''
     }
 
-    const renderizarCarritoVentaVacio = (termino) => {
+    const construirCarritoVentaVacio = (termino, lucideIcon) => {
         return `
             <div class="empty-cart text-center py-5">
-                <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
+                <i data-lucide="${lucideIcon}" class="lucide-icon mb-2" style="width: 4rem;height: 4rem;"></i>
                 <h5 class="text-muted">Tu ${termino} está vacío</h5>
                 <p class="text-muted">Agrega algunos productos para comenzar</p>
             </div>
@@ -664,7 +671,7 @@
                         <div class="mb-0 d-flex flex-row justify-content-between">
                             <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
                                 <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
-                                <small class="color-theme">${`Unidades: ${producto.cantidad_solicitada}`}</small>
+                                <small class="color-theme">${`Unidades: <span id="unidades-carrito-${producto.id}">${producto.cantidad_solicitada}`}</span></small>
                                 ${producto.costo_adicionales > 0 ? `<small class="color-theme">Extras: Bs. ${producto.costo_adicionales}</small>` : ''}
                             </div>
                             <div class="product-image-container m-0" style="z-index: 10">
@@ -689,7 +696,7 @@
                                 ${(producto.tiene_descuento ?
                                 `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${producto.precio_original.toFixed(2) * producto.cantidad_solicitada}</del>` : ''
                                 )}
-                                <p class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
+                                <p id="precio-carrito-${producto.id}" class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
                                     Bs. ${producto.precio_final.toFixed(2)}
                                 </p>
                             </div>
@@ -697,6 +704,55 @@
                         </div>
                         ${stockMessage}
                         ${disabledOverlay}
+                    </div>
+                </div>
+            `;
+        }
+
+        const reemplazarCardCarrito = (productoCarrito) => {
+            const cardAntiguo = $(`#cart-item-wrapper-${productoCarrito.id}`);
+            const cardNuevo = construirCardItemCarrito(productoCarrito);
+            cardAntiguo.replaceWith(cardNuevo);
+        }
+
+        // SINCRONIZAR APROPIADAMENTE PARA REEMPLAZAR EN renderCartItem
+        const construirCardItemCarrito = (producto) => {
+            return `
+                <div class="cart-item-wrapper mb-4" data-product-id="${producto.id}"  data-product-state="${estado}" id="cart-item-wrapper-${producto.id}">
+                    <div class="card mb-0 d-flex flex-column item-carrito-info justify-content-between p-3 bg-white rounded-sm shadow-sm border">
+                        <div class="mb-0 d-flex flex-row justify-content-between">
+                            <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
+                                <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
+                                <small class="color-theme">${`Unidades: <span id="unidades-carrito-${producto.id}">${producto.cantidad_solicitada}`}</span></small>
+                                ${producto.costo_adicionales > 0 ? `<small class="color-theme">Extras: Bs. ${producto.costo_adicionales}</small>` : ''}
+                            </div>
+                            <div class="product-image-container m-0" style="z-index: 10">
+                                <img class="product-image rounded"
+                                    src="${producto.imagen}"
+                                    alt="${producto.nombre}"
+                                    data-product-id="${producto.id}">
+                                <button class="btn btn-xxs bg-highlight opacity-100 delete-item-btn position-absolute"
+                                        type="button"
+                                        data-product-id="${producto.id}"
+                                        title="Eliminar producto"
+                                        style="top: 0.1rem; right: 0.01rem; z-index: 20;"
+                                        >
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="item-overlay rounded-sm card-overlay opacity-60"></div>
+                        </div>
+                        <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
+                            <div>
+                                ${(producto.tiene_descuento ?
+                                `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${producto.precio_original.toFixed(2) * producto.cantidad_solicitada}</del>` : ''
+                                )}
+                                <p id="precio-carrito-${producto.id}" class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
+                                    Bs. ${producto.precio_final.toFixed(2)}
+                                </p>
+                            </div>
+                            ${renderActions(producto, isDisabled, cantidad, estado)}
+                        </div>
                     </div>
                 </div>
             `;
@@ -954,11 +1010,15 @@
             const adicionalesData = button.getAttribute('data-adicionales');
             let adicionales = adicionalesData === 'null' ? null : JSON.parse(adicionalesData);
             const quantitySpan = document.getElementById(`item-${productToIncreaseId}-qty`);
+            const unidadesCard = $(`#unidades-carrito-${productToIncreaseId}`);
 
             const IncreaseAttemp = await carritoStorage.agregarAlCarrito(productToIncreaseId, 1, true, adicionales);
 
             if (IncreaseAttemp.success === true) {
                 quantitySpan.textContent = IncreaseAttemp.newQuantity;
+                unidadesCard.text(IncreaseAttemp.newQuantity);
+                // llamado al backend para obtener informacion apropiada
+                // reemplazarCardCarrito();
             } else {
                 console.error("No se pudo incrementar el valor del producto: ", productToIncreaseId);
             }
@@ -971,6 +1031,7 @@
             // const adicionalesData = button.getAttribute('data-adicionales');
             // let adicionales = adicionalesData === 'null' ? null : JSON.parse(adicionalesData);
             const quantitySpan = document.getElementById(`item-${productToDecreaseId}-qty`);
+            const unidadesCard = $(`#unidades-carrito-${productToDecreaseId}`);
 
             // Check if quantity is 1 or less before proceeding
             if (parseInt(quantitySpan.textContent, 10) <= 1) return;
@@ -979,6 +1040,7 @@
 
             if (DecreaseAttemp.success === true) {
                 quantitySpan.textContent = DecreaseAttemp.newQuantity;
+                unidadesCard.text(DecreaseAttemp.newQuantity);
             } else {
                 console.error("No se pudo reducir el valor del producto: ", productToDecreaseId);
             }

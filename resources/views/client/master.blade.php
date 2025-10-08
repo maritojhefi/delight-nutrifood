@@ -285,6 +285,38 @@
             });
         });
     </script>
+    
+    <script>
+        window.mostrarToastSuccess = (mensaje) => {
+            const toastsuccess = $('#toast-success');
+            toastsuccess.text(mensaje);
+            const toast = new bootstrap.Toast(toastsuccess);
+            toast.show()
+            setTimeout(() => {
+                toast.hide();
+            }, 3000);
+        }
+
+        window.mostrarToastAdvertencia = (mensaje) => {
+            const toasterror = $('#toast-warning');
+            toasterror.text(mensaje);
+            const toast = new bootstrap.Toast(toasterror);
+            toast.show()
+            setTimeout(() => {
+                toast.hide();
+            }, 3000);
+        }
+        
+        window.mostrarToastError = (mensaje) => {
+            const toasterror = $('#toast-error');
+            toasterror.text(mensaje);
+            const toast = new bootstrap.Toast(toasterror);
+            toast.show()
+            setTimeout(() => {
+                toast.hide();
+            }, 3000);
+        }
+    </script>
 
     <script>
         // SCRIPT PARA EVITAR TRANSFORMACIONES INDESEADAS - SOLO MÉTODO 3

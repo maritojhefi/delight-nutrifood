@@ -179,26 +179,6 @@
             cardEliminar.remove();
         }
 
-        const mostrarToastSuccess = (mensaje) => {
-            const toastsuccess = $('#toast-success');
-            toastsuccess.text(mensaje);
-            const toast = new bootstrap.Toast(toastsuccess);
-            toast.show()
-            setTimeout(() => {
-                toast.hide();
-            }, 3000);
-        }
-
-        const mostrarToastError = (mensaje) => {
-            const toasterror = $('#toast-error');
-            toasterror.text(mensaje);
-            const toast = new bootstrap.Toast(toasterror);
-            toast.show()
-            setTimeout(() => {
-                toast.hide();
-            }, 3000);
-        }
-
         const renderizarCardOrden = (info, adicionales, indice) => {
             const precioAdicionalesItem = adicionales.reduce((sum, adicional) => {
                 return sum + (parseFloat(adicional.precio) || 0);

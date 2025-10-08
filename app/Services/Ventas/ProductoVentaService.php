@@ -664,17 +664,16 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
                 // Actualizar totales
                 $this->calculadoraService->actualizarTotalesVenta($venta);
-                
-                $productoVenta = $venta->productos()
-                    ->where('producto_id', $producto->id)
-                    ->wherePivot('aceptado', false)
-                    ->withPivot('id', 'cantidad', 'adicionales')
-                    ->first();
+
+                $productoVentaInfo = $this->obtenerProductoVentaIndividual($venta,$producto_venta_id);
+                if (!$productoVentaInfo->success) {
+                    throw new VentaException("Error al obtener el registro correspondiente", "error", [],404);
+                }
 
                 $this->calculadoraService->actualizarTotalesVenta($venta);
 
                 return VentaResponse::success(
-                    $productoVenta ? $productoVenta->pivot : null,
+                    $productoVentaInfo ? $productoVentaInfo->data : null,
                     "Se eliminó 1 {$producto->nombre} de esta venta"
                 );
             });
