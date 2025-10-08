@@ -774,53 +774,35 @@
             `;
         }
 
-        const construirCardProductoVenta2 = (producto) => {
-            return `
-                <li id="pedido-item-${producto.pivot_id}">
-                    <div class="cart-item-wrapper mb-4" data-producto-id="${producto.id}"  data-pedido-aceptado="${producto.aceptado}">
-                        <div class="card mb-0 d-flex flex-column item-carrito-info justify-content-between p-3 bg-white rounded-sm shadow-sm border">
-                            <div class="mb-0 d-flex flex-row justify-content-between">
-                                <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
-                                    <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
-                                    <small class="color-theme">${`Unidades: ${producto.cantidad}`}</small>
-                                    ${producto.costo_adicionales > 0 ? `<small class="color-theme">Extras: Bs. <span id="adicionales-carrito-${producto.id}">${producto.costo_adicionales}</span></small>` : ''}
-                                </div>
-                                <div class="product-image-container m-0" style="z-index: 10">
-                                    <img class="product-image rounded"
-                                        src="${producto.imagen}"
-                                        alt="${producto.nombre}"
-                                        data-producto-id="${producto.id}">
-                                    ${(producto.aceptado) ? '':
-                                    `<button class="btn btn-xxs bg-highlight opacity-100 borrar-pventa-btn position-absolute"
-                                            type="button"
-                                            data-producto-venta-id="${producto.pivot_id}"
-                                            title="Eliminar producto"
-                                            style="top: 0.1rem; right: 0.01rem; z-index: 20;"
-                                            >
-                                        <i class="fa fa-times"></i>
-                                    </button>`}
-                                </div>
-                                <div class="item-overlay rounded-sm card-overlay opacity-60"></div>
-                            </div>
-                            <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
-                                <div>
-                                    ${(producto.tiene_descuento ?
-                                    `<del class="badge bg-highlight mb-1 product-price-old">Bs. <span id="pviejo-carrito-${producto.id}">${producto.precio_original.toFixed(2) * producto.cantidad_solicitada}</span></del>` : ''
-                                    )}
-                                    <p class="fw-bold mb-0 text-success fs-5 product-price" data-precio="${producto.precio}">
-                                        Bs. <span id="precio-carrito-${producto.id}">${producto.precio_final.toFixed(2)}</span>
-                                    </p>
-                                </div>
-                                ${renderizarBotonAccion(producto)}
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            `
+        const prepararResumenCarrito = (validacionProductos) => {
+            const $summaryItems = $('#cart-summary-items');
+            const $summaryTotals = $('#cart-totals');
+
+            $summaryItems.empty();
+            const disponibles = Object.values(validacionProductos.disponibles || {});
+
+            let totalFinal = 0;
+            let totalDescuento = 0;
+            let totalOriginal = 0;
+
+            if (disponibles.length) {
+                disponibles.forEach(prod => {
+                    // // $available.append(renderCartItem(prod, 'disponible', prod.cantidad_solicitada));
+                    $summaryItems.append(renderSummaryItem(prod)); 
+
+                    totalFinal += (prod.precio * prod.cantidad_solicitada) + prod.costo_adicionales;
+                    totalOriginal += (prod.precio_original * prod.cantidad_solicitada) + prod.costo_adicionales;
+                    if (prod.tiene_descuento) {
+                        totalDescuento += (prod.precio_original - prod.precio) * prod.cantidad_solicitada;
+                    }
+                });
+            }
+
+            $summaryTotals.html(renderSummaryTotal(totalFinal, totalDescuento, totalOriginal));
         }
 
         const renderSummaryItem = (producto) => {
-            const itemSubtotal = (producto.precio * producto.cantidad_solicitada).toFixed(2);
+            const itemSubtotal = ((producto.precio * producto.cantidad_solicitada) + producto.costo_adicionales).toFixed(2);
             return `
                 <div class="mb-2">
                     <div class="item-name fw-semibold mb-2" title="${producto.nombre}">
@@ -968,15 +950,17 @@
             }
 
             try {
+                // Validacion de items en carrito
                 const cartCheckResponse = await CarritoService.getCartProductsInfo({
                     sucursaleId: 1,
                     items: cartToCheck.items,
-                })
+                });
 
                 const escasosArray = Object.values(cartCheckResponse.escasos || {});
                 const agotadosArray = Object.values(cartCheckResponse.agotados || {});
                 if (escasosArray.length == 0 && agotadosArray.length == 0) {
                     // Continuar con el resumen
+                    prepararResumenCarrito(cartCheckResponse);
                     summaryModal.show();
                     return;
                 } else {
