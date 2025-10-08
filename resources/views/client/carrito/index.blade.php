@@ -442,6 +442,7 @@
                                 ${(producto.aceptado) ? '':
                                 `<button class="btn btn-xxs bg-highlight opacity-100 borrar-pventa-btn position-absolute"
                                         type="button"
+                                        disabled
                                         data-producto-venta-id="${producto.pivot_id}"
                                         title="Eliminar producto"
                                         style="top: 0.1rem; right: 0.01rem; z-index: 20;"
@@ -478,6 +479,7 @@
                 <div class="quantity-controls bg-light border rounded d-flex align-items-center">
                     <button class="btn btn-xs btn-outline-secondary border-0 reducir-simple"
                             type="button"
+                            disabled
                             data-producto-id="${prod_venta.id}"
                             data-pventa-id=${prod_venta.pivot_id}
                             title="Disminuir cantidad">
@@ -490,6 +492,7 @@
                     </span>
                     <button class="btn btn-xs btn-outline-secondary border-0 incrementar-simple"
                             type="button"
+                            disabled
                             data-producto-id="${prod_venta.id}"
                             data-pventa-id=${prod_venta.pivot_id}
                             title="Aumentar cantidad">

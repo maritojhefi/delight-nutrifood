@@ -14,7 +14,7 @@
                 <!-- <div id="contenedor-boton-agregar" class="">
 
                 </div> -->
-                    <button id="boton-agregar-orden-venta" class="d-none">Agregar Orden</button>
+                    <button id="boton-agregar-orden-venta" class="d-none" disabled>Agregar Orden</button>
                 <div id="contenedor-observacion" class="mb-4 px-4">
                 </div>
             </div>
@@ -205,6 +205,7 @@
                                         data-producto-id="${info.id}"
                                         data-orden-index="${indice}"
                                         class="borrar-orden-pventa"
+                                        disabled
                                     >
                                         <i class="lucide-icon" data-lucide="trash-2"></i>
                                     </button>
@@ -251,6 +252,7 @@
                     id="boton-agregar-orden-venta"
                     data-producto-id="${id}"
                     ${disabledAttr}
+                    disabled
                     class="${buttonClass} btn btn-xs add-disabler mx-5 mb-3 mt-n1 rounded-s bg-teal-light d-flex flex-row gap-2 align-items-center text-uppercase justify-content-center">
                     ${textoBoton}
                     <i class="lucide-icon" data-lucide="circle-plus"></i>
