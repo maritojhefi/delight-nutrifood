@@ -28,21 +28,21 @@
             </a>
         </center>
         <h4 class="d-flex justify-content-between align-items-center m-0">
-            <strong class="m-3 text-muted" style="font-size: 12px"><i class="fa fa-send"></i>
-                #{{ $cuenta->id }}</strong> <br>
+            {{-- <strong class="m-3 text-muted" style="font-size: 12px"><i class="fa fa-send"></i>
+                #{{ $cuenta->id }}</strong> <br> --}}
 
 
             @if ($cuenta->cliente)
                 <a href="#" data-bs-toggle="modal" data-bs-target="#planesusuario"><span
-                        class="badge  badge-success letra10 p-1">{{ Str::before($cuenta->cliente->name, ' ') }} <i
+                        class="badge  badge-dark light letra10 p-1">{{ Str::before($cuenta->cliente->name, ' ') }} <i
                             class="fa fa-user"></i></span></a>
             @else
                 @if ($cuenta->usuario_manual)
                     <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span
-                            class="badge letra10 badge-info p-1">{{ $cuenta->usuario_manual }}</span></a>
+                            class="badge letra10 badge-info light p-1">{{ $cuenta->usuario_manual }}</span></a>
                 @else
                     <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span
-                            class="badge badge-outline-danger p-1 letra10">Sin usuario</span></a>
+                            class="p-1 letra10">Sin usuario</span></a>
                 @endif
             @endif
 
@@ -113,21 +113,26 @@
                             </small>
                         </div>
                         <div>
-                            <div class="row">
-                                <strong class="" style="font-size:14px">{{ $item['subtotal'] }} Bs</strong>
-
+                            <div class="d-flex align-items-center" style="line-height: 10px; white-space: nowrap;">
+                                <strong style="font-size:14px; white-space: nowrap;">{{ $item['subtotal'] }} Bs</strong>
+                                @if($item['tiene_descuentos'])
+                                    <i class="fa fa-info-circle text-info ml-1" 
+                                       onclick="mostrarDetalleDescuentos('{{ $item['detalle'] }}', '{{ $item['nombre'] }}', {{ $item['precio_original'] }}, {{ $item['subtotal'] }}, {{ $item['cantidad'] }})"
+                                       style="cursor: pointer; font-size: 16px; flex-shrink: 0;" 
+                                       title="Ver detalles de descuentos"></i>
+                                @endif
                             </div>
                             @if (!$cuenta->pagado)
-                                <div class="row">
+                                <div class="row mt-0">
                                     <div x-data="{ open: false }">
-                                        <button @click="open = ! open"
-                                            class="badge badge-xs light badge-info">Añadir</button>
+                                        <span style="cursor: pointer;line-height: 10px;font-size: 9px;" class=" mt-0" @click="open = ! open; $nextTick(() => $refs.cantidadInput.focus())"
+                                            class="">Agregar <i class="fa fa-plus"></i></span>
 
                                         <div x-show="open" @click.outside="open = false">
 
-                                            <div class="input-group input-primary" style="width: 50px; height: 30px;">
+                                            <div class="input-group input-dark" style="width: 50px; height: 30px;">
                                                 <input type="text" wire:model.lazy="cantidadespecifica"
-                                                    class="form-control" placeholder=""
+                                                    class="form-control" placeholder="" x-ref="cantidadInput"
                                                     style="height: 30px; width: 30px; font-size: 12px; padding: 2px;"
                                                     value="{{ $item['cantidad'] }}">
                                                 <a href="#" class="input-group-text m-0 p-0"
@@ -249,24 +254,36 @@
                 <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:12px">
                     <small>Subtotal</small>
                     <strong>{{ $subtotal }} Bs</strong>
-
+                </li> 
+                @if(isset($totalAdicionales) && $totalAdicionales > 0)
+                <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:12px">
+                    <small>Total Adicionales</small>
+                    <span class="text-success">+ {{ $totalAdicionales }} Bs</span>
                 </li>
+                @endif
+                @if(isset($descuentoConvenio) && $descuentoConvenio > 0)
+                <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:12px">
+                    <small>Descuento Convenio</small>
+                    <span class="text-danger">- {{ $descuentoConvenio }} Bs</span>
+                </li>
+                @endif
+                @if(isset($descuentoProductos) && $descuentoProductos > 0)
                 <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:12px">
                     <small>Descuento Productos</small>
-                    <strong>{{ $descuentoProductos }} Bs</strong>
-
+                    <span class="text-danger">- {{ $descuentoProductos }} Bs</span>
                 </li>
+                @endif
                 <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:12px">
                     <small>Descuento Manual</small>
                     @if (!$cuenta->pagado)
                         <div x-data="{ open: false }">
-                            <button @click="open = ! open"
-                                class="badge badge-xs light badge-secondary">Editar</button>
+                            <span style="cursor: pointer;" @click="open = ! open; $nextTick(() => $refs.descuentoInput.focus())"
+                                class=""><i class="fa fa-edit"></i> Editar</span>
 
                             <div x-show="open" @click.outside="open = false">
-                                <div class="input-group input-primary" style="width: 50px; height: 30px;">
+                                <div class="input-group input-dark" style="width: 50px; height: 30px;">
                                     <input type="text" wire:model.lazy="descuento" class="form-control"
-                                        placeholder=""
+                                        placeholder="" x-ref="descuentoInput"
                                         style="height: 30px; width: 30px; font-size: 12px; padding: 2px;">
                                     <a href="#" class="input-group-text m-0 p-0" wire:click="editardescuento"
                                         style="min-width:0px;height: 30px; width: 20px !important; font-size: 8px; padding: 2px;"><i
@@ -277,7 +294,9 @@
                             </div>
                         </div>
                     @endif
-                    <strong>{{ $cuenta->descuento }} Bs</strong>
+                    @if(isset($cuenta) && $cuenta->descuento > 0)
+                    <span class="text-danger">- {{ $cuenta->descuento }} Bs</span>
+                    @endif
                 </li>
 
                 <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:15px">
@@ -312,5 +331,6 @@
             @include('livewire.admin.ventas.includes-pos.modal-cobranza')
         @endif
     </div>
+
 
 </x-card-col>

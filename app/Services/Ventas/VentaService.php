@@ -23,13 +23,15 @@ class VentaService implements VentaServiceInterface
         private SaldoServiceInterface $saldoService
     ) {}
 
-    public function crearVenta(int $usuarioId, int $sucursalId, ?int $clienteId = null): VentaResponse
+    public function crearVenta(int $usuarioId, int $sucursalId, ?int $clienteId = null, ?int $mesaId = null, ?string $tipo = null): VentaResponse
     {
         try {
             $venta = Venta::create([
                 'usuario_id' => $usuarioId,
                 'sucursale_id' => $sucursalId,
                 'cliente_id' => $clienteId,
+                'mesa_id' => $mesaId,
+                'tipo_entrega' => $tipo,
             ]);
 
             return VentaResponse::success($venta, 'Nueva venta creada');
@@ -92,6 +94,7 @@ class VentaService implements VentaServiceInterface
                     'descuento_saldo' => $descuentoSaldo,
                     'descuento_manual' => $venta->descuento,
                     'total_descuento' => $calculos->descuentoProductos + $venta->descuento,
+                    'descuento_convenio' => $calculos->descuentoConvenio,
                     'saldo_monto' => $saldoResultante['montoSaldo'],
                     'a_favor_cliente' => $saldoResultante['saldoAFavorCliente'],
                 ]);
@@ -134,6 +137,7 @@ class VentaService implements VentaServiceInterface
                         'precio_subtotal' => $prodLista['subtotal'] ?? 0,
                         'precio_unitario' => $prodLista['precio'] ?? $producto->precio,
                         'descuento_producto' => $prodLista['descuento_producto'] ?? 0,
+                        'descuento_convenio' => $prodLista['descuento_convenio'] ?? 0,
                     ]);
                 }
 
@@ -229,11 +233,34 @@ class VentaService implements VentaServiceInterface
             $venta->descuento = $descuento;
             $venta->save();
 
+            // Actualizar campos de descuentos para todos los productos en la venta
+            foreach ($venta->productos as $producto) {
+                $this->actualizarCamposDescuentosProducto($venta, $producto);
+            }
+
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
             return VentaResponse::success($venta->fresh(), 'Descuento actualizado!');
         } catch (\Exception $e) {
             return VentaResponse::error('Error al editar descuento: ' . $e->getMessage());
+        }
+    }
+
+    private function actualizarCamposDescuentosProducto(Venta $venta, $producto): void
+    {
+        // Calcular descuentos usando el servicio de convenio
+        $calculos = $this->calculadoraService->calcularVenta($venta);
+        $prodLista = collect($calculos->listaCuenta)->firstWhere('id', $producto->id);
+
+        if ($prodLista) {
+            DB::table('producto_venta')
+                ->where('venta_id', $venta->id)
+                ->where('producto_id', $producto->id)
+                ->update([
+                    'descuento_producto' => $prodLista['descuento_producto'] ?? 0,
+                    'descuento_convenio' => $prodLista['descuento_convenio'] ?? 0,
+                    'total_adicionales' => $prodLista['total_adicionales'] ?? 0,
+                ]);
         }
     }
 

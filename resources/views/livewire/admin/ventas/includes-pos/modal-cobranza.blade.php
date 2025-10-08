@@ -99,20 +99,24 @@
         @else
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Detalle de la cuenta
+                    <h5 class="modal-title d-flex align-items-center mx-auto">
+                        @isset($cuenta->cliente)
+                            <span class="text-muted" style="font-size: 12px">Cliente:
+                                {{ $cuenta->cliente->name }} </span>
+                        @else
+                            <span class="text-muted" style="font-size: 12px">Cliente anonimo</span>
+                        @endisset
                         <div wire:loading class="spinner-border spinner-border-sm" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal">
-                    </button>
+                    
                 </div>
                 <div class="modal-body m-1 p-0 px-2">
-                    @isset($cuenta->cliente)
-                        <center class="text-muted" style="font-size: 12px">Cliente:
-                            {{ $cuenta->cliente->name }} </center>
-                    @endisset
-                    <ul class="list-group" style="border: 2px solid #20c996b3;">
+                    <div class=" d-block text-center align-items-center  mx-auto">
+                        <h2>Total: {{ $subtotalConDescuento }} Bs</h2>
+                    </div>
+                    {{-- <ul class="list-group" style="border: 2px solid #20c996b3;">
                         <li class="list-group-item d-flex justify-content-between lh-condensed m-0 py-0">
                             <div>
                                 <h6 class="my-0">Subtotal</h6>
@@ -140,10 +144,10 @@
                             <span>Total (BS)</span>
                             <strong>{{ $subtotal - $cuenta->descuento - $descuentoProductos }}</strong>
                         </li>
-                    </ul>
+                    </ul> --}}
 
 
-                    <center class="text-muted">Puntos en esta venta: {{ $cuenta->puntos }}</center>
+                    {{-- <center class="text-muted">Puntos en esta venta: {{ $cuenta->puntos }}</center> --}}
 
 
                     <div class="content">

@@ -15,4 +15,12 @@ class Mesa extends Model
         'url',
         'codigo',
     ];
+    public function sucursale()
+    {
+        return $this->belongsTo(Sucursale::class);
+    }
+    public function venta()
+    {
+        return $this->hasOne(Venta::class);
+    }
 }

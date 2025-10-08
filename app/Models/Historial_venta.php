@@ -29,6 +29,7 @@ class Historial_venta extends Model
         'total_a_pagar',
         'subtotal',
         'descuento_saldo',
+        'descuento_convenio'
     ];
     public function saldoSituacion()
     {

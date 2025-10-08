@@ -134,7 +134,7 @@
             /* Ajusta según la posición deseada */
             left: 50%;
             transform: translateX(-50%);
-            z-index: 100;
+            z-index: 1000;
             opacity: 0;
             transition: opacity 0.3s;
         }

@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
-
+use App\Models\Mesa;
 use App\Models\Producto;
 use App\Models\Sucursale;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +19,7 @@ class Venta extends Model
         'usuario_id',
         'cliente_id',
         'sucursale_id',
+        'mesa_id',
         'total',
         'puntos',
         'descuento',
@@ -37,7 +38,7 @@ class Venta extends Model
     public function productos()
     {
         return $this->belongsToMany(Producto::class)
-            ->withPivot('cantidad', 'estado_actual', 'adicionales', 'observacion', 'id');
+            ->withPivot('cantidad', 'estado_actual', 'adicionales', 'observacion', 'id', 'descuento_producto', 'descuento_convenio', 'total', 'total_adicionales');
     }
     public function cliente()
     {
@@ -50,5 +51,23 @@ class Venta extends Model
     public function ventaHistorial()
     {
         return $this->belongsTo(Historial_venta::class, 'historial_venta_id');
+    }
+
+    public function mesa()
+    {
+        return $this->belongsTo(Mesa::class);
+    }
+    public function totalFinal()
+    {
+        if ($this->ventaHistorial) {
+            return $this->ventaHistorial->total_pagado;
+        }
+
+        // Total original sin descuentos + adicionales - todos los descuentos
+        $sumaDescuentos = $this->productos->sum('pivot.descuento_producto') +
+            $this->productos->sum('pivot.descuento_convenio') +
+            $this->descuento;
+
+        return $this->total + $this->productos->sum('pivot.total_adicionales') - $sumaDescuentos;
     }
 }

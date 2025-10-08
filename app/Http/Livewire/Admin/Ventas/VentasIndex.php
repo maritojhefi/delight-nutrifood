@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Admin\Ventas;
 
 use Carbon\Carbon;
 use App\Models\Caja;
+use App\Models\Mesa;
 use App\Models\User;
 use App\Models\Plane;
 use App\Models\Saldo;
@@ -30,13 +31,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Http\Livewire\Admin\PedidosRealtimeComponent;
-use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 // Services
-use App\Services\Ventas\Contracts\VentaServiceInterface;
-use App\Services\Ventas\Contracts\ProductoVentaServiceInterface;
 use App\Services\Ventas\Contracts\SaldoServiceInterface;
 use App\Services\Ventas\Contracts\StockServiceInterface;
+use App\Services\Ventas\Contracts\VentaServiceInterface;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use App\Services\Ventas\Contracts\ProductoVentaServiceInterface;
 use App\Services\Ventas\Contracts\CalculadoraVentaServiceInterface;
 
 class VentasIndex extends Component
@@ -83,7 +84,9 @@ class VentasIndex extends Component
         $subtotalConDescuento,
         $descuentoSaldo = 0,
         $saldoSobranteCheck = false,
-        $maxDescuentoSaldo;
+        $maxDescuentoSaldo,
+        $descuentoConvenio,
+        $totalAdicionales;
     public $subcategoriaSeleccionada;
     protected $rules = [
         'sucursal' => 'required|integer',
@@ -393,6 +396,31 @@ class VentasIndex extends Component
             $this->reset(['user', 'cliente', 'sucursal']);
         }
     }
+
+    public function abrirVentaConMesa($mesaId, $tipo)
+    {
+        try {
+            $mesa = Mesa::findOrFail($mesaId);
+
+            $response = $this->ventaService->crearVenta(auth()->user()->id, $this->sucursal, null, $mesaId, $tipo);
+
+            $this->dispatchBrowserEvent('alert', [
+                'type' => $response->type,
+                'message' => $response->message,
+            ]);
+
+            if ($response->success) {
+                $this->reset(['user', 'cliente', 'sucursal']);
+                // Cerrar el modal automáticamente
+                $this->dispatchBrowserEvent('cerrarModal', ['modalId' => 'modalSeleccionarMesa']);
+            }
+        } catch (\Exception $e) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Error al abrir la venta: ' . $e->getMessage(),
+            ]);
+        }
+    }
     public function seleccionaritem($numero)
     {
         /*  foreach($this->productoapuntado->ventas->where('id','7') as $asd)
@@ -487,7 +515,9 @@ class VentasIndex extends Component
         $this->subtotal = $calculos->subtotal;
         $this->itemsCuenta = $calculos->itemsCuenta;
         $this->descuentoProductos = $calculos->descuentoProductos;
+        $this->descuentoConvenio = $calculos->descuentoConvenio;
         $this->subtotalConDescuento = $calculos->subtotalConDescuento;
+        $this->totalAdicionales = $calculos->totalAdicionales;
 
         $this->cuenta->puntos = $calculos->puntos;
 
@@ -879,10 +909,15 @@ class VentasIndex extends Component
     }
     public function render()
     {
+        if (isset($this->ventaSeleccionada)) {
+            $this->ventaSeleccionada->fresh();
+        }
+
         $ventas = Venta::orderBy('created_at', 'asc')->get();
         $usuarios = collect();
         $sucursales = Sucursale::pluck('id', 'nombre');
         $this->sucursal = $sucursales->first();
+        $mesas = Mesa::where('sucursale_id', $this->sucursal)->get();
         $productos = Producto::where('estado', 'activo')
             ->when($this->search, function (Builder $query) {
                 $query->where(function (Builder $subQuery) {
@@ -908,6 +943,6 @@ class VentasIndex extends Component
                 ->take(5)
                 ->get();
         }
-        return view('livewire.admin.ventas.ventas-index', compact('ventas', 'sucursales', 'subcategorias', 'productos', 'usuarios'))->extends('admin.master')->section('content');
+        return view('livewire.admin.ventas.ventas-index', compact('mesas', 'ventas', 'sucursales', 'subcategorias', 'productos', 'usuarios'))->extends('admin.master')->section('content');
     }
 }

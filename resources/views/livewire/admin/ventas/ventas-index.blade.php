@@ -199,3 +199,64 @@
         }
     </script>
 @endpush
+@push('scripts')
+<script>
+    function mostrarDetalleDescuentos(detalle, nombreProducto, precioOriginal, subtotal, cantidad = 1) {
+        // Separar los descuentos por el delimitador " | "
+        const descuentos = detalle.split(' | ');
+        
+        // Crear filas de la tabla para cada descuento
+        let filasDescuentos = '';
+        let totalDescuentosCalculado = 0;
+        
+        descuentos.forEach(descuento => {
+            if (descuento.trim() !== '') {
+                // Extraer el monto del descuento del texto
+                const match = descuento.match(/(\d+\.?\d*)\s*Bs/);
+                if (match) {
+                    const montoDescuento = parseFloat(match[1]);
+                    totalDescuentosCalculado += montoDescuento;
+                }
+                
+                filasDescuentos += `
+                    <tr>
+                        <td style="border: 1px solid white; padding: 8px; color: white;">${descuento}</td>
+                        <td style="border: 1px solid white; padding: 8px; text-align: right; color: white; font-weight: bold;">-${match ? parseFloat(match[1]).toFixed(2) : '0.00'} Bs</td>
+                    </tr>
+                `;
+            }
+        });
+        
+        // Calcular precio original total (precio unitario * cantidad)
+        const precioOriginalTotal = precioOriginal * cantidad;
+        
+        Swal.fire({
+            title: false,
+            html: `
+                <div style="color: white; margin-bottom: 15px;">
+                    <div style="margin-bottom: 5px;">Precio Unitario: <strong>${precioOriginal.toFixed(2)} Bs</strong></div>
+                    <div>Cantidad: <strong>${cantidad} ${cantidad === 1 ? 'unidad' : 'unidades'}</strong></div>
+                </div>
+                <table style="width: 100%; color: white; border-collapse: collapse; text-align: justify;">
+                    <tr>
+                        <td style="border: 1px solid white; padding: 8px;">Subtotal Original</td>
+                        <td style="border: 1px solid white; padding: 8px; text-align: right; font-weight: bold;">${precioOriginalTotal.toFixed(2)} Bs</td>
+                    </tr>
+                    ${filasDescuentos}
+                    <tr>
+                        <td style="border: 1px solid white; padding: 8px;">Total Descuentos</td>
+                        <td style="border: 1px solid white; padding: 8px; text-align: right; font-weight: bold;">-${totalDescuentosCalculado.toFixed(2)} Bs</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid white; padding: 8px;">PRECIO FINAL</td>
+                        <td style="border: 1px solid white; padding: 8px; text-align: right; font-weight: bold;">${subtotal.toFixed(2)} Bs</td>
+                    </tr>
+                </table>
+            `,
+            showConfirmButton: true,
+            confirmButtonText: 'Entendido',
+            showCloseButton: false
+        });
+    }
+</script>
+@endpush

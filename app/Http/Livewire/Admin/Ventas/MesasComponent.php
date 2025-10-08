@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Admin\Ventas;
 
 use App\Models\Mesa;
 use Livewire\Component;
+use App\Models\Sucursale;
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
 use App\Helpers\GlobalHelper;
@@ -100,6 +101,7 @@ class MesasComponent extends Component
         }
         // Validar los datos
         $this->validate();
+        $sucursal = Sucursale::first();
         Mesa::updateOrCreate(
             ['id' => $this->mesaId],
             [
@@ -107,6 +109,7 @@ class MesasComponent extends Component
                 'numero' => $this->numero,
                 'url' => $this->url,
                 'codigo' => $this->codigo,
+                'sucursale_id' => $sucursal->id,
             ]
         );
 

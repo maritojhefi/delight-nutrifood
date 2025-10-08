@@ -7,20 +7,27 @@ use App\Helpers\CreateList;
 use Illuminate\Support\Facades\DB;
 use App\Services\Ventas\DTOs\VentaCalculosData;
 use App\Services\Ventas\Contracts\CalculadoraVentaServiceInterface;
+use App\Services\Ventas\Contracts\ConvenioServiceInterface;
 
 class CalculadoraVentaService implements CalculadoraVentaServiceInterface
 {
+    public function __construct(
+        private ConvenioServiceInterface $convenioService
+    ) {}
+
     public function calcularVenta(Venta $venta, ?float $descuentoSaldo = 0): VentaCalculosData
     {
-        $resultado = CreateList::crearlista($venta);
-        
+        $resultado = CreateList::crearlista($venta, $this->convenioService);
+
         $listaCuenta = $resultado[0];
         $subtotal = $resultado[1];
         $itemsCuenta = $resultado[2];
         $puntos = $resultado[3];
         $descuentoProductos = $resultado[4];
-        
-        $subtotalConDescuento = $subtotal - $descuentoProductos - $descuentoSaldo - $venta->descuento;
+        $descuentoConvenio = $resultado[5] ?? 0;
+        $totalAdicionales = $resultado[6] ?? 0;
+
+        $subtotalConDescuento = $subtotal - $descuentoProductos - $descuentoConvenio - $descuentoSaldo - $venta->descuento + $totalAdicionales;
 
         return new VentaCalculosData(
             listaCuenta: $listaCuenta->toArray(),
@@ -30,7 +37,9 @@ class CalculadoraVentaService implements CalculadoraVentaServiceInterface
             descuentoProductos: $descuentoProductos,
             subtotalConDescuento: $subtotalConDescuento,
             descuentoSaldo: $descuentoSaldo,
-            descuentoManual: $venta->descuento
+            descuentoManual: $venta->descuento,
+            descuentoConvenio: $descuentoConvenio,
+            totalAdicionales: $totalAdicionales,
         );
     }
 
@@ -67,11 +76,11 @@ class CalculadoraVentaService implements CalculadoraVentaServiceInterface
     public function actualizarTotalesVenta(Venta $venta): void
     {
         $calculos = $this->calcularVenta($venta);
-        
+        // dd($calculos);
         DB::table('ventas')
             ->where('id', $venta->id)
             ->update([
-                'total' => $calculos->subtotal - $calculos->descuentoProductos,
+                'total' => $calculos->subtotal, // Total original sin descuentos
                 'puntos' => $calculos->puntos
             ]);
     }

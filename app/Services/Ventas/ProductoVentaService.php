@@ -66,8 +66,11 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 $this->actualizarAdicionales($venta, $producto, $cantidad === 1 ? 'sumar' : 'muchos', $cantidad);
             }
 
-            // Actualizar totales
+            // Actualizar totales primero
             $this->calculadoraService->actualizarTotalesVenta($venta);
+
+            // Actualizar campos de descuentos en la tabla pivot después de actualizar totales
+            $this->actualizarCamposDescuentos($venta, $producto);
 
             return VentaResponse::success(
                 null,
@@ -112,12 +115,15 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     ->where('venta_id', $venta->id)
                     ->where('producto_id', $producto->id)
                     ->decrement('cantidad', 1);
+
+                // Actualizar campos de descuentos si el producto sigue en la venta
+                $this->actualizarCamposDescuentos($venta, $producto);
             }
 
             // Actualizar adicionales
             $this->actualizarAdicionales($venta, $producto, 'restar');
 
-            // Actualizar totales
+            // Actualizar totales primero
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
             return VentaResponse::success(
@@ -229,6 +235,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 $adicional->save();
             }
 
+            // Actualizar campos de descuentos en la tabla pivot
+            $this->actualizarCamposDescuentos($venta, $producto);
+
             // Actualizar totales
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
@@ -284,8 +293,11 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 ->where('venta_id', $venta->id)
                 ->decrement('cantidad');
 
-            // Actualizar totales
+            // Actualizar totales primero
             $this->calculadoraService->actualizarTotalesVenta($venta);
+
+            // Actualizar campos de descuentos en la tabla pivot
+            $this->actualizarCamposDescuentos($venta, $producto);
 
             return VentaResponse::success(null, 'Item eliminado correctamente');
         } catch (VentaException $e) {
@@ -352,6 +364,12 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     ->update(['adicionales' => json_encode($json)]);
             }
 
+            // Actualizar totales primero
+            $this->calculadoraService->actualizarTotalesVenta($venta);
+
+            // Actualizar campos de descuentos en la tabla pivot
+            $this->actualizarCamposDescuentos($venta, $producto);
+
             return VentaResponse::success(null, 'Adicionales actualizados');
         } catch (\Exception $e) {
             return VentaResponse::error('Error al actualizar adicionales: ' . $e->getMessage());
@@ -407,5 +425,39 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         return empty(array_filter($array, function ($item) {
             return !empty($item);
         }));
+    }
+
+    private function actualizarCamposDescuentos(Venta $venta, Producto $producto): void
+    {
+        // Calcular descuentos usando el servicio de convenio
+        $calculos = $this->calculadoraService->calcularVenta($venta);
+        $prodLista = collect($calculos->listaCuenta)->firstWhere('id', $producto->id);
+
+        if ($prodLista) {
+            // Debug temporal
+            \Log::info('Actualizando campos descuentos para producto: ' . $producto->id, [
+                'descuento_producto' => $prodLista['descuento_producto'] ?? 0,
+                'descuento_convenio' => $prodLista['descuento_convenio'] ?? 0,
+                'total_adicionales' => $prodLista['total_adicionales'] ?? 0,
+            ]);
+
+            // Calcular total original (precio original * cantidad)
+            $totalOriginal = $prodLista['precio_original'] * $prodLista['cantidad'];
+
+            DB::table('producto_venta')
+                ->where('venta_id', $venta->id)
+                ->where('producto_id', $producto->id)
+                ->update([
+                    'total' => $totalOriginal,
+                    'descuento_producto' => $prodLista['descuento_producto'] ?? 0,
+                    'descuento_convenio' => $prodLista['descuento_convenio'] ?? 0,
+                    'total_adicionales' => $prodLista['total_adicionales'] ?? 0,
+                ]);
+        } else {
+            \Log::warning('No se encontró producto en lista calculada', [
+                'producto_id' => $producto->id,
+                'venta_id' => $venta->id
+            ]);
+        }
     }
 }

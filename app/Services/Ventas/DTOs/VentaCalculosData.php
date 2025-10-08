@@ -12,7 +12,9 @@ class VentaCalculosData
         public float $descuentoProductos,
         public float $subtotalConDescuento,
         public ?float $descuentoSaldo = 0,
-        public ?float $descuentoManual = 0
+        public ?float $descuentoManual = 0,
+        public ?float $descuentoConvenio = 0,
+        public ?float $totalAdicionales = 0,
     ) {}
 
     public function toArray(): array
@@ -25,7 +27,9 @@ class VentaCalculosData
             'descuentoProductos' => $this->descuentoProductos,
             'subtotalConDescuento' => $this->subtotalConDescuento,
             'descuentoSaldo' => $this->descuentoSaldo,
-            'descuentoManual' => $this->descuentoManual
+            'descuentoManual' => $this->descuentoManual,
+            'descuentoConvenio' => $this->descuentoConvenio,
+            'totalAdicionales' => $this->totalAdicionales,
         ];
     }
 }
