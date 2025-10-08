@@ -221,7 +221,7 @@
 
         // Preparar la informacion del Menu para el producto seleccionado.
         const prepararMenuAdicionarProducto = async (infoProducto) => {
-            console.log("InfoProducto MenuAdicionarProducto:", infoProducto);
+            // // console.log("InfoProducto MenuAdicionarProducto:", infoProducto);
             const nombreProductoMenu = document.getElementById('detalles-menu-nombre');
             const adicionalesContainer = document.getElementById('detalles-menu-adicionales');
             const elementoCostoUnitario = document.getElementById('detalle-costo-unitario')
@@ -240,8 +240,8 @@
                 const productoCarrito = carritoStorage.obtenerItemCarrito(infoProducto.id);
                 const totalEnCarrito = productoCarrito ? Object.keys(productoCarrito.adicionales).length : 0;
                 if (totalEnCarrito > 0) {
-                    console.log("Total en carrito: ", totalEnCarrito);
-                    console.log("Se revelara la cuenta de unidades en carrito");
+                    // // console.log("Total en carrito: ", totalEnCarrito);
+                    // // console.log("Se revelara la cuenta de unidades en carrito");
                     $('#contador-cantidad-encarrito').text(totalEnCarrito);
                     contenedorCantidadesCarrito.removeClass('d-none');
                 }
@@ -251,12 +251,12 @@
             elementoCostoUnitario.innerText = `Bs. ${(infoProducto.precio).toFixed(2)}`;
             adicionalesContainer.innerHTML = renderAdicionales(infoProducto.adicionales);
 
-            console.log("$incrementarProductoBtn", $incrementarProductoBtn);
+            // // console.log("$incrementarProductoBtn", $incrementarProductoBtn);
             $incrementarProductoBtn.on('click', () => {
                 actualizarCostoTotal(infoProducto); 
             });
 
-            console.log("$reducirProductoBtn", $reducirProductoBtn);
+            // // console.log("$reducirProductoBtn", $reducirProductoBtn);
             $reducirProductoBtn.on('click', () => {
                 actualizarCostoTotal(infoProducto); 
             });
@@ -374,7 +374,7 @@
                 if (key !== 'cantidad-orden') {
                     IdsAdicionalesSeleccionados.push(parseInt(value));  
                 } else {
-                    console.log("Valor de cantidad-orden: ", value);
+                    // // console.log("Valor de cantidad-orden: ", value);
                     cantidadSolicitada = parseInt(value);
                 }
             };
@@ -383,7 +383,7 @@
 
             const enCarrito = carritoStorage.obtenerItemCarrito(infoProducto.id);
             const cantidadCarrito = enCarrito ? Object.keys(enCarrito.adicionales).length : 0;
-            console.log("Cantidad Solicitada entrando al formulario sin contar carrito: ", cantidadSolicitada);
+            // // console.log("Cantidad Solicitada entrando al formulario sin contar carrito: ", cantidadSolicitada);
             try {
                 // // SOLICITUD DE AGREGAR PRODUCTO
                 // if (enCarrito) {
@@ -417,7 +417,7 @@
                             } else if (AddAttempt.stockDisponible < AddAttempt.totalSolicitado) 
                             {
                                 if (AddAttempt.stockDisponible == cantidadCarrito) {
-                                    console.log("Se deberia mostrar el toast");
+                                    // // console.log("Se deberia mostrar el toast");
                                     carritoStorage.mostrarToastLimite();
                                     closeDetallesMenu();
                                 }
@@ -438,6 +438,7 @@
                                 const itemCarrito = carritoStorage.obtenerItemCarrito(infoProducto.id);
                                 const infoActualizada = await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
                                 renderizarListadoOrdenesVenta(infoActualizada.item);
+                                actualizarInfoCardCarrito(infoActualizada.item);
                             }
                             closeDetallesMenu();
                             estaVerificando(false);
@@ -469,7 +470,6 @@
                     // STOCK INSUFICIENTE PRODUCTO
                     else if (stockProducto < cantidadSolicitada) {
                         if (stockProducto == cantidadCarrito) {
-                            console.log("Se deberia mostrar el toast");
                             carritoStorage.mostrarToastLimite();
                             closeDetallesMenu();
                         }

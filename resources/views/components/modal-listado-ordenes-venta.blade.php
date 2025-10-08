@@ -44,7 +44,7 @@
             let textoInicial = '';
 
             if (typeof info.observacion === 'undefined') {
-                console.log("Propiedad 'observacion' no existe. obteniendo de localStorage.");
+                // // console.log("Propiedad 'observacion' no existe. obteniendo de localStorage.");
                 const itemCarrito = carritoStorage.obtenerItemCarrito(info.id);
                 textoInicial = itemCarrito.observacion ?? '';
                 // return null; 
@@ -118,7 +118,7 @@
                 // En caso de desear solo eliminar el card de la orden seleccionada, usar la funcion comentada
                 // // eliminarCardOrdenIndice(pivotID, index);
                 // Actualizar la informacion del pedido general
-                console.log("Valor de respuesta tras eliminacion venta: ", response.data);
+                // // console.log("Valor de respuesta tras eliminacion venta: ", response.data);
                 window.reemplazarCardProductoVenta(response.data);
                 mostrarToastSuccess("Orden eliminada con éxito");
             } catch (error) {
@@ -145,9 +145,10 @@
                 
                 carritoStorage.actualizarContadorCarrito();
                 const infoProductoActualizado = await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
-
                 // const infoProductoObjetivo = response.data.find(producto => producto.pivot_id = pivotID);
-                // console.log(`Informacion del producto cuya orden ${indice} acaba de ser eliminada: `, infoProductoActualizado.item);
+                // // console.log(`Informacion del producto cuya orden ${indice} acaba de ser eliminada: `, infoProductoActualizado.item);
+                // funncion obtenida del inicio carrito
+                actualizarInfoCardCarrito(infoProductoActualizado.item);
                 // console.log("Valor de carrito tras eliminacion de orden: ", response.data);
                 
                 // // reemplazarCardOrdenIndice(infoProductoActualizado.item, infoOrden.indice);
@@ -167,7 +168,7 @@
         }
 
         window.reemplazarCardOrdenIndice = (infoProductoVenta, indice) => {
-            console.log("Informacion al reemplazar card: ", infoProductoVenta);
+            // // console.log("Informacion al reemplazar card: ", infoProductoVenta);
             const adicionalesIndice = infoProductoVenta.adicionales[indice];
             const cardAntiguo = $(`#pedido-${infoProductoVenta.pivot_id}-orden-${indice}`);
             const cardNuevo = renderizarCardOrden(infoProductoVenta, adicionalesIndice, indice);

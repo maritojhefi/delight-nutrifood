@@ -426,7 +426,7 @@
                                 ${(producto.tiene_descuento ?
                                 `<del id="pviejo-pventa-${producto.pivot_id}" class="badge bg-highlight mb-1 product-price-old">Bs. ${(producto.precio_original.toFixed(2) * producto.cantidad) + producto.costo_adicionales}</del>` : ''
                                 )}
-                                <p id="precio-pventa-${producto.pivot_id}" class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
+                                <p id="precio-pventa-${producto.pivot_id}" class="fw-bold mb-0 text-success fs-5 product-price" data-precio="${producto.precio}">
                                     Bs. ${producto.precio_final.toFixed(2)}
                                 </p>
                             </div>
@@ -540,7 +540,8 @@
 
             // Si no hay productos válidos
             if (!disponibles.length && !escasos.length && !agotados.length) {
-                $cartContent.html(emptyCartHTML);
+                renderizarCarritoVacio();
+                // $cartContent.html(emptyCartHTML);
                 $cartInfo.hide();
                 return;
             }
@@ -665,6 +666,8 @@
                 </button>`;
             }
 
+            console.log("Producto a renderizar carrito:", producto);
+
             return `
                 <div class="cart-item-wrapper mb-4 ${disabledClass}" data-product-id="${producto.id}"  data-product-state="${estado}" id="cart-item-wrapper-${producto.id}">
                     <div class="card mb-0 d-flex flex-column item-carrito-info justify-content-between p-3 bg-white rounded-sm shadow-sm border">
@@ -694,9 +697,9 @@
                         <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
                             <div>
                                 ${(producto.tiene_descuento ?
-                                `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${producto.precio_original.toFixed(2) * producto.cantidad_solicitada}</del>` : ''
+                                `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${(producto.precio_original.toFixed(2) * producto.cantidad_solicitada) + producto.costo_adicionales}</del>` : ''
                                 )}
-                                <p id="precio-carrito-${producto.id}" class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
+                                <p id="precio-carrito-${producto.id}" class="fw-bold mb-0 text-success fs-5 product-price" data-precio="${producto.precio}">
                                     Bs. ${producto.precio_final.toFixed(2)}
                                 </p>
                             </div>
@@ -715,6 +718,19 @@
             cardAntiguo.replaceWith(cardNuevo);
         }
 
+        window.actualizarInfoCardCarrito = (info) => {
+            const unidadesSolicitadasText = $(`#unidades-carrito-${info.id}`);
+            const costoTotalAdicionalesText = $(`#adicionales-carrito-${info.id}`);
+            const costoTotalSinDescuento = $(`#pviejo-carrito-${info.id}`);
+            const costoTotalFinal = $(`#precio-carrito-${info.id}`);
+
+            unidadesSolicitadasText.text(info.cantidad_solicitada);
+            costoTotalAdicionalesText.text(info.costo_adicionales);
+            costoTotalSinDescuento.text((info.precio_original.toFixed(2) * info.cantidad_solicitada) + info.costo_adicionales);
+            costoTotalFinal.text(info.precio_final.toFixed(2));
+        }
+
+
         // SINCRONIZAR APROPIADAMENTE PARA REEMPLAZAR EN renderCartItem
         const construirCardItemCarrito = (producto) => {
             return `
@@ -724,7 +740,7 @@
                             <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
                                 <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
                                 <small class="color-theme">${`Unidades: <span id="unidades-carrito-${producto.id}">${producto.cantidad_solicitada}`}</span></small>
-                                ${producto.costo_adicionales > 0 ? `<small class="color-theme">Extras: Bs. ${producto.costo_adicionales}</small>` : ''}
+                                ${producto.costo_adicionales > 0 ? `<small class="color-theme">Extras: Bs. <span id="adicionales-carrito-${producto.id}">${producto.costo_adicionales}</span></small>` : ''}
                             </div>
                             <div class="product-image-container m-0" style="z-index: 10">
                                 <img class="product-image rounded"
@@ -745,10 +761,10 @@
                         <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
                             <div>
                                 ${(producto.tiene_descuento ?
-                                `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${producto.precio_original.toFixed(2) * producto.cantidad_solicitada}</del>` : ''
+                                `<del class="badge bg-highlight mb-1 product-price-old">Bs. <span id="pviejo-carrito-${producto.id}">${(producto.precio_original.toFixed(2) * producto.cantidad_solicitada) + producto.costo_adicionales}</span></del>` : ''
                                 )}
-                                <p id="precio-carrito-${producto.id}" class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
-                                    Bs. ${producto.precio_final.toFixed(2)}
+                                <p id="precio-carrito-${producto.id}" class="fw-bold mb-0 text-success fs-5 product-price" data-precio="${producto.precio}">
+                                    Bs. <span id="precio-carrito-${producto.id}">${producto.precio_final.toFixed(2)}</span>
                                 </p>
                             </div>
                             ${renderActions(producto, isDisabled, cantidad, estado)}
@@ -767,7 +783,7 @@
                                 <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
                                     <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
                                     <small class="color-theme">${`Unidades: ${producto.cantidad}`}</small>
-                                    ${producto.costo_adicionales > 0 ? `<small class="color-theme">Extras: Bs. ${producto.costo_adicionales}</small>` : ''}
+                                    ${producto.costo_adicionales > 0 ? `<small class="color-theme">Extras: Bs. <span id="adicionales-carrito-${producto.id}">${producto.costo_adicionales}</span></small>` : ''}
                                 </div>
                                 <div class="product-image-container m-0" style="z-index: 10">
                                     <img class="product-image rounded"
@@ -789,10 +805,10 @@
                             <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
                                 <div>
                                     ${(producto.tiene_descuento ?
-                                    `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${producto.precio_original.toFixed(2) * producto.cantidad}</del>` : ''
+                                    `<del class="badge bg-highlight mb-1 product-price-old">Bs. <span id="pviejo-carrito-${producto.id}">${producto.precio_original.toFixed(2) * producto.cantidad_solicitada}</span></del>` : ''
                                     )}
-                                    <p class="fw-bold mb-0 text-success fs-5 product-price" data-price="${producto.precio}">
-                                        Bs. ${producto.precio_final.toFixed(2)}
+                                    <p class="fw-bold mb-0 text-success fs-5 product-price" data-precio="${producto.precio}">
+                                        Bs. <span id="precio-carrito-${producto.id}">${producto.precio_final.toFixed(2)}</span>
                                     </p>
                                 </div>
                                 ${renderizarBotonAccion(producto)}
@@ -1007,18 +1023,20 @@
             e.preventDefault();
             const button = e.target.closest('.qty-increase');
             const productToIncreaseId = parseInt(button.getAttribute('data-product-id'), 10);
-            const adicionalesData = button.getAttribute('data-adicionales');
-            let adicionales = adicionalesData === 'null' ? null : JSON.parse(adicionalesData);
+            // const adicionalesData = button.getAttribute('data-adicionales');
+            // let adicionales = adicionalesData === 'null' ? null : JSON.parse(adicionalesData);
             const quantitySpan = document.getElementById(`item-${productToIncreaseId}-qty`);
             const unidadesCard = $(`#unidades-carrito-${productToIncreaseId}`);
+            const textoPrecio = $(`#precio-carrito-${productToIncreaseId}`);
+            const precioUnitario = textoPrecio.data('precio');
 
-            const IncreaseAttemp = await carritoStorage.agregarAlCarrito(productToIncreaseId, 1, true, adicionales);
-
+            const IncreaseAttemp = await carritoStorage.agregarAlCarrito(productToIncreaseId, 1, true);
+            
             if (IncreaseAttemp.success === true) {
-                quantitySpan.textContent = IncreaseAttemp.newQuantity;
-                unidadesCard.text(IncreaseAttemp.newQuantity);
-                // llamado al backend para obtener informacion apropiada
-                // reemplazarCardCarrito();
+                nuevaCantidad = IncreaseAttemp.newQuantity;
+                quantitySpan.textContent = nuevaCantidad;
+                unidadesCard.text(nuevaCantidad);
+                textoPrecio.text(`Bs. ${(precioUnitario * nuevaCantidad).toFixed(2)}`)
             } else {
                 console.error("No se pudo incrementar el valor del producto: ", productToIncreaseId);
             }
@@ -1032,6 +1050,8 @@
             // let adicionales = adicionalesData === 'null' ? null : JSON.parse(adicionalesData);
             const quantitySpan = document.getElementById(`item-${productToDecreaseId}-qty`);
             const unidadesCard = $(`#unidades-carrito-${productToDecreaseId}`);
+            const textoPrecio = $(`#precio-carrito-${productToDecreaseId}`);
+            const precioUnitario = textoPrecio.data('precio');
 
             // Check if quantity is 1 or less before proceeding
             if (parseInt(quantitySpan.textContent, 10) <= 1) return;
@@ -1039,8 +1059,10 @@
             const DecreaseAttemp = await carritoStorage.restarDelCarrito(productToDecreaseId, 1);
 
             if (DecreaseAttemp.success === true) {
-                quantitySpan.textContent = DecreaseAttemp.newQuantity;
-                unidadesCard.text(DecreaseAttemp.newQuantity);
+                nuevaCantidad = DecreaseAttemp.newQuantity;
+                quantitySpan.textContent = nuevaCantidad;
+                unidadesCard.text(nuevaCantidad);
+                textoPrecio.text(`Bs. ${(precioUnitario * nuevaCantidad).toFixed(2)}`);
             } else {
                 console.error("No se pudo reducir el valor del producto: ", productToDecreaseId);
             }
@@ -1074,7 +1096,7 @@
                 // Limpiar el Carrito
                 carritoStorage.vaciarCarrito();
                 // Renderizado del Carrito Vacio
-                renderEmptyCart();
+                renderizarCarritoVacio();
                 // Actualizar el contador
                 carritoStorage.actualizarContadorCarrito();
                 // Ocultar el modal y mostrar mensaje de exito de ser necesario
@@ -1101,7 +1123,7 @@
             const remainingItems = document.querySelectorAll('.cart-item-wrapper');
             if (remainingItems.length === 0) {
                 // De estar vacio, renderizar el carrito vacio
-                renderEmptyCart();
+                renderizarCarritoVacio();
             }
 
             // Actualizar el contador del carrito
@@ -1131,16 +1153,12 @@
             }
         }
 
-        // Renderizardo de Carrito Vacio
-        const renderEmptyCart = () => {
-            const cartContent = document.querySelector('.cart-content');
-            if (cartContent) {
-                cartContent.innerHTML = `<div class="empty-cart text-center py-5">
-                        <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">Tu carrito está vacío</h5>
-                        <p class="text-muted">Agrega algunos productos para comenzar</p>
-                    </div>`
-            }
+        const renderizarCarritoVacio = () => {
+            const contenedor = $('#contenedor-principal');
+            const termino = "carrito";
+            const lucideIcon = "shopping-cart";
+            contenedor.html(construirCarritoVentaVacio(termino, lucideIcon));
+            reinitializeLucideIcons();
         };
     </script>
     @endpush('scripts')
