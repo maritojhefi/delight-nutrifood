@@ -20,7 +20,8 @@ class LineaDelightController extends Controller
         
 
         $productos = $productos->map(function ($producto) {
-            $producto->tiene_stock = !($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0);
+            // $producto->tiene_stock = !($producto->unfilteredSucursale->isNotEmpty() && $producto->stock_actual == 0);
+            $producto->tiene_stock = $producto->contable ? $producto->stockTotal() > 0 : true;
             return $producto;
         });
 

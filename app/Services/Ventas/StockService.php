@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\DB;
 use App\Services\Ventas\DTOs\VentaResponse;
 use App\Services\Ventas\Exceptions\VentaException;
 use App\Services\Ventas\Contracts\StockServiceInterface;
+use App\Services\Ventas\DTOs\VerificacionStockResponse;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
 
 class StockService implements StockServiceInterface
 {
@@ -49,9 +52,10 @@ class StockService implements StockServiceInterface
 
     public function verificarStock(Producto $producto, int $cantidad, int $sucursalId): bool
     {
-        if (!$producto->contable) {
-            return true;
-        }
+        // La verificacion de stock infinito se maneja en obtenerStockTotal
+        // if (!$producto->contable) {
+        //     return true;
+        // }
 
         $siProductoVinculado = $producto->productoVinculadoStock;
         if ($siProductoVinculado) {
@@ -65,6 +69,10 @@ class StockService implements StockServiceInterface
 
     public function obtenerStockTotal(Producto $producto, int $sucursalId): int
     {
+        if (!$producto->contable) {
+            return PHP_INT_MAX;
+        }
+
         return DB::table('producto_sucursale')
             ->where('producto_id', $producto->id)
             ->where('sucursale_id', $sucursalId)
@@ -142,6 +150,100 @@ class StockService implements StockServiceInterface
         }
 
         return VentaResponse::success(null, 'Stock actualizado correctamente');
+    }
+
+    public function verificarStockCompleto(
+        Producto $producto, 
+        Collection $adicionales, 
+        int $cantidadSolicitada, 
+        int $sucursalId = 1
+    ): VerificacionStockResponse {
+        
+        $stockProducto = $this->obtenerStockTotal($producto, $sucursalId);
+        $adicionalesInfo = $this->analizarStockAdicionales($adicionales, $cantidadSolicitada, $sucursalId);
+        
+        // Calcular cantidad máxima posible considerando todas las restricciones
+        $cantidadMaxima = $stockProducto;
+        if ($adicionalesInfo['cantidadMaxima'] !== null) {
+            $cantidadMaxima = min($cantidadMaxima, $adicionalesInfo['cantidadMaxima']);
+        }
+        
+        $stockSuficiente = $stockProducto >= $cantidadSolicitada && 
+                        empty($adicionalesInfo['agotados']) && 
+                        empty($adicionalesInfo['limitados']);
+
+        // Log::debug('Verificación de stock', [
+        //     'producto_id' => $producto->id,
+        //     'cantidad' => $cantidadSolicitada,
+        //     'stock_producto' => $stockProducto,
+        //     'adicionales_info' => $adicionalesInfo,
+        //     'cantidad_maxima' => $cantidadMaxima,
+        //     'stock_suficiente' => $stockSuficiente
+        // ]);
+        
+        return new VerificacionStockResponse(
+            $stockSuficiente,
+            $stockProducto,
+            $cantidadSolicitada,
+            $cantidadMaxima,
+            [
+                'suficiente' => $stockProducto >= $cantidadSolicitada,
+                'disponible' => $stockProducto
+            ],
+            $adicionalesInfo
+        );
+    }
+
+    private function analizarStockAdicionales(
+        Collection $adicionales, 
+        int $cantidadSolicitada, 
+        int $sucursalId = 1
+    ): array {
+        
+        if ($adicionales->isEmpty()) {
+            return [
+                'agotados' => [],
+                'limitados' => [],
+                'cantidadMaxima' => null,
+                'todosSuficientes' => true
+            ];
+        }
+
+        $agotados = [];
+        $limitados = [];
+        $cantidadMaxima = PHP_INT_MAX;
+
+        foreach ($adicionales as $adicional) {
+            if (!$adicional->contable) {
+                continue;
+            }
+
+            $stockAdicional = $adicional->cantidad;
+
+            if ($stockAdicional <= 0) {
+                $agotados[] = [
+                    'id' => $adicional->id,
+                    'nombre' => $adicional->nombre,
+                    'stock' => $stockAdicional
+                ];
+            } elseif ($stockAdicional < $cantidadSolicitada) {
+                $limitados[] = [
+                    'id' => $adicional->id,
+                    'nombre' => $adicional->nombre,
+                    'stock' => $stockAdicional,
+                    'solicitado' => $cantidadSolicitada
+                ];
+                
+                $cantidadMaxima = min($cantidadMaxima, $stockAdicional);
+            }
+        }
+
+        return [
+            'agotados' => $agotados,
+            'limitados' => $limitados,
+            'cantidadMaxima' => $cantidadMaxima === PHP_INT_MAX ? null : $cantidadMaxima,
+            'todosSuficientes' => empty($agotados) && empty($limitados)
+        ];
     }
 
     private function actualizarStockProductoVinculado(Producto $productoVinculado, string $operacion, int $cantidad, int $sucursalId): VentaResponse

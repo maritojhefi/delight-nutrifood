@@ -261,27 +261,44 @@
                                             {{-- <td>
                                                 <span class="">{{ $registroSeleccionado->cliente->name }}</span>
                                             </td> --}}
-                                            <td class="py-1">
-                                                <span class="">{{ $registroSeleccionado->partner->name }}</span>
-                                            </td>
-                                            <td class="py-1">
-                                                <span class="">{{ $registroSeleccionado->puntos_partner }}</span>
-                                            </td>
-                                            <td class="py-1">
-                                                <span class="">{{ $registroSeleccionado->puntos_cliente }}</span>
-                                            </td>
-                                            <td class="py-1">
-                                                <span class="">{{ $registroSeleccionado->total_puntos }}</span>
-                                            </td>
-                                            <td class="py-1">
-                                                <span class="">
-                                                    {{ App\Helpers\GlobalHelper::fechaFormateada(3, $registroSeleccionado->created_at) }}
-                                                    <br>
-                                                    <small
-                                                        class="text-muted">({{ App\Helpers\GlobalHelper::timeago($registroSeleccionado->created_at) }})</small>
-                                                </span>
-                                            </td>
 
+                                            @if ($registroSeleccionado->partner)
+                                                <td class="py-1">
+                                                    <span class="">{{ $registroSeleccionado->partner->name }}</span>
+                                                </td>
+                                                <td class="py-1">
+                                                    <span
+                                                        class="">{{ $registroSeleccionado->puntos_partner }}</span>
+                                                </td>
+                                                <td class="py-1">
+                                                    <span
+                                                        class="">{{ $registroSeleccionado->puntos_cliente }}</span>
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="">{{ $registroSeleccionado->total_puntos }}</span>
+                                                </td>
+                                            @else
+                                                <td class="py-1">
+                                                    <span class="text-muted">Sin Partner</span>
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="text-muted">Sin Partner</span>
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="text-muted">Sin Partner</span>
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="text-muted">Sin Partner</span>
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="">
+                                                        {{ App\Helpers\GlobalHelper::fechaFormateada(3, $registroSeleccionado->created_at) }}
+                                                        <br>
+                                                        <small
+                                                            class="text-muted">({{ App\Helpers\GlobalHelper::timeago($registroSeleccionado->created_at) }})</small>
+                                                    </span>
+                                                </td>
+                                            @endif
                                         </tr>
                                     </tbody>
                                 </table>

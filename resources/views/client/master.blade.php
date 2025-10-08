@@ -161,6 +161,13 @@
         style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Añadido al carrito!</div>
     <div id="toast-cart-item-limit" class="snackbar-toast bg-yellow-dark color-white fade hide" data-autohide="true"
         style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Limite alcanzado!</div>
+
+    <div id="toast-success" class="snackbar-toast bg-green-dark color-white fade hide" data-autohide="true"
+    style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Mensaje de exito</div>
+    <div id="toast-warning" class="snackbar-toast bg-yellow-dark color-white fade hide" data-autohide="true"
+        style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Mensaje de advertencia</div>
+    <div id="toast-error" class="snackbar-toast bg-red-dark color-white fade hide" data-autohide="true"
+        style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Mensaje de error</div>
     @include('client.partials.modalredes')
 
     <div id="shared" class="snackbar-toast bg-blue-dark color-white fade hide" data-delay="3000" data-autohide="true"
@@ -278,6 +285,38 @@
             });
         });
     </script>
+    
+    <script>
+        window.mostrarToastSuccess = (mensaje) => {
+            const toastsuccess = $('#toast-success');
+            toastsuccess.text(mensaje);
+            const toast = new bootstrap.Toast(toastsuccess);
+            toast.show()
+            setTimeout(() => {
+                toast.hide();
+            }, 3000);
+        }
+
+        window.mostrarToastAdvertencia = (mensaje) => {
+            const toasterror = $('#toast-warning');
+            toasterror.text(mensaje);
+            const toast = new bootstrap.Toast(toasterror);
+            toast.show()
+            setTimeout(() => {
+                toast.hide();
+            }, 3000);
+        }
+        
+        window.mostrarToastError = (mensaje) => {
+            const toasterror = $('#toast-error');
+            toasterror.text(mensaje);
+            const toast = new bootstrap.Toast(toasterror);
+            toast.show()
+            setTimeout(() => {
+                toast.hide();
+            }, 3000);
+        }
+    </script>
 
     <script>
         // SCRIPT PARA EVITAR TRANSFORMACIONES INDESEADAS - SOLO MÉTODO 3
@@ -286,12 +325,12 @@
             const protectedElement = document.getElementById('contenido-cliente');
 
             if (!protectedElement) {
-                console.error('Elemento protegido no encontrado!');
+                // // console.error('Elemento protegido no encontrado!');
                 return;
             }
 
-            console.log('🛡️ Bloqueo transformaciones directas de estilo cargado');
-            console.log('📋 Elemento protegido:', protectedElement);
+            // // console.log('🛡️ Bloqueo transformaciones directas de estilo cargado');
+            // // console.log('📋 Elemento protegido:', protectedElement);
 
             // Bloquear transformaciones directas de estilo
             let originalTransformDescriptor = Object.getOwnPropertyDescriptor(protectedElement.style, 'transform');
@@ -308,17 +347,17 @@
                     '';
                 },
                 set: function(value) {
-                    console.log('🚨 TRANFORMACION DIRECTA BLOQUEADA:');
-                    console.log('   - Valor que se intento implementar:', value);
-                    console.log('   - Call stack (culpable):');
-                    console.trace();
+                    // // console.log('🚨 TRANFORMACION DIRECTA BLOQUEADA:');
+                    // // console.log('   - Valor que se intento implementar:', value);
+                    // // console.log('   - Call stack (culpable):');
+                    // // console.trace();
                     // No setear nada mas, solo bloquear la transformacion -> return;
                     return;
                 },
                 configurable: true
             });
 
-            console.log('✅ Bloqueo transformaciones directas de estilo cargado');
+            // // console.log('✅ Bloqueo transformaciones directas de estilo cargado');
         });
     </script>
     @stack('scripts')

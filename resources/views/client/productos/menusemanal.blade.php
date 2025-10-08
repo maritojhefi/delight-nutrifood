@@ -258,7 +258,6 @@
 
     <x-cabecera-pagina titulo="Bienvenidos" cabecera="appkit" />
 
-
     {{-- <div class="splide single-slider slider-no-arrows slider-no-dots visible-slider splide--loop splide--ltr splide--draggable is-active"
         id="single-slider-2" style="visibility: visible;">
         <div class="splide__arrows"><button class="splide__arrow splide__arrow--prev" type="button"
@@ -1432,3 +1431,53 @@
         <div class="card-overlay bg-black opacity-60"></div>
     </a>
 @endsection
+@push('scripts')
+<script>
+    $(document).ready( async function() {
+        $(document).on('click', '#abrir-venta-qr', async () => {
+            // Mockup functionalidad escaneado de QR
+            console.log("Simulando escaneado de QR");
+            // Asumiendo escaneado exitoso
+            // Generacion de una nueva venta con el identificador del usuario
+            try {
+                const respuestaQR = await VentaService.generarVentaQR();
+                await sincronizarCarrito();
+                // if (respuestaQR.status === 200) {
+                //     console.log("La creacion de la venta fue un exito");
+                //     await sincronizarCarrito();
+                // }
+            } catch (error) {
+                if (error.response && error.response.status === 409) {
+                    // De ya existir una venta, se procede con la sincronizacion del carrito
+                    // Esto puede utilizarse para mencionarle al cliente que ya dispone de atencion a sus pedidos
+                    console.log("Ya existe una venta activa, Procediendo a sincronizar el carrito.");
+                    await sincronizarCarrito();
+                } else {
+                    // Control de Error, puede usarse para mencionarle al cliente que el escaneado
+                    // del QR no funcionó
+                    console.error("Error al procesar el código QR:", error);
+                }
+            }
+
+            
+        });
+
+        $(document).on('click', '#cerrar-venta-qr', () => {
+            console.log("Simulando proceso cerrado de venta");
+            // Culminar ciclo de venta sea aceptando o rechazando los producto_venta relacionados
+            // a la venta activa del cliente
+        });
+
+        const sincronizarCarrito = async () => {
+            const carrito = carritoStorage.obtenerCarrito();
+            console.log("Carrito:", carrito);
+            // Sincronizacion de base de datos con elementos actuales en el carrito
+            const respuestaSincronizacion = await VentaService.generarProductosVenta_Carrito(carrito)
+            console.log("Sincronización de productos exitosa:", respuestaSincronizacion);
+            // Eliminar elmentos existentes en el carrito para evitar nuevos registros indeseados 
+            // y abusos en generacion de producto_venta 
+            carritoStorage.vaciarCarrito();
+        }
+    });
+</script>
+@endpush

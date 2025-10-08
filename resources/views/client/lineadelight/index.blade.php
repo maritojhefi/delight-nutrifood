@@ -170,36 +170,11 @@
 
     <x-menu-adicionales-producto :isUpdate="false"/>
     <x-modal-listado-productos />
+    <!-- MODAL ACCIONES PRODUCTO INDIVIDUAL -->
+
 @endsection
 
 @push('scripts')
-{{-- SCRIPT CONTROL DE AGREGAR AL CARRITO --}}
-<script> 
-    $(document).ready(function() {
-        $(document).on('click', '.agregar-unidad', addToCartHandler);
-
-        $(document).on('click', '.menu-adicionales-btn', function() {
-            const productoId = $(this).data('producto-id');
-            openDetallesMenu(productoId);
-        });
-    });
-
-    async function addToCartHandler() {
-        const product_Id = $(this).data('producto-id');
-        const product_nombre = $(this).data('producto-nombre')
-        
-        try {
-            const result = await carritoStorage.addToCart(product_Id, 1);
-            if (result.success) {
-                console.log("Producto  agregado con exito al carrito.")
-            } else {
-                console.log(`Error al agregar el producto ${product_nombre} al carrito.`)
-            }
-        } catch (error) {
-            console.error('Error agregando el producto al carrito:', error);
-        }
-    }
-</script>
 {{-- SCRIPT CONTROL DE SLIDER DE HORARIOS --}}
 <script>
     const subcategoriasPorHorario = @json($horariosData);

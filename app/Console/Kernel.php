@@ -31,11 +31,11 @@ class Kernel extends ConsoleKernel
         $logsAdmin = 'public/logsAdmin.txt';
         $logsMenu = 'public/logsMenuWhatsapp.txt';
         $schedule->command('apertura:diaria')
-            ->dailyAt('01:00')->appendOutputTo($logGeneral);
+            ->dailyAt('01:00');
         $schedule->command('plan:diario')
-            ->hourly()->appendOutputTo($logGeneral);
+            ->hourly();
         $schedule->command('finalizarPlanTodos:diario')
-            ->dailyAt('09:00')->appendOutputTo($logGeneral);
+            ->dailyAt('09:00');
 
         $schedule->command('eliminar:stocks-vacios')
             ->dailyAt('01:30');
@@ -44,9 +44,9 @@ class Kernel extends ConsoleKernel
         // $schedule->command('whatsapp:enviarMenuManana')
         //     ->dailyAt('08:00')->appendOutputTo($logsMenu);
         $schedule->command('bloquear:menu')
-            ->weeklyOn(6, '15:00')->appendOutputTo($logsAdmin);
+            ->weeklyOn(6, '15:00');
         $schedule->command('notificar:planExpirado')
-            ->dailyAt('11:00')->appendOutputTo($logsAdmin);
+            ->dailyAt('11:00');
         $schedule->command('refrescar:adicionales-cocina')
             ->dailyAt('01:00');
         // $schedule->command('actualizar:tickets')

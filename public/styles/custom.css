@@ -391,11 +391,6 @@ hover-blue:hover {
     border-color: #dee2e6;
 }
 
-/* UpdateToMax Button */
-.qty-fixer {
-    width: 120px;
-}
-
 .unavailable-fixer {
     width: 120px;
 }
@@ -458,7 +453,9 @@ hover-blue:hover {
 .quantity-controls {
     background-color: #f8f9fa !important;
     border: 1px solid #dee2e6 !important;
-    min-height: 35px;
+    min-height: 2rem;
+    max-height: 2rem;
+    max-width: 6rem;
     border-radius: 5px;
 }
 
@@ -1075,6 +1072,14 @@ hover-blue:hover {
     /* #1f2937 */
     /* #374151 */
 }
+
+.theme-dark .bg-dtheme-dkblue  {
+    background-color:  #0f1117 !important;
+    /* #1f2937 */
+    /* #374151 */
+}
+
+
 .theme-dark .tag-icon {
     color: white !important;
 }
