@@ -427,6 +427,8 @@ class ProductoVentaService implements ProductoVentaServiceInterface
     public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad): VentaResponse
     {
         try {
+            // // Log::debug("Valores pasados por el cliente a agregarProductoCliente: ", ["Producto" => $producto, "Adicionales" => $adicionales, "cantidad" => $cantidad]);
+
             DB::beginTransaction();
 
             $existeProductoVenta = $venta->productos()

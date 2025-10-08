@@ -445,9 +445,9 @@
                         }
                     } catch (error) {
                         // MostrarToastError
+                        mostrarToastError("Sucedio un error al realizar el pedido.");
                         console.log("Error al agregar producto a carrito: ", error);
-                    }   
-                    // mostrarToastSuccess("Se agregó la orden a su carrito.");
+                    }
                 }
                 // CONTROL DE STOCK INSUFICIENTE
                 else if (error.response && error.response.status === 422) {
@@ -529,7 +529,8 @@
                     }
                 }  else {
                     // Error interno del servidor
-                    console.error("Ocurrió un error inesperado al procesar su solicitud.", error)
+                    mostrarToastError("Sucedio un error al realizar el pedido.");
+                    console.log("Error inesperado al agregar producto a carrito: ", error);
                     // Toast error general
                     // Mostrar un dialog sencillo de error
                     estaVerificando(false);

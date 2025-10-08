@@ -325,12 +325,12 @@
             const protectedElement = document.getElementById('contenido-cliente');
 
             if (!protectedElement) {
-                console.error('Elemento protegido no encontrado!');
+                // // console.error('Elemento protegido no encontrado!');
                 return;
             }
 
-            console.log('🛡️ Bloqueo transformaciones directas de estilo cargado');
-            console.log('📋 Elemento protegido:', protectedElement);
+            // // console.log('🛡️ Bloqueo transformaciones directas de estilo cargado');
+            // // console.log('📋 Elemento protegido:', protectedElement);
 
             // Bloquear transformaciones directas de estilo
             let originalTransformDescriptor = Object.getOwnPropertyDescriptor(protectedElement.style, 'transform');
@@ -347,17 +347,17 @@
                     '';
                 },
                 set: function(value) {
-                    console.log('🚨 TRANFORMACION DIRECTA BLOQUEADA:');
-                    console.log('   - Valor que se intento implementar:', value);
-                    console.log('   - Call stack (culpable):');
-                    console.trace();
+                    // // console.log('🚨 TRANFORMACION DIRECTA BLOQUEADA:');
+                    // // console.log('   - Valor que se intento implementar:', value);
+                    // // console.log('   - Call stack (culpable):');
+                    // // console.trace();
                     // No setear nada mas, solo bloquear la transformacion -> return;
                     return;
                 },
                 configurable: true
             });
 
-            console.log('✅ Bloqueo transformaciones directas de estilo cargado');
+            // // console.log('✅ Bloqueo transformaciones directas de estilo cargado');
         });
     </script>
     @stack('scripts')

@@ -156,10 +156,8 @@ class VentasWebController extends Controller
             $user = auth()->user();
             $ventaActiva = $user->ventaActiva;
 
-            Log::debug("valor de user:", [$user]);
-            Log::debug("valor de ventaActiva:", [$ventaActiva]);
-
-            // $ventaActiva = $this->validarVentaActiva();
+            // // Log::debug("valor de user:", [$user]);
+            // // Log::debug("valor de ventaActiva:", [$ventaActiva]);
 
 
             $producto = Producto::publicoTienda()->findOrFail($producto_id); 
@@ -169,7 +167,7 @@ class VentasWebController extends Controller
             $adicionales = Adicionale::whereIn('id', $adicionales_ids)->get()->keyBy('id');
 
             if (!$ventaActiva) {
-                Log::debug("No hay venta activa, revisando stock para carrito localStorage:", [$ventaActiva]);
+                // Log::debug("No hay venta activa, revisando stock para carrito localStorage:", [$ventaActiva]);
                 $verificacionStock = $this->stockService
                 ->verificarStockCompleto($producto, $adicionales, 1, $sucursal_id);
 
@@ -291,7 +289,7 @@ class VentasWebController extends Controller
             foreach ($carrito as $item) {
                 $producto_id = $item['id'];
                 $adicionales = $item['adicionales'];
-                $cantidad = $item['cantidad'];
+                // $cantidad = $item['cantidad'];
 
                 $producto = Producto::publicoTienda()->findOrFail($producto_id); 
 
@@ -302,22 +300,16 @@ class VentasWebController extends Controller
                     ->agregarProductoCliente($venta_activa, 
                                             $producto, 
                                             $adicionales, 
-                                            $cantidad );
+                                            1 );
                 }
-
-                // Log::info("Procesando producto del carrito", [
-                //     'producto_id' => $producto_id,
-                //     'cantidad_total' => $cantidad_total,
-                //     'adicionales_estructura' => $adicionales_estructura,
-                //     'detalles_count' => count($detalles)
-                // ]);
             }
 
             return response()->json([
                 'message' => 'Carrito procesado exitosamente',
                 'items_procesados' => $carrito->sum(function ($item) {
                     return count($item['adicionales']);
-                })
+                }),
+                'respuesta_adicion' =>  $respuestaAdicion,
             ], 200);
 
         } catch (\Throwable $th) {

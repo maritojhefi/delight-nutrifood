@@ -102,7 +102,6 @@ class StockService implements StockServiceInterface
 
     private function restarStock($consulta, int $cantidad): VentaResponse
     {
-        Log::debug('Restando stock', ['cantidad' => $cantidad, 'consulta' => $consulta]);
         $consultaRestar = $consulta->sortByDesc('fecha_venc');
 
         foreach ($consultaRestar as $array) {
