@@ -174,7 +174,7 @@ class StockService implements StockServiceInterface
 
         // Log::debug('Verificación de stock', [
         //     'producto_id' => $producto->id,
-        //     'cantidad_solicitada' => $cantidadSolicitada,
+        //     'cantidad' => $cantidadSolicitada,
         //     'stock_producto' => $stockProducto,
         //     'adicionales_info' => $adicionalesInfo,
         //     'cantidad_maxima' => $cantidadMaxima,

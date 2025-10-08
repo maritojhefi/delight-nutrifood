@@ -17,7 +17,10 @@
             </div>
             <div id="contenedor-pendientes" class="d-flex flex-column justify-content-center d-none">
                 <h3>Pedidos Pendientes</h3>
-                <ul id="lista-pendientes" class="list-unstyled"></ul>
+                <ul id="lista-pendientes" class="list-unstyled mb-0"></ul>
+            </div>
+            <div id="contenedor-opciones-pedido-cliente" class="d-none alignt-items-center justify-content-center">
+                
             </div>
             {{-- CONTENEDORES DE PRODCUTOS SEGUN DISPONIBILIDAD --}}
             <div id="container-state-agotado" class="d-flex flex-column justify-content-center"></div>
@@ -266,6 +269,7 @@
                 .map(producto => construirCardProductoVenta(producto))
                 .join('');
             listaPendientes.html(htmlContentPendientes);
+            revelarOpcionesPedido(true);
         } else {
             contenedorPendientes.addClass('d-none');
         }
@@ -279,6 +283,8 @@
         } else {
             contenedorAceptados.addClass('d-none');
         }
+
+
 
         listaPendientes.off('.pedidos-pendientes');
 
@@ -300,10 +306,33 @@
                 const productoVentaId = parseInt(this.dataset.pventaId, 10);
                 await handleReducirProductoSimple(productoVentaId);
             });
-
+            
+        
         
     }
 
+    const revelarOpcionesPedido = (booleano) => {
+        const contenedorOpciones = $('#contenedor-opciones-pedido-cliente');
+        const htmlOpciones = `
+                <button id="showSummaryButton" class="abrir-resumen-pedido btn w-30 align-self-center btn-sm rounded-sm bg-highlight font-800 text-uppercase">
+                    Realizar Pedido
+                </button>
+            `;
+
+        if (booleano) {
+            contenedorOpciones.html(htmlOpciones);
+            contenedorOpciones.removeClass('d-none');
+            contenedorOpciones.addClass('d-flex');
+            contenedorOpciones.on('click.pedidos-pendientes', '.abrir-resumen-pedido', async function(e) {
+                e.preventDefault();
+                await handleResumenPedido();
+            });
+        } else {
+            contenedorOpciones.removeClass('d-flex');
+            contenedorOpciones.addClass('d-none');
+            contenedorOpciones.html('');
+        }
+    }
     const handleIncrementarProductoSimple = async (productoIncrementarID, productoVentaId) => {
         try {
             const respuestaIncremento = await VentaService.agregarProductoVenta(productoIncrementarID, 1);
@@ -355,6 +384,7 @@
                 const contenedorPendientes = $('#contenedor-pendientes');
                 contenedorAceptados.removeClass('d-block');
                 contenedorPendientes.addClass('d-none');
+                revelarOpcionesPedido(false)
                 // Renderizar PedidoVacio
                 renderizarPedidoVacio();
             }
@@ -492,6 +522,94 @@
             </div>
         `
     }
+
+    const handleResumenPedido = async() => {
+        const repuestaProductosVentaCliente = await VentaService.productosVenta();
+        const productosVentaCliente = repuestaProductosVentaCliente.data;
+
+        if (productosVentaCliente.length > 0) {
+            prepararResumenPedidoVenta(productosVentaCliente);
+            const summaryModal = new bootstrap.Modal(document.getElementById('cartSummaryModal'));
+            summaryModal.show();
+            // renderizarProductosVenta(productosVenta);
+        }
+    }
+
+    const prepararResumenPedidoVenta = (productosVentaPendientes) => {
+        const $summaryItems = $('#cart-summary-items');
+        const $summaryTotals = $('#cart-totals');
+
+        $summaryItems.empty();
+        const pedidos = productosVentaPendientes;
+
+        let totalFinal = 0;
+        let totalDescuento = 0;
+        let totalOriginal = 0;
+
+        if (pedidos.length) {
+            pedidos.forEach(prod => {
+                // // $available.append(renderCartItem(prod, 'disponible', prod.cantidad));
+                $summaryItems.append(renderSummaryItem(prod)); 
+
+                totalFinal += (prod.precio * prod.cantidad) + prod.costo_adicionales;
+                totalOriginal += (prod.precio_original * prod.cantidad) + prod.costo_adicionales;
+                if (prod.tiene_descuento) {
+                    totalDescuento += (prod.precio_original - prod.precio) * prod.cantidad;
+                }
+            });
+        }
+        $summaryTotals.html(renderSummaryTotal(totalFinal, totalDescuento, totalOriginal));
+    }
+
+    const renderSummaryItem = (producto) => {
+        console.log("Informacion recibida para renderizar item resumen: ", producto);
+        const itemSubtotal = ((producto.precio * producto.cantidad) + producto.costo_adicionales).toFixed(2);
+        return `
+            <div class="mb-2">
+                <div class="item-name fw-semibold mb-2" title="${producto.nombre}">
+                    <p class="mb-0 font-600 text-dark">${producto.nombre}</p>
+                </div>
+                <div class="d-flex flex-row justify-content-between align-items-center">
+                    <small class="text-muted d-flex align-items-center gap-1">
+                        <span>${producto.cantidad}</span>
+                        ×
+                        <span> Bs. ${producto.precio.toFixed(2)}</span>
+                        ${(producto.tiene_descuento ?
+                            `<del>${producto.precio_original.toFixed(2)}</del>` : ''
+                        )}
+                    </small>
+                    <div class="item-subtotal fw-bold text-success">
+                        <p class="mb-0 fs-6">Bs. ${itemSubtotal}</p>
+                    </div>
+                    
+                </div>
+                <div class="divider mt-1 mb-0"></div>
+            </div>
+        `;
+    }
+
+    const renderSummaryTotal = (totalFinal, totalDescuento, totalOriginal) => {
+        return `
+            ${totalDescuento && totalDescuento > 0 
+            ? `
+                <div class="d-flex flex-row justify-content-between align-items-center mb-0 text-gray">
+                    <p class="fw-bold mb-0">Costo original:</p>
+                    <p class="fw-bold mb-0">Bs. ${totalOriginal.toFixed(2)}</p>
+                </div>
+                <div class="d-flex flex-row justify-content-between align-items-center mb-0 text-gray">
+                    <p class="fw-bold mb-0">Descuento total:</p>
+                    <p class="fw-bold mb-0">Bs. ${totalDescuento.toFixed(2)}</p>
+                </div>
+            `
+            : ""
+            }
+            <div class="d-flex flex-row justify-content-between align-items-center mb-3 pt-2 text-black">
+                <p class="fw-bold fs-5 mb-0">Total:</p>
+                <p id="cart-final-total" class="fw-bold fs-5 mb-0">Bs. ${totalFinal.toFixed(2)}</p>
+            </div>
+        `;
+    };
+
 </script>
 @endpush
 <!-- CHECK VENTA EXISTENTE -->
@@ -561,13 +679,13 @@
             if (disponibles.length) {
                 $available.append(`<h5 class="mb-3 color-highlight" id="label-disponible">Productos Disponibles</h5>`);
                 disponibles.forEach(prod => {
-                    $available.append(renderCartItem(prod, 'disponible', prod.cantidad_solicitada));
+                    $available.append(renderCartItem(prod, 'disponible', prod.cantidad));
                     $summaryItems.append(renderSummaryItem(prod));
 
-                    totalFinal += prod.precio * prod.cantidad_solicitada;
-                    totalOriginal += prod.precio_original * prod.cantidad_solicitada;
+                    totalFinal += prod.precio * prod.cantidad;
+                    totalOriginal += prod.precio_original * prod.cantidad;
                     if (prod.tiene_descuento) {
-                        totalDescuento += (prod.precio_original - prod.precio) * prod.cantidad_solicitada;
+                        totalDescuento += (prod.precio_original - prod.precio) * prod.cantidad;
                     }
                 });
             }
@@ -576,11 +694,11 @@
             if (escasos.length) {
                 $limited.append(`<h5 class="mb-3 text-warning" id="label-escaso">Productos con stock limitado</h5>`);
                 escasos.forEach(prod => {
-                    $limited.append(renderCartItem(prod, 'escaso', prod.cantidad_solicitada));
+                    $limited.append(renderCartItem(prod, 'escaso', prod.cantidad));
                     estadoValidacionCarrito.productosLimitados[prod.id] = {
-                        mensaje: `Solo existen ${prod.stock_disponible} unidades disponibles de las ${prod.cantidad_solicitada} solicitadas.`,
+                        mensaje: `Solo existen ${prod.stock_disponible} unidades disponibles de las ${prod.cantidad} solicitadas.`,
                         stockDisponible: prod.stock_disponible,
-                        cantidadSolicitada: prod.cantidad_solicitada,
+                        cantidadSolicitada: prod.cantidad,
                     };
                 });
             }
@@ -589,7 +707,7 @@
             if (agotados.length) {
                 $unavailable.append(`<h5 class="mb-3 text-danger" id="label-agotado">Productos agotados</h5>`);
                 agotados.forEach(prod => {
-                    $unavailable.append(renderCartItem(prod, 'agotado', prod.cantidad_solicitada));
+                    $unavailable.append(renderCartItem(prod, 'agotado', prod.cantidad));
                 });
             }
 
@@ -643,7 +761,7 @@
             let actionButton = '';
             if (isLowStock && producto.stock_disponible !== "INFINITO") {
                 stockMessage = `<div class="alert alert-warning py-1 px-2 mt-2 mb-0 small">
-                    Solo existen ${producto.stock_disponible} unidades disponibles de las ${producto.cantidad_solicitada} solicitadas.
+                    Solo existen ${producto.stock_disponible} unidades disponibles de las ${producto.cantidad} solicitadas.
                 </div>`;
                 actionButton = `<button data-product-id="${producto.id}" class="qty-fixer btn-s  rounded bg-highlight" style="z-index: 10;">
                     Actualizar
@@ -666,15 +784,13 @@
                 </button>`;
             }
 
-            console.log("Producto a renderizar carrito:", producto);
-
             return `
                 <div class="cart-item-wrapper mb-4 ${disabledClass}" data-product-id="${producto.id}"  data-product-state="${estado}" id="cart-item-wrapper-${producto.id}">
                     <div class="card mb-0 d-flex flex-column item-carrito-info justify-content-between p-3 bg-white rounded-sm shadow-sm border">
                         <div class="mb-0 d-flex flex-row justify-content-between">
                             <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
                                 <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
-                                <small class="color-theme">${`Unidades: <span id="unidades-carrito-${producto.id}">${producto.cantidad_solicitada}`}</span></small>
+                                <small class="color-theme">${`Unidades: <span id="unidades-carrito-${producto.id}">${producto.cantidad}`}</span></small>
                                 ${producto.costo_adicionales > 0 ? `<small class="color-theme">Extras: Bs. ${producto.costo_adicionales}</small>` : ''}
                             </div>
                             <div class="product-image-container m-0" style="z-index: 10">
@@ -697,9 +813,9 @@
                         <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
                             <div>
                                 ${(producto.tiene_descuento ?
-                                `<del class="badge bg-highlight mb-1 product-price-old">Bs. ${(producto.precio_original.toFixed(2) * producto.cantidad_solicitada) + producto.costo_adicionales}</del>` : ''
+                                `<del class="badge bg-highlight mb-1 product-price-old">Bs. <span id="pviejo-carrito-${producto.id}">${(producto.precio_original.toFixed(2) * producto.cantidad) + producto.costo_adicionales}</span></del>` : ''
                                 )}
-                                <p id="precio-carrito-${producto.id}" class="fw-bold mb-0 text-success fs-5 product-price" data-precio="${producto.precio}">
+                                <p id="precio-carrito-${producto.id}" class="fw-bold mb-0 text-success fs-5 product-price" data-precio="${producto.precio}" data-precio-original="${producto.precio_original}">
                                     Bs. ${producto.precio_final.toFixed(2)}
                                 </p>
                             </div>
@@ -724,9 +840,9 @@
             const costoTotalSinDescuento = $(`#pviejo-carrito-${info.id}`);
             const costoTotalFinal = $(`#precio-carrito-${info.id}`);
 
-            unidadesSolicitadasText.text(info.cantidad_solicitada);
+            unidadesSolicitadasText.text(info.cantidad);
             costoTotalAdicionalesText.text(info.costo_adicionales);
-            costoTotalSinDescuento.text((info.precio_original.toFixed(2) * info.cantidad_solicitada) + info.costo_adicionales);
+            costoTotalSinDescuento.text((info.precio_original.toFixed(2) * info.cantidad) + info.costo_adicionales);
             costoTotalFinal.text(info.precio_final.toFixed(2));
         }
 
@@ -739,7 +855,7 @@
                         <div class="mb-0 d-flex flex-row justify-content-between">
                             <div class="d-flex flex-column item-carrito-detalles flex-grow-1 me-3" style="z-index: 10">
                                 <h5 class="fw-bold text-dark mb-2 product-name">${producto.nombre}</h5>
-                                <small class="color-theme">${`Unidades: <span id="unidades-carrito-${producto.id}">${producto.cantidad_solicitada}`}</span></small>
+                                <small class="color-theme">${`Unidades: <span id="unidades-carrito-${producto.id}">${producto.cantidad}`}</span></small>
                                 ${producto.costo_adicionales > 0 ? `<small class="color-theme">Extras: Bs. <span id="adicionales-carrito-${producto.id}">${producto.costo_adicionales}</span></small>` : ''}
                             </div>
                             <div class="product-image-container m-0" style="z-index: 10">
@@ -761,9 +877,9 @@
                         <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="color: none !important">
                             <div>
                                 ${(producto.tiene_descuento ?
-                                `<del class="badge bg-highlight mb-1 product-price-old">Bs. <span id="pviejo-carrito-${producto.id}">${(producto.precio_original.toFixed(2) * producto.cantidad_solicitada) + producto.costo_adicionales}</span></del>` : ''
+                                `<del class="badge bg-highlight mb-1 product-price-old">Bs. <span id="pviejo-carrito-${producto.id}">${(producto.precio_original.toFixed(2) * producto.cantidad) + producto.costo_adicionales}</span></del>` : ''
                                 )}
-                                <p id="precio-carrito-${producto.id}" class="fw-bold mb-0 text-success fs-5 product-price" data-precio="${producto.precio}">
+                                <p id="precio-carrito-${producto.id}" class="fw-bold mb-0 text-success fs-5 product-price" data-precio="${producto.precio}" data-precio-original="${producto.precio_original}">
                                     Bs. <span id="precio-carrito-${producto.id}">${producto.precio_final.toFixed(2)}</span>
                                 </p>
                             </div>
@@ -774,80 +890,8 @@
             `;
         }
 
-        const prepararResumenCarrito = (validacionProductos) => {
-            const $summaryItems = $('#cart-summary-items');
-            const $summaryTotals = $('#cart-totals');
+        
 
-            $summaryItems.empty();
-            const disponibles = Object.values(validacionProductos.disponibles || {});
-
-            let totalFinal = 0;
-            let totalDescuento = 0;
-            let totalOriginal = 0;
-
-            if (disponibles.length) {
-                disponibles.forEach(prod => {
-                    // // $available.append(renderCartItem(prod, 'disponible', prod.cantidad_solicitada));
-                    $summaryItems.append(renderSummaryItem(prod)); 
-
-                    totalFinal += (prod.precio * prod.cantidad_solicitada) + prod.costo_adicionales;
-                    totalOriginal += (prod.precio_original * prod.cantidad_solicitada) + prod.costo_adicionales;
-                    if (prod.tiene_descuento) {
-                        totalDescuento += (prod.precio_original - prod.precio) * prod.cantidad_solicitada;
-                    }
-                });
-            }
-
-            $summaryTotals.html(renderSummaryTotal(totalFinal, totalDescuento, totalOriginal));
-        }
-
-        const renderSummaryItem = (producto) => {
-            const itemSubtotal = ((producto.precio * producto.cantidad_solicitada) + producto.costo_adicionales).toFixed(2);
-            return `
-                <div class="mb-2">
-                    <div class="item-name fw-semibold mb-2" title="${producto.nombre}">
-                        <p class="mb-0 font-600 text-dark">${producto.nombre}</p>
-                    </div>
-                    <div class="d-flex flex-row justify-content-between align-items-center">
-                        <small class="text-muted d-flex align-items-center gap-1">
-                            <span>${producto.cantidad_solicitada}</span>
-                            ×
-                            <span> Bs. ${producto.precio.toFixed(2)}</span>
-                            ${(producto.tiene_descuento ?
-                                `<del>${producto.precio_original.toFixed(2)}</del>` : ''
-                            )}
-                        </small>
-                        <div class="item-subtotal fw-bold text-success">
-                            <p class="mb-0 fs-6">Bs. ${itemSubtotal}</p>
-                        </div>
-                        
-                    </div>
-                    <div class="divider mt-1 mb-0"></div>
-                </div>
-            `;
-        }
-
-        const renderSummaryTotal = (totalFinal, totalDescuento, totalOriginal) => {
-            return `
-                ${totalDescuento && totalDescuento > 0 
-                ? `
-                    <div class="d-flex flex-row justify-content-between align-items-center mb-0 text-gray">
-                        <p class="fw-bold mb-0">Costo original:</p>
-                        <p class="fw-bold mb-0">Bs. ${totalOriginal.toFixed(2)}</p>
-                    </div>
-                    <div class="d-flex flex-row justify-content-between align-items-center mb-0 text-gray">
-                        <p class="fw-bold mb-0">Descuento total:</p>
-                        <p class="fw-bold mb-0">Bs. ${totalDescuento.toFixed(2)}</p>
-                    </div>
-                `
-                : ""
-                }
-                <div class="d-flex flex-row justify-content-between align-items-center mb-3 pt-2 text-black">
-                    <p class="fw-bold fs-5 mb-0">Total:</p>
-                    <p id="cart-final-total" class="fw-bold fs-5 mb-0">Bs. ${totalFinal.toFixed(2)}</p>
-                </div>
-            `;
-        };
 
         const renderActions = (producto, isDisabled, cantidad, estado) => {
             const tipo = producto.tipo;
@@ -912,6 +956,32 @@
             }
 
             return '';
+        }
+
+        const prepararResumenCarrito = (validacionProductos) => {
+            const $summaryItems = $('#cart-summary-items');
+            const $summaryTotals = $('#cart-totals');
+
+            $summaryItems.empty();
+            const disponibles = Object.values(validacionProductos.disponibles || {});
+
+            let totalFinal = 0;
+            let totalDescuento = 0;
+            let totalOriginal = 0;
+
+            if (disponibles.length) {
+                disponibles.forEach(prod => {
+                    // // $available.append(renderCartItem(prod, 'disponible', prod.cantidad));
+                    $summaryItems.append(renderSummaryItem(prod)); 
+
+                    totalFinal += (prod.precio * prod.cantidad) + prod.costo_adicionales;
+                    totalOriginal += (prod.precio_original * prod.cantidad) + prod.costo_adicionales;
+                    if (prod.tiene_descuento) {
+                        totalDescuento += (prod.precio_original - prod.precio) * prod.cantidad;
+                    }
+                });
+            }
+            $summaryTotals.html(renderSummaryTotal(totalFinal, totalDescuento, totalOriginal));
         }
 
         document.addEventListener('DOMContentLoaded', async function() {
@@ -1013,6 +1083,8 @@
             const unidadesCard = $(`#unidades-carrito-${productToIncreaseId}`);
             const textoPrecio = $(`#precio-carrito-${productToIncreaseId}`);
             const precioUnitario = textoPrecio.data('precio');
+            const precioUnitarioOriginal = textoPrecio.data('precio-original');
+            const costoTotalSinDescuento = $(`#pviejo-carrito-${productToIncreaseId}`);
 
             const IncreaseAttemp = await carritoStorage.agregarAlCarrito(productToIncreaseId, 1, true);
             
@@ -1021,6 +1093,7 @@
                 quantitySpan.textContent = nuevaCantidad;
                 unidadesCard.text(nuevaCantidad);
                 textoPrecio.text(`Bs. ${(precioUnitario * nuevaCantidad).toFixed(2)}`)
+                costoTotalSinDescuento.text((precioUnitarioOriginal * nuevaCantidad).toFixed(2));
             } else {
                 console.error("No se pudo incrementar el valor del producto: ", productToIncreaseId);
             }
@@ -1036,6 +1109,8 @@
             const unidadesCard = $(`#unidades-carrito-${productToDecreaseId}`);
             const textoPrecio = $(`#precio-carrito-${productToDecreaseId}`);
             const precioUnitario = textoPrecio.data('precio');
+            const precioUnitarioOriginal = textoPrecio.data('precio-original');
+            const costoTotalSinDescuento = $(`#pviejo-carrito-${productToDecreaseId}`);
 
             // Check if quantity is 1 or less before proceeding
             if (parseInt(quantitySpan.textContent, 10) <= 1) return;
@@ -1047,6 +1122,7 @@
                 quantitySpan.textContent = nuevaCantidad;
                 unidadesCard.text(nuevaCantidad);
                 textoPrecio.text(`Bs. ${(precioUnitario * nuevaCantidad).toFixed(2)}`);
+                costoTotalSinDescuento.text((precioUnitarioOriginal * nuevaCantidad).toFixed(2));
             } else {
                 console.error("No se pudo reducir el valor del producto: ", productToDecreaseId);
             }

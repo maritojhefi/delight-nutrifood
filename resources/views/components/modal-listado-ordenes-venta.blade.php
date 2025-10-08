@@ -349,17 +349,17 @@
 
             const contenedorDisponibles = $('#contenedor-productos-disponibles-carrito');
 
-            if (validacionProductoPrincipal && validacionProductoPrincipal.stockDisponible < info.cantidad_solicitada) {
+            if (validacionProductoPrincipal && validacionProductoPrincipal.stockDisponible < info.cantidad) {
                 mensajeValidacion.text(validacionProductoPrincipal.mensaje);
                 contenedorMensajeValidacion.removeClass('d-none');
                 contenedorMensajeValidacion.addClass('d-block');
                 
 
 
-                // contenedorItemsDisponibles.innerHTML += renderCartItem(info,'disponible', info.cantidad_solicitada);
-            } else if (validacionProductoPrincipal && validacionProductoPrincipal.stockDisponible >= info.cantidad_solicitada) {
+                // contenedorItemsDisponibles.innerHTML += renderCartItem(info,'disponible', info.cantidad);
+            } else if (validacionProductoPrincipal && validacionProductoPrincipal.stockDisponible >= info.cantidad) {
                 eliminarCardProductoCarrito(info.id);
-                const newCardHtml = renderCartItem(info, 'disponible', info.cantidad_solicitada);
+                const newCardHtml = renderCartItem(info, 'disponible', info.cantidad);
                 contenedorDisponibles.append(newCardHtml);
                 mensajeValidacion.text('')
                 contenedorMensajeValidacion.removeClass('d-block');
