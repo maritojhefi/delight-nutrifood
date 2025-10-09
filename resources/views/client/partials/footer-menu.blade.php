@@ -26,45 +26,81 @@
             document.addEventListener('DOMContentLoaded', function() {
                 // Actualizar contenido del carrito de existir al momento de cargarse
                 carritoStorage.actualizarContadorCarrito();
+                refrescarContadoresFooter();
                 
                 // Optional: Escuchar evento para actualizar el carrito en otro lugar
                 // document.addEventListener('cartUpdated', actualizarContadorCarrito);
+                
             });
+
+            $(document).ready(function() {
+                // Controlar la visibilidad de un contador
+                const  actualizarVisibilidadCounters = (selector) => {
+                    const counterElement = $(selector);
+
+                    if (counterElement.length === 0) {
+                        return;
+                    }
+
+                    const count = parseInt(counterElement.text().trim(), 10);
+                    
+                    if (isNaN(count) || count === 0) {
+                        counterElement.css('display', 'none');
+                    } else {
+                        counterElement.css('display', 'block');
+                    }
+                }
+                
+                actualizarVisibilidadCounters('#mipedido-counter'); 
+                actualizarVisibilidadCounters('#cart-counter'); 
+
+                window.refrescarContadoresFooter = function() {
+                    actualizarVisibilidadCounters('#mipedido-counter');
+                    actualizarVisibilidadCounters('#cart-counter');
+                };
+            });
+
         </script>
     @endpush
     <a id="uno" href="{{ route('miperfil') }}"
-        class="{{ request()->is('miperfil' . '*') ? 'active-nav rounded-m ' : '' }} cargando">
+        class="{{ request()->is('miperfil' . '*') ? 'active-nav rounded-m ' : '' }} cargando d-flex flex-column gap-1">
         <i class="fa fa-heart {{request()->is('miperfil' . '*') ? 'color-highlight' : ''}}">
         </i><span class="{{request()->is('miperfil' . '*') ? 'color-highlight' : ''}}">Mi Perfil</span>
         <em></em>
     </a>
     <a href="{{ route('linea.delight') }}"
-        class="{{ request()->is('lineadelight' . '*') ? 'active-nav rounded-m' : '' }} cargando">
+        class="{{ request()->is('lineadelight' . '*') ? 'active-nav rounded-m' : '' }} cargando d-flex flex-column gap-1">
         <i class="fa fa-leaf {{request()->is('lineadelight' . '*') ? 'color-highlight' : ''}}"></i>
-        <span class="{{request()->is('lineadelight' . '*') ? 'color-highlight' : ''}}">Linea {{GlobalHelper::getValorAtributoSetting('nombre_sistema')}}!</span>
+        <span class="{{request()->is('lineadelight' . '*') ? 'color-highlight' : ''}}">Linea {{GlobalHelper::getValorAtributoSetting('nombre_sistema')}}</span>
         <em></em>
     </a>
     <a href="{{ route('menusemanal') }}"
-        class="circle-nav {{ request()->is('inicio' . '*') ? 'active-nav rounded-m' : '' }} cargando">
+        class="circle-nav {{ request()->is('inicio' . '*') ? 'active-nav rounded-m' : '' }} cargando d-flex flex-column gap-1">
         <i class="fa fa-home {{request()->is('inicio' . '*') ? 'color-highlight' : ''}}"></i>
         <span class="{{request()->is('inicio' . '*') ? 'color-highlight' : ''}}">Inicio</span>
         <em></em>
         <strong><u></u></strong>
     </a>
     <a href="{{ route('productos') }}"
-        class="{{ request()->is('productos' . '*') ? 'active-nav rounded-m' : '' }} cargando">
+        class="{{ request()->is('productos' . '*') ? 'active-nav rounded-m' : '' }} cargando d-flex flex-column gap-1">
         <i class="fa fa-gem {{request()->is('productos' . '*') ? 'color-highlight' : ''}}"></i>
         <span class="{{request()->is('productos' . '*') ? 'color-highlight' : ''}}">Eco-Tienda</span>
         <em></em>
     </a>
     <a href="{{ route('carrito') }}"
-        class="{{ request()->is('carrito' . '*') ? 'active-nav rounded-m' : '' }} cargando">
+        class="{{ request()->is('carrito' . '*') ? 'active-nav rounded-m' : '' }} cargando d-flex flex-column gap-1">
         @if ($tiene_venta_activa)
-            <i><i data-lucide="hand-platter" class="lucide-icon color {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i></i>
+            <div class="d-flex align-items-center justify-content-center gap-1">
+                <i><i data-lucide="hand-platter" class="lucide-icon color {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i></i>
+                <span id="mipedido-counter" class="pedido-counter-badge">{{ $cantidad_total_pedido }}</span>
+            </div>
         @else
-            <i class="fa fa-shopping-cart {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i>
+            <div class="d-flex align-items-center justify-content-center gap-1">
+                <!-- <i><i data-lucide="shopping-cart" class="lucide-icon color {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i></i> -->
+                <i class="fa fa-shopping-cart {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i>
+                <span id="cart-counter" class="cart-counter-badge"></span>
+            </div>
         @endif
-        <span id="cart-counter" class="cart-counter-badge"></span>
         <span class="{{request()->is('carrito' . '*') ? 'color-highlight' : ''}}">{{ $tiene_venta_activa ? "Mi Pedido" : "Mi Carrito" }}</span>
         <em></em>
     </a>

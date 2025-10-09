@@ -106,11 +106,14 @@
             
             try {
                 const agregarVentaProducto = await VentaService.agregarProductoVenta(ProductoID, 1);
+                actualizarContadorPedidosFooter(agregarVentaProducto.data.pedidos_totales_cliente);
+                refrescarContadoresFooter();
                 await carritoStorage.mostrarToastAgregado();
             } catch (error) {
                 if (error.response && error.response.status === 409) {
                     // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
                     const AddAttempt = await carritoStorage.agregarAlCarrito(ProductoID, 1);
+                    refrescarContadoresFooter();
                     estaVerificando(false);
                     closeDetallesMenu();
                 } else if (error.response && error.response.status === 422) {
@@ -396,6 +399,9 @@
                     renderizarListadoOrdenesVenta(agregarVentaProducto.data);
                     reemplazarCardProductoVenta(agregarVentaProducto.data);
                 }
+                console.log("RespuestaAgregarProductoVenta:", agregarVentaProducto);
+                actualizarContadorPedidosFooter(agregarVentaProducto.data.pedidos_totales_cliente);
+                refrescarContadoresFooter();
 
                 
                 closeDetallesMenu();
@@ -408,6 +414,7 @@
                     // Si el usuario no dispone de una venta activa (o no ha iniciado sesion) se agrega el producto al carrito
                     try {
                         const AddAttempt = await carritoStorage.agregarAlCarrito(infoProducto.id, cantidadSolicitada, false, IdsAdicionalesSeleccionados);
+                        refrescarContadoresFooter();
                         if (AddAttempt.success == false) {
                             if (AddAttempt.stockDisponible <= 0)
                             {
@@ -838,7 +845,6 @@
         });
     }
 
-
     const reemplazarBotonConActualizar = () => {
         const botonAdicionar = $(`#btn-verificar-agregado`);
         const botonActualizar = `                
@@ -848,7 +854,6 @@
 
         botonAdicionar.replaceWith(botonActualizar);
     }
-
 
     const estaActualizando = (booleano) => {
         $('#btn-verificar-actualizacion')
@@ -894,7 +899,6 @@
             // Reemplazar pventaID con el identificador para producto
             const responseActualizarOdenVenta = await VentaService.actualizarOrdenVentaIndex(infoProducto.id, infoOrden.indice, IdsAdicionalesSeleccionados, 1);
             // En caso de error controlado, actualizar orden en el carrito
-            
             reemplazarCardOrdenIndice(responseActualizarOdenVenta.data, infoOrden.indice);
             mostrarToastSuccess("Su pedido fue actualizado");
             estaActualizando(false);
@@ -968,6 +972,11 @@
         }
     }
 
+    const actualizarContadorPedidosFooter = (cantidad) => {
+        const contadorFooter = $(`#mipedido-counter`);
+        contadorFooter.text(cantidad);
+    }
+
     const ocultarMensajeLimitados = () => {
         const containerAdvertencia = document.getElementById('error-limitados-container');
         containerAdvertencia.style.display = 'none';
@@ -1001,5 +1010,7 @@
             $(".menu-hider").removeClass("menu-active");
         }
     }
+
+    window.actualizarContadorPedidosFooter = actualizarContadorPedidosFooter;
 </script>
 @endpush

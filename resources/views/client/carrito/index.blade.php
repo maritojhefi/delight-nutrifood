@@ -174,7 +174,6 @@
     </div>
 
     <!-- MODAL LISTADO ORDENES-PRODUCTO -->
-    <!-- <x-modal-listado-ordenes-carrito /> -->
     <x-modal-listado-ordenes-venta />
 
 
@@ -235,7 +234,7 @@
 
         // Obtener informacion venta
         const response = await VentaService.productosVenta();
-        const productosVenta = response.data;
+        const productosVenta = response.data.productos;
 
         if (productosVenta.length > 0) {
             renderizarProductosVenta(productosVenta);
@@ -342,6 +341,7 @@
             $(`#precio-pventa-${productoVentaId}`).text(`Bs. ${precioFinal}`);
             $(`#unidades-pventa-${productoVentaId}`).text(`Unidades: ${cantidad}`);
             $(`#pviejo-pventa-${productoVentaId}`).text(`Bs. ${respuestaIncremento.data.precio_original.toFixed(2) * cantidad}`);
+            actualizarContadorPedidosFooter(respuestaIncremento.data.pedidos_totales_cliente);
         } catch (error) {
             console.log(error);
             if (error.response?.data?.stockProducto === 0) {
@@ -361,6 +361,7 @@
             $(`#precio-pventa-${productoVentaId}`).text(`Bs. ${precioFinal}`);
             $(`#unidades-pventa-${productoVentaId}`).text(`Unidades: ${cantidad}`);
             $(`#pviejo-pventa-${productoVentaId}`).text(`Bs. ${respuestaReduccion.data.precio_original.toFixed(2) * cantidad}`);
+            actualizarContadorPedidosFooter(respuestaReduccion.data.pedidos_totales_cliente);
         } catch (error) {
             console.log(error);
             if (error.response?.data.type == "warning") {
@@ -377,14 +378,16 @@
             // renderizarProductosVenta(response.data);
             console.log("Respuesta tras eliminacion: ", response);
             eliminarCardProductoVenta(pivotID);
+            actualizarContadorPedidosFooter(response.data.cantidad_pedido);
+            refrescarContadoresFooter();
             mostrarToastSuccess("Pedido eliminado con éxito");
-            if (response.data.length == 0) {
+            if (response.data.productos.length == 0) {
                 // Ocultar listados de pedidos
                 const contenedorAceptados = $('#contenedor-aceptados');
                 const contenedorPendientes = $('#contenedor-pendientes');
                 contenedorAceptados.removeClass('d-block');
                 contenedorPendientes.addClass('d-none');
-                revelarOpcionesPedido(false)
+                revelarOpcionesPedido(false);
                 // Renderizar PedidoVacio
                 renderizarPedidoVacio();
             }
@@ -528,7 +531,7 @@
 
     const handleResumenPedido = async() => {
         const repuestaProductosVentaCliente = await VentaService.productosVenta();
-        const productosVentaCliente = repuestaProductosVentaCliente.data;
+        const productosVentaCliente = repuestaProductosVentaCliente.data.productos;
 
         if (productosVentaCliente.length > 0) {
             prepararResumenPedidoVenta(productosVentaCliente);
@@ -1090,7 +1093,7 @@
             const costoTotalSinDescuento = $(`#pviejo-carrito-${productToIncreaseId}`);
 
             const IncreaseAttemp = await carritoStorage.agregarAlCarrito(productToIncreaseId, 1, true);
-            
+            refrescarContadoresFooter();
             if (IncreaseAttemp.success === true) {
                 nuevaCantidad = IncreaseAttemp.newQuantity;
                 quantitySpan.textContent = nuevaCantidad;
@@ -1162,6 +1165,7 @@
                 renderizarCarritoVacio();
                 // Actualizar el contador
                 carritoStorage.actualizarContadorCarrito();
+                refrescarContadoresFooter();
                 // Ocultar el modal y mostrar mensaje de exito de ser necesario
                 confirmModal.hide();
             });
@@ -1191,6 +1195,7 @@
 
             // Actualizar el contador del carrito
             carritoStorage.actualizarContadorCarrito();
+            refrescarContadoresFooter();
         }
 
         window.eliminarCardProductoCarrito = (productId) => {

@@ -81,6 +81,7 @@
         
         try {
             const result = await carritoStorage.agregarAlCarrito(product_Id, 1);
+            refrescarContadoresFooter();
             if (result.success) {
                 console.log("Producto  agregado con exito al carrito.")
             } else {

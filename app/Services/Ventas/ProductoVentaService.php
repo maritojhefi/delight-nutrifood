@@ -849,14 +849,24 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             }
 
             $productos = $venta->productos()->get();
-            
+
+            $productosProcessed = [];
+            $message = "";
+            $pedidos_totales_cliente = $this->obtenerCantidadProductosVenta($venta); 
+        
             if ($productos->isEmpty()) {
-                return VentaResponse::success([], 'No hay productos en esta venta');
+                $message = 'No hay productos en esta venta';
+            } else {
+                $productosProcessed = $this->procesarProductosVenta($productos, $venta->sucursale_id);
+                $message = 'Productos obtenidos exitosamente';
             }
 
-            $productosProcessed = $this->procesarProductosVenta($productos, $venta->sucursale_id);
+            $productosyCantidad = [
+                'productos' => $productosProcessed,
+                'cantidad_pedido' => $pedidos_totales_cliente
+            ];
 
-            return VentaResponse::success($productosProcessed);
+            return VentaResponse::success($productosyCantidad, $message);
 
         } catch (\Exception $e) {
             Log::error('Error obteniendo productos de venta', [
@@ -887,7 +897,8 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             // Procesar un unico ProductoVenta
             $productoProcesado = $this->procesarProductoVentaIndividual($producto, $venta->sucursale_id);
-
+            $pedidos_totales_cliente = $this->obtenerCantidadProductosVenta($venta); 
+            $productoProcesado['pedidos_totales_cliente'] = $pedidos_totales_cliente; 
             return VentaResponse::success($productoProcesado);
 
         } catch (\Exception $e) {
@@ -1077,6 +1088,11 @@ class ProductoVentaService implements ProductoVentaServiceInterface
     }
 
     // #endregion
+
+    private function obtenerCantidadProductosVenta(Venta $venta): int 
+    {
+        return (int) $venta->productos()->sum('cantidad');
+    }
     private function verificarAdicionalesVacios($arrayAdicionales): bool
     {
         if (is_null($arrayAdicionales)) {
