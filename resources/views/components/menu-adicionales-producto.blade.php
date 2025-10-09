@@ -1,15 +1,14 @@
 <div id="detalles-menu" class="menu menu-box-bottom rounded-m pb-5" style="z-index: 1056;">    
     <div class="menu-title">
-        <p class="color-highlight">Delight-Nutrifood</p>
-        <h1 class="font-22">Personaliza tu orden</h1>
+        <!-- <p class="color-highlight mt-0">Delight-Nutrifood</p> -->
+        <h1 class="font-22 mb-0 pb-1">Personaliza tu orden</h1>
         <a href="#" id="btn-cerrar-detalles" class=""><i class="fa fa-times-circle"></i></a>
     </div>
     <div class="divider mb-0"></div>
-    <div class="content mt-3">
+    <div class="content mt-1">
         <div class="d-flex mb-3 flex-row gap-4 align-items-center">
             <img id="detalles-menu-img" src="{{asset(GlobalHelper::getValorAtributoSetting('bg_default'))}}" class="rounded-sm"
             style="width: 5rem; height: 5rem; object-fit: cover;">
-
             <div>
                 <h2 id="detalles-menu-nombre" class="font-16 line-height-s mt-1 mb-n1">Nombre del producto</h2>
                 <div id="contenedor-cantidad-encarrito" class="d-none">
@@ -20,8 +19,9 @@
                 </div>
             </div>
         </div>
-        <form id="detalles-menu-adicionales">
-            {{-- RENDERIZADO CONDICIONAL ADICIONALES --}}
+        <form id="detalles-menu-adicionales" 
+            style="max-height: 40vh; overflow-x: hidden; overflow-y: auto;">
+                {{-- RENDERIZADO CONDICIONAL ADICIONALES --}}
         </form>
         <div class="divider mb-2"></div>
         @if (!$isUpdate)
@@ -29,7 +29,7 @@
             <div class="line-height-xs">
                 <small class="color-theme">Los extras seleccionados se veran reflejados en la cantidad del pedido.</small>
             </div>
-            <div class="d-flex mb-0 py-1">
+            <div class="d-flex mb-0">
                 <div class="align-self-center">
                     <h5 class="mb-0">Cantidad</h5>
                     <!-- <small>Disponible(s): <span id="stock-producto-value">x</span></small> -->
@@ -51,7 +51,7 @@
         <div id="error-agotados-container" class="alert bg-orange-light p-2 rounded-s" style="display: none;">
             <p id="error-agotados-message" class="text-white">Algunos adicionales se encuentran agotados.</p>
         </div>
-        <div class="d-flex mb-3 mt-1">
+        <div class="d-flex mb-1 mt-1">
             <div class="align-self-center">
                 <h5 class="mb-0">Costo Unitario Producto</h5>
             </div>
@@ -60,7 +60,7 @@
             </div>
         </div>
         <div id="display-adicionales" style="display: none;">
-            <div class="d-flex mb-3">
+            <div class="d-flex my-1">
                 <div class="align-self-center">
                     <h5 class="mb-0">Costo Adicionales</h5>
                 </div>
@@ -69,7 +69,7 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex mb-2">
+        <div class="d-flex mb-0">
             <div class="align-self-center">
                 <h5 class="mb-0">Costo Total</h5>
             </div>
@@ -699,10 +699,10 @@
                     <div class="row mb-2">
                         ${grupo.map(ad_obligatorio => `
                             <div class="col-6">
-                                <div class="form-check icon-check mb-0">
+                                <div class="form-check icon-check mb-0 me-0 pr-0">
                                     <input class="form-check-input input-radio" id="adicional-${ad_obligatorio.id}" type="radio"
                                     name="${nombreGrupo}" value="${ad_obligatorio.id}">
-                                    <label class="form-check-label" for="adicional-${ad_obligatorio.id}">
+                                    <label class="form-check-label pr-0 pl-1" for="adicional-${ad_obligatorio.id}" style="padding-right: 0 !important;">
                                         <span id="nombre-adicional-${ad_obligatorio.id}">${ad_obligatorio.nombre}</span> ${ad_obligatorio.precio > 0 ?  `<span class="badge bg-highlight">Bs. ${ad_obligatorio.precio}</span>` : '' }
                                     </label>
                                     <i class="icon-check-1 fa fa-circle color-gray-dark font-16"></i>
@@ -719,10 +719,10 @@
                     <div class="row mb-2">
                         ${grupo.map(adicionalUnico => `
                             <div class="col-6">
-                                <div class="form-check icon-check mb-0">
+                                <div class="form-check icon-check mb-0 me-0 pr-0">
                                     <input class="form-check-input input-single" id="adicional-${adicionalUnico.id}" type="checkbox" name="${nombreGrupo}[]" value="${adicionalUnico.id}" 
                                     ${adicionalUnico.cantidad == 0 && adicionalUnico.contable == true ? 'disabled': '' }>
-                                    <label class="form-check-label" for="adicional-${adicionalUnico.id}">
+                                    <label class="form-check-label pr-0" for="adicional-${adicionalUnico.id}" style="padding-right: 0 !important;" >
                                         <span id="nombre-adicional-${adicionalUnico.id}">${adicionalUnico.nombre}</span> ${adicionalUnico.precio > 0 ? `<span class="badge bg-highlight">Bs. ${adicionalUnico.precio}</span>` : '' }
                                     </label>
                                     <i class="icon-check-1 fa fa-square color-gray-dark font-16"></i>
