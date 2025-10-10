@@ -238,6 +238,20 @@ export const actualizarContadorCarrito = () => {
     }
 }
 
+export const cantidadOrdenesTotales = () => {
+    const carrito = obtenerCarrito();
+    if (carrito.items && carrito.items.length > 0) {
+        // Sumar los valores de cantidad de cada producto
+        const cantidadTotal = carrito.items.reduce((sum, item) => {
+            return sum + (item.cantidad || 0);
+        }, 0);
+
+        return cantidadTotal;
+    }
+    
+    return 0;
+}
+
 // AGREGAR ITEMS AL CARRITO
 export async function agregarAlCarrito(productId, cantidad, isUpdate = false, adicionales = null) {
     const carrito = obtenerCarrito();
@@ -475,5 +489,6 @@ window.carritoStorage = {
     mostrarToastAgregado,
     mostrarToastLimite,
     adicionalesOrdenIndice,
-    cantidadOrdenesProducto
+    cantidadOrdenesProducto,
+    cantidadOrdenesTotales
 }

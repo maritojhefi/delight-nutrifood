@@ -224,10 +224,11 @@
     $(document).ready( async function() {
 
         if (ventaActiva) {
-            // axios para venta activa
             await renderizarPrincipalPedidos();
         }
     });
+
+
 
     const renderizarPrincipalPedidos = async () => {
         const contenedorPrincipal = $('#contenedor-principal');

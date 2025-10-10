@@ -194,34 +194,6 @@
     @stack('modals')
     <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}?v=1.0.0"></script>
     <script type="text/javascript" src="{{ asset('scripts/custom.js') }}?v=1.0.0"></script>
-
-    {{-- <script>
-        $(document).ready(function() {
-            var baseUrl = '{{ env('APP_URL') }}';
-            $.ajaxSetup({
-                beforeSend: function(xhr, options) {
-                    options.url = baseUrl + options.url;
-                }
-            })
-            $(".carrito").click(function() {
-
-                $.ajax({
-                    method: "get",
-                    url: "/productos/add/carrito/" + $(this).attr('id'),
-                    success: function(result) {
-                        if (result == 'logout') {
-                            window.location.href = "{{ route('login') }}";
-                        } else {
-                            // var toaster = document.getElementById('saved-to-favorites');
-                            // cart = new bootstrap.Toast(toaster);
-                            // cart.show()
-                        }
-                    }
-                })
-
-            });
-        });
-    </script> --}}
     <script>
         function myFunction() {
             var element = document.body;

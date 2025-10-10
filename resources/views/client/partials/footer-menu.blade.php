@@ -90,7 +90,7 @@
     <a href="{{ route('carrito') }}"
         class="{{ request()->is('carrito' . '*') ? 'active-nav rounded-m' : '' }} cargando d-flex flex-column gap-1">
         @if ($tiene_venta_activa)
-            <div class="d-flex align-items-center justify-content-center gap-1">
+            <div class="d-flex align-items-center justify-content-center gap-1 mb-n2">
                 <i><i data-lucide="hand-platter" class="lucide-icon color {{request()->is('carrito' . '*') ? 'color-highlight' : ''}}"></i></i>
                 <span id="mipedido-counter" class="pedido-counter-badge">{{ $cantidad_total_pedido }}</span>
             </div>

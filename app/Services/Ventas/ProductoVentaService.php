@@ -431,29 +431,41 @@ class ProductoVentaService implements ProductoVentaServiceInterface
     public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad): VentaResponse
     {
         try {
-            // // Log::debug("Valores pasados por el cliente a agregarProductoCliente: ", ["Producto" => $producto, "Adicionales" => $adicionales, "cantidad" => $cantidad]);
-
             DB::beginTransaction();
 
-            $existeProductoVenta = $venta->productos()
-                    ->where('producto_id', $producto->id)
-                    ->wherePivot('aceptado', false)->exists();
+            // CRITICAL FIX: Get current cantidad BEFORE updating
+            $productoVentaExistente = $venta->productos()
+                ->where('producto_id', $producto->id)
+                ->wherePivot('aceptado', false)
+                ->first();
             
+            $existeProductoVenta = !is_null($productoVentaExistente);
+            $cantidadActual = $existeProductoVenta ? $productoVentaExistente->pivot->cantidad : 0;
+
+            // Update or create producto_venta
             if (!$existeProductoVenta) {
-                // Log::debug("No existe registro en producto_venta, creando para ",[$producto->id]);
                 $venta->productos()->attach($producto->id, ['cantidad' => $cantidad]);
             } else {
-                // Log::debug("Existe registro en producto_venta, creando para ",[$producto->id]);
-                $venta->productos()->wherePivot('aceptado', false)->updateExistingPivot($producto->id, [
-                    'cantidad' => DB::raw("cantidad + {$cantidad}")
-                ]);
+                // CRITICAL FIX: Use calculated value instead of DB::raw to avoid race conditions
+                $venta->productos()
+                    ->wherePivot('aceptado', false)
+                    ->updateExistingPivot($producto->id, [
+                        'cantidad' => $cantidadActual + $cantidad
+                    ]);
             }
 
-            // Actualizar adicionales si es necesario
+            // Process adicionales if needed
             if ($producto->medicion == 'unidad') {
-                $this->procesarAdicionalesBatch($venta, $producto->id, $adicionales, $cantidad);
+                $respuestaProcesado = $this->procesarAdicionalesBatch($venta, $producto->id, $adicionales, $cantidad);
+                                
+                // CRITICAL FIX: Check if adicionales processing failed
+                if (!$respuestaProcesado->success) {
+                    DB::rollBack();
+                    return $respuestaProcesado;
+                }
             }
 
+            // Validate and update stock
             if ($producto->contable) {
                 $stockResponse = $this->stockService->actualizarStock(
                     $producto,
@@ -463,35 +475,47 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 );
 
                 if (!$stockResponse->success) {
-                    // Log::debug("Error en stockResponse, realizando rollback: ", [$stockResponse]);
+                    DB::rollBack();
                     return $stockResponse;
                 }
             }
+
             DB::commit();
 
+            // Get updated producto_venta
             $productoVenta = $venta->productos()
-            ->where('producto_id', $producto->id)
-            ->wherePivot('aceptado', false)
-            ->withPivot('id', 'cantidad')
-            ->first();
+                ->where('producto_id', $producto->id)
+                ->wherePivot('aceptado', false)
+                ->withPivot('id', 'cantidad')
+                ->first();
 
-            $productoVentaInfo = $this->obtenerProductoVentaIndividual($venta,$productoVenta->pivot->id);
+            $productoVentaInfo = $this->obtenerProductoVentaIndividual($venta, $productoVenta->pivot->id);
             if (!$productoVentaInfo->success) {
-                throw new VentaException("Error al obtener el registro correspondiente", "error", [],404);
+                throw new VentaException("Error al obtener el registro correspondiente", "error", [], 404);
             }
 
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
             return VentaResponse::success(
-                $productoVenta ? $productoVentaInfo->data : null,
+                $productoVentaInfo->data,
                 "ProductoVenta agregado/actualizado exitosamente"
             );
+            
         } catch (VentaException $e) {
+            Log::error("VentaException capturada, ejecutando rollback", [
+                'message' => $e->getMessage(),
+                'producto' => $producto->nombre ?? 'desconocido'
+            ]);
             DB::rollBack();
             return VentaResponse::error($e->getMessage(), [], null);
-        } catch (\Exception  $e) {
+        } catch (\Exception $e) {
+            Log::error("Exception capturada, ejecutando rollback", [
+                'message' => $e->getMessage(),
+                'producto' => $producto->nombre ?? 'desconocido',
+                'trace' => $e->getTraceAsString()
+            ]);
             DB::rollBack();
-            return VentaResponse::error('Error al agregar producto: ' . $e ->getMessage());
+            return VentaResponse::error('Error al agregar producto: ' . $e->getMessage());
         }
     }
 
@@ -927,15 +951,11 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             $adicionalesProductoVenta = json_decode($registro->adicionales, true);;
             $adicionalesIndice = $adicionalesProductoVenta[$indice];
-
-            // Log::debug("Adicionales para el ProductoVenta escogido: ", [$adicionalesProductoVenta]);
-            // Log::debug("Adicionales para el Indice escogido: ", [$adicionalesIndice]);
             
             $adicionales = [];
             
             foreach ($adicionalesIndice as $adic) {
                 $adicional = Adicionale::where('nombre', key($adic))->first();
-                // Log::debug("valor del adicional $adicional->nombre:" , [$adicional]);
                 $adicionales[] = [
                     "id" => $adicional->id,
                     "nombre" => $adicional->nombre,

@@ -271,14 +271,12 @@ class VentasWebController extends Controller
         }
     }
 
-    public function carrito_ProductosVenta(Request $request) {
+    public function sincronizar_carrito(Request $request) {
         try {
             $user = User::find(auth()->user()->id);
-
             $carrito = collect($request->carrito['items']);
             $venta_activa = $user->ventaActiva;
 
-            // Verificar que existe una venta activa
             if (!$venta_activa) {
                 return response()->json([
                     'message' => 'No se encontró una venta activa para el usuario',
@@ -286,30 +284,87 @@ class VentasWebController extends Controller
                 ], 404);
             }
 
+            $resultados = [
+                'exitosos' => [],
+                'fallidos' => [],
+                'advertencias' => []
+            ];
+
+            Log::debug("Sincronizando Carrito");
+
             foreach ($carrito as $item) {
                 $producto_id = $item['id'];
-                $adicionales = $item['adicionales'];
-                // $cantidad = $item['cantidad'];
+                $adicionales_grupos = $item['adicionales'];
 
-                $producto = Producto::publicoTienda()->findOrFail($producto_id); 
+                try {
+                    $producto = Producto::publicoTienda()->findOrFail($producto_id);
 
-                foreach ($adicionales as $orden) {
-                    $adicionales = Adicionale::whereIn('id', $orden)->get()->keyBy('id');
+                    // Process each serving individually (keeping your current approach)
+                    foreach ($adicionales_grupos as $index => $orden) {
+                        $adicionales = Adicionale::whereIn('id', $orden)->get();
 
-                    $respuestaAdicion = $this->productoVentaService
-                    ->agregarProductoCliente($venta_activa, 
-                                            $producto, 
-                                            $adicionales, 
-                                            1 );
+                        $respuestaAdicion = $this->productoVentaService->agregarProductoCliente(
+                            $venta_activa,
+                            $producto,
+                            $adicionales,
+                            1
+                        );
+
+                        // CRITICAL FIX: Skip this serving if it fails, but continue with others
+                        if (!$respuestaAdicion->success) {
+                            if ($respuestaAdicion->type === 'warning') {
+                                $resultados['advertencias'][] = [
+                                    'producto_id' => $producto_id,
+                                    'nombre' => $producto->nombre,
+                                    'serving' => $index + 1,
+                                    'mensaje' => $respuestaAdicion->message
+                                ];
+                            } else {
+                                $resultados['fallidos'][] = [
+                                    'producto_id' => $producto_id,
+                                    'nombre' => $producto->nombre,
+                                    'serving' => $index + 1,
+                                    'error' => $respuestaAdicion->message
+                                ];
+                            }
+                            
+                            // Skip this serving but continue with the next one
+                            Log::warning("Saltando serving " . ($index + 1) . " de {$producto->nombre}", [
+                                'error' => $respuestaAdicion->message
+                            ]);
+                            continue; // Changed from break to continue
+                        }
+
+                        $resultados['exitosos'][] = [
+                            'producto_id' => $producto_id,
+                            'nombre' => $producto->nombre,
+                            'serving' => $index + 1
+                        ];
+                    }
+
+                } catch (\Exception $e) {
+                    Log::error("Error procesando producto {$producto_id}", [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                    
+                    $resultados['fallidos'][] = [
+                        'producto_id' => $producto_id,
+                        'error' => $e->getMessage()
+                    ];
                 }
             }
 
+            $exitosos = count($resultados['exitosos']);
+            $fallidos = count($resultados['fallidos']);
+            $advertencias = count($resultados['advertencias']);
+
             return response()->json([
-                'message' => 'Carrito procesado exitosamente',
-                'items_procesados' => $carrito->sum(function ($item) {
-                    return count($item['adicionales']);
-                }),
-                'respuesta_adicion' =>  $respuestaAdicion,
+                'message' => "Carrito procesado: {$exitosos} exitosos, {$fallidos} fallidos, {$advertencias} advertencias",
+                'exitosos' => $exitosos,
+                'fallidos' => $fallidos,
+                'advertencias' => $advertencias,
+                'detalles' => $resultados
             ], 200);
 
         } catch (\Throwable $th) {

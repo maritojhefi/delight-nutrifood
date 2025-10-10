@@ -96,7 +96,7 @@ Route::prefix('/ventas')
     ->group(function () {
         Route::get('', [App\Http\Controllers\VentasCocinaController::class, 'index'])->name('ventas.cocina.pedido');
         Route::post('/ventaQR', [App\Http\Controllers\VentasWebController::class, 'generarVentaQR']);
-        Route::post('/sincronizar', [App\Http\Controllers\VentasWebController::class,'carrito_ProductosVenta']);
+        Route::post('/sincronizar', [App\Http\Controllers\VentasWebController::class,'sincronizar_carrito']);
         Route::get('/productos', [App\Http\Controllers\VentasWebController::class,'obtenerProductosVenta']);
         Route::get('/productos/{producto_venta_ID}', [App\Http\Controllers\VentasWebController::class,'obtenerProductoVenta']);
         Route::post('/producto/observacion', [App\Http\Controllers\VentasWebController::class,'actualizarObservacionVenta']);
