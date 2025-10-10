@@ -428,6 +428,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
+    // Servicio para el agregado de productos_venta con la configuracion solicitada por el cliente, validando el stock disponible
     public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad): VentaResponse
     {
         try {
@@ -519,6 +520,69 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
+    // Servicio Helper para el procesado de adicionales incluidos en una solicitud realizada por el cliente.
+    private function procesarAdicionalesBatch(Venta $venta, int $productoId, Collection $extras, int $cantidad)
+    {
+        try {
+            // Obtener el registro de producto_venta necesario
+            $productoVenta = $venta->productos()
+                    ->where('producto_id', $productoId)
+                    ->wherePivot('aceptado', false)      // Obtener solo pedidos no aceptados
+                    ->first();
+            
+            if (!$productoVenta) {
+                return VentaResponse::error('Producto no encontrado en la venta');
+            }
+
+            // Obtener el listado de adicionales actual
+            $listaActual = $productoVenta->pivot->adicionales;
+            $json = $listaActual ? json_decode($listaActual, true) : [];
+
+            // En caso de no disponer de adicionales, insertat arrays vacios
+            if ($extras->isEmpty()) {
+                for ($i = 0; $i < $cantidad; $i++) {
+                    $siguiente_clave = count($json) + 1;
+                    $json[$siguiente_clave] = []; // Empty array for each unit
+                }
+            } else {
+                // Validar el stock necesario
+                foreach ($extras as $adicional) {
+                    if ($adicional->contable == true && $adicional->cantidad < $cantidad) {
+                        return VentaResponse::warning("No hay stock suficiente para el adicional: {$adicional->nombre}. Stock disponible: {$adicional->cantidad}, requerido: {$cantidad}");
+                        // throw new \Exception("No hay stock suficiente para el adicional: {$adicional->nombre}. Stock disponible: {$adicional->cantidad}, requerido: {$cantidad}");
+                    }
+                }
+
+                // Procesar las veces determinadas por la cantidad
+                for ($i = 0; $i < $cantidad; $i++) {
+                    $siguiente_clave = count($json) + 1;
+                    $array_extras = [];
+
+                    foreach ($extras as $adicional) {
+                        if ($adicional->contable == true && $i == 0) {
+                            $adicional->decrement('cantidad', $cantidad);
+                        }
+                        $array_extras[] = [$adicional->nombre => $adicional->precio];
+                    }
+
+                    $json[$siguiente_clave] = $array_extras;
+                }
+            }
+            
+            // Actualizar producto_venta
+            DB::table('producto_venta')
+            ->where('venta_id', $venta->id)
+            ->where('producto_id', $productoId)
+            ->where('aceptado', false)
+            ->update(['adicionales' => json_encode($json)]);
+
+            return VentaResponse::success(null, 'Adicionales actualizados');
+        } catch (\Exception $e) {
+            return VentaResponse::error('Error al actualizar adicionales: ' . $e->getMessage());
+        }
+    }
+
+    // Servicio para la actualizacion de una orden en "adicionales" para un registro de "productos_venta" con la configuracion solicitada por el cliente.
     public function actualizarOrdenVentaCliente(Venta $venta, $productoVenta, Producto $producto, Collection $adicionalesNuevos, int $indice): VentaResponse
     {
         try {
@@ -587,67 +651,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
-    private function procesarAdicionalesBatch(Venta $venta, int $productoId, Collection $extras, int $cantidad)
-    {
-        try {
-            // Obtener el registro de producto_venta necesario
-            $productoVenta = $venta->productos()
-                    ->where('producto_id', $productoId)
-                    ->wherePivot('aceptado', false)      // Obtener solo pedidos no aceptados
-                    ->first();
-            
-            if (!$productoVenta) {
-                return VentaResponse::error('Producto no encontrado en la venta');
-            }
-
-            // Obtener el listado de adicionales actual
-            $listaActual = $productoVenta->pivot->adicionales;
-            $json = $listaActual ? json_decode($listaActual, true) : [];
-
-            // En caso de no disponer de adicionales, insertat arrays vacios
-            if ($extras->isEmpty()) {
-                for ($i = 0; $i < $cantidad; $i++) {
-                    $siguiente_clave = count($json) + 1;
-                    $json[$siguiente_clave] = []; // Empty array for each unit
-                }
-            } else {
-                // Validar el stock necesario
-                foreach ($extras as $adicional) {
-                    if ($adicional->contable == true && $adicional->cantidad < $cantidad) {
-                        return VentaResponse::warning("No hay stock suficiente para el adicional: {$adicional->nombre}. Stock disponible: {$adicional->cantidad}, requerido: {$cantidad}");
-                        // throw new \Exception("No hay stock suficiente para el adicional: {$adicional->nombre}. Stock disponible: {$adicional->cantidad}, requerido: {$cantidad}");
-                    }
-                }
-
-                // Procesar las veces determinadas por la cantidad
-                for ($i = 0; $i < $cantidad; $i++) {
-                    $siguiente_clave = count($json) + 1;
-                    $array_extras = [];
-
-                    foreach ($extras as $adicional) {
-                        if ($adicional->contable == true && $i == 0) {
-                            $adicional->decrement('cantidad', $cantidad);
-                        }
-                        $array_extras[] = [$adicional->nombre => $adicional->precio];
-                    }
-
-                    $json[$siguiente_clave] = $array_extras;
-                }
-            }
-            
-            // Actualizar producto_venta
-            DB::table('producto_venta')
-            ->where('venta_id', $venta->id)
-            ->where('producto_id', $productoId)
-            ->where('aceptado', false)
-            ->update(['adicionales' => json_encode($json)]);
-
-            return VentaResponse::success(null, 'Adicionales actualizados');
-        } catch (\Exception $e) {
-            return VentaResponse::error('Error al actualizar adicionales: ' . $e->getMessage());
-        }
-    }
-
+    // Reduce en 1 el pedido realizado por el cliente, necesario para productos simples
     public function disminuirProductoCLiente(Venta $venta, int $producto_venta_id): VentaResponse 
     {
         try {
@@ -717,6 +721,8 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
+    // Elimina por completo un registro de un adicional en una posicion (indice) en particular, guiandose por el identificador unico de la tabla producto_venta
+    // IMPORTANTE, necesario para identificar que el elemento a eliminarse es un pedido aceptado o no aceptado
     public function eliminarItemPivotID(Venta $venta, int $producto_venta_id, int $posicion): VentaResponse {
         try {
             if ($venta->pagado) {
@@ -790,6 +796,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
+    // Elimina por completo un registro de "producto_venta", realizando el restock necesario del producto y sus adicionales
     public function eliminarProductoCompletoCliente(Venta $venta, int $producto_venta_id)    
     {
         try {
@@ -1113,6 +1120,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
     {
         return (int) $venta->productos()->sum('cantidad');
     }
+
     private function verificarAdicionalesVacios($arrayAdicionales): bool
     {
         if (is_null($arrayAdicionales)) {

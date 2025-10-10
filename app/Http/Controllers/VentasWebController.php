@@ -23,6 +23,8 @@ class VentasWebController extends Controller
         private StockServiceInterface $stockService
         // private CalculadoraVentaServiceInterface $calculadoraService
     ) {}
+
+    // Genera una venta para el usuario
     public function generarVentaQR() {   
         
         try {
@@ -76,6 +78,7 @@ class VentasWebController extends Controller
         }
     }
 
+    // Obtiene los productos registrados en la venta activa del usuario
     public function obtenerProductosVenta(Request $request): JsonResponse
     {
         $user = auth()->user();
@@ -105,6 +108,7 @@ class VentasWebController extends Controller
         return response()->json($response->toArray(), $statusCode);
     }
 
+    // Obtiene un producto rergistrado en la venta activa del usuario a partir del identificador de la tabla relacion producto_venta
     public function obtenerProductoVenta(Request $request, $producto_venta_ID): JsonResponse 
     {
         $user = auth()->user();
@@ -134,6 +138,8 @@ class VentasWebController extends Controller
         return response()->json($response->toArray(), $statusCode);
     }
 
+    // Obtiene informacion de una orden a partir de su indice, las ordenes se encuentran en el atributo "adicionales" de los registros
+    // en la tabla "producto_venta"
     public function obtenerOrdenIndice(int $producto_venta_id, int $indice): JsonResponse 
     {
         $ventaActiva = $this->validarVentaActiva();
@@ -143,6 +149,7 @@ class VentasWebController extends Controller
         return response()->json($response, Response::HTTP_OK);
     }
 
+    // Actualizar una orden especifica en un registro de "producto_venta" a partir de su indice
     public function actualizarOrdenIndice(Request $request): JsonResponse 
     {
         try {
@@ -155,10 +162,6 @@ class VentasWebController extends Controller
             // Revisar si el usuario tiene una venta activa
             $user = auth()->user();
             $ventaActiva = $user->ventaActiva;
-
-            // // Log::debug("valor de user:", [$user]);
-            // // Log::debug("valor de ventaActiva:", [$ventaActiva]);
-
 
             $producto = Producto::publicoTienda()->findOrFail($producto_id); 
             if (! $producto) {
@@ -181,24 +184,11 @@ class VentasWebController extends Controller
                 );
                 return new JsonResponse($ventaResponse->toArray(), Response::HTTP_CONFLICT);
             }
-            
-
-            
-            // $habilitadoAceptados = auth()->check() && in_array(auth()->user()->role->nombre, ['admin', 'cajero']);
 
             $productoVenta = DB::table('producto_venta')
                 ->where('producto_id', $producto_id)
                 ->where('venta_id', $ventaActiva->id)
                 ->where('aceptado', 'false')->first();
-
-            // if(!$habilitadoAceptados) {
-            //     $consultaPV->where('aceptado', false);
-            // } 
-            // else {
-            //     $consultaPV->where('cliente_id', '!=', auth()->user()->id); 
-            // }
-
-            // $productoVenta = $consultaPV->first();
 
             if (!$productoVenta) {
                 throw new VentaException("No se pudo obtener la informacion del pedido.", 'error', ["producto_id"=>$producto_id,"venta_id"=>$ventaActiva->id], 500);
@@ -218,6 +208,7 @@ class VentasWebController extends Controller
         }
     }
 
+    // Actualizar la observacion para un pedido en una venta activa
     public function actualizarObservacionVenta(Request $request): JsonResponse
     {
         $ventaActiva = $this->validarVentaActiva();
@@ -234,6 +225,7 @@ class VentasWebController extends Controller
         return new JsonResponse($respuesta->toArray(), Response::HTTP_OK);
     }
 
+    // Eliminar una orden particular a partir de su indice, haciendo uso del identificador unico del registro en "producto_venta"
     public function eliminarOrdenIndice(Request $request): JsonResponse 
     {
         $ventaActiva = $this->validarVentaActiva();
@@ -253,6 +245,7 @@ class VentasWebController extends Controller
         }
     }
 
+    // Eliminar un pedido general, realizando el restock para el producto y los adicionales incluidos
     public function eliminarPedido(Request $request): JsonResponse
     {
         $ventaActiva = $this->validarVentaActiva();
@@ -271,6 +264,7 @@ class VentasWebController extends Controller
         }
     }
 
+    // Sincronizar los pedidos incluidos en el carrito local del cliente con su venta activa
     public function sincronizar_carrito(Request $request) {
         try {
             $user = User::find(auth()->user()->id);
@@ -381,6 +375,8 @@ class VentasWebController extends Controller
         }
     }
 
+    // Agregar un registro a la tabla "producto_venta" desde las vistas del cliente, incluyendose los adicionales y la cantidad de ordenes
+    // con la estructura deseada
     public function agregarProductoVenta(Request $request) {
         $producto_id = $request->producto_id;
         $adicionales_ids = $request->adicionales_ids;
@@ -433,6 +429,7 @@ class VentasWebController extends Controller
         return response()->json($respuestaVenta, Response::HTTP_CREATED);
     }
 
+    // Disminuye en uno el valor de un pedido por parte del cliente.
     public function disminuirProductoVenta(Request $request): JsonResponse {
         $producto_venta_id = $request->producto_venta_id;
         $ventaActiva = $this->validarVentaActiva();
@@ -445,6 +442,7 @@ class VentasWebController extends Controller
         return response()->json($respuestaDisminucion, Response::HTTP_OK);
     }
 
+    // Helper para la validacion de una venta activa para el usuario
     private function validarVentaActiva()
     {
         $user = auth()->user();
