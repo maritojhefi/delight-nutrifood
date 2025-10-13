@@ -80,7 +80,11 @@ class UsuariosController extends Controller
     public function saldo()
     {
         $usuario = User::find(auth()->user()->id);
-        return view('client.miperfil.saldo', compact('usuario'));
+        // SALDO PENDIENTE
+        $saldosPendientes = $usuario->saldos->where('anulado',false)->where('liquidado', null)->sortBy('created_at');
+        // HISTORIAL DE SALDOS
+        $saldosHistorial = $usuario->saldos->where('anulado',false)->sortByDesc('created_at');
+        return view('client.miperfil.saldo', compact('usuario','saldosPendientes','saldosHistorial'));
     }
     public function detalleplan($id, $planid)
     {

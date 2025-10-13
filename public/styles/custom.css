@@ -395,6 +395,10 @@ hover-blue:hover {
     width: 120px;
 }
 
+.theme-dark .table-toggle-btn{
+    background-color: #21252a;
+}
+
 /* Delete Button */
 /* .delete-item-btn {
     top: -6px;
