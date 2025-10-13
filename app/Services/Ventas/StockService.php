@@ -171,15 +171,6 @@ class StockService implements StockServiceInterface
         $stockSuficiente = $stockProducto >= $cantidadSolicitada && 
                         empty($adicionalesInfo['agotados']) && 
                         empty($adicionalesInfo['limitados']);
-
-        // Log::debug('Verificación de stock', [
-        //     'producto_id' => $producto->id,
-        //     'cantidad' => $cantidadSolicitada,
-        //     'stock_producto' => $stockProducto,
-        //     'adicionales_info' => $adicionalesInfo,
-        //     'cantidad_maxima' => $cantidadMaxima,
-        //     'stock_suficiente' => $stockSuficiente
-        // ]);
         
         return new VerificacionStockResponse(
             $stockSuficiente,

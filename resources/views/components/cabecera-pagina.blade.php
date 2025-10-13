@@ -79,16 +79,9 @@
 
     <h1>{{$titulo}}</h1>
 
-    
-    {{-- BOTON REDIRECCION AL PERFIL DE USUARIO --}}
-    {{-- <a href="#" class="page-title-icon preload-img entered loaded" data-ll-status="loaded"
-    style="
-        background-image: url('{{ asset('imagenes/perfil/'.auth()->user()->foto) }}');
-        background-size: cover;
-    ">
-    </a> --}}
-    
-    {{-- <button href="#" data-back-button class="page-title-icon shadow-xl bg-theme"><i class="fas fa-chevron-left"></i></button> --}}
+    @if (request()->is('carrito*') && $tiene_venta_activa )
+        <x-modal-carrito-pendiente />
+    @endif
     <button href="#" class="page-title-icon shadow-xl bg-theme cambiarColor"><x-theme-icon/></button>
     <a href="#" class="page-title-icon shadow-xl bg-theme color-theme" data-menu="menu-main"><i class="fa fa-bars"></i></a>
 </div>
