@@ -222,19 +222,19 @@
                                 <h2 class="">Detalles de la venta</h2>
                                 <!-- <p class="font-600 color-highlight mt-n2 mb-1">Detalle de los items de esta venta:</p> -->
                                 <div class="row mb-0">
-                                    @foreach ($item->venta->productos->groupBy('nombre') as $detalle)
-                                        <div class="d-flex flex-column">
-                                            <strong class="color-highlight font-500">{{ Str::limit($detalle[0]->nombre, 50) }}</strong>
-                                        </div>
-                                        <div class="col-4">
-                                            <small class="font-400 color-theme">
-                                                <strong>Unidades: </strong>
-                                                @foreach ($detalle as $pivot)
-                                                        {{ $pivot->pivot->cantidad }}
-                                                    @break
-                                                @endforeach
-                                            </small>
-                                        </div>
+                                @foreach ($item->venta->productos->groupBy('nombre') as $detalle)
+                                    <div class="d-flex flex-column">
+                                        <strong class="color-highlight font-500">{{ Str::limit($detalle[0]->nombre, 50) }}</strong>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="font-400 color-theme">
+                                            <strong>Unidades: </strong>
+                                            @foreach ($detalle as $pivot)
+                                                    {{ $pivot->pivot->cantidad }}
+                                                @break
+                                            @endforeach
+                                        </small>
+                                    </div>
                                     @if ($detalle[0]->descuento != null && $detalle[0]->descuento < $detalle[0]->precio)
                                         <div class="col-5">
                                             <small class="font-400 color-theme"><strong>Precio:</strong> {{ $detalle->sum('descuento') }} Bs c/u</small>
@@ -245,12 +245,12 @@
                                         </div>
                                     @else
                                         <div class="col-4">
-                                            <small class="font-400 color-theme"><strong>Precio:</strong> {{ $detalle->sum('precio') }} Bs</small>
+                                            <small class="font-400 color-theme"><strong>Precio:</strong> {{ $detalle[0]->pivot->precio_unitario }} Bs</small>
                                         </div>
                                         <div class="col-4">
                                             <small class="font-400 color-theme">
                                                 <strong>Total: </strong>
-                                                {{ $detalle[0]->pivot->cantidad * $detalle->sum('precio') }}
+                                                {{ $detalle[0]->pivot->cantidad * $detalle[0]->pivot->precio_unitario }}
                                                 Bs</small>
                                         </div>
                                     @endif
