@@ -199,7 +199,7 @@
                                         <p class="color-theme font-700">{{ $item->es_deuda ? 'Saldo a deuda' : 'Saldo a favor' }}</p>
                                     </div>
                                     <div class="col-7">
-                                        <p class="font-400 color-{{ $item->es_deuda ? 'red' : 'green' }}-dark"><strong>{{ $item->venta->saldo_monto }} Bs</strong></p>
+                                        <p class="font-400 color-{{ $item->es_deuda ? 'red' : 'green' }}-dark"><strong>{{ $item->es_deuda ? '-' : '+' }}{{ $item->venta->saldo_monto }} Bs</strong></p>
                                     </div>
                                     <!-- FIN PRUEBA -->
                                     <!-- <div class="col-5">
