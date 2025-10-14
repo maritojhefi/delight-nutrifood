@@ -399,6 +399,17 @@ hover-blue:hover {
     background-color: #21252a;
 }
 
+/* Target the specific dropdown button by its ID */
+#pageSelectorButton::after {
+    /* Spacing: Adds more space between the page number and the arrow */
+    margin-left: 0.5em !important; 
+    
+    /* Size: Scales the arrow larger */
+    transform: translateY(0.1em) scale(1.3); 
+    
+    /* Use !important if the default Bootstrap style is too specific to override */
+}
+
 /* Delete Button */
 /* .delete-item-btn {
     top: -6px;
