@@ -76,30 +76,6 @@
                     <p class="font-10 opacity-30 mb-1">Click para ver</p>
                 </div>
             </a>
-            <a href="{{ route('carrito') }}" class="col-6 pe-2">
-                <div class="card card-style me-0 mb-3">
-                    <h1 class="center-text pt-3 mt-3 mb-3">
-                        <i class="fa fa-shopping-cart color-teal-light font-50"></i>
-                    </h1>
-                    <h4 class="color-theme font-600">Mi carrito</h4>
-                    <p class="mt-n2 font-11 color-highlight mb-3">
-                        Tus favoritos!
-                    </p>
-                    <p class="font-10 opacity-30 mb-1">Click para ver</p>
-                </div>
-            </a>
-            <a href="{{ route('tutoriales') }}" class="col-6 ps-2">
-                <div class="card card-style ms-0 mb-3">
-                    <h1 class="center-text pt-3 mt-3 mb-3">
-                        <i class="fa fa-video color-blue-light font-50"></i>
-                    </h1>
-                    <h4 class="color-theme font-600">Videos</h4>
-                    <p class="mt-n2 font-11 color-highlight mb-3">
-                        Conoce mas nuestra comunidad!
-                    </p>
-                    <p class="font-10 opacity-30 mb-1">Click para ver</p>
-                </div>
-            </a>
 
             <a href="#" id="revisarWhatsapp" class="col-12">
                 <div class="card card-style mb-3">
