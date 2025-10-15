@@ -20,124 +20,137 @@
                 </button>
             </div>
             <div class="table-responsive rounded-sm shadow-l">
-                <table id="tabla-pendientes" class="table table-borderless rounded-sm text-center mb-0" style="overflow: hidden;">
-                    <thead class="">
-                        <tr>
-                            <th style="width:7%"  class="color-theme py-2 font-14 text-center align-middle">Ver</th>
-                            <th style="width:33%" class="color-theme py-2 font-14 text-center align-middle">Fecha</th>
-                            <th style="width:27%" class="color-theme py-2 font-14 text-center align-middle">Monto (Bs)</th>
-                            <th style="width:33%" class="color-theme py-2 font-14 text-center align-middle">Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($saldosPendientes as $item)
-                            <tr>
-                                <td><a href="#" data-bs-toggle="modal"
-                                        data-bs-target="#modalSaldo{{ $item->id }}">
-                                        <i data-lucide="book-text" class="lucide-icon color-teal-light"></i>
-                                        <!-- <span
-                                            class="fa-fw select-all fas"></span> -->
-                                    </a>
-                                </td>
-                                <td scope="row" class="color-theme">
-                                    {{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }}</td>
-                                <td class="color-{{ $item->es_deuda ? 'red' : 'green' }}-dark">{{ $item->monto }}</td>
-                                @if ($item->es_deuda)
-                                    <td>
-                                        <mark class="highlight ps-2 font-12 pe-2 bg-red-dark">DEUDA <strong>-</strong></mark> <i
-                                            class="fa fa-arrow-right rotate-135 color-red-dark"></i>
-                                    </td>
-                                @else
-                                    <td >
-                                        <mark class="highlight ps-2 font-12 pe-2 bg-green-dark">FAVOR
-                                            <strong>+</strong></mark> <i class="fa fa-arrow-up rotate-45 color-green-dark"></i>
-                                    </td>
-                                @endif
+                <div id="contenedor-tabla-pendientes">
+                    @if ($saldosPendientes->isEmpty())
+                        <div class="my-4 d-flex flex-column align-items-center justify-content-center">
+                            <i data-lucide="wallet" class="lucide-icon my-2" style="width: 5rem; height: 5rem;"></i>
+                            <h3>Estás al día</h3>
+                            <p class="mb-0">Al parecer no dispones de un saldo activo.</p>
+                            <p>¡Anímate a realizar tus compras ahora!</p>
+                        </div>
+                    @else
+                        <table id="tabla-pendientes" class="table table-borderless rounded-sm text-center mb-0" style="overflow: hidden;">
+                            <thead class="">
+                                <tr>
+                                    <th style="width:7%"  class="color-theme py-2 font-14 text-center align-middle">Ver</th>
+                                    <th style="width:33%" class="color-theme py-2 font-14 text-center align-middle">Fecha</th>
+                                    <th style="width:27%" class="color-theme py-2 font-14 text-center align-middle">Monto (Bs)</th>
+                                    <th style="width:33%" class="color-theme py-2 font-14 text-center align-middle">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($saldosPendientes as $item)
+                                    <tr>
+                                        <td><a href="#" data-bs-toggle="modal"
+                                                data-bs-target="#modalSaldo{{ $item->id }}">
+                                                <i data-lucide="book-text" class="lucide-icon color-teal-light"></i>
+                                                <!-- <span
+                                                    class="fa-fw select-all fas"></span> -->
+                                            </a>
+                                        </td>
+                                        <td scope="row" class="color-theme">
+                                            {{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }}</td>
+                                        <td class="color-{{ $item->es_deuda ? 'red' : 'green' }}-dark">{{ $item->monto }}</td>
+                                        @if ($item->es_deuda)
+                                            <td>
+                                                <mark class="highlight ps-2 font-12 pe-2 bg-red-dark">DEUDA <strong>-</strong></mark> <i
+                                                    class="fa fa-arrow-right rotate-135 color-red-dark"></i>
+                                            </td>
+                                        @else
+                                            <td >
+                                                <mark class="highlight ps-2 font-12 pe-2 bg-green-dark">FAVOR
+                                                    <strong>+</strong></mark> <i class="fa fa-arrow-up rotate-45 color-green-dark"></i>
+                                            </td>
+                                        @endif
 
-                            </tr>
-                        @endforeach 
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2" class="text-center align-middle">
-                                TOTAL
-                            </th>
-                            
-                            <td colspan="2" class="text-center align-middle color-{{ $usuario->saldo > 0 ? 'red' : 'green' }}-dark">
-                                <strong>{{ $usuario->saldo }} Bs. {{ $usuario->saldo > 0 ? "Deuda" : "Disponibles" }} </strong>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-                <table id="tabla-completa" class="table table-borderless rounded-sm text-center d-none" style="overflow: hidden;">
-                    <thead>
-                        <tr>
-                            <th style="width:7%"  class="color-theme py-2 font-14 text-center align-middle">Ver</th>
-                            <th style="width:33%" class="color-theme py-2 font-14 text-center align-middle">Fecha</th>
-                            <th style="width:27%" class="color-theme py-2 font-14 text-center align-middle">Monto (Bs)</th>
-                            <th style="width:33%" class="color-theme py-2 font-14 text-center align-middle">Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-completa-body">
-                        @foreach ($saldosHistorial as $item)
+                                    </tr>
+                                @endforeach 
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="2" class="text-center align-middle">
+                                        TOTAL
+                                    </th>
+                                    
+                                    <td colspan="2" class="text-center align-middle color-{{ $usuario->saldo > 0 ? 'red' : 'green' }}-dark">
+                                        <strong>{{ $usuario->saldo }} Bs. {{ $usuario->saldo > 0 ? "Deuda" : "Disponibles" }} </strong>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    @endif
+                </div>
+                <div id="contenedor-tabla-completa" class="d-none">
+                    <table id="tabla-completa" class="table table-borderless rounded-sm text-center" style="overflow: hidden;">
+                        <thead>
                             <tr>
-                                <td>
-                                    <a href="#" data-bs-toggle="modal"
-                                        data-bs-target="#modalSaldo{{ $item->id }}">
-                                        <i data-lucide="book-text" class="lucide-icon color-teal-light"></i>
-                                        <!-- <span
-                                            class="fa-fw select-all fas"></span> -->
-                                    </a>
-                                </td>
-                                <td scope="row" class="color-theme">
-                                    {{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }}</td>
-                                <td class="color-{{ $item->es_deuda ? 'red' : 'green' }}-dark">{{ $item->monto }}</td>
-                                @if ($item->es_deuda)
-                                    <td>
-                                        <mark class="highlight ps-2 font-12 pe-2 bg-red-dark">DEUDA <strong>-</strong></mark> <i
-                                            class="fa fa-arrow-right rotate-135 color-red-dark"></i>
-                                    </td>
-                                @else
-                                    <td >
-                                        <mark class="highlight ps-2 font-12 pe-2 bg-green-dark">FAVOR
-                                            <strong>+</strong></mark> <i class="fa fa-arrow-up rotate-45 color-green-dark"></i>
-                                    </td>
-                                @endif
-
+                                <th style="width:7%"  class="color-theme py-2 font-14 text-center align-middle">Ver</th>
+                                <th style="width:33%" class="color-theme py-2 font-14 text-center align-middle">Fecha</th>
+                                <th style="width:27%" class="color-theme py-2 font-14 text-center align-middle">Monto (Bs)</th>
+                                <th style="width:33%" class="color-theme py-2 font-14 text-center align-middle">Estado</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot id="tabla-completa-footer">
-                        <tr>
-                            <th colspan="4" id="paginacion-historial-saldos" class="text-center align-middle">
-                                <div class="d-flex flex-row align-items-center justify-content-between">
-                                    <div class="d-flex flex-row gap-2 align-items-center">
-                                        <!-- <select id="selector-pagina-historial"  title="pagina_seleccionada" class="form-select form-select-sm d-flex  justify-items-center">
-                                            <option value="1" default>1</option>
-                                        </select> -->
-                                        <div class="dropdown dropup">
-                                            <button class="btn btn-xxs bg-highlight dropdown-toggle" 
-                                                    type="button" 
-                                                    id="pageSelectorButton" 
-                                                    data-bs-toggle="dropdown" 
-                                                    aria-expanded="false">
-                                                <strong><span id="selector-pagina-text" class="font-13">1</span></strong>
-                                            </button>
-                                            
-                                            <ul class="dropdown-menu bg-dtheme-blue overflow-scroll"  aria-labelledby="pageSelectorButton" id="selector-pagina-options" style="min-width: 4rem !important; max-height: 30vh;">
-                                                </ul>
+                        </thead>
+                        <tbody id="tabla-completa-body">
+                            @foreach ($saldosHistorial as $item)
+                                <tr>
+                                    <td>
+                                        <a href="#" data-bs-toggle="modal"
+                                            data-bs-target="#modalSaldo{{ $item->id }}">
+                                            <i data-lucide="book-text" class="lucide-icon color-teal-light"></i>
+                                            <!-- <span
+                                                class="fa-fw select-all fas"></span> -->
+                                        </a>
+                                    </td>
+                                    <td scope="row" class="color-theme">
+                                        {{ App\Helpers\WhatsappAPIHelper::timeago($item->created_at) }}</td>
+                                    <td class="color-{{ $item->es_deuda ? 'red' : 'green' }}-dark">{{ $item->monto }}</td>
+                                    @if ($item->es_deuda)
+                                        <td>
+                                            <mark class="highlight ps-2 font-12 pe-2 bg-red-dark">DEUDA <strong>-</strong></mark> <i
+                                                class="fa fa-arrow-right rotate-135 color-red-dark"></i>
+                                        </td>
+                                    @else
+                                        <td >
+                                            <mark class="highlight ps-2 font-12 pe-2 bg-green-dark">FAVOR
+                                                <strong>+</strong></mark> <i class="fa fa-arrow-up rotate-45 color-green-dark"></i>
+                                        </td>
+                                    @endif
+
+                                </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot id="tabla-completa-footer">
+                            <tr>
+                                <th colspan="4" id="paginacion-historial-saldos" class="text-center align-middle">
+                                    <div class="d-flex flex-row align-items-center justify-content-between">
+                                        <div class="d-flex flex-row gap-2 align-items-center">
+                                            <!-- <select id="selector-pagina-historial"  title="pagina_seleccionada" class="form-select form-select-sm d-flex  justify-items-center">
+                                                <option value="1" default>1</option>
+                                            </select> -->
+                                            <div class="dropdown dropup">
+                                                <button class="btn btn-xxs bg-highlight dropdown-toggle" 
+                                                        type="button" 
+                                                        id="pageSelectorButton" 
+                                                        data-bs-toggle="dropdown" 
+                                                        aria-expanded="false">
+                                                    <strong><span id="selector-pagina-text" class="font-13">1</span></strong>
+                                                </button>
+                                                
+                                                <ul class="dropdown-menu bg-dtheme-blue overflow-scroll"  aria-labelledby="pageSelectorButton" id="selector-pagina-options" style="min-width: 4rem !important; max-height: 30vh;">
+                                                    </ul>
+                                            </div>
+                                            <p>Página <span id="span-pgactual-historial">1</span> de <span id="span-pgmax-historial">N</span></p>
                                         </div>
-                                        <p>Página <span id="span-pgactual-historial">1</span> de <span id="span-pgmax-historial">N</span></p>
+                                        <div class="d-flex flex-row gap-2">
+                                            <button id="btn-pganterior-historial" class="btn-pg-control btn btn-xxs bg-teal-dark">Anterior</button>
+                                            <button id="btn-pgsiguiente-historial" class="btn-pg-control btn btn-xxs bg-teal-dark">Siguiente</button>
+                                        </div>
                                     </div>
-                                    <div class="d-flex flex-row gap-2">
-                                        <button id="btn-pganterior-historial" class="btn-pg-control btn btn-xxs bg-teal-dark">Anterior</button>
-                                        <button id="btn-pgsiguiente-historial" class="btn-pg-control btn btn-xxs bg-teal-dark">Siguiente</button>
-                                    </div>
-                                </div>
-                            </th>
-                        </tr>
-                    </tfoot>
-                </table>
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -315,9 +328,11 @@
             
             $('#historial-saldo-btn').on('click', function() {
                 // Ocultar tabla pendientes
-                $('#tabla-pendientes').addClass('d-none');                
+                $('#contenedor-tabla-pendientes').addClass('d-none');    
+                // $('#tabla-pendientes').addClass('d-none');                
                 // Revelar tabla historial
-                $('#tabla-completa').removeClass('d-none');
+                $('#contenedor-tabla-completa').removeClass('d-none');
+                // $('#tabla-completa').removeClass('d-none');
 
                 // Deseleccionar Boton Pendientes 
                 $('#pendientes-saldo-btn').removeClass('bg-teal-light');
@@ -328,9 +343,11 @@
 
             $('#pendientes-saldo-btn').on('click', function() {
                 // Ocultar tabla historial
-                $('#tabla-completa').addClass('d-none');
+                $('#contenedor-tabla-completa').addClass('d-none');
+                // $('#tabla-completa').addClass('d-none');
                 // Revelar tabla pendientes
-                $('#tabla-pendientes').removeClass('d-none');
+                $('#contenedor-tabla-pendientes').removeClass('d-none');
+                // $('#tabla-pendientes').removeClass('d-none');
 
                 // Deseleccionar Boton Historial
                 $('#historial-saldo-btn').removeClass('bg-teal-light');
@@ -360,8 +377,14 @@
         const renderizarListadoHistorial = async(pagina, limite) => {
             try {
                 await SaldoService.obtenerHistorialSaldo(pagina, 10).then(data => {
-                    renderizarRegistrosHistorial(data.saldos);
-                    renderizarControlesPaginacion(data.registros_totales, data.pagina_actual, data.cantidad_pagina);
+                    if (data.saldos.length) {
+                        renderizarRegistrosHistorial(data.saldos);
+                        renderizarControlesPaginacion(data.registros_totales, data.pagina_actual, data.cantidad_pagina);
+                    } else {
+                        renderizarHistorialVacio();
+                        console.log("No parece ser que el cliente disponga de un historial de saldos");
+                    }
+                    
                 });
                 
             } catch (error) {
@@ -444,6 +467,45 @@
             botonAnterior.data('page', paginaActual - 1);
             botonSiguiente.data('page', paginaActual + 1);
         }
-    </script>
+
+        const renderizarHistorialVacio = () => {
+            const tabla = $('#tabla-completa');
+            const footerPaginacion = $('#tabla-completa-footer');
+            footerPaginacion.addClass('d-none');
+            const mensajeHistorialVacio = `
+                <div class="my-4 d-flex flex-column align-items-center justify-content-center p-1">
+                    <i data-lucide="book-open" class="lucide-icon my-2" style="width: 5rem; height: 5rem;"></i>
+                    <h3>Tu historial esta vacío</h3>
+                    <p class="mb-0 mx-3 text-center">Al parecer no dispones de un historial de saldos.</p>
+                    <p>¡Anímate a realizar tus compras ahora!</p>
+                    <div class="row g-2 mb-0 w-100 px-2">
+                        <div class="col-6 d-flex justify-content-center">
+                            <a href="/lineadelight" class="btn gradient-green w-75 d-flex flex-column align-items-center justify-content-center gap-1 py-2 px-0" role="button">
+                                <i class="fa fa-leaf fa-2x"></i> 
+                                <span class="font-12">Línea Delight</span>
+                            </a>
+                        </div>
+
+                        <div class="col-6 d-flex justify-content-center">
+                            <a href="/productos" class="btn gradient-blue w-75 d-flex flex-column align-items-center justify-content-center gap-1 py-2 px-0" role="button">
+                                <i class="fa fa-gem fa-2x"></i> 
+                                <span class="font-12">Eco-Tienda</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `
+            tabla.replaceWith(mensajeHistorialVacio);
+            reinitializeLucideIcons();
+            
+        }
+
+        const renderizarPendientesVacio = () => {
+            // <div>
+            //     <h3></h3>
+            // </div>
+            return;
+        }
+</script>
     @endpush
 @endsection
