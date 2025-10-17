@@ -543,106 +543,182 @@
                             <!-- Contenido colapsable del acordeón -->
                             <div id="planCollapse" class="accordion-collapse collapse" aria-labelledby="planHeader"
                                 data-bs-parent="#planAccordion">
-                                <!-- Listado de pedidos para el plan -->
-                                <ul class="list-unstyled d-flex flex-column gap-3 mb-0 mt-2">
-                                    @foreach ($pedidos as $pedido)
-                                        <li>
-                                            @php
-                                                $numeroPedido = 'pedido' . $loop->iteration;
-                                                $pedidoHeaderId = $numeroPedido . 'Header';
-                                                $pedidoCollapseId = $numeroPedido . 'Collapse';
-                                                $detallePedido = $pedido->detalle ? json_decode($pedido->detalle, true) : [];
-                                                $loopPedido = $loop->iteration
-                                            @endphp
-                                            <div class="card card-style rounded-sm rounded bg-teal-light bg-dtheme-blue mx-0 mb-0">
-                                                <div class="accordion-header" id="{{ $pedidoHeaderId }}">
-                                                    <button type="button" class="accordion-button pedido-accordion-button bg-transparent bg-dtheme-blue py-2" data-bs-toggle="collapse"
-                                                        data-bs-target="#{{ $pedidoCollapseId }}" aria-expanded="false" aria-controls="{{ $pedidoCollapseId }}">
-                                                        <div class="d-flex flex-row align-items-center justify-content-between w-100 me-2">
-                                                            <h3 class="mb-0 color-white font-18">Pedido {{ $loop->iteration }}</h3>
-                                                            <!-- <p class="mb-0 color-highlight font-18">Pedido {{ $loop->iteration }}</p>  -->
-                                                            @if ($plan->pivot->cocina == 'despachado' || true)
-                                                                <p class="badge bg-white bg-dtheme-dkblue color-theme mb-0">{{ ucfirst($pedido->cocina) }}</p>
+                                @php
+                                    $menuItems = [
+                                        'SOPA' => [
+                                            'label' => 'Sopa',
+                                            'icon' => 'soup',
+                                        ],
+                                        'PLATO' => [
+                                            'label' => 'Principal',
+                                            'icon' => 'utensils-crossed',
+                                        ],
+                                        'CARBOHIDRATO' => [
+                                            'label' => 'Carbohidrato',
+                                            'icon' => 'sprout',
+                                        ],
+                                        'ENSALADA' => [
+                                            'label' => 'Ensalada',
+                                            'icon' => 'salad',
+                                        ],
+                                        'JUGO' => [
+                                            'label' => 'Jugo',
+                                            'icon' => 'glass-water',
+                                        ],
+                                        'EMPAQUE' => [
+                                            'label' => 'Empaque',
+                                            'icon' => 'package',
+                                        ]
+                                    ];
+                                @endphp
+
+                                @if (count($pedidos) > 1)
+                                    <!-- Listado de pedidos para el plan -->
+                                    <ul class="list-unstyled d-flex flex-column gap-3 mb-0 mt-2">
+                                        @foreach ($pedidos as $pedido)
+                                            <li>
+                                                @php
+                                                    $numeroPedido = 'pedido' . $loop->iteration;
+                                                    $pedidoHeaderId = $numeroPedido . 'Header';
+                                                    $pedidoCollapseId = $numeroPedido . 'Collapse';
+                                                    $detallePedido = $pedido->detalle ? json_decode($pedido->detalle, true) : [];
+                                                    $loopPedido = $loop->iteration
+                                                @endphp
+                                                <div class="card card-style rounded-sm rounded bg-teal-light bg-dtheme-blue mx-0 mb-0">
+                                                    <div class="accordion-header" id="{{ $pedidoHeaderId }}">
+                                                        <button type="button" class="accordion-button pedido-accordion-button bg-transparent bg-dtheme-blue py-2" data-bs-toggle="collapse"
+                                                            data-bs-target="#{{ $pedidoCollapseId }}" aria-expanded="false" aria-controls="{{ $pedidoCollapseId }}">
+                                                            <div class="d-flex flex-row align-items-center justify-content-between w-100 me-2">
+                                                                <h3 class="mb-0 color-white font-18">Pedido {{ $loop->iteration }}</h3>
+                                                                @if ($plan->pivot->cocina == 'despachado' || true)
+                                                                    <p class="badge bg-white bg-dtheme-dkblue color-theme mb-0">{{ ucfirst($pedido->cocina) }}</p>
+                                                                @endif
+                                                            </div>
+                                                        </button>
+                                                    </div>
+                                                    <div id="{{ $pedidoCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $pedidoHeaderId }}">
+                                                        <div class="accordion-body mx-3 mb-3 mt-0 p-3 card card-style bg-dtheme-dkblue">
+                                                            @if (empty($detallePedido))
+                                                                <div class="d-flex flex-row gap-2 color-theme align-items-center">
+                                                                    <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
+                                                                        <i data-lucide="notebook-pen" class="lucide-icon color-white"></i>
+                                                                    </div>
+                                                                    <span class="font-15 item-value color-theme">El pedido no ha sido detallado</span>
+                                                                </div>
+                                                                <!-- <div class="no-details">
+
+                                                                    <i class="fa fa-info-circle"></i>
+                                                                    <span>No hay detalles disponibles.</span>
+                                                                </div> -->
+                                                            @else
+                                                                <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                                                                    @php
+                                                                        $iteracionValidaDetalle = 0;
+                                                                    @endphp
+                                                                    @foreach ($menuItems as $key => $item)
+                                                                        @if (isset($detallePedido[$key]) && $detallePedido[$key] != '')
+                                                                        @php
+                                                                            $iteracionValidaDetalle++;
+                                                                            $bgClass = ($iteracionValidaDetalle % 2 !== 0) ? 'bg-delight-red' : 'bg-highlight';
+                                                                            $colorClass = ($iteracionValidaDetalle % 2 !== 0) ? 'color-delight-red' : 'color-highlight';
+                                                                        @endphp
+                                                                            <li class="d-flex flex-row gap-2 align-items-center">
+                                                                                <div class="{{ $bgClass }} rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
+                                                                                    <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-white" style="height: 2rem; width: 2rem"></i>
+                                                                                </div>
+                                                                                <div class="d-flex flex-column">
+                                                                                    <h3 class="detalle-label {{ $colorClass }}">{{ $item['label'] }}</h3>
+                                                                                    <span class="item-value color-theme" style="font-size: 15px !important; line-height: normal;">
+                                                                                        {{ ucfirst($detallePedido[$key]) }}
+                                                                                    </span>
+                                                                                </div>
+                                                                            </li>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </ul>
                                                             @endif
                                                         </div>
-                                                    </button>
-                                                </div>
-                                                <div id="{{ $pedidoCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $pedidoHeaderId }}">
-                                                    <div class="accordion-body mx-3 mb-3 mt-0 card card-style bg-dtheme-dkblue">
-                                                        @if (empty($detallePedido))
-                                                            <div class="no-details">
-                                                                <i class="fa fa-info-circle"></i>
-                                                                <span>No hay detalles disponibles.</span>
+                                                        @if (isset($detallePedido['ENVIO']) && $detallePedido['ENVIO'] != '')
+                                                            <div class="accordion-body mx-3 mb-3 mt-0 card card-style bg-dtheme-dkblue">
+                                                                <div class="d-flex flex-row gap-2 color-theme">
+                                                                    <i data-lucide="truck" class="lucide-icon"></i>
+                                                                    <span>{{ $detallePedido['ENVIO'] }}</span>
+                                                                </div>
                                                             </div>
-                                                        @else
-                                                            @php
-                                                                $menuItems = [
-                                                                    'SOPA' => [
-                                                                        'label' => 'Sopa',
-                                                                        'icon' => 'soup',
-                                                                    ],
-                                                                    'PLATO' => [
-                                                                        'label' => 'Principal',
-                                                                        'icon' => 'utensils-crossed',
-                                                                    ],
-                                                                    'CARBOHIDRATO' => [
-                                                                        'label' => 'Carbohidrato',
-                                                                        'icon' => 'sprout',
-                                                                    ],
-                                                                    'ENSALADA' => [
-                                                                        'label' => 'Ensalada',
-                                                                        'icon' => 'salad',
-                                                                    ],
-                                                                    'JUGO' => [
-                                                                        'label' => 'Jugo',
-                                                                        'icon' => 'glass-water',
-                                                                    ],
-                                                                    'EMPAQUE' => [
-                                                                        'label' => 'Empaque',
-                                                                        'icon' => 'package',
-                                                                    ]
-                                                                ];
-                                                            @endphp
-                                                            <ul class="list-unstyled d-flex flex-column gap-2">
-                                                                @php
-                                                                    $iteracionValidaDetalle = 0;
-                                                                @endphp
-                                                                @foreach ($menuItems as $key => $item)
-                                                                    @if (isset($detallePedido[$key]) && $detallePedido[$key] != '')
-                                                                    @php
-                                                                        $iteracionValidaDetalle++;
-                                                                        $bgClass = ($iteracionValidaDetalle % 2 !== 0) ? 'bg-delight-red' : 'bg-highlight';
-                                                                        $colorClass = ($iteracionValidaDetalle % 2 !== 0) ? 'color-delight-red' : 'color-highlight';
-                                                                    @endphp
-                                                                        <li class="d-flex flex-row gap-2 align-items-center">
-                                                                            <div class="{{ $bgClass }} rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
-                                                                                <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-white" style="height: 2rem; width: 2rem"></i>
-                                                                            </div>
-                                                                            <div class="d-flex flex-column">
-                                                                                <h3 class="detalle-label {{ $colorClass }}">{{ $item['label'] }}</h3>
-                                                                                <span class="item-value color-theme" style="font-size: 15px !important; line-height: normal;">
-                                                                                    {{ ucfirst($detallePedido[$key]) }}
-                                                                                </span>
-                                                                            </div>
-                                                                        </li>
-                                                                    @endif
-                                                                @endforeach
-                                                            </ul>
                                                         @endif
                                                     </div>
-                                                    @if (isset($detallePedido['ENVIO']) && $detallePedido['ENVIO'] != '')
-                                                        <div class="accordion-body mx-3 mb-3 mt-0 card card-style bg-dtheme-dkblue">
-                                                            <div class="d-flex flex-row gap-2 color-theme">
-                                                                <i data-lucide="truck" class="lucide-icon"></i>
-                                                                <span>{{ $detallePedido['ENVIO'] }}</span>
-                                                            </div>
-                                                        </div>
-                                                    @endif
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @elseif (count($pedidos) == 1)
+                                    <!-- Pedido individual -->
+                                    @php
+                                        $pedido = $pedidos->first();
+                                        $detallePedido = $pedido->detalle ? json_decode($pedido->detalle, true) : [];
+                                    @endphp
+                                    <div class="card card-style rounded-sm rounded bg-teal-light bg-dtheme-blue mx-0 mb-0 mt-2">
+                                        <div class="py-2 px-3">
+                                            <div class="d-flex flex-row align-items-center justify-content-between w-100">
+                                                <h3 class="mb-0 color-white font-20">Pedido</h3>
+                                                @if ($plan->pivot->cocina == 'despachado' || true)
+                                                    <p class="badge bg-white bg-dtheme-dkblue color-theme mb-0">{{ ucfirst($pedido->cocina) }}</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="mx-3 mb-3 mt-0 p-3 card card-style bg-dtheme-dkblue">
+                                            @if (empty($detallePedido))
+                                                <div class="d-flex flex-row gap-2 color-theme align-items-center">
+                                                    <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
+                                                        <i data-lucide="notebook-pen" class="lucide-icon color-white"></i>
+                                                    </div>
+                                                    <span class="font-15 item-value color-theme">El pedido no ha sido detallado</span>
+                                                </div>
+                                                <!-- <div class="no-details">
+
+                                                    <i class="fa fa-info-circle"></i>
+                                                    <span>No hay detalles disponibles.</span>
+                                                </div> -->
+                                            @else
+                                                <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                                                    @php
+                                                        $iteracionValidaDetalle = 0;
+                                                    @endphp
+                                                    @foreach ($menuItems as $key => $item)
+                                                        @if (isset($detallePedido[$key]) && $detallePedido[$key] != '')
+                                                        @php
+                                                            $iteracionValidaDetalle++;
+                                                            $bgClass = ($iteracionValidaDetalle % 2 !== 0) ? 'bg-delight-red' : 'bg-highlight';
+                                                            $colorClass = ($iteracionValidaDetalle % 2 !== 0) ? 'color-delight-red' : 'color-highlight';
+                                                        @endphp
+                                                            <li class="d-flex flex-row gap-2 align-items-center">
+                                                                <div class="{{ $bgClass }} rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
+                                                                    <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-white" style="height: 2rem; width: 2rem"></i>
+                                                                </div>
+                                                                <div class="d-flex flex-column">
+                                                                    <h3 class="detalle-label {{ $colorClass }}">{{ $item['label'] }}</h3>
+                                                                    <span class="item-value color-theme" style="font-size: 15px !important; line-height: normal;">
+                                                                        {{ ucfirst($detallePedido[$key]) }}
+                                                                    </span>
+                                                                </div>
+                                                            </li>
+                                                        @endif
+                                                    @endforeach
+                                                </ul>
+                                            @endif
+                                        </div>
+                                        @if (isset($detallePedido['ENVIO']) && $detallePedido['ENVIO'] != '')
+                                            <div class="accordion-body mx-3 mb-3 mt-0 card card-style bg-dtheme-dkblue">
+                                                <div class="d-flex flex-row gap-2 color-theme align-items-center">
+                                                    <div class="bg-blue-light rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
+                                                        <i data-lucide="truck" class="lucide-icon"></i>
+                                                    </div>
+                                                    <span>{{ $detallePedido['ENVIO'] }}</span>
                                                 </div>
                                             </div>
-                                        </li>
-                                    @endforeach
-                                </ul>
+                                        @endif
+                                    </div>
+                                @endif
                                 @if ($plan->pivot->cocina != 'despachado')
                                     <div class="row d-flex justify-content-center align-items-center mb-0 mt-3">
                                         <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
