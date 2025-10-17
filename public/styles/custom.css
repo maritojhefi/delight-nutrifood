@@ -410,6 +410,37 @@ hover-blue:hover {
     /* Use !important if the default Bootstrap style is too specific to override */
 }
 
+.pedido-accordion-button::after {
+    /* Updated SVG path data to create a thicker arrow. */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M1.646 4.146a.5.5 0 0 1 .708 0L8 9.793l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+}
+
+.bg-delight-red {
+    background-color: #FF5A5A;
+}
+
+.theme-dark .bg-delight-red {
+    background-color: #FF5A5A;
+}
+
+.color-delight-red {
+    color: #FF5A5A;
+}
+
+.theme-dark .color-delight-red {
+    color: #FF5A5A;
+}
+
+.border-delight-red {
+    border-color: #FF5A5A;
+}
+
+.theme-dark .border-delight-red {
+    border-color: #FF5A5A;
+}
+
+
+
 /* Delete Button */
 /* .delete-item-btn {
     top: -6px;

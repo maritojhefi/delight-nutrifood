@@ -11,6 +11,7 @@ use App\Models\Almuerzo;
 use App\Models\Producto;
 use App\Models\Adicionale;
 use App\Helpers\WhatsappAPIHelper;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Rawilk\Printing\Facades\Printing;
 
@@ -516,7 +517,10 @@ class GlobalHelper
             });
 
             $planSiguiente = $planesSiguienteOrdenados->first();
-            $horaInicioSiguiente = Carbon::parse($planSiguiente->horario->hora_inicio);
+
+            $pedidos = self::obtenerPedidosDelPlan($usuario->id, $planSiguiente, $fechaSiguiente);
+
+            // $horaInicioSiguiente = Carbon::parse($planSiguiente->horario->hora_inicio);
 
             // Calcular tiempo hasta el inicio del plan de mañana
             $fechaHoraInicioSiguiente = $fechaActual->copy()->addDay()->setTimeFromTimeString($planSiguiente->horario->hora_inicio);
@@ -524,6 +528,7 @@ class GlobalHelper
 
             return (object) [
                 'plan' => $planSiguiente,
+                'pedidos' => $pedidos,
                 'estado' => 'proximo_dia',
                 'tiempo_restante' => $tiempoRestante,
                 'planes_restantes' => $planesSiguiente->count(),
@@ -581,12 +586,15 @@ class GlobalHelper
 
                 $planSiguiente = $planesSiguienteOrdenados->first();
 
+                $pedidos = self::obtenerPedidosDelPlan($usuario->id, $planSiguiente, $fechaSiguiente);
+
                 // Calcular tiempo hasta el inicio del plan de mañana
                 $fechaHoraInicioSiguiente = $fechaActual->copy()->addDay()->setTimeFromTimeString($planSiguiente->horario->hora_inicio);
                 $tiempoRestante = $horaActual->diffInMinutes($fechaHoraInicioSiguiente);
 
                 return (object) [
                     'plan' => $planSiguiente,
+                    'pedidos' => $pedidos,
                     'estado' => 'proximo_dia',
                     'tiempo_restante' => $tiempoRestante,
                     'planes_restantes' => $planesSiguiente->count(),
@@ -599,12 +607,33 @@ class GlobalHelper
 
         $planFinal = $planActual ?: $planProximo;
 
+        $pedidos = self::obtenerPedidosDelPlan($usuario->id, $planFinal, $fecha);
+
         return (object) [
             'plan' => $planFinal,
+            'pedidos' => $pedidos,
             'estado' => $estado,
             'tiempo_restante' => $tiempoRestante,
             'planes_restantes' => $planesRestantesHoy,
             'fecha_plan' => $fecha,
         ];
+    }
+
+    protected static function obtenerPedidosDelPlan($userId, $plan, $fecha)
+    {
+        $start_timestamp_plan_seleccionado = $plan->pivot->start;
+
+        $pedidos = DB::table('plane_user')
+            // Filtrar por el usuario actual
+            ->where('user_id', $userId)
+            // Filtrar por el ID del plan (tipo de plan, ej. Almuerzo)
+            ->where('plane_id', $plan->id)
+            // Filtrar por la fecha completa para asegurar la coincidencia del día
+            ->whereDate('start', $fecha)
+            // Filtro clave: Agrupar por la hora de inicio exacta del plan seleccionado
+            ->where('start', $start_timestamp_plan_seleccionado)
+            ->get(); // Obtener la colección de todos los registros coincidentes
+        
+        return $pedidos;
     }
 }
