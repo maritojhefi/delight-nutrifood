@@ -725,14 +725,29 @@
                                             @endif
                                         </div>
                                         @if (isset($detallePedido['ENVIO']) && $detallePedido['ENVIO'] != '')
-                                            <div class="accordion-body mx-3 mb-3 mt-0 card card-style bg-dtheme-dkblue">
+                                        <div class="d-flex mx-3 mb-3 align-items-stretch justify-content-between gap-4">
+                                            <div class="accordion-body m-0 card card-style bg-dtheme-dkblue d-flex flex-row w-100">
                                                 <div class="d-flex flex-row gap-2 color-theme align-items-center">
-                                                    <div class="bg-blue-light rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
-                                                        <i data-lucide="truck" class="lucide-icon" style="height: 2rem; width: 2rem"></i>
+                                                    <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
+                                                        <i data-lucide="truck" class="lucide-icon color-white" style="height: 2rem; width: 2rem"></i>
                                                     </div>
-                                                    <span class="font-15 item-value color-theme m-0">{{ $detallePedido['ENVIO'] }}</span>
+                                                    <div class="d-flex flex-column">
+                                                        <h3 class="detalle-label color-blue-dark">ENVÍO</h3>
+                                                        <span class="font-15 item-value color-theme m-0">{{ $detallePedido['ENVIO'] }}</span>
+                                                    </div>
                                                 </div>
                                             </div>
+                                            @if ($plan->editable != 0 && $pedido->estado == 'pendiente')
+                                                <a href="#" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#confirmarModificarPedidoModal"
+                                                    data-url="{{ route('calendario.cliente', [$plan->id, auth()->user()->id, $pedido->id]) }}"
+                                                    class="card card-style gradient-blue d-flex align-items-center justify-content-center m-0 w-50 modificar-pedido-trigger"
+                                                    {{ $pedido->estado == 'finalizado' ? 'disabled' : '' }}>
+                                                        <span class="w-75 color-white text-center">Modificar Pedido</span>
+                                                </a>
+                                            @endif
+                                        </div>
                                         @endif
                                     </div>
                                 @endif
