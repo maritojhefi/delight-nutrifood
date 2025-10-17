@@ -431,7 +431,7 @@
                     $minutos = $tiempoRestanteMinutos % 60;
                     $tiempoRestante = $horas . 'h ' . $minutos . 'm';
                 } else {
-                    $tiempoRestante = $tiempoRestanteMinutos . ' min';
+                    $tiempoRestante = $tiempoRestanteMinutos . ($tiempoRestanteMinutos > 1 ? ' minutos': 'minuto');
                 }
                 // Determinar el mensaje según el estado
                 switch ($estado) {
@@ -479,16 +479,8 @@
                                     data-bs-toggle="collapse" data-bs-target="#planCollapse" aria-expanded="false"
                                     aria-controls="planCollapse">
                                     
-                                    <div class="plan-header-content mt-3"
+                                    <div class="plan-header-content mt-3 mb-2 px-0"
                                         style="padding-right: 2% !important; padding-left: 2% !important;">
-                                        <!-- <div class="d-flex flex-row gap-1">
-                                            <h2 class="plan-title mb-0 color-highlight">{{ $plan->nombre }}</h2>
-                                            
-                                        </div> -->
-                                        <!-- <div>
-                                                <i data-lucide="calendar" class="lucide-icon color-highlight"></i>
-                                                <strong>{{ App\Helpers\GlobalHelper::fechaFormateada(2, Carbon\Carbon::now()) }}</strong>
-                                            </div> -->
 
                                         <div class="day-info">
                                             <div class="day-icon-container">
@@ -525,67 +517,25 @@
                                                     @if(count($pedidos) >= 2)
                                                         <p class="badge bg-delight-red color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
                                                             <span>Pedidos disponibles: {{ count($pedidos) }}</span>
-                                                            <!-- <i class="fa fa-apple"></i> -->
                                                             <i data-lucide="utensils" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
                                                         </p>
                                                     @endif
                                                     <!-- Badge de tiempo con estado -->
-                                                    <!-- <p class="color-highlight mb-0">{{ $textoTiempo }} </p> -->
-                                                    <!-- <div class="badge badge-{{ $colorTiempo }} badge-outline-{{ $colorTiempo }} mb-0"> -->
                                                     <p class="badge bg-highlight color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
                                                         <span>{{ $mensajeTiempo }}</span>
                                                         <!-- <i class="fa {{ $iconoTiempo }}"></i> -->
                                                         <i data-lucide="{{ $iconoTiempoLucide }}" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
                                                     </p>
-                                                </div>
-                                                
-                                                <!-- Información adicional -->
-                                                <div class="plan-info mt-0 pt-0">
-                                                    @if ($plan->pivot->cocina != 'despachado')
-                                                        <!-- <div class="d-flex flex-row">
+
+                                                    <!-- <div class="d-flex flex-row">
                                                             <small>Despacho:</small>
                                                             <small>{{ $plan->horario->hora_inicio . '-' . $plan->horario->hora_fin }}</small>
                                                         </div> -->
-                                                        <!-- @if ($estado == 'en_curso')
-                                                            <small class="text-success">
-                                                                <i class="fa fa-play-circle me-1"></i>
-                                                                Plan en curso
-                                                            </small>
-                                                        @elseif($estado == 'proximo')
-                                                            <small class="text-warning">
-                                                                <i class="fa fa-pause-circle me-1"></i>
-                                                                Próximo plan
-                                                            </small>
-                                                        @elseif($estado == 'proximo_dia')
-                                                            <small class="text-info">
-                                                                <i class="fa fa-calendar me-1"></i>
-                                                                Plan de mañana
-                                                            </small>
-                                                        @endif -->
-                                                        @if ($planesRestantes > 0)
-                                                            <small class="text-muted d-block">
-                                                                <i class="fa fa-list me-1"></i>
-                                                                {{ $planesRestantes }} {{ $planesRestantes > 1 ? 'planes disponibles' : 'plan disponible' }}
-                                                            </small>
-                                                        @endif
-                                                    @else
-                                                        <small class="text-primary">
-                                                            <i class="fa fa-motorcycle me-1"></i>
-                                                            {{ ucfirst($plan->pivot->cocina) }}
-                                                        </small>
-                                                    @endif
                                                 </div>
-                                                
-                                                
-                                                
                                             </div>
-                                            <!-- <div class="d-flex flex-row align-items-center justify-content-center">
-
-                                                </div> -->
                                             <i data-lucide="chevron-up"
                                                 class="lucide-icon plan-chevron color-gray-dark"
                                                 style="width: 4rem; height: 4rem;"></i>
-                                            
                                         </div>
                                     </div>
                                 </button>
@@ -594,7 +544,7 @@
                             <div id="planCollapse" class="accordion-collapse collapse" aria-labelledby="planHeader"
                                 data-bs-parent="#planAccordion">
                                 <!-- Listado de pedidos para el plan -->
-                                <ul class="list-unstyled d-flex flex-column gap-3">
+                                <ul class="list-unstyled d-flex flex-column gap-3 mb-0 mt-2">
                                     @foreach ($pedidos as $pedido)
                                         <li>
                                             @php
@@ -604,16 +554,16 @@
                                                 $detallePedido = $pedido->detalle ? json_decode($pedido->detalle, true) : [];
                                                 $loopPedido = $loop->iteration
                                             @endphp
-                                            <!-- <div class="card card-style bg-dtheme-blue mx-0 mb-0 border border-1 border-highlight" 
-                                                style="border-width: 2px !important; border-style: solid !important;"> -->
-                                            <div class="card card-style bg-teal-light bg-dtheme-blue mx-0 mb-0">
-                                            <!-- <div class="card card-style {{ $loopPedido % 2 == 0 ? 'bg-teal-light' : 'bg-delight-red' }} bg-dtheme-blue mx-0 mb-0"> -->
+                                            <div class="card card-style rounded-sm rounded bg-teal-light bg-dtheme-blue mx-0 mb-0">
                                                 <div class="accordion-header" id="{{ $pedidoHeaderId }}">
                                                     <button type="button" class="accordion-button pedido-accordion-button bg-transparent bg-dtheme-blue py-2" data-bs-toggle="collapse"
                                                         data-bs-target="#{{ $pedidoCollapseId }}" aria-expanded="false" aria-controls="{{ $pedidoCollapseId }}">
-                                                        <div>
+                                                        <div class="d-flex flex-row align-items-center justify-content-between w-100 me-2">
                                                             <h3 class="mb-0 color-white font-18">Pedido {{ $loop->iteration }}</h3>
                                                             <!-- <p class="mb-0 color-highlight font-18">Pedido {{ $loop->iteration }}</p>  -->
+                                                            @if ($plan->pivot->cocina == 'despachado' || true)
+                                                                <p class="badge bg-white bg-dtheme-dkblue color-theme mb-0">{{ ucfirst($pedido->cocina) }}</p>
+                                                            @endif
                                                         </div>
                                                     </button>
                                                 </div>
@@ -660,13 +610,12 @@
                                                                 @foreach ($menuItems as $key => $item)
                                                                     @if (isset($detallePedido[$key]) && $detallePedido[$key] != '')
                                                                     @php
-                                                                        // Increment the counter ONLY for items that pass the @if check
                                                                         $iteracionValidaDetalle++;
                                                                         $bgClass = ($iteracionValidaDetalle % 2 !== 0) ? 'bg-delight-red' : 'bg-highlight';
                                                                         $colorClass = ($iteracionValidaDetalle % 2 !== 0) ? 'color-delight-red' : 'color-highlight';
                                                                     @endphp
-                                                                        <li class="d-flex flex-row gap-2">
-                                                                            <div class="{{ $bgClass }} rounded rounded-circle d-flex align-items-center justify-content-center p-2">
+                                                                        <li class="d-flex flex-row gap-2 align-items-center">
+                                                                            <div class="{{ $bgClass }} rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
                                                                                 <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-white" style="height: 2rem; width: 2rem"></i>
                                                                             </div>
                                                                             <div class="d-flex flex-column">
@@ -678,25 +627,6 @@
                                                                         </li>
                                                                     @endif
                                                                 @endforeach
-                                                                <!-- @if (isset($detallePedido['EMPAQUE']) && $detallePedido['EMPAQUE'] != '')
-                                                                    @php
-                                                                        // Increment the counter ONLY for items that pass the @if check
-                                                                        $iteracionValidaDetalle++;
-                                                                        $bgClass = ($iteracionValidaDetalle % 2 !== 0) ? 'bg-delight-red' : 'bg-teal-light';
-                                                                        $colorClass = ($iteracionValidaDetalle % 2 !== 0) ? 'color-delight-red' : 'color-teal-light';
-                                                                    @endphp
-                                                                    <div class="d-flex flex-row gap-2">
-                                                                        <div class="bg-aqua-light rounded rounded-circle d-flex align-items-center justify-content-center p-2">
-                                                                            <i data-lucide="package" class="lucide-icon color-white"></i>
-                                                                        </div>
-                                                                        <div class="d-flex flex-column">
-                                                                            <h3 class="detalle-label color-aqua-light">Empaque</h3>
-                                                                            <span class="item-value color-theme" style="font-size: 12px !important; line-height: normal;">
-                                                                                {{ ucfirst($detallePedido['EMPAQUE']) }}
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-                                                                @endif -->
                                                             </ul>
                                                         @endif
                                                     </div>
@@ -709,19 +639,14 @@
                                                         </div>
                                                     @endif
                                                 </div>
-
                                             </div>
                                         </li>
                                     @endforeach
                                 </ul>
-
-
-                                
-                                
                                 @if ($plan->pivot->cocina != 'despachado')
                                     <div class="row d-flex justify-content-center align-items-center mb-0 mt-3">
                                         <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
-                                            class="btn btn-xxs mb-3 rounded-s text-uppercase font-700 shadow-s bg-primary  w-50">
+                                            class="btn btn-xxs mb-3 rounded rounded-m text-uppercase font-700 shadow-s bg-delight-red  w-50">
                                             Editar Plan
                                         </a>
                                     </div>
@@ -733,7 +658,6 @@
                                 class="lucide-icon plan-chevron color-gray-dark"
                                 style="width: 4rem; height: 4rem;"></i>
                         </div> -->
-                            
                     </div>
                 </div>
             </div>
@@ -798,10 +722,11 @@
 
                 .plan-header-content {
                     display: flex;
+                    flex-direction: column;
                     justify-content: space-between;
-                    align-items: center;
+                    align-items: flex-start;
+                    gap: 15px;
                     width: 100%;
-                    /* padding: 20px 25px; */
                     position: relative;
                     z-index: 2;
                 }

@@ -439,6 +439,32 @@ hover-blue:hover {
     border-color: #FF5A5A;
 }
 
+.color-mint-green {
+    color: #A7FFEB;
+}
+
+.theme-dark .color-mint-green {
+    color: #A7FFEB;
+}
+
+.border-mint-green {
+    border-color: #A7FFEB;
+}
+
+.theme-dark .border-mint-green {
+    border-color: #A7FFEB;
+}
+
+.bg-mint-green {
+    background-color: #A7FFEB;
+}
+
+.theme-dark .bg-mint-green {
+    background-color: #A7FFEB;
+}
+
+
+
 
 
 /* Delete Button */
