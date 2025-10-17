@@ -517,22 +517,16 @@
                                             <div class="plan-summary">
                                                 <div class="d-flex flex-column gap-2">
                                                     @if(count($pedidos) >= 2)
-                                                        <p class="badge bg-delight-red color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                        <p class="badge bg-delight-red rounded rounded-l color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
                                                             <span>Pedidos restantes: {{ count($pedidos) }}</span>
                                                             <i data-lucide="utensils" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
                                                         </p>
                                                     @endif
                                                     <!-- Badge de tiempo con estado -->
-                                                    <p class="badge bg-highlight color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                    <p class="badge bg-highlight rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
                                                         <span>{{ $mensajeTiempo }}</span>
-                                                        <!-- <i class="fa {{ $iconoTiempo }}"></i> -->
                                                         <i data-lucide="{{ $iconoTiempoLucide }}" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
                                                     </p>
-
-                                                    <!-- <div class="d-flex flex-row">
-                                                            <small>Despacho:</small>
-                                                            <small>{{ $plan->horario->hora_inicio . '-' . $plan->horario->hora_fin }}</small>
-                                                        </div> -->
                                                 </div>
                                             </div>
                                             @if ($plan->editable == 1)
@@ -595,16 +589,16 @@
 
                                                 @if (empty($detallePedido))
                                                     <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id, $pedido->id]) }}" 
-                                                        class="btn btn-xs bg-teal-light bg-dtheme-blue rounded rounded-sm m-0">
+                                                        class="btn btn-xs bg-teal-light bg-dtheme-blue rounded rounded-l m-0">
                                                         <div class="d-flex flex-row justify-content-between align-items-center">
                                                             <h3 class="mb-0 color-white font-20">Pedido {{ $loop->iteration }}</h3>
-                                                            <p class="badge bg-delight-red color-white mb-0 font-12">¡Pendiente!</p>
+                                                            <p class="badge bg-delight-red rounded rounded-l color-white mb-0 font-12">¡Pendiente!</p>
                                                         </div>
                                                     </a>
                                                 @else
-                                                <div class="card card-style rounded-sm rounded bg-teal-light bg-dtheme-blue mx-0 mb-0">
+                                                <div class="card card-style bg-teal-light bg-dtheme-blue mx-0 mb-0">
                                                     <div class="accordion-header" id="{{ $pedidoHeaderId }}">
-                                                        <button type="button" class="accordion-button pedido-accordion-button bg-transparent bg-dtheme-blue py-2" data-bs-toggle="collapse"
+                                                        <button type="button" class="accordion-button pedido-accordion-button rounded rounded-sm bg-transparent bg-dtheme-blue py-2" data-bs-toggle="collapse"
                                                             data-bs-target="#{{ $pedidoCollapseId }}" aria-expanded="false" aria-controls="{{ $pedidoCollapseId }}">
                                                             <div class="d-flex flex-row align-items-center justify-content-between w-100 me-2">
                                                                 <h3 class="mb-0 color-white font-20">Pedido {{ $loop->iteration }}</h3>
@@ -676,20 +670,12 @@
                                         $detallePedido = $pedido->detalle ? json_decode($pedido->detalle, true) : [];
                                     @endphp
                                     <div class="card card-style bg-teal-light bg-dtheme-blue mx-0 mb-0">
-                                        <!-- <div class="py-2 px-3">
-                                            <div class="d-flex flex-row align-items-center justify-content-between w-100">
-                                                <h3 class="mb-0 color-white font-20">Pedido</h3>
-                                                @if (empty($detallePedido))
-                                                    <p class="badge bg-delight-red color-white mb-0">¡Pendiente!</p>
-                                                @endif
-                                            </div>
-                                        </div> -->
                                         @if (empty($detallePedido))
                                             <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id, $pedido->id]) }}" 
-                                                class="btn btn-xs bg-teal-light bg-dtheme-blue rounded rounded-sm m-0">
+                                                class="btn btn-xs bg-teal-light bg-dtheme-blue rounded rounded-l m-0">
                                                 <div class="d-flex flex-row justify-content-between align-items-center">
                                                     <h3 class="mb-0 color-white font-20">Pedido</h3>
-                                                    <p class="badge bg-delight-red color-white mb-0 font-12">¡Pendiente!</p>
+                                                    <p class="badge bg-delight-red rounded rounded-l color-white mb-0 font-12">¡Pendiente!</p>
                                                 </div>
                                             </a>
                                         @else
@@ -747,14 +733,14 @@
                                         @endif
                                     </div>
                                 @endif
-                                @if ($plan->pivot->cocina != 'despachado')
+                                <!-- @if ($plan->pivot->cocina != 'despachado')
                                     <div class="row d-flex justify-content-center align-items-center mb-0 mt-3">
                                         <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
-                                            class="btn mb-3 w-auto rounded rounded-m text-uppercase font-15 font-700 shadow-s bg-delight-red  w-50">
-                                            Editar Plan
+                                            class="btn mb-3 w-auto rounded rounded-l font-15 font-700 shadow-s bg-delight-red  w-50">
+                                            Editar plan
                                         </a>
                                     </div>
-                                @endif
+                                @endif -->
                             </div>
                         </div>
                         <!-- <div class="d-flex flex-row w-100 justify-content-center align-items-center mt-n4">
