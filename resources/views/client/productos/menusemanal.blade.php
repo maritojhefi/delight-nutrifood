@@ -453,7 +453,7 @@
                         $textoTiempo = 'Mañana en: ';
                         $mensajeTiempo = 'Mañana en ' . $tiempoRestante;
                         $iconoTiempo = 'fa-calendar-plus';
-                        $iconoTiempoLucide = 'fa-calendar';
+                        $iconoTiempoLucide = 'calendar';
                         $colorTiempo = 'info';
                         break;
                     default:
@@ -476,9 +476,8 @@
                             <!-- Header del acordeón (siempre visible) -->
                             <div class="accordion-header" id="planHeader">
                                 <button class="accordion-button plan-accordion-button {{ $gradienteClass }} collapsed" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#planCollapse" aria-expanded="false"
-                                    aria-controls="planCollapse">
-                                    
+                                    data-bs-toggle="collapse" data-bs-target="#planCollapse" aria-expanded="false" aria-controls="planCollapse"
+                                    {{ $plan->editable != 1 ? 'disabled':'' }}>
                                     <div class="plan-header-content mt-3 mb-2 px-0"
                                         style="padding-right: 2% !important; padding-left: 2% !important;">
 
@@ -533,9 +532,15 @@
                                                         </div> -->
                                                 </div>
                                             </div>
-                                            <i data-lucide="chevron-up"
+                                            @if ($plan->editable == 1)
+                                                <i data-lucide="chevron-up"
                                                 class="lucide-icon plan-chevron color-gray-dark"
                                                 style="width: 4rem; height: 4rem;"></i>
+                                            @else
+                                                <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}" 
+                                                    class="btn btn-xs bg-delight-red rounded rounded-m color-white">Controlar Plan</a>
+                                            @endif
+                                            
                                         </div>
                                     </div>
                                 </button>
@@ -599,12 +604,13 @@
                                                     <div id="{{ $pedidoCollapseId }}" class="accordion-collapse collapse pb-3" aria-labelledby="{{ $pedidoHeaderId }}">
                                                         <div class="accordion-body mx-3 mb-3 mt-0 p-3 card card-style bg-dtheme-dkblue">
                                                             @if (empty($detallePedido))
-                                                                <div class="d-flex flex-row gap-2 color-theme align-items-center">
+                                                                <!-- <div class="d-flex flex-row gap-2 color-theme align-items-center">
                                                                     <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
                                                                         <i data-lucide="notebook-pen" class="lucide-icon color-white"></i>
                                                                     </div>
                                                                     <span class="font-15 item-value color-theme">El pedido no ha sido detallado</span>
-                                                                </div>
+                                                                </div> -->
+                                                                <p>nada</p>
                                                                 <!-- <div class="no-details">
 
                                                                     <i class="fa fa-info-circle"></i>
@@ -674,7 +680,7 @@
                                         $pedido = $pedidos->first();
                                         $detallePedido = $pedido->detalle ? json_decode($pedido->detalle, true) : [];
                                     @endphp
-                                    <div class="card card-style rounded-sm rounded bg-teal-light bg-dtheme-blue mx-0 mb-0 mt-2">
+                                    <div class="card card-style bg-teal-light bg-dtheme-blue mx-0 mb-0 mt-2">
                                         <div class="py-2 px-3">
                                             <div class="d-flex flex-row align-items-center justify-content-between w-100">
                                                 <h3 class="mb-0 color-white font-20">Pedido</h3>
@@ -685,12 +691,13 @@
                                         </div>
                                         <div class="mx-3 mb-3 mt-0 p-3 card card-style bg-dtheme-dkblue">
                                             @if (empty($detallePedido))
-                                                <div class="d-flex flex-row gap-2 color-theme align-items-center">
+                                                <!-- <div class="d-flex flex-row gap-2 color-theme align-items-center">
                                                     <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
                                                         <i data-lucide="notebook-pen" class="lucide-icon color-white"></i>
                                                     </div>
                                                     <span class="font-15 item-value color-theme">El pedido no ha sido detallado</span>
-                                                </div>
+                                                </div> -->
+                                                <p>nada</p>
                                                 <!-- <div class="no-details">
 
                                                     <i class="fa fa-info-circle"></i>
