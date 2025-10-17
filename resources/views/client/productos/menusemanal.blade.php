@@ -238,9 +238,9 @@
             }
         }
 
-        .day-icon svg {
+        /* .day-icon svg {
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-        }
+        } */
 
         .plan-accordion-button:not(.collapsed)::after {
             background: none !important;
@@ -326,6 +326,7 @@
             if ($horaActual >= 6 && $horaActual < 12) {
                 // Mañana: 6:00 - 11:59
                 $periodoDia = 'manana';
+                $lucideDia = 'sun-dim';
                 $gradienteClass = 'gradient-morning';
                 $iconoSvg = '<svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
@@ -341,6 +342,7 @@
             } elseif ($horaActual >= 12 && $horaActual < 18) {
                 // Tarde: 12:00 - 17:59
                 $periodoDia = 'tarde';
+                $lucideDia = 'sun';
                 $gradienteClass = 'gradient-afternoon';
                 $iconoSvg = '<svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
@@ -384,6 +386,7 @@
             } else {
                 // Noche: 18:00 - 5:59
                 $periodoDia = 'noche';
+                $lucideDia = 'moon-star';
                 $gradienteClass = 'gradient-night';
                 $iconoSvg = '<svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
@@ -484,7 +487,7 @@
                                         <div class="day-info">
                                             <div class="day-icon-container">
                                                 <div class="day-icon">
-                                                    {!! $iconoSvg !!}
+                                                    <i data-lucide={{ $lucideDia }} class="lucide-icon color-highlight mt-1" style="width: 3rem; height: 3rem;"></i>
                                                 </div>
                                             </div>
                                             
@@ -888,7 +891,7 @@
 
                 .day-icon {
                     animation: float 3s ease-in-out infinite;
-                    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+                    /* filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2)); */
                 }
 
                 .day-text {
