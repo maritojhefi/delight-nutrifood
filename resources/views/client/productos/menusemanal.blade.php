@@ -641,14 +641,13 @@
                                                         </div>
                                                         @if (isset($detallePedido['ENVIO']) && $detallePedido['ENVIO'] != '')
                                                             <div class="d-flex mx-3 align-items-stretch justify-content-between gap-4">
-                                                                <div class="accordion-body m-0 card card-style bg-dtheme-dkblue d-flex flex-row w-100">
+                                                                <div class="accordion-body m-0 card card-style py-1 px-2 bg-dtheme-dkblue d-flex flex-row w-100">
                                                                     <div class="d-flex flex-row gap-2 color-theme align-items-center">
-                                                                        <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
-                                                                            <i data-lucide="truck" class="lucide-icon color-white" style="height: 2rem; width: 2rem"></i>
+                                                                        <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2rem; width: 2rem">
+                                                                            <i data-lucide="truck" class="lucide-icon color-white" style="height: 1.5rem; width: 1.5rem"></i>
                                                                         </div>
                                                                         <div class="d-flex flex-column">
-                                                                            <h3 class="detalle-label color-blue-dark">ENVÍO</h3>
-                                                                            <span class="font-15 item-value color-theme m-0">{{ $detallePedido['ENVIO'] }}</span>
+                                                                            <span class="font-12 item-value color-theme m-0">{{ $detallePedido['ENVIO'] }}</span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -657,9 +656,9 @@
                                                                         data-bs-toggle="modal" 
                                                                         data-bs-target="#confirmarModificarPedidoModal"
                                                                         data-url="{{ route('calendario.cliente', [$plan->id, auth()->user()->id, $pedido->id]) }}"
-                                                                        class="card card-style gradient-blue d-flex align-items-center justify-content-center m-0 w-50 modificar-pedido-trigger"
+                                                                        class="card card-style gradient-blue d-flex align-items-center justify-content-center m-0 py-1 w-50 modificar-pedido-trigger"
                                                                         {{ $pedido->estado == 'finalizado' ? 'disabled' : '' }}>
-                                                                            <span class="w-75 color-white text-center">Modificar Pedido</span>
+                                                                            <span class="w-75 color-white text-center font-15 font-500">Modificar Pedido</span>
                                                                     </a>
                                                                 @endif
                                                             </div>
@@ -676,27 +675,23 @@
                                         $pedido = $pedidos->first();
                                         $detallePedido = $pedido->detalle ? json_decode($pedido->detalle, true) : [];
                                     @endphp
-                                    <div class="card card-style bg-teal-light bg-dtheme-blue mx-0 mb-0 mt-2">
-                                        <div class="py-2 px-3">
+                                    <div class="card card-style bg-teal-light bg-dtheme-blue mx-0 mb-0">
+                                        <!-- <div class="py-2 px-3">
                                             <div class="d-flex flex-row align-items-center justify-content-between w-100">
                                                 <h3 class="mb-0 color-white font-20">Pedido</h3>
                                                 @if (empty($detallePedido))
                                                     <p class="badge bg-delight-red color-white mb-0">¡Pendiente!</p>
                                                 @endif
                                             </div>
-                                        </div>
+                                        </div> -->
                                         @if (empty($detallePedido))
-                                            <!-- <div class="d-flex flex-row gap-2 color-theme align-items-center">
-                                                <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
-                                                    <i data-lucide="notebook-pen" class="lucide-icon color-white"></i>
+                                            <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id, $pedido->id]) }}" 
+                                                class="btn btn-xs bg-teal-light bg-dtheme-blue rounded rounded-sm m-0">
+                                                <div class="d-flex flex-row justify-content-between align-items-center">
+                                                    <h3 class="mb-0 color-white font-20">Pedido</h3>
+                                                    <p class="badge bg-delight-red color-white mb-0 font-12">¡Pendiente!</p>
                                                 </div>
-                                                <span class="font-15 item-value color-theme">El pedido no ha sido detallado</span>
-                                            </div> -->
-                                            <p>nada</p>
-                                            <!-- <div class="no-details">
-                                                <i class="fa fa-info-circle"></i>
-                                                <span>No hay detalles disponibles.</span>
-                                            </div> -->
+                                            </a>
                                         @else
                                             <div class="mx-3 mb-3 mt-0 p-3 card card-style bg-dtheme-dkblue">
                                                 <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
@@ -726,29 +721,28 @@
                                                 </ul>
                                             </div>
                                             @if (isset($detallePedido['ENVIO']) && $detallePedido['ENVIO'] != '')
-                                            <div class="d-flex mx-3 mb-3 align-items-stretch justify-content-between gap-4">
-                                                <div class="accordion-body m-0 card card-style bg-dtheme-dkblue d-flex flex-row w-100">
-                                                    <div class="d-flex flex-row gap-2 color-theme align-items-center">
-                                                        <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
-                                                            <i data-lucide="truck" class="lucide-icon color-white" style="height: 2rem; width: 2rem"></i>
-                                                        </div>
-                                                        <div class="d-flex flex-column">
-                                                            <h3 class="detalle-label color-blue-dark">ENVÍO</h3>
-                                                            <span class="font-15 item-value color-theme m-0">{{ $detallePedido['ENVIO'] }}</span>
+                                                <div class="d-flex mx-3 align-items-stretch justify-content-between gap-4">
+                                                    <div class="accordion-body m-0 card card-style py-1 px-2 bg-dtheme-dkblue d-flex flex-row w-100">
+                                                        <div class="d-flex flex-row gap-2 color-theme align-items-center">
+                                                            <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2rem; width: 2rem">
+                                                                <i data-lucide="truck" class="lucide-icon color-white" style="height: 1.5rem; width: 1.5rem"></i>
+                                                            </div>
+                                                            <div class="d-flex flex-column">
+                                                                <span class="font-12 item-value color-theme m-0">{{ $detallePedido['ENVIO'] }}</span>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                    @if ($plan->editable != 0 && $pedido->estado == 'pendiente')
+                                                        <a href="#" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#confirmarModificarPedidoModal"
+                                                            data-url="{{ route('calendario.cliente', [$plan->id, auth()->user()->id, $pedido->id]) }}"
+                                                            class="card card-style gradient-blue d-flex align-items-center justify-content-center m-0 py-1 w-50 modificar-pedido-trigger"
+                                                            {{ $pedido->estado == 'finalizado' ? 'disabled' : '' }}>
+                                                                <span class="w-75 color-white text-center font-15 font-500">Modificar Pedido</span>
+                                                        </a>
+                                                    @endif
                                                 </div>
-                                                @if ($plan->editable != 0 && $pedido->estado == 'pendiente')
-                                                    <a href="#" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#confirmarModificarPedidoModal"
-                                                        data-url="{{ route('calendario.cliente', [$plan->id, auth()->user()->id, $pedido->id]) }}"
-                                                        class="card card-style gradient-blue d-flex align-items-center justify-content-center m-0 w-50 modificar-pedido-trigger"
-                                                        {{ $pedido->estado == 'finalizado' ? 'disabled' : '' }}>
-                                                            <span class="w-75 color-white text-center">Modificar Pedido</span>
-                                                    </a>
-                                                @endif
-                                            </div>
                                             @endif
                                         @endif
                                     </div>
@@ -777,9 +771,8 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content mx-2">
                             <div class="modal-header border-0 pb-0 align-self-center">
-                                <h1 class="modal-title fw-bold text-danger" id="confirmarModificarPedidoLabel">
+                                <h1 class="modal-title fw-bold  color-delight-red" id="confirmarModificarPedidoLabel">
                                     ¿Modificar el pedido?
-                                    <i class="fa fa-exclamation-triangle me-2"></i>
                                 </h1>
                             </div>
                             <div class="modal-body pt-2 pb-3">
@@ -787,14 +780,14 @@
                                     Tendrás que armar tu pedido nuevamente
                                 </p>
                             </div>
-                            <div class="modal-footer border-0 pt-0 d-flex flex-row align-items-center justify-content-between px-3">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    <i class="fa fa-times me-1"></i>
+                            <div class="modal-footer bg-white bg-dtheme-blue border-0 pt-0 d-flex flex-row align-items-center justify-content-between px-3">
+                                <button type="button" class="btn bg-delight-red" data-bs-dismiss="modal">
                                     Cancelar
+                                    <i data-lucide="x" class="lucide-icon"></i>
                                 </button>
-                                <a href="#" class="btn btn-danger" id="confirmarModificarPedido">
-                                    <i class="fa fa-edit me-1"></i>
+                                <a href="#" class="btn bg-teal-light" id="confirmarModificarPedido">
                                     Confirmar
+                                    <i data-lucide="check" class="lucide-iconj"></i>
                                 </a>
                             </div>
                         </div>
