@@ -123,7 +123,7 @@ Route::prefix('/miperfil')
         Route::get('/saldo/usuario', [App\Http\Controllers\admin\UsuariosController::class, 'saldo'])->name('usuario.saldo');
         Route::get('/saldo/historial', [App\Http\Controllers\admin\UsuariosController::class, 'saldoHistorial']);
         Route::get('', [App\Http\Controllers\MiperfilController::class, 'index'])->name('miperfil');
-        Route::get('/calendario/{plan}/{usuario}', [App\Http\Controllers\MiperfilController::class, 'calendario'])->name('calendario.cliente');
+        Route::get('/calendario/{plan}/{usuario}/{idpivot?}', [App\Http\Controllers\MiperfilController::class, 'calendario'])->name('calendario.cliente');
         Route::post('/personalizardia', [App\Http\Controllers\MiperfilController::class, 'personalizardia'])->name('personalizardia');
         Route::get('/editardia/{idpivot}', [App\Http\Controllers\MiperfilController::class, 'editardia'])->name('editardia');
         Route::post('/subirfoto', [App\Http\Controllers\MiperfilController::class, 'subirFoto'])->name('subirfoto.perfil');

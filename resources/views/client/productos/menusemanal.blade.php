@@ -505,7 +505,7 @@
                                                 @else
                                                     <p class="day-greeting">¡Buenas noches!</p>
                                                 @endif
-                                                <strong class="day-title color-theme">
+                                                <strong class="day-title color-theme font-20">
                                                     {{ App\Helpers\GlobalHelper::fechaFormateada(2, Carbon\Carbon::now()) }}
                                                 </strong>
                                             </div>
@@ -589,14 +589,14 @@
                                                         <button type="button" class="accordion-button pedido-accordion-button bg-transparent bg-dtheme-blue py-2" data-bs-toggle="collapse"
                                                             data-bs-target="#{{ $pedidoCollapseId }}" aria-expanded="false" aria-controls="{{ $pedidoCollapseId }}">
                                                             <div class="d-flex flex-row align-items-center justify-content-between w-100 me-2">
-                                                                <h3 class="mb-0 color-white font-18">Pedido {{ $loop->iteration }}</h3>
+                                                                <h3 class="mb-0 color-white font-20">Pedido {{ $loop->iteration }}</h3>
                                                                 @if ($plan->pivot->cocina == 'despachado' || true)
                                                                     <p class="badge bg-white bg-dtheme-dkblue color-theme mb-0">{{ ucfirst($pedido->cocina) }}</p>
                                                                 @endif
                                                             </div>
                                                         </button>
                                                     </div>
-                                                    <div id="{{ $pedidoCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $pedidoHeaderId }}">
+                                                    <div id="{{ $pedidoCollapseId }}" class="accordion-collapse collapse pb-3" aria-labelledby="{{ $pedidoHeaderId }}">
                                                         <div class="accordion-body mx-3 mb-3 mt-0 p-3 card card-style bg-dtheme-dkblue">
                                                             @if (empty($detallePedido))
                                                                 <div class="d-flex flex-row gap-2 color-theme align-items-center">
@@ -639,12 +639,29 @@
                                                             @endif
                                                         </div>
                                                         @if (isset($detallePedido['ENVIO']) && $detallePedido['ENVIO'] != '')
-                                                            <div class="accordion-body mx-3 mb-3 mt-0 card card-style bg-dtheme-dkblue">
-                                                                <div class="d-flex flex-row gap-2 color-theme">
-                                                                    <i data-lucide="truck" class="lucide-icon"></i>
-                                                                    <span>{{ $detallePedido['ENVIO'] }}</span>
+                                                        <div class="d-flex mx-3 align-items-stretch justify-content-between gap-4">
+                                                            <div class="accordion-body m-0 card card-style bg-dtheme-dkblue d-flex flex-row w-100">
+                                                                <div class="d-flex flex-row gap-2 color-theme align-items-center">
+                                                                    <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
+                                                                        <i data-lucide="truck" class="lucide-icon color-white" style="height: 2rem; width: 2rem"></i>
+                                                                    </div>
+                                                                    <div class="d-flex flex-column">
+                                                                        <h3 class="detalle-label color-blue-dark">ENVÍO</h3>
+                                                                        <span class="font-15 item-value color-theme m-0">{{ $detallePedido['ENVIO'] }}</span>
+                                                                    </div>
                                                                 </div>
                                                             </div>
+                                                            @if ($plan->editable != 0 && $pedido->estado == 'pendiente')
+                                                                <a href="#" 
+                                                                    data-bs-toggle="modal" 
+                                                                    data-bs-target="#confirmarModificarPedidoModal"
+                                                                    data-url="{{ route('calendario.cliente', [$plan->id, auth()->user()->id, $pedido->id]) }}"
+                                                                    class="card card-style gradient-blue d-flex align-items-center justify-content-center m-0 w-50 modificar-pedido-trigger"
+                                                                    {{ $pedido->estado == 'finalizado' ? 'disabled' : '' }}>
+                                                                        <span class="w-75 color-white text-center">Modificar Pedido</span>
+                                                                </a>
+                                                            @endif
+                                                        </div>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -711,9 +728,9 @@
                                             <div class="accordion-body mx-3 mb-3 mt-0 card card-style bg-dtheme-dkblue">
                                                 <div class="d-flex flex-row gap-2 color-theme align-items-center">
                                                     <div class="bg-blue-light rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
-                                                        <i data-lucide="truck" class="lucide-icon"></i>
+                                                        <i data-lucide="truck" class="lucide-icon" style="height: 2rem; width: 2rem"></i>
                                                     </div>
-                                                    <span>{{ $detallePedido['ENVIO'] }}</span>
+                                                    <span class="font-15 item-value color-theme m-0">{{ $detallePedido['ENVIO'] }}</span>
                                                 </div>
                                             </div>
                                         @endif
@@ -722,7 +739,7 @@
                                 @if ($plan->pivot->cocina != 'despachado')
                                     <div class="row d-flex justify-content-center align-items-center mb-0 mt-3">
                                         <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
-                                            class="btn btn-xxs mb-3 rounded rounded-m text-uppercase font-700 shadow-s bg-delight-red  w-50">
+                                            class="btn mb-3 w-auto rounded rounded-m text-uppercase font-15 font-700 shadow-s bg-delight-red  w-50">
                                             Editar Plan
                                         </a>
                                     </div>
@@ -737,6 +754,36 @@
                     </div>
                 </div>
             </div>
+
+            @push('modals')
+                <div class="modal fade" id="confirmarModificarPedidoModal" tabindex="-1" aria-labelledby="confirmarModificarPedidoLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content mx-2">
+                            <div class="modal-header border-0 pb-0 align-self-center">
+                                <h1 class="modal-title fw-bold text-danger" id="confirmarModificarPedidoLabel">
+                                    ¿Modificar el pedido?
+                                    <i class="fa fa-exclamation-triangle me-2"></i>
+                                </h1>
+                            </div>
+                            <div class="modal-body pt-2 pb-3">
+                                <p class="text-muted text-center font-15 mb-0">
+                                    Tendrás que armar tu pedido nuevamente
+                                </p>
+                            </div>
+                            <div class="modal-footer border-0 pt-0 d-flex flex-row align-items-center justify-content-between px-3">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="fa fa-times me-1"></i>
+                                    Cancelar
+                                </button>
+                                <a href="#" class="btn btn-danger" id="confirmarModificarPedido">
+                                    <i class="fa fa-edit me-1"></i>
+                                    Confirmar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endpush
 
             <!-- Estilos específicos para el acordeón del plan -->
             <style>
@@ -1523,6 +1570,23 @@
 @endsection
 @push('scripts')
 <script>
+
+$(document).ready(function() {
+    $('#confirmarModificarPedidoModal').on('show.bs.modal', function(event) {
+        var trigger = $(event.relatedTarget);
+        var url = trigger.data('url');
+        $('#confirmarModificarPedido').data('redirect-url', url);
+    });
+    
+    $('#confirmarModificarPedido').on('click', function(e) {
+        e.preventDefault();
+        var url = $(this).data('redirect-url');
+        if (url) {
+            window.location.href = url;
+        }
+    });
+});
+
     $(document).ready( async function() {
         $(document).on('click', '#abrir-venta-qr', async () => {
             // Mockup functionalidad escaneado de QR

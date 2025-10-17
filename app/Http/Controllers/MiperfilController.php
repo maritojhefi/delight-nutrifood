@@ -86,11 +86,18 @@ class MiperfilController extends Controller
         $fotoMenu = Almuerzo::withoutGlobalScope('diasActivos')->find(1);
         return view('client.miperfil.index', compact('usuario', 'planes', 'fotoMenu'));
     }
-    public function calendario(Plane $plan, User $usuario)
+    public function calendario(Plane $plan, User $usuario, $idPedidoEditar = null)
     {
         if ($usuario->id != auth()->user()->id) {
 
             return back();
+        }
+
+        if ($idPedidoEditar !== null) {
+            $dia = DB::table('plane_user')->where('id', $idPedidoEditar)->first();
+            if ($dia && $dia->estado == "pendiente") {
+                DB::table('plane_user')->where('id', $idPedidoEditar)->update(['detalle' => null, 'whatsapp' => false]);
+            }
         }
 
         $coleccion = collect();
@@ -146,7 +153,7 @@ class MiperfilController extends Controller
             }
         }
 
-        return view('client.miperfil.calendario', compact('plan', 'usuario', 'coleccion', 'menusemanal', 'estadoMenu'));
+        return view('client.miperfil.calendario', compact('plan', 'usuario', 'coleccion', 'menusemanal', 'estadoMenu', 'idPedidoEditar'));
     }
     public function saber_dia($nombredia)
     {

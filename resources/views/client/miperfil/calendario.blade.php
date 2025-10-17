@@ -27,8 +27,8 @@
                         <div class="card card-style">
                             <div
                                 class="list-group list-custom-small list-icon-0 bg-@if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'mint' }}@elseif($lista['estado'] == 'desarrollo'){{ 'yellow' }}@else{{ 'green' }}@endif-dark ps-3 pe-4 ">
-                                <a data-bs-toggle="collapse" class="no-effect collapsed" href="#collapse-7{{ $lista['id'] }}"
-                                    aria-expanded="false">
+                                <a data-bs-toggle="collapse" class="{{ ($idPedidoEditar == $lista['id']) ? '' : 'collapsed' }}" href="#collapse-7{{ $lista['id'] }}"
+                                    aria-expanded="{{ ($idPedidoEditar == $lista['id']) ? 'true' : 'false' }}">
 
                                     @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
                                         <i class="fas fa-user-edit color-white"></i>
@@ -47,7 +47,7 @@
                                     <i class="fa fa-angle-down color-white"></i>
                                 </a>
                             </div>
-                            <div class="ps-2 pe-4 collapse bordeado" id="collapse-7{{ $lista['id'] }}"
+                            <div class="ps-2 pe-4 collapse {{ ($idPedidoEditar == $lista['id']) ? 'show' : '' }} bordeado" id="collapse-7{{ $lista['id'] }}"
                                 data-bs-parent="#accordion-3" style="">
                                 <div class="p-2">
                                     @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
@@ -88,8 +88,6 @@
                                         <a href="{{ route('editardia', $lista['id']) }}"
                                             class="btn btn-xxs  rounded-s text-uppercase font-900 shadow-s border-red-dark  bg-red-light">Editar</a>
                                     @endif
-
-
                                 </div>
                             </div>
                         </div>
@@ -143,7 +141,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content card card-style shadow-xl pt-2 mx-2">
                     <div class="card-header bg-transparent d-flex flex-row justify-content-between align-items-center">
-                        <h5 class="modal-title">Esta seguro? Esta accion no se puede revertir</h5>
+                        <h5 class="modal-title">¿Está seguro? Esta accion no se puede revertir</h5>
                             <button type="button" class="btn-close bg-magenta-dark p-2" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="card-body">
