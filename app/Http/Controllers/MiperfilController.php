@@ -86,12 +86,14 @@ class MiperfilController extends Controller
         $fotoMenu = Almuerzo::withoutGlobalScope('diasActivos')->find(1);
         return view('client.miperfil.index', compact('usuario', 'planes', 'fotoMenu'));
     }
-    public function calendario(Plane $plan, User $usuario, $idPedidoEditar = null)
+
+    public function calendario(Plane $plan, User $usuario, Request $request)
     {
         if ($usuario->id != auth()->user()->id) {
-
             return back();
         }
+
+        $idPedidoEditar = $request->query('pedido');
 
         if ($idPedidoEditar !== null) {
             $dia = DB::table('plane_user')->where('id', $idPedidoEditar)->first();
@@ -167,7 +169,8 @@ class MiperfilController extends Controller
         // dd($request);
         $switcher = SwitchPlane::find(1);
         if ($switcher->activo == false) {
-            return back()->with('error', 'El menu se encuentra cerrado!');
+            return redirect()->route('calendario.cliente', [$request->plan, auth()->user()->id])
+                ->with('error', 'El menu se encuentra cerrado!');
         }
         $plan = Plane::find($request->plan);
         $plato = 'plato' . $request->id;
@@ -208,9 +211,11 @@ class MiperfilController extends Controller
         $dia = DB::table('plane_user')->where('id', $request->id)->first();
         if ($dia->estado == "pendiente") {
             DB::table('plane_user')->where('id', $request->id)->update(['detalle' => $array]);
-            return back()->with('success', 'Dia ' . $request->dia . ' guardado!');
+            return redirect()->route('calendario.cliente', [$request->plan, auth()->user()->id])
+                ->with('success', 'Dia ' . $request->dia . ' guardado!');
         } else {
-            return back()->with('error', 'Este dia ya no se encuentra en su plan!');
+            return redirect()->route('calendario.cliente', [$request->plan, auth()->user()->id])
+                ->with('error', 'Este dia ya no se encuentra en su plan!');
         }
     }
     public function editardia($idpivot)

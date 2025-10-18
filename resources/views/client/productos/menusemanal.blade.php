@@ -475,7 +475,7 @@
                 </div>
                 <div class="card-body m-0 p-0">
                     <div class="accordion mb-1" id="planAccordion">
-                        <div class="accordion-item plan-accordion-item">
+                        <div class="accordion-item plan-accordion-item mb-3">
                             <!-- Header del acordeón (siempre visible) -->
                             <div class="accordion-header" id="planHeader">
                                 <button class="accordion-button plan-accordion-button {{ $gradienteClass }} collapsed" type="button"
@@ -588,7 +588,7 @@
                                                 @endphp
 
                                                 @if (empty($detallePedido))
-                                                    <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id, $pedido->id]) }}" 
+                                                    <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}" 
                                                         class="btn btn-xs bg-teal-light bg-dtheme-blue rounded rounded-l m-0">
                                                         <div class="d-flex flex-row justify-content-between align-items-center">
                                                             <h3 class="mb-0 color-white font-20">Pedido {{ $loop->iteration }}</h3>
@@ -649,7 +649,7 @@
                                                                     <a href="#" 
                                                                         data-bs-toggle="modal" 
                                                                         data-bs-target="#confirmarModificarPedidoModal"
-                                                                        data-url="{{ route('calendario.cliente', [$plan->id, auth()->user()->id, $pedido->id]) }}"
+                                                                        data-url="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}"
                                                                         class="card card-style gradient-blue d-flex align-items-center justify-content-center m-0 py-1 w-50 modificar-pedido-trigger"
                                                                         {{ $pedido->estado == 'finalizado' ? 'disabled' : '' }}>
                                                                             <span class="w-75 color-white text-center font-15 font-500">Modificar Pedido</span>
@@ -671,7 +671,7 @@
                                     @endphp
                                     <div class="card card-style bg-teal-light bg-dtheme-blue mx-0 mb-0">
                                         @if (empty($detallePedido))
-                                            <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id, $pedido->id]) }}" 
+                                            <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}" 
                                                 class="btn btn-xs bg-teal-light bg-dtheme-blue rounded rounded-l m-0">
                                                 <div class="d-flex flex-row justify-content-between align-items-center">
                                                     <h3 class="mb-0 color-white font-20">Pedido</h3>
@@ -722,7 +722,7 @@
                                                         <a href="#" 
                                                             data-bs-toggle="modal" 
                                                             data-bs-target="#confirmarModificarPedidoModal"
-                                                            data-url="{{ route('calendario.cliente', [$plan->id, auth()->user()->id, $pedido->id]) }}"
+                                                            data-url="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}"
                                                             class="card card-style gradient-blue d-flex align-items-center justify-content-center m-0 py-1 w-50 modificar-pedido-trigger"
                                                             {{ $pedido->estado == 'finalizado' ? 'disabled' : '' }}>
                                                                 <span class="w-75 color-white text-center font-15 font-500">Modificar Pedido</span>
