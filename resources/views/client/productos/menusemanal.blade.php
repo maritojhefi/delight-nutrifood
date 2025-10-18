@@ -238,9 +238,9 @@
             }
         }
 
-        .day-icon svg {
+        /* .day-icon svg {
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-        }
+        } */
 
         .plan-accordion-button:not(.collapsed)::after {
             background: none !important;
@@ -326,6 +326,7 @@
             if ($horaActual >= 6 && $horaActual < 12) {
                 // Mañana: 6:00 - 11:59
                 $periodoDia = 'manana';
+                $lucideDia = 'sun-dim';
                 $gradienteClass = 'gradient-morning';
                 $iconoSvg = '<svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
@@ -341,6 +342,7 @@
             } elseif ($horaActual >= 12 && $horaActual < 18) {
                 // Tarde: 12:00 - 17:59
                 $periodoDia = 'tarde';
+                $lucideDia = 'sun';
                 $gradienteClass = 'gradient-afternoon';
                 $iconoSvg = '<svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
@@ -355,20 +357,36 @@
                         </linearGradient>
                     </defs>
                     <!-- Sol de la tarde más bajo -->
-                    <circle cx="12" cy="16" r="4" fill="url(#afternoonGradient)" stroke="#FF6347" stroke-width="1"/>
-                    <!-- Rayos del sol más cortos -->
-                    <path d="M12 8v2M12 20v2M6.5 6.5l1.5 1.5M16 16l1.5 1.5M6.5 17.5l1.5-1.5M16 8l1.5-1.5M8 12h2M14 12h2" stroke="#FF8C00" stroke-width="1.5" stroke-linecap="round"/>
+                    <circle cx="12" cy="14" r="4" fill="url(#afternoonGradient)" stroke="#FF6347" stroke-width="1"/>
+                    <!-- Rayos del sol (8 rayos simétricos) -->
+                    <!-- Top -->
+                    <line x1="12" y1="8" x2="12" y2="6" stroke="#FF8C00" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- Bottom -->
+                    <line x1="12" y1="20" x2="12" y2="22" stroke="#FF8C00" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- Left -->
+                    <line x1="6" y1="14" x2="4" y2="14" stroke="#FF8C00" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- Right -->
+                    <line x1="18" y1="14" x2="20" y2="14" stroke="#FF8C00" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- Top-left diagonal -->
+                    <line x1="7.2" y1="9.2" x2="5.8" y2="7.8" stroke="#FF8C00" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- Top-right diagonal -->
+                    <line x1="16.8" y1="9.2" x2="18.2" y2="7.8" stroke="#FF8C00" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- Bottom-left diagonal -->
+                    <line x1="9.2" y1="16.8" x2="7.8" y2="18.2" stroke="#FF8C00" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- Bottom-right diagonal -->
+                    <line x1="14.8" y1="16.8" x2="16.2" y2="18.2" stroke="#FF8C00" stroke-width="1.5" stroke-linecap="round"/>
                     <!-- Nubes de la tarde -->
                     <path d="M4 14c0-1.5 1-2.5 2.5-2.5s2.5 1 2.5 2.5c1 0 2 1 2 2s-1 2-2 2H6c-1.5 0-2.5-1-2.5-2.5z" fill="url(#cloudGradient)"/>
                     <path d="M16 12c0-1 1-2 2-2s2 1 2 2c1 0 1.5 0.5 1.5 1.5s-0.5 1.5-1.5 1.5H18c-1 0-2-1-2-2z" fill="url(#cloudGradient)"/>
                     <!-- Montañas en el horizonte -->
-                    <path d="M0 20L6 16L12 18L18 14L24 16V24H0V20Z" fill="#8B4513" opacity="0.3"/>
+                    <path d="M0 20L6 16L12 18L18 14L24 16V24H0V20Z" fill="#8B4513" opacity="1"/>
                     <!-- Reflejo del sol -->
-                    <ellipse cx="12" cy="18" rx="3" ry="1" fill="#FFD700" opacity="0.4"/>
+                    <ellipse cx="12" cy="16" rx="3" ry="1" fill="#FFD700" opacity="0.4"/>
                 </svg>';
             } else {
                 // Noche: 18:00 - 5:59
                 $periodoDia = 'noche';
+                $lucideDia = 'moon-star';
                 $gradienteClass = 'gradient-night';
                 $iconoSvg = '<svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
@@ -403,6 +421,7 @@
         @isset($planData)
             @php
                 $plan = $planData->plan;
+                $pedidos = $planData->pedidos;
                 $detalle = $plan->pivot->detalle ? json_decode($plan->pivot->detalle, true) : [];
                 // dd($detalle, $plan);
                 $estado = $planData->estado;
@@ -415,109 +434,110 @@
                     $minutos = $tiempoRestanteMinutos % 60;
                     $tiempoRestante = $horas . 'h ' . $minutos . 'm';
                 } else {
-                    $tiempoRestante = $tiempoRestanteMinutos . ' min';
+                    $tiempoRestante = $tiempoRestanteMinutos . ($tiempoRestanteMinutos > 1 ? ' minutos': 'minuto');
                 }
                 // Determinar el mensaje según el estado
                 switch ($estado) {
                     case 'en_curso':
+                        $textoTiempo = 'Termina en: ';
                         $mensajeTiempo = 'Termina en ' . $tiempoRestante;
                         $iconoTiempo = 'fa-clock';
+                        $iconoTiempoLucide = 'clock';
                         $colorTiempo = 'success';
                         break;
                     case 'proximo':
+                        $textoTiempo = 'Inicia en: ';
                         $mensajeTiempo = 'Inicia en ' . $tiempoRestante;
                         $iconoTiempo = 'fa-hourglass-start';
+                        $iconoTiempoLucide = 'hourglass';
                         $colorTiempo = 'warning';
                         break;
                     case 'proximo_dia':
+                        $textoTiempo = 'Mañana en: ';
                         $mensajeTiempo = 'Mañana en ' . $tiempoRestante;
                         $iconoTiempo = 'fa-calendar-plus';
+                        $iconoTiempoLucide = 'calendar';
                         $colorTiempo = 'info';
                         break;
                     default:
+                        $textoTiempo = '';
                         $mensajeTiempo = 'Disponible';
                         $iconoTiempo = 'fa-check';
+                        $iconoTiempoLucide = 'check';
                         $colorTiempo = 'primary';
                 }
             @endphp
 
             <!-- Acordeón del Plan -->
             <div class="card card-style pb-0">
-                <div class="content m-0 p-0">
+                <div class="card-header bg-highlight bg-dtheme-blue py-3">
+                    <h2 class="plan-title mb-0 color-white">{{ $plan->nombre }}</h2>
+                </div>
+                <div class="card-body m-0 p-0">
                     <div class="accordion mb-1" id="planAccordion">
-                        <div class="accordion-item plan-accordion-item">
+                        <div class="accordion-item plan-accordion-item mb-3">
                             <!-- Header del acordeón (siempre visible) -->
                             <div class="accordion-header" id="planHeader">
-                                <button class="accordion-button plan-accordion-button {{ $gradienteClass }}" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#planCollapse" aria-expanded="false"
-                                    aria-controls="planCollapse">
-                                    <div class="plan-header-content"
+                                <button class="accordion-button plan-accordion-button {{ $gradienteClass }} collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#planCollapse" aria-expanded="false" aria-controls="planCollapse"
+                                    {{ $plan->editable != 1 ? 'disabled':'' }}>
+                                    <div class="plan-header-content mt-3 mb-2 px-0"
                                         style="padding-right: 2% !important; padding-left: 2% !important;">
+
                                         <div class="day-info">
                                             <div class="day-icon-container">
                                                 <div class="day-icon">
-                                                    {!! $iconoSvg !!}
+                                                    <i data-lucide={{ $lucideDia }} class="lucide-icon color-highlight mt-1" style="width: 3rem; height: 3rem;"></i>
                                                 </div>
                                             </div>
-                                            <div class="day-text">
-                                                @if ($periodoDia == 'manana')
+                                            
+                                            <div class="day-text" class="d-flex flex-column ms-2">
+                                                
+                                                <!-- @if ($periodoDia == 'manana')
                                                     <p class="day-greeting">¡Buenos días!☀️</p>
-                                                    <h2 class="day-title">
-                                                        {{ App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()) }}
-                                                    </h2>
                                                 @elseif($periodoDia == 'tarde')
                                                     <p class="day-greeting">¡Buenas tardes! 🌤️</p>
-                                                    <h2 class="day-title">
-                                                        {{ App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()) }}
-                                                    </h2>
                                                 @else
                                                     <p class="day-greeting">¡Buenas noches! 🌙</p>
-                                                    <h2 class="day-title">
-                                                        {{ App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()) }}
-                                                    </h2>
+                                                @endif -->
+                                                @if ($periodoDia == 'manana')
+                                                    <p class="day-greeting">¡Buenos días!</p>
+                                                @elseif($periodoDia == 'tarde')
+                                                    <p class="day-greeting">¡Buenas tardes!</p>
+                                                @else
+                                                    <p class="day-greeting">¡Buenas noches!</p>
                                                 @endif
+                                                <strong class="day-title color-theme font-20">
+                                                    {{ App\Helpers\GlobalHelper::fechaFormateada(2, Carbon\Carbon::now()) }}
+                                                </strong>
                                             </div>
                                         </div>
-                                        <div class="plan-summary">
-                                            <h5 class="plan-title">{{ $plan->nombre }}</h5>
-                                            <!-- Badge de tiempo con estado -->
-                                            <div class="badge badge-{{ $colorTiempo }} badge-outline-{{ $colorTiempo }} mb-0">
-                                                <i class="fa {{ $iconoTiempo }} me-1"></i>
-                                                <span>{{ $mensajeTiempo }}</span>
-                                            </div>
-                                            <!-- Información adicional -->
-                                            <div class="plan-info mt-0 pt-0">
-                                                @if ($plan->pivot->cocina != 'despachado')
-                                                    @if ($estado == 'en_curso')
-                                                        <small class="text-success">
-                                                            <i class="fa fa-play-circle me-1"></i>
-                                                            Plan en curso
-                                                        </small>
-                                                    @elseif($estado == 'proximo')
-                                                        <small class="text-warning">
-                                                            <i class="fa fa-pause-circle me-1"></i>
-                                                            Próximo plan
-                                                        </small>
-                                                    @elseif($estado == 'proximo_dia')
-                                                        <small class="text-info">
-                                                            <i class="fa fa-calendar me-1"></i>
-                                                            Plan de mañana
-                                                        </small>
+
+                                        <div class="d-flex flex-row justify-content-between align-items-center w-100">
+                                            <div class="plan-summary">
+                                                <div class="d-flex flex-column gap-2">
+                                                    @if(count($pedidos) >= 2)
+                                                        <p class="badge bg-delight-red rounded rounded-l color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                            <span>Pedidos restantes: {{ count($pedidos) }}</span>
+                                                            <i data-lucide="utensils" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
+                                                        </p>
                                                     @endif
-                                                    @if ($planesRestantes > 0)
-                                                        <small class="text-muted d-block">
-                                                            <i class="fa fa-list me-1"></i>
-                                                            {{ $planesRestantes }} plan{{ $planesRestantes > 1 ? 'es' : '' }}
-                                                            restante{{ $planesRestantes > 1 ? 's' : '' }}
-                                                        </small>
-                                                    @endif
-                                                @else
-                                                    <small class="text-primary">
-                                                        <i class="fa fa-motorcycle me-1"></i>
-                                                        {{ ucfirst($plan->pivot->cocina) }}
-                                                    </small>
-                                                @endif
+                                                    <!-- Badge de tiempo con estado -->
+                                                    <p class="badge bg-highlight rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                        <span>{{ $mensajeTiempo }}</span>
+                                                        <i data-lucide="{{ $iconoTiempoLucide }}" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
+                                                    </p>
+                                                </div>
                                             </div>
+                                            @if ($plan->editable == 1)
+                                                <i data-lucide="chevron-up"
+                                                class="lucide-icon plan-chevron color-gray-dark"
+                                                style="width: 4rem; height: 4rem;"></i>
+                                            @else
+                                                <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}" 
+                                                    class="btn bg-delight-red rounded rounded-m color-white" style=" font-weight: 500 !important;">Controlar Plan</a>
+                                            @endif
+                                            
                                         </div>
                                     </div>
                                 </button>
@@ -525,144 +545,241 @@
                             <!-- Contenido colapsable del acordeón -->
                             <div id="planCollapse" class="accordion-collapse collapse" aria-labelledby="planHeader"
                                 data-bs-parent="#planAccordion">
-                                <div class="accordion-body plan-accordion-body" style="border-radius: 15px !important;">
-                                    <!-- Detalles del menú -->
-                                    <div class="menu-details">
-                                        @if (empty($detalle))
-                                            <div class="no-details">
-                                                <i class="fa fa-info-circle"></i>
-                                                <span>No hay detalles disponibles.</span>
-                                            </div>
+                                @php
+                                    $menuItems = [
+                                        'SOPA' => [
+                                            'label' => 'Sopa',
+                                            'icon' => 'soup',
+                                        ],
+                                        'PLATO' => [
+                                            'label' => 'Principal',
+                                            'icon' => 'utensils-crossed',
+                                        ],
+                                        'CARBOHIDRATO' => [
+                                            'label' => 'Carbohidrato',
+                                            'icon' => 'sprout',
+                                        ],
+                                        'ENSALADA' => [
+                                            'label' => 'Ensalada',
+                                            'icon' => 'salad',
+                                        ],
+                                        'JUGO' => [
+                                            'label' => 'Jugo',
+                                            'icon' => 'glass-water',
+                                        ],
+                                        'EMPAQUE' => [
+                                            'label' => 'Empaque',
+                                            'icon' => 'package',
+                                        ]
+                                    ];
+                                @endphp
+
+                                @if (count($pedidos) > 1)
+                                    <!-- Listado de pedidos para el plan -->
+                                    <ul class="list-unstyled d-flex flex-column gap-3 mb-0 mt-2">
+                                        @foreach ($pedidos as $pedido)
+                                            <li>
+                                                @php
+                                                    $numeroPedido = 'pedido' . $loop->iteration;
+                                                    $pedidoHeaderId = $numeroPedido . 'Header';
+                                                    $pedidoCollapseId = $numeroPedido . 'Collapse';
+                                                    $detallePedido = $pedido->detalle ? json_decode($pedido->detalle, true) : [];
+                                                    $loopPedido = $loop->iteration
+                                                @endphp
+
+                                                @if (empty($detallePedido))
+                                                    <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}" 
+                                                        class="btn btn-xs bg-teal-light bg-dtheme-blue rounded rounded-l m-0">
+                                                        <div class="d-flex flex-row justify-content-between align-items-center">
+                                                            <h3 class="mb-0 color-white font-20">Pedido {{ $loop->iteration }}</h3>
+                                                            <p class="badge bg-delight-red rounded rounded-l color-white mb-0 font-12">¡Pendiente!</p>
+                                                        </div>
+                                                    </a>
+                                                @else
+                                                <div class="card card-style bg-teal-light bg-dtheme-blue mx-0 mb-0">
+                                                    <div class="accordion-header" id="{{ $pedidoHeaderId }}">
+                                                        <button type="button" class="accordion-button pedido-accordion-button rounded rounded-sm bg-transparent bg-dtheme-blue py-2" data-bs-toggle="collapse"
+                                                            data-bs-target="#{{ $pedidoCollapseId }}" aria-expanded="false" aria-controls="{{ $pedidoCollapseId }}">
+                                                            <div class="d-flex flex-row align-items-center justify-content-between w-100 me-2">
+                                                                <h3 class="mb-0 color-white font-20">Pedido {{ $loop->iteration }}</h3>
+                                                            </div>
+                                                        </button>
+                                                    </div>
+                                                    <div id="{{ $pedidoCollapseId }}" class="accordion-collapse collapse pb-3" aria-labelledby="{{ $pedidoHeaderId }}">
+                                                        <div class="accordion-body mx-3 mb-3 mt-0 p-3 card card-style bg-dtheme-dkblue">
+                                                            <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                                                                @php
+                                                                    $iteracionValidaDetalle = 0;
+                                                                @endphp
+                                                                @foreach ($menuItems as $key => $item)
+                                                                    @if (isset($detallePedido[$key]) && $detallePedido[$key] != '')
+                                                                    @php
+                                                                        $iteracionValidaDetalle++;
+                                                                        $bgClass = ($iteracionValidaDetalle % 2 !== 0) ? 'bg-delight-red' : 'bg-highlight';
+                                                                        $colorClass = ($iteracionValidaDetalle % 2 !== 0) ? 'color-delight-red' : 'color-highlight';
+                                                                    @endphp
+                                                                        <li class="d-flex flex-row gap-2 align-items-center">
+                                                                            <div class="{{ $bgClass }} rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
+                                                                                <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-white" style="height: 2rem; width: 2rem"></i>
+                                                                            </div>
+                                                                            <div class="d-flex flex-column">
+                                                                                <h3 class="detalle-label {{ $colorClass }}">{{ $item['label'] }}</h3>
+                                                                                <span class="item-value color-theme" style="font-size: 15px !important; line-height: normal;">
+                                                                                    {{ ucfirst($detallePedido[$key]) }}
+                                                                                </span>
+                                                                            </div>
+                                                                        </li>
+                                                                    @endif
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
+                                                        @if (isset($detallePedido['ENVIO']) && $detallePedido['ENVIO'] != '')
+                                                            <div class="d-flex mx-3 align-items-stretch justify-content-between gap-4">
+                                                                <div class="accordion-body m-0 card card-style py-1 px-2 bg-dtheme-dkblue d-flex flex-row w-100">
+                                                                    <div class="d-flex flex-row gap-2 color-theme align-items-center">
+                                                                        <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2rem; width: 2rem">
+                                                                            <i data-lucide="truck" class="lucide-icon color-white" style="height: 1.5rem; width: 1.5rem"></i>
+                                                                        </div>
+                                                                        <div class="d-flex flex-column">
+                                                                            <span class="font-12 item-value color-theme m-0">{{ $detallePedido['ENVIO'] }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                @if ($plan->editable != 0 && $pedido->estado == 'pendiente')
+                                                                    <a href="#" 
+                                                                        data-bs-toggle="modal" 
+                                                                        data-bs-target="#confirmarModificarPedidoModal"
+                                                                        data-url="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}"
+                                                                        class="card card-style gradient-blue d-flex align-items-center justify-content-center m-0 py-1 w-50 modificar-pedido-trigger"
+                                                                        {{ $pedido->estado == 'finalizado' ? 'disabled' : '' }}>
+                                                                            <span class="w-75 color-white text-center font-15 font-500">Modificar Pedido</span>
+                                                                    </a>
+                                                                @endif
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                @endif
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @elseif (count($pedidos) == 1)
+                                    <!-- Pedido individual -->
+                                    @php
+                                        $pedido = $pedidos->first();
+                                        $detallePedido = $pedido->detalle ? json_decode($pedido->detalle, true) : [];
+                                    @endphp
+                                    <div class="card card-style bg-teal-light bg-dtheme-blue py-3 mx-0 mb-0">
+                                        @if (empty($detallePedido))
+                                            <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}" 
+                                                class="btn btn-xs bg-teal-light bg-dtheme-blue rounded rounded-l m-0">
+                                                <div class="d-flex flex-row justify-content-between align-items-center">
+                                                    <h3 class="mb-0 color-white font-20">Pedido</h3>
+                                                    <p class="badge bg-delight-red rounded rounded-l color-white mb-0 font-12">¡Pendiente!</p>
+                                                </div>
+                                            </a>
                                         @else
-                                            <div class="menu-items">
-                                                <div class="row mb-0">
-                                                    @if (isset($detalle['SOPA']) && $detalle['SOPA'] != '')
-                                                        <div class="col-6 px-1 mb-1">
-                                                            <div class="menu-item">
-                                                                <div class="item-icon">
-                                                                    <svg fill="#727272" viewBox="0 0 16 16"
-                                                                        xmlns="http://www.w3.org/2000/svg" stroke="#727272"
-                                                                        style="width: 17px; height: 17px;">
-                                                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
-                                                                            stroke-linejoin="round">
-                                                                        </g>
-                                                                        <g id="SVGRepo_iconCarrier">
-                                                                            <path
-                                                                                d="M0 6h16v2A8 8 0 1 1 0 8V6zm2 2a6 6 0 1 0 12 0H2zm0-7h2v4H2V1zm5-1h2v4H7V0zm5 1h2v4h-2V1z"
-                                                                                fill-rule="evenodd"></path>
-                                                                        </g>
-                                                                    </svg>
+                                            <div class="mx-3 mb-3 mt-0 p-3 card card-style bg-dtheme-dkblue">
+                                                <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                                                    @php
+                                                        $iteracionValidaDetalle = 0;
+                                                    @endphp
+                                                    @foreach ($menuItems as $key => $item)
+                                                        @if (isset($detallePedido[$key]) && $detallePedido[$key] != '')
+                                                        @php
+                                                            $iteracionValidaDetalle++;
+                                                            $bgClass = ($iteracionValidaDetalle % 2 !== 0) ? 'bg-delight-red' : 'bg-highlight';
+                                                            $colorClass = ($iteracionValidaDetalle % 2 !== 0) ? 'color-delight-red' : 'color-highlight';
+                                                        @endphp
+                                                            <li class="d-flex flex-row gap-2 align-items-center">
+                                                                <div class="{{ $bgClass }} rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
+                                                                    <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-white" style="height: 2rem; width: 2rem"></i>
                                                                 </div>
-                                                                <div class="item-content">
-                                                                    <span class="item-label">Sopa</span>
-                                                                    <span class="item-value"
-                                                                        style="font-size: 12px !important; line-height: normal;">{{ $detalle['SOPA'] }}</span>
+                                                                <div class="d-flex flex-column">
+                                                                    <h3 class="detalle-label {{ $colorClass }}">{{ $item['label'] }}</h3>
+                                                                    <span class="item-value color-theme" style="font-size: 15px !important; line-height: normal;">
+                                                                        {{ ucfirst($detallePedido[$key]) }}
+                                                                    </span>
                                                                 </div>
+                                                            </li>
+                                                        @endif
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                            @if (isset($detallePedido['ENVIO']) && $detallePedido['ENVIO'] != '')
+                                                <div class="d-flex mx-3 align-items-stretch justify-content-between gap-4">
+                                                    <div class="accordion-body m-0 card card-style py-1 px-2 bg-dtheme-dkblue d-flex flex-row w-100">
+                                                        <div class="d-flex flex-row gap-2 color-theme align-items-center">
+                                                            <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2rem; width: 2rem">
+                                                                <i data-lucide="truck" class="lucide-icon color-white" style="height: 1.5rem; width: 1.5rem"></i>
+                                                            </div>
+                                                            <div class="d-flex flex-column">
+                                                                <span class="font-12 item-value color-theme m-0">{{ $detallePedido['ENVIO'] }}</span>
                                                             </div>
                                                         </div>
-                                                    @endif
-                                                    @if (isset($detalle['PLATO']) && $detalle['PLATO'] != '')
-                                                        <div class="col-6 px-1 mb-1">
-                                                            <div class="menu-item">
-                                                                <div class="item-icon">
-                                                                    <i class="fa fa-utensils"></i>
-                                                                </div>
-                                                                <div class="item-content">
-                                                                    <span class="item-label">Principal</span>
-                                                                    <span class="item-value"
-                                                                        style="font-size: 12px !important; line-height: normal;">{{ $detalle['PLATO'] }}</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endif
-                                                    @if (isset($detalle['ENSALADA']) && $detalle['ENSALADA'] != '')
-                                                        <div class="col-6 px-1 mb-1">
-                                                            <div class="menu-item">
-                                                                <div class="item-icon">
-                                                                    <i class="fa fa-leaf"></i>
-                                                                </div>
-                                                                <div class="item-content">
-                                                                    <span class="item-label">Ensalada</span>
-                                                                    <span class="item-value"
-                                                                        style="font-size: 12px !important; line-height: normal;">{{ $detalle['ENSALADA'] }}</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endif
-                                                    @if (isset($detalle['CARBOHIDRATO']) && $detalle['CARBOHIDRATO'] != '')
-                                                        <div class="col-6 px-1 mb-1">
-                                                            <div class="menu-item">
-                                                                <div class="item-icon">
-                                                                    <i class="fa fa-seedling"></i>
-                                                                </div>
-                                                                <div class="item-content">
-                                                                    <span class="item-label">Carbohidrato</span>
-                                                                    <span class="item-value"
-                                                                        style="font-size: 12px !important; line-height: normal;">{{ $detalle['CARBOHIDRATO'] }}</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endif
-                                                    @if (isset($detalle['JUGO']) && $detalle['JUGO'] != '')
-                                                        <div class="col-6 px-1 mb-1">
-                                                            <div class="menu-item">
-                                                                <div class="item-icon">
-                                                                    <i class="fa fa-wine-glass"></i>
-                                                                </div>
-                                                                <div class="item-content">
-                                                                    <span class="item-label">Jugo</span>
-                                                                    <span class="item-value"
-                                                                        style="font-size: 12px !important; line-height: normal;">{{ $detalle['JUGO'] }}</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                    </div>
+                                                    @if ($plan->editable != 0 && $pedido->estado == 'pendiente')
+                                                        <a href="#" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#confirmarModificarPedidoModal"
+                                                            data-url="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}"
+                                                            class="card card-style gradient-blue d-flex align-items-center justify-content-center m-0 py-1 w-50 modificar-pedido-trigger"
+                                                            {{ $pedido->estado == 'finalizado' ? 'disabled' : '' }}>
+                                                                <span class="w-75 color-white text-center font-15 font-500">Modificar Pedido</span>
+                                                        </a>
                                                     @endif
                                                 </div>
-                                            </div>
-                                            <!-- Información adicional -->
-                                            <div class="additional-info">
-                                                @if (isset($detalle['ENVIO']) && $detalle['ENVIO'] != '')
-                                                    <div class="info-item">
-                                                        <i class="fa fa-truck"></i>
-                                                        <span>{{ $detalle['ENVIO'] }}</span>
-                                                    </div>
-                                                @endif
-                                                @if (isset($detalle['EMPAQUE']) && $detalle['EMPAQUE'] != '')
-                                                    <div class="info-item">
-                                                        <i class="fa fa-box"></i>
-                                                        <span>{{ $detalle['EMPAQUE'] }}</span>
-                                                    </div>
-                                                @endif
-                                            </div>
+                                            @endif
                                         @endif
                                     </div>
-                                    <!-- Horario de disponibilidad -->
-                                    <div class="schedule-info">
-                                        <div class="schedule-item">
-                                            <i class="fa fa-play-circle"></i>
-                                            <span>Inicio: {{ $plan->horario->hora_inicio }}</span>
-                                        </div>
-                                        <div class="schedule-item">
-                                            <i class="fa fa-stop-circle"></i>
-                                            <span>Fin: {{ $plan->horario->hora_fin }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                @if ($plan->pivot->cocina != 'despachado')
+                                @endif
+                                <!-- @if ($plan->pivot->cocina != 'despachado')
                                     <div class="row d-flex justify-content-center align-items-center mb-0 mt-3">
                                         <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
-                                            class="btn btn-xxs mb-3 rounded-s text-uppercase font-700 shadow-s bg-primary  w-50">
-                                            Editar Plan
+                                            class="btn mb-3 w-auto rounded rounded-l font-15 font-700 shadow-s bg-delight-red  w-50">
+                                            Editar plan
                                         </a>
                                     </div>
-                                @endif
+                                @endif -->
+                            </div>
+                        </div>
+                        <!-- <div class="d-flex flex-row w-100 justify-content-center align-items-center mt-n4">
+                            <i data-lucide="chevron-up"
+                                class="lucide-icon plan-chevron color-gray-dark"
+                                style="width: 4rem; height: 4rem;"></i>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+
+            @push('modals')
+                <div class="modal fade" id="confirmarModificarPedidoModal" tabindex="-1" aria-labelledby="confirmarModificarPedidoLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content mx-2">
+                            <div class="modal-header border-0 pb-0 align-self-center">
+                                <h1 class="modal-title fw-bold  color-delight-red" id="confirmarModificarPedidoLabel">
+                                    ¿Modificar el pedido?
+                                </h1>
+                            </div>
+                            <div class="modal-body pt-2 pb-3">
+                                <p class="text-muted text-center font-15 mb-0">
+                                    Tendrás que armar tu pedido nuevamente
+                                </p>
+                            </div>
+                            <div class="modal-footer bg-white bg-dtheme-blue border-0 pt-0 d-flex flex-row align-items-center justify-content-between px-3">
+                                <button type="button" class="btn bg-delight-red" data-bs-dismiss="modal">
+                                    Cancelar
+                                    <i data-lucide="x" class="lucide-icon"></i>
+                                </button>
+                                <a href="#" class="btn bg-teal-light" id="confirmarModificarPedido">
+                                    Confirmar
+                                    <i data-lucide="check" class="lucide-iconj"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            @endpush
 
             <!-- Estilos específicos para el acordeón del plan -->
             <style>
@@ -724,10 +841,11 @@
 
                 .plan-header-content {
                     display: flex;
+                    flex-direction: column;
                     justify-content: space-between;
-                    align-items: center;
+                    align-items: flex-start;
+                    gap: 15px;
                     width: 100%;
-                    padding: 20px 25px;
                     position: relative;
                     z-index: 2;
                 }
@@ -744,7 +862,7 @@
 
                 .day-icon {
                     animation: float 3s ease-in-out infinite;
-                    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+                    /* filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2)); */
                 }
 
                 .day-text {
@@ -770,6 +888,17 @@
                     flex-direction: column;
                     align-items: flex-end;
                     text-align: right;
+                }
+
+                .plan-chevron {
+                    transform: rotate(0deg);
+                    /* transition: transform 0.3s ease-in-out; */
+
+                    transition: transform 0.3s step-start;
+                }
+
+                .plan-accordion-button.collapsed .plan-chevron {
+                    transform: rotate(180deg);
                 }
 
 
@@ -898,6 +1027,10 @@
                     /* color: white; */
                     font-weight: 500;
                     margin-top: 2px;
+                }
+
+                .detalle-label {
+                    margin-bottom: 0;
                 }
 
                 .additional-info {
@@ -1433,6 +1566,23 @@
 @endsection
 @push('scripts')
 <script>
+
+$(document).ready(function() {
+    $('#confirmarModificarPedidoModal').on('show.bs.modal', function(event) {
+        var trigger = $(event.relatedTarget);
+        var url = trigger.data('url');
+        $('#confirmarModificarPedido').data('redirect-url', url);
+    });
+    
+    $('#confirmarModificarPedido').on('click', function(e) {
+        e.preventDefault();
+        var url = $(this).data('redirect-url');
+        if (url) {
+            window.location.href = url;
+        }
+    });
+});
+
     $(document).ready( async function() {
         $(document).on('click', '#abrir-venta-qr', async () => {
             // Mockup functionalidad escaneado de QR
