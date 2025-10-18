@@ -535,7 +535,7 @@
                                                 style="width: 4rem; height: 4rem;"></i>
                                             @else
                                                 <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}" 
-                                                    class="btn btn-xs bg-delight-red rounded rounded-m color-white">Controlar Plan</a>
+                                                    class="btn bg-delight-red rounded rounded-m color-white" style=" font-weight: 500 !important;">Controlar Plan</a>
                                             @endif
                                             
                                         </div>
@@ -669,7 +669,7 @@
                                         $pedido = $pedidos->first();
                                         $detallePedido = $pedido->detalle ? json_decode($pedido->detalle, true) : [];
                                     @endphp
-                                    <div class="card card-style bg-teal-light bg-dtheme-blue mx-0 mb-0">
+                                    <div class="card card-style bg-teal-light bg-dtheme-blue py-3 mx-0 mb-0">
                                         @if (empty($detallePedido))
                                             <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}" 
                                                 class="btn btn-xs bg-teal-light bg-dtheme-blue rounded rounded-l m-0">
