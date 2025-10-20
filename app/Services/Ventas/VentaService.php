@@ -23,7 +23,7 @@ class VentaService implements VentaServiceInterface
         private SaldoServiceInterface $saldoService
     ) {}
 
-    public function crearVenta(int $usuarioId, int $sucursalId, ?int $clienteId = null, ?int $mesaId = null, ?string $tipo = null): VentaResponse
+    public function crearVenta(int $usuarioId, int $sucursalId, ?int $clienteId = null, ?int $mesaId = null, ?string $tipo = null, ?string $reservadoAt = null): VentaResponse
     {
         try {
             $venta = Venta::create([
@@ -32,6 +32,7 @@ class VentaService implements VentaServiceInterface
                 'cliente_id' => $clienteId,
                 'mesa_id' => $mesaId,
                 'tipo_entrega' => $tipo,
+                'reservado_at' => $reservadoAt,
             ]);
 
             return VentaResponse::success($venta, 'Nueva venta creada');

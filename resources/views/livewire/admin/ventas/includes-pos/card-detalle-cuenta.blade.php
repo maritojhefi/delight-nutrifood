@@ -22,7 +22,9 @@
             asset('images/cumple.gif') .
             ');background-position: top;background-repeat: no-repeat;"'
         : '' !!}>
-        <center style="font-size: 10px" class="mt-0">Creado por: {{ Str::words($cuenta->usuario->name, 1, '') }}
+        <center style="font-size: 10px" class="mt-0">Creado por:
+            <strong>{{ Str::words($cuenta->usuario->name, 1, '') }}</strong>
+            <span>{{ GlobalHelper::timeago($cuenta->created_at) }}</span>
             <a class="" href="#" wire:loading>
                 <small class="spinner-border spinner-border-sm letra10" role="status" aria-hidden="true"></small>
             </a>
@@ -34,30 +36,49 @@
 
             @if ($cuenta->cliente)
                 <a href="#" data-bs-toggle="modal" data-bs-target="#planesusuario"><span
-                        class="badge  badge-dark light letra10 p-1">{{ Str::before($cuenta->cliente->name, ' ') }} <i
-                            class="fa fa-user"></i></span></a>
+                        class=" letra12 p-1 text-secondary" style="cursor: pointer;text-decoration: underline;"><i
+                            class="fa fa-user"></i> {{ Str::before($cuenta->cliente->name, ' ') }} </span></a>
             @else
                 @if ($cuenta->usuario_manual)
                     <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span
-                            class="badge letra10 badge-info light p-1">{{ $cuenta->usuario_manual }}</span></a>
+                            class=" letra12 p-1 text-info" style="cursor: pointer;text-decoration: underline;"><i
+                                class="fa fa-edit"></i> {{ $cuenta->usuario_manual }} </span></a>
                 @else
                     <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span
-                            class="p-1 letra10">Sin usuario</span></a>
+                            class="p-1 letra10 nav-link" style="text-decoration: underline;">Sin usuario</span></a>
                 @endif
             @endif
 
+            <a href="#" onclick="cambiarTipoEntrega('{{ $cuenta->tipo_entrega }}')"><span class="letra12 text-black"
+                    style="cursor: pointer;text-decoration: underline;">
+                    @switch($cuenta->tipo_entrega)
+                        @case('mesa')
+                            <i class="fa fa-table"></i> Para: <strong>Mesa</strong>
+                        @break
 
+                        @case('delivery')
+                            <i class="fa fa-truck"></i> Para: <strong>Delivery</strong>
+                        @break
+
+                        @default
+                            <i class="fa fa-bolt"></i> <strong>Venta Rapida</strong>
+                        @break
+                    @endswitch
+                </span></a>
             <span class="text-muted letra10">{{ $itemsCuenta }} items</span>
         </h4>
-        @isset($cuenta->cliente)
-            @if ($cuenta->cliente->saldo > 0)
-                <small class="m-0 px-2 bg-warning text-white"><i class="flaticon-091-warning"></i>
-                    DEUDA DEL CLIENTE : {{ $cuenta->cliente->saldo }} Bs</small>
-            @elseif($cuenta->cliente->saldo < 0)
-                <small class="m-0 px-2 bg-primary text-white"><i class="flaticon-008-check"></i>
-                    A FAVOR DEL CLIENTE : {{ abs((int) $cuenta->cliente->saldo) }} Bs</small>
-            @endif
-        @endisset
+        <div class="row text-center my-1">
+            @isset($cuenta->cliente)
+                @if ($cuenta->cliente->saldo > 0)
+                    <small class="m-0 px-2 bg-warning text-white w-100"><i class="flaticon-091-warning"></i>
+                        DEUDA DEL CLIENTE : {{ $cuenta->cliente->saldo }} Bs</small>
+                @elseif($cuenta->cliente->saldo < 0)
+                    <small class="m-0 px-2 bg-primary text-white w-100"><i class="flaticon-008-check"></i>
+                        A FAVOR DEL CLIENTE : {{ abs((int) $cuenta->cliente->saldo) }} Bs</small>
+                @endif
+            @endisset
+        </div>
+
 
 
         @if ($esCumple)
@@ -114,18 +135,20 @@
                         </div>
                         <div>
                             <div class="d-flex align-items-center" style="line-height: 10px; white-space: nowrap;">
-                                <strong style="font-size:14px; white-space: nowrap;">{{ $item['subtotal'] }} Bs</strong>
-                                @if($item['tiene_descuentos'])
-                                    <i class="fa fa-info-circle text-info ml-1" 
-                                       onclick="mostrarDetalleDescuentos('{{ $item['detalle'] }}', '{{ $item['nombre'] }}', {{ $item['precio_original'] }}, {{ $item['subtotal'] }}, {{ $item['cantidad'] }})"
-                                       style="cursor: pointer; font-size: 16px; flex-shrink: 0;" 
-                                       title="Ver detalles de descuentos"></i>
+                                <strong style="font-size:14px; white-space: nowrap;">{{ $item['subtotal'] }}
+                                    Bs</strong>
+                                @if ($item['tiene_descuentos'])
+                                    <i class="fa fa-info-circle text-info ml-1"
+                                        onclick="mostrarDetalleDescuentos('{{ $item['detalle'] }}', '{{ $item['nombre'] }}', {{ $item['precio_original'] }}, {{ $item['subtotal'] }}, {{ $item['cantidad'] }})"
+                                        style="cursor: pointer; font-size: 16px; flex-shrink: 0;"
+                                        title="Ver detalles de descuentos"></i>
                                 @endif
                             </div>
                             @if (!$cuenta->pagado)
                                 <div class="row mt-0">
                                     <div x-data="{ open: false }">
-                                        <span style="cursor: pointer;line-height: 10px;font-size: 9px;" class=" mt-0" @click="open = ! open; $nextTick(() => $refs.cantidadInput.focus())"
+                                        <span style="cursor: pointer;line-height: 10px;font-size: 9px;" class=" mt-0"
+                                            @click="open = ! open; $nextTick(() => $refs.cantidadInput.focus())"
                                             class="">Agregar <i class="fa fa-plus"></i></span>
 
                                         <div x-show="open" @click.outside="open = false">
@@ -254,30 +277,31 @@
                 <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:12px">
                     <small>Subtotal</small>
                     <strong>{{ $subtotal }} Bs</strong>
-                </li> 
-                @if(isset($totalAdicionales) && $totalAdicionales > 0)
-                <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:12px">
-                    <small>Total Adicionales</small>
-                    <span class="text-success">+ {{ $totalAdicionales }} Bs</span>
                 </li>
+                @if (isset($totalAdicionales) && $totalAdicionales > 0)
+                    <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:12px">
+                        <small>Total Adicionales</small>
+                        <span class="text-success">+ {{ $totalAdicionales }} Bs</span>
+                    </li>
                 @endif
-                @if(isset($descuentoConvenio) && $descuentoConvenio > 0)
-                <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:12px">
-                    <small>Descuento Convenio</small>
-                    <span class="text-danger">- {{ $descuentoConvenio }} Bs</span>
-                </li>
+                @if (isset($descuentoConvenio) && $descuentoConvenio > 0)
+                    <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:12px">
+                        <small>Descuento Convenio</small>
+                        <span class="text-danger">- {{ $descuentoConvenio }} Bs</span>
+                    </li>
                 @endif
-                @if(isset($descuentoProductos) && $descuentoProductos > 0)
-                <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:12px">
-                    <small>Descuento Productos</small>
-                    <span class="text-danger">- {{ $descuentoProductos }} Bs</span>
-                </li>
+                @if (isset($descuentoProductos) && $descuentoProductos > 0)
+                    <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:12px">
+                        <small>Descuento Productos</small>
+                        <span class="text-danger">- {{ $descuentoProductos }} Bs</span>
+                    </li>
                 @endif
                 <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:12px">
                     <small>Descuento Manual</small>
                     @if (!$cuenta->pagado)
                         <div x-data="{ open: false }">
-                            <span style="cursor: pointer;" @click="open = ! open; $nextTick(() => $refs.descuentoInput.focus())"
+                            <span style="cursor: pointer;"
+                                @click="open = ! open; $nextTick(() => $refs.descuentoInput.focus())"
                                 class=""><i class="fa fa-edit"></i> Editar</span>
 
                             <div x-show="open" @click.outside="open = false">
@@ -294,8 +318,8 @@
                             </div>
                         </div>
                     @endif
-                    @if(isset($cuenta) && $cuenta->descuento > 0)
-                    <span class="text-danger">- {{ $cuenta->descuento }} Bs</span>
+                    @if (isset($cuenta) && $cuenta->descuento > 0)
+                        <span class="text-danger">- {{ $cuenta->descuento }} Bs</span>
                     @endif
                 </li>
 
@@ -331,6 +355,4 @@
             @include('livewire.admin.ventas.includes-pos.modal-cobranza')
         @endif
     </div>
-
-
 </x-card-col>
