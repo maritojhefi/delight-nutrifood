@@ -281,7 +281,7 @@
     </script>
 @endpush
 
-@push('scripts')
+
     <script>
         let mesasDisponiblesGlobal = [];
         let clientesDisponiblesGlobal = [];
@@ -1066,7 +1066,7 @@
     `;
         document.head.appendChild(style);
     </script>
-@endpush
+
 
 @push('scripts')
     <style>
