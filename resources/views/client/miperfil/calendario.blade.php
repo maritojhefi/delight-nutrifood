@@ -25,9 +25,10 @@
                 <div class="accordion" id="accordion-3">
                     @foreach ($coleccion as $lista)
                         {{-- @dd($lista) --}}
-                        <div class="card card-style">
+                        <div class="card card-style border-teal-dark" 
+                            style="border: 2px solid #ddd !important; border-radius: 20px !important;">                            
                             <div
-                                class="list-group list-custom-small list-icon-0 bg-@if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'mint' }}@elseif($lista['estado'] == 'desarrollo'){{ 'yellow' }}@else{{ 'green' }}@endif-dark ps-3 pe-4 ">
+                                class="list-custom-small border-0 list-icon-0 @if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'bg-highlight bg-dtheme-blue' }}@elseif($lista['estado'] == 'desarrollo'){{ 'bg-yellow-dark' }}@else{{ 'bg-green-dark bg-dtheme-blue' }}@endif px-3">
                                 <a data-bs-toggle="collapse" class="{{ ($idPedidoEditar == $lista['id']) ? '' : 'collapsed' }}" href="#collapse-7{{ $lista['id'] }}"
                                     aria-expanded="{{ ($idPedidoEditar == $lista['id']) ? 'true' : 'false' }}">
                                     <div class="d-flex flex-row align-items-center justify-content-between">
@@ -54,46 +55,52 @@
                                     </div>
                                 </a>
                             </div>
-                            <div class="ps-2 pe-4 collapse {{ ($idPedidoEditar == $lista['id']) ? 'show' : '' }} bordeado" id="collapse-7{{ $lista['id'] }}"
+                            <div class="px-2 collapse {{ ($idPedidoEditar == $lista['id']) ? 'show' : '' }}" id="collapse-7{{ $lista['id'] }}"
                                 data-bs-parent="#accordion-3" style="">
-                                <div class="p-2">
+                                <div class="p-2 d-flex flex-column justify-content-center align-items-center">
                                     @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
                                         <form action="{{ route('personalizardia') }}" id="{{ $lista['id'] }}"
                                             method="POST">
                                             @csrf
-                                            <div class="row mb-0">
+                                            <div class="row mb-0 d-flex flex-column justify-content-center align-items-center">
                                                 @if ($plan->segundo)
                                                     @include('client.miperfil.includes.seleccion-segundo')
-                                                    <hr>
+                                                    <hr class="my-2">
                                                 @endif
 
                                                 @if ($plan->carbohidrato)
                                                     @include('client.miperfil.includes.seleccion-carbohidrato')
-                                                    <hr>
+                                                    <hr class="my-2">
                                                 @endif
 
-                                            </div>
 
                                             @include('client.miperfil.includes.seleccion-envio')
-                                            <hr>
+                                            <hr class="my-2">
                                             @include('client.miperfil.includes.seleccion-secundarios')
+                                            </div>
 
                                         </form>
                                     @elseif($lista['estado'] == 'desarrollo')
                                         Ve a tu whatsapp para terminar de programar este plan!
                                     @else
-                                        <ul class="icon-list">
-                                            @foreach (json_decode($lista['detalle'], true) as $plato => $valor)
-                                                @if ($valor != '')
-                                                    <li><i class="fa fa-check color-green-dark"></i>{{ $plato }} :
-                                                        <label for=""
-                                                            class="font-700 mb-0">{{ $valor }}</label>
-                                                    </li>
-                                                @endif
-                                            @endforeach
-                                        </ul>
-                                        <a href="{{ route('editardia', $lista['id']) }}"
-                                            class="btn btn-xxs  rounded-m text-uppercase font-900 shadow-s border-red-dark  bg-red-light">Editar</a>
+                                        <div class="w-100 d-flex flex-column py-2 gap-2">
+                                            <ul class="icon-list mb-0">
+                                                @foreach (json_decode($lista['detalle'], true) as $plato => $valor)
+                                                    @if ($valor != '')
+                                                        <li class="color-theme">
+                                                            <!-- <i class="fa fa-check color-green-dark"></i> -->
+                                                            <i data-lucide="check" class="lucide-icon color-teal-dark"></i>
+                                                            <label for=""
+                                                                class="font-700 mb-0">{{ $plato }}:</label>
+                                                            {{ ucfirst($valor) }}
+                                                        </li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                            <a href="{{ route('editardia', $lista['id']) }}"
+                                                style="border-radius: 10px;"
+                                                class="btn btn-xxs w-auto text-uppercase font-900 shadow-s bg-teal-light">Editar</a>
+                                        </div>
                                     @endif
                                 </div>
                             </div>

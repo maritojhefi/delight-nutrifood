@@ -1,40 +1,43 @@
 <div class="row mb-0">
-    @if ($plan->sopa)
-        <h4 class="col-6 font-500  font-13"> <i class="fa fa-check color-green-dark"></i>
-            <strong>Sopa</strong>
-        </h4>
-        <p class="col-6 mb-3 text-end  font-900 mb-0">
-            {{ $lista['sopa'] }}
-        </p>
-        <input type="hidden" value="{{ $lista['sopa'] }}" name="sopa">
-    @endif
-    @if ($plan->ensalada)
-        <h4 class="col-6 font-500 font-13 "> <i class="fa fa-check color-green-dark"></i>
-            <strong>Ensalada</strong>
-        </h4>
-        <p class="col-6 mb-3 text-end  font-900 mb-0">
-            {{ $lista['ensalada'] }}
-        </p>
-        <input type="hidden" value="{{ $lista['ensalada'] }}" name="ensalada">
-    @endif
-    @if ($plan->jugo)
-        <h4 class="col-6 font-500 font-13"> <i class="fa fa-check color-green-dark"></i>
-            <strong>Jugo</strong>
-        </h4>
-        <p class="col-6 mb-3 text-end  font-900 mb-0">
-            {{ $lista['jugo'] }}
-        </p>
-        <input type="hidden" value="{{ $lista['jugo'] }}" name="jugo">
-    @endif
+
+    @php
+        $labels = [
+            'sopa' => 'Sopa',
+            'ensalada' => 'Ensalada',
+            'jugo' => 'Jugo'
+        ];
+    @endphp
+
+    @foreach($labels as $key => $label)
+        @if ($plan->$key)
+            <div class="col-12 px-0 d-flex flex-row align-items-center justify-content-between">
+                <div class="d-flex flex-row gap-1 align-items-center">
+                    <!-- <h4 class="font-900 font-13 mb-0"> -->
+                        <strong class="color-theme">{{ $label }}</strong>
+                    <!-- </h4> -->
+                    <i data-lucide="check" class="lucide-icon color-teal-dark"></i>
+                </div>
+                <p class="text-end font-400 mb-0">
+                    {{ ucfirst($lista[$key]) }}
+                </p>
+                <input type="hidden" value="{{ $lista[$key] }}" name="{{ $key }}">
+            </div>
+        @endif
+    @endforeach
 
     <input type="hidden" value="{{ $lista['dia'] }}" name="dia">
     <input type="hidden" value="{{ $lista['id'] }}" name="id">
     <input type="hidden" value="{{ $plan->id }}" name="plan">
 
 
-    <div class="col">
-        <button type="submit" disabled
-            class="btn btn-m btn-full mb-3 rounded-m text-uppercase font-900 shadow-s bg-mint-dark">Guardar
-            {{ $lista['dia'] }}</button>
+    <div class="col my-2">
+        <div class="d-flex flex-row justify-content-center align-items-center w-100 px-0 gap-2">
+            <!-- <button type="button" disabled 
+                class="btn btn-m rounded-m w-50 text-uppercase font-900 shadow-s bg-gray-light">Permiso</button> -->
+            <button type="submit" disabled
+                class="btn btn-m rounded-m w-100 text-uppercase font-900 shadow-s bg-teal-dark bg-dtheme-blue">
+                <span class="text-white">Guardar {{ $lista['dia'] }}</span>
+            </button>
+        </div>
     </div>
 </div>

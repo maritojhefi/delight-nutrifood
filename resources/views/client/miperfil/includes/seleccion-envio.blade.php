@@ -1,7 +1,11 @@
 <div class="row mb-0">
-    <div class="col-6" id="envio{{ $lista['id'] }}">
-        <i class="fa fa-map-marker font-16 color-red-dark"></i> <strong>Tipo de
-            envio</strong>
+    <div class="col-6 px-0" id="envio{{ $lista['id'] }}">
+        <!-- <i class="fa fa-map-marker font-16 color-red-dark"></i> -->
+        <div class="ms-n1 d-flex flex-row align-items-center gap-2">
+            <i data-lucide="map-pin" class="lucide-icon"></i>
+            <strong class="color-theme">Tipo de envío</strong>
+        </div>
+
         <div class="fac fac-radio fac-default mesa" data-group="envio{{ $lista['id'] }}"><span></span>
             <input id="box7-fac-radio{{ $lista['id'] }}" type="radio" data-id="{{ $lista['id'] }}" class="mesa"
                 name="envio{{ $lista['id'] }}" value="{{ $lista['envio1'] }}">
@@ -20,9 +24,12 @@
 
     </div>
 
-    <div class="col-6 empaques d-none" id="empaque{{ $lista['id'] }}">
-        <i class="fa fa-edit font-16 color-red-dark"></i> <strong>Tipo de
-            empaque</strong>
+    <div class="col-6 px-0 empaques d-none" id="empaque{{ $lista['id'] }}">
+        <!-- <i class="fa fa-edit font-16 color-red-dark"></i>  -->
+        <div class="ms-n2 d-flex flex-row align-items-center gap-1">
+            <i data-lucide="package" class="lucide-icon"></i>
+            <strong class=" line-height-s">Tipo de empaque</strong>
+        </div>
         <div class="fac fac-radio fac-default" data-group="empaque{{ $lista['id'] }}"><span></span>
             <input id="box10-fac-radio{{ $lista['id'] }}" type="radio" name="empaque{{ $lista['id'] }}"
                 value="{{ $lista['empaque1'] }}">
