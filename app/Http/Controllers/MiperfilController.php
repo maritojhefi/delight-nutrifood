@@ -223,12 +223,23 @@ class MiperfilController extends Controller
                 ->with('error', 'Este dia ya no se encuentra en su plan!');
         }
     }
+
     public function editardia($idpivot)
     {
         $dia = DB::table('plane_user')->where('id', $idpivot)->first();
+        
         if ($dia->estado == "pendiente") {
-            DB::table('plane_user')->where('id', $idpivot)->update(['detalle' => null, 'whatsapp' => false]);
-            return back()->with('success', 'Ya puede editar este dia!');
+            DB::table('plane_user')
+                ->where('id', $idpivot)
+                ->update(['detalle' => null, 'whatsapp' => false]);
+
+            $url = route('calendario.cliente', [
+                'plan' => $dia->plane_id,
+                'usuario' => auth()->user()->id
+            ]) . '?pedido=' . $idpivot;
+
+            return redirect($url);
+            
         } else {
             return back()->with('error', 'Este dia ya no se encuentra disponible!');
         }

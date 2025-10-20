@@ -34,7 +34,7 @@
 
     <div class="col">
         <button type="submit" disabled
-            class="btn btn-m btn-full mb-3 rounded-xs text-uppercase font-900 shadow-s bg-mint-dark">Guardar
+            class="btn btn-m btn-full mb-3 rounded-m text-uppercase font-900 shadow-s bg-mint-dark">Guardar
             {{ $lista['dia'] }}</button>
     </div>
 </div>

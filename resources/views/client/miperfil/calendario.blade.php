@@ -1,5 +1,6 @@
 @extends('client.master')
 @section('content')
+    <!-- <x-cabecera-pagina titulo="{{ $plan->nombre }}" cabecera="appkit" /> -->
     <x-cabecera-pagina titulo="{{ $plan->nombre }}" cabecera="appkit" />
     @env('local')
     @php
@@ -18,10 +19,10 @@
                 <div class="content text-white">
                     <h4>Personaliza tu menú de esta semana!</h4>
                     <p>
-                        Quedan {{ $coleccion->count() }} días, personaliza cada uno!
+                        Quedan {{ $coleccion->count() }} pedidos en esta semana para tu plan. ¡Personaliza cada uno!
                     </p>
                 </div>
-                <div class="accordion mt-4" id="accordion-3">
+                <div class="accordion" id="accordion-3">
                     @foreach ($coleccion as $lista)
                         {{-- @dd($lista) --}}
                         <div class="card card-style">
@@ -29,22 +30,28 @@
                                 class="list-group list-custom-small list-icon-0 bg-@if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'mint' }}@elseif($lista['estado'] == 'desarrollo'){{ 'yellow' }}@else{{ 'green' }}@endif-dark ps-3 pe-4 ">
                                 <a data-bs-toggle="collapse" class="{{ ($idPedidoEditar == $lista['id']) ? '' : 'collapsed' }}" href="#collapse-7{{ $lista['id'] }}"
                                     aria-expanded="{{ ($idPedidoEditar == $lista['id']) ? 'true' : 'false' }}">
-
-                                    @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
-                                        <i class="fas fa-user-edit color-white"></i>
-                                        <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
-                                    @elseif($lista['estado'] == 'desarrollo')
-                                        <i class="fab fa-whatsapp color-white"></i>
-                                        <span class="font-14 color-white">{{ $lista['dia'] }}</span>
-                                        <small for="" class="text-magenta text-white">
-                                            (En desarrollo por whatsapp)
-                                        </small>
-                                    @else
-                                        <i class="fas fa-save color-white"></i>
-                                        <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
-                                        <span class="text-white">Guardado!</span>
-                                    @endif
-                                    <i class="fa fa-angle-down color-white"></i>
+                                    <div class="d-flex flex-row align-items-center justify-content-between">
+                                        <div class="d-flex flex-row align-items-center justify-content-between gap-2">
+                                        @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
+                                            <!-- <i class="fas fa-user-edit color-white"></i> -->
+                                            <i data-lucide="notebook-pen" class="lucide-icon color-white"></i>
+                                            <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                        @elseif($lista['estado'] == 'desarrollo')
+                                            <i class="fab fa-whatsapp color-white"></i>
+                                            <span class="font-14 color-white">{{ $lista['dia'] }}</span>
+                                            <small for="" class="text-magenta text-white">
+                                                (En desarrollo por whatsapp)
+                                            </small>
+                                        @else
+                                            <!-- <i class="fas fa-save color-white"></i> -->
+                                            <i data-lucide="save" class="lucide-icon color-white"></i>
+                                            <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                            <span class="text-white">Guardado!</span>
+                                        @endif
+                                        </div>
+                                        <!-- <i data-lucide="chevron-down" class="lucide-icon color-white"></i> -->
+                                        <i class="fa fa-angle-down color-white"></i>
+                                    </div>
                                 </a>
                             </div>
                             <div class="ps-2 pe-4 collapse {{ ($idPedidoEditar == $lista['id']) ? 'show' : '' }} bordeado" id="collapse-7{{ $lista['id'] }}"
@@ -86,7 +93,7 @@
                                             @endforeach
                                         </ul>
                                         <a href="{{ route('editardia', $lista['id']) }}"
-                                            class="btn btn-xxs  rounded-s text-uppercase font-900 shadow-s border-red-dark  bg-red-light">Editar</a>
+                                            class="btn btn-xxs  rounded-m text-uppercase font-900 shadow-s border-red-dark  bg-red-light">Editar</a>
                                     @endif
                                 </div>
                             </div>
@@ -129,13 +136,13 @@
         <div id="toast-whatsapp" class="toast toast-tiny toast-top bg-yellow-dark fade hide" data-bs-delay="3000"
             data-bs-autohide="true"><i class="fab fa-whatsapp"></i> En desarrollo!</div>
 
-        <div class="card card-style bg-18" data-card-height="150" style="height: 150px;">
+        <!-- <div class="card card-style bg-18" data-card-height="150" style="height: 150px;">
             <div class="card-center ms-3">
                 <h1 class="color-white">Detalles del plan:</h1>
                 <p class="color-white mt-n1 mb-0 opacity-70">{{ $plan->detalle }}</p>
             </div>
             <div class="card-overlay bg-black opacity-80"></div>
-        </div>
+        </div> -->
 
         <div class="modal fade" id="basicModal" data-bs-backdrop="false">
             <div class="modal-dialog modal-dialog-centered" role="document">
