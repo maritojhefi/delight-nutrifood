@@ -19,11 +19,21 @@ use Symfony\Component\HttpFoundation\Response;
 class UsuariosController extends Controller
 {
 
-    public function editarPlanUsuario($plan, $usuario)
+    public function editarPlanUsuario($plan, $usuario, Request $request)
     {
         $plan = Plane::find((int)$plan);
         $usuario = User::find((int)$usuario);
         // dd($usuario);
+
+        $idPedidoEditar = $request->query('pedido');
+
+        if ($idPedidoEditar !== null) {
+            $dia = DB::table('plane_user')->where('id', $idPedidoEditar)->first();
+            if ($dia && $dia->estado == "pendiente") {
+                DB::table('plane_user')->where('id', $idPedidoEditar)->update(['detalle' => null, 'whatsapp' => false]);
+            }
+        }
+
         $coleccion = collect();
         $fechaactual = Carbon::now()->format('y-m-d');
         $fechalimite = date("y-m-d", strtotime("next sunday"));
@@ -54,13 +64,13 @@ class UsuariosController extends Controller
                     'sopa' => $menusemanal->sopa,
                     'ensalada' => $menusemanal->ensalada,
                     'ejecutivo' => $menusemanal->ejecutivo,
-                    'ejecutivo_tiene_carbo'=>$menusemanal->ejecutivo_tiene_carbo,
+                    'ejecutivo_tiene_carbo' => $menusemanal->ejecutivo_tiene_carbo,
                     'ejecutivo_estado' => ($menusemanal->ejecutivo_estado) ? true : false,
                     'dieta' => $menusemanal->dieta,
-                    'dieta_tiene_carbo'=>$menusemanal->dieta_tiene_carbo,
+                    'dieta_tiene_carbo' => $menusemanal->dieta_tiene_carbo,
                     'dieta_estado' => ($menusemanal->dieta_estado) ? true : false,
                     'vegetariano' => $menusemanal->vegetariano,
-                    'vegetariano_tiene_carbo'=>$menusemanal->vegetariano_tiene_carbo,
+                    'vegetariano_tiene_carbo' => $menusemanal->vegetariano_tiene_carbo,
                     'vegetariano_estado' => ($menusemanal->vegetariano_estado) ? true : false,
                     'carbohidrato_1' => $menusemanal->carbohidrato_1,
                     'carbohidrato_1_estado' => ($menusemanal->carbohidrato_1_estado) ? true : false,
@@ -78,16 +88,16 @@ class UsuariosController extends Controller
             }
         }
 
-        return view('client.miperfil.calendario', compact('plan', 'usuario', 'coleccion', 'menusemanal', 'estadoMenu'));
+        return view('client.miperfil.calendario', compact('plan', 'usuario', 'coleccion', 'menusemanal', 'estadoMenu', 'idPedidoEditar'));
     }
     public function saldo()
     {
         $usuario = User::find(auth()->user()->id);
         // SALDO PENDIENTE
-        $saldosPendientes = $usuario->saldos->where('anulado',false)->where('liquidado', null)->sortBy('created_at');
+        $saldosPendientes = $usuario->saldos->where('anulado', false)->where('liquidado', null)->sortBy('created_at');
         // HISTORIAL DE SALDOS
-        $saldosHistorial = $usuario->saldos->where('anulado',false)->sortByDesc('created_at');
-        return view('client.miperfil.saldo', compact('usuario','saldosPendientes','saldosHistorial'));
+        $saldosHistorial = $usuario->saldos->where('anulado', false)->sortByDesc('created_at');
+        return view('client.miperfil.saldo', compact('usuario', 'saldosPendientes', 'saldosHistorial'));
     }
     public function saldoHistorial(Request $request): JsonResponse
     {
@@ -101,8 +111,8 @@ class UsuariosController extends Controller
 
         // CONSULTA HISTORIAL
         $query = $usuario->saldos()
-                        ->where('anulado', false)
-                        ->orderByDesc('created_at'); 
+            ->where('anulado', false)
+            ->orderByDesc('created_at');
 
         // REGISTROS PARA LA PAGINA DESEADA
         $saldosPaginados = $query->paginate($limite, ['*'], 'pagina', $pagina);
@@ -286,7 +296,7 @@ class UsuariosController extends Controller
                 ->where('user_id', $userId)
                 ->where('title', '!=', 'feriado')
                 ->get();
-            
+
             foreach ($registrosEnSabado as $registro) {
                 if (WhatsappAPIHelper::saber_dia($registro->start) == 'Sabado') {
                     $planIncluyeSabados = true;
@@ -301,12 +311,12 @@ class UsuariosController extends Controller
         } else {
             $fechaParaAgregar = Carbon::parse(Carbon::create($ultimaFecha)->addDays(1))->format('Y-m-d');
         }
-        
+
         // Si el día siguiente cae en sábado y el plan no incluye sábados, saltar al lunes
         if (WhatsappAPIHelper::saber_dia($fechaParaAgregar) == 'Sabado' && !$planIncluyeSabados) {
             $fechaParaAgregar = Carbon::parse(Carbon::create($fechaParaAgregar)->addDays(2))->format('Y-m-d');
         }
-        
+
         //dd($fechaParaAgregar);
         $siExisteFeriado = DB::table('plane_user')->where('start', $fechaParaAgregar)->where('title', 'feriado')->first();
         while ($siExisteFeriado) {
@@ -318,7 +328,7 @@ class UsuariosController extends Controller
             if (WhatsappAPIHelper::saber_dia($fechaParaAgregar) == 'Sabado' && !$planIncluyeSabados) {
                 $fechaParaAgregar = Carbon::parse(Carbon::create($fechaParaAgregar)->addDays(2))->format('Y-m-d');
             }
-           
+
             $siExisteFeriado = DB::table('plane_user')->where('start', $fechaParaAgregar)->where('title', 'feriado')->first();
         }
         return $fechaParaAgregar;
