@@ -37,26 +37,26 @@ function mostrarSweetAlertAdicionales(producto, grupos) {
 function crearHTMLModal(producto, grupos) {
     let html = `
         <div class="modal-adicionales">
-            <div class="producto-info mb-2">
-                <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center justify-content-between mb-2 producto-cantidad-row bg-primary">
+                <div class="producto-info d-flex align-items-center">
                     <img src="${producto.imagen}" alt="${
         producto.nombre
     }" class="producto-imagen me-2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px;">
                     <div>
                         <h6 class="mb-0 producto-nombre">${producto.nombre}</h6>
-                        <small class="text-muted">Bs. ${producto.precio.toFixed(
+                        <small class="text-white">Bs. ${producto.precio.toFixed(
                             2
                         )}</small>
                     </div>
                 </div>
-            </div>
-            
-            <div class="cantidad-section mb-2">
-                <label class="form-label small">Cantidad:</label>
-                <div class="d-flex align-items-center">
-                    <button type="button" class="btn btn-outline-secondary btn-sm btn-cantidad" id="btn-disminuir">-</button>
-                    <input type="number" class="form-control form-control-sm text-center mx-1" id="cantidad" value="1" min="1" style="width: 60px;">
-                    <button type="button" class="btn btn-outline-secondary btn-sm btn-cantidad" id="btn-aumentar">+</button>
+                
+                <div class="cantidad-section">
+                    <label class="form-label small mb-1">Cantidad:</label>
+                    <div class="d-flex align-items-center">
+                        <button type="button" class="btn btn-danger btn-sm btn-cantidad " id="btn-disminuir">-</button>
+                        <input type="number" class="form-control form-control-sm text-center mx-1 p-1 letra14" id="cantidad" value="1" min="1" style="width: 60px;">
+                        <button type="button" class="btn btn-info btn-sm btn-cantidad " id="btn-aumentar">+</button>
+                    </div>
                 </div>
             </div>
             
@@ -181,7 +181,9 @@ function inicializarEventosModal() {
             input.addEventListener("change", function () {
                 const grupo = this.closest(".grupo-opciones");
                 const grupoId = grupo.dataset.grupoId;
-                const maximo = parseInt(grupo.dataset.maximo);
+                const maximo = parseInt(
+                    grupo.dataset.maximo ? grupo.dataset.maximo : 5
+                );
                 const grupoContainer = this.closest(".grupo-adicionales");
 
                 // Quitar el error visual al seleccionar
@@ -275,7 +277,9 @@ function validarYProcesarSeleccion(producto, grupos) {
             );
             return false;
         }
-
+        if (grupo.maximo_seleccionable == null) {
+            grupo.maximo_seleccionable = 5;
+        }
         if (seleccionados.length > grupo.maximo_seleccionable) {
             grupoContainer.classList.add("grupo-error");
             Swal.showValidationMessage(
@@ -320,6 +324,14 @@ style.textContent = `
         margin: 0.5rem 0 !important;
     }
     
+    /* Fila de producto y cantidad */
+    .modal-adicionales .producto-cantidad-row {
+        padding: 0.5rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+    }
+    
     /* Información del producto */
     .modal-adicionales .producto-imagen {
         border: 1px solid #dee2e6;
@@ -334,6 +346,10 @@ style.textContent = `
     }
     
     /* Sección de cantidad */
+    .modal-adicionales .cantidad-section {
+        text-align: center;
+    }
+    
     .modal-adicionales .btn-cantidad {
         width: 28px;
         height: 28px;
@@ -446,6 +462,19 @@ style.textContent = `
     
     /* Responsive para pantallas pequeñas */
     @media (max-width: 576px) {
+        .modal-adicionales .producto-cantidad-row {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .modal-adicionales .producto-info {
+            width: 100%;
+        }
+        
+        .modal-adicionales .cantidad-section {
+            width: 100%;
+        }
+        
         .modal-adicionales .col-4 {
             flex: 0 0 100%;
             max-width: 100%;

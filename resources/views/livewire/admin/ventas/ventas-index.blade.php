@@ -168,7 +168,7 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.4/qz-tray.min.js"></script>
-    <script src="{{ asset('js/adicionales-sweetalert.js') }}"></script>
+    <script src="{{ asset('js/adicionales-sweetalert.js') }}?v=1"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             Livewire.on('imprimir-recibo-local', (rawbytes) => {

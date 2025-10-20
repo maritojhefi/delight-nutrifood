@@ -879,7 +879,7 @@ class VentasIndex extends Component
                 'id' => $producto->id,
                 'nombre' => $producto->nombre,
                 'precio' => $producto->precioReal(),
-                'imagen' => $producto->pathAttachment()
+                'imagen' => asset($producto->pathAttachment()),
             ],
             'grupos' => $grupos
         ]);
