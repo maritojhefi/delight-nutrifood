@@ -70,10 +70,10 @@ function crearHTMLModal(producto, grupos) {
         const tipoInput = maximoSeleccionable === 1 ? "radio" : "checkbox";
 
         html += `
-            <div class="col-6">
+            <div class="col-4">
                 <div class="grupo-adicionales">
                     <h6 class="grupo-titulo">
-                        ${grupo.nombre}
+                        ${grupo.nombre ? grupo.nombre : "OTROS"}
                         ${
                             esObligatorio
                                 ? '<span class="text-danger">*</span>'
@@ -182,6 +182,12 @@ function inicializarEventosModal() {
                 const grupo = this.closest(".grupo-opciones");
                 const grupoId = grupo.dataset.grupoId;
                 const maximo = parseInt(grupo.dataset.maximo);
+                const grupoContainer = this.closest(".grupo-adicionales");
+
+                // Quitar el error visual al seleccionar
+                if (grupoContainer) {
+                    grupoContainer.classList.remove("grupo-error");
+                }
 
                 if (this.type === "checkbox") {
                     const seleccionados =
@@ -246,23 +252,36 @@ function validarYProcesarSeleccion(producto, grupos) {
     const cantidad = parseInt(document.getElementById("cantidad").value);
     const adicionalesSeleccionados = [];
 
+    // Limpiar errores previos
+    document.querySelectorAll(".grupo-adicionales").forEach((grupo) => {
+        grupo.classList.remove("grupo-error");
+    });
+
     // Validar grupos obligatorios
     for (const grupo of grupos) {
         const grupoElement = document.querySelector(
             `[data-grupo-id="${grupo.id}"]`
         );
+        const grupoContainer = grupoElement.closest(".grupo-adicionales");
         const seleccionados = grupoElement.querySelectorAll("input:checked");
 
         if (grupo.es_obligatorio && seleccionados.length === 0) {
+            // Resaltar el grupo con error
+            grupoContainer.classList.add("grupo-error");
             Swal.showValidationMessage(
-                `Debes seleccionar al menos una opción en ${grupo.nombre}`
+                `Debes seleccionar al menos una opción en ${
+                    grupo.nombre || "este grupo"
+                }`
             );
             return false;
         }
 
         if (seleccionados.length > grupo.maximo_seleccionable) {
+            grupoContainer.classList.add("grupo-error");
             Swal.showValidationMessage(
-                `Solo puedes seleccionar máximo ${grupo.maximo_seleccionable} opciones en ${grupo.nombre}`
+                `Solo puedes seleccionar máximo ${
+                    grupo.maximo_seleccionable
+                } opciones en ${grupo.nombre || "este grupo"}`
             );
             return false;
         }
@@ -324,6 +343,10 @@ style.textContent = `
     }
     
     /* Grupos de adicionales */
+    .modal-adicionales .grupo-adicionales {
+        transition: all 0.3s ease;
+    }
+    
     .modal-adicionales .grupo-titulo {
         color: #495057;
         font-weight: 600;
@@ -331,6 +354,7 @@ style.textContent = `
         margin-bottom: 0.3rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        transition: color 0.3s ease;
     }
     
     .modal-adicionales .grupo-opciones {
@@ -339,12 +363,34 @@ style.textContent = `
         padding: 0.5rem;
         background-color: #f8f9fa;
         min-height: 120px;
+        transition: all 0.3s ease;
+    }
+    
+    /* Grupo con error */
+    .modal-adicionales .grupo-error .grupo-titulo {
+        color: #dc3545;
+        animation: shake 0.4s ease;
+    }
+    
+    .modal-adicionales .grupo-error .grupo-opciones {
+        border: 2px solid #dc3545;
+        background-color: #fff5f5;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.15);
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
     }
     
     .modal-adicionales .form-check {
-        padding: 0.25rem 0;
+        padding: 0.25rem 0.3rem;
         margin-bottom: 0.2rem;
+        margin-left: 0;
         border-bottom: 1px solid #e9ecef;
+        display: flex;
+        align-items: flex-start;
     }
     
     .modal-adicionales .form-check:last-child {
@@ -353,16 +399,20 @@ style.textContent = `
     }
     
     .modal-adicionales .form-check-input {
-        margin-top: 0.1rem;
+        margin-top: 0.2rem;
+        margin-left: 0;
+        margin-right: 0.4rem;
         transform: scale(0.8);
+        flex-shrink: 0;
     }
     
     .modal-adicionales .form-check-label {
-        width: 100%;
+        flex: 1;
         cursor: pointer;
         font-size: 0.75rem;
         line-height: 1.2;
-        padding-left: 0.2rem;
+        padding-left: 0;
+        margin-bottom: 0;
     }
     
     .modal-adicionales .adicional-nombre {
@@ -396,7 +446,7 @@ style.textContent = `
     
     /* Responsive para pantallas pequeñas */
     @media (max-width: 576px) {
-        .modal-adicionales .col-6 {
+        .modal-adicionales .col-4 {
             flex: 0 0 100%;
             max-width: 100%;
         }
