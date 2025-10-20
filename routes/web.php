@@ -96,7 +96,7 @@ Route::prefix('/ventas')
     ->group(function () {
         Route::get('', [App\Http\Controllers\VentasCocinaController::class, 'index'])->name('ventas.cocina.pedido');
         Route::post('/ventaQR', [App\Http\Controllers\VentasWebController::class, 'generarVentaQR']);
-        Route::post('/sincronizar', [App\Http\Controllers\VentasWebController::class,'carrito_ProductosVenta']);
+        Route::post('/sincronizar', [App\Http\Controllers\VentasWebController::class,'sincronizar_carrito']);
         Route::get('/productos', [App\Http\Controllers\VentasWebController::class,'obtenerProductosVenta']);
         Route::get('/productos/{producto_venta_ID}', [App\Http\Controllers\VentasWebController::class,'obtenerProductoVenta']);
         Route::post('/producto/observacion', [App\Http\Controllers\VentasWebController::class,'actualizarObservacionVenta']);
@@ -121,6 +121,7 @@ Route::prefix('/miperfil')
         Route::get('/permiso/{id}/{todos}', [App\Http\Controllers\admin\UsuariosController::class, 'permiso']);
         Route::get('/editar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'editar']);
         Route::get('/saldo/usuario', [App\Http\Controllers\admin\UsuariosController::class, 'saldo'])->name('usuario.saldo');
+        Route::get('/saldo/historial', [App\Http\Controllers\admin\UsuariosController::class, 'saldoHistorial']);
         Route::get('', [App\Http\Controllers\MiperfilController::class, 'index'])->name('miperfil');
         Route::get('/calendario/{plan}/{usuario}', [App\Http\Controllers\MiperfilController::class, 'calendario'])->name('calendario.cliente');
         Route::post('/personalizardia', [App\Http\Controllers\MiperfilController::class, 'personalizardia'])->name('personalizardia');

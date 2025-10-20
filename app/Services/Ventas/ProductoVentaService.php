@@ -446,32 +446,45 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
+    // Servicio para el agregado de productos_venta con la configuracion solicitada por el cliente, validando el stock disponible
     public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad): VentaResponse
     {
         try {
-            // // Log::debug("Valores pasados por el cliente a agregarProductoCliente: ", ["Producto" => $producto, "Adicionales" => $adicionales, "cantidad" => $cantidad]);
-
             DB::beginTransaction();
 
-            $existeProductoVenta = $venta->productos()
-                    ->where('producto_id', $producto->id)
-                    ->wherePivot('aceptado', false)->exists();
+            // CRITICAL FIX: Get current cantidad BEFORE updating
+            $productoVentaExistente = $venta->productos()
+                ->where('producto_id', $producto->id)
+                ->wherePivot('aceptado', false)
+                ->first();
             
+            $existeProductoVenta = !is_null($productoVentaExistente);
+            $cantidadActual = $existeProductoVenta ? $productoVentaExistente->pivot->cantidad : 0;
+
+            // Update or create producto_venta
             if (!$existeProductoVenta) {
-                // Log::debug("No existe registro en producto_venta, creando para ",[$producto->id]);
                 $venta->productos()->attach($producto->id, ['cantidad' => $cantidad]);
             } else {
-                // Log::debug("Existe registro en producto_venta, creando para ",[$producto->id]);
-                $venta->productos()->wherePivot('aceptado', false)->updateExistingPivot($producto->id, [
-                    'cantidad' => DB::raw("cantidad + {$cantidad}")
-                ]);
+                // CRITICAL FIX: Use calculated value instead of DB::raw to avoid race conditions
+                $venta->productos()
+                    ->wherePivot('aceptado', false)
+                    ->updateExistingPivot($producto->id, [
+                        'cantidad' => $cantidadActual + $cantidad
+                    ]);
             }
 
-            // Actualizar adicionales si es necesario
+            // Process adicionales if needed
             if ($producto->medicion == 'unidad') {
-                $this->procesarAdicionalesBatch($venta, $producto->id, $adicionales, $cantidad);
+                $respuestaProcesado = $this->procesarAdicionalesBatch($venta, $producto->id, $adicionales, $cantidad);
+                                
+                // CRITICAL FIX: Check if adicionales processing failed
+                if (!$respuestaProcesado->success) {
+                    DB::rollBack();
+                    return $respuestaProcesado;
+                }
             }
 
+            // Validate and update stock
             if ($producto->contable) {
                 $stockResponse = $this->stockService->actualizarStock(
                     $producto,
@@ -481,38 +494,113 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 );
 
                 if (!$stockResponse->success) {
-                    // Log::debug("Error en stockResponse, realizando rollback: ", [$stockResponse]);
+                    DB::rollBack();
                     return $stockResponse;
                 }
             }
+
             DB::commit();
 
+            // Get updated producto_venta
             $productoVenta = $venta->productos()
-            ->where('producto_id', $producto->id)
-            ->wherePivot('aceptado', false)
-            ->withPivot('id', 'cantidad')
-            ->first();
+                ->where('producto_id', $producto->id)
+                ->wherePivot('aceptado', false)
+                ->withPivot('id', 'cantidad')
+                ->first();
 
-            $productoVentaInfo = $this->obtenerProductoVentaIndividual($venta,$productoVenta->pivot->id);
+            $productoVentaInfo = $this->obtenerProductoVentaIndividual($venta, $productoVenta->pivot->id);
             if (!$productoVentaInfo->success) {
-                throw new VentaException("Error al obtener el registro correspondiente", "error", [],404);
+                throw new VentaException("Error al obtener el registro correspondiente", "error", [], 404);
             }
 
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
             return VentaResponse::success(
-                $productoVenta ? $productoVentaInfo->data : null,
+                $productoVentaInfo->data,
                 "ProductoVenta agregado/actualizado exitosamente"
             );
+            
         } catch (VentaException $e) {
+            Log::error("VentaException capturada, ejecutando rollback", [
+                'message' => $e->getMessage(),
+                'producto' => $producto->nombre ?? 'desconocido'
+            ]);
             DB::rollBack();
             return VentaResponse::error($e->getMessage(), [], null);
-        } catch (\Exception  $e) {
+        } catch (\Exception $e) {
+            Log::error("Exception capturada, ejecutando rollback", [
+                'message' => $e->getMessage(),
+                'producto' => $producto->nombre ?? 'desconocido',
+                'trace' => $e->getTraceAsString()
+            ]);
             DB::rollBack();
-            return VentaResponse::error('Error al agregar producto: ' . $e ->getMessage());
+            return VentaResponse::error('Error al agregar producto: ' . $e->getMessage());
         }
     }
 
+    // Servicio Helper para el procesado de adicionales incluidos en una solicitud realizada por el cliente.
+    private function procesarAdicionalesBatch(Venta $venta, int $productoId, Collection $extras, int $cantidad)
+    {
+        try {
+            // Obtener el registro de producto_venta necesario
+            $productoVenta = $venta->productos()
+                    ->where('producto_id', $productoId)
+                    ->wherePivot('aceptado', false)      // Obtener solo pedidos no aceptados
+                    ->first();
+            
+            if (!$productoVenta) {
+                return VentaResponse::error('Producto no encontrado en la venta');
+            }
+
+            // Obtener el listado de adicionales actual
+            $listaActual = $productoVenta->pivot->adicionales;
+            $json = $listaActual ? json_decode($listaActual, true) : [];
+
+            // En caso de no disponer de adicionales, insertat arrays vacios
+            if ($extras->isEmpty()) {
+                for ($i = 0; $i < $cantidad; $i++) {
+                    $siguiente_clave = count($json) + 1;
+                    $json[$siguiente_clave] = []; // Empty array for each unit
+                }
+            } else {
+                // Validar el stock necesario
+                foreach ($extras as $adicional) {
+                    if ($adicional->contable == true && $adicional->cantidad < $cantidad) {
+                        return VentaResponse::warning("No hay stock suficiente para el adicional: {$adicional->nombre}. Stock disponible: {$adicional->cantidad}, requerido: {$cantidad}");
+                        // throw new \Exception("No hay stock suficiente para el adicional: {$adicional->nombre}. Stock disponible: {$adicional->cantidad}, requerido: {$cantidad}");
+                    }
+                }
+
+                // Procesar las veces determinadas por la cantidad
+                for ($i = 0; $i < $cantidad; $i++) {
+                    $siguiente_clave = count($json) + 1;
+                    $array_extras = [];
+
+                    foreach ($extras as $adicional) {
+                        if ($adicional->contable == true && $i == 0) {
+                            $adicional->decrement('cantidad', $cantidad);
+                        }
+                        $array_extras[] = [$adicional->nombre => $adicional->precio];
+                    }
+
+                    $json[$siguiente_clave] = $array_extras;
+                }
+            }
+            
+            // Actualizar producto_venta
+            DB::table('producto_venta')
+            ->where('venta_id', $venta->id)
+            ->where('producto_id', $productoId)
+            ->where('aceptado', false)
+            ->update(['adicionales' => json_encode($json)]);
+
+            return VentaResponse::success(null, 'Adicionales actualizados');
+        } catch (\Exception $e) {
+            return VentaResponse::error('Error al actualizar adicionales: ' . $e->getMessage());
+        }
+    }
+
+    // Servicio para la actualizacion de una orden en "adicionales" para un registro de "productos_venta" con la configuracion solicitada por el cliente.
     public function actualizarOrdenVentaCliente(Venta $venta, $productoVenta, Producto $producto, Collection $adicionalesNuevos, int $indice): VentaResponse
     {
         try {
@@ -581,67 +669,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
-    private function procesarAdicionalesBatch(Venta $venta, int $productoId, Collection $extras, int $cantidad)
-    {
-        try {
-            // Obtener el registro de producto_venta necesario
-            $productoVenta = $venta->productos()
-                    ->where('producto_id', $productoId)
-                    ->wherePivot('aceptado', false)      // Obtener solo pedidos no aceptados
-                    ->first();
-            
-            if (!$productoVenta) {
-                return VentaResponse::error('Producto no encontrado en la venta');
-            }
-
-            // Obtener el listado de adicionales actual
-            $listaActual = $productoVenta->pivot->adicionales;
-            $json = $listaActual ? json_decode($listaActual, true) : [];
-
-            // En caso de no disponer de adicionales, insertat arrays vacios
-            if ($extras->isEmpty()) {
-                for ($i = 0; $i < $cantidad; $i++) {
-                    $siguiente_clave = count($json) + 1;
-                    $json[$siguiente_clave] = []; // Empty array for each unit
-                }
-            } else {
-                // Validar el stock necesario
-                foreach ($extras as $adicional) {
-                    if ($adicional->contable == true && $adicional->cantidad < $cantidad) {
-                        return VentaResponse::warning("No hay stock suficiente para el adicional: {$adicional->nombre}. Stock disponible: {$adicional->cantidad}, requerido: {$cantidad}");
-                        // throw new \Exception("No hay stock suficiente para el adicional: {$adicional->nombre}. Stock disponible: {$adicional->cantidad}, requerido: {$cantidad}");
-                    }
-                }
-
-                // Procesar las veces determinadas por la cantidad
-                for ($i = 0; $i < $cantidad; $i++) {
-                    $siguiente_clave = count($json) + 1;
-                    $array_extras = [];
-
-                    foreach ($extras as $adicional) {
-                        if ($adicional->contable == true && $i == 0) {
-                            $adicional->decrement('cantidad', $cantidad);
-                        }
-                        $array_extras[] = [$adicional->nombre => $adicional->precio];
-                    }
-
-                    $json[$siguiente_clave] = $array_extras;
-                }
-            }
-            
-            // Actualizar producto_venta
-            DB::table('producto_venta')
-            ->where('venta_id', $venta->id)
-            ->where('producto_id', $productoId)
-            ->where('aceptado', false)
-            ->update(['adicionales' => json_encode($json)]);
-
-            return VentaResponse::success(null, 'Adicionales actualizados');
-        } catch (\Exception $e) {
-            return VentaResponse::error('Error al actualizar adicionales: ' . $e->getMessage());
-        }
-    }
-
+    // Reduce en 1 el pedido realizado por el cliente, necesario para productos simples
     public function disminuirProductoCLiente(Venta $venta, int $producto_venta_id): VentaResponse 
     {
         try {
@@ -711,6 +739,8 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
+    // Elimina por completo un registro de un adicional en una posicion (indice) en particular, guiandose por el identificador unico de la tabla producto_venta
+    // IMPORTANTE, necesario para identificar que el elemento a eliminarse es un pedido aceptado o no aceptado
     public function eliminarItemPivotID(Venta $venta, int $producto_venta_id, int $posicion): VentaResponse {
         try {
             if ($venta->pagado) {
@@ -784,6 +814,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
+    // Elimina por completo un registro de "producto_venta", realizando el restock necesario del producto y sus adicionales
     public function eliminarProductoCompletoCliente(Venta $venta, int $producto_venta_id)    
     {
         try {
@@ -867,14 +898,24 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             }
 
             $productos = $venta->productos()->get();
-            
+
+            $productosProcessed = [];
+            $message = "";
+            $pedidos_totales_cliente = $this->obtenerCantidadProductosVenta($venta); 
+        
             if ($productos->isEmpty()) {
-                return VentaResponse::success([], 'No hay productos en esta venta');
+                $message = 'No hay productos en esta venta';
+            } else {
+                $productosProcessed = $this->procesarProductosVenta($productos, $venta->sucursale_id);
+                $message = 'Productos obtenidos exitosamente';
             }
 
-            $productosProcessed = $this->procesarProductosVenta($productos, $venta->sucursale_id);
+            $productosyCantidad = [
+                'productos' => $productosProcessed,
+                'cantidad_pedido' => $pedidos_totales_cliente
+            ];
 
-            return VentaResponse::success($productosProcessed);
+            return VentaResponse::success($productosyCantidad, $message);
 
         } catch (\Exception $e) {
             Log::error('Error obteniendo productos de venta', [
@@ -905,7 +946,8 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             // Procesar un unico ProductoVenta
             $productoProcesado = $this->procesarProductoVentaIndividual($producto, $venta->sucursale_id);
-
+            $pedidos_totales_cliente = $this->obtenerCantidadProductosVenta($venta); 
+            $productoProcesado['pedidos_totales_cliente'] = $pedidos_totales_cliente; 
             return VentaResponse::success($productoProcesado);
 
         } catch (\Exception $e) {
@@ -934,15 +976,11 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             $adicionalesProductoVenta = json_decode($registro->adicionales, true);;
             $adicionalesIndice = $adicionalesProductoVenta[$indice];
-
-            // Log::debug("Adicionales para el ProductoVenta escogido: ", [$adicionalesProductoVenta]);
-            // Log::debug("Adicionales para el Indice escogido: ", [$adicionalesIndice]);
             
             $adicionales = [];
             
             foreach ($adicionalesIndice as $adic) {
                 $adicional = Adicionale::where('nombre', key($adic))->first();
-                // Log::debug("valor del adicional $adicional->nombre:" , [$adicional]);
                 $adicionales[] = [
                     "id" => $adicional->id,
                     "nombre" => $adicional->nombre,
@@ -1095,6 +1133,12 @@ class ProductoVentaService implements ProductoVentaServiceInterface
     }
 
     // #endregion
+
+    private function obtenerCantidadProductosVenta(Venta $venta): int 
+    {
+        return (int) $venta->productos()->sum('cantidad');
+    }
+
     private function verificarAdicionalesVacios($arrayAdicionales): bool
     {
         if (is_null($arrayAdicionales)) {

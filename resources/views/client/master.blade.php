@@ -147,7 +147,7 @@
         </div>
         {{-- Inclusion del Menu Sidebar --}}
         <div id="menu-main" class="menu menu-box-left menu-box-detached rounded-0 d-flex flex-column"
-            data-menu-width="260" data-menu-active="nav-pages" data-menu-effect="menu-over">
+            data-menu-width="260" data-menu-active="nav-pages" data-menu-effect="menu-over" style="z-index: 2000;">
             @include('client.partials.menu-sidebar')
         </div>
     </div>
@@ -194,34 +194,6 @@
     @stack('modals')
     <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}?v=1.0.0"></script>
     <script type="text/javascript" src="{{ asset('scripts/custom.js') }}?v=1.0.0"></script>
-
-    {{-- <script>
-        $(document).ready(function() {
-            var baseUrl = '{{ env('APP_URL') }}';
-            $.ajaxSetup({
-                beforeSend: function(xhr, options) {
-                    options.url = baseUrl + options.url;
-                }
-            })
-            $(".carrito").click(function() {
-
-                $.ajax({
-                    method: "get",
-                    url: "/productos/add/carrito/" + $(this).attr('id'),
-                    success: function(result) {
-                        if (result == 'logout') {
-                            window.location.href = "{{ route('login') }}";
-                        } else {
-                            // var toaster = document.getElementById('saved-to-favorites');
-                            // cart = new bootstrap.Toast(toaster);
-                            // cart.show()
-                        }
-                    }
-                })
-
-            });
-        });
-    </script> --}}
     <script>
         function myFunction() {
             var element = document.body;

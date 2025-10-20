@@ -11,10 +11,7 @@
             <div id="contenedor-listado-ordenes" class="d-flex align-content-center flex-column">
                 <ul id="listado-ordenes" class="px-3 pt-3 mb-0">
                 </ul>
-                <!-- <div id="contenedor-boton-agregar" class="">
-
-                </div> -->
-                    <button id="boton-agregar-orden-venta" class="d-none">Agregar Orden</button>
+                    <button id="boton-agregar-orden-venta" class="d-none" disabled>Agregar Orden</button>
                 <div id="contenedor-observacion" class="mb-4 px-4">
                 </div>
             </div>
@@ -106,19 +103,10 @@
             try {
                 const response = await VentaService.eliminarOrdenIndex(pivotID, index); 
                 // Se renderizan nuevamente los listados, debido a que los indices de producto_venta.adicionales
-                // se reorganizaron
-                
+                // se reorganizaron                
+                actualizarContadorPedidosFooter(response.data.cantidad_pedido);
                 // Renderizar el listado permite reatribuirle los Indices ya modificados
                 renderizarListadoOrdenesVenta(response.data);
-                
-                // const validacionProductoPrincipal = estadoValidacionCarrito.productosLimitados[infoProductoObjetivo.id];
-                // if (validacionProductoPrincipal) {
-                    
-                // }
-                // En caso de desear solo eliminar el card de la orden seleccionada, usar la funcion comentada
-                // // eliminarCardOrdenIndice(pivotID, index);
-                // Actualizar la informacion del pedido general
-                // // console.log("Valor de respuesta tras eliminacion venta: ", response.data);
                 window.reemplazarCardProductoVenta(response.data);
                 mostrarToastSuccess("Orden eliminada con éxito");
             } catch (error) {
@@ -144,6 +132,7 @@
                 }
                 
                 carritoStorage.actualizarContadorCarrito();
+                refrescarContadoresFooter();
                 const infoProductoActualizado = await CarritoService.obtenerInfoItemCarrito(itemCarrito, 1);
                 // const infoProductoObjetivo = response.data.find(producto => producto.pivot_id = pivotID);
                 // // console.log(`Informacion del producto cuya orden ${indice} acaba de ser eliminada: `, infoProductoActualizado.item);
@@ -193,7 +182,7 @@
                     data-producto-id="${info.id}"
                     data-pventa-id="${info.pivot_id}"
                     data-orden-index="${indice}"
-                    class="${esAceptado ? '' : 'actualizar-orden-venta'}"
+                    class="${esAceptado ? '' : 'actualizar-orden-venta-deshabilitado'}"
                     style="list-style-type: none">
                     <div class="card card-style">
                         <div class="card-header bg-teal-light">
@@ -251,6 +240,7 @@
                     id="boton-agregar-orden-venta"
                     data-producto-id="${id}"
                     ${disabledAttr}
+                    disabled
                     class="${buttonClass} btn btn-xs add-disabler mx-5 mb-3 mt-n1 rounded-s bg-teal-light d-flex flex-row gap-2 align-items-center text-uppercase justify-content-center">
                     ${textoBoton}
                     <i class="lucide-icon" data-lucide="circle-plus"></i>
@@ -322,6 +312,8 @@
                     // // console.log("Eliminado orden del carrito")
                     await eliminarOrdenCarrito(productoID, index);
                 } else {
+                    // Omitido para debugear
+                    return;
                     // // console.log("PivotID: ", pivotID);
                     // // console.log("Eliminando orden en venta activa")
                     await eliminarOrden(pivotID, index);

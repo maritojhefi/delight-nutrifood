@@ -174,7 +174,6 @@
     </div>
 
     <!-- MODAL LISTADO ORDENES-PRODUCTO -->
-    <!-- <x-modal-listado-ordenes-carrito /> -->
     <x-modal-listado-ordenes-venta />
 
 
@@ -225,17 +224,18 @@
     $(document).ready( async function() {
 
         if (ventaActiva) {
-            // axios para venta activa
             await renderizarPrincipalPedidos();
         }
     });
+
+
 
     const renderizarPrincipalPedidos = async () => {
         const contenedorPrincipal = $('#contenedor-principal');
 
         // Obtener informacion venta
         const response = await VentaService.productosVenta();
-        const productosVenta = response.data;
+        const productosVenta = response.data.productos;
 
         if (productosVenta.length > 0) {
             renderizarProductosVenta(productosVenta);
@@ -342,6 +342,7 @@
             $(`#precio-pventa-${productoVentaId}`).text(`Bs. ${precioFinal}`);
             $(`#unidades-pventa-${productoVentaId}`).text(`Unidades: ${cantidad}`);
             $(`#pviejo-pventa-${productoVentaId}`).text(`Bs. ${respuestaIncremento.data.precio_original.toFixed(2) * cantidad}`);
+            actualizarContadorPedidosFooter(respuestaIncremento.data.pedidos_totales_cliente);
         } catch (error) {
             console.log(error);
             if (error.response?.data?.stockProducto === 0) {
@@ -361,6 +362,7 @@
             $(`#precio-pventa-${productoVentaId}`).text(`Bs. ${precioFinal}`);
             $(`#unidades-pventa-${productoVentaId}`).text(`Unidades: ${cantidad}`);
             $(`#pviejo-pventa-${productoVentaId}`).text(`Bs. ${respuestaReduccion.data.precio_original.toFixed(2) * cantidad}`);
+            actualizarContadorPedidosFooter(respuestaReduccion.data.pedidos_totales_cliente);
         } catch (error) {
             console.log(error);
             if (error.response?.data.type == "warning") {
@@ -377,14 +379,16 @@
             // renderizarProductosVenta(response.data);
             console.log("Respuesta tras eliminacion: ", response);
             eliminarCardProductoVenta(pivotID);
+            actualizarContadorPedidosFooter(response.data.cantidad_pedido);
+            refrescarContadoresFooter();
             mostrarToastSuccess("Pedido eliminado con éxito");
-            if (response.data.length == 0) {
+            if (response.data.productos.length == 0) {
                 // Ocultar listados de pedidos
                 const contenedorAceptados = $('#contenedor-aceptados');
                 const contenedorPendientes = $('#contenedor-pendientes');
                 contenedorAceptados.removeClass('d-block');
                 contenedorPendientes.addClass('d-none');
-                revelarOpcionesPedido(false)
+                revelarOpcionesPedido(false);
                 // Renderizar PedidoVacio
                 renderizarPedidoVacio();
             }
@@ -442,6 +446,7 @@
                                 ${(producto.aceptado) ? '':
                                 `<button class="btn btn-xxs bg-highlight opacity-100 borrar-pventa-btn position-absolute"
                                         type="button"
+                                        disabled
                                         data-producto-venta-id="${producto.pivot_id}"
                                         title="Eliminar producto"
                                         style="top: 0.1rem; right: 0.01rem; z-index: 20;"
@@ -478,6 +483,7 @@
                 <div class="quantity-controls bg-light border rounded d-flex align-items-center">
                     <button class="btn btn-xs btn-outline-secondary border-0 reducir-simple"
                             type="button"
+                            disabled
                             data-producto-id="${prod_venta.id}"
                             data-pventa-id=${prod_venta.pivot_id}
                             title="Disminuir cantidad">
@@ -490,6 +496,7 @@
                     </span>
                     <button class="btn btn-xs btn-outline-secondary border-0 incrementar-simple"
                             type="button"
+                            disabled
                             data-producto-id="${prod_venta.id}"
                             data-pventa-id=${prod_venta.pivot_id}
                             title="Aumentar cantidad">
@@ -525,7 +532,7 @@
 
     const handleResumenPedido = async() => {
         const repuestaProductosVentaCliente = await VentaService.productosVenta();
-        const productosVentaCliente = repuestaProductosVentaCliente.data;
+        const productosVentaCliente = repuestaProductosVentaCliente.data.productos;
 
         if (productosVentaCliente.length > 0) {
             prepararResumenPedidoVenta(productosVentaCliente);
@@ -1087,7 +1094,7 @@
             const costoTotalSinDescuento = $(`#pviejo-carrito-${productToIncreaseId}`);
 
             const IncreaseAttemp = await carritoStorage.agregarAlCarrito(productToIncreaseId, 1, true);
-            
+            refrescarContadoresFooter();
             if (IncreaseAttemp.success === true) {
                 nuevaCantidad = IncreaseAttemp.newQuantity;
                 quantitySpan.textContent = nuevaCantidad;
@@ -1159,6 +1166,7 @@
                 renderizarCarritoVacio();
                 // Actualizar el contador
                 carritoStorage.actualizarContadorCarrito();
+                refrescarContadoresFooter();
                 // Ocultar el modal y mostrar mensaje de exito de ser necesario
                 confirmModal.hide();
             });
@@ -1188,6 +1196,7 @@
 
             // Actualizar el contador del carrito
             carritoStorage.actualizarContadorCarrito();
+            refrescarContadoresFooter();
         }
 
         window.eliminarCardProductoCarrito = (productId) => {

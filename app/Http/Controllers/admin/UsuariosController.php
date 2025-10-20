@@ -12,6 +12,9 @@ use App\Helpers\GlobalHelper;
 use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+
 
 class UsuariosController extends Controller
 {
@@ -80,7 +83,38 @@ class UsuariosController extends Controller
     public function saldo()
     {
         $usuario = User::find(auth()->user()->id);
-        return view('client.miperfil.saldo', compact('usuario'));
+        // SALDO PENDIENTE
+        $saldosPendientes = $usuario->saldos->where('anulado',false)->where('liquidado', null)->sortBy('created_at');
+        // HISTORIAL DE SALDOS
+        $saldosHistorial = $usuario->saldos->where('anulado',false)->sortByDesc('created_at');
+        return view('client.miperfil.saldo', compact('usuario','saldosPendientes','saldosHistorial'));
+    }
+    public function saldoHistorial(Request $request): JsonResponse
+    {
+        $limite = $request->input('limite', 10); // Records per page, default 10
+        $pagina = $request->input('pagina', 1);  // Requested page number, default 1
+
+        $limite = (int) $limite;
+        $pagina = (int) $pagina;
+
+        $usuario = User::find(auth()->user()->id);
+
+        // CONSULTA HISTORIAL
+        $query = $usuario->saldos()
+                        ->where('anulado', false)
+                        ->orderByDesc('created_at'); 
+
+        // REGISTROS PARA LA PAGINA DESEADA
+        $saldosPaginados = $query->paginate($limite, ['*'], 'pagina', $pagina);
+
+        $infoPagina = [
+            "registros_totales" => $saldosPaginados->total(),
+            "pagina_actual" => $saldosPaginados->currentPage(),
+            "cantidad_pagina" => $saldosPaginados->perPage(),
+            "saldos" => $saldosPaginados->items(),
+        ];
+
+        return response()->json($infoPagina, Response::HTTP_OK);
     }
     public function detalleplan($id, $planid)
     {

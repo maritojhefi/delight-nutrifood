@@ -6,6 +6,7 @@ import { createIcons, icons } from 'lucide';
 import './auth/logout';
 import './carrito/carrito-store';
 import './ventas/venta-service'
+import './saldo/saldo-service'
 
 
 createIcons({icons});
