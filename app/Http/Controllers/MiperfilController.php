@@ -89,7 +89,9 @@ class MiperfilController extends Controller
 
     public function calendario(Plane $plan, User $usuario, Request $request)
     {
-        if ($usuario->id != auth()->user()->id) {
+        // dd($usuario);
+        // dd(auth()->user()->role_id);
+        if ($usuario->id != auth()->user()->id && auth()->user()->role_id != 1) {
             return back();
         }
 
@@ -211,7 +213,10 @@ class MiperfilController extends Controller
         $dia = DB::table('plane_user')->where('id', $request->id)->first();
         if ($dia->estado == "pendiente") {
             DB::table('plane_user')->where('id', $request->id)->update(['detalle' => $array]);
-            return redirect()->route('calendario.cliente', [$request->plan, auth()->user()->id])
+            $registro =  DB::table('plane_user')->where('id', $request->id)->first();
+            // dd($plan, $request, $usuario);
+            // dd($registro->user_id);
+            return redirect()->route('calendario.cliente', [$request->plan, $registro->user_id])
                 ->with('success', 'Dia ' . $request->dia . ' guardado!');
         } else {
             return redirect()->route('calendario.cliente', [$request->plan, auth()->user()->id])
