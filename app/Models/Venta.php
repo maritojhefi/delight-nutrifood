@@ -28,7 +28,8 @@ class Venta extends Model
         'usuario_manual',
         'impreso',
         'cocina',
-        'pagado'
+        'pagado',
+        'reservado_at'
     ];
 
     public function sucursale()
@@ -69,5 +70,9 @@ class Venta extends Model
             $this->descuento;
 
         return $this->total + $this->productos->sum('pivot.total_adicionales') - $sumaDescuentos;
+    }
+    public function totalItems()
+    {
+        return $this->productos->sum('pivot.cantidad');
     }
 }

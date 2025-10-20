@@ -97,6 +97,10 @@ class VentasIndex extends Component
         'imprimir' => 'imprimirReciboCliente',
         'descargarPDF' => 'descargarPDF',
         'modalResumen' => 'modalResumen',
+        'crearVentaDelivery' => 'crearVentaDelivery',
+        'crearVentaReserva' => 'crearVentaReserva',
+        'cambiarTipoEntregaVenta' => 'cambiarTipoEntregaVenta',
+        'agregarProductoConAdicionales' => 'agregarProductoConAdicionales',
     ];
     public function boot(
         VentaServiceInterface $ventaService,
@@ -386,7 +390,7 @@ class VentasIndex extends Component
         $this->validate();
 
         $response = $this->ventaService->crearVenta(auth()->user()->id, $this->sucursal, $this->cliente);
-
+        $this->seleccionar($response->data->id);
         $this->dispatchBrowserEvent('alert', [
             'type' => $response->type,
             'message' => $response->message,
@@ -400,7 +404,7 @@ class VentasIndex extends Component
     public function abrirVentaConMesa($mesaId, $tipo)
     {
         try {
-            $mesa = Mesa::findOrFail($mesaId);
+            // $mesa = Mesa::findOrFail($mesaId);
 
             $response = $this->ventaService->crearVenta(auth()->user()->id, $this->sucursal, null, $mesaId, $tipo);
 
@@ -408,7 +412,8 @@ class VentasIndex extends Component
                 'type' => $response->type,
                 'message' => $response->message,
             ]);
-
+            // dd($response->data);
+            $this->seleccionar($response->data->id);
             if ($response->success) {
                 $this->reset(['user', 'cliente', 'sucursal']);
                 // Cerrar el modal automáticamente
@@ -418,6 +423,210 @@ class VentasIndex extends Component
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'error',
                 'message' => 'Error al abrir la venta: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function buscarClientes()
+    {
+        if ($this->user != null && strlen($this->user) >= 2) {
+            $clientes = User::where('name', 'LIKE', '%' . $this->user . '%')
+                ->orWhere('email', 'LIKE', '%' . $this->user . '%')
+                ->take(10)
+                ->get(['id', 'name', 'email']);
+
+            $this->dispatchBrowserEvent('clientesEncontrados', ['clientes' => $clientes]);
+        } else {
+            $this->dispatchBrowserEvent('clientesEncontrados', ['clientes' => []]);
+        }
+    }
+
+    public function obtenerMesasDisponibles()
+    {
+        $mesas = Mesa::where('sucursale_id', $this->sucursal)
+            ->with(['venta' => function ($query) {
+                $query->where('pagado', false);
+            }])
+            ->get()
+            ->map(function ($mesa) {
+                $ventaActiva = $mesa->venta;
+                $mesaOcupada = $ventaActiva && !$ventaActiva->pagado;
+
+                return [
+                    'id' => $mesa->id,
+                    'numero' => $mesa->numero,
+                    'capacidad' => $mesa->capacidad,
+                    'ocupada' => $mesaOcupada,
+                    'es_actual' => $this->cuenta && $this->cuenta->mesa_id === $mesa->id,
+                ];
+            });
+
+        $this->dispatchBrowserEvent('mesasDisponibles', ['mesas' => $mesas]);
+    }
+
+    public function crearVentaDelivery($clienteId)
+    {
+        try {
+            $cliente = User::find($clienteId);
+
+            if (!$cliente) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => 'Cliente no encontrado',
+                ]);
+                return;
+            }
+
+            $response = $this->ventaService->crearVenta(
+                auth()->user()->id,
+                $this->sucursal,
+                $clienteId,
+                null,
+                'delivery'
+            );
+
+            $this->seleccionar($response->data->id);
+            $this->dispatchBrowserEvent('alert', [
+                'type' => $response->type,
+                'message' => $response->message,
+            ]);
+
+            if ($response->success) {
+                $this->reset(['user', 'cliente', 'sucursal']);
+            }
+        } catch (\Exception $e) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Error al crear venta delivery: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function crearVentaReserva($tipoEntrega, $mesaId = null, $clienteId = null, $fechaHora = null)
+    {
+        try {
+            // Validaciones según el tipo de entrega
+            if ($tipoEntrega === 'mesa' && !$mesaId) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => 'Debe seleccionar una mesa',
+                ]);
+                return;
+            }
+
+            if ($tipoEntrega === 'delivery' && !$clienteId) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => 'Debe seleccionar un cliente para delivery',
+                ]);
+                return;
+            }
+
+            if (!$fechaHora) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => 'Debe seleccionar fecha y hora de reserva',
+                ]);
+                return;
+            }
+
+            $response = $this->ventaService->crearVenta(
+                auth()->user()->id,
+                $this->sucursal,
+                $clienteId,
+                $mesaId,
+                $tipoEntrega,  // El tipo real (mesa, delivery, recoger)
+                $fechaHora     // La fecha de reserva
+            );
+
+            $this->seleccionar($response->data->id);
+            $this->dispatchBrowserEvent('alert', [
+                'type' => $response->type,
+                'message' => $response->message . ' (Reservada para ' . date('d/m/Y H:i', strtotime($fechaHora)) . ')',
+            ]);
+
+            if ($response->success) {
+                $this->reset(['user', 'cliente', 'sucursal']);
+            }
+        } catch (\Exception $e) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Error al crear venta reserva: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function cambiarTipoEntregaVenta($tipoEntrega, $mesaId = null, $clienteId = null, $fechaHora = null)
+    {
+        try {
+            if (!$this->cuenta) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => 'No hay una venta seleccionada',
+                ]);
+                return;
+            }
+
+            // Validaciones según el tipo de entrega
+            if ($tipoEntrega === 'mesa' && !$mesaId) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => 'Debe seleccionar una mesa',
+                ]);
+                return;
+            }
+
+            if ($tipoEntrega === 'delivery' && !$clienteId) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => 'Debe seleccionar un cliente para delivery',
+                ]);
+                return;
+            }
+
+            // Verificar si la mesa está ocupada
+            if ($tipoEntrega === 'mesa' && $mesaId) {
+                $mesa = Mesa::find($mesaId);
+                if ($mesa->venta && $mesa->venta->id !== $this->cuenta->id && !$mesa->venta->pagado) {
+                    $this->dispatchBrowserEvent('alert', [
+                        'type' => 'error',
+                        'message' => 'La mesa seleccionada ya está ocupada',
+                    ]);
+                    return;
+                }
+            }
+
+            // Actualizar la venta
+            $this->cuenta->tipo_entrega = $tipoEntrega;
+            $this->cuenta->mesa_id = $tipoEntrega === 'mesa' ? $mesaId : null;
+            $this->cuenta->cliente_id = $clienteId;
+            $this->cuenta->reservado_at = $fechaHora; // Si es null, se limpia la reserva
+            $this->cuenta->save();
+
+            $mensajeTipo = [
+                'mesa' => 'Mesa',
+                'delivery' => 'Delivery',
+                'recoger' => 'Venta Rápida',
+            ];
+
+            $mensaje = 'Tipo de entrega cambiado a: ' . ($mensajeTipo[$tipoEntrega] ?? $tipoEntrega);
+
+            if ($fechaHora) {
+                $mensaje .= ' (Reservada para ' . date('d/m/Y H:i', strtotime($fechaHora)) . ')';
+            }
+
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => $mensaje,
+            ]);
+
+            // Refrescar la cuenta
+            $this->cuenta = Venta::find($this->cuenta->id);
+            $this->actualizarlista($this->cuenta);
+        } catch (\Exception $e) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Error al cambiar tipo de entrega: ' . $e->getMessage(),
             ]);
         }
     }
@@ -644,6 +853,101 @@ class VentasIndex extends Component
 
     public function adicionar(Producto $producto)
     {
+        // Verificar si el producto tiene adicionales
+        if ($this->productoTieneAdicionales($producto)) {
+            // Mostrar SweetAlert para seleccionar adicionales
+            $this->mostrarSweetAlertAdicionales($producto);
+        } else {
+            // Agregar producto directamente
+            $this->agregarProductoDirecto($producto);
+        }
+    }
+
+    private function productoTieneAdicionales(Producto $producto): bool
+    {
+        return $producto->subcategoria &&
+            $producto->subcategoria->adicionalesGrupo()->isNotEmpty();
+    }
+
+    private function mostrarSweetAlertAdicionales(Producto $producto)
+    {
+        $adicionalesConGrupos = $producto->subcategoria->adicionalesGrupo();
+        $grupos = $this->organizarAdicionalesPorGrupos($adicionalesConGrupos);
+
+        $this->dispatchBrowserEvent('mostrarSweetAlertAdicionales', [
+            'producto' => [
+                'id' => $producto->id,
+                'nombre' => $producto->nombre,
+                'precio' => $producto->precioReal(),
+                'imagen' => asset($producto->pathAttachment()),
+            ],
+            'grupos' => $grupos
+        ]);
+    }
+
+    private function organizarAdicionalesPorGrupos($adicionalesConGrupos)
+    {
+        $grupos = [];
+
+        foreach ($adicionalesConGrupos as $adicional) {
+            $grupoId = $adicional->grupo_id;
+            $grupoNombre = $adicional->nombre_grupo;
+            $esObligatorio = (bool) $adicional->es_obligatorio;
+            $maximoSeleccionable = $adicional->maximo_seleccionable;
+
+            if (!isset($grupos[$grupoId])) {
+                $grupos[$grupoId] = [
+                    'id' => $grupoId,
+                    'nombre' => $grupoNombre,
+                    'es_obligatorio' => $esObligatorio,
+                    'maximo_seleccionable' => $maximoSeleccionable,
+                    'adicionales' => []
+                ];
+            }
+
+            $grupos[$grupoId]['adicionales'][] = [
+                'id' => $adicional->id,
+                'nombre' => $adicional->nombre,
+                'precio' => (float) $adicional->precio,
+                'contable' => (bool) $adicional->contable,
+                'cantidad' => $adicional->cantidad
+            ];
+        }
+
+        return array_values($grupos);
+    }
+
+    public function agregarProductoConAdicionales($productoId, $adicionalesSeleccionados, $cantidad = 1)
+    {
+        try {
+            $producto = Producto::find($productoId);
+            $adicionales = Adicionale::whereIn('id', $adicionalesSeleccionados)->get();
+
+            $response = $this->productoVentaService->agregarProductoCliente(
+                $this->cuenta,
+                $producto,
+                $adicionales,
+                $cantidad
+            );
+
+            $this->dispatchBrowserEvent('alert', [
+                'type' => $response->type,
+                'message' => $response->message,
+            ]);
+
+            if ($response->success) {
+                $this->actualizarlista(Venta::find($this->cuenta->id));
+            }
+        } catch (\Exception $e) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Error al agregar producto: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    private function agregarProductoDirecto(Producto $producto)
+    {
         $response = $this->productoVentaService->agregarProducto($this->cuenta, $producto);
 
         $this->dispatchBrowserEvent('alert', [
@@ -721,7 +1025,7 @@ class VentasIndex extends Component
         $this->reset('tipocobro', 'metodosSeleccionados', 'totalAcumuladoMetodos', 'descuentoSaldo', 'saldoSobranteCheck', 'adicionales', 'productoapuntado');
         $this->saldoRestante = 0;
         $this->saldo = false;
-        $this->emit('focusInputBuscador');
+        $this->emit('focusInputBuscador', $this->cuenta->id);
         $this->actualizarlista($venta);
         $this->reset('clienteRecibo', 'fechaRecibo', 'checkClientePersonalizado', 'modoImpresion', 'observacionRecibo', 'checkMetodoPagoPersonalizado', 'metodoRecibo');
     }
@@ -913,7 +1217,10 @@ class VentasIndex extends Component
             $this->ventaSeleccionada->fresh();
         }
 
-        $ventas = Venta::orderBy('created_at', 'asc')->get();
+        $ventas = Venta::orderByRaw('reservado_at IS NULL')
+            ->orderBy('reservado_at', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->get();
         $usuarios = collect();
         $sucursales = Sucursale::pluck('id', 'nombre');
         $this->sucursal = $sucursales->first();
