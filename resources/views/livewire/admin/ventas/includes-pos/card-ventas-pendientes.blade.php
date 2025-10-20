@@ -126,7 +126,7 @@
 </x-card-col>
 
 <!-- Modal Seleccionar Mesa -->
-<div class="modal fade" id="modalSeleccionarMesa" tabindex="-1" aria-labelledby="modalSeleccionarMesaLabel"
+<div class="modal fade" id="modalSeleccionarMesa" wire:ignore.self tabindex="-1" aria-labelledby="modalSeleccionarMesaLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
