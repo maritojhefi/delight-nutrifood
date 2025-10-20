@@ -235,7 +235,7 @@ class MiperfilController extends Controller
 
             $url = route('calendario.cliente', [
                 'plan' => $dia->plane_id,
-                'usuario' => auth()->user()->id
+                'usuario' => $dia->user_id
             ]) . '?pedido=' . $idpivot;
 
             return redirect($url);
