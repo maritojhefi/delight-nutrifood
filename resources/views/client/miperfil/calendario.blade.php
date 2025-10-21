@@ -160,7 +160,6 @@
                         <span>El plan seleccionado pasara a un dia despues del ultimo plan encontrado</span>
                         <form action="" id="formBasic">
                             <input type="hidden" name="id" id="id">
-
                         </form>
                     </div>
                     <div class="card-footer align-self-end bg-transparent border-top-0">
@@ -311,6 +310,44 @@
 
                 })
             });
+        </script>
+        <!-- Script para el retirado de pedidos individuales de un acordeon plan -->
+        <script>
+            $(document).ready( function () {
+                    $('.confirmar-pedido-permiso').on('click', async function (e) {
+                        e.preventDefault();
+                        const idPedido = $(this).data('pedido');
+                        console.log(`click en confirmar permiso para el pedido ${idPedido}`);
+
+                        await PlanesService.permisoPedido(idPedido).then(
+                            (respuestaPermiso) => {
+                                // Cerrar modal
+                                mostrarToastSuccess("¡Permiso obtenido!");
+                                cerrarModalConfirmarPermiso(idPedido);
+                                // Recargar pagina
+                                location.reload();
+                                // (Posible caso) En el caso de quedar pocos dias en el plan, se deberan renderizar el acordeon para el nuevo pedido
+                                // Empujado un dia al final del plan, (lo mas sencillo es re renderizar toda la pagina)
+                            }
+                        ).catch(error => {
+                            if (error.response) {
+                                console.log("Respuesta al error permiso pedido:", error.response);
+                            }
+                            cerrarModalConfirmarPermiso(idPedido);
+                            mostrarToastError("Ocurrio un error al solicitar el permiso");
+                            console.log(`Ocurrio un error al solicitar el permiso ${idPedido}:`, error);
+                        });
+
+                        $(`#permiso-menu-${idPedido}`).removeClass('menu-active');
+                        $(`.menu-hider`).removeClass('menu-active');
+                    });
+                }
+            );
+
+            const cerrarModalConfirmarPermiso = (idPedido) => {
+                $(`#permiso-menu-${idPedido}`).removeClass('menu-active');
+                $(`.menu-hider`).removeClass('menu-active');
+            }
         </script>
     @endpush
 
