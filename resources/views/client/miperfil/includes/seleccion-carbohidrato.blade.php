@@ -1,7 +1,7 @@
 <div class="col-12" id="carb{{ $lista['id'] }}">
-    <div class="ms-n1 d-flex flex-row align-items-center gap-2">
+    <div class="ms-n1 d-flex flex-row align-items-center gap-2 color-theme">
         <i data-lucide="sprout" class="lucide-icon"></i>
-        <strong class="color-theme">Elija su carbohidrato</strong>
+        <strong>Elija su carbohidrato</strong>
     </div>
     
     @php
@@ -31,7 +31,7 @@
                     class="d-flex flex-row gap-1 align-items-center"
                 >
                     @if ($lista[$estadoKey])
-                        {{ $lista[$carbo['key']] }} 
+                        <p class="mb-0">{{ $lista[$carbo['key']] }}</p>
                         <i data-lucide="check" class="lucide-icon color-teal-dark"></i>
                     @else
                         <del>{{ $lista[$carbo['key']] }}</del> 
@@ -51,7 +51,9 @@
             value="sin carbohidrato"
         >
         <label for="box13-fac-radio{{ $lista['id'] }}">
-            Sin carbohidrato
+            <p class="mb-0">
+                Sin carbohidrato
+            </p>
         </label>
     </div>
 </div>

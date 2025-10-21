@@ -1,10 +1,7 @@
 <div class="col-12" id="plato{{ $lista['id'] }}">
-    <div class="ms-n1 d-flex flex-row align-items-center gap-2">
-        <!-- <div class="bg-highlight rounded rounded-circle d-flex align-items-center justify-content-center p-1" style="height: 1.5rem; width: 1.5rem">
-            <i data-lucide="utensils" class="lucide-icon color-white" style="width: 1rem; height: 1rem;"></i>
-        </div> -->
+    <div class="ms-n1 d-flex flex-row align-items-center gap-2 color-theme">
         <i data-lucide="utensils" class="lucide-icon"></i>
-        <strong class="color-theme">Elija su plato</strong>
+        <strong>Elija su plato</strong>
     </div>
     
     @php
@@ -47,13 +44,13 @@
                     @if (!$lista[$estadoKey]) disabled @endif
                 >
                 <label for="{{ $plato['box_id'] }}{{ $lista['id'] }}"
-                    class="d-flex flex-row gap-1 align-items-center"
+                    class="d-flex flex-row gap-1 align-items-center me-0"
                 >
-                    <mark class="highlight px-2 line-height-xs font-10 bg-magenta-dark rounded-m">
+                    <mark class="highlight px-2 line-height-xs font-10 bg-highlight bg-dtheme-blue color-white rounded-m">
                         {{ $plato['label'] }}
                     </mark>
                     @if ($lista[$estadoKey])
-                        {{ $lista[$plato['key']] }} 
+                        <p class="mb-0">{{ $lista[$plato['key']] }} </p>
                         <i data-lucide="check" class="lucide-icon color-teal-dark"></i>
                     @else
                         <del>{{ $lista[$plato['key']] }}</del> 

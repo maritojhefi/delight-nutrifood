@@ -25,39 +25,41 @@
                 <div class="accordion" id="accordion-3">
                     @foreach ($coleccion as $lista)
                         {{-- @dd($lista) --}}
-                        <div class="card card-style border-teal-dark" 
-                            style="border: 2px solid #ddd !important; border-radius: 20px !important;">                            
+                        <div class="card card-style rounded-s">
                             <div
-                                class="list-custom-small border-0 list-icon-0 @if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'bg-highlight bg-dtheme-blue' }}@elseif($lista['estado'] == 'desarrollo'){{ 'bg-yellow-dark' }}@else{{ 'bg-green-dark bg-dtheme-blue' }}@endif px-3">
+                                class="list-custom-small rounded-s border-0 list-icon-0 @if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'bg-highlight bg-dtheme-blue' }}@elseif($lista['estado'] == 'desarrollo'){{ 'bg-yellow-dark' }}@else{{ 'bg-green-dark bg-dtheme-blue' }}@endif px-3">
                                 <a data-bs-toggle="collapse" class="{{ ($idPedidoEditar == $lista['id']) ? '' : 'collapsed' }}" href="#collapse-7{{ $lista['id'] }}"
                                     aria-expanded="{{ ($idPedidoEditar == $lista['id']) ? 'true' : 'false' }}">
                                     <div class="d-flex flex-row align-items-center justify-content-between">
-                                        <div class="d-flex flex-row align-items-center justify-content-between gap-2">
+                                        <div class="d-flex flex-row justify-content-between align-items-center w-100 me-2">
                                         @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
-                                            <!-- <i class="fas fa-user-edit color-white"></i> -->
-                                            <i data-lucide="notebook-pen" class="lucide-icon color-white"></i>
-                                            <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                            <div class="d-flex flex-row gap-2 align-items-center">
+                                                <i data-lucide="notebook-pen" class="lucide-icon color-white"></i>
+                                                <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                            </div>
                                         @elseif($lista['estado'] == 'desarrollo')
-                                            <i class="fab fa-whatsapp color-white"></i>
-                                            <span class="font-14 color-white">{{ $lista['dia'] }}</span>
+                                            <div class="d-flex flex-row gap-2 align-items-center">
+                                                <i class="fab fa-whatsapp color-white"></i>
+                                                <span class="font-14 color-white">{{ $lista['dia'] }}</span>
+                                            </div>
                                             <small for="" class="text-magenta text-white">
                                                 (En desarrollo por whatsapp)
                                             </small>
                                         @else
-                                            <!-- <i class="fas fa-save color-white"></i> -->
-                                            <i data-lucide="save" class="lucide-icon color-white"></i>
-                                            <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
-                                            <span class="text-white">Guardado!</span>
+                                            <div class="d-flex flex-row gap-2 align-items-center">
+                                                <i data-lucide="save" class="lucide-icon color-white"></i>
+                                                <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                            </div>
+                                            <span class="bg-green-dark font-12 line-height-s rounded-xs px-1  bg-green-dark text-white">Guardado</span>
                                         @endif
                                         </div>
-                                        <!-- <i data-lucide="chevron-down" class="lucide-icon color-white"></i> -->
                                         <i class="fa fa-angle-down color-white"></i>
                                     </div>
                                 </a>
                             </div>
                             <div class="px-2 collapse {{ ($idPedidoEditar == $lista['id']) ? 'show' : '' }}" id="collapse-7{{ $lista['id'] }}"
                                 data-bs-parent="#accordion-3" style="">
-                                <div class="p-2 d-flex flex-column justify-content-center align-items-center">
+                                <div class="p-2 d-flex flex-column gap-2 justify-content-center align-items-center">
                                     @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
                                         <form action="{{ route('personalizardia') }}" id="{{ $lista['id'] }}"
                                             method="POST">
@@ -83,24 +85,25 @@
                                     @elseif($lista['estado'] == 'desarrollo')
                                         Ve a tu whatsapp para terminar de programar este plan!
                                     @else
-                                        <div class="w-100 d-flex flex-column py-2 gap-2">
+                                        <div class="w-100 d-flex flex-column gap-2">
                                             <ul class="icon-list mb-0">
                                                 @foreach (json_decode($lista['detalle'], true) as $plato => $valor)
                                                     @if ($valor != '')
-                                                        <li class="color-theme">
-                                                            <!-- <i class="fa fa-check color-green-dark"></i> -->
+                                                        <li class="d-flex flex-row align-items-center gap-2">
                                                             <i data-lucide="check" class="lucide-icon color-teal-dark"></i>
-                                                            <label for=""
-                                                                class="font-700 mb-0">{{ $plato }}:</label>
-                                                            {{ ucfirst($valor) }}
+                                                            <label for="" class="font-700 color-theme">
+                                                                {{ $plato }}:
+                                                            </label>
+                                                            <p class="mb-0">{{ ucfirst($valor) }}</p>
                                                         </li>
                                                     @endif
                                                 @endforeach
                                             </ul>
-                                            <a href="{{ route('editardia', $lista['id']) }}"
-                                                style="border-radius: 10px;"
-                                                class="btn btn-xxs w-auto text-uppercase font-900 shadow-s bg-teal-light">Editar</a>
+                                            
                                         </div>
+                                        <a href="{{ route('editardia', $lista['id']) }}"
+                                                style="border-radius: 10px;"
+                                                class="btn btn-s w-auto text-uppercase font-600 shadow-s bg-teal-light">Editar</a>
                                     @endif
                                 </div>
                             </div>
@@ -115,16 +118,11 @@
                 <p class="boxed-text-l">
                     Estamos planificando el menu para toda la semana! Estara listo en breve...
                 </p>
-
             </div>
-
         @endif
-
-
-
     </div>
-    @include('client.miperfil.includes.show-errores')
 
+    @include('client.miperfil.includes.show-errores')
 
     <div class="card card-style bg-18">
         <div class="card">
@@ -188,12 +186,9 @@
                             dia despues de la ultima fecha que tenga en este plan</span>
                         <form action="" id="formPermiso">
                             <input type="hidden" name="id" id="id">
-
                         </form>
-
                     </div>
                     <div class="modal-footer">
-
                         <button type="button"
                             class="btn btn-xxs mb-3 rounded-s text-uppercase font-900 shadow-s border-green-dark  bg-green-light"
                             id="btnPermisoUno">Solo 1 permiso <span class="btn-icon-end"><i class="fa fa-check"></i></span>
@@ -203,12 +198,10 @@
                             id="btnPermisoTodos">Permiso para todos <span class="btn-icon-end"><i
                                     class="fa fa-check"></i></span>
                         </button>
-
                     </div>
                 </div>
             </div>
         </div>
-
         <div id="permiso-aceptado" class="snackbar-toast bg-magenta-dark color-white fade hide" data-delay="3000"
             data-autohide="true"><i class="fa fa-shopping-cart me-3"></i>Tu permiso fue aceptado!</div>
     @endpush
@@ -305,7 +298,8 @@
                     if (cont == data.length) {
                         $(this).find('button').prop('disabled', false);
                     } else {
-                        $(this).find('button').prop('disabled', true);
+                        // $(this).find('button').prop('disabled', true);
+                        $(this).find('button').not('.bg-delight-red').prop('disabled', true);
                     }
                     // console.log(cont);
                     // if ($("input[name='carb" + idForm + "']:checked").val() && $("input[name='plato" + idForm +
