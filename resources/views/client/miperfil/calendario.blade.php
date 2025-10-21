@@ -25,9 +25,9 @@
                 <div class="accordion" id="accordion-3">
                     @foreach ($coleccion as $lista)
                         {{-- @dd($lista) --}}
-                        <div class="card card-style rounded-s">
+                        <div class="card card-style rounded-s ">
                             <div
-                                class="list-custom-small rounded-s border-0 list-icon-0 @if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'bg-highlight bg-dtheme-blue' }}@elseif($lista['estado'] == 'desarrollo'){{ 'bg-yellow-dark' }}@else{{ 'bg-green-dark bg-dtheme-blue' }}@endif px-3">
+                                class="list-custom-small rounded-top border-0 list-icon-0 @if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'bg-highlight bg-dtheme-blue' }}@elseif($lista['estado'] == 'desarrollo'){{ 'bg-yellow-dark' }}@else{{ 'bg-green-dark bg-dtheme-blue' }}@endif px-3">
                                 <a data-bs-toggle="collapse" class="{{ ($idPedidoEditar == $lista['id']) ? '' : 'collapsed' }}" href="#collapse-7{{ $lista['id'] }}"
                                     aria-expanded="{{ ($idPedidoEditar == $lista['id']) ? 'true' : 'false' }}">
                                     <div class="d-flex flex-row align-items-center justify-content-between">
@@ -57,7 +57,7 @@
                                     </div>
                                 </a>
                             </div>
-                            <div class="px-2 collapse {{ ($idPedidoEditar == $lista['id']) ? 'show' : '' }}" id="collapse-7{{ $lista['id'] }}"
+                            <div class="px-2 border border-2 border-top-0 rounded-bottom collapse {{ ($idPedidoEditar == $lista['id']) ? 'show' : '' }}" id="collapse-7{{ $lista['id'] }}"
                                 data-bs-parent="#accordion-3" style="">
                                 <div class="p-2 d-flex flex-column gap-2 justify-content-center align-items-center">
                                     @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
