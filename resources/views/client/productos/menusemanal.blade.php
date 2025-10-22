@@ -491,7 +491,7 @@
                                 <button class="accordion-button plan-accordion-button {{ $gradienteClass }} collapsed" type="button"
                                     data-bs-toggle="collapse" data-bs-target="#planCollapse" aria-expanded="false" aria-controls="planCollapse"
                                     {{ $plan->editable != 1 ? 'disabled':'' }}>
-                                    <div class="plan-header-content mt-3 mb-2 px-0"
+                                    <div class="plan-header-content mt-3 px-0"
                                         style="padding-right: 2% !important; padding-left: 2% !important;">
 
                                         <div class="day-info">
@@ -502,21 +502,17 @@
                                             </div>
 
                                             <div class="day-text" class="d-flex flex-column ms-2">
-
                                                 <!-- @if ($periodoDia == 'manana')
-                                                    <p class="day-greeting">¡Buenos días!☀️</p>
-                                                @elseif($periodoDia == 'tarde')
-                                                    <p class="day-greeting">¡Buenas tardes! 🌤️</p>
-                                                @else
-                                                    <p class="day-greeting">¡Buenas noches! 🌙</p>
-                                                @endif -->
-                                                @if ($periodoDia == 'manana')
                                                     <p class="day-greeting">¡Buenos días!</p>
                                                 @elseif($periodoDia == 'tarde')
                                                     <p class="day-greeting">¡Buenas tardes!</p>
                                                 @else
                                                     <p class="day-greeting">¡Buenas noches!</p>
-                                                @endif
+                                                @endif -->
+                                                <p class="badge gradient-blue rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                    <span>Despacho: {{ $plan->horario->hora_inicio . ' - ' . $plan->horario->hora_fin }}</span>
+                                                    <i data-lucide="clock" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
+                                                </p>
                                                 <strong class="day-title color-theme font-18">
                                                     {{ App\Helpers\GlobalHelper::fechaFormateada(2, Carbon\Carbon::now()) }}
                                                 </strong>
@@ -528,7 +524,7 @@
                                                 <div class="d-flex flex-column gap-2">
                                                     @if(count($pedidos) >= 2)
                                                         <p class="badge bg-delight-red rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
-                                                            <span>Pedidos restantes: {{ count($pedidos) }}</span>
+                                                            <span>Porciones: {{ count($pedidos) }}</span>
                                                             <i data-lucide="utensils" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
                                                         </p>
                                                     @endif
@@ -843,7 +839,7 @@
                     flex-direction: column;
                     justify-content: space-between;
                     align-items: flex-start;
-                    gap: 15px;
+                    gap: 0.5rem;
                     width: 100%;
                     position: relative;
                     z-index: 2;
@@ -852,7 +848,9 @@
                 .day-info {
                     display: flex;
                     align-items: center;
-                    gap: 10px;
+                    /* justify-content: space; */
+                    gap: 1.5rem;
+                    width: 100%;
                 }
 
                 .day-icon-container {
@@ -1091,7 +1089,7 @@
                 @media (max-width: 480px) {
                     .plan-header-content {
                         flex-direction: column;
-                        gap: 15px;
+                        gap: 0.5rem;
                         align-items: flex-start;
                         text-align: left;
                     }
@@ -1362,7 +1360,7 @@
             </div>
             <div class="card-top mt-3 me-3">
                 <a href="{{ route('miperfil') }}"
-                    class="float-end bg-white color-black btn btn-s rounded-xl font-900 mt-2 text-uppercase font-11">Ir a mi
+                    class="float-end bg-white color-black btn btn-s rounded-xl font-700 mt-2 text-uppercase font-11">Ir a mi
                     perfil</a>
             </div>
 
