@@ -25,7 +25,7 @@
                     value="{{ $envio['value'] }}"
                 >
                 <label for="{{ $envio['box_id'] }}{{ $lista['id'] }}">
-                    <p class="mb-0">
+                    <p class="mb-0 line-height-s">
                         {{ $envio['value'] }}
                     </p>
                 </label>
@@ -57,7 +57,7 @@
                     value="{{ $empaque['value'] }}"
                 >
                 <label for="{{ $empaque['box_id'] }}{{ $lista['id'] }}">
-                    <p class="mb-0">
+                    <p class="mb-0 line-height-s">
                         {{ $empaque['label'] ?? $empaque['value'] }}
                     </p>    
                 </label>

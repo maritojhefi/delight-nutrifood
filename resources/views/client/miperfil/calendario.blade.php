@@ -27,7 +27,9 @@
                         {{-- @dd($lista) --}}
                         <div class="card card-style rounded-s ">
                             <div
-                                class="list-custom-small rounded-top border-0 list-icon-0 @if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'bg-highlight bg-dtheme-blue' }}@elseif($lista['estado'] == 'desarrollo'){{ 'bg-yellow-dark' }}@else{{ 'bg-green-dark bg-dtheme-blue' }}@endif px-3">
+                                class="list-custom-small @if($lista['proximo']){{ 'proximo-dia' }}@endif rounded-top border-0 list-icon-0 @if($lista['proximo']){{ 'bg-highlight' }}@elseif($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'bg-highlight bg-dtheme-blue' }}@elseif($lista['estado'] == 'desarrollo'){{ 'bg-yellow-dark' }}@else{{ 'bg-green-dark bg-dtheme-blue' }}@endif px-3"
+                                style="@if($lista['estado'] != 'desarrollo') background-image: url('{{ asset('imagenes/delight/22.jpeg') }}'); background-position: center; background-size: cover; @endif"
+                            >
                                 <a data-bs-toggle="collapse" class="{{ ($idPedidoEditar == $lista['id']) ? '' : 'collapsed' }}" href="#collapse-7{{ $lista['id'] }}"
                                     aria-expanded="{{ ($idPedidoEditar == $lista['id']) ? 'true' : 'false' }}">
                                     <div class="d-flex flex-row align-items-center justify-content-between">
@@ -37,6 +39,9 @@
                                                 <i data-lucide="notebook-pen" class="lucide-icon color-white"></i>
                                                 <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
                                             </div>
+                                            @if ($lista['proximo'])
+                                            <span class="bg-delight-red font-12 line-height-s rounded-xs px-1 text-white" style="z-index: 4;">Próximo</span>
+                                            @endif
                                         @elseif($lista['estado'] == 'desarrollo')
                                             <div class="d-flex flex-row gap-2 align-items-center">
                                                 <i class="fab fa-whatsapp color-white"></i>
@@ -50,13 +55,14 @@
                                                 <i data-lucide="save" class="lucide-icon color-white"></i>
                                                 <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
                                             </div>
-                                            <span class="bg-green-dark font-12 line-height-s rounded-xs px-1  bg-green-dark text-white">Guardado</span>
+                                            <span class="bg-teal-dark font-12 line-height-s rounded-xs px-1 text-white" style="z-index: 4;">Guardado</span>
                                         @endif
                                         </div>
                                         <i class="fa fa-angle-down color-white"></i>
                                     </div>
                                 </a>
                             </div>
+                            <!-- <p class="hidden">{{ json_encode($lista) }}</p> -->
                             <div class="px-2 border border-2 border-top-0 rounded-bottom collapse {{ ($idPedidoEditar == $lista['id']) ? 'show' : '' }}" id="collapse-7{{ $lista['id'] }}"
                                 data-bs-parent="#accordion-3" style="">
                                 <div class="p-2 d-flex flex-column gap-2 justify-content-center align-items-center">
@@ -94,16 +100,15 @@
                                                             <label for="" class="font-700 color-theme">
                                                                 {{ $plato }}:
                                                             </label>
-                                                            <p class="mb-0">{{ ucfirst($valor) }}</p>
+                                                            <p class="mb-0 line-height-s">{{ ucfirst($valor) }}</p>
                                                         </li>
                                                     @endif
                                                 @endforeach
                                             </ul>
-                                            
                                         </div>
                                         <a href="{{ route('editardia', $lista['id']) }}"
                                                 style="border-radius: 10px;"
-                                                class="btn btn-s w-auto text-uppercase font-600 shadow-s bg-teal-light">Editar</a>
+                                                class="btn btn-s w-auto text-uppercase font-600 shadow-s bg-highlight">Editar</a>
                                     @endif
                                 </div>
                             </div>
@@ -124,13 +129,13 @@
 
     @include('client.miperfil.includes.show-errores')
 
-    <div class="card card-style bg-18">
-        <div class="card">
+    <div class="card card-style bg-dtheme-dkblue">
             <div class="card-body">
                 <div id="calendar" class="app-fullcalendar"></div>
             </div>
-        </div>
     </div>
+
+    
     @push('modals')
         <div id="toast-finalizado" class="toast toast-tiny toast-top bg-orange-dark fade hide" data-bs-delay="2000"
             data-bs-autohide="true"><i class="fa fa-exclamation"></i> Dia finalizado...</div>
@@ -204,6 +209,48 @@
         <div id="permiso-aceptado" class="snackbar-toast bg-magenta-dark color-white fade hide" data-delay="3000"
             data-autohide="true"><i class="fa fa-shopping-cart me-3"></i>Tu permiso fue aceptado!</div>
     @endpush
+
+    @push('header')
+    <!-- Estilos para el calendario generado mediante -->
+    <style>
+        .fc .fc-toolbar.fc-header-toolbar {
+            margin-bottom: 0px;
+            padding-bottom: 1rem;
+            padding-inline: 0.1rem;
+        }
+
+        .theme-dark .fc-scrollgrid table,
+        .theme-dark .fc-scrollgrid td {
+            background-color:  #0f1117 !important;
+            background-color:  #1f2937 !important;
+        }
+
+        .list-custom-small {
+            position: relative; 
+            z-index: 1; 
+            
+            /* background-color: rgba(0, 0, 0, 0.4);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            color: white; */
+        }
+
+        .list-custom-small::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 2; /* Entre el fondo (1) y el contenido (3) */
+        }
+
+        .list-custom-small > * {
+            z-index: 3;
+            position: relative;
+        }
+    </style>
+    @endpush()
     @push('scripts')
         <script>
             $(document).ready(function() {
