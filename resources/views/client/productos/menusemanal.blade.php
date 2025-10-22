@@ -517,7 +517,7 @@
                                                 @else
                                                     <p class="day-greeting">¡Buenas noches!</p>
                                                 @endif
-                                                <strong class="day-title color-theme font-20">
+                                                <strong class="day-title color-theme font-18">
                                                     {{ App\Helpers\GlobalHelper::fechaFormateada(2, Carbon\Carbon::now()) }}
                                                 </strong>
                                             </div>
@@ -545,7 +545,7 @@
                                                 style="width: 4rem; height: 4rem;"></i>
                                             @else
                                                 <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
-                                                    class="btn bg-delight-red rounded rounded-m color-white" style=" font-weight: 500 !important;">Controlar Plan</a>
+                                                    class="btn bg-delight-red rounded-s color-white font-13" style="font-weight: 700 !important;">Controlar Plan</a>
                                             @endif
 
                                         </div>
@@ -580,7 +580,7 @@
                                         'EMPAQUE' => [
                                             'label' => 'Empaque',
                                             'icon' => 'package',
-                                        ]
+                                        ],
                                     ];
                                 @endphp
 
@@ -599,9 +599,9 @@
 
                                                 @if (empty($detallePedido))
                                                     <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}"
-                                                        class="btn pedido-pendiente btn-xs bg-highlight bg-dtheme-blue rounded rounded-s m-0 ">
+                                                        class="btn pedido-pendiente btn-s bg-highlight bg-dtheme-blue rounded rounded-s m-0 ">
                                                         <div class="d-flex flex-row justify-content-between align-items-center">
-                                                            <h3 class="mb-0 color-white font-20">Pedido {{ $loop->iteration }}</h3>
+                                                            <h3 class="mb-0 color-white font-18">Pedido {{ $loop->iteration }}</h3>
                                                             <p class="badge bg-delight-red rounded rounded-s color-white mb-0 font-12">¡Pendiente!</p>
                                                         </div>
                                                     </a>
@@ -611,61 +611,59 @@
                                                         <button type="button" class="accordion-button pedido-accordion-button btn rounded rounded-s bg-highlight bg-dtheme-blue py-2" data-bs-toggle="collapse"
                                                             data-bs-target="#{{ $pedidoCollapseId }}" aria-expanded="false" aria-controls="{{ $pedidoCollapseId }}">
                                                             <div class="d-flex flex-row align-items-center justify-content-between w-100 me-2">
-                                                                <h3 class="mb-0 color-white font-20">Pedido {{ $loop->iteration }}</h3>
+                                                                <h3 class="mb-0 color-white font-18">Pedido {{ $loop->iteration }}</h3>
                                                             </div>
                                                         </button>
                                                     </div>
-                                                    <div id="{{ $pedidoCollapseId }}" class="accordion-collapse collapse pb-3" aria-labelledby="{{ $pedidoHeaderId }}">
-                                                        <div class="accordion-body m-0 mt-0 px-3 py-0 card card-style bg-dtheme-dkblue">
-                                                            <ul class="list-unstyled row  mb-0">
+                                                    <div id="{{ $pedidoCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $pedidoHeaderId }}">
+                                                        <div class="accordion-body m-0 mt-0 px-2 py-0 card card-style bg-dtheme-dkblue">
+                                                            <div class="row m-0">
                                                                 @php
                                                                     $iteracionValidaDetalle = 0;
                                                                 @endphp
                                                                 @foreach ($menuItems as $key => $item)
                                                                     @if (isset($detallePedido[$key]) && $detallePedido[$key] != '')
-                                                                    @php
-                                                                        $iteracionValidaDetalle++;
-                                                                        $bgClass = ($iteracionValidaDetalle % 2 !== 0) ? 'bg-delight-red' : 'bg-highlight';
-                                                                        $colorClass = ($iteracionValidaDetalle % 2 !== 0) ? 'color-delight-red' : 'color-highlight';
-                                                                    @endphp
-                                                                        <div class="col-6 px-2 py-2">
-                                                                            <li class="d-flex flex-row gap-2 align-items-top">
-                                                                                <div class="{{ $bgClass }} rounded rounded-circle d-flex align-items-center justify-content-center p-1" style="height: 1.8rem; width: 1.8rem">
-                                                                                    <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-white" style="height: 1.5rem; width: 1.4rem"></i>
-                                                                                </div>
+                                                                        @php
+                                                                            $iteracionValidaDetalle++;
+                                                                            $bgClass = ($iteracionValidaDetalle % 2 !== 0) ? 'bg-delight-red' : 'bg-highlight';
+                                                                            $colorClass = ($iteracionValidaDetalle % 2 !== 0) ? 'color-delight-red' : 'color-highlight';
+                                                                        @endphp
+                                                                        <div class="col-6 px-1 py-2">
+                                                                            <div class="d-flex flex-row gap-2 align-items-center">
+                                                                                <!-- <div class="{{ $bgClass }} rounded-circle d-flex align-items-center justify-content-center p-1" style="height: 1.8rem; width: 1.8rem"> -->
+                                                                                    <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-theme" style="height: 1.8rem; width: 1.8rem"></i>
+                                                                                <!-- </div> -->
                                                                                 <div class="d-flex flex-column">
                                                                                     <h3 class="detalle-label line-height-s font-15 {{ $colorClass }}">{{ $item['label'] }}</h3>
                                                                                     <span class="item-value line-height-xs font-12 m-0 color-theme">
                                                                                         {{ ucfirst($detallePedido[$key]) }}
                                                                                     </span>
                                                                                 </div>
-                                                                            </li>
+                                                                            </div>
                                                                         </div>
                                                                     @endif
                                                                 @endforeach
-                                                            </ul>
+                                                            </div>
                                                         </div>
                                                         @if (isset($detallePedido['ENVIO']) && $detallePedido['ENVIO'] != '')
                                                             <hr class="my-2">
-                                                            <div class="d-flex mx-3 align-items-stretch justify-content-between gap-4">
-                                                                <div class="accordion-body m-0 card card-style py-1 px-2 bg-dtheme-dkblue d-flex flex-row w-100">
-                                                                    <div class="d-flex flex-row gap-2 color-theme align-items-center">
-                                                                        <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2rem; width: 2rem">
-                                                                            <i data-lucide="truck" class="lucide-icon color-white" style="height: 1.5rem; width: 1.5rem"></i>
-                                                                        </div>
-                                                                        <div class="d-flex flex-column">
-                                                                            <span class="font-12 item-value color-theme m-0">{{ $detallePedido['ENVIO'] }}</span>
-                                                                        </div>
-                                                                    </div>
+                                                            <div class="accordion-body m-0 card card-style py-1 px-3 bg-dtheme-dkblue d-flex flex-row justify-content-evenly w-100">
+                                                                <div class="d-flex flex-row gap-2 color-theme align-items-center">
+                                                                    <!-- <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-1" style="height: 1.8rem; width: 1.8rem"> -->
+                                                                        <i data-lucide="truck" class="lucide-icon color-theme" style="height: 2rem; width: 2rem"></i>
+                                                                    <!-- </div> -->
+                                                                    <!-- <div class="d-flex flex-column"> -->
+                                                                        <span class="font-12 item-value color-theme m-0 line-height-s w-auto">{{ $detallePedido['ENVIO'] }}</span>
+                                                                    <!-- </div> -->
                                                                 </div>
                                                                 @if ($plan->editable != 0 && $pedido->estado == 'pendiente')
                                                                     <a href="#"
                                                                         data-bs-toggle="modal"
                                                                         data-bs-target="#confirmarModificarPedidoModal"
                                                                         data-url="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}"
-                                                                        class="card card-style gradient-blue d-flex align-items-center justify-content-center m-0 py-1 w-50 modificar-pedido-trigger"
+                                                                        class="btn rounded-s gradient-blue d-flex align-items-center justify-content-center m-0 py-1 px-2 w-auto modificar-pedido-trigger"
                                                                         {{ $pedido->estado == 'finalizado' ? 'disabled' : '' }}>
-                                                                            <span class="w-75 color-white text-center font-15 font-500">Modificar Pedido</span>
+                                                                            <span class="w-auto color-white text-center font-13 font-700 line-height-s">Modificar Pedido</span>
                                                                     </a>
                                                                 @endif
                                                             </div>
@@ -682,63 +680,64 @@
                                         $pedido = $pedidos->first();
                                         $detallePedido = $pedido->detalle ? json_decode($pedido->detalle, true) : [];
                                     @endphp
-                                    <div class="card card-style bg-transparent rounded-s py-3 mx-0 mb-0">
+                                    <div class="card card-style bg-transparent rounded-s mt-0 mx-0 mb-0">
                                         @if (empty($detallePedido))
                                             <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}"
-                                                class="btn btn-xs bg-highlight bg-dtheme-blue rounded rounded-s m-0">
+                                                class="btn btn-s bg-highlight bg-dtheme-blue rounded rounded-s m-0">
                                                 <div class="d-flex flex-row justify-content-between align-items-center">
-                                                    <h3 class="mb-0 color-white font-20">Pedido</h3>
+                                                    <h3 class="mb-0 color-white font-18">Pedido</h3>
                                                     <p class="badge bg-delight-red rounded rounded-s color-white mb-0 font-12">¡Pendiente!</p>
                                                 </div>
                                             </a>
                                         @else
-                                            <div class="mx-3 mb-3 mt-0 p-3 card card-style bg-dtheme-dkblue">
-                                                <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                                            <div class="m-0 p-0 card card-style bg-dtheme-dkblue">
+                                                <div class="row m-0">
                                                     @php
                                                         $iteracionValidaDetalle = 0;
                                                     @endphp
                                                     @foreach ($menuItems as $key => $item)
                                                         @if (isset($detallePedido[$key]) && $detallePedido[$key] != '')
-                                                        @php
-                                                            $iteracionValidaDetalle++;
-                                                            $bgClass = ($iteracionValidaDetalle % 2 !== 0) ? 'bg-delight-red' : 'bg-highlight';
-                                                            $colorClass = ($iteracionValidaDetalle % 2 !== 0) ? 'color-delight-red' : 'color-highlight';
-                                                        @endphp
-                                                            <li class="d-flex flex-row gap-2 align-items-center">
-                                                                <div class="{{ $bgClass }} rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2.5rem; width: 2.5rem">
-                                                                    <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-white" style="height: 2rem; width: 2rem"></i>
+                                                            @php
+                                                                $iteracionValidaDetalle++;
+                                                                $bgClass = ($iteracionValidaDetalle % 2 !== 0) ? 'bg-delight-red' : 'bg-highlight';
+                                                                $colorClass = ($iteracionValidaDetalle % 2 !== 0) ? 'color-delight-red' : 'color-highlight';
+                                                            @endphp
+                                                            <div class="col-6 px-1 py-2">
+                                                                <div class="d-flex flex-row gap-2 align-items-center">
+                                                                    <!-- <div class="{{ $bgClass }} rounded-circle d-flex align-items-center justify-content-center p-1" style="height: 1.8rem; width: 1.8rem"> -->
+                                                                        <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-theme" style="height: 1.8rem; width: 1.8rem"></i>
+                                                                    <!-- </div> -->
+                                                                    <div class="d-flex flex-column">
+                                                                        <h3 class="detalle-label line-height-s font-15 {{ $colorClass }}">{{ $item['label'] }}</h3>
+                                                                        <span class="item-value line-height-xs font-12 m-0 color-theme">
+                                                                            {{ ucfirst($detallePedido[$key]) }}
+                                                                        </span>
+                                                                    </div>
                                                                 </div>
-                                                                <div class="d-flex flex-column">
-                                                                    <h3 class="detalle-label {{ $colorClass }}">{{ $item['label'] }}</h3>
-                                                                    <span class="item-value color-theme" style="font-size: 15px !important; line-height: normal;">
-                                                                        {{ ucfirst($detallePedido[$key]) }}
-                                                                    </span>
-                                                                </div>
-                                                            </li>
+                                                            </div>
                                                         @endif
                                                     @endforeach
-                                                </ul>
+                                                </div>
                                             </div>
                                             @if (isset($detallePedido['ENVIO']) && $detallePedido['ENVIO'] != '')
-                                                <div class="d-flex mx-3 align-items-stretch justify-content-between gap-4">
-                                                    <div class="accordion-body m-0 card card-style py-1 px-2 bg-dtheme-dkblue d-flex flex-row w-100">
-                                                        <div class="d-flex flex-row gap-2 color-theme align-items-center">
-                                                            <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-2" style="height: 2rem; width: 2rem">
-                                                                <i data-lucide="truck" class="lucide-icon color-white" style="height: 1.5rem; width: 1.5rem"></i>
-                                                            </div>
-                                                            <div class="d-flex flex-column">
-                                                                <span class="font-12 item-value color-theme m-0">{{ $detallePedido['ENVIO'] }}</span>
-                                                            </div>
-                                                        </div>
+                                                <hr class="my-2">
+                                                <div class="accordion-body m-0 card card-style py-1 px-3 bg-dtheme-dkblue d-flex flex-row justify-content-evenly w-100">
+                                                    <div class="d-flex flex-row gap-2 color-theme align-items-center">
+                                                        <!-- <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-1" style="height: 1.8rem; width: 1.8rem"> -->
+                                                            <i data-lucide="truck" class="lucide-icon color-theme" style="height: 2rem; width: 2rem"></i>
+                                                        <!-- </div> -->
+                                                        <!-- <div class="d-flex flex-column"> -->
+                                                            <span class="font-12 item-value color-theme m-0 line-height-s w-auto">{{ $detallePedido['ENVIO'] }}</span>
+                                                        <!-- </div> -->
                                                     </div>
                                                     @if ($plan->editable != 0 && $pedido->estado == 'pendiente')
                                                         <a href="#"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#confirmarModificarPedidoModal"
                                                             data-url="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}"
-                                                            class="card card-style gradient-blue d-flex align-items-center justify-content-center m-0 py-1 w-50 modificar-pedido-trigger"
+                                                            class="btn rounded-s gradient-blue d-flex align-items-center justify-content-center m-0 py-1 px-2 w-auto modificar-pedido-trigger"
                                                             {{ $pedido->estado == 'finalizado' ? 'disabled' : '' }}>
-                                                                <span class="w-75 color-white text-center font-15 font-500">Modificar Pedido</span>
+                                                                <span class="w-auto color-white text-center font-13 font-700 line-height-s">Modificar Pedido</span>
                                                         </a>
                                                     @endif
                                                 </div>
@@ -746,21 +745,8 @@
                                         @endif
                                     </div>
                                 @endif
-                                <!-- @if ($plan->pivot->cocina != 'despachado')
-                                    <div class="row d-flex justify-content-center align-items-center mb-0 mt-3">
-                                        <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
-                                            class="btn mb-3 w-auto rounded rounded-s font-15 font-700 shadow-s bg-delight-red  w-50">
-                                            Editar plan
-                                        </a>
-                                    </div>
-                                @endif -->
                             </div>
                         </div>
-                        <!-- <div class="d-flex flex-row w-100 justify-content-center align-items-center mt-n4">
-                            <i data-lucide="chevron-up"
-                                class="lucide-icon plan-chevron color-gray-dark"
-                                style="width: 4rem; height: 4rem;"></i>
-                        </div> -->
                     </div>
                 </div>
             </div>
