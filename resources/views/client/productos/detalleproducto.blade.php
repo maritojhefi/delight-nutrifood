@@ -12,7 +12,7 @@
                 <div class="d-flex">
                     <div>
                         <a href="{{ route('detalleproducto', $item->id) }}">
-                            <img src="{{ asset($item->pathAttachment()) }}" class="rounded-sm" width="55">
+                            <img src="{{ $item->pathAttachment() }}" class="rounded-sm" width="55">
                     </div>
                     <div class="ps-3">
                         <h4>{{ Str::limit($item->nombre(), 25) }}</h4>

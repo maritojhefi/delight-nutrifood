@@ -54,7 +54,7 @@
                             @foreach ($productos as $item)
                                 <div class="media align-items-center">
                                     <div class="media-image me-2 d-none d-md-block">
-                                        <img src="{{ asset($item->pathAttachment()) }}" alt=""
+                                        <img src="{{ $item->pathAttachment() }}" alt=""
                                             class="img-fluid">
                                     </div>
                                     <div class="media-body m-0 mt-2 p-0" style="line-height: 15px">

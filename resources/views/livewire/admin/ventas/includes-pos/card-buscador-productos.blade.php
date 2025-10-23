@@ -1,6 +1,7 @@
 <x-card-col tamano="6">
-    <input type="search" id="input-buscador" wire:model.debounce.750ms="search" style="border: 2px solid #20c996b3;height:30px"
-        class="form-control mt-2" placeholder="Busca productos y categorias">
+    <input type="search" id="input-buscador" wire:model.debounce.750ms="search"
+        style="border: 2px solid #20c996b3;height:30px" class="form-control mt-2"
+        placeholder="Busca productos y categorias">
     <ul class=" m-1" role="tablist"
         style="white-space: nowrap; overflow-x: auto; overflow-y: hidden; overflow-x: hidden; display: flex; flex-wrap: nowrap; -webkit-overflow-scrolling: touch;">
         <div class="nav-container" style="overflow-x: auto; white-space: nowrap;">
@@ -38,7 +39,7 @@
                 <div class="new-arrival-product m-0 p-0">
                     <div wire:click="adicionar('{{ $item->id }}')" class="new-arrivals-img-contnent mx-auto"
                         style="width: 100px;height:100px">
-                        <img class="img-fluid rounded" src="{{ asset($item->pathAttachment()) }}" alt="">
+                        <img class="img-fluid rounded" src="{{ $item->pathAttachment() }}" alt="">
                     </div>
                     <div wire:click="adicionar('{{ $item->id }}')" class="new-arrival-content text-center mt-1">
                         <h4 class="p-0 m-0" style="font-size:10px">{{ Str::limit($item->nombre, 40) }}

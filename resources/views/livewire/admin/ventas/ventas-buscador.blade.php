@@ -24,7 +24,7 @@
                     <del class=" text-muted"><small>{{ Str::limit($item->nombre, 40) }}</small> </del>
                 @else
                     <div class="row" wire:click="adicionar('{{ $item->id }}')">
-                        <div class="col-3"><img src="{{ asset($item->pathAttachment()) }}"
+                        <div class="col-3"><img src="{{ $item->pathAttachment() }}"
                                 alt="" class="me-3 rounded" height="40"></div>
                         <div class="col-9"><small>{{ Str::limit($item->nombre, 40) }}
                             </small><span class="spinner-border spinner-border-sm text-primary ml-2"

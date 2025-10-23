@@ -23,7 +23,7 @@
             @foreach ($productos as $producto)
             <div class="splide__slide" id="{{$tag}}-products-slider-slide{{$producto->id}}" aria-hidden="true" tabindex="-1">
                 <a href="{{route('detalleproducto',$producto->id)}}" class="card rounded-md card-style">
-                    <img src="{{asset($producto->pathAttachment())}}" 
+                    <img src="{{ $producto->pathAttachment() }}" 
                         {{-- src="{{ asset('imagenes/producto/'.$producto->imagen)}}"  --}}
                         {{-- onerror="this.src='/imagenes/delight/default-bg-1.png';"  --}}
                         style="max-height: 100px; width: 100%; object-fit: cover;">
