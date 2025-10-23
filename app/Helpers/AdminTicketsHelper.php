@@ -179,7 +179,7 @@ class AdminTicketsHelper
                                 $menuDiaActual->vegetariano . '(veggie)',
                                 'Pedir Permiso'
                             ],
-                            asset('imagenes/almuerzo/'.$menuDiaActual->foto),
+                            $menuDiaActual->pathFoto,
                             'image',
                             $usuario->telf,
                             'es'

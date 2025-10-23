@@ -20,8 +20,7 @@
                 <div class="d-flex">
                     <div>
                         @if ($usuario->foto)
-                            <img src="{{ asset('imagenes/perfil/' . $usuario->foto) }}" width="50"
-                                class="me-3 bg-highlight rounded-xl">
+                            <img src="{{ $usuario->pathFoto }}" width="50" class="me-3 bg-highlight rounded-xl">
                         @else
                             <img src="{{ asset('user.png') }}" width="50" class="me-3 bg-highlight rounded-xl">
                         @endif

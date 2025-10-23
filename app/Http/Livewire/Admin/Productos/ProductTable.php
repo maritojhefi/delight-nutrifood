@@ -8,10 +8,12 @@ use App\Models\Producto;
 use App\Models\Categoria;
 use App\Models\Sucursale;
 use App\Models\Subcategoria;
+use App\Helpers\GlobalHelper;
+use App\Helpers\ProcesarImagen;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\DB;
-use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ProductTable extends Component
@@ -105,18 +107,57 @@ class ProductTable extends Component
                 $this->validate([
                     'imagen' => 'mimes:jpg,jpeg,png,gif|max:5120',
                 ]);
-                Storage::disk('public_images')->delete('productos/' . $this->productoEdit->imagen);
+                
+                // Eliminar la imagen anterior del disco correcto
+                $rutaArchivoAnterior = Producto::RUTA_IMAGENES . $this->productoEdit->imagen;
+                $disco = GlobalHelper::discoArchivos();
+                if (Storage::disk($disco)->exists($rutaArchivoAnterior)) {
+                    Storage::disk($disco)->delete($rutaArchivoAnterior);
+                }
             }
-            $filename = time() . '.' . $this->imagen->extension();
-            $this->imagen->storeAs('productos', $filename, 'public_images');
-            //comprimir la foto
-            $img = Image::make('imagenes/productos/' . $filename);
-            $img->resize(480, null, function ($constraint) {
-                $constraint->aspectRatio();
-            });
-            $img->rotate(0);
-            $img->save('imagenes/productos/' . $filename);
-            $this->productoEdit->imagen = $filename;
+            
+            try {
+                // Usar el helper ProcesarImagen para procesar y guardar la imagen
+                $procesarImagen = ProcesarImagen::crear($this->imagen)
+                    ->carpeta(Producto::RUTA_IMAGENES) // Carpeta donde se guardará
+                    ->dimensiones(480, null) // Redimensionar a máximo 480px de ancho
+                    ->formato($this->imagen->getClientOriginalExtension()); // Mantener formato original
+                
+                // Guardar la imagen procesada (automáticamente usa el disco correcto según el ambiente)
+                $filename = $procesarImagen->guardar();
+                
+                // Log de la ubicación donde se guardó la imagen
+                $disco = GlobalHelper::discoArchivos();
+                if ($disco === 's3') {
+                    $config = config('filesystems.disks.s3');
+                    $bucket = $config['bucket'] ?? '';
+                    $region = $config['region'] ?? 'us-east-1';
+                    $urlCompleta = "https://{$bucket}.s3.{$region}.amazonaws.com" . Producto::RUTA_IMAGENES . $filename;
+                    Log::info("Imagen de producto actualizada en S3", [
+                        'producto_id' => $this->productoEdit->id,
+                        'nombre_archivo' => $filename,
+                        'url_s3' => $urlCompleta,
+                        'disco' => $disco
+                    ]);
+                } else {
+                    $rutaLocal = public_path('imagenes/productos/' . $filename);
+                    Log::info("Imagen de producto actualizada en local", [
+                        'producto_id' => $this->productoEdit->id,
+                        'nombre_archivo' => $filename,
+                        'ruta_local' => $rutaLocal,
+                        'disco' => $disco
+                    ]);
+                }
+                
+                $this->productoEdit->imagen = $filename;
+                
+            } catch (\Exception $e) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => 'Error al procesar la imagen: ' . $e->getMessage()
+                ]);
+                return;
+            }
         }
 
         //$this->imagen->move(public_path('imagenes'),$filename);

@@ -6,7 +6,7 @@
         <div class="card-center text-center">
             <h1 class="mb-5">
                 @if ($usuario->foto)
-                    <img src="{{ asset('imagenes/perfil/' . $usuario->foto) }}" class="rounded-circle"
+                    <img src="{{ $usuario->pathFoto }}" class="rounded-circle"
                         style="width: 150px;height:150px" alt="">
                 @else
                     <i class="fa fa-4x fa-user color-mint-dark "></i>

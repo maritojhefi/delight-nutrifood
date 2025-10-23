@@ -186,8 +186,8 @@ class ProductoController extends Controller
                     'id' => $producto->id,
                     'nombre' => $producto->nombre,
                     // 'url_imagen' => $producto->pathAttachment(),
-                    'url_imagen' => $producto->imagen ? 
-                        asset('imagenes/productos/'. $producto->imagen) : 
+                    'url_imagen' => $producto->pathImagen ? 
+                        $producto->pathImagen : 
                         asset(GlobalHelper::getValorAtributoSetting('busqueda_default')),
                     'url' => route('delight.detalleproducto', $producto->id),
                     'tiene_descuento' => ($producto->precio == $producto->precioReal()) ? false : true,

@@ -69,7 +69,7 @@
                                 wire:click="guardarFoto">Guardar</button>
                             <div class="avatar avatar-xl position-relative mt-3 border  ">
 
-                                <img src="{{ asset('imagenes/almuerzo/' . $almuerzos[0]->foto) }}"
+                                <img src="{{ $almuerzos[0]->pathFoto }}"
                                     class="w-100 border-radius-lg shadow-sm">
                                 Foto actual
                             </div>
