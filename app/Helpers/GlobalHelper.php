@@ -430,7 +430,7 @@ class GlobalHelper
     public static function processSubcategoriaFoto($subcategorias)
     {
         return $subcategorias->map(function ($sub) {
-            $sub->foto = $sub->foto ? asset('imagenes/subcategorias/' . $sub->foto) : asset(GlobalHelper::getValorAtributoSetting('bg_default'));
+            $sub->foto = $sub->foto ? $sub->pathFoto : asset(GlobalHelper::getValorAtributoSetting('bg_default'));
             return $sub;
         });
     }
@@ -496,8 +496,8 @@ class GlobalHelper
         // Obtener planes del día actual con horarios cargados
         $planesHoy = $usuario->planesHoy($fecha)->get()->load('horario');
         // Filtrar planes que no tienen horario (la relación es null)
-        $planesHoy = $planesHoy->filter(fn ($plan) => $plan->horario !== null);
-        
+        $planesHoy = $planesHoy->filter(fn($plan) => $plan->horario !== null);
+
 
         // Si no hay planes hoy, buscar planes del día siguiente
         if ($planesHoy->isEmpty()) {
@@ -505,7 +505,7 @@ class GlobalHelper
             $planesSiguiente = $usuario->planesHoy($fechaSiguiente)->get()->load('horario');
 
             //  Filtrar planes que no tienen horario (la relación es null)
-            $planesSiguiente = $planesSiguiente->filter(fn ($plan) => $plan->horario !== null);
+            $planesSiguiente = $planesSiguiente->filter(fn($plan) => $plan->horario !== null);
 
             if ($planesSiguiente->isEmpty()) {
                 return null;
@@ -576,7 +576,7 @@ class GlobalHelper
             $planesSiguiente = $usuario->planesHoy($fechaSiguiente)->get()->load('horario');
 
             // Filtrar planes que no tienen horario (la relación es null)
-            $planesSiguiente = $planesSiguiente->filter(fn ($plan) => $plan->horario !== null);
+            $planesSiguiente = $planesSiguiente->filter(fn($plan) => $plan->horario !== null);
 
             if ($planesSiguiente->isNotEmpty()) {
                 // Ordenar planes del día siguiente por hora de inicio
@@ -633,7 +633,13 @@ class GlobalHelper
             // Filtro clave: Agrupar por la hora de inicio exacta del plan seleccionado
             ->where('start', $start_timestamp_plan_seleccionado)
             ->get(); // Obtener la colección de todos los registros coincidentes
-        
+
         return $pedidos;
+    }
+
+
+    public static function discoArchivos()
+    {
+        return config('filesystems.default');
     }
 }

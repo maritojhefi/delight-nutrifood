@@ -1,6 +1,5 @@
-
-    <div class="row">
-        @empty($productoSeleccionado)
+<div class="row">
+    @empty($productoSeleccionado)
         <div class="col-xl-6 col-lg-12 col-xxl-8">
             <div class="card">
                 <div class="card-header">
@@ -8,30 +7,30 @@
                 </div>
                 <div class="card-body">
                     <div class="">
-                       
-                        <x-input-create  :lista="([
-                            'Nombre'=>['nombre','text'],
-                            'Precio'=>['precio','number'],
-                            'Detalle'=>['detalle','textarea'],
-                            'Imagen'=>['imagen','file'],
-                            'Descuento'=>['descuento','number','Opcional'],
-                            'Puntos'=>['puntos','number','Opcional']
-                            
-                              ])" >
-                                       
-                              @if ($imagen)
-                              <img src="{{ $imagen->temporaryUrl() }}" class="w-100 border-radius-lg shadow-sm">
-                             @endif
+
+                        <x-input-create :lista="[
+                            'Nombre' => ['nombre', 'text'],
+                            'Precio' => ['precio', 'number'],
+                            'Detalle' => ['detalle', 'textarea'],
+                            'Imagen' => ['imagen', 'file'],
+                            'Descuento' => ['descuento', 'number', 'Opcional'],
+                            'Puntos' => ['puntos', 'number', 'Opcional'],
+                        ]">
+
+                            @if ($imagen)
+                                <img src="{{ $imagen->temporaryUrl() }}" class="w-100 border-radius-lg shadow-sm">
+                            @endif
                             <x-slot name="otrosinputs">
-                                
+
                                 <div class="mb-3 row">
                                     <label class="col-sm-3 col-form-label">Categoria</label>
                                     <div class="col-sm-9">
-                                        <select  wire:model="cat"  class="form-control @error($cat)is-invalid @enderror">
-                                            <option  class="dropdown-item" aria-labelledby="dropdownMenuButton" >Seleccione una opcion</option>
+                                        <select wire:model="cat" class="form-control @error($cat)is-invalid @enderror">
+                                            <option class="dropdown-item" aria-labelledby="dropdownMenuButton">Seleccione
+                                                una opcion</option>
                                             @foreach ($subcategorias as $cat)
-                                            <option value="{{$cat->id}}" class="dropdown-item" aria-labelledby="dropdownMenuButton" >{{$cat->nombre}}</option>
-                                            
+                                                <option value="{{ $cat->id }}" class="dropdown-item"
+                                                    aria-labelledby="dropdownMenuButton">{{ $cat->nombre }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -39,58 +38,66 @@
                                 <div class="mb-3 row">
                                     <label class="col-sm-3 col-form-label">Medicion</label>
                                     <div class="col-sm-9">
-                                        <select  wire:model="medicion"  class="form-control @error($medicion)is-invalid @enderror">
-                                            
-                                           
-                                            <option value="unidad" class="dropdown-item" aria-labelledby="dropdownMenuButton" >Unidades</option>
-                                            <option value="gramo" class="dropdown-item" aria-labelledby="dropdownMenuButton" >Gramos</option>
-                                            
-                                            
-                                            
+                                        <select wire:model="medicion"
+                                            class="form-control @error($medicion)is-invalid @enderror">
+
+
+                                            <option value="unidad" class="dropdown-item"
+                                                aria-labelledby="dropdownMenuButton">Unidades</option>
+                                            <option value="gramo" class="dropdown-item"
+                                                aria-labelledby="dropdownMenuButton">Gramos</option>
+
+
+
                                         </select>
                                     </div>
                                 </div>
                             </x-slot>
                         </x-input-create>
-                       
+
                     </div>
                 </div>
             </div>
         </div>
-        @endempty
-        @isset($productoSeleccionado)
+    @endempty
+    @isset($productoSeleccionado)
         <div class="col-xl-6 col-lg-12 col-xxl-8">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Agregando stock a {{$productoSeleccionado->nombre}} <a href="#" wire:click="resetProducto"><span class="badge badge-xs badge-danger pt-1">X</span></a></h4>
+                    <h4 class="card-title">Agregando stock a {{ $productoSeleccionado->nombre }} <a href="#"
+                            wire:click="resetProducto"><span class="badge badge-xs badge-danger pt-1">X</span></a></h4>
                 </div>
                 <div class="card-body">
-                    <x-input-create-custom-function funcion="addStock" boton="Agregar Stock" :lista="([
-                            'Cantidad'=>['cantidad','number'],
-                            'Fecha'=>['fecha','date'],
-                              ])" >  
-                               <x-slot name="otrosinputs">
-                                <div class="mb-3 row">
-                                    <label class="col-sm-4 col-form-label">Sucursal</label>
-                                    <div class="col-sm-8">
-                                      <div class=" input-group" >
-                                        <select name="" class="form-control  @error('sucursalSeleccionada') is-invalid @enderror" id="" wire:model="sucursalSeleccionada">
+                    <x-input-create-custom-function funcion="addStock" boton="Agregar Stock" :lista="[
+                        'Cantidad' => ['cantidad', 'number'],
+                        'Fecha' => ['fecha', 'date'],
+                    ]">
+                        <x-slot name="otrosinputs">
+                            <div class="mb-3 row">
+                                <label class="col-sm-4 col-form-label">Sucursal</label>
+                                <div class="col-sm-8">
+                                    <div class=" input-group">
+                                        <select name=""
+                                            class="form-control  @error('sucursalSeleccionada') is-invalid @enderror"
+                                            id="" wire:model="sucursalSeleccionada">
                                             @foreach ($sucursales as $sucur)
-                                                <option value="{{$sucur->id}}">{{$sucur->nombre}}</option>
+                                                <option value="{{ $sucur->id }}">{{ $sucur->nombre }}</option>
                                             @endforeach
                                         </select>
-                                  </div>
-                                    @error('sucursalSeleccionada') <small class="error">{{ $message }}</small> @enderror
                                     </div>
-                                  </div>
-                                
-                               </x-slot>             
+                                    @error('sucursalSeleccionada')
+                                        <small class="error">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+
+                        </x-slot>
                     </x-input-create-custom-function>
                 </div>
             </div>
-        </div> 
-        @endisset
-        {{-- <div class="col-xl-6 col-lg-12 col-xxl-4">
+        </div>
+    @endisset
+    {{-- <div class="col-xl-6 col-lg-12 col-xxl-4">
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title">Productos recientes</h4>
@@ -113,6 +120,4 @@
                 </div>
             </div>
         </div> --}}
-    </div>
-    
-
+</div>

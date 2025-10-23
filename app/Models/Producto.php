@@ -40,6 +40,9 @@ class Producto extends Model
     const PRIORIDADBAJA = "1";
     const PRIORIDADALTA = "2";
     const PRIORIDADMEDIA = "3";
+    
+    // Constante para la ruta de imágenes de productos en S3
+    const RUTA_IMAGENES = '/imagenes/productos/';
     public function sucursale()
     {
 
@@ -69,12 +72,50 @@ class Producto extends Model
     {
         return $this->belongsTo(Producto::class, 'producto_stock_id');
     }
+    protected $appends = ['pathImagen'];
+
     public function pathAttachment()
     {
         if ($this->imagen == null) {
             return GlobalHelper::getValorAtributoSetting('producto_default');
         } else {
-            return "imagenes/productos/" . $this->imagen;
+            // Usar el disco configurado para generar la URL correcta
+            $disk = GlobalHelper::discoArchivos();
+            if ($disk === 's3') {
+                // Para S3, usar la URL completa
+                $config = config('filesystems.disks.s3');
+                $bucket = $config['bucket'] ?? '';
+                $region = $config['region'] ?? 'us-east-1';
+                $baseUrl = "https://{$bucket}.s3.{$region}.amazonaws.com";
+                return $baseUrl . self::RUTA_IMAGENES . $this->imagen;
+            } else {
+                // Para local, usar la ruta relativa
+                return "imagenes/productos/" . $this->imagen;
+            }
+        }
+    }
+
+    /**
+     * Obtener la URL completa de la imagen del producto
+     */
+    public function getPathImagenAttribute()
+    {
+        if ($this->imagen == null) {
+            return GlobalHelper::getValorAtributoSetting('producto_default');
+        } else {
+            // Usar el disco configurado para generar la URL correcta
+            $disk = GlobalHelper::discoArchivos();
+            if ($disk === 's3') {
+                // Para S3, usar la URL completa
+                $config = config('filesystems.disks.s3');
+                $bucket = $config['bucket'] ?? '';
+                $region = $config['region'] ?? 'us-east-1';
+                $baseUrl = "https://{$bucket}.s3.{$region}.amazonaws.com";
+                return $baseUrl . self::RUTA_IMAGENES . $this->imagen;
+            } else {
+                // Para local, usar asset()
+                return asset("imagenes/productos/" . $this->imagen);
+            }
         }
     }
     public function detalle()

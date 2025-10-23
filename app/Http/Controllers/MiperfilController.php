@@ -12,8 +12,10 @@ use App\Models\SwitchPlane;
 use App\Models\Subcategoria;
 use Illuminate\Http\Request;
 use App\Helpers\GlobalHelper;
+use App\Helpers\ProcesarImagen;
 use App\Events\CocinaPedidoEvent;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
@@ -262,24 +264,56 @@ class MiperfilController extends Controller
         $request->validate([
             'foto' => 'required|mimes:jpeg,bmp,png,gif|max:10240'
         ]);
+
         $user = User::find(auth()->user()->id);
-        if ($user->foto) {
-            $filename = $user->foto;
-        } else {
-            $filename = time() . "." . $request->foto->extension();
+
+        try {
+            // Usar el helper ProcesarImagen para procesar y guardar la imagen
+            $procesarImagen = ProcesarImagen::crear($request->foto)
+                ->carpeta(User::RUTA_FOTO) // Carpeta donde se guardará
+                ->dimensiones(320, null) // Redimensionar a máximo 320px de ancho
+                ->formato($request->foto->getClientOriginalExtension()); // Mantener formato original
+
+            // Si el usuario ya tiene una foto, usar el mismo nombre
+            if ($user->foto) {
+                $nombreSinExtension = pathinfo($user->foto, PATHINFO_FILENAME);
+                $procesarImagen->nombreArchivo($nombreSinExtension);
+            }
+
+            // Guardar la imagen procesada (automáticamente usa el disco correcto según el ambiente)
+            $nombreArchivo = $procesarImagen->guardar();
+
+            // Actualizar solo el nombre del archivo en la base de datos
+            $user->foto = $nombreArchivo;
+            $user->save();
+
+            // Log de la ubicación donde se guardó la imagen
+            $disco = GlobalHelper::discoArchivos();
+            if ($disco === 's3') {
+                $config = config('filesystems.disks.s3');
+                $bucket = $config['bucket'] ?? '';
+                $region = $config['region'] ?? 'us-east-1';
+                $urlCompleta = "https://{$bucket}.s3.{$region}.amazonaws.com" . User::RUTA_FOTO . $nombreArchivo;
+                Log::info("Foto de perfil guardada en S3", [
+                    'usuario_id' => $user->id,
+                    'nombre_archivo' => $nombreArchivo,
+                    'url_s3' => $urlCompleta,
+                    'disco' => $disco
+                ]);
+            } else {
+                $rutaLocal = public_path('imagenes/perfil/' . $nombreArchivo);
+                Log::info("Foto de perfil guardada en local", [
+                    'usuario_id' => $user->id,
+                    'nombre_archivo' => $nombreArchivo,
+                    'ruta_local' => $rutaLocal,
+                    'disco' => $disco
+                ]);
+            }
+
+            return back()->with('actualizado', 'Se actualizó tu foto de perfil!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al subir la foto: ' . $e->getMessage());
         }
-        //$this->foto->move(public_path('imagenes'),$filename);
-        $request->foto->storeAs('perfil', $filename, 'public_images');
-        //comprimir la foto
-        $img = Image::make('imagenes/perfil/' . $filename);
-        $img->resize(320, null, function ($constraint) {
-            $constraint->aspectRatio();
-        });
-        $img->rotate(0);
-        $img->save('imagenes/productos/' . $filename);
-        $user->foto = $filename;
-        $user->save();
-        return back()->with('actualizado', 'Se actualizo tu foto de perfil!');
     }
 
 

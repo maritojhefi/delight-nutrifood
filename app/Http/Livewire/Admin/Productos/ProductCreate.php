@@ -10,8 +10,9 @@ use App\Models\Sucursale;
 use App\Models\Subcategoria;
 use App\Helpers\GlobalHelper;
 use Livewire\WithFileUploads;
+use App\Helpers\ProcesarImagen;
 use Illuminate\Support\Facades\DB;
-use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Log;
 
 class ProductCreate extends Component
 {
@@ -92,29 +93,58 @@ class ProductCreate extends Component
             $this->validate([
                 'imagen'=>'required|mimes:jpeg,bmp,png,gif|max:10240'
             ]);
-            $filename= time().".". $this->imagen->extension();
-            //$this->imagen->move(public_path('imagenes'),$filename);
-            $this->imagen->storeAs('productos',$filename, 'public_images');
-              //comprimir la foto
-            $img = Image::make('imagenes/productos/'.$filename);
-            $img->resize(480, null, function ($constraint) {
-             $constraint->aspectRatio();
-            });
-             $img->rotate(0);
-            $img->save('imagenes/productos/'.$filename);
+            
+            try {
+                // Usar el helper ProcesarImagen para procesar y guardar la imagen
+                $procesarImagen = ProcesarImagen::crear($this->imagen)
+                    ->carpeta(Producto::RUTA_IMAGENES) // Carpeta donde se guardará
+                    ->dimensiones(480, null) // Redimensionar a máximo 480px de ancho
+                    ->formato($this->imagen->getClientOriginalExtension()); // Mantener formato original
+                
+                // Guardar la imagen procesada (automáticamente usa el disco correcto según el ambiente)
+                $filename = $procesarImagen->guardar();
+                
+                // Log de la ubicación donde se guardó la imagen
+                $disco = GlobalHelper::discoArchivos();
+                if ($disco === 's3') {
+                    $config = config('filesystems.disks.s3');
+                    $bucket = $config['bucket'] ?? '';
+                    $region = $config['region'] ?? 'us-east-1';
+                    $urlCompleta = "https://{$bucket}.s3.{$region}.amazonaws.com" . \App\Models\Producto::RUTA_IMAGENES . $filename;
+                    Log::info("Imagen de producto guardada en S3", [
+                        'nombre_archivo' => $filename,
+                        'url_s3' => $urlCompleta,
+                        'disco' => $disco
+                    ]);
+                } else {
+                    $rutaLocal = public_path('imagenes/productos/' . $filename);
+                    Log::info("Imagen de producto guardada en local", [
+                        'nombre_archivo' => $filename,
+                        'ruta_local' => $rutaLocal,
+                        'disco' => $disco
+                    ]);
+                }
 
-           $producto= Producto::create([
-                'nombre' => $this->nombre,
-                'detalle' => $this->detalle,
-                'subcategoria_id' => $this->cat,
-                'precio' => $this->precio,
-                'descuento' => $this->descuento,
-                'imagen' => $filename,
-                'medicion' => $this->medicion,
-                'puntos' => $this->puntos,
-            ]);
-            $producto->codigoBarra=GlobalHelper::getValorAtributoSetting('prefijo_codigo_barras').$producto->id;
-            $producto->save();
+               $producto= Producto::create([
+                    'nombre' => $this->nombre,
+                    'detalle' => $this->detalle,
+                    'subcategoria_id' => $this->cat,
+                    'precio' => $this->precio,
+                    'descuento' => $this->descuento,
+                    'imagen' => $filename,
+                    'medicion' => $this->medicion,
+                    'puntos' => $this->puntos,
+                ]);
+                $producto->codigoBarra=GlobalHelper::getValorAtributoSetting('prefijo_codigo_barras').$producto->id;
+                $producto->save();
+                
+            } catch (\Exception $e) {
+                $this->dispatchBrowserEvent('alert',[
+                    'type'=>'error',
+                    'message'=>"Error al procesar la imagen: " . $e->getMessage()
+                ]);
+                return;
+            }
         }
         else
         {

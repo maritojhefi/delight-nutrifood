@@ -42,7 +42,7 @@
                                     <div class="profile-blog">
 
                                         <div class="mb-1 col-lg-4 col-xl-4 col-sm-4 col-6" >
-                                            <img src="{{ asset('imagenes/galeria/' . $foto->foto) }}" alt="" style="width:150px;max-height=150px"  
+                                            <img src="{{ $foto->pathFoto ?? asset('imagenes/galeria/default.png') }}" alt="" style="width:150px;max-height=150px"  
                                                 class="">
                                         </div>
                                         <h4><a href="#" class="text-black">{{ $foto->titulo }}</a></h4>

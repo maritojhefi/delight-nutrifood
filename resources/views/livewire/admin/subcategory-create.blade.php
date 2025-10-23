@@ -63,7 +63,7 @@
 
                                         <th>
                                             @if ($item->foto)
-                                                <img src="{{ asset('imagenes/subcategorias/' . $item->foto) }}"
+                                                <img src="{{ $item->pathFoto }}"
                                                     class="img-thumbnail" style="width: 50px" alt="">
                                             @else
                                                 <img src="{{ asset(GlobalHelper::getValorAtributoSetting('dia_noche_inicio')) }}" class="img-thumbnail"

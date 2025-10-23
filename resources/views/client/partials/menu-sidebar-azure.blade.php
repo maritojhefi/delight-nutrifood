@@ -22,7 +22,7 @@
     @auth
         @if (auth()->user()->foto)
             <a href="#"><img class="rounded-circle bg-highlight" width="80"
-                    src="{{ asset('imagenes/perfil/' . auth()->user()->foto) }}"></a>
+                    src="{{ auth()->user()->pathFoto }}"></a>
         @else
             <a href="#"><img class="rounded-circle bg-highlight" width="80" src="{{ asset('user.png') }}"></a>
         @endif

@@ -16,6 +16,9 @@ class Subcategoria extends Model
     use HasFactory;
 
     protected $fillable = ['nombre', 'descripcion', 'categoria_id', 'foto', 'interacciones'];
+    
+    // Constante para la ruta de fotos de subcategorías en S3
+    const RUTA_FOTO = '/imagenes/subcategorias/';
     public function getNombreAttribute($value)
     {
         return ucfirst(strtolower($value));
@@ -50,12 +53,50 @@ class Subcategoria extends Model
             ->select(['adicionales.*', 'grupos_adicionales.id as grupo_id', 'grupos_adicionales.nombre_grupo', 'grupos_adicionales.es_obligatorio', 'grupos_adicionales.maximo_seleccionable'])
             ->get();
     }
+    protected $appends = ['pathFoto'];
+
     public function rutaFoto()
     {
         if ($this->foto == null) {
             return GlobalHelper::getValorAtributoSetting('subcategoria_default');
         } else {
-            return 'imagenes/subcategorias/' . $this->foto;
+            // Usar el disco configurado para generar la URL correcta
+            $disk = GlobalHelper::discoArchivos();
+            if ($disk === 's3') {
+                // Para S3, usar la URL completa
+                $config = config('filesystems.disks.s3');
+                $bucket = $config['bucket'] ?? '';
+                $region = $config['region'] ?? 'us-east-1';
+                $baseUrl = "https://{$bucket}.s3.{$region}.amazonaws.com";
+                return $baseUrl . self::RUTA_FOTO . $this->foto;
+            } else {
+                // Para local, usar la ruta relativa
+                return 'imagenes/subcategorias/' . $this->foto;
+            }
+        }
+    }
+
+    /**
+     * Obtener la URL completa de la foto de la subcategoría
+     */
+    public function getPathFotoAttribute()
+    {
+        if ($this->foto == null) {
+            return GlobalHelper::getValorAtributoSetting('subcategoria_default');
+        } else {
+            // Usar el disco configurado para generar la URL correcta
+            $disk = GlobalHelper::discoArchivos();
+            if ($disk === 's3') {
+                // Para S3, usar la URL completa
+                $config = config('filesystems.disks.s3');
+                $bucket = $config['bucket'] ?? '';
+                $region = $config['region'] ?? 'us-east-1';
+                $baseUrl = "https://{$bucket}.s3.{$region}.amazonaws.com";
+                return $baseUrl . self::RUTA_FOTO . $this->foto;
+            } else {
+                // Para local, usar asset()
+                return asset('imagenes/subcategorias/' . $this->foto);
+            }
         }
     }
     public function scopeTieneProductosDisponibles($query)

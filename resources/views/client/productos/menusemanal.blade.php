@@ -1370,9 +1370,9 @@
 
             <div class="card-bottom ms-3 mb-3">
                 @if (auth()->user()->foto)
-                    <img data-src="{{ asset('imagenes/perfil/' . auth()->user()->foto) }}" alt="img" width="40"
+                    <img data-src="{{ auth()->user()->pathFoto }}" alt="img" width="40"
                         class="pb-1 preload-img shadow-xl rounded-m entered loaded" data-ll-status="loaded"
-                        src="{{ asset('imagenes/perfil/' . auth()->user()->foto) }}">
+                        src="{{ auth()->user()->pathFoto }}">
                 @else
                     <img data-src="{{ asset('user.png') }}" alt="img" width="40"
                         class="pb-1 preload-img shadow-xl rounded-m entered loaded" data-ll-status="loaded"
