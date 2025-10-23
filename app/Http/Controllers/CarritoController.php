@@ -169,7 +169,6 @@ class CarritoController extends Controller
             'cantidad' => $cantidadSolicitada,
             'estado' => $estado,
             'max_permitido' => $stockDisponible === "INFINITO" ? "INFINITO" : $stockDisponible,
-            'stock_disponible' => $stockDisponible,
             'adicionalesLimitados' => $adicionalesLimitados,
             'tipo' => $this->determinarTipoProducto($producto),
         ];
