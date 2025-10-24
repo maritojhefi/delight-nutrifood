@@ -491,8 +491,8 @@
                         <div class="accordion-item plan-accordion-item mb-3">
                             <!-- Header del acordeón (siempre visible) -->
                             <div class="accordion-header" id="planHeader">
-                                <button class="accordion-button plan-accordion-button {{ $gradienteClass }} collapsed" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#planCollapse" aria-expanded="false" aria-controls="planCollapse"
+                                <button class="accordion-button plan-accordion-button {{ $gradienteClass }}" type="button"
+                                    aria-expanded="false" aria-controls="planCollapse"
                                     {{ $plan->editable != 1 ? 'disabled':'' }}>
                                     <div class="plan-header-content mt-3 px-0"
                                         style="padding-right: 2% !important; padding-left: 2% !important;">
@@ -580,9 +580,9 @@
                                                 </div>
                                             </div>
                                             @if ($plan->editable == 1 && count($pedidos) >= 1)
-                                                <i data-lucide="chevron-up"
+                                                <!-- <i data-lucide="chevron-up"
                                                 class="lucide-icon plan-chevron color-gray-dark"
-                                                style="width: 4rem; height: 4rem;"></i>
+                                                style="width: 4rem; height: 4rem;"></i> -->
                                             @else
                                                 <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
                                                     class="btn bg-delight-red rounded-s color-white font-13" style="font-weight: 700 !important;">Controlar Plan</a>
@@ -592,7 +592,7 @@
                                 </button>
                             </div>
                             <!-- Contenido colapsable del acordeón -->
-                            <div id="planCollapse" class="accordion-collapse collapse" aria-labelledby="planHeader"
+                            <div id="planCollapse" class="accordion-collapse" aria-labelledby="planHeader"
                                 data-bs-parent="#planAccordion">
                                 @php
                                     $menuItems = [
