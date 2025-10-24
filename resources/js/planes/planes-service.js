@@ -18,6 +18,11 @@ export const obtenerCalendarioPlan = async(idPlan, idUser) => {
     return response; 
 }
 
+export const asignarPermisosVarios = async(fecha, cantidad, planId) => {
+    const response = await axios.get(`/miperfil/permisos/${fecha}/${cantidad}/${planId}`);
+    return response;
+}
+
 
 // Limpiar la cache de las solicitudes al plan del calendario
 // Util en el caso de que el usuario actualice sus planes y sea necesaria la actualizacion de la cache
@@ -28,5 +33,6 @@ export const obtenerCalendarioPlan = async(idPlan, idUser) => {
 
 window.PlanesService = {
     permisoPedido,
-    obtenerCalendarioPlan
+    obtenerCalendarioPlan,
+    asignarPermisosVarios
 };

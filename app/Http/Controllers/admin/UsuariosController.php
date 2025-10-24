@@ -381,6 +381,68 @@ class UsuariosController extends Controller
 
         return response()->json($evento);
     }
+    public function permisoVarios($fecha, $cantidad, $planId) {
+        // Solo se debe permitir solicitar permiso para 
+        $eventosPermisibles = DB::table('plane_user')
+                        ->where('start', $fecha)
+                        ->where('estado', 'pendiente')
+                        // uso temporal del id del usuario realizando la solicitud
+                        ->where('user_id', auth()->user()->id)
+                        ->where('plane_id', $planId)
+                        ->limit($cantidad)
+                        ->get();
+
+        if ($eventosPermisibles->isEmpty()) {
+            return response()->json(['error' => 'No hay eventos permisibles'], 404);
+        }
+
+        $permisibleComparacion = $eventosPermisibles->first();
+
+        $extraerUltimo = DB::table('plane_user')
+            ->where('user_id', $permisibleComparacion->user_id)
+            ->where('plane_id', $permisibleComparacion->plane_id)
+            ->where('title', '!=', 'feriado')
+            ->orderBy('start', 'DESC')
+            ->first();
+        
+        $fechaParaAgregar = $this->diaSiguienteAlUltimo($extraerUltimo->start, $permisibleComparacion->plane_id, $permisibleComparacion->user_id);
+        $saberDia = WhatsappAPIHelper::saber_dia($fechaParaAgregar);
+        if ($saberDia == "Domingo") {
+            $fechaParaAgregar = Carbon::parse($fechaParaAgregar)->addDay();
+        }
+
+        $idsActualizados = [];
+
+        foreach ($eventosPermisibles as $permisible) {
+            // Insert new event
+            DB::table('plane_user')->insert([
+                'start' => $fechaParaAgregar,
+                'end' => $fechaParaAgregar,
+                'title' => $permisible->title,
+                'plane_id' => $permisible->plane_id,
+                'user_id' => $permisible->user_id
+            ]);
+            
+            // Update the existing event to permiso status
+            DB::table('plane_user')
+                ->where('id', $permisible->id)
+                ->update([
+                    'estado' => Plane::ESTADOPERMISO, 
+                    'color' => Plane::COLORPERMISO, 
+                    'detalle' => null
+                ]);
+            
+            $idsActualizados[] = $permisible->id;
+        }
+        
+        return response()->json([
+            'success' => true,
+            'cantidad' => count($idsActualizados),
+            'ids_actualizados' => $idsActualizados,
+            'fecha_original' => $fecha,
+            'fecha_agregada' => $fechaParaAgregar
+        ]);
+    }
     public function quitarpermiso($id)
     {
         $evento = DB::table('plane_user')->where('id', $id)->update(['estado' => Plane::ESTADOPENDIENTE, 'color' => Plane::COLORPENDIENTE]);

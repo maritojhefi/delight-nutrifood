@@ -125,7 +125,7 @@
                 <div class="align-self-center">
                     <h5 class="color-magenta-dark">Permisos</h5>
                     <p class="mb-0 mt-n1 font-10">
-                        <span><i class="fa fa-map-marker color-blue-dark pe-1"></i>Retirar permisos para mis pedidos del día </span>
+                        <span><i class="fa fa-map-marker color-blue-dark pe-1"></i>Retirar permisos para mis pedidos este día (pronto) </span>
                         <!-- <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span> -->
                     </p>
                 </div>
@@ -180,7 +180,27 @@
     <script>
         $(document).ready( async function () {
             // // $('.menu-hider').addClass('menu-active');
+            await renderizarCalendario();
 
+            // await PlanesService.obtenerCalendarioPlan( {{ $plan->id }},{{ $usuario->id }} ).then(
+            //     (respuestaCalendario) => {
+            //         console.log("Respuesta obtenida sobre la informacion del plan: ", respuestaCalendario.data);
+            //         console.log("Respuesta servida desde la cache: ", respuestaCalendario.cached);
+
+            //         // Obtener respuestas separadas divididas por meses en orden
+            //         const mesesPlan = respuestaCalendario.data.meses;
+            //         // Usar el mes y las fechas contenidas en el para renderizar el calendario
+            //         const infoMesActual = mesesPlan.find((mes) => mes.currentDayFlag);
+            //         console.log("info meses plan", mesesPlan);
+                    
+            //         if (infoMesActual) {
+            //             construirCalendario(infoMesActual, mesesPlan);
+            //         }
+            //     }
+            // );
+        });
+
+        const renderizarCalendario = async () => {
             await PlanesService.obtenerCalendarioPlan( {{ $plan->id }},{{ $usuario->id }} ).then(
                 (respuestaCalendario) => {
                     console.log("Respuesta obtenida sobre la informacion del plan: ", respuestaCalendario.data);
@@ -197,7 +217,7 @@
                     }
                 }
             );
-        });
+        }
 
         const construirCalendario = (infoMes, infoMeses) => {
             console.log("Construyendo calendario para: ", infoMes);
@@ -558,12 +578,8 @@
                 
                 try {
                     // Make axios call
-                    const response = await axios.post('/api/marcar-permisos', {
-                        fecha: infoDia.start,
-                        cantidad: cantidadPermisos,
-                        pedidos: pendPermisibles.slice(0, cantidadPermisos).map(p => p.id)
-                    });
-                    
+                    const response = await PlanesService.asignarPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }});
+                    await renderizarCalendario();
                     console.log('Permisos marcados exitosamente:', response.data);
                     
                     // Show success message and refresh calendar
