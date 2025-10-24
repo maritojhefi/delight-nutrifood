@@ -83,62 +83,85 @@
     <div id="menu-pedidos-dia-calendario" class="menu menu-box-modal rounded-m" style="width: 90%">
         <div class="menu-title flex-align-center">
             <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
-            <h1 id="fecha-menu-dia-calendario" class="font-24 mt-1 mb-0">29 de Febrero 2025</h1>
+            <h1 id="fecha-menu-dia-calendario" class="font-20 mt-1 mb-0">29 de Febrero 2025</h1>
             <a href="#" class="close-menu"><i class="fa fa-times-circle"></i></a>
         </div>
         <div class="divider divider-margins my-2"></div>
         <div class="content mt-0">
-            <a href="#" class="d-flex gap-3 align-items-center mb-3">
+            <a id="pendientes-anchor" href="#" class="d-flex gap-3 align-items-center mb-3">
                 <div class="align-self-center">
-                    <!-- <img src="images/pictures/1s.jpg" width="60" class="rounded-sm me-3"> -->
-                    <!-- <div class="d-flex align-items-center justify-content-center rounded rounded-circle bg-highlight" style=" width: 2.5rem; height: 2.5rem;"> -->
-                        <i data-lucide="notebook-pen" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
-                    <!-- </div> -->
+                    <i data-lucide="notebook-pen" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
                 </div>
                 <div class="align-self-center">
-                    <h5>Pedidos Pendientes</h5>
+                    <h5 class="">Pedidos Pendientes</h5>
                     <p class="mb-0 mt-n1 font-10">
-                        <span><i class="fa fa-map-marker color-blue-dark pe-1"></i>Palo Alto</span>
-                        <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span>
+                        <span><i class="fa fa-map-marker color-blue-dark pe-1"></i>Solicitar permiso para mis pedidos del día</span>
+                        <!-- <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span> -->
                     </p>
                 </div>
                 <div class="align-self-center ms-auto">
                     <i class="fa fa-arrow-right pe-2 opacity-30"></i>
                 </div>
             </a>
-            <a href="#" class="d-flex gap-3 align-items-center mb-3">
+            <a id="finalizados-anchor" href="#" class="d-flex gap-3 align-items-center mb-3">
                 <div class="align-self-center">
-                    <!-- <img src="images/pictures/2s.jpg" width="60" class="rounded-sm me-3"> -->
                     <i data-lucide="calendar-check" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
                 </div>
                 <div class="align-self-center">
-                    <h5>Pedidos Finalizados</h5>
+                    <h5 class="color-orange-dark">Pedidos Finalizados</h5>
                     <p class="mb-0 mt-n1 font-10">
-                        <span><i class="fa fa-map-marker color-blue-dark pe-1"></i>Palo Alto</span>
-                        <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span>
+                        <span><i class="fa fa-map-marker color-blue-dark pe-1"></i>Ver el historial de mis pedidos este día (pronto)</span>
+                        <!-- <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span> -->
                     </p>
                 </div>
-                <div class="align-self-center ms-auto">
+                <!-- <div class="align-self-center ms-auto">
                     <i class="fa fa-arrow-right pe-2 opacity-30"></i>
-                </div>
+                </div> -->
             </a>
-            <a href="#" class="d-flex gap-3 align-items-center mb-3">
+            <a id="permisos-anchor" href="#" class="d-flex gap-3 align-items-center mb-3">
                 <div class="align-self-center">
-                    <!-- <img src="images/pictures/31s.jpg" width="60" class="rounded-sm me-3"> -->
                     <i data-lucide="calendar-clock" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
                 </div>
                 <div class="align-self-center">
-                    <h5>Permisos</h5>
+                    <h5 class="color-magenta-dark">Permisos</h5>
                     <p class="mb-0 mt-n1 font-10">
-                        <span><i class="fa fa-map-marker color-blue-dark pe-1"></i>Palo Alto</span>
-                        <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span>
+                        <span><i class="fa fa-map-marker color-blue-dark pe-1"></i>Retirar permisos para mis pedidos del día </span>
+                        <!-- <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span> -->
                     </p>
                 </div>
                 <div class="align-self-center ms-auto">
                     <i class="fa fa-arrow-right pe-2 opacity-30"></i>
                 </div>
             </a>
-            <!-- <a href="#" class="btn btn-full btn-m text-uppercase font-700 border-0 my-3 mx-1 rounded-sm gradient-blue">View All Events</a> -->
+        </div>
+    </div>
+
+    <div id="menu-pedir-permisos" class="menu menu-box-modal rounded-m" style="width: 90%">
+        <div class="menu-title flex-align-center">
+            <a href="#" class="back-menu-pedidos-dia">
+                <i data-lucide="chevron-left" class="lucide-icon"></i>
+            </a>
+            <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
+            <h1 id="fecha-menu-dia-calendario" class="font-24 mt-1 mb-0">29 de Febrero 2025</h1>
+        </div>
+        <div class="divider divider-margins mt-1 mb-0"></div>
+        <div class="content m-0 p-3">
+                <!-- <h4 class="font-700 mb-3">Seleccionar Permisos</h4> -->
+                <p class="mb-0">Tienes <span id="mensaje-cantidad-permisos"></span> pedidos disponibles para marcar con permiso este día.</p>
+            <div id="menu-selector-permisos">Selector</div>
+        </div>
+    </div>
+    <div id="menu-deshacer-permisos" class="menu menu-box-modal rounded-m" style="width: 90%">
+        <div class="menu-title flex-align-center">
+            <a href="#" class="back-menu-pedidos-dia">
+                <i data-lucide="chevron-left" class="lucide-icon"></i>
+            </a>
+            <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
+            <h1 id="fecha-menu-dia-calendario" class="font-24 mt-1 mb-0">29 de Febrero 2025</h1>
+        </div>
+        <div class="divider divider-margins my-2"></div>
+        <div class="content mt-0">
+            <p>Selector</p>
         </div>
     </div>
 @endpush
@@ -363,15 +386,215 @@
             console.log("Informacion para construir el modal:", infoDia);
             console.log("Informacion del mes pal modal", infoMes);
 
+            // CAMBIAR LA FECHA DEL MODAL
             const stringFecha = `${infoDia.start}T00:00:00Z`;
             const dateObj = new Date(stringFecha);
-
             const dia = dateObj.getUTCDate();
-
-            const fecha = infoDia.start.trim('-');
-            // CAMBIAR LA FECHA DEL MODAL
+            // const fecha = infoDia.start.trim('-');
             $('#fecha-menu-dia-calendario').text(`${dia} de ${infoMes.nombre}  de ${infoMes.anio}`);
+
+            // Agrupar pedidos
+            const pendientes = infoDia.eventos.filter((pedido) => pedido.estado == "pendiente");
+            const finalizados = infoDia.eventos.filter((pedido) => pedido.estado == "finalizado");
+            // const permisos = infoDia.eventos.filter((pedido) => pedido.estado == "permiso");
+
+            const permisos = infoDia.eventos.filter((pedido) => {
+                if (pedido.estado !== "permiso") return false;
+                
+                // Convert the string date to a Date object at 8:55 AM
+                const fechaPermiso = new Date(pedido.end + 'T08:55:00');
+                const ahora = new Date();
+                
+                // Only include permisos where the 8:55 AM datetime has already passed
+                return fechaPermiso > ahora;
+            });
+
+            console.log("Permisos válidos (antes de las 8:55 AM de su fecha):", permisos);
+
+            // const testPermiso = permisos[0];
+            // console.log("Datatype testPermiso", typeof(testPermiso.end));
+            // El datatype de permiso.end es stringFecha, a pesar de ser un date
+            // convertir a datetime de 9:00 am para evaluar el filtrado apropiado
             
+
+            // if (finalizados.length) {
+            //     console.log("finalizados.length true")
+            //     $('#finalizados-anchor').css('display','flex');
+            //     $('#finalizados-anchor').removeClass('d-none');
+            //     $('#finalizados-anchor').addClass('d-flex');
+            // } else {
+            //     console.log("finalizados.length fakse")
+            //     $('#finalizados-anchor').removeClass('d-flex');
+            //     $('#finalizados-anchor').addClass('d-none');
+            // }
+
+            if (pendientes.length) {
+                $('#pendientes-anchor').off('click').on('click', async function (e) {
+                    e.preventDefault();
+                    console.log("Abriendo menu solicitar permisos dia");
+                    construirSelectorPermisos(infoDia, infoMes, pendientes);
+                    revelarMenuPedirPermisos();
+                });
+                $('#pendientes-anchor').removeClass('d-none');
+                $('#pendientes-anchor').addClass('d-flex');
+
+                
+            } else {
+                $('#pendientes-anchor').removeClass('d-flex');
+                $('#pendientes-anchor').addClass('d-none');
+            }
+
+            if (permisos.length) {
+                $('#permisos-anchor').off('click').on('click', async function (e) {
+                    e.preventDefault();
+                    console.log("Abriendo menu deshacer permisos dia");
+                    construirSelectorDeshacer(infoDia, infoMes);
+                    revelarMenuDeshacerPermisos();
+                });
+                $('#permisos-anchor').removeClass('d-none');
+                $('#permisos-anchor').addClass('d-flex');
+            } else {
+                $('#permisos-anchor').removeClass('d-flex');
+                $('#permisos-anchor').addClass('d-none');
+            }
+            
+        }
+
+        // const ocultarElementoFlex = () => {
+
+        // }
+
+        // const construirSelectorPermisos = (infoDia, infoMes, pendPermisibles) => {
+        //     reiniciarBackButton(infoDia, infoMes);
+        //     const htmlSelector = `
+        //         <label><label>
+        //         <input type="number">
+        //     `
+        // }
+
+        const construirSelectorPermisos = (infoDia, infoMes, pendPermisibles) => {
+            reiniciarBackButton(infoDia, infoMes);
+            
+            const maxPermisos = pendPermisibles.length;
+
+            $('#mensaje-cantidad-permisos').text(maxPermisos);
+            
+            const htmlSelector = `
+                <div class="d-flex flex-row align-items-center justify-content-between mx-2 mt-2">
+                    <div class="stepper rounded-s d-flex flex-row">
+                        <a href="#" class="stepper-sub"><i class="fa fa-minus color-theme"></i></a>
+                        <input type="number" id="cantidad-permisos" min="1" max="${maxPermisos}" value="${maxPermisos}">
+                        <a href="#" class="stepper-add"><i class="fa fa-plus color-theme"></i></a>
+                    </div>
+                    <button 
+                        id="btn-confirmar-permisos"
+                        class="py-2 px-3 wrapper font-15 bg-magenta-dark rounded-s line-height-s text-uppercase font-600 shadow-xl"
+                    >
+                        <span class="d-flex flex-row align-items-center gap-1">Confirmar</span>
+                    </button>
+                </div>
+            `;
+            
+            // Insert the HTML
+            $('#menu-selector-permisos').html(htmlSelector);
+            
+            const $input = $('#cantidad-permisos');
+            const $btnSub = $('.stepper-sub');
+            const $btnAdd = $('.stepper-add');
+            
+            // Handle subtract button
+            $btnSub.off('click').on('click', function(e) {
+                e.preventDefault();
+                
+                let currentValue = parseInt($input.val());
+                if (currentValue > 1) {
+                    $input.val(currentValue - 1);
+                }
+            });
+            
+            // Handle add button
+            $btnAdd.off('click').on('click', function(e) {
+                e.preventDefault();
+                
+                let currentValue = parseInt($input.val());
+                if (currentValue < maxPermisos) {
+                    $input.val(currentValue + 1);
+                }
+            });
+            
+            // Handle manual input changes
+            $input.on('input change', function() {
+                let valor = parseInt($(this).val());
+                
+                // Validate and constrain the value
+                if (isNaN(valor) || valor < 1) {
+                    valor = 1;
+                } else if (valor > maxPermisos) {
+                    valor = maxPermisos;
+                }
+                
+                $(this).val(valor);
+            });
+            
+            // Handle submit button click
+            $('#btn-confirmar-permisos').off('click').on('click', async function(e) {
+                e.preventDefault();
+                
+                const cantidadPermisos = parseInt($input.val());
+                const $btn = $(this);
+                const $span = $btn.find('span');
+                const textoOriginal = $span.text();
+                
+                // Validate the input
+                if (cantidadPermisos < 1 || cantidadPermisos > maxPermisos) {
+                    console.error('Cantidad inválida');
+                    return;
+                }
+                
+                // Disable controls while processing
+                $btn.prop('disabled', true);
+                $input.prop('disabled', true);
+                $span.html('<i class="fa fa-spinner fa-spin me-1"></i>Procesando');
+                
+                try {
+                    // Make axios call
+                    const response = await axios.post('/api/marcar-permisos', {
+                        fecha: infoDia.start,
+                        cantidad: cantidadPermisos,
+                        pedidos: pendPermisibles.slice(0, cantidadPermisos).map(p => p.id)
+                    });
+                    
+                    console.log('Permisos marcados exitosamente:', response.data);
+                    
+                    // Show success message and refresh calendar
+                    // ... your success handling logic
+                    
+                } catch (error) {
+                    console.error('Error al marcar permisos:', error);
+                    // Show error message
+                } finally {
+                    // Re-enable everything
+                    $btn.prop('disabled', false);
+                    $input.prop('disabled', false);
+                    $span.text(textoOriginal);
+                }
+            });
+        };
+
+        const construirSelectorDeshacer = (infoDia, infoMes) => {
+            reiniciarBackButton(infoDia, infoMes);
+        }
+
+        const revelarMenuPedirPermisos = () => {
+            ocultarrMenuDiaSinHider();
+            $('#menu-pedir-permisos').addClass('menu-active')
+        }
+
+
+
+        const revelarMenuDeshacerPermisos = () => {
+            ocultarrMenuDiaSinHider();
+            $('#menu-deshacer-permisos').addClass('menu-active')
         }
 
         const revelarMenuDia = (infoDia, infoMes) => {
@@ -383,6 +606,25 @@
         const ocultarrMenuDia = () => {
             $('#menu-pedidos-dia-calendario').removeClass('menu-active');
             $('.menu-hider').removeClass('menu-active');
+        }
+
+        const ocultarrMenuDiaSinHider = () => {
+            $('#menu-pedidos-dia-calendario').removeClass('menu-active');
+            // $('.menu-hider').removeClass('menu-active');
+        }
+
+        const ocultarMenusPermisos = () => {
+            $('#menu-pedir-permisos').removeClass('menu-active');
+            $('#menu-deshacer-permisos').removeClass('menu-active');
+        }
+
+        const reiniciarBackButton = (infoDia, infoMes) => {
+            $('.back-menu-pedidos-dia').off('click').on('click', function (e) {
+                e.preventDefault();
+                ocultarMenusPermisos();
+                revelarMenuDia(infoDia, infoMes);
+
+            })
         }
     </script>
 @endpush
