@@ -454,6 +454,7 @@
                         $iconoTiempo = 'fa-clock';
                         $iconoTiempoLucide = 'clock';
                         $colorTiempo = 'success';
+                        $textodia = 'Hoy '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()) ) .' te servirás:';
                         break;
                     case 'proximo':
                         $textoTiempo = 'Inicia en: ';
@@ -461,6 +462,7 @@
                         $iconoTiempo = 'fa-hourglass-start';
                         $iconoTiempoLucide = 'hourglass';
                         $colorTiempo = 'warning';
+                        $textodia = $textodia = 'Hoy '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now())) .' te servirás:';
                         break;
                     case 'proximo_dia':
                         $textoTiempo = 'Mañana en: ';
@@ -468,6 +470,7 @@
                         $iconoTiempo = 'fa-calendar-plus';
                         $iconoTiempoLucide = 'calendar';
                         $colorTiempo = 'info';
+                        $textodia = 'Mañana '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()->addDay())) .' te servirás:';
                         break;
                     default:
                         $textoTiempo = '';
@@ -494,7 +497,7 @@
                                     <div class="plan-header-content mt-3 px-0"
                                         style="padding-right: 2% !important; padding-left: 2% !important;">
 
-                                        <div class="day-info">
+                                        <div class="day-info d-flex justify-content-evenly">
                                             <div class="day-icon-container">
                                                 <div class="day-icon">
                                                     <i data-lucide={{ $lucideDia }} class="lucide-icon color-highlight mt-1" style="width: 3rem; height: 3rem;"></i>
@@ -502,40 +505,81 @@
                                             </div>
 
                                             <div class="day-text" class="d-flex flex-column ms-2">
-                                                <!-- @if ($periodoDia == 'manana')
-                                                    <p class="day-greeting">¡Buenos días!</p>
-                                                @elseif($periodoDia == 'tarde')
-                                                    <p class="day-greeting">¡Buenas tardes!</p>
-                                                @else
-                                                    <p class="day-greeting">¡Buenas noches!</p>
-                                                @endif -->
-                                                <p class="badge gradient-blue rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
-                                                    <span>Despacho: {{ $plan->horario->hora_inicio . ' - ' . $plan->horario->hora_fin }}</span>
-                                                    <i data-lucide="clock" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
-                                                </p>
-                                                <strong class="day-title color-theme font-18">
-                                                    {{ App\Helpers\GlobalHelper::fechaFormateada(2, Carbon\Carbon::now()) }}
-                                                </strong>
+                                                <div class="d-flex flex-column gap-1">
+                                                    <p class="badge gradient-blue rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                        <span>Despacho: {{ $plan->horario->hora_inicio . ' - ' . $plan->horario->hora_fin }}</span>
+                                                        <i data-lucide="clock" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
+                                                    </p>
+                                                    <!-- Badge de tiempo con estado -->
+                                                    @if (count($pedidos->filter(fn($pedido) => $pedido->detalle == null)))
+                                                    <p class="badge bg-highlight rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                        
+                                                        @php
+                                                            // 1. Get the current time in Carbon
+                                                            $now = Carbon\Carbon::now();
+                                                            
+                                                            // 2. Set the target time to 9:00 AM today
+                                                            $targetTime = $now->copy()->setTime(9, 0, 0);
+                                                            
+                                                            // 3. If 9:00 AM has already passed today, set the target for 9:00 AM tomorrow
+                                                            if ($now->greaterThan($targetTime)) {
+                                                                $targetTime->addDay();
+                                                            }
+                                                            
+                                                            // 4. Get the UNIX timestamp (seconds since epoch) for JavaScript
+                                                            $targetTimestamp = $targetTime->timestamp;
+                                                            
+                                                        @endphp
+
+                                                        {{-- The countdown display area --}}
+                                                        <span id="countdown-timer" data-target="{{ $targetTimestamp }}">
+                                                            Calculando...
+                                                        </span>
+
+                                                        <i data-lucide="{{ $iconoTiempoLucide }}" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
+                                                    </p>
+                                                    @endif
+                                                    
+                                                    <!-- <p class="badge bg-highlight rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                        <span>{{ $mensajeTiempo }}</span>
+                                                        <i data-lucide="{{ $iconoTiempoLucide }}" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
+                                                    </p> -->
+
+                                                    @if(count($pedidos) >= 2)
+                                                    <p class="badge bg-delight-red rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                        <span>Porciones: {{ count($pedidos) }}</span>
+                                                        <i data-lucide="utensils" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
+                                                    </p>
+                                                    @endif
+                                                </div>
+                                                
+                                                
+                                                
+                                                
                                             </div>
                                         </div>
 
                                         <div class="d-flex flex-row justify-content-between align-items-center w-100">
                                             <div class="plan-summary">
                                                 <div class="d-flex flex-column gap-2">
-                                                    @if(count($pedidos) >= 2)
+                                                    <strong class="day-title color-theme font-18">
+                                                        {{ $textodia }}
+                                                    </strong>
+                                                    <!-- resumen badges -->
+                                                    <!-- @if(count($pedidos) >= 2)
                                                         <p class="badge bg-delight-red rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
                                                             <span>Porciones: {{ count($pedidos) }}</span>
                                                             <i data-lucide="utensils" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
                                                         </p>
-                                                    @endif
+                                                    @endif -->
                                                     <!-- Badge de tiempo con estado -->
-                                                    <p class="badge bg-highlight rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                    <!-- <p class="badge bg-highlight rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
                                                         <span>{{ $mensajeTiempo }}</span>
                                                         <i data-lucide="{{ $iconoTiempoLucide }}" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
-                                                    </p>
+                                                    </p> -->
                                                 </div>
                                             </div>
-                                            @if ($plan->editable == 1)
+                                            @if ($plan->editable == 1 && count($pedidos) >= 1)
                                                 <i data-lucide="chevron-up"
                                                 class="lucide-icon plan-chevron color-gray-dark"
                                                 style="width: 4rem; height: 4rem;"></i>
@@ -543,7 +587,6 @@
                                                 <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
                                                     class="btn bg-delight-red rounded-s color-white font-13" style="font-weight: 700 !important;">Controlar Plan</a>
                                             @endif
-
                                         </div>
                                     </div>
                                 </button>
@@ -575,7 +618,7 @@
                                         ],
                                         'EMPAQUE' => [
                                             'label' => 'Empaque',
-                                            'icon' => 'package',
+                                            'icon' => 'package-2',
                                         ],
                                     ];
                                 @endphp
@@ -608,6 +651,9 @@
                                                             data-bs-target="#{{ $pedidoCollapseId }}" aria-expanded="false" aria-controls="{{ $pedidoCollapseId }}">
                                                             <div class="d-flex flex-row align-items-center justify-content-between w-100 me-2">
                                                                 <h3 class="mb-0 color-white font-18">Pedido {{ $loop->iteration }}</h3>
+                                                                @if ($pedido->detalle != null)
+                                                                    <p class="badge bg-green-dark rounded rounded-s color-white mb-0 font-12">Guardado</p>
+                                                                @endif
                                                             </div>
                                                         </button>
                                                     </div>
@@ -627,7 +673,7 @@
                                                                         <div class="col-6 px-1 py-2">
                                                                             <div class="d-flex flex-row gap-2 align-items-center">
                                                                                 <!-- <div class="{{ $bgClass }} rounded-circle d-flex align-items-center justify-content-center p-1" style="height: 1.8rem; width: 1.8rem"> -->
-                                                                                    <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-theme" style="height: 1.8rem; width: 1.8rem"></i>
+                                                                                    <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-theme" style="min-height: 1.8rem; min-width: 1.8rem"></i>
                                                                                 <!-- </div> -->
                                                                                 <div class="d-flex flex-column">
                                                                                     <h3 class="detalle-label line-height-s font-15 {{ $colorClass }}">{{ $item['label'] }}</h3>
@@ -701,7 +747,7 @@
                                                             <div class="col-6 px-1 py-2">
                                                                 <div class="d-flex flex-row gap-2 align-items-center">
                                                                     <!-- <div class="{{ $bgClass }} rounded-circle d-flex align-items-center justify-content-center p-1" style="height: 1.8rem; width: 1.8rem"> -->
-                                                                        <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-theme" style="height: 1.8rem; width: 1.8rem"></i>
+                                                                        <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-theme" style="min-height: 1.8rem; min-width: 1.8rem"></i>
                                                                     <!-- </div> -->
                                                                     <div class="d-flex flex-column">
                                                                         <h3 class="detalle-label line-height-s font-15 {{ $colorClass }}">{{ $item['label'] }}</h3>
@@ -1624,6 +1670,60 @@ $(document).ready(function() {
             // y abusos en generacion de producto_venta
             carritoStorage.vaciarCarrito();
         }
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        // Find the countdown element
+        const $countdownElement = $('#countdown-timer');
+        
+        // Get the target timestamp (in seconds) from the data attribute
+        const targetTimestamp = parseInt($countdownElement.data('target'));
+        
+        if (isNaN(targetTimestamp)) {
+            $countdownElement.text('Error en la hora.');
+            return;
+        }
+
+        // Main update function
+        function updateCountdown() {
+            // Get current time in seconds
+            const now = Math.floor(Date.now() / 1000);
+            
+            // Calculate the total remaining seconds
+            let remainingSeconds = targetTimestamp - now;
+
+            if (remainingSeconds <= 0) {
+                // Countdown is finished or passed
+                $countdownElement.text('¡Hora de servir!');
+                // Stop the timer
+                clearInterval(timerInterval); 
+                // Optionally reload the page or update the target time again
+                return;
+            }
+
+            // --- Calculation ---
+            const hours = Math.floor(remainingSeconds / 3600);
+            remainingSeconds %= 3600;
+            
+            const minutes = Math.floor(remainingSeconds / 60);
+            const seconds = remainingSeconds % 60;
+
+            // --- Formatting (Pads single digits with a leading zero) ---
+            const hDisplay = String(hours).padStart(2, '0');
+            const mDisplay = String(minutes).padStart(2, '0');
+            const sDisplay = String(seconds).padStart(2, '0');
+            
+            // --- Output ---
+            $countdownElement.text(`Tiempo: ${hDisplay}h ${mDisplay}m ${sDisplay}s`);
+        }
+
+        // Run the update function immediately
+        updateCountdown();
+
+        // Run the update function every second
+        const timerInterval = setInterval(updateCountdown, 1000);
     });
 </script>
 @endpush
