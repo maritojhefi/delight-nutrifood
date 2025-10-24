@@ -13,6 +13,7 @@ use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -395,8 +396,145 @@ class UsuariosController extends Controller
             $eventos->push($feriado);
         }
 
+        // Log::debug("Informacion de eventos obtenida: ", [$eventos]);
+
 
         return response()->json($eventos);
+    }
+
+    // public function contarPedidosDisponiblesPlan($idplan, $iduser) 
+    // {
+    //     // Get all events for the user and plan
+    //     $eventos = DB::table('plane_user')
+    //         ->where('plane_id', $idplan)
+    //         ->where('user_id', $iduser)
+    //         ->get();
+        
+    //     // Get feriados separately
+
+    //     $fechaMinima = $eventos->min('start');
+    //     $fechaMaxima = $eventos->max('end');
+
+    //     // Obtemer las fechas feriadas desde el primer dia de registro del plan hasta el ultimo dia del mes del final del plan
+    //     $feriados = DB::table('plane_user')
+    //         ->where('title', 'feriado')
+    //         ->get();
+
+    //     $feriados = DB::table('plane_user')
+    //         ->where('title', 'feriado')
+    //         // Filter feriados whose 'start' date is between the plan's min start and max end.
+    //         ->whereBetween('start', [$fechaMinima, $fechaMaxima])
+    //         ->get();
+
+    //     // Group events by date and count them
+    //     $eventosPorDia = $eventos->groupBy('start')->map(function ($eventosDelDia, $fecha) {
+    //         return [
+    //             'id' => 'count_' . $fecha, // Unique identifier
+    //             'start' => $fecha,
+    //             'end' => $fecha,
+    //             'title' => $eventosDelDia->count() . ' disponibles', // "X disponibles"
+    //             'color' => '#F7843A',
+    //             'eventos' => $eventosDelDia->toArray(), // Keep original events for reference if needed
+    //             'tipo' => 'contador'
+    //         ];
+    //     })->values(); // Reset keys to get a clean array
+
+    //     // Add feriados to the collection
+    //     foreach ($feriados as $feriado) {
+    //         $eventosPorDia->push([
+    //             'id' => $feriado->id,
+    //             'start' => $feriado->start,
+    //             'end' => $feriado->end,
+    //             'title' => $feriado->title,
+    //             'color' => $feriado->color ?? '#FF0000',
+    //             'tipo' => 'feriado'
+    //         ]);
+    //     }
+
+    //     $meses = // Filter the existing months from the availables dates in $eventosPorDia, and store the days inside too, like a month["numero"=>10,"nombre"=>"Octubre","dias"=>$filteredEventosPorDia]
+
+
+    //     // Log::debug("Información de eventos agrupados obtenida: ", [$eventosPorDia]);
+
+    //     return response()->json([
+    //         "dias" => $eventosPorDia,
+    //     ]);
+    // }
+
+    public function contarPedidosDisponiblesPlan($idplan, $iduser) 
+    {
+        // Get all events for the user and plan
+        $eventos = DB::table('plane_user')
+            ->where('plane_id', $idplan)
+            ->where('user_id', $iduser)
+            ->get();
+        
+        $fechaMinima = $eventos->min('start');
+        $fechaMaxima = $eventos->max('end');
+
+        // Get feriados within the plan's date range
+        $feriados = DB::table('plane_user')
+            ->where('title', 'feriado')
+            ->whereBetween('start', [$fechaMinima, $fechaMaxima])
+            ->get();
+
+        // Group events by date and count them
+        $eventosPorDia = $eventos->groupBy('start')->map(function ($eventosDelDia, $fecha) {
+            return [
+                'id' => 'count_' . $fecha,
+                'start' => $fecha,
+                'end' => $fecha,
+                'title' => $eventosDelDia->count() . ' disponibles',
+                'color' => '#F7843A',
+                'eventos' => $eventosDelDia->toArray(),
+                'tipo' => 'contador'
+            ];
+        })->values();
+
+        // Add feriados to the collection
+        foreach ($feriados as $feriado) {
+            $eventosPorDia->push([
+                'id' => $feriado->id,
+                'start' => $feriado->start,
+                'end' => $feriado->end,
+                'title' => $feriado->title,
+                'color' => $feriado->color ?? '#FF0000',
+                'tipo' => 'feriado'
+            ]);
+        }
+
+        // Get current date for flag
+        $currentDate = now()->format('Y-m-d');
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+
+        // Group events by month and extract available months
+        $meses = $eventosPorDia->groupBy(function ($evento) {
+            return Carbon::parse($evento['start'])->format('Y-m');
+        })->map(function ($diasDelMes, $yearMonth) use ($currentDate, $currentMonth, $currentYear) {
+            $date = Carbon::parse($yearMonth . '-01');
+            $month = $date->month;
+            $year = $date->year;
+            
+            // Check if this month contains the current date
+            $currentDayFlag = null;
+            if ($month == $currentMonth && $year == $currentYear) {
+                $currentDayFlag = $currentDate;
+            }
+            
+            return [
+                'numero' => $month,
+                'anio' => $year,
+                'nombre' => ucfirst($date->locale('es')->monthName), // Spanish month name
+                'dias' => $diasDelMes->values()->toArray(),
+                'currentDayFlag' => $currentDayFlag // null if not current month, date string if current month
+            ];
+        })->values(); // Reset keys to get clean array
+
+        return response()->json([
+            "meses" => $meses,
+            // "dias" => $eventosPorDia, // Keep this if you still need it
+        ]);
     }
 
 

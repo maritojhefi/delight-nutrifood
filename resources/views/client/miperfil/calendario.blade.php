@@ -129,6 +129,8 @@
 
     @include('client.miperfil.includes.show-errores')
 
+    <x-calendario-appkit-plan :plan="$plan" :usuario="$usuario" />
+
     <div class="card card-style bg-dtheme-dkblue">
             <div class="card-body">
                 <div id="calendar" class="app-fullcalendar"></div>
@@ -396,6 +398,7 @@
                 $(`.menu-hider`).removeClass('menu-active');
             }
         </script>
+        
     @endpush
 
 @endsection
