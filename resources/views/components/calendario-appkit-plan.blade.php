@@ -78,6 +78,71 @@
     </div>
 </div>
 
+@push('modals')
+    <!-- <div id="menu-events" class="menu menu-box-bottom rounded-m menu-active" data-menu-height="420" style="display: block; height: 420px;"> -->
+    <div id="menu-pedidos-dia-calendario" class="menu menu-box-modal rounded-m" style="width: 90%">
+        <div class="menu-title flex-align-center">
+            <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
+            <h1 id="fecha-menu-dia-calendario" class="font-24 mt-1 mb-0">29 de Febrero 2025</h1>
+            <a href="#" class="close-menu"><i class="fa fa-times-circle"></i></a>
+        </div>
+        <div class="divider divider-margins my-2"></div>
+        <div class="content mt-0">
+            <a href="#" class="d-flex gap-3 align-items-center mb-3">
+                <div class="align-self-center">
+                    <!-- <img src="images/pictures/1s.jpg" width="60" class="rounded-sm me-3"> -->
+                    <!-- <div class="d-flex align-items-center justify-content-center rounded rounded-circle bg-highlight" style=" width: 2.5rem; height: 2.5rem;"> -->
+                        <i data-lucide="notebook-pen" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
+                    <!-- </div> -->
+                </div>
+                <div class="align-self-center">
+                    <h5>Pedidos Pendientes</h5>
+                    <p class="mb-0 mt-n1 font-10">
+                        <span><i class="fa fa-map-marker color-blue-dark pe-1"></i>Palo Alto</span>
+                        <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span>
+                    </p>
+                </div>
+                <div class="align-self-center ms-auto">
+                    <i class="fa fa-arrow-right pe-2 opacity-30"></i>
+                </div>
+            </a>
+            <a href="#" class="d-flex gap-3 align-items-center mb-3">
+                <div class="align-self-center">
+                    <!-- <img src="images/pictures/2s.jpg" width="60" class="rounded-sm me-3"> -->
+                    <i data-lucide="calendar-check" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
+                </div>
+                <div class="align-self-center">
+                    <h5>Pedidos Finalizados</h5>
+                    <p class="mb-0 mt-n1 font-10">
+                        <span><i class="fa fa-map-marker color-blue-dark pe-1"></i>Palo Alto</span>
+                        <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span>
+                    </p>
+                </div>
+                <div class="align-self-center ms-auto">
+                    <i class="fa fa-arrow-right pe-2 opacity-30"></i>
+                </div>
+            </a>
+            <a href="#" class="d-flex gap-3 align-items-center mb-3">
+                <div class="align-self-center">
+                    <!-- <img src="images/pictures/31s.jpg" width="60" class="rounded-sm me-3"> -->
+                    <i data-lucide="calendar-clock" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
+                </div>
+                <div class="align-self-center">
+                    <h5>Permisos</h5>
+                    <p class="mb-0 mt-n1 font-10">
+                        <span><i class="fa fa-map-marker color-blue-dark pe-1"></i>Palo Alto</span>
+                        <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span>
+                    </p>
+                </div>
+                <div class="align-self-center ms-auto">
+                    <i class="fa fa-arrow-right pe-2 opacity-30"></i>
+                </div>
+            </a>
+            <!-- <a href="#" class="btn btn-full btn-m text-uppercase font-700 border-0 my-3 mx-1 rounded-sm gradient-blue">View All Events</a> -->
+        </div>
+    </div>
+@endpush
+
 @push('header')
     <style>
         .cal-dates button {
@@ -91,6 +156,8 @@
     <!-- Script para el control del calendario appkit -->
     <script>
         $(document).ready( async function () {
+            // // $('.menu-hider').addClass('menu-active');
+
             await PlanesService.obtenerCalendarioPlan( {{ $plan->id }},{{ $usuario->id }} ).then(
                 (respuestaCalendario) => {
                     console.log("Respuesta obtenida sobre la informacion del plan: ", respuestaCalendario.data);
@@ -191,11 +258,13 @@
                             break;
                     }
 
+                    // REALIZAR LA ASIGNACION APROPIADA DE INFORMACION PARA EL DESPLIEGUE DEL MODAL/MENU
+
                     // Si el dia dispone de un plan/feriado
                     if (esHoy(dia)) {
                         // Dia de hoy con plan
                         calendarHTML.push(`
-                            <a href="#" class="cal-selected" data-menu="menu-events" data-fecha="${fecha}">
+                            <a href="#" class="cal-selected cal-menu-opener" data-menu="menu-events" data-fecha="${fecha}">
                                 <button class="${bgColor} rounded-xs line-height-xs">${dia}</button>
                             </a>
                         `);
@@ -209,11 +278,12 @@
                     } else {
                         // Dia regular con plan
                         calendarHTML.push(`
-                            <a href="#" data-menu="menu-events" data-fecha="${fecha}">
+                            <a href="#" class="cal-menu-opener" data-menu="menu-events" data-fecha="${fecha}">
                                 <button class="${bgColor} rounded-xs line-height-xs">${dia}</button>
                             </a>
                         `);
                     }
+
                 } else {
                     // Dias sin planes
                     if (esHoy(dia)) {
@@ -279,9 +349,40 @@
                 
                 if (diaInfo) {
                     console.log('Día seleccionado:', fecha, diaInfo);
+
+                    if (diaInfo.tipo != 'feriado') {
+                        revelarMenuDia(diaInfo, infoMes);
+                    }
                     // Handle day selection - show events menu, etc.
                 }
             });
+        }
+
+        const construirMenuPedidosDia = (infoDia, infoMes) => {
+            console.log("Construccion del modal/menu para controlar los pedidos del cliente");
+            console.log("Informacion para construir el modal:", infoDia);
+            console.log("Informacion del mes pal modal", infoMes);
+
+            const stringFecha = `${infoDia.start}T00:00:00Z`;
+            const dateObj = new Date(stringFecha);
+
+            const dia = dateObj.getUTCDate();
+
+            const fecha = infoDia.start.trim('-');
+            // CAMBIAR LA FECHA DEL MODAL
+            $('#fecha-menu-dia-calendario').text(`${dia} de ${infoMes.nombre}  de ${infoMes.anio}`);
+            
+        }
+
+        const revelarMenuDia = (infoDia, infoMes) => {
+            construirMenuPedidosDia(infoDia, infoMes);
+            $('#menu-pedidos-dia-calendario').addClass('menu-active');
+            $('.menu-hider').addClass('menu-active');
+        }
+
+        const ocultarrMenuDia = () => {
+            $('#menu-pedidos-dia-calendario').removeClass('menu-active');
+            $('.menu-hider').removeClass('menu-active');
         }
     </script>
 @endpush

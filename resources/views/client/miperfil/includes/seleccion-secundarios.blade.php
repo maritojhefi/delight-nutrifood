@@ -51,7 +51,7 @@
 @push('modals')
 <div id="permiso-menu-{{ $lista['id'] }}" class="menu menu-box-modal pb-3 rounded-m overflow-hidden" style="width: 80%;">
         <div class="menu-title p-3">
-            <div class="d-flex flex-row gap-3 align-items-center">
+            <div class="d-flex flex-row gap-2 align-items-center">
                 <i data-lucide="calendar-clock" class="lucide-icon" style="width: 2.5rem; height: 2.5rem;"></i>
                 <div>
                     <!-- <p class="color-highlight font-10">{{ $plan->nombre }}</p> -->
@@ -64,7 +64,7 @@
             <p class="pe-3 mb-0">
                 Tu pedido para {{ $lista['dia'] }} {{ $lista['fecha'] }}. será pospuesto por un dia.
             </p>
-            <div class="d-flex flex-row justify-content-between px-4 mb-0">
+            <div class="d-flex flex-row justify-content-between mb-0">
                 <a href="#" class="btn close-menu btn-s rounded-s text-uppercase bg-delight-red font-600 rounded-s">Cancelar</a>
                 <button data-pedido="{{ $lista['id'] }}" href="#" class="btn btn-s rounded-s text-uppercase bg-highlight font-600 rounded-s confirmar-pedido-permiso">Aceptar</button>
             </div>
