@@ -174,17 +174,29 @@
             for (let dia = 1; dia <= totalDiasMes; dia++) {
                 const fecha = `${year}-${String(month).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
                 const diaInfo = diasDisponibles[fecha];
-                
+                let bgColor = '';
                 if (diaInfo) {
+
+                    switch (diaInfo.tipo) {
+                        case 'pendiente':
+                            bgColor = 'bg-highlight';
+                            break;
+                        case 'permiso':
+                            bgColor = 'bg-magenta-dark';
+                            break;
+                        case 'finalizado':
+                            bgColor = 'bg-orange-dark';
+                            break;
+                        default:
+                            break;
+                    }
+
                     // Si el dia dispone de un plan/feriado
                     if (esHoy(dia)) {
                         // Dia de hoy con plan
                         calendarHTML.push(`
-                            <a href="#" class="cal-selected" data-fecha="${fecha}">
-                                <button>
-                                    <i class="fa fa-square color-highlight"></i>
-                                    <span>${dia}</span>
-                                </button>
+                            <a href="#" class="cal-selected" data-menu="menu-events" data-fecha="${fecha}">
+                                <button class="${bgColor} rounded-xs line-height-xs">${dia}</button>
                             </a>
                         `);
                     } else if (diaInfo.tipo === 'feriado') {
@@ -198,7 +210,7 @@
                         // Dia regular con plan
                         calendarHTML.push(`
                             <a href="#" data-menu="menu-events" data-fecha="${fecha}">
-                                <button class="bg-highlight rounded-xs line-height-xs">${dia}</button>
+                                <button class="${bgColor} rounded-xs line-height-xs">${dia}</button>
                             </a>
                         `);
                     }

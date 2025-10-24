@@ -464,36 +464,65 @@ class UsuariosController extends Controller
     public function contarPedidosDisponiblesPlan($idplan, $iduser) 
     {
         // Get all events for the user and plan
-        $eventos = DB::table('plane_user')
+        $pedidos = DB::table('plane_user')
             ->where('plane_id', $idplan)
             ->where('user_id', $iduser)
             ->get();
         
-        $fechaMinima = $eventos->min('start');
-        $fechaMaxima = $eventos->max('end');
+        $fechaMinima = $pedidos->min('start');
+        $fechaMaxima = $pedidos->max('end');
 
-        // Get feriados within the plan's date range
+        // Obtener los dias feriados en el rango del plan del usuario
         $feriados = DB::table('plane_user')
             ->where('title', 'feriado')
             ->whereBetween('start', [$fechaMinima, $fechaMaxima])
             ->get();
 
-        // Group events by date and count them
-        $eventosPorDia = $eventos->groupBy('start')->map(function ($eventosDelDia, $fecha) {
+        // Agrupar por fecha y contar pedidos
+        $pedidosPorDia = $pedidos->groupBy('start')->map(function ($pedidosDelDia, $fecha) {
+            // Determine tipo segun jerarquia de estados permiso > pendiente > finalizado
+            $tipoFinal = 'contador'; // default
+            
+            // Revisar si existe un pedido con permiso
+            $tienePermiso = $pedidosDelDia->contains('estado', 'permiso');
+            
+            if ($tienePermiso) {
+                // Establecer el tipo de dia como 'permiso'
+                $tipoFinal = 'permiso';
+            } else {
+                // Revisar si existen pedidos pendientes
+                $tienePendiente = $pedidosDelDia->contains('estado', 'pendiente');
+                
+                if ($tienePendiente) {
+                    // Establecer el tipo de dia como 'pendiente'
+                    $tipoFinal = 'pendiente';
+                } else {
+                    // Revisar si todos los pedidos para el dia estan finalizados
+                    $todosFinalizado = $pedidosDelDia->every(function ($evento) {
+                        return $evento->estado === 'finalizado';
+                    });
+                    
+                    if ($todosFinalizado) {
+                        // Establecer el tipo de dia como 'finalizado'
+                        $tipoFinal = 'finalizado';
+                    }
+                }
+            }
+
             return [
                 'id' => 'count_' . $fecha,
                 'start' => $fecha,
                 'end' => $fecha,
-                'title' => $eventosDelDia->count() . ' disponibles',
+                'title' => $pedidosDelDia->count() . ' disponibles',
                 'color' => '#F7843A',
-                'eventos' => $eventosDelDia->toArray(),
-                'tipo' => 'contador'
+                'eventos' => $pedidosDelDia->toArray(),
+                'tipo' => $tipoFinal,
             ];
         })->values();
 
-        // Add feriados to the collection
+        // Agregar dias feriados
         foreach ($feriados as $feriado) {
-            $eventosPorDia->push([
+            $pedidosPorDia->push([
                 'id' => $feriado->id,
                 'start' => $feriado->start,
                 'end' => $feriado->end,
@@ -509,7 +538,7 @@ class UsuariosController extends Controller
         $currentYear = now()->year;
 
         // Group events by month and extract available months
-        $meses = $eventosPorDia->groupBy(function ($evento) {
+        $meses = $pedidosPorDia->groupBy(function ($evento) {
             return Carbon::parse($evento['start'])->format('Y-m');
         })->map(function ($diasDelMes, $yearMonth) use ($currentDate, $currentMonth, $currentYear) {
             $date = Carbon::parse($yearMonth . '-01');
@@ -533,7 +562,7 @@ class UsuariosController extends Controller
 
         return response()->json([
             "meses" => $meses,
-            // "dias" => $eventosPorDia, // Keep this if you still need it
+            // "dias" => $pedidosPorDia, // Keep this if you still need it
         ]);
     }
 
