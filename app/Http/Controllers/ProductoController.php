@@ -43,7 +43,7 @@ class ProductoController extends Controller
             ->take(5)
             ->map(function ($p) {
                 $p->imagen = 
-                asset($p->pathAttachment());
+                $p->pathAttachment();
                 $p->url_detalle = route('delight.detalleproducto', $p->id);
                 return $p;
             });
@@ -109,7 +109,7 @@ class ProductoController extends Controller
             ->take(5)
             ->map(function ($p) {
                 $p->imagen = 
-                asset($p->pathAttachment());
+                $p->pathAttachment();
                 $p->url_detalle = route('delight.detalleproducto', $p->id);
                 return $p;
             });

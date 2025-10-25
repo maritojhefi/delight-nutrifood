@@ -1,52 +1,63 @@
-<div class="col-12 mb-1" id="plato{{ $lista['id'] }}">
-    <i class="fa fa-star color-yellow-dark"></i> <strong>Elija su
-        plato</strong>
-    @if ($lista['ejecutivo_estado'])
-        <div class="fac fac-radio fac-default" data-group="plato{{ $lista['id'] }}"><span></span>
-            <input id="box1-fac-radio{{ $lista['id'] }}" type="radio" class="segundos"
-                @if (!$lista['ejecutivo_estado']) disabled @endif name="plato{{ $lista['id'] }}"
-                data-id="{{ $lista['id'] }}" value="{{ $lista['ejecutivo'] }}"
-                data-carbo="{{ $lista['ejecutivo_tiene_carbo'] }}">
-            <label for="box1-fac-radio{{ $lista['id'] }}"><mark
-                    class="highlight ps-1 font-10 pe-1 bg-magenta-dark mr-2 rounded-m">Ejecutivo</mark>
-                @if ($lista['ejecutivo_estado'])
-                    {{ $lista['ejecutivo'] }} <i class="fa fa-check color-green-dark"></i>
-                @else
-                    <del>{{ $lista['ejecutivo'] }}</del> <i class="fa fa-ban color-red-dark"></i>
-                @endif
-
-            </label>
-        </div>
-    @endif
-    @if ($lista['dieta_estado'])
-    <div class="fac fac-radio fac-default" data-group="plato{{ $lista['id'] }}"><span></span>
-        <input id="box2-fac-radio{{ $lista['id'] }}" type="radio" class="segundos" data-id="{{ $lista['id'] }}"
-            @if (!$lista['dieta_estado']) disabled @endif name="plato{{ $lista['id'] }}"
-            value="{{ $lista['dieta'] }}" data-carbo="{{ $lista['dieta_tiene_carbo'] }}">
-        <label for="box2-fac-radio{{ $lista['id'] }}"><mark
-                class="highlight ps-1 font-10 pe-1 bg-magenta-dark mr-2 rounded-m">Dieta</mark>
-            @if ($lista['dieta_estado'])
-                {{ $lista['dieta'] }} <i class="fa fa-check color-green-dark"></i>
-            @else
-                <del>{{ $lista['dieta'] }}</del> <i class="fa fa-ban color-red-dark"></i>
-            @endif
-        </label>
+<div class="col-12" id="plato{{ $lista['id'] }}">
+    <div class="ms-n1 d-flex flex-row align-items-center gap-2 color-theme">
+        <i data-lucide="utensils" class="lucide-icon"></i>
+        <strong>Elija su plato</strong>
     </div>
-    @endif
-    @if ($lista['vegetariano_estado'])
-    <div class="fac fac-radio fac-default" data-group="plato{{ $lista['id'] }}"><span></span>
-        <input id="box3-fac-radio{{ $lista['id'] }}" type="radio" class="segundos" data-id="{{ $lista['id'] }}"
-            @if (!$lista['vegetariano_estado']) disabled @endif name="plato{{ $lista['id'] }}"
-            value="{{ $lista['vegetariano'] }}" data-carbo="{{ $lista['vegetariano_tiene_carbo'] }}">
-        <label for="box3-fac-radio{{ $lista['id'] }}"><mark
-                class="highlight ps-1 font-10 pe-1 bg-magenta-dark mr-2 rounded-m">Veggie</mark>
-            @if ($lista['vegetariano_estado'])
-                {{ $lista['vegetariano'] }} <i class="fa fa-check color-green-dark"></i>
-            @else
-                <del>{{ $lista['vegetariano'] }}</del> <i class="fa fa-ban color-red-dark"></i>
-            @endif
-        </label>
-    </div>
-    @endif
+    
+    @php
+        $platos = [
+            [
+                'key' => 'ejecutivo',
+                'label' => 'Ejecutivo',
+                'box_id' => 'box1-fac-radio',
+            ],
+            [
+                'key' => 'dieta',
+                'label' => 'Dieta',
+                'box_id' => 'box2-fac-radio',
+            ],
+            [
+                'key' => 'vegetariano',
+                'label' => 'Veggie',
+                'box_id' => 'box3-fac-radio',
+            ],
+        ];
+    @endphp
 
+    @foreach($platos as $plato)
+        @php
+            $estadoKey = $plato['key'] . '_estado';
+            $carboKey = $plato['key'] . '_tiene_carbo';
+        @endphp
+        
+        @if ($lista[$estadoKey])
+            <div class="fac fac-radio fac-default" data-group="plato{{ $lista['id'] }}">
+                <span></span>
+                <input 
+                    id="{{ $plato['box_id'] }}{{ $lista['id'] }}" 
+                    type="radio" 
+                    class="segundos"
+                    name="plato{{ $lista['id'] }}"
+                    data-id="{{ $lista['id'] }}" 
+                    value="{{ $lista[$plato['key']] }}"
+                    data-carbo="{{ $lista[$carboKey] }}"
+                    @if (!$lista[$estadoKey]) disabled @endif
+                >
+                <label for="{{ $plato['box_id'] }}{{ $lista['id'] }}"
+                    class="d-flex flex-row gap-1 align-items-center me-0"
+                >
+                    <mark class="highlight px-2 line-height-xs font-10 bg-highlight bg-dtheme-blue color-white rounded-m">
+                        {{ $plato['label'] }}
+                    </mark>
+                    @if ($lista[$estadoKey])
+                        <p class="mb-0">{{ $lista[$plato['key']] }} </p>
+                        <i data-lucide="check" class="lucide-icon color-teal-dark"></i>
+                    @else
+                        <del>{{ $lista[$plato['key']] }}</del> 
+                        <i data-lucide="x" class="lucide-icon color-delight-red"></i>
+                    @endif
+                </label>
+            </div>
+        @endif
+    @endforeach
 </div>

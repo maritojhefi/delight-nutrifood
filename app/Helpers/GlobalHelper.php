@@ -634,6 +634,8 @@ class GlobalHelper
             ->whereDate('start', $fecha)
             // Filtro clave: Agrupar por la hora de inicio exacta del plan seleccionado
             ->where('start', $start_timestamp_plan_seleccionado)
+            // Filtrar para evitar pedidos con permiso
+            ->whereNotIn('estado',['permiso'])
             ->get(); // Obtener la colección de todos los registros coincidentes
 
         return $pedidos;

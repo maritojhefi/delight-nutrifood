@@ -463,6 +463,20 @@ hover-blue:hover {
     background-color: #A7FFEB;
 }
 
+.bg-appkit-footer {
+    backdrop-filter: saturate(180%) blur(20px);
+    background-color: rgba(255,255,255,.7);
+}
+
+.theme-dark .bg-appkit-footer {
+    /* backdrop-filter: saturate(180%) blur(20px); */
+    background-color: #21252a !important;
+}
+
+.bg-footer-slate {
+    backdrop-filter: saturate(180%) blur(20px);
+    background-color: #21252a;
+}
 
 
 

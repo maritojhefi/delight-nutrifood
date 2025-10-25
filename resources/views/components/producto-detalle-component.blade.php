@@ -1,6 +1,6 @@
 <div class="card card-style">
     <div class="card bg-13" data-card-height="250"
-        style="height: 250px;background-image:url('{{ asset($producto->pathAttachment()) }}')">
+        style="height: 250px;background-image:url('{{ $producto->pathAttachment() }}')">
         <div class="card-bottom pb-4 ps-3">
             <h3 class="font-20 text-white">
                 {!! wordwrap($producto->nombre(), 20, "<br />\n") !!}
