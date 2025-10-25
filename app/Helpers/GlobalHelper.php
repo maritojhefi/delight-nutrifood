@@ -220,6 +220,8 @@ class GlobalHelper
                     'PLAN' => $lista->nombre,
                     'PLAN_ID' => $lista->plane_id,
                     'USER_ID' => $lista->user_id,
+                    'CLIENTE_INGRESADO' => $lista->cliente_ingresado ?? false,
+                    'CLIENTE_INGRESADO_AT' => $lista->cliente_ingresado_at ?? null,
                 ]);
             } else {
                 $coleccion->push([
@@ -237,6 +239,8 @@ class GlobalHelper
                     'PLAN' => $lista->nombre,
                     'PLAN_ID' => $lista->plane_id,
                     'USER_ID' => $lista->user_id,
+                    'CLIENTE_INGRESADO' => $lista->cliente_ingresado ?? false,
+                    'CLIENTE_INGRESADO_AT' => $lista->cliente_ingresado_at ?? null,
                 ]);
             }
         }
@@ -635,7 +639,7 @@ class GlobalHelper
             // Filtro clave: Agrupar por la hora de inicio exacta del plan seleccionado
             ->where('start', $start_timestamp_plan_seleccionado)
             // Filtrar para evitar pedidos con permiso
-            ->whereNotIn('estado',['permiso'])
+            ->whereNotIn('estado', ['permiso'])
             ->get(); // Obtener la colección de todos los registros coincidentes
 
         return $pedidos;

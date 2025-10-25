@@ -72,6 +72,7 @@
                     'Agregar Plan a Usuario' => 'planes',
                     'Planes por expirar' => 'planes.expirar',
                     'Cocina' => 'reporte.cocina',
+                    'Nutribar' => 'nutribar.index',
                     'Planes en desarrollo(whatsapp)' => 'reporte.whatsapp',
                 ]">
                     <i class="flaticon-381-photo"></i>

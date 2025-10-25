@@ -60,10 +60,22 @@
                         @foreach ($coleccion as $lista)
                             <tr class="{{ $lista['ESTADO'] == 'finalizado' ? 'table-success' : '' }}{{ $lista['ESTADO'] == 'permiso' ? 'table-warning' : '' }}"
                                 style="padding:5px">
-                                <td style="padding:5px">{{ $loop->iteration }}</td>
+                                <td style="padding:5px">
+                                    @if (isset($lista['CLIENTE_INGRESADO']) && $lista['CLIENTE_INGRESADO'])
+                                        <i class="fa fa-user fa-beat text-success ml-2" style="font-size: 18px;"
+                                            title="Cliente ingresado"></i>
+                                    @endif
+                                    {{ $loop->iteration }}
+                                </td>
 
-                                <td style="padding:5px"><a
-                                        href="{{ route('detalleplan', [$lista['USER_ID'], $lista['PLAN_ID']]) }}"><strong>{{ Str::limit($lista['NOMBRE'], 35) }}</strong></a>
+                                <td style="padding:5px">
+                                    <div class="d-flex align-items-center">
+                                        <a href="javascript:void(0)"
+                                            onclick="verAlertOpciones('{{ $lista['USER_ID'] }}', '{{ $lista['PLAN_ID'] }}', '{{ $lista['ID'] }}')">
+                                            <strong>{{ Str::limit($lista['NOMBRE'], 35) }}</strong>
+                                        </a>
+
+                                    </div>
                                 </td>
 
                                 <td style="padding:5px">{{ $lista['SOPA'] != '' ? 'SI' : '' }}</td>
@@ -85,7 +97,8 @@
                                             wire:click="cambiarAPendiente('{{ $lista['ID'] }}')"
                                             class="btn btn-success btn-sm">Finalizado</button></td>
                                 @elseif($lista['ESTADO'] == 'permiso')
-                                    <td style="padding:5px"><button class="btn btn-warning btn-sm" disabled>Permiso</button>
+                                    <td style="padding:5px"><button class="btn btn-warning btn-sm"
+                                            disabled>Permiso</button>
                                     </td>
                                 @endif
 
@@ -158,7 +171,8 @@
                         <div class="row m-2">
                             <div class="col"><span class="badge badge-pill badge-primary">{{ $menuHoy->carbohidrato_1 }}
                                 </span></div>
-                            <a href="#" wire:click="cambiarEstadoPlato('carbohidrato_1_estado')" class="col"><span
+                            <a href="#" wire:click="cambiarEstadoPlato('carbohidrato_1_estado')"
+                                class="col"><span
                                     class="badge badge-pill badge-{{ $menuHoy->carbohidrato_1_estado == 1 ? 'success' : 'danger' }}">{{ $menuHoy->carbohidrato_1_estado == 1 ? 'Disponible' : 'Agotado' }}</span>
                             </a>
                         </div>
@@ -234,4 +248,37 @@
             font-size: 12px !important;
         }
     </style>
+@endpush
+
+@push('scripts')
+    <script>
+        function verAlertOpciones(userId, planId, itemId) {
+            Swal.fire({
+                title: '¿Qué deseas hacer?',
+                html: '<p style="font-size: 14px;">Selecciona una opción para este cliente</p>',
+                icon: 'question',
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonText: '<i class="fa fa-check"></i> Marcar como ingresado',
+                denyButtonText: '<i class="fa fa-clipboard"></i> Ver planes',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#28a745',
+                denyButtonColor: '#007bff',
+                cancelButtonColor: '#6c757d',
+                customClass: {
+                    confirmButton: 'btn btn-success btn-sm px-3',
+                    denyButton: 'btn btn-primary btn-sm px-3',
+                    cancelButton: 'btn btn-secondary btn-sm px-3'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Marcar como ingresado
+                    Livewire.emit('marcarComoIngresado', itemId);
+                } else if (result.isDenied) {
+                    // Redirigir a la URL de planes del usuario
+                    window.location.href = `/admin/usuarios/detalleplan/${userId}/${planId}`;
+                }
+            });
+        }
+    </script>
 @endpush

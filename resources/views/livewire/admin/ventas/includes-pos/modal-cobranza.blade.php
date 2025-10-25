@@ -232,7 +232,7 @@
                     <button type="button" class="btn btn-outline-warning btn-xxs p-2 my-0"
                         {{ $cuenta->pagado ? '' : 'disabled' }} wire:click="modalImpresion"><span>Imprimir <i
                                 class="fa fa-print"></i></span></button>
-                    @if ($cuenta->cocina && !$cuenta->despachado_cocina)
+                    {{-- @if ($cuenta->cocina && !$cuenta->despachado_cocina)
                         <button type="button" disabled class="btn btn-info btn-xxs p-2 my-0"><span>Enviado a cocina
                                 <i class="fa fa-send"></i></span></button>
                     @elseif($cuenta->despachado_cocina)
@@ -242,7 +242,7 @@
                         <button wire:loading.remove wire:target='imprimir' type="button"
                             class="btn btn-outline-info btn-xxs p-2 my-0" wire:click="imprimirCocina"><span>Enviar a
                                 cocina <i class="fa fa-send"></i></span></button>
-                    @endif
+                    @endif --}}
 
                 </div>
             </div>
