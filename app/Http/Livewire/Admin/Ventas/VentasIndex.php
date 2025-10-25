@@ -39,6 +39,7 @@ use App\Services\Ventas\Contracts\VentaServiceInterface;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use App\Services\Ventas\Contracts\ProductoVentaServiceInterface;
 use App\Services\Ventas\Contracts\CalculadoraVentaServiceInterface;
+use App\Rules\ValidarTelefonoPorPais;
 
 class VentasIndex extends Component
 {
@@ -101,6 +102,8 @@ class VentasIndex extends Component
         'crearVentaReserva' => 'crearVentaReserva',
         'cambiarTipoEntregaVenta' => 'cambiarTipoEntregaVenta',
         'agregarProductoConAdicionales' => 'agregarProductoConAdicionales',
+        'crearClienteRapido' => 'crearClienteRapido',
+        'seleccionar' => 'seleccionar',
     ];
     public function boot(
         VentaServiceInterface $ventaService,
@@ -688,6 +691,99 @@ class VentasIndex extends Component
             'message' => 'Nuevo cliente: ' . $this->name . ' creado!',
         ]);
         $this->resetExcept(['metodosPagos']);
+    }
+
+    public function crearClienteRapido($nombreCompleto, $codigoPais, $telefono, $asignarACuenta = false)
+    {
+        try {
+            // Limpiar el teléfono (remover espacios, guiones, etc.)
+            $telefonoLimpio = preg_replace('/[^0-9]/', '', $telefono);
+
+            // Crear el teléfono completo con código de país
+            $telefonoCompleto = $codigoPais . $telefonoLimpio;
+
+            // Validar datos
+            $validator = Validator::make(
+                [
+                    'nombre' => $nombreCompleto,
+                    'telefono' => $telefonoLimpio,
+                    'codigo_pais' => $codigoPais,
+                ],
+                [
+                    'nombre' => 'required|min:3|max:255',
+                    'telefono' => ['required', 'numeric', new ValidarTelefonoPorPais($codigoPais)],
+                    'codigo_pais' => 'required',
+                ],
+                [
+                    'nombre.required' => 'El nombre completo es obligatorio',
+                    'nombre.min' => 'El nombre debe tener al menos 3 caracteres',
+                    'nombre.max' => 'El nombre no debe exceder 255 caracteres',
+                    'telefono.required' => 'El teléfono es obligatorio',
+                    'telefono.numeric' => 'El teléfono debe contener solo números',
+                    'codigo_pais.required' => 'Debe seleccionar un código de país',
+                ]
+            );
+
+            if ($validator->fails()) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => $validator->errors()->first(),
+                ]);
+                return false;
+            }
+
+            // Verificar si el teléfono ya existe
+            $telefonoExistente = User::where('telf', $telefonoLimpio)
+                ->where('codigo_pais', $codigoPais)
+                ->first();
+
+            if ($telefonoExistente) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => 'Este número de teléfono ya está registrado en el sistema',
+                ]);
+                return false;
+            }
+
+            // Generar email único basado en el teléfono
+            $appName = strtolower(str_replace(' ', '', config('app.name', 'delight')));
+            $emailBase = 'cliente' . $telefonoLimpio . '@' . $appName . '.com';
+
+            // Verificar si el email ya existe, si es así agregar timestamp
+            $email = $emailBase;
+            $counter = 1;
+            while (User::where('email', $email)->exists()) {
+                $email = 'cliente' . $telefonoLimpio . '_' . $counter . '@' . $appName . '.com';
+                $counter++;
+            }
+
+            // Crear el cliente
+            $cliente = User::create([
+                'name' => $nombreCompleto,
+                'email' => $email,
+                'password' => bcrypt($telefonoLimpio), // Password temporal igual al teléfono
+                'role_id' => 4,
+                'telf' => $telefonoLimpio,
+                'codigo_pais' => $codigoPais,
+            ]);
+
+            // Si se solicita asignar a cuenta Y hay una cuenta activa
+            if ($asignarACuenta && $this->cuenta) {
+                $this->cambiarClienteACuenta($cliente);
+            }
+
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => '¡Cliente creado exitosamente! ' . ($asignarACuenta && $this->cuenta ? 'Cliente asignado a la venta.' : ''),
+            ]);
+
+            return $cliente->id;
+        } catch (\Exception $e) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Error al crear el cliente: ' . $e->getMessage(),
+            ]);
+        }
     }
     public function mostraradicionales(Producto $producto)
     {

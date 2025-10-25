@@ -10,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class CocinaPedidoEvent implements ShouldBroadcast
+class RefreshMenuHeaderEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -19,18 +19,9 @@ class CocinaPedidoEvent implements ShouldBroadcast
      *
      * @return void
      */
-    public $message;
-    public $idVenta;
-    public $user;
-    public $seccion;
-    public $icono;
-    public function __construct($message = null, $idVenta = null, $user = null, $seccion = 'cocina', $icono = 'success')
+    public function __construct()
     {
-        $this->message = $message;
-        $this->idVenta = $idVenta;
-        $this->user = $user;
-        $this->seccion = $seccion;
-        $this->icono = $icono;
+        //
     }
 
     /**
@@ -40,6 +31,6 @@ class CocinaPedidoEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('pedido-' . $this->seccion);
+        return new Channel('menu-header');
     }
 }

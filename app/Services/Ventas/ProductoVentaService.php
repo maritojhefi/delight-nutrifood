@@ -75,6 +75,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             // Actualizar campos de descuentos en la tabla pivot después de actualizar totales
             $this->actualizarCamposDescuentos($venta, $producto);
 
+            // Disparar evento para cocina/nutribar según sección del producto
+            $this->dispararEventoPedido($venta, $producto, "Se agregó {$cantidad} {$producto->nombre}", 'success');
+
             return VentaResponse::success(
                 null,
                 "Se agregó {$cantidad} {$producto->nombre} a esta venta"
@@ -82,7 +85,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         } catch (VentaException $e) {
             return VentaResponse::error($e->getMessage(), [], null);
         } catch (\Exception $e) {
-            return VentaResponse::error('Error al agregar producto: ' . $e ->getMessage());
+            return VentaResponse::error('Error al agregar producto: ' . $e->getMessage());
         }
     }
 
@@ -135,6 +138,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 ->withPivot('id', 'cantidad', 'adicionales')
                 ->first();
 
+            // Disparar evento para cocina/nutribar según sección del producto
+            $this->dispararEventoPedido($venta, $producto, "Se eliminó 1 {$producto->nombre}", 'warning');
+
             return VentaResponse::success(
                 $productoVenta ? $productoVenta->pivot : null,
                 "Se eliminó 1 {$producto->nombre} de esta venta"
@@ -184,10 +190,8 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             // Actualizar totales
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
-            // Disparar evento si no es de ECO-TIENDA
-            if ($producto->subcategoria->categoria->nombre !== 'ECO-TIENDA') {
-                // event(new CocinaPedidoEvent("Se actualizó la mesa {$venta->id}"));
-            }
+            // Disparar evento para cocina/nutribar según sección del producto
+            $this->dispararEventoPedido($venta, $producto, "Se eliminó {$producto->nombre}", 'warning');
 
             return VentaResponse::success(
                 null,
@@ -227,7 +231,20 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             // Agregar adicional al item específico
             for ($i = 1; $i <= $item; $i++) {
                 if ($i == $item) {
-                    $array[$i][] = [$adicional->nombre => $adicional->precio];
+                    // Compatibilidad: verificar si usa formato nuevo o antiguo
+                    if (isset($array[$i]['adicionales'])) {
+                        // Formato nuevo
+                        $array[$i]['adicionales'][] = [$adicional->nombre => $adicional->precio];
+                    } else {
+                        // Formato antiguo - migrar a nuevo formato
+                        $adicionalesAntiguos = $array[$i];
+                        $array[$i] = [
+                            'adicionales' => $adicionalesAntiguos,
+                            'agregado_at' => now()->toDateTimeString(),
+                            'estado' => 'pendiente'
+                        ];
+                        $array[$i]['adicionales'][] = [$adicional->nombre => $adicional->precio];
+                    }
                 }
             }
 
@@ -249,6 +266,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             // Actualizar totales
             $this->calculadoraService->actualizarTotalesVenta($venta);
+
+            // Disparar evento para cocina/nutribar según sección del producto
+            $this->dispararEventoPedido($venta, $producto, "Se agregó adicional {$adicional->nombre} a {$producto->nombre}", 'success');
 
             return VentaResponse::success(null, 'Adicional agregado correctamente');
         } catch (VentaException $e) {
@@ -276,7 +296,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 return VentaResponse::warning('No puede eliminar el único item disponible');
             }
 
-            
+
             // Restaurar stock si es contable
             if ($producto->contable) {
                 $stockResponse = $this->stockService->actualizarStock($producto, 'restar', 1, $venta->sucursale_id);
@@ -286,7 +306,10 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             }
 
             // Restaurar stock de adicionales
-            foreach ($array[$posicion] as $adic) {
+            $itemData = $array[$posicion];
+            $adicionalesItem = $itemData['adicionales'] ?? $itemData; // Compatibilidad con formato antiguo
+
+            foreach ($adicionalesItem as $adic) {
                 $adicional = Adicionale::where('nombre', key($adic))->first();
                 if ($adicional && $adicional->contable) {
                     $adicional->increment('cantidad');
@@ -317,6 +340,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             // Actualizar campos de descuentos en la tabla pivot
             $this->actualizarCamposDescuentos($venta, $producto);
 
+            // Disparar evento para cocina/nutribar según sección del producto
+            $this->dispararEventoPedido($venta, $producto, "Se eliminó un item de {$producto->nombre}", 'warning');
+
             return VentaResponse::success(null, 'Item eliminado correctamente');
         } catch (VentaException $e) {
             return VentaResponse::warning($e->getMessage());
@@ -340,7 +366,13 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             $listaadicionales = $registro->adicionales;
 
             if ($listaadicionales == null) {
-                $string = '{"1":[]}';
+                $string = json_encode([
+                    '1' => [
+                        'adicionales' => [],
+                        'agregado_at' => now()->toDateTimeString(),
+                        'estado' => 'pendiente'
+                    ]
+                ]);
                 DB::table('producto_venta')
                     ->where('producto_id', $producto->id)
                     ->where('venta_id', $venta->id)
@@ -351,19 +383,30 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
                 switch ($operacion) {
                     case 'sumar':
-                        $json[] = [];
+                        $json[] = [
+                            'adicionales' => [],
+                            'agregado_at' => now()->toDateTimeString(),
+                            'estado' => 'pendiente'
+                        ];
                         break;
 
                     case 'muchos':
                         for ($i = 0; $i < $cantidadEspecifica; $i++) {
-                            $json[] = [];
+                            $json[] = [
+                                'adicionales' => [],
+                                'agregado_at' => now()->toDateTimeString(),
+                                'estado' => 'pendiente'
+                            ];
                         }
                         break;
 
                     case 'restar':
                         if ($registro->cantidad > 0) {
                             // Restaurar stock de adicionales
-                            foreach ($json[$cantidad] as $adic) {
+                            $itemData = $json[$cantidad];
+                            $adicionalesItem = $itemData['adicionales'] ?? $itemData; // Compatibilidad con formato antiguo
+
+                            foreach ($adicionalesItem as $adic) {
                                 $adicional = Adicionale::where('nombre', key($adic))->first();
                                 if ($adicional && $adicional->contable) {
                                     $adicional->increment('cantidad');
@@ -457,7 +500,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 ->where('producto_id', $producto->id)
                 ->wherePivot('aceptado', false)
                 ->first();
-            
+
             $existeProductoVenta = !is_null($productoVentaExistente);
             $cantidadActual = $existeProductoVenta ? $productoVentaExistente->pivot->cantidad : 0;
 
@@ -476,7 +519,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             // Process adicionales if needed
             if ($producto->medicion == 'unidad') {
                 $respuestaProcesado = $this->procesarAdicionalesBatch($venta, $producto->id, $adicionales, $cantidad);
-                                
+
                 // CRITICAL FIX: Check if adicionales processing failed
                 if (!$respuestaProcesado->success) {
                     DB::rollBack();
@@ -515,11 +558,13 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
+            // Disparar evento para cocina/nutribar según sección del producto
+            $this->dispararEventoPedido($venta, $producto, "Se agregó pedido de {$producto->nombre}", 'success');
+
             return VentaResponse::success(
                 $productoVentaInfo->data,
                 "ProductoVenta agregado/actualizado exitosamente"
             );
-            
         } catch (VentaException $e) {
             Log::error("VentaException capturada, ejecutando rollback", [
                 'message' => $e->getMessage(),
@@ -544,10 +589,10 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         try {
             // Obtener el registro de producto_venta necesario
             $productoVenta = $venta->productos()
-                    ->where('producto_id', $productoId)
-                    ->wherePivot('aceptado', false)      // Obtener solo pedidos no aceptados
-                    ->first();
-            
+                ->where('producto_id', $productoId)
+                ->wherePivot('aceptado', false)      // Obtener solo pedidos no aceptados
+                ->first();
+
             if (!$productoVenta) {
                 return VentaResponse::error('Producto no encontrado en la venta');
             }
@@ -556,18 +601,21 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             $listaActual = $productoVenta->pivot->adicionales;
             $json = $listaActual ? json_decode($listaActual, true) : [];
 
-            // En caso de no disponer de adicionales, insertat arrays vacios
+            // En caso de no disponer de adicionales, insertar items vacios con metadata
             if ($extras->isEmpty()) {
                 for ($i = 0; $i < $cantidad; $i++) {
                     $siguiente_clave = count($json) + 1;
-                    $json[$siguiente_clave] = []; // Empty array for each unit
+                    $json[$siguiente_clave] = [
+                        'adicionales' => [],
+                        'agregado_at' => now()->toDateTimeString(),
+                        'estado' => 'pendiente'
+                    ];
                 }
             } else {
                 // Validar el stock necesario
                 foreach ($extras as $adicional) {
                     if ($adicional->contable == true && $adicional->cantidad < $cantidad) {
                         return VentaResponse::warning("No hay stock suficiente para el adicional: {$adicional->nombre}. Stock disponible: {$adicional->cantidad}, requerido: {$cantidad}");
-                        // throw new \Exception("No hay stock suficiente para el adicional: {$adicional->nombre}. Stock disponible: {$adicional->cantidad}, requerido: {$cantidad}");
                     }
                 }
 
@@ -579,20 +627,25 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     foreach ($extras as $adicional) {
                         if ($adicional->contable == true && $i == 0) {
                             $adicional->decrement('cantidad', $cantidad);
+                            GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'reducir', $cantidad);
                         }
                         $array_extras[] = [$adicional->nombre => $adicional->precio];
                     }
 
-                    $json[$siguiente_clave] = $array_extras;
+                    $json[$siguiente_clave] = [
+                        'adicionales' => $array_extras,
+                        'agregado_at' => now()->toDateTimeString(),
+                        'estado' => 'pendiente'
+                    ];
                 }
             }
-            
+
             // Actualizar producto_venta
             DB::table('producto_venta')
-            ->where('venta_id', $venta->id)
-            ->where('producto_id', $productoId)
-            ->where('aceptado', false)
-            ->update(['adicionales' => json_encode($json)]);
+                ->where('venta_id', $venta->id)
+                ->where('producto_id', $productoId)
+                ->where('aceptado', false)
+                ->update(['adicionales' => json_encode($json)]);
 
             return VentaResponse::success(null, 'Adicionales actualizados');
         } catch (\Exception $e) {
@@ -609,12 +662,17 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             $adicionalesOriginales = json_decode($productoVenta->adicionales, true);
 
             if (isset($adicionalesOriginales[$indice])) {
-                foreach ($adicionalesOriginales[$indice] as $nombreAdicional) {
+                // Obtener los adicionales del item (compatibilidad con formato antiguo)
+                $itemData = $adicionalesOriginales[$indice];
+                $adicionalesDelItem = $itemData['adicionales'] ?? $itemData;
+
+                foreach ($adicionalesDelItem as $nombreAdicional) {
                     $adicional = Adicionale::where('nombre', key($nombreAdicional))->first();
                     if ($adicional) {
                         if ($adicional->contable) {
                             $adicional->increment('cantidad');
                             $adicional->save();
+                            GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
                         }
                     }
                 }
@@ -630,17 +688,26 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             }
 
             if ($adicionalesNuevos->isEmpty()) {
-                $adicionalesOriginales[$indice] = []; 
+                $adicionalesOriginales[$indice] = [
+                    'adicionales' => [],
+                    'agregado_at' => $adicionalesOriginales[$indice]['agregado_at'] ?? now()->toDateTimeString(),
+                    'estado' => $adicionalesOriginales[$indice]['estado'] ?? 'pendiente'
+                ];
             } else {
                 $nuevoArray = [];
                 foreach ($adicionalesNuevos as $adicional) {
                     if ($adicional->contable == true) {
                         $adicional->decrement('cantidad', 1);
                         $adicional->save();
+                        GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'reducir');
                     }
                     $nuevoArray[] = [$adicional->nombre => $adicional->precio];
                 }
-                $adicionalesOriginales[$indice] = $nuevoArray;
+                $adicionalesOriginales[$indice] = [
+                    'adicionales' => $nuevoArray,
+                    'agregado_at' => $adicionalesOriginales[$indice]['agregado_at'] ?? now()->toDateTimeString(),
+                    'estado' => $adicionalesOriginales[$indice]['estado'] ?? 'pendiente'
+                ];
             }
 
             DB::table('producto_venta')
@@ -656,6 +723,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
+            // Disparar evento para cocina/nutribar según sección del producto
+            $this->dispararEventoPedido($venta, $producto, "Se actualizó pedido de {$producto->nombre}", 'success');
+
             return VentaResponse::success($solicitudInfoProducto->toArray(), "Adicionales actualizados correctamente");
         } catch (VentaException $e) {
             DB::rollBack();
@@ -670,7 +740,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
     }
 
     // Reduce en 1 el pedido realizado por el cliente, necesario para productos simples
-    public function disminuirProductoCLiente(Venta $venta, int $producto_venta_id): VentaResponse 
+    public function disminuirProductoCLiente(Venta $venta, int $producto_venta_id): VentaResponse
     {
         try {
             return DB::transaction(function () use ($venta, $producto_venta_id) {
@@ -679,15 +749,15 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 if ($venta->pagado) {
                     throw VentaException::ventaPagada();
                 }
-                
-                $registro = DB::table('producto_venta')
-                        ->where('id', $producto_venta_id)
-                        ->where('venta_id', $venta->id)
-                        ->where('aceptado', false)
-                        ->lockForUpdate() // Add pessimistic locking
-                        ->first();
 
-                
+                $registro = DB::table('producto_venta')
+                    ->where('id', $producto_venta_id)
+                    ->where('venta_id', $venta->id)
+                    ->where('aceptado', false)
+                    ->lockForUpdate() // Add pessimistic locking
+                    ->first();
+
+
 
                 if (!$registro) {
                     throw new \Exception('El producto no existe en esta venta');
@@ -717,12 +787,15 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 // Actualizar totales
                 $this->calculadoraService->actualizarTotalesVenta($venta);
 
-                $productoVentaInfo = $this->obtenerProductoVentaIndividual($venta,$producto_venta_id);
+                $productoVentaInfo = $this->obtenerProductoVentaIndividual($venta, $producto_venta_id);
                 if (!$productoVentaInfo->success) {
-                    throw new VentaException("Error al obtener el registro correspondiente", "error", [],404);
+                    throw new VentaException("Error al obtener el registro correspondiente", "error", [], 404);
                 }
 
                 $this->calculadoraService->actualizarTotalesVenta($venta);
+
+                // Disparar evento para cocina/nutribar según sección del producto
+                $this->dispararEventoPedido($venta, $producto, "Se disminuyó cantidad de {$producto->nombre}", 'warning');
 
                 return VentaResponse::success(
                     $productoVentaInfo ? $productoVentaInfo->data : null,
@@ -741,7 +814,8 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
     // Elimina por completo un registro de un adicional en una posicion (indice) en particular, guiandose por el identificador unico de la tabla producto_venta
     // IMPORTANTE, necesario para identificar que el elemento a eliminarse es un pedido aceptado o no aceptado
-    public function eliminarItemPivotID(Venta $venta, int $producto_venta_id, int $posicion): VentaResponse {
+    public function eliminarItemPivotID(Venta $venta, int $producto_venta_id, int $posicion): VentaResponse
+    {
         try {
             if ($venta->pagado) {
                 throw VentaException::ventaPagada();
@@ -751,14 +825,14 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             $habilitadoAceptados = auth()->check() && in_array(auth()->user()->role->nombre, ['admin', 'cajero']);
 
             return DB::transaction(function () use ($venta, $producto_venta_id, $posicion, $habilitadoAceptados) {
-                
+
                 $consultaPV = DB::table('producto_venta')
                     ->where('id', $producto_venta_id);
 
-                if(!$habilitadoAceptados) {
+                if (!$habilitadoAceptados) {
                     $consultaPV->where('aceptado', false);
                 }
-                
+
                 $pivot = $consultaPV->first();
 
                 if (!$pivot) {
@@ -779,13 +853,16 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 }
 
                 // Restaurar stock de adicionales
-                foreach ($array[$posicion] as $nombreAdicional) {
+                $itemData = $array[$posicion];
+                $adicionalesItem = $itemData['adicionales'] ?? $itemData; // Compatibilidad con formato antiguo
+
+                foreach ($adicionalesItem as $nombreAdicional) {
                     $adicional = Adicionale::where('nombre', key($nombreAdicional))->first();
                     if ($adicional && $adicional->contable) {
                         $adicional->increment('cantidad');
                         $adicional->save();
-                        // GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
-                    }  
+                        GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
+                    }
                 }
 
                 // Eliminar item y reorganizar
@@ -804,9 +881,11 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
                 $this->calculadoraService->actualizarTotalesVenta($venta);
 
+                // Disparar evento para cocina/nutribar según sección del producto
+                $this->dispararEventoPedido($venta, $producto, "Se eliminó un item de {$producto->nombre}", 'warning');
+
                 return VentaResponse::success(null, 'Item eliminado correctamente');
             });
-
         } catch (VentaException $e) {
             return VentaResponse::warning($e->getMessage());
         } catch (\Exception $e) {
@@ -815,7 +894,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
     }
 
     // Elimina por completo un registro de "producto_venta", realizando el restock necesario del producto y sus adicionales
-    public function eliminarProductoCompletoCliente(Venta $venta, int $producto_venta_id)    
+    public function eliminarProductoCompletoCliente(Venta $venta, int $producto_venta_id)
     {
         try {
             if ($venta->pagado) {
@@ -824,15 +903,15 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             $habilitadoAceptados = auth()->check() && in_array(auth()->user()->role->nombre, ['admin', 'cajero']);
 
-            return DB::transaction(function () use ($venta, $producto_venta_id, $habilitadoAceptados) { 
+            return DB::transaction(function () use ($venta, $producto_venta_id, $habilitadoAceptados) {
 
                 $consultaPV = DB::table('producto_venta')
                     ->where('id', $producto_venta_id);
 
-                if(!$habilitadoAceptados) {
+                if (!$habilitadoAceptados) {
                     $consultaPV->where('aceptado', false);
                 }
-                
+
                 $pivot = $consultaPV->first();
 
                 if (!$pivot) {
@@ -862,15 +941,18 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
                 // Restaurar el stock de los adicionales del producto_venta
                 for ($i = 1; $i <= count($arrayOrdenes); $i++) {
-                    foreach ($arrayOrdenes[$i] as $nombreAdicional) {
+                    $itemData = $arrayOrdenes[$i];
+                    $adicionalesItem = $itemData['adicionales'] ?? $itemData; // Compatibilidad con formato antiguo
+
+                    foreach ($adicionalesItem as $nombreAdicional) {
                         $nombre = key($nombreAdicional);
                         $adicional = $adicionales->get($nombre);
-                        
+
                         if ($adicional && $adicional->contable) {
                             $adicional->increment('cantidad');
                             $adicional->save();
-                            // GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
-                        }  
+                            GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
+                        }
                     }
                 }
 
@@ -878,6 +960,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 DB::table('producto_venta')->where('id', $pivot->id)->delete();
 
                 $this->calculadoraService->actualizarTotalesVenta($venta);
+
+                // Disparar evento para cocina/nutribar según sección del producto
+                $this->dispararEventoPedido($venta, $producto, "Se eliminó pedido de {$producto->nombre}", 'warning');
 
                 return VentaResponse::success(null, "solicitud realizada exitosamente");
             });
@@ -901,8 +986,8 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             $productosProcessed = [];
             $message = "";
-            $pedidos_totales_cliente = $this->obtenerCantidadProductosVenta($venta); 
-        
+            $pedidos_totales_cliente = $this->obtenerCantidadProductosVenta($venta);
+
             if ($productos->isEmpty()) {
                 $message = 'No hay productos en esta venta';
             } else {
@@ -916,7 +1001,6 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             ];
 
             return VentaResponse::success($productosyCantidad, $message);
-
         } catch (\Exception $e) {
             Log::error('Error obteniendo productos de venta', [
                 'venta_id' => $venta->id ?? null,
@@ -946,10 +1030,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             // Procesar un unico ProductoVenta
             $productoProcesado = $this->procesarProductoVentaIndividual($producto, $venta->sucursale_id);
-            $pedidos_totales_cliente = $this->obtenerCantidadProductosVenta($venta); 
-            $productoProcesado['pedidos_totales_cliente'] = $pedidos_totales_cliente; 
+            $pedidos_totales_cliente = $this->obtenerCantidadProductosVenta($venta);
+            $productoProcesado['pedidos_totales_cliente'] = $pedidos_totales_cliente;
             return VentaResponse::success($productoProcesado);
-
         } catch (\Exception $e) {
             Log::error('Error obteniendo el producto correspondiente a la venta', [
                 'venta_id' => $venta->id ?? null,
@@ -962,7 +1045,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
     }
 
-    public function obtenerOrdenPorIndice(Venta $venta, int $producto_venta_id, int $indice): VentaResponse 
+    public function obtenerOrdenPorIndice(Venta $venta, int $producto_venta_id, int $indice): VentaResponse
     {
         try {
             if (!$venta) {
@@ -971,14 +1054,15 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             // Consultar por el registro del producto especifico para el pivot solicitado
             $registro = DB::table('producto_venta')
-            ->where('aceptado',false)
-            ->find($producto_venta_id);
+                ->where('aceptado', false)
+                ->find($producto_venta_id);
 
-            $adicionalesProductoVenta = json_decode($registro->adicionales, true);;
-            $adicionalesIndice = $adicionalesProductoVenta[$indice];
-            
+            $adicionalesProductoVenta = json_decode($registro->adicionales, true);
+            $itemData = $adicionalesProductoVenta[$indice];
+            $adicionalesIndice = $itemData['adicionales'] ?? $itemData; // Compatibilidad con formato antiguo
+
             $adicionales = [];
-            
+
             foreach ($adicionalesIndice as $adic) {
                 $adicional = Adicionale::where('nombre', key($adic))->first();
                 $adicionales[] = [
@@ -987,8 +1071,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     "precio" => $adicional->precio
                 ];
             }
-            return VentaResponse::success($adicionales,"Exito en el llamado al servicio");
-            
+            return VentaResponse::success($adicionales, "Exito en el llamado al servicio");
         } catch (\Throwable $th) {
             return VentaResponse::error('Error interno del servidor');
         }
@@ -1009,9 +1092,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
     {
         $adicionalesData = json_decode($producto->pivot->adicionales ?? '{}', true);
         $adicionalesNames = $this->extraerNombresDeAdicionalesData($adicionalesData);
-        
+
         $adicionales = $this->adicionalesPorNombre(collect($adicionalesNames));
-        
+
         return $this->transformarProducto($producto, $adicionales, $sucursaleId);
     }
 
@@ -1036,9 +1119,19 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         $names = [];
         foreach ($adicionalesData as $group) {
             if (is_array($group)) {
-                foreach ($group as $adicional) {
-                    if (is_array($adicional)) {
-                        $names = array_merge($names, array_keys($adicional));
+                // Verificar si es formato nuevo (con 'adicionales')
+                if (isset($group['adicionales'])) {
+                    foreach ($group['adicionales'] as $adicional) {
+                        if (is_array($adicional)) {
+                            $names = array_merge($names, array_keys($adicional));
+                        }
+                    }
+                } else {
+                    // Formato antiguo
+                    foreach ($group as $adicional) {
+                        if (is_array($adicional)) {
+                            $names = array_merge($names, array_keys($adicional));
+                        }
                     }
                 }
             }
@@ -1081,8 +1174,8 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             'aceptado' => $producto->pivot->aceptado,
             'observacion' => $producto->pivot->observacion,
             'pivot_id' => $producto->pivot->id,
-            'tipo' => ($producto->subcategoria && $producto->subcategoria->adicionales->isNotEmpty()) 
-                ? 'complejo' 
+            'tipo' => ($producto->subcategoria && $producto->subcategoria->adicionales->isNotEmpty())
+                ? 'complejo'
                 : 'simple'
         ];
     }
@@ -1098,26 +1191,29 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
         foreach ($adicionalesData as $groupIndex => $group) {
             $processed[$groupIndex] = [];
-            
+
             if (!is_array($group)) {
                 continue;
             }
 
-            foreach ($group as $adicionalItem) {
+            // Verificar si es formato nuevo (con 'adicionales')
+            $adicionalesArray = $group['adicionales'] ?? $group;
+
+            foreach ($adicionalesArray as $adicionalItem) {
                 if (!is_array($adicionalItem)) {
                     continue;
                 }
 
                 foreach ($adicionalItem as $nombre => $precio) {
                     $adicional = $adicionales->get($nombre);
-                    
+
                     if ($adicional) {
                         $processed[$groupIndex][] = [
                             'id' => $adicional->id,
                             'nombre' => ucfirst($adicional->nombre),
-                            'precio' => (float) $adicional->precio  // Using $adicional->precio
+                            'precio' => (float) $adicional->precio
                         ];
-                        
+
                         $precioTotal += (float) $adicional->precio;
                     } else {
                         Log::warning('Adicional no encontrado', [
@@ -1134,7 +1230,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
     // #endregion
 
-    private function obtenerCantidadProductosVenta(Venta $venta): int 
+    private function obtenerCantidadProductosVenta(Venta $venta): int
     {
         return (int) $venta->productos()->sum('cantidad');
     }
@@ -1159,7 +1255,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
         if ($prodLista) {
             // Debug temporal
-            \Log::info('Actualizando campos descuentos para producto: ' . $producto->id, [
+            Log::info('Actualizando campos descuentos para producto: ' . $producto->id, [
                 'descuento_producto' => $prodLista['descuento_producto'] ?? 0,
                 'descuento_convenio' => $prodLista['descuento_convenio'] ?? 0,
                 'total_adicionales' => $prodLista['total_adicionales'] ?? 0,
@@ -1178,10 +1274,110 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     'total_adicionales' => $prodLista['total_adicionales'] ?? 0,
                 ]);
         } else {
-            \Log::warning('No se encontró producto en lista calculada', [
+            Log::warning('No se encontró producto en lista calculada', [
                 'producto_id' => $producto->id,
                 'venta_id' => $venta->id
             ]);
+        }
+    }
+
+    /**
+     * Cambia el estado de un item específico en el campo adicionales
+     * 
+     * @param int $producto_venta_id ID del registro en producto_venta
+     * @param int $indice Índice del item (1, 2, 3, etc.)
+     * @param string $nuevoEstado Nuevo estado ('pendiente', 'preparacion', 'despachado')
+     * @return VentaResponse
+     */
+    public function cambiarEstadoItem(int $producto_venta_id, int $indice, string $nuevoEstado): VentaResponse
+    {
+        try {
+            $registro = DB::table('producto_venta')->find($producto_venta_id);
+
+            if (!$registro) {
+                return VentaResponse::error('Producto no encontrado');
+            }
+
+            $adicionales = json_decode($registro->adicionales, true);
+
+            if (!isset($adicionales[$indice])) {
+                return VentaResponse::error('Item no encontrado en el índice especificado');
+            }
+
+            // Verificar si es formato nuevo o migrar
+            if (!isset($adicionales[$indice]['estado'])) {
+                // Migrar formato antiguo a nuevo
+                $adicionales[$indice] = [
+                    'adicionales' => $adicionales[$indice],
+                    'agregado_at' => now()->toDateTimeString(),
+                    'estado' => $nuevoEstado
+                ];
+            } else {
+                // Actualizar estado en formato nuevo
+                $adicionales[$indice]['estado'] = $nuevoEstado;
+            }
+
+            // Actualizar en base de datos
+            DB::table('producto_venta')
+                ->where('id', $producto_venta_id)
+                ->update(['adicionales' => json_encode($adicionales)]);
+
+            // Verificar si todos los items están despachados para actualizar estado_actual
+            if ($this->todosItemsDespachados($adicionales)) {
+                DB::table('producto_venta')
+                    ->where('id', $producto_venta_id)
+                    ->update(['estado_actual' => 'despachado']);
+            }
+
+            return VentaResponse::success(null, 'Estado del item actualizado correctamente');
+        } catch (\Exception $e) {
+            return VentaResponse::error('Error al cambiar estado del item: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Verifica si todos los items de un producto_venta están en estado 'despachado'
+     * 
+     * @param array $adicionales Array de adicionales del producto_venta
+     * @return bool
+     */
+    private function todosItemsDespachados(array $adicionales): bool
+    {
+        foreach ($adicionales as $item) {
+            // Verificar formato nuevo
+            if (isset($item['estado'])) {
+                if ($item['estado'] !== 'despachado') {
+                    return false;
+                }
+            } else {
+                // Formato antiguo no tiene estado, considerarlo como pendiente
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Dispara el evento de actualización para cocina/nutribar según la sección del producto
+     */
+    private function dispararEventoPedido(Venta $venta, Producto $producto, string $mensaje, string $icono): void
+    {
+        // Solo disparar evento si el producto tiene una sección definida
+        if (!empty($producto->seccion)) {
+            $userId = auth()->check() ? auth()->user()->id : null;
+            switch ($producto->seccion) {
+                case 'cocina':
+                    $seccion = 'cocina';
+                    break;
+                case 'nutribar':
+                    $seccion = 'nutribar';
+                    break;
+                default:
+                    $seccion = 'cocina';
+                    break;
+            }
+            event(new CocinaPedidoEvent($mensaje, $venta->id, $userId, $seccion, $icono));
         }
     }
 }

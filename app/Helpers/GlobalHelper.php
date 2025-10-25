@@ -14,6 +14,7 @@ use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Rawilk\Printing\Facades\Printing;
+use App\Events\RefreshMenuHeaderEvent;
 
 class GlobalHelper
 {
@@ -293,7 +294,7 @@ class GlobalHelper
         }
     }
 
-    public static function actualizarMenuCantidadDesdePOS(Adicionale $adicional, $accion = 'reducir')
+    public static function actualizarMenuCantidadDesdePOS(Adicionale $adicional, $accion = 'reducir', $cantidad = 1)
     {
         // Obtén el menú de hoy
         $menuHoy = Almuerzo::withoutGlobalScope('diasActivos')->hoy()->first();
@@ -309,22 +310,22 @@ class GlobalHelper
         // Actualiza el campo correspondiente basado en el código de cocina
         switch ($adicional->codigo_cocina) {
             case 'segundo_ejecutivo':
-                $menuHoy->{$method}('ejecutivo_cant');
+                $menuHoy->{$method}('ejecutivo_cant', $cantidad);
                 break;
             case 'segundo_dieta':
-                $menuHoy->{$method}('dieta_cant');
+                $menuHoy->{$method}('dieta_cant', $cantidad);
                 break;
             case 'segundo_veggie':
-                $menuHoy->{$method}('vegetariano_cant');
+                $menuHoy->{$method}('vegetariano_cant', $cantidad);
                 break;
             case 'carbohidrato_1':
-                $menuHoy->{$method}('carbohidrato_1_cant');
+                $menuHoy->{$method}('carbohidrato_1_cant', $cantidad);
                 break;
             case 'carbohidrato_2':
-                $menuHoy->{$method}('carbohidrato_2_cant');
+                $menuHoy->{$method}('carbohidrato_2_cant', $cantidad);
                 break;
             case 'carbohidrato_3':
-                $menuHoy->{$method}('carbohidrato_3_cant');
+                $menuHoy->{$method}('carbohidrato_3_cant', $cantidad);
                 break;
             default:
                 // Código desconocido, no hacer nada
@@ -333,6 +334,7 @@ class GlobalHelper
 
         // Guarda los cambios en el menú de hoy
         $menuHoy->save();
+        event(new RefreshMenuHeaderEvent());
     }
     public static function cantidadColor($cantidad)
     {

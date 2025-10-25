@@ -24,6 +24,7 @@ function mostrarSweetAlertAdicionales(producto, grupos) {
         cancelButtonText: "Cancelar",
         confirmButtonColor: "#20c996",
         cancelButtonColor: "#dc3545",
+        allowOutsideClick: false,
         showLoaderOnConfirm: true,
         preConfirm: () => {
             return validarYProcesarSeleccion(producto, grupos);

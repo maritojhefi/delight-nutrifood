@@ -136,6 +136,7 @@
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
+                allowOutsideClick: false,
                 confirmButtonText: 'Sí, confirmar',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
@@ -252,6 +253,7 @@
                 customClass: {
                     popup: 'swal-fondo-blanco'
                 },
+                allowOutsideClick: false,
                 title: false,
                 html: `
                 <div style="color: white; margin-bottom: 15px;">
@@ -547,6 +549,7 @@
                 customClass: {
                     popup: 'swal-fondo-blanco'
                 },
+                allowOutsideClick: false,
                 title: '<i class="fa fa-truck"></i> Venta Delivery',
                 html: `
                 <div class="text-start">
@@ -638,6 +641,7 @@
                 customClass: {
                     popup: 'swal-fondo-blanco'
                 },
+                allowOutsideClick: false,
                 title: '<i class="flaticon-088-time"></i> Reserva',
                 html: `
                 <div class="text-start">
@@ -1122,5 +1126,253 @@
                 setTimeout(actualizarTemporizadores, 100);
             });
         });
+
+        // Configuración de países y sus requisitos de teléfono
+        const paisesTelefono = {
+            '+591': {
+                nombre: 'Bolivia',
+                digitos: 8,
+                bandera: '🇧🇴'
+            },
+            '+54': {
+                nombre: 'Argentina',
+                digitos: 10,
+                bandera: '🇦🇷'
+            },
+            '+55': {
+                nombre: 'Brasil',
+                digitos: 11,
+                bandera: '🇧🇷'
+            },
+            '+56': {
+                nombre: 'Chile',
+                digitos: 9,
+                bandera: '🇨🇱'
+            },
+            '+57': {
+                nombre: 'Colombia',
+                digitos: 10,
+                bandera: '🇨🇴'
+            },
+            '+593': {
+                nombre: 'Ecuador',
+                digitos: 9,
+                bandera: '🇪🇨'
+            },
+            '+51': {
+                nombre: 'Perú',
+                digitos: 9,
+                bandera: '🇵🇪'
+            },
+            '+595': {
+                nombre: 'Paraguay',
+                digitos: 9,
+                bandera: '🇵🇾'
+            },
+            '+598': {
+                nombre: 'Uruguay',
+                digitos: 8,
+                bandera: '🇺🇾'
+            },
+            '+58': {
+                nombre: 'Venezuela',
+                digitos: 10,
+                bandera: '🇻🇪'
+            },
+            '+52': {
+                nombre: 'México',
+                digitos: 10,
+                bandera: '🇲🇽'
+            },
+            '+1': {
+                nombre: 'USA/Canadá',
+                digitos: 10,
+                bandera: '🇺🇸'
+            },
+            '+34': {
+                nombre: 'España',
+                digitos: 9,
+                bandera: '🇪🇸'
+            }
+        };
+
+        // Función para crear usuario rápido
+        function crearUsuarioRapido(asignarACuenta = true, nombre = '', codigoPais = '+591', telefono = '') {
+            // Generar opciones del select de países
+            const opcionesPaises = Object.keys(paisesTelefono).map(codigo => {
+                const pais = paisesTelefono[codigo];
+                const selected = codigo === codigoPais ? 'selected' : '';
+                return `<option value="${codigo}" ${selected}>${pais.bandera} ${codigo}</option>`;
+            }).join('');
+
+            Swal.fire({
+                customClass: {
+                    popup: 'swal-fondo-blanco'
+                },
+                allowOutsideClick: false,
+                title: '<i class="fa fa-user-plus"></i> Crear Cliente Rápido',
+                html: `
+                <div class="text-start">
+                    <label class="form-label fw-bold">Nombre Completo: <span class="text-danger">*</span></label>
+                    <input type="text" id="nombreClienteRapido" class="form-control mb-3" 
+                           placeholder="Ej: Juan Pérez García" value="${nombre}"
+                           autocomplete="off">
+                    
+                    <label class="form-label fw-bold">Teléfono: <span class="text-danger">*</span></label>
+                    <div class="input-group mb-2">
+                        <select id="codigoPaisClienteRapido" class="form-select" style="max-width: 200px;">
+                            ${opcionesPaises}
+                        </select>
+                        <input type="tel" id="telefonoClienteRapido" class="form-control" 
+                               placeholder="71234567" value="${telefono}"
+                               autocomplete="off">
+                    </div>
+                    <small class="text-muted mb-3 d-block" id="infoDigitos">
+                        <i class="fa fa-info-circle"></i> Debe tener 8 dígitos
+                    </small>
+                    
+                    <small class="text-muted">
+                        <i class="fa fa-envelope"></i> El correo se generará automáticamente
+                    </small>
+                </div>
+            `,
+                showCancelButton: true,
+                confirmButtonText: '<i class="fa fa-save"></i> Crear Cliente',
+                cancelButtonText: '<i class="fa fa-times"></i> Cancelar',
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#dc3545',
+                width: '550px',
+                didOpen: () => {
+                    const nombreInput = document.getElementById('nombreClienteRapido');
+                    const telefonoInput = document.getElementById('telefonoClienteRapido');
+                    const codigoPaisSelect = document.getElementById('codigoPaisClienteRapido');
+                    const infoDigitos = document.getElementById('infoDigitos');
+
+                    // Función para actualizar el placeholder y la info según el país
+                    function actualizarInfoPais() {
+                        const codigoPais = codigoPaisSelect.value;
+                        const pais = paisesTelefono[codigoPais];
+
+                        telefonoInput.setAttribute('maxlength', pais.digitos);
+                        telefonoInput.placeholder = '7'.repeat(pais.digitos).substring(0, pais.digitos);
+                        infoDigitos.innerHTML =
+                            `<i class="fa fa-info-circle"></i> Debe tener exactamente ${pais.digitos} dígitos (${pais.nombre})`;
+
+                        // Limpiar el input si cambia de país
+                        telefonoInput.value = '';
+                    }
+
+                    // Actualizar info inicial
+                    actualizarInfoPais();
+
+                    // Listener para cambio de país
+                    codigoPaisSelect.addEventListener('change', actualizarInfoPais);
+
+                    // Focus en el primer campo
+                    nombreInput.focus();
+
+                    // Validar que el teléfono solo contenga números
+                    telefonoInput.addEventListener('input', function(e) {
+                        this.value = this.value.replace(/[^0-9]/g, '');
+
+                        // Validación visual en tiempo real
+                        const codigoPais = codigoPaisSelect.value;
+                        const pais = paisesTelefono[codigoPais];
+
+                        if (this.value.length > 0) {
+                            if (this.value.length === pais.digitos) {
+                                this.style.borderColor = '#28a745';
+                                this.style.backgroundColor = '#f0fff4';
+                            } else {
+                                this.style.borderColor = '#ffc107';
+                                this.style.backgroundColor = '#fff9e6';
+                            }
+                        } else {
+                            this.style.borderColor = '';
+                            this.style.backgroundColor = '';
+                        }
+                    });
+
+                    // Permitir enviar con Enter
+                    [nombreInput, telefonoInput].forEach(input => {
+                        input.addEventListener('keypress', function(e) {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                Swal.clickConfirm();
+                            }
+                        });
+                    });
+                },
+                preConfirm: () => {
+                    const nombre = document.getElementById('nombreClienteRapido').value.trim();
+                    const codigoPais = document.getElementById('codigoPaisClienteRapido').value;
+                    const telefono = document.getElementById('telefonoClienteRapido').value.trim();
+                    const pais = paisesTelefono[codigoPais];
+
+                    // Validaciones
+                    if (!nombre) {
+                        Swal.showValidationMessage('El nombre completo es obligatorio');
+                        return false;
+                    }
+
+                    if (nombre.length < 3) {
+                        Swal.showValidationMessage('El nombre debe tener al menos 3 caracteres');
+                        return false;
+                    }
+
+                    if (!telefono) {
+                        Swal.showValidationMessage('El teléfono es obligatorio');
+                        return false;
+                    }
+
+                    if (!/^\d+$/.test(telefono)) {
+                        Swal.showValidationMessage('El teléfono debe contener solo números');
+                        return false;
+                    }
+
+                    if (telefono.length !== pais.digitos) {
+                        Swal.showValidationMessage(
+                            `El teléfono de ${pais.nombre} debe tener exactamente ${pais.digitos} dígitos`);
+                        return false;
+                    }
+
+                    return {
+                        nombre: nombre,
+                        codigoPais: codigoPais,
+                        telefono: telefono
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Mostrar loading
+                    Swal.fire({
+                        title: 'Creando cliente...',
+                        text: 'Por favor espere',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Llamar al método de Livewire
+                    @this.call('crearClienteRapido', result.value.nombre, result.value.codigoPais, result.value
+                            .telefono, asignarACuenta)
+                        .then((response) => {
+                            if (response != false) {
+                                Swal.close();
+                            } else {
+                                setTimeout(() => {
+                                    crearUsuarioRapido(asignarACuenta,result.value.nombre,result.value.codigoPais,result.value.telefono);
+                                }, 2000);
+                               
+                            }
+                        })
+                }
+            });
+        }
+        function seleccionar(id) {
+            @this.call('seleccionar', id);
+        }
     </script>
 @endpush

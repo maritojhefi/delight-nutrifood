@@ -392,6 +392,7 @@
                 customClass: {
                     popup: 'swal-fondo-blanco'
                 },
+                allowOutsideClick: false,
                 title: '<i class="fa fa-exchange"></i> Cambiar Tipo de Entrega',
                 html: `
                 <div class="text-start">

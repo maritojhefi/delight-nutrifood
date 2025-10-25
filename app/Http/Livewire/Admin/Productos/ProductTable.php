@@ -28,6 +28,7 @@ class ProductTable extends Component
 
     protected $listeners = [
         'cerrar-modal-tags' => 'cerrarModalTags',
+        'actualizarSeccionProducto' => 'actualizarSeccionProducto',
     ];
 
     public function mount()
@@ -107,7 +108,7 @@ class ProductTable extends Component
                 $this->validate([
                     'imagen' => 'mimes:jpg,jpeg,png,gif|max:5120',
                 ]);
-                
+
                 // Eliminar la imagen anterior del disco correcto
                 $rutaArchivoAnterior = Producto::RUTA_IMAGENES . $this->productoEdit->imagen;
                 $disco = GlobalHelper::discoArchivos();
@@ -115,17 +116,17 @@ class ProductTable extends Component
                     Storage::disk($disco)->delete($rutaArchivoAnterior);
                 }
             }
-            
+
             try {
                 // Usar el helper ProcesarImagen para procesar y guardar la imagen
                 $procesarImagen = ProcesarImagen::crear($this->imagen)
                     ->carpeta(Producto::RUTA_IMAGENES) // Carpeta donde se guardará
                     ->dimensiones(480, null) // Redimensionar a máximo 480px de ancho
                     ->formato($this->imagen->getClientOriginalExtension()); // Mantener formato original
-                
+
                 // Guardar la imagen procesada (automáticamente usa el disco correcto según el ambiente)
                 $filename = $procesarImagen->guardar();
-                
+
                 // Log de la ubicación donde se guardó la imagen
                 $disco = GlobalHelper::discoArchivos();
                 if ($disco === 's3') {
@@ -148,9 +149,8 @@ class ProductTable extends Component
                         'disco' => $disco
                     ]);
                 }
-                
+
                 $this->productoEdit->imagen = $filename;
-                
             } catch (\Exception $e) {
                 $this->dispatchBrowserEvent('alert', [
                     'type' => 'error',
@@ -227,7 +227,7 @@ class ProductTable extends Component
     public function cambiarcontable(Producto $producto)
     {
         if ($producto->contable == true) {
-            if($producto->sucursale->count() > 0){
+            if ($producto->sucursale->count() > 0) {
                 $this->dispatchBrowserEvent('alert', [
                     'type' => 'warning',
                     'message' => 'Este producto tiene stock, primero elimine el stock para poder cambiar el contable del producto',
@@ -256,12 +256,12 @@ class ProductTable extends Component
             ]);
             return;
         }
-        
+
         $producto->publico_tienda = !$producto->publico_tienda;
         $producto->save();
-        
+
         $mensaje = $producto->publico_tienda ? 'visible en la tienda' : 'oculto de la tienda';
-        
+
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
             'message' => 'El producto ' . $producto->nombre . ' ahora está ' . $mensaje,
@@ -423,6 +423,55 @@ class ProductTable extends Component
         if (strlen($this->searchTags) >= 2 || empty($this->searchTags)) {
             $this->cargarTags();
             $this->emit('renderizar-icono-modal-creacion-listado');
+        }
+    }
+
+    public function actualizarSeccionProducto($productoId, $seccion)
+    {
+        try {
+            $producto = Producto::find($productoId);
+
+            if (!$producto) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => 'Producto no encontrado',
+                ]);
+                return;
+            }
+
+            // Si la sección está vacía, establecer como null (resetear)
+            if (empty($seccion)) {
+                $producto->seccion = null;
+                $producto->save();
+
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'success',
+                    'message' => 'Sección reseteada correctamente para ' . $producto->nombre,
+                ]);
+                return;
+            }
+
+            // Validar que la sección sea una de las permitidas
+            if (!in_array($seccion, array_keys(Producto::SECCIONES))) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => 'Sección no válida',
+                ]);
+                return;
+            }
+
+            $producto->seccion = $seccion;
+            $producto->save();
+
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => 'Sección de despacho actualizada correctamente para ' . $producto->nombre,
+            ]);
+        } catch (\Exception $e) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Error al actualizar la sección: ' . $e->getMessage(),
+            ]);
         }
     }
 }

@@ -7,6 +7,7 @@ use App\Models\Plane;
 use App\Models\Venta;
 use App\Models\Producto;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 class CreateList
@@ -31,11 +32,16 @@ class CreateList
             $totaladicionales = 0;
 
             if (isset($adicionales)) {
-                foreach ($adicionales as $array) {
-                    if (isset($array)) {
-                        foreach ($array as $numero => $lista) {
-                            foreach ($lista as $nombre => $precio) {
-                                $totaladicionales = $totaladicionales + $precio;
+                foreach ($adicionales as $itemData) {
+                    if (isset($itemData)) {
+                        // Verificar si es formato nuevo (con 'adicionales')
+                        $adicionalesArray = $itemData['adicionales'] ?? $itemData;
+
+                        foreach ($adicionalesArray as $lista) {
+                            if (is_array($lista)) {
+                                foreach ($lista as $nombre => $precio) {
+                                    $totaladicionales = $totaladicionales + (float)$precio;
+                                }
                             }
                         }
                     }
@@ -62,7 +68,7 @@ class CreateList
                 $descuentoConvenio += $descuentoConvenioProducto;
 
                 // Debug temporal
-                \Log::info('Calculando descuento convenio para producto: ' . $producto->id, [
+                Log::info('Calculando descuento convenio para producto: ' . $producto->id, [
                     'producto_nombre' => $producto->nombre,
                     'cliente_id' => $cuenta->cliente->id,
                     'cliente_nombre' => $cuenta->cliente->name,
@@ -129,12 +135,16 @@ class CreateList
             $adicionales = json_decode($item->adicionales, true);
             $totaladicionales = 0;
             if (isset($adicionales)) {
+                foreach ($adicionales as $itemData) {
+                    if (isset($itemData)) {
+                        // Verificar si es formato nuevo (con 'adicionales')
+                        $adicionalesArray = $itemData['adicionales'] ?? $itemData;
 
-                foreach ($adicionales as $array) {
-                    if (isset($array)) {
-                        foreach ($array as $numero => $lista) {
-                            foreach ($lista as $nombre => $precio) {
-                                $totaladicionales = $totaladicionales + $precio;
+                        foreach ($adicionalesArray as $lista) {
+                            if (is_array($lista)) {
+                                foreach ($lista as $nombre => $precio) {
+                                    $totaladicionales = $totaladicionales + (float)$precio;
+                                }
                             }
                         }
                     }

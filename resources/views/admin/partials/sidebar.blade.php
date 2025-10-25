@@ -5,6 +5,7 @@
                 <x-sidebar-elements titulo="Cocina" linkglobal="cocina" :lista="[
                     'Despachar pedidos' => 'reporte.cocina',
                     'Agregar stock' => 'sucursal.stock',
+                    'Nutribar' => 'nutribar.index',
                 ]">
                     <i class="flaticon-025-dashboard"></i>
                 </x-sidebar-elements>

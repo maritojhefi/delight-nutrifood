@@ -35,12 +35,18 @@ class Producto extends Model
         'stock_actual',
         'cantidad_vendida',
         'publico_tienda',
-        'producto_stock_id'
+        'producto_stock_id',
+        'seccion'
     ];
     const PRIORIDADBAJA = "1";
     const PRIORIDADALTA = "2";
     const PRIORIDADMEDIA = "3";
-    
+
+    const SECCIONES = [
+        'cocina' => 'Cocina',
+        'nutribar' => 'Nutribar',
+    ];
+
     // Constante para la ruta de imágenes de productos en S3
     const RUTA_IMAGENES = '/imagenes/productos/';
     public function sucursale()
