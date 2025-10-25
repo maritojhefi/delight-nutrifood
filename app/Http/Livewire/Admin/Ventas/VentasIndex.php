@@ -103,6 +103,8 @@ class VentasIndex extends Component
         'cambiarTipoEntregaVenta' => 'cambiarTipoEntregaVenta',
         'agregarProductoConAdicionales' => 'agregarProductoConAdicionales',
         'crearClienteRapido' => 'crearClienteRapido',
+        'verDetalleItemPOS' => 'verDetalleItemPOS',
+        'eliminarItemPOS' => 'eliminarItemPOS',
         'seleccionar' => 'seleccionar',
     ];
     public function boot(
@@ -803,6 +805,81 @@ class VentasIndex extends Component
         }
     }
 
+    public function verDetalleItemPOS($producto_venta_id)
+    {
+        $detalle = DB::table('producto_venta')->where('id', $producto_venta_id)->first();
+
+        if (!$detalle) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Producto no encontrado'
+            ]);
+            return;
+        }
+
+        $producto = Producto::find($detalle->producto_id);
+        $adicionales = json_decode($detalle->adicionales, true);
+
+        $items = [];
+        if ($adicionales) {
+            foreach ($adicionales as $indice => $itemData) {
+                // Compatibilidad con formato antiguo y nuevo
+                $adicionalesArray = $itemData['adicionales'] ?? $itemData;
+                $agregadoAt = $itemData['agregado_at'] ?? null;
+                $estado = $itemData['estado'] ?? null;
+
+                // Extraer nombres de adicionales
+                $nombresAdicionales = [];
+                if (is_array($adicionalesArray)) {
+                    foreach ($adicionalesArray as $adic) {
+                        if (is_array($adic)) {
+                            // Cada $adic es como {"Omelett de verduras":"0.00"}
+                            foreach ($adic as $nombre => $precio) {
+                                $nombresAdicionales[] = $nombre;
+                            }
+                        }
+                    }
+                }
+
+                $items[] = [
+                    'indice' => $indice,
+                    'adicionales' => $nombresAdicionales,
+                    'agregado_at' => $agregadoAt,
+                    'estado' => $estado
+                ];
+            }
+        }
+
+        $this->dispatchBrowserEvent('verDetalleItemPOS', [
+            'producto_venta_id' => $producto_venta_id,
+            'producto_nombre' => $producto->nombre,
+            'producto_tiene_seccion' => $producto->seccion ? true : false,
+            'cantidad_total' => $detalle->cantidad,
+            'observacion' => $detalle->observacion,
+            'items' => $items
+        ]);
+    }
+
+    public function eliminarItemPOS($producto_venta_id, $indice)
+    {
+        $response = $this->productoVentaService->eliminarItemPivotID(
+            $this->cuenta,
+            $producto_venta_id,
+            $indice
+        );
+
+        $this->dispatchBrowserEvent('alert', [
+            'type' => $response->type,
+            'message' => $response->message,
+        ]);
+
+        if ($response->success) {
+            $this->actualizarlista(Venta::find($this->cuenta->id));
+            // Volver a mostrar el detalle actualizado
+            $this->verDetalleItemPOS($producto_venta_id);
+        }
+    }
+
     public function seleccionarcliente($id, $name)
     {
         $this->cliente = $id;
@@ -1013,7 +1090,7 @@ class VentasIndex extends Component
         return array_values($grupos);
     }
 
-    public function agregarProductoConAdicionales($productoId, $adicionalesSeleccionados, $cantidad = 1)
+    public function agregarProductoConAdicionales($productoId, $adicionalesSeleccionados, $cantidad = 1, $observacion = null)
     {
         try {
             $producto = Producto::find($productoId);
@@ -1023,7 +1100,8 @@ class VentasIndex extends Component
                 $this->cuenta,
                 $producto,
                 $adicionales,
-                $cantidad
+                $cantidad,
+                $observacion
             );
 
             $this->dispatchBrowserEvent('alert', [

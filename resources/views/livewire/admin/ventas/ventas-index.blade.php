@@ -1374,5 +1374,199 @@
         function seleccionar(id) {
             @this.call('seleccionar', id);
         }
+
+        // Listener para mostrar detalle de items en POS
+        window.addEventListener('verDetalleItemPOS', event => {
+            const data = event.detail;
+            mostrarDetalleItemsPOS(data);
+        });
+
+        function mostrarDetalleItemsPOS(data) {
+            const {
+                producto_venta_id,
+                producto_nombre,
+                producto_tiene_seccion,
+                cantidad_total,
+                observacion,
+                items
+            } = data;
+
+            // Generar HTML para cada item
+            let itemsHTML = '';
+            items.forEach((item, index) => {
+                // Lista de adicionales
+                let adicionalesHTML = '';
+                if (item.adicionales && item.adicionales.length > 0) {
+                    adicionalesHTML = '<div class="mb-1" style="font-size: 11px; padding-left: 8px;">';
+                    item.adicionales.forEach(adicional => {
+                        adicionalesHTML += `<div class="text-black">• ${adicional}</div>`;
+                    });
+                    adicionalesHTML += '</div>';
+                } else {
+                    adicionalesHTML = '<div class="text-muted mb-1" style="font-size: 11px;"><em>Sin adicionales</em></div>';
+                }
+
+                // Estado del item (solo si el producto tiene sección)
+                let estadoHTML = '';
+                if (producto_tiene_seccion && item.estado) {
+                    const estadoClass = {
+                        'pendiente': 'badge-danger',
+                        'preparacion': 'badge-warning',
+                        'despachado': 'badge-success'
+                    };
+                    const estadoIcon = {
+                        'pendiente': '⏳',
+                        'preparacion': '🔥',
+                        'despachado': '✅'
+                    };
+
+                    estadoHTML = `<span class="badge badge-sm ${estadoClass[item.estado]}" style="font-size: 10px;">${estadoIcon[item.estado]} ${item.estado.toUpperCase()}</span>`;
+                }
+
+                // Calcular tiempo transcurrido si existe
+                let tiempoHTML = '';
+                if (item.agregado_at) {
+                    const agregado = new Date(item.agregado_at);
+                    const ahora = new Date();
+                    const diffMs = ahora - agregado;
+                    const diffMins = Math.floor(diffMs / 60000);
+                    const diffHoras = Math.floor(diffMins / 60);
+
+                    let tiempoTranscurrido = '';
+                    if (diffHoras > 0) {
+                        tiempoTranscurrido = `Hace ${diffHoras}h ${diffMins % 60}m`;
+                    } else if (diffMins > 0) {
+                        tiempoTranscurrido = `Hace ${diffMins}m`;
+                    } else {
+                        tiempoTranscurrido = 'Recién agregado';
+                    }
+
+                    // Formatear hora
+                    const horaFormateada = agregado.toLocaleTimeString('es-BO', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    tiempoHTML = `
+                        <div class="d-flex justify-content-between text-muted mb-1" style="font-size: 10px;">
+                            <span>📅 ${horaFormateada}</span>
+                            <span class="fw-bold ${diffMins > 30 ? 'text-danger' : ''}">${tiempoTranscurrido}</span>
+                        </div>
+                    `;
+                }
+
+                // Botón de eliminar compacto (solo para items pendientes si tiene sección)
+                let botonEliminar = '';
+                const puedeEliminar = !producto_tiene_seccion || !item.estado || item.estado === 'pendiente';
+                
+                if (puedeEliminar) {
+                    botonEliminar = `
+                        <button type="button" 
+                                class="btn btn-outline-danger btn-xs mt-1 py-0 px-2" 
+                                style="font-size: 10px; line-height: 1.5;"
+                                onclick="eliminarItemPOS(${producto_venta_id}, ${item.indice}, '${item.estado || 'pendiente'}', ${producto_tiene_seccion})">
+                            <i class="fa fa-trash" style="font-size: 9px;"></i> Eliminar
+                        </button>
+                    `;
+                } else {
+                    botonEliminar = `
+                        <div class="alert alert-warning p-1 mt-1 mb-0" style="font-size: 9px; line-height: 1.3;">
+                            <i class="fa fa-lock"></i> No se puede eliminar (en ${item.estado})
+                        </div>
+                    `;
+                }
+
+                const borderColor = producto_tiene_seccion && item.estado
+                    ? (item.estado === 'pendiente' ? '#dc3545' : item.estado === 'preparacion' ? '#ffc107' : '#28a745')
+                    : '#6c757d';
+
+                itemsHTML += `
+                    <div class="card mb-2" style="border-left: 3px solid ${borderColor};">
+                        <div class="card-body p-2">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <strong style="font-size: 12px;">Item ${item.indice}</strong>
+                                ${estadoHTML}
+                            </div>
+                            ${tiempoHTML}
+                            <div style="font-size: 11px; color: #666; margin-bottom: 2px;">Adicionales:</div>
+                            ${adicionalesHTML}
+                            ${botonEliminar}
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Agregar observación si existe
+            let observacionHTML = '';
+            if (observacion && observacion.trim() !== '') {
+                observacionHTML = `
+                    <div class="alert alert-warning mb-2 p-2" style="background-color: #fff3cd;">
+                        <strong style="color: #856404; font-size: 11px;">📝 Observación:</strong>
+                        <p class="mb-0 mt-1" style="color: #856404; font-size: 11px;">${observacion}</p>
+                    </div>
+                `;
+            }
+
+            Swal.fire({
+                customClass: {
+                    popup: 'swal-fondo-blanco'
+                },
+                allowOutsideClick: false,
+                title: `<div style="font-size: 18px;">${producto_nombre}</div>`,
+                html: `
+                    <div class="text-start">
+                        <div class="alert alert-info mb-2 p-2" style="font-size: 12px;">
+                            <strong>Total de items:</strong> ${cantidad_total}
+                        </div>
+                        ${observacionHTML}
+                        ${itemsHTML}
+                    </div>
+                `,
+                width: '450px',
+                showCloseButton: true,
+                showConfirmButton: false,
+                customClass: {
+                    container: 'detalle-items-modal-pos',
+                    title: 'swal2-title-custom'
+                }
+            });
+        }
+
+        // Función global para eliminar item desde el SweetAlert
+        window.eliminarItemPOS = function(producto_venta_id, indice, estado, producto_tiene_seccion) {
+            // Validar que solo se puedan eliminar items pendientes si el producto tiene sección
+            if (producto_tiene_seccion && estado && estado !== 'pendiente') {
+                Swal.fire({
+                    title: '<span style="font-size: 16px;">No se puede eliminar</span>',
+                    html: `<p style="font-size: 13px; margin: 0;">Este item está en <strong>${estado}</strong> y ya está siendo preparado en cocina.<br>Solo se pueden eliminar items <strong>pendientes</strong>.</p>`,
+                    icon: 'error',
+                    confirmButtonText: '<span style="font-size: 13px;">Entendido</span>',
+                    customClass: {
+                        confirmButton: 'btn btn-primary btn-sm px-3'
+                    }
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: '<span style="font-size: 16px;">¿Estás seguro?</span>',
+                html: '<p style="font-size: 13px; margin: 0;">Se eliminará este item del pedido</p>',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<span style="font-size: 13px;">Sí, eliminar</span>',
+                cancelButtonText: '<span style="font-size: 13px;">Cancelar</span>',
+                buttonsStyling: true,
+                customClass: {
+                    confirmButton: 'btn btn-danger btn-sm px-3',
+                    cancelButton: 'btn btn-secondary btn-sm px-3'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.emit('eliminarItemPOS', producto_venta_id, indice);
+                }
+            });
+        }
     </script>
 @endpush

@@ -99,6 +99,7 @@ class CreateList
 
             $personalizado->prepend([
                 'id' => $producto->id,
+                'pivot_id' => $item->id, // ID de la tabla pivot producto_venta
                 'nombre' => $producto->nombre,
                 'medicion' => $producto->medicion,
                 'cantidad' => $item->cantidad,

@@ -68,7 +68,7 @@ interface ProductoVentaServiceInterface
     /**
      * Agrega un producto a la venta, considerando adicionales y cantidad (caso uso cliente)
      */
-    public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad): VentaResponse;
+    public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad, ?string $observacion = null): VentaResponse;
 
     /**
      * Disminuye ordenes de un producto sin aceptar por parte del cliente

@@ -105,6 +105,16 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 return VentaResponse::error('El producto no existe en esta venta');
             }
 
+            // Validar que el último item se pueda eliminar (solo si tiene sección)
+            $adicionales = json_decode($registro->adicionales, true);
+            if ($adicionales && count($adicionales) > 0) {
+                $ultimaPosicion = count($adicionales);
+                $validacion = $this->validarEliminacionItem($producto, $adicionales, $ultimaPosicion);
+                if (!$validacion->success) {
+                    return $validacion;
+                }
+            }
+
             // Restaurar stock si es contable
             if ($producto->contable) {
                 $stockResponse = $this->stockService->actualizarStock($producto, 'restar', 1, $venta->sucursale_id);
@@ -294,6 +304,12 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             if (count($array) == 1) {
                 return VentaResponse::warning('No puede eliminar el único item disponible');
+            }
+
+            // Validar si el item se puede eliminar (solo pendientes si tiene sección)
+            $validacion = $this->validarEliminacionItem($producto, $array, $posicion);
+            if (!$validacion->success) {
+                return $validacion;
             }
 
 
@@ -490,7 +506,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
     }
 
     // Servicio para el agregado de productos_venta con la configuracion solicitada por el cliente, validando el stock disponible
-    public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad): VentaResponse
+    public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad, ?string $observacion = null): VentaResponse
     {
         try {
             DB::beginTransaction();
@@ -506,14 +522,30 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             // Update or create producto_venta
             if (!$existeProductoVenta) {
-                $venta->productos()->attach($producto->id, ['cantidad' => $cantidad]);
+                $venta->productos()->attach($producto->id, [
+                    'cantidad' => $cantidad,
+                    'observacion' => $observacion
+                ]);
             } else {
                 // CRITICAL FIX: Use calculated value instead of DB::raw to avoid race conditions
+                $updateData = ['cantidad' => $cantidadActual + $cantidad];
+
+                // Si hay una nueva observación, actualizarla o concatenarla
+                if ($observacion) {
+                    $observacionExistente = $productoVentaExistente->pivot->observacion;
+                    if ($observacionExistente && trim($observacionExistente) !== '') {
+                        // Si ya hay observación, concatenar si es diferente
+                        if ($observacionExistente !== $observacion) {
+                            $updateData['observacion'] = $observacionExistente . ' | ' . $observacion;
+                        }
+                    } else {
+                        $updateData['observacion'] = $observacion;
+                    }
+                }
+
                 $venta->productos()
                     ->wherePivot('aceptado', false)
-                    ->updateExistingPivot($producto->id, [
-                        'cantidad' => $cantidadActual + $cantidad
-                    ]);
+                    ->updateExistingPivot($producto->id, $updateData);
             }
 
             // Process adicionales if needed
@@ -847,6 +879,12 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     return VentaResponse::warning('No puede eliminar el único item disponible');
                 }
 
+                // Validar si el item se puede eliminar (solo pendientes si tiene sección)
+                $validacion = $this->validarEliminacionItem($producto, $array, $posicion);
+                if (!$validacion->success) {
+                    return $validacion;
+                }
+
                 // Restaurar stock si es contable
                 if ($producto->contable) {
                     $this->stockService->actualizarStock($producto, 'restar', 1, $venta->sucursale_id);
@@ -920,6 +958,18 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
                 $producto = Producto::find($pivot->producto_id);
                 $arrayOrdenes = json_decode($pivot->adicionales, true);
+
+                // Validar que todos los items estén pendientes si el producto tiene sección
+                if ($producto->seccion && $arrayOrdenes) {
+                    foreach ($arrayOrdenes as $indice => $itemData) {
+                        $estado = $itemData['estado'] ?? 'pendiente';
+                        if ($estado !== 'pendiente') {
+                            throw new \Exception(
+                                "No se puede eliminar el pedido. Tiene items en estado '{$estado}' que ya están siendo preparados en cocina. Solo se pueden eliminar pedidos con todos los items pendientes."
+                            );
+                        }
+                    }
+                }
 
                 // Restaurar stock si es contable
                 if ($producto->contable) {
@@ -1322,16 +1372,91 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 ->where('id', $producto_venta_id)
                 ->update(['adicionales' => json_encode($adicionales)]);
 
-            // Verificar si todos los items están despachados para actualizar estado_actual
-            if ($this->todosItemsDespachados($adicionales)) {
-                DB::table('producto_venta')
-                    ->where('id', $producto_venta_id)
-                    ->update(['estado_actual' => 'despachado']);
-            }
+            // Calcular y actualizar el estado_actual según los estados de todos los items
+            $nuevoEstadoActual = $this->calcularEstadoActual($adicionales);
+            DB::table('producto_venta')
+                ->where('id', $producto_venta_id)
+                ->update(['estado_actual' => $nuevoEstadoActual]);
 
             return VentaResponse::success(null, 'Estado del item actualizado correctamente');
         } catch (\Exception $e) {
             return VentaResponse::error('Error al cambiar estado del item: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Valida si un item puede ser eliminado basándose en su estado
+     * Solo se pueden eliminar items pendientes si el producto tiene sección
+     * 
+     * @param Producto $producto Producto del item
+     * @param array $adicionales Array completo de adicionales
+     * @param int $posicion Posición del item a eliminar
+     * @return VentaResponse
+     */
+    private function validarEliminacionItem(Producto $producto, array $adicionales, int $posicion): VentaResponse
+    {
+        // Si el producto no tiene sección, permitir eliminar siempre
+        if (!$producto->seccion) {
+            return VentaResponse::success(null, 'Validación exitosa');
+        }
+
+        // Verificar si el item existe
+        if (!isset($adicionales[$posicion])) {
+            return VentaResponse::error('Item no encontrado en la posición especificada');
+        }
+
+        $itemData = $adicionales[$posicion];
+        $estado = $itemData['estado'] ?? 'pendiente';
+
+        // Si el item no está pendiente, no permitir eliminarlo
+        if ($estado !== 'pendiente') {
+            return VentaResponse::error(
+                "No se puede eliminar. El item está en estado '{$estado}' y ya está siendo preparado en cocina. Solo se pueden eliminar items pendientes."
+            );
+        }
+
+        return VentaResponse::success(null, 'Validación exitosa');
+    }
+
+    /**
+     * Calcula el estado_actual del registro producto_venta basándose en los estados de todos sus items
+     * 
+     * Lógica:
+     * - Si todos están despachados → 'despachado'
+     * - Si hay alguno en preparación → 'preparacion'
+     * - En cualquier otro caso → 'pendiente'
+     * 
+     * @param array $adicionales Array de adicionales del producto_venta
+     * @return string Estado calculado ('pendiente', 'preparacion', 'despachado')
+     */
+    private function calcularEstadoActual(array $adicionales): string
+    {
+        $todosDespachados = true;
+        $hayEnPreparacion = false;
+
+        foreach ($adicionales as $item) {
+            if (isset($item['estado'])) {
+                $estado = $item['estado'];
+
+                if ($estado !== 'despachado') {
+                    $todosDespachados = false;
+                }
+
+                if ($estado === 'preparacion') {
+                    $hayEnPreparacion = true;
+                }
+            } else {
+                // Si no tiene estado (formato antiguo), considerarlo como pendiente
+                $todosDespachados = false;
+            }
+        }
+
+        if ($todosDespachados) {
+            return 'despachado';
+        } elseif ($hayEnPreparacion) {
+            return 'pendiente';
+        } else {
+            return 'pendiente';
         }
     }
 

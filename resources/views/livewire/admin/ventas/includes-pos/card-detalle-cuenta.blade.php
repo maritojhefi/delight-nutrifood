@@ -98,9 +98,8 @@
                     <li class="list-group-item d-flex justify-content-between lh-condensed m-0 p-1">
                         <div class="">
                             <div class="row">
-                                <div class="col"><a href="#" data-toggle="modal"
-                                        data-target="#modalAdicionales{{ $item['id'] }}"
-                                        wire:click="mostraradicionales('{{ $item['id'] }}')">
+                                <div class="col">
+                                    <a href="#" wire:click="verDetalleItemPOS('{{ $item['pivot_id'] }}')">
                                         <h6 class="my-0" style="font-size:12px"><small
                                                 class="@isset($productoapuntado) {{ $item['nombre'] == $productoapuntado->nombre ? 'text-success' : '' }} @endisset">{{ Str::limit($item['nombre'], 40, '...') }}</small>
                                         </h6>
