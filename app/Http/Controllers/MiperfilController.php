@@ -118,18 +118,33 @@ class MiperfilController extends Controller
         //dd($planes);
         $menusemanal = "";
         $estadoMenu = SwitchPlane::find(1);
-        foreach ($planes as $dias) {
 
+        $primer_dia = null;
+        $esProximo = true;
+
+        foreach ($planes as $dias) {
             if (date('y-m-d', strtotime($dias->pivot->start)) <= $fechalimite && date('y-m-d', strtotime($dias->pivot->start)) >= $fechaactual) {
 
-                $menusemanal = Almuerzo::where('dia', $this->saber_dia($dias->pivot->start))->first();
+                $dia = $this->saber_dia($dias->pivot->start);
+
+                $menusemanal = Almuerzo::where('dia', $dia)->first();
+
                 if (!$menusemanal) {
                     continue;
                 }
+
+                // Marcar el primer conjunto de dias como proximo para ser resaltados
+                if ($primer_dia === null) {
+                    $primer_dia = $dia;
+                } else if ($primer_dia !== $dia) {
+                    $esProximo = false;
+                }
+                $proximo_value = $esProximo;
+
                 $coleccion->push([
                     'detalle' => $dias->pivot->detalle,
                     'estado' => $dias->pivot->estado,
-                    'dia' => $this->saber_dia($dias->pivot->start),
+                    'dia' => $dia,
                     'id' => $dias->pivot->id,
                     'fecha' => date('d-M', strtotime($dias->pivot->start)),
                     'sopa' => $menusemanal->sopa,
@@ -155,6 +170,7 @@ class MiperfilController extends Controller
                     'envio3' => Plane::ENVIO3,
                     'empaque1' => 'Vianda',
                     'empaque2' => 'Empaque Bio(apto/microondas)',
+                    'proximo' => $proximo_value, // Assign the dynamically determined value
                 ]);
             }
         }
@@ -225,12 +241,23 @@ class MiperfilController extends Controller
                 ->with('error', 'Este dia ya no se encuentra en su plan!');
         }
     }
+
     public function editardia($idpivot)
     {
         $dia = DB::table('plane_user')->where('id', $idpivot)->first();
+        
         if ($dia->estado == "pendiente") {
-            DB::table('plane_user')->where('id', $idpivot)->update(['detalle' => null, 'whatsapp' => false]);
-            return back()->with('success', 'Ya puede editar este dia!');
+            DB::table('plane_user')
+                ->where('id', $idpivot)
+                ->update(['detalle' => null, 'whatsapp' => false]);
+
+            $url = route('calendario.cliente', [
+                'plan' => $dia->plane_id,
+                'usuario' => $dia->user_id
+            ]) . '?pedido=' . $idpivot;
+
+            return redirect($url);
+            
         } else {
             return back()->with('error', 'Este dia ya no se encuentra disponible!');
         }

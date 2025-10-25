@@ -7,7 +7,7 @@ import './auth/logout';
 import './carrito/carrito-store';
 import './ventas/venta-service'
 import './saldo/saldo-service'
-
+import './planes/planes-service'
 
 createIcons({icons});
 
