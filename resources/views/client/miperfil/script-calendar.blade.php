@@ -12,7 +12,6 @@
             let formulario = document.getElementById("form-cal");
             let formBasic = document.getElementById("formBasic");
             var calendarEl = document.getElementById('calendar');
-            // Construccion del calendario
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 height: 'auto',
                 initialView: 'dayGridMonth',
