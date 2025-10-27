@@ -30,12 +30,12 @@
 
     <div class="col my-2">
         <div class="d-flex flex-row justify-content-evenly align-items-center w-100 px-0 gap-3">
-            @if ($lista['estado'] == 'pendiente')
+            <!-- @if ($lista['estado'] == 'pendiente')
                 <a href="#" data-menu="permiso-menu-{{ $lista['id'] }}"
                     class="btn btn-s rounded-s w-auto text-uppercase font-600 shadow-s bg-delight-red permiso-pedido-btn">
                     <span class="text-white">Permiso</span>
                 </a>
-            @endif
+            @endif -->
             <!-- <button type="submit" disabled
                 class="btn btn-s rounded-s w-auto text-uppercase font-600 shadow-s bg-teal-dark bg-dtheme-blue">
                 <span class="text-white">Guardar {{ $lista['dia'] }}</span>
