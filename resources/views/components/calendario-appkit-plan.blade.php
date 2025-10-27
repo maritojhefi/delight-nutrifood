@@ -577,11 +577,11 @@
                 $span.html('<i class="fa fa-spinner fa-spin me-1"></i>Procesando');
                 
                 try {
-                    // Make axios call
                     const response = await PlanesService.asignarPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }});
                     await renderizarCalendario();
                     console.log('Permisos marcados exitosamente:', response.data);
-                    
+                    ocultarMenusPermisos();
+                    ocultarTodosMenus();
                     // Show success message and refresh calendar
                     // ... your success handling logic
                     
@@ -632,6 +632,10 @@
         const ocultarMenusPermisos = () => {
             $('#menu-pedir-permisos').removeClass('menu-active');
             $('#menu-deshacer-permisos').removeClass('menu-active');
+        }
+
+        const ocultarTodosMenus = () => {
+            $('.menu-active').removeClass('menu-active');
         }
 
         const reiniciarBackButton = (infoDia, infoMes) => {

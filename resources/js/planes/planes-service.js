@@ -6,13 +6,18 @@ export const permisoPedido = async(idPlaneUser) => {
     return response;
 }
 
+// export const obtenerCalendarioPlan = async(idPlan, idUser) => {
+//     const response = await cachedAxios.get(`/miperfil/calendario-plan/${idPlan}/${idUser}`, {
+//         cache: {
+//             ttl: 1000 * 60 * 5,
+//             interpretHeader: false,
+//         }
+//     });
+//     return response; 
+// }
+
 export const obtenerCalendarioPlan = async(idPlan, idUser) => {
-    const response = await cachedAxios.get(`/miperfil/calendario-plan/${idPlan}/${idUser}`, {
-        cache: {
-            ttl: 1000 * 60 * 5,
-            interpretHeader: false,
-        }
-    });
+    const response = await axios.get(`/miperfil/calendario-plan/${idPlan}/${idUser}`);
     // console.log("Respuesta obtenida sobre la informacion del plan: ", response.data);
     // console.log("Respuesta servida desde la cache: ", response.cached);
     return response; 
