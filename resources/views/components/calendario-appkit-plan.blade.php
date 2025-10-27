@@ -301,14 +301,25 @@
                             break;
                     }
 
+                    // Check if diaInfo.eventos exists. If it does, get its length. 
+                    // If it doesn't (i.e., it's undefined or null), use 0 instead.
+                    let numPlanesDia = diaInfo.eventos ? diaInfo.eventos.length : 0;
+
+                    const badgeHTML = numPlanesDia > 1 ? `
+                                    <div class="badge border bg-theme bg-dtheme-blue color-theme bg-delight-red position-absolute top-0">
+                                        ${numPlanesDia}
+                                    </div>
+                                ` : '';
                     // REALIZAR LA ASIGNACION APROPIADA DE INFORMACION PARA EL DESPLIEGUE DEL MODAL/MENU
 
                     // Si el dia dispone de un plan/feriado
                     if (esHoy(dia)) {
                         // Dia de hoy con plan
+                        console.log("diaInfo:",diaInfo);
+
                         calendarHTML.push(`
-                            <a href="#" class="cal-selected cal-menu-opener" data-menu="menu-events" data-fecha="${fecha}">
-                                <button class="${bgColor} rounded-xs line-height-xs">${dia}</button>
+                            <a href="#" class="cal-selected cal-menu-opener position-relative" data-menu="menu-events" data-fecha="${fecha}">
+                                <button class="${bgColor} rounded-xs line-height-xs">${dia} ${badgeHTML}</button>
                             </a>
                         `);
                     } else if (diaInfo.tipo === 'feriado') {
@@ -321,8 +332,8 @@
                     } else {
                         // Dia regular con plan
                         calendarHTML.push(`
-                            <a href="#" class="cal-menu-opener" data-menu="menu-events" data-fecha="${fecha}">
-                                <button class="${bgColor} rounded-xs line-height-xs">${dia}</button>
+                            <a href="#" class="cal-menu-opener position-relative" data-menu="menu-events" data-fecha="${fecha}">
+                                <button class="${bgColor} rounded-xs line-height-xs">${dia} ${badgeHTML}</button>
                             </a>
                         `);
                     }
