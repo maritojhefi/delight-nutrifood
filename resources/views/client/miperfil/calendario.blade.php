@@ -12,7 +12,6 @@
             $path = GlobalHelper::getValorAtributoSetting('url_web');
         @endphp
     @endproduction
-    @include('client.miperfil.script-calendar')
     <div class="card card-style">
         @if ($estadoMenu->activo)
             @if ($plan->editable)
@@ -130,12 +129,6 @@
     @include('client.miperfil.includes.show-errores')
 
     <x-calendario-appkit-plan :plan="$plan" :usuario="$usuario" />
-
-    <div class="card card-style bg-dtheme-dkblue">
-            <div class="card-body">
-                <div id="calendar" class="app-fullcalendar"></div>
-            </div>
-    </div>
 
     
     @push('modals')

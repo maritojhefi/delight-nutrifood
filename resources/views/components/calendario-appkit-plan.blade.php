@@ -375,7 +375,7 @@
                     // Si el dia dispone de un plan/feriado
                     if (esHoy(dia)) {
                         // Dia de hoy con plan
-                        console.log("diaInfo:",diaInfo);
+                        // console.log("diaInfo:",diaInfo);
 
                         calendarHTML.push(`
                             <a href="#" class="cal-selected ${claseAccion} position-relative" data-fecha="${fecha}">
