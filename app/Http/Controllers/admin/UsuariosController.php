@@ -13,7 +13,6 @@ use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -381,16 +380,39 @@ class UsuariosController extends Controller
 
         return response()->json($evento);
     }
-    public function permisoVarios($fecha, $cantidad, $planId) {
-        // Solo se debe permitir solicitar permiso para 
+
+    public function permisoVarios(Request $request)
+    {
+        $fecha = $request->fecha; // string
+        $cantidad = $request->cantidad;
+        $planId = $request->planId;
+
+        $fechaSeleccionada = Carbon::parse($fecha)->startOfDay();
+        $fechaHoy = Carbon::now();
+        $horaActual = $fechaHoy->hour;
+
+        // No permitir fechas pasadas
+        if ($fechaSeleccionada->lessThan($fechaHoy->startOfDay())) {
+            return response()->json([
+                'error' => 'No se pueden asignar permisos en fechas pasadas.'
+            ], 400);
+        }
+
+        // Condición: si la fecha seleccionada es hoy y ya pasó de las 9AM → fallar
+        if ($fechaSeleccionada->isSameDay($fechaHoy) && $horaActual >= 9) {
+            return response()->json([
+                'error' => 'Ya no se pueden solicitar permisos después de las 9AM.'
+            ], 400);
+        }
+
+        // Obtener los eventos "pendientes" permisibles
         $eventosPermisibles = DB::table('plane_user')
-                        ->where('start', $fecha)
-                        ->where('estado', 'pendiente')
-                        // uso temporal del id del usuario realizando la solicitud
-                        ->where('user_id', auth()->user()->id)
-                        ->where('plane_id', $planId)
-                        ->limit($cantidad)
-                        ->get();
+            ->whereDate('start', $fechaSeleccionada)
+            ->where('estado', 'pendiente')
+            ->where('user_id', auth()->id())
+            ->where('plane_id', $planId)
+            ->limit($cantidad)
+            ->get();
 
         if ($eventosPermisibles->isEmpty()) {
             return response()->json(['error' => 'No hay eventos permisibles'], 404);
@@ -398,14 +420,20 @@ class UsuariosController extends Controller
 
         $permisibleComparacion = $eventosPermisibles->first();
 
+        // Calcular fecha siguiente
         $extraerUltimo = DB::table('plane_user')
             ->where('user_id', $permisibleComparacion->user_id)
             ->where('plane_id', $permisibleComparacion->plane_id)
             ->where('title', '!=', 'feriado')
             ->orderBy('start', 'DESC')
             ->first();
-        
-        $fechaParaAgregar = $this->diaSiguienteAlUltimo($extraerUltimo->start, $permisibleComparacion->plane_id, $permisibleComparacion->user_id);
+
+        $fechaParaAgregar = $this->diaSiguienteAlUltimo(
+            $extraerUltimo->start,
+            $permisibleComparacion->plane_id,
+            $permisibleComparacion->user_id
+        );
+
         $saberDia = WhatsappAPIHelper::saber_dia($fechaParaAgregar);
         if ($saberDia == "Domingo") {
             $fechaParaAgregar = Carbon::parse($fechaParaAgregar)->addDay();
@@ -414,7 +442,7 @@ class UsuariosController extends Controller
         $idsActualizados = [];
 
         foreach ($eventosPermisibles as $permisible) {
-            // Insert new event
+            // Crear nuevos registros "pendientes" para el usuario tras su ultimo día
             DB::table('plane_user')->insert([
                 'start' => $fechaParaAgregar,
                 'end' => $fechaParaAgregar,
@@ -422,19 +450,19 @@ class UsuariosController extends Controller
                 'plane_id' => $permisible->plane_id,
                 'user_id' => $permisible->user_id
             ]);
-            
-            // Update the existing event to permiso status
+
+            // Actualizar los registros pendientes seleccionados a "permisos"
             DB::table('plane_user')
                 ->where('id', $permisible->id)
                 ->update([
-                    'estado' => Plane::ESTADOPERMISO, 
-                    'color' => Plane::COLORPERMISO, 
+                    'estado' => Plane::ESTADOPERMISO,
+                    'color' => Plane::COLORPERMISO,
                     'detalle' => null
                 ]);
-            
+
             $idsActualizados[] = $permisible->id;
         }
-        
+
         return response()->json([
             'success' => true,
             'cantidad' => count($idsActualizados),
@@ -443,6 +471,85 @@ class UsuariosController extends Controller
             'fecha_agregada' => $fechaParaAgregar
         ]);
     }
+
+    public function deshacerPermisosVarios(Request $request)
+    {
+        $fecha = $request->fecha; // string
+        $cantidad = $request->cantidad;
+        $planId = $request->planId;
+
+        $fechaSeleccionada = Carbon::parse($fecha)->startOfDay();
+        $fechaHoy = Carbon::now();
+        $horaActual = $fechaHoy->hour;
+
+        // Condición: si la fecha seleccionada es hoy y ya pasó de las 9AM → fallar
+        if ($fechaSeleccionada->isSameDay($fechaHoy) && $horaActual >= 9) {
+            return response()->json([
+                'error' => 'Ya no se pueden deshacer permisos después de las 9AM.'
+            ], 400);
+        }
+
+        // No permitir fechas pasadas
+        if ($fechaSeleccionada->lessThan($fechaHoy->startOfDay())) {
+            return response()->json([
+                'error' => 'No se pueden deshacer permisos de días anteriores.'
+            ], 400);
+        }
+
+        // Obtener permisos de la fecha solicitada
+        $permisosRemovibles = DB::table('plane_user')
+            ->whereDate('start', $fechaSeleccionada)
+            ->where('estado', 'permiso')
+            ->where('user_id', auth()->id())
+            ->where('plane_id', $planId)
+            ->orderBy('start', 'ASC')
+            ->limit($cantidad)
+            ->get();
+
+        // En caso de no haber permisos removibles -> fallar
+        if ($permisosRemovibles->isEmpty()) {
+            return response()->json(['error' => 'No hay permisos que puedan deshacerse'], 404);
+        }
+
+        // Eliminar los últimos "pendientes" del usuario (más recientes)
+        $pendientesAEliminar = DB::table('plane_user')
+            ->where('user_id', auth()->id())
+            ->where('plane_id', $planId)
+            ->whereNotIn('estado', [Plane::ESTADOFINALIZADO, Plane::ESTADOFERIADO])
+            ->orderBy('start', 'DESC')
+            ->limit($permisosRemovibles->count())
+            ->pluck('id'); // solo obtener IDs
+
+
+        if ($pendientesAEliminar->isNotEmpty()) {
+            DB::table('plane_user')->whereIn('id', $pendientesAEliminar)->delete();
+        }
+
+        // Actualizar los permisos removibles a pendientes
+        $idsActualizados = [];
+        foreach ($permisosRemovibles as $removible) {
+            DB::table('plane_user')
+                ->where('id', $removible->id)
+                ->update([
+                    'estado' => Plane::ESTADOPENDIENTE,
+                    'color' => Plane::COLORPENDIENTE,
+                    'detalle' => null
+                ]);
+
+            $idsActualizados[] = $removible->id;
+        }
+
+        return response()->json([
+            'success' => true,
+            'cantidad_actualizados' => count($idsActualizados),
+            'cantidad_eliminados' => $pendientesAEliminar->count(),
+            'ids_actualizados' => $idsActualizados,
+            'fecha_original' => $fechaSeleccionada->toDateString(),
+        ]);
+    }
+
+
+
     public function quitarpermiso($id)
     {
         $evento = DB::table('plane_user')->where('id', $id)->update(['estado' => Plane::ESTADOPENDIENTE, 'color' => Plane::COLORPENDIENTE]);

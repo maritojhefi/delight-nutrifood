@@ -83,7 +83,7 @@
     <div id="menu-pedidos-dia-calendario" class="menu menu-box-modal rounded-m" style="width: 90%">
         <div class="menu-title flex-align-center">
             <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
-            <h1 id="fecha-menu-dia-calendario" class="font-20 mt-1 mb-0">29 de Febrero 2025</h1>
+                <h1 id="fecha-menu-control-dia" class="font-20 mt-1 mb-0 fecha-seleccionada">Fecha del día</h1>
             <a href="#" class="close-menu"><i class="fa fa-times-circle"></i></a>
         </div>
         <div class="divider divider-margins my-2"></div>
@@ -136,57 +136,48 @@
         </div>
     </div>
 
+    <!-- <div id="menu-pedir-permisos" class="menu menu-box-modal rounded-m" style="width: 90%">
+        <div class="menu-title flex-align-center">
+            <a href="#" class="back-menu-pedidos-dia">
+                <i data-lucide="chevron-left" class="lucide-icon"></i>
+            </a>
+            <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
+            <h1 id="fecha-menu-dia-calendario" class="font-24 mt-1 mb-0">29 de Febrero 2025</h1>
+        </div>
+        <div class="divider divider-margins mt-1 mb-0"></div>
+        <div class="content m-0 p-3">
+                <p class="mb-0">Tienes <span id="mensaje-cantidad-permisos"></span> pedidos disponibles para marcar con permiso este día.</p>
+            <div id="menu-selector-permisos">Selector</div>
+        </div>
+    </div> -->
+
     <div id="menu-pedir-permisos" class="menu menu-box-modal rounded-m" style="width: 90%">
         <div class="menu-title flex-align-center">
             <a href="#" class="back-menu-pedidos-dia">
                 <i data-lucide="chevron-left" class="lucide-icon"></i>
             </a>
             <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
-            <h1 id="fecha-menu-dia-calendario" class="font-24 mt-1 mb-0">29 de Febrero 2025</h1>
+            <h1 id="fecha-menu-control-permisos" class="font-20 mt-1 mb-0 fecha-seleccionada">Fecha del día</h1>
         </div>
         <div class="divider divider-margins mt-1 mb-0"></div>
         <div class="content m-0 p-3">
-                <!-- <h4 class="font-700 mb-3">Seleccionar Permisos</h4> -->
-                <p class="mb-0">Tienes <span id="mensaje-cantidad-permisos"></span> pedidos disponibles para marcar con permiso este día.</p>
-            <div id="menu-selector-permisos">Selector</div>
-        </div>
-    </div>
-
-    <div id="menu-deshacer-permisos" class="menu menu-box-modal rounded-m" style="width: 90%">
-        <div class="menu-title flex-align-center">
-            <a href="#" class="back-menu-pedidos-dia">
-                <i data-lucide="chevron-left" class="lucide-icon"></i>
-            </a>
-            <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
-            <h1 id="fecha-menu-dia-calendario" class="font-24 mt-1 mb-0">29 de Febrero 2025</h1>
-        </div>
-        <div class="divider divider-margins my-2"></div>
-        <div class="content mt-0">
-            <p>Selector</p>
-        </div>
-    </div>
-<!-- 
-    <div id="menu-permiso-simple" class="menu menu-box-modal rounded-m" style="width: 90%">
-        <div class="menu-title flex-align-center">
-            <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
-            <h1 id="fecha-menu-dia-calendario" class="font-24 mt-1 mb-0">29 de Febrero 2025</h1>
-            <a href="#" class="back-menu-pedidos-dia">
-                <i class="fa fa-times-circle close-menu"></i>
-            </a>
-        </div>
-        <div class="divider divider-margins mt-1 mb-0"></div>
-        <div class="content m-0 p-3">
-            <p class="mb-2">
-                <span class="color-theme" id="textoPermisoSimple"></span>
-                <br>
-                No perderás tu pedido, este pasará al dia siguiente del final de tu plan.
-            </p>
-            <div class="d-flex flex-row align-items-center justify-content-evenly">
-                <button class="close-menu py-2 px-3 font-15 bg-delight-red color-white rounded-s line-height-s text-uppercase font-600 shadow-xl">Cancelar</button>
-                <button id="btnPermisoSimple" class="py-2 px-3 font-15 bg-highlight color-white rounded-s line-height-s text-uppercase font-600 shadow-xl">Confirmar</button>
+            <p id="mensaje-permisos" class="mb-0"></p>
+            
+            <div class="d-flex flex-row align-items-center justify-content-between mx-2 mt-2">
+                <div class="stepper rounded-s d-flex flex-row">
+                    <a href="#" class="stepper-restar"><i class="fa fa-minus color-theme"></i></a>
+                    <input type="number" id="cantidad-permisos" min="1" value="1">
+                    <a href="#" class="stepper-agregar"><i class="fa fa-plus color-theme"></i></a>
+                </div>
+                <button 
+                    id="btn-confirmar-permisos"
+                    class="py-2 px-3 wrapper font-15 bg-magenta-dark rounded-s line-height-s text-uppercase font-600 shadow-xl"
+                >
+                    <span class="d-flex flex-row align-items-center gap-1">Confirmar</span>
+                </button>
             </div>
         </div>
-    </div> -->
+    </div>
 
     <div id="menu-permiso-simple" class="menu menu-box-modal pb-3 rounded-m overflow-hidden" style="width: 80%;">
         <div class="menu-title p-3">
@@ -212,17 +203,6 @@
             </div>
         </div>
     </div>
-    <!-- <div id="menu-deshacer-simple">
-        <div class="menu-title flex-align-center">
-            <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
-            <h1 id="fecha-menu-dia-calendario" class="font-24 mt-1 mb-0">29 de Febrero 2025</h1>
-            <a href="#" class="back-menu-pedidos-dia">
-                <i data-lucide="chevron-left" class="lucide-icon"></i>
-                <i class="fa fa-times-circle"></i>
-            </a>
-        </div>
-        <div class="divider divider-margins mt-1 mb-0"></div>
-    </div> -->
 @endpush
 
 @push('header')
@@ -502,16 +482,14 @@
                 const fecha = $(this).data('fecha');
                 const diaInfo = diasDisponibles[fecha];
                 console.log("Diainfo para evento con permiso simple: ", diaInfo);
-                // switch(diaInfo[0].estado)
                 switch (diaInfo.eventos[0].estado) {
                     case "pendiente":
-                        // construirMenuPermisoSimple(true);
-                        console.log("Es pendiente");
+                        // // console.log("Es pendiente");
                         construirMenuPermisoSimple(true, diaInfo, infoMes);
                         revelarMenuPermisoSimple();
                         break;
                     case "permiso":
-                        console.log("Es permiso");
+                        // // console.log("Es permiso");
                         construirMenuPermisoSimple(false, diaInfo, infoMes);
                         revelarMenuPermisoSimple();
                         break;
@@ -528,18 +506,13 @@
             const stringFecha = `${infoDia.start}T00:00:00Z`;
             const dateObj = new Date(stringFecha);
             const dia = dateObj.getUTCDate();
-            // const botonAccionSimple = $('#btnPermisoSimple');
-            // const textoSimple = $('#textoPermisoSimple');
             const tituloSimple = $('#titulo-simple');
             const textoSimple = $('#texto-simple'); // elemento <p>, incluir html con span para modificarlo
-            // const textoFecha = $('#fecha-simple');
             const botonConfirmacion = $('#btnConfirmarSimple');
 
             botonConfirmacion.data('pedido', infoDia.eventos[0].id);
-            // textoFecha.text(infoDia.start);
-            // const fecha = infoDia.start.trim('-');
-            $('#fecha-menu-dia-calendario').text(`${dia} de ${infoMes.nombre}  de ${infoMes.anio}`);
-            // asignar funcionalidad al boton de confirmacion
+            $('.fecha-seleccionada').text(`${dia} de ${infoMes.nombre}  de ${infoMes.anio}`);
+            // Asignar funcionalidad al boton de confirmación
             if (esPendiente) {
                 tituloSimple.text("Solicitar Permiso");
                 textoSimple.text("¿Deseas pedir permiso para el pedido de este día?");
@@ -551,230 +524,229 @@
                     const $span = $btn.find('span');
                     const textoOriginal = $span.text();
                     
-                    // Disable controls while processing
+                    // Deshabilitar mientras se procesa
                     botonConfirmacion.prop('disabled', true);
-                    // $span.html('<i class="fa fa-spinner fa-spin me-1"></i>Procesando');
+                    $span.html('<i class="fa fa-spinner fa-spin me-1"></i>Procesando');
                     
                     try {
                         const response = await PlanesService.asignarPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }});
+                        mostrarToastSuccess("Se asignó el permiso solicitado");
                         await renderizarCalendario();
                         console.log('Permisos marcados exitosamente:', response.data);
                         ocultarMenusPermisos();
                         ocultarTodosMenus();
-                        // Show success message and refresh calendar
-                        // ... your success handling logic
                         
                     } catch (error) {
                         console.error('Error al marcar permisos:', error);
-                        // Show error message
                     } finally {
-                        // Re-enable everything
+                        // Re-habilitar
                         $btn.prop('disabled', false);
-                        $input.prop('disabled', false);
+                        console.log("Texto a colocarse en el span simple:", textoOriginal);
                         $span.text(textoOriginal);
+                        console.log("span simple actualizado");
                     }
                 });
-                // botonAccionSimple.removeClass('deshacer-simple');
-                // botonAccionSimple.addClass('permiso-simple');
-                // textoSimple.text("¿Deseas pedir permiso para este día?");
             } else {
                 tituloSimple.text("Deshacer Permiso");
                 textoSimple.text("¿Deseas retirar el permiso para este día?");
+                $('#btnConfirmarSimple').off('click').on('click', async function(e) {
+                    e.preventDefault();
+                    
+                    const cantidadPermisos = 1;
+                    const $btn = $(this);
+                    const $span = $btn.find('span');
+                    const textoOriginal = $span.text();
+                    
+                    // Deshabilitar mientras se procesa
+                    botonConfirmacion.prop('disabled', true);
+                    $span.html('<i class="fa fa-spinner fa-spin me-1"></i>Procesando');
+                    
+                    try {
+                        const response = await PlanesService.deshacerPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }});
+                        mostrarToastSuccess("Se retiró el permiso solicitado");
+                        await renderizarCalendario();
+                        console.log('Permisos retirados exitosamente:', response.data);
+                        ocultarMenusPermisos();
+                        ocultarTodosMenus();
+                        
+                    } catch (error) {
+                        console.error('Error al retirar permisos:', error);
+                    } finally {
+                        // Re-habilitar
+                        $btn.prop('disabled', false);
+                        console.log("Texto a colocarse en el span simple:", textoOriginal);
+                        $span.text(textoOriginal);
+                        console.log("span simple actualizado");
+                    }
+                });
             }
-
-            
-
-            // botonAccionSimple.off('click').on('click', async function (e) {
-            //     e.preventDefault();
-
-            //     if (botonAccionSimple.hasClass('permiso-simple')) {
-            //         console.log("Axios call para asignar permiso");
-            //     } else if (botonAccionSimple.hasClass('deshacer-simple')) 
-            //     {
-            //         console.log("Axios call para retirar permiso");   
-            //     }                
-            // });
         }
 
         const construirMenuPedidosDia = (infoDia, infoMes) => {
-            console.log("Construccion del modal/menu para controlar los pedidos del cliente");
-            console.log("Informacion para construir el modal:", infoDia);
-            console.log("Informacion del mes pal modal", infoMes);
+            // // console.log("Construccion del modal/menu para controlar los pedidos del cliente");
+            // // console.log("Informacion para construir el modal:", infoDia);
+            // // console.log("Informacion del mes pal modal", infoMes);
 
             // CAMBIAR LA FECHA DEL MODAL
             const stringFecha = `${infoDia.start}T00:00:00Z`;
             const dateObj = new Date(stringFecha);
             const dia = dateObj.getUTCDate();
-            // const fecha = infoDia.start.trim('-');
-            $('#fecha-menu-dia-calendario').text(`${dia} de ${infoMes.nombre}  de ${infoMes.anio}`);
+            $('.fecha-seleccionada').text(`${dia} de ${infoMes.nombre}  de ${infoMes.anio}`);
 
             // Agrupar pedidos
             const pendientes = infoDia.eventos.filter((pedido) => pedido.estado == "pendiente");
             const finalizados = infoDia.eventos.filter((pedido) => pedido.estado == "finalizado");
-            // const permisos = infoDia.eventos.filter((pedido) => pedido.estado == "permiso");
-
             const permisos = infoDia.eventos.filter((pedido) => {
                 if (pedido.estado !== "permiso") return false;
-                
-                // Convert the string date to a Date object at 8:55 AM
-                const fechaPermiso = new Date(pedido.end + 'T08:55:00');
-                const ahora = new Date();
-                
-                // Only include permisos where the 8:55 AM datetime has already passed
-                return fechaPermiso > ahora;
+
+                const fechaSeleccionada = new Date(infoDia.start + "T00:00:00");
+                const fechaHoy = new Date();
+
+                // Normalizar los inicios de hoy y la fecha seleccionada
+                const inicioSeleccionado = new Date(fechaSeleccionada.setHours(0, 0, 0, 0));
+                const inicioDeHoy = new Date(fechaHoy.setHours(0, 0, 0, 0));
+
+                // Rechazar fechas pasadas
+                if (inicioSeleccionado < inicioDeHoy) return false;
+
+                // Rechazar la fecha de hoy si excede las 9:00 AM
+                const horaActual = new Date().getHours();
+                if (inicioSeleccionado.getTime() === inicioDeHoy.getTime() && horaActual >= 9) {
+                    return false;
+                }
+
+                // Retornar permisos validos
+                return true;
             });
 
-            console.log("Permisos válidos (antes de las 8:55 AM de su fecha):", permisos);
-
-            // const testPermiso = permisos[0];
-            // console.log("Datatype testPermiso", typeof(testPermiso.end));
-            // El datatype de permiso.end es stringFecha, a pesar de ser un date
-            // convertir a datetime de 9:00 am para evaluar el filtrado apropiado
-            
-
-            // if (finalizados.length) {
-            //     console.log("finalizados.length true")
-            //     $('#finalizados-anchor').css('display','flex');
-            //     $('#finalizados-anchor').removeClass('d-none');
-            //     $('#finalizados-anchor').addClass('d-flex');
-            // } else {
-            //     console.log("finalizados.length fakse")
-            //     $('#finalizados-anchor').removeClass('d-flex');
-            //     $('#finalizados-anchor').addClass('d-none');
-            // }
+            // // console.log("Permisos válidos a deshacerse:", permisos);
 
             if (pendientes.length) {
                 $('#pendientes-anchor').off('click').on('click', async function (e) {
                     e.preventDefault();
-                    console.log("Abriendo menu solicitar permisos dia");
-                    construirSelectorPermisos(infoDia, infoMes, pendientes);
-                    revelarMenuPedirPermisos();
+                    
+                    construirSelectorPermisos(infoDia, infoMes, pendientes, {
+                        mensaje: 'Tienes {cantidad} pedidos disponibles para marcar con permiso este día.',
+                        accion: async (fecha, cantidad) => {
+                            return await PlanesService.asignarPermisosVarios(fecha, cantidad, {{ $plan->id }});
+                        },
+                        mensajeExito: 'Se asignaron los permisos solicitados.',
+                        mensajeError: 'Error al marcar permisos'
+                    });
+                    revelarMenuPermisos();
                 });
-                $('#pendientes-anchor').removeClass('d-none');
-                $('#pendientes-anchor').addClass('d-flex');
-
-                
+                $('#pendientes-anchor').removeClass('d-none').addClass('d-flex');
             } else {
-                $('#pendientes-anchor').removeClass('d-flex');
-                $('#pendientes-anchor').addClass('d-none');
+                $('#pendientes-anchor').removeClass('d-flex').addClass('d-none');
             }
-
             if (permisos.length) {
                 $('#permisos-anchor').off('click').on('click', async function (e) {
-                    e.preventDefault();
-                    console.log("Abriendo menu deshacer permisos dia");
-                    construirSelectorDeshacer(infoDia, infoMes);
-                    revelarMenuDeshacerPermisos();
+                    e.preventDefault();                    
+                    construirSelectorPermisos(infoDia, infoMes, permisos, {
+                        mensaje: 'Tienes {cantidad} permisos asignados que puedes deshacer este día.',
+                        accion: async (fecha, cantidad) => {
+                            return await PlanesService.deshacerPermisosVarios(fecha, cantidad, {{ $plan->id }});
+                        },
+                        mensajeExito: 'Se deshicieron los permisos solicitados.',
+                        mensajeError: 'Error al deshacer permisos'
+                    });
+                    revelarMenuPermisos();
                 });
-                $('#permisos-anchor').removeClass('d-none');
-                $('#permisos-anchor').addClass('d-flex');
+                $('#permisos-anchor').removeClass('d-none').addClass('d-flex');
             } else {
-                $('#permisos-anchor').removeClass('d-flex');
-                $('#permisos-anchor').addClass('d-none');
+                $('#permisos-anchor').removeClass('d-flex').addClass('d-none');
             }
-            
         }
 
-        const construirSelectorPermisos = (infoDia, infoMes, pendPermisibles) => {
+        const construirSelectorPermisos = (infoDia, infoMes, items, config) => {
             reiniciarBackButton(infoDia, infoMes);
             
-            const maxPermisos = pendPermisibles.length;
-
-            $('#mensaje-cantidad-permisos').text(maxPermisos);
+            const maxItems = items.length;
             
-            const htmlSelector = `
-                <div class="d-flex flex-row align-items-center justify-content-between mx-2 mt-2">
-                    <div class="stepper rounded-s d-flex flex-row">
-                        <a href="#" class="stepper-sub"><i class="fa fa-minus color-theme"></i></a>
-                        <input type="number" id="cantidad-permisos" min="1" max="${maxPermisos}" value="${maxPermisos}">
-                        <a href="#" class="stepper-add"><i class="fa fa-plus color-theme"></i></a>
-                    </div>
-                    <button 
-                        id="btn-confirmar-permisos"
-                        class="py-2 px-3 wrapper font-15 bg-magenta-dark rounded-s line-height-s text-uppercase font-600 shadow-xl"
-                    >
-                        <span class="d-flex flex-row align-items-center gap-1">Confirmar</span>
-                    </button>
-                </div>
-            `;
-            
-            // Insert the HTML
-            $('#menu-selector-permisos').html(htmlSelector);
+            // Actualizar mensaje
+            $('#mensaje-permisos').html(config.mensaje.replace('{cantidad}', `<span class="font-700">${maxItems}</span>`));
             
             const $input = $('#cantidad-permisos');
-            const $btnSub = $('.stepper-sub');
-            const $btnAdd = $('.stepper-add');
+            const $btnSub = $('.stepper-restar');
+            const $btnAdd = $('.stepper-agregar');
+            const $btnConfirmar = $('#btn-confirmar-permisos');
             
-            // Handle subtract button
+            // Establecer minimos y máximos
+            $input.attr('min', 1);
+            $input.attr('max', maxItems);
+            $input.val(maxItems);
+            
+            // Control botón reducir
             $btnSub.off('click').on('click', function(e) {
                 e.preventDefault();
-                
                 let currentValue = parseInt($input.val());
                 if (currentValue > 1) {
                     $input.val(currentValue - 1);
                 }
             });
             
-            // Handle add button
+            // Control botón incrementar
             $btnAdd.off('click').on('click', function(e) {
                 e.preventDefault();
-                
                 let currentValue = parseInt($input.val());
-                if (currentValue < maxPermisos) {
+                if (currentValue < maxItems) {
                     $input.val(currentValue + 1);
                 }
             });
             
-            // Handle manual input changes
+            // Control de cambios en input
             $input.on('input change', function() {
                 let valor = parseInt($(this).val());
                 
-                // Validate and constrain the value
+                // Validar y limitar valores seleccionables
                 if (isNaN(valor) || valor < 1) {
                     valor = 1;
-                } else if (valor > maxPermisos) {
-                    valor = maxPermisos;
+                } else if (valor > maxItems) {
+                    valor = maxItems;
                 }
                 
                 $(this).val(valor);
             });
             
-            // Handle submit button click
-            $('#btn-confirmar-permisos').off('click').on('click', async function(e) {
+            // Controlar submit y funcionalidad del botón confirmación
+            $btnConfirmar.off('click').on('click', async function(e) {
                 e.preventDefault();
                 
-                const cantidadPermisos = parseInt($input.val());
+                const cantidad = parseInt($input.val());
                 const $btn = $(this);
                 const $span = $btn.find('span');
                 const textoOriginal = $span.text();
                 
-                // Validate the input
-                if (cantidadPermisos < 1 || cantidadPermisos > maxPermisos) {
+                // Validar el input de cantidad
+                if (cantidad < 1 || cantidad > maxItems) {
                     console.error('Cantidad inválida');
+                    mostrarToastError('La cantidad seleccionada es inválida')
                     return;
                 }
                 
-                // Disable controls while processing
+                // Deshabilitar controles hasta terminar la solicitud
                 $btn.prop('disabled', true);
                 $input.prop('disabled', true);
+                $btnSub.css('pointer-events', 'none');
+                $btnAdd.css('pointer-events', 'none');
                 $span.html('<i class="fa fa-spinner fa-spin me-1"></i>Procesando');
                 
                 try {
-                    const response = await PlanesService.asignarPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }});
+                    await config.accion(infoDia.start, cantidad);
+                    mostrarToastSuccess(config.mensajeExito);
                     await renderizarCalendario();
-                    console.log('Permisos marcados exitosamente:', response.data);
                     ocultarMenusPermisos();
                     ocultarTodosMenus();
-                    // Show success message and refresh calendar
-                    // ... your success handling logic
-                    
-                } catch (error) {
-                    console.error('Error al marcar permisos:', error);
-                    // Show error message
-                } finally {
-                    // Re-enable everything
+                } 
+                catch (error) {
+                    console.error(config.mensajeError, error);
+                    mostrarToastError(config.mensajeError);
+                }
+                finally {
                     $btn.prop('disabled', false);
                     $input.prop('disabled', false);
+                    $btnSub.css('pointer-events', '');
+                    $btnAdd.css('pointer-events', '');
                     $span.text(textoOriginal);
                 }
             });
@@ -784,18 +756,14 @@
             reiniciarBackButton(infoDia, infoMes);
         }
 
-        const revelarMenuPedirPermisos = () => {
+        const revelarMenuPermisos = () => {
             ocultarrMenuDiaSinHider();
             $('#menu-pedir-permisos').addClass('menu-active')
         }
 
         const revelarMenuPermisoSimple = () => {
-            // construirMenuPermisoSimple(esPendiente);
-            console.log("Revelando menu permiso simple");
             $('.menu-hider').addClass('menu-active');
             $('#menu-permiso-simple').addClass('menu-active');
-
-            
         }
 
         const revelarMenuDeshacerPermisos = () => {
@@ -816,7 +784,6 @@
 
         const ocultarrMenuDiaSinHider = () => {
             $('#menu-pedidos-dia-calendario').removeClass('menu-active');
-            // $('.menu-hider').removeClass('menu-active');
         }
 
         const ocultarMenusPermisos = () => {
@@ -833,7 +800,6 @@
                 e.preventDefault();
                 ocultarMenusPermisos();
                 revelarMenuDia(infoDia, infoMes);
-
             })
         }
     </script>

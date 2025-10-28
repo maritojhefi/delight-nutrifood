@@ -23,8 +23,27 @@ export const obtenerCalendarioPlan = async(idPlan, idUser) => {
     return response; 
 }
 
-export const asignarPermisosVarios = async(fecha, cantidad, planId) => {
-    const response = await axios.get(`/miperfil/permisos/${fecha}/${cantidad}/${planId}`);
+// export const asignarPermisosVarios = async(fecha, cantidad, planId) => {
+//     const response = await axios.get(`/miperfil/permisos/${fecha}/${cantidad}/${planId}`);
+//     return response;
+// }
+
+export const asignarPermisosVarios = async (fecha, cantidad, planId) => {
+    const response = await axios.post(`/miperfil/permisos/asignar-permisos`, {
+        fecha,
+        cantidad,
+        planId,
+    });
+    return response;
+};
+
+
+export const deshacerPermisosVarios = async(fecha, cantidad, planId) => {
+    const response = await axios.post(`/miperfil/permisos/deshacer-permisos`, {
+        fecha: fecha,
+        cantidad: cantidad,
+        planId: planId
+    });
     return response;
 }
 
@@ -39,5 +58,6 @@ export const asignarPermisosVarios = async(fecha, cantidad, planId) => {
 window.PlanesService = {
     permisoPedido,
     obtenerCalendarioPlan,
-    asignarPermisosVarios
+    asignarPermisosVarios,
+    deshacerPermisosVarios
 };
