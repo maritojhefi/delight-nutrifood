@@ -31,7 +31,7 @@
     </div>
     <div class="divider mb-1"></div>
     <div id="fechas-calendario-plan" class="cal-dates cal-dates-border">
-        <a href="#" class="cal-disabled">25</a>
+        <!-- <a href="#" class="cal-disabled">25</a>
         <a href="#" class="cal-disabled">26</a>
         <a href="#" class="cal-disabled">27</a>
         <a href="#" class="cal-disabled">28</a>
@@ -65,7 +65,6 @@
         <a href="#" data-menu="menu-events">26</a>
         <a href="#" data-menu="menu-events">27</a>
         <a href="#" data-menu="menu-events">28</a>
-                <!-- <a href="#" class="cal-disabled">1</a> -->
         <a href="#" data-menu="menu-events">29</a>
         <a href="#" data-menu="menu-events">30</a>
         <a href="#" data-menu="menu-events">31</a>
@@ -74,7 +73,7 @@
         <a href="#" class="cal-disabled">3</a>
         <a href="#" class="cal-disabled">4</a>
         <a href="#" class="cal-disabled">5</a>
-        <div class="clearfix"></div>
+        <div class="clearfix"></div> -->
     </div>
 </div>
 
@@ -309,7 +308,7 @@
             // Dias de mes anterior
             for (let i = diasMesAnterior - 1; i >= 0; i--) {
                 const dia = ultimoDiaMesAnterior - i;
-                calendarHTML.push(`<a href="#" class="cal-disabled">${dia}</a>`);
+                calendarHTML.push(`<a href="#" class="cal-disabled font-14">${dia}</a>`);
             }
             
             // Agregar los dias del mes actual
@@ -346,8 +345,9 @@
                     let numPlanesDia = diaInfo.eventos ? diaInfo.eventos.length : 0;
 
                     const badgeHTML = numPlanesDia > 1 ? `
-                                    <div class="badge border bg-theme bg-dtheme-blue color-theme bg-delight-red position-absolute top-0">
-                                        ${numPlanesDia}
+                                    <div class="badge border d-flex align-items-center justify-content-center p-0 bg-theme bg-dtheme-blue color-theme bg-delight-red position-absolute top-0 end-0"
+                                        style="width: 1.05rem !important; height: 1.05rem !important">
+                                        <span class="">${numPlanesDia}</span>
                                     </div>
                                 ` : '';
 
@@ -382,21 +382,21 @@
 
                         calendarHTML.push(`
                             <a href="#" class="cal-selected ${claseAccion} position-relative" data-fecha="${fecha}">
-                                <button class="${bgColor} rounded-xs line-height-xs">${dia} ${badgeHTML}</button>
+                                <button class=" font-14 ${bgColor} rounded-xs line-height-xs">${dia} </button>${badgeHTML}
                             </a>
                         `);
                     } else if (diaInfo.tipo === 'feriado') {
                         // Feriado
                         calendarHTML.push(`
                             <a href="#" data-menu="menu-events" data-fecha="${fecha}" class="cal-feriado">
-                                <button class="bg-red-dark rounded-xs line-height-xs">${dia}</button>
+                                <button class=" font-14 bg-red-dark rounded-xs line-height-xs">${dia}</button>
                             </a>
                         `);
                     } else {
                         // Dia regular con plan
                         calendarHTML.push(`
                             <a href="#" class="${claseAccion} position-relative"  data-fecha="${fecha}">
-                                <button class="${bgColor} rounded-xs line-height-xs">${dia} ${badgeHTML}</button>
+                                <button class=" font-14 ${bgColor} rounded-xs line-height-xs">${dia} </button>${badgeHTML}
                             </a>
                         `);
                     }
@@ -408,13 +408,13 @@
                         calendarHTML.push(`
                             <a href="#" data-fecha="${fecha}">
                                 <button>
-                                    <span>${dia}</span>
+                                    <span class="font-14">${dia}</span>
                                 </button>
                             </a>
                         `);
                     } else {
                         // Dia cualquiera sin plan
-                        calendarHTML.push(`<a href="#" data-fecha="${fecha}">${dia}</a>`);
+                        calendarHTML.push(`<a href="#" class="font-14" data-fecha="${fecha}">${dia}</a>`);
                     }
                 }
             }
@@ -432,11 +432,9 @@
 
             $('#mes-anterior-btn').off('click').on('click', function (e) {
                 e.preventDefault();
-                console.log("cambio al mes anterior");
                 const mesAnterior = $(this).data("mes-anterior");
                 const anioAnterior = $(this).data("anio");
                 const nuevoMes = infoMeses.filter((mes) => mes.numero == mesAnterior && mes.anio == anioAnterior);
-                console.log("mes anterior: ", nuevoMes);
                 
                 if (nuevoMes.length) {
                     construirCalendario(nuevoMes[0], infoMeses);
@@ -445,13 +443,10 @@
 
             $('#mes-siguiente-btn').off('click').on('click', function (e) {
                 e.preventDefault();
-                console.log("cambio al mes siguiente");
                 const mesSiguiente = $(this).data("mes-siguiente");
                 const anioSiguiente = $(this).data("anio");
 
                 const nuevoMes = infoMeses.filter((mes) => mes.numero == mesSiguiente && mes.anio == anioSiguiente);
-                console.log("mes siguiente: ", nuevoMes);
-
                 
                 if (nuevoMes.length) {
                     construirCalendario(nuevoMes[0], infoMeses);
