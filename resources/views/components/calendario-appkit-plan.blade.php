@@ -218,48 +218,50 @@
     <!-- Script para el control del calendario appkit -->
     <script>
         $(document).ready( async function () {
-            // // $('.menu-hider').addClass('menu-active');
             await renderizarCalendario();
-
-            // await PlanesService.obtenerCalendarioPlan( {{ $plan->id }},{{ $usuario->id }} ).then(
-            //     (respuestaCalendario) => {
-            //         console.log("Respuesta obtenida sobre la informacion del plan: ", respuestaCalendario.data);
-            //         console.log("Respuesta servida desde la cache: ", respuestaCalendario.cached);
-
-            //         // Obtener respuestas separadas divididas por meses en orden
-            //         const mesesPlan = respuestaCalendario.data.meses;
-            //         // Usar el mes y las fechas contenidas en el para renderizar el calendario
-            //         const infoMesActual = mesesPlan.find((mes) => mes.currentDayFlag);
-            //         console.log("info meses plan", mesesPlan);
-                    
-            //         if (infoMesActual) {
-            //             construirCalendario(infoMesActual, mesesPlan);
-            //         }
-            //     }
-            // );
         });
 
-        const renderizarCalendario = async () => {
-            await PlanesService.obtenerCalendarioPlan( {{ $plan->id }},{{ $usuario->id }} ).then(
+        const renderizarCalendario = async (fechaSeleccionada = null) => {
+            await PlanesService.obtenerCalendarioPlan({{ $plan->id }}, {{ $usuario->id }}).then(
                 (respuestaCalendario) => {
-                    console.log("Respuesta obtenida sobre la informacion del plan: ", respuestaCalendario.data);
-                    console.log("Respuesta servida desde la cache: ", respuestaCalendario.cached);
+                    // console.log("Respuesta obtenida sobre la informacion del plan: ", respuestaCalendario.data);
+                    // console.log("Respuesta servida desde la cache: ", respuestaCalendario.cached);
 
                     // Obtener respuestas separadas divididas por meses en orden
                     const mesesPlan = respuestaCalendario.data.meses;
-                    // Usar el mes y las fechas contenidas en el para renderizar el calendario
-                    const infoMesActual = mesesPlan.find((mes) => mes.currentDayFlag);
-                    console.log("info meses plan", mesesPlan);
+                    
+                    let infoMesActual;
+                    
+                    if (fechaSeleccionada) {
+                        // Extraer el mes de la fecha seleccionada (formato: "YYYY-MM-DD")
+                        const mesSeleccionado = parseInt(fechaSeleccionada.split('-')[1]);
+                        const anioSeleccionado = parseInt(fechaSeleccionada.split('-')[0]);
+                        
+                        // Buscar el mes correspondiente
+                        infoMesActual = mesesPlan.find((mes) => 
+                            mes.numero === mesSeleccionado && mes.anio === anioSeleccionado
+                        );
+                        
+                        console.log(`Buscando mes ${mesSeleccionado}/${anioSeleccionado} para fecha: ${fechaSeleccionada}`);
+                    } else {
+                        // Comportamiento por defecto: usar el mes actual
+                        infoMesActual = mesesPlan.find((mes) => mes.currentDayFlag);
+                    }
+                    
+                    // console.log("info meses plan", mesesPlan);
+                    // console.log("mes seleccionado", infoMesActual);
                     
                     if (infoMesActual) {
                         construirCalendario(infoMesActual, mesesPlan);
+                    } else if (fechaSeleccionada) {
+                        console.warn(`No se encontró información para la fecha: ${fechaSeleccionada}`);
                     }
                 }
             );
         }
 
         const construirCalendario = (infoMes, infoMeses) => {
-            console.log("Construyendo calendario para: ", infoMes);
+            // console.log("Construyendo calendario para: ", infoMes);
             
             // Actualizar el titulo del mes
             $('#mes-calendario').text(`${infoMes.nombre} ${infoMes.anio}`);
@@ -267,7 +269,6 @@
             
             // Actualizar botones
             $('#mes-anterior-btn').data('mes-anterior', infoMes.numero === 1 ? 12 : infoMes.numero - 1);
-            // $('#mes-anterior-btn').data('mes-anterior', infoMes.mes.numero === 1 ? 12 : infoMes.numero - 1);
             $('#mes-anterior-btn').data('anio', infoMes.numero === 1 ? infoMes.anio - 1 :infoMes.anio);
             $('#mes-siguiente-btn').data('mes-siguiente', infoMes.numero === 12 ? 1 : infoMes.numero + 1);
             $('#mes-siguiente-btn').data('anio', infoMes.numero === 12 ? infoMes.anio + 1 :infoMes.anio);
@@ -340,8 +341,8 @@
                             break;
                     }
 
-                    // Check if diaInfo.eventos exists. If it does, get its length. 
-                    // If it doesn't (i.e., it's undefined or null), use 0 instead.
+                    // Revisar el número de pedidos pedidos asignados para el dia,
+                    // de no haberlos, asignar 0
                     let numPlanesDia = diaInfo.eventos ? diaInfo.eventos.length : 0;
 
                     const badgeHTML = numPlanesDia > 1 ? `
@@ -356,28 +357,24 @@
 
                     if (numPlanesDia == 1) {
                         // Determinar si diaInfo es apropiado para pedir permiso o remover permiso
-                        // Dependiendo del resultado, se les asignara una clase
-                        // confirmar-pedido-permiso puede pedir permiso
+                        // Dependiendo del resultado, se les asignará una clase
 
                         const fechaPedido = new Date(diaInfo.end + 'T08:55:00');
                         const ahora = new Date();
                         const habilitadoAccion = fechaPedido > ahora;
 
-                        console.log("InfoDiaSimple:", diaInfo);
-                        console.log("HabilitadoAccion:", habilitadoAccion);
+                        // console.log("InfoDiaSimple:", diaInfo);
+                        // console.log("HabilitadoAccion:", habilitadoAccion);
                             
                         if (diaInfo.eventos[0].estado == "pendiente" && habilitadoAccion) {
                             claseAccionSimple = `pedir-permiso-simple`;
-                            console.log("Hay boton pedido simple calendario");
+                            // console.log("Hay boton pedido simple calendario");
                         } else if (diaInfo.eventos[0].estado == "permiso" && habilitadoAccion) {
                             claseAccionSimple = `deshacer-menu-${diaInfo.eventos[0].id}`;
-                            console.log("Hay boton deshacer simple calendario");
+                            // console.log("Hay boton deshacer simple calendario");
                         }
-
-                        // confirmar-deshacer-permiso puede deshacer permiso
                     }
                     // REALIZAR LA ASIGNACION APROPIADA DE INFORMACION PARA EL DESPLIEGUE DEL MODAL/MENU
-
                     // Si el dia dispone de un plan/feriado
                     if (esHoy(dia)) {
                         // Dia de hoy con plan
@@ -531,8 +528,8 @@
                     try {
                         const response = await PlanesService.asignarPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }});
                         mostrarToastSuccess("Se asignó el permiso solicitado");
-                        await renderizarCalendario();
-                        console.log('Permisos marcados exitosamente:', response.data);
+                        await renderizarCalendario(infoDia.start);
+                        // console.log('Permisos marcados exitosamente:', response.data);
                         ocultarMenusPermisos();
                         ocultarTodosMenus();
                         
@@ -541,9 +538,7 @@
                     } finally {
                         // Re-habilitar
                         $btn.prop('disabled', false);
-                        console.log("Texto a colocarse en el span simple:", textoOriginal);
                         $span.text(textoOriginal);
-                        console.log("span simple actualizado");
                     }
                 });
             } else {
@@ -564,8 +559,8 @@
                     try {
                         const response = await PlanesService.deshacerPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }});
                         mostrarToastSuccess("Se retiró el permiso solicitado");
-                        await renderizarCalendario();
-                        console.log('Permisos retirados exitosamente:', response.data);
+                        await renderizarCalendario(infoDia.start);
+                        // console.log('Permisos retirados exitosamente:', response.data);
                         ocultarMenusPermisos();
                         ocultarTodosMenus();
                         
@@ -574,18 +569,16 @@
                     } finally {
                         // Re-habilitar
                         $btn.prop('disabled', false);
-                        console.log("Texto a colocarse en el span simple:", textoOriginal);
                         $span.text(textoOriginal);
-                        console.log("span simple actualizado");
                     }
                 });
             }
         }
 
         const construirMenuPedidosDia = (infoDia, infoMes) => {
-            // // console.log("Construccion del modal/menu para controlar los pedidos del cliente");
-            // // console.log("Informacion para construir el modal:", infoDia);
-            // // console.log("Informacion del mes pal modal", infoMes);
+            console.log("Construccion del modal/menu para controlar los pedidos del cliente");
+            console.log("Informacion para construir el modal:", infoDia);
+            console.log("Informacion del mes pal modal", infoMes);
 
             // CAMBIAR LA FECHA DEL MODAL
             const stringFecha = `${infoDia.start}T00:00:00Z`;
@@ -734,7 +727,7 @@
                 try {
                     await config.accion(infoDia.start, cantidad);
                     mostrarToastSuccess(config.mensajeExito);
-                    await renderizarCalendario();
+                    await renderizarCalendario(infoDia.start);
                     ocultarMenusPermisos();
                     ocultarTodosMenus();
                 } 
