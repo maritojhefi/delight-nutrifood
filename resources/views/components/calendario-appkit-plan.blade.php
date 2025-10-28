@@ -92,9 +92,9 @@
                     <i data-lucide="notebook-pen" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
                 </div>
                 <div class="align-self-center">
-                    <h5 class="">Pedidos Pendientes</h5>
-                    <p class="mb-0 mt-n1 font-10">
-                        <span><i class="fa fa-map-marker color-blue-dark pe-1"></i>Solicitar permiso para mis pedidos del día</span>
+                    <h5 class="">Solicitar Permisos</h5>
+                    <p class="mb-0 mt-n1 font-10 line-height-s">
+                        <span><i class="fa fa-book color-blue-dark pe-1"></i>Solicitar permisos para mis pedidos del día</span>
                         <!-- <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span> -->
                     </p>
                 </div>
@@ -108,9 +108,8 @@
                 </div>
                 <div class="align-self-center">
                     <h5 class="color-orange-dark">Pedidos Finalizados</h5>
-                    <p class="mb-0 mt-n1 font-10">
-                        <span><i class="fa fa-map-marker color-blue-dark pe-1"></i>Ver el historial de mis pedidos este día (pronto)</span>
-                        <!-- <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span> -->
+                    <p class="mb-0 mt-n1 font-10 line-height-s">
+                        <span><i class="fa fa-book color-blue-dark pe-1"></i>Ver el historial de mis pedidos este día (pronto)</span>
                     </p>
                 </div>
                 <!-- <div class="align-self-center ms-auto">
@@ -122,9 +121,9 @@
                     <i data-lucide="calendar-clock" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
                 </div>
                 <div class="align-self-center">
-                    <h5 class="color-magenta-dark">Permisos</h5>
-                    <p class="mb-0 mt-n1 font-10">
-                        <span><i class="fa fa-map-marker color-blue-dark pe-1"></i>Retirar permisos para mis pedidos este día (pronto) </span>
+                    <h5 class="color-magenta-dark">Retirar Permisos</h5>
+                    <p class="mb-0 mt-n1 font-10 line-height-s">
+                        <span><i class="fa fa-book color-blue-dark pe-1"></i>Retirar permisos para mis pedidos este día</span>
                         <!-- <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span> -->
                     </p>
                 </div>
@@ -160,7 +159,7 @@
         </div>
         <div class="divider divider-margins mt-1 mb-0"></div>
         <div class="content m-0 p-3">
-            <p id="mensaje-permisos" class="mb-0"></p>
+            <p id="mensaje-permisos" class="mb-0 color-theme"></p>
             
             <div class="d-flex flex-row align-items-center justify-content-between mx-2 mt-2">
                 <div class="stepper rounded-s d-flex flex-row">
@@ -170,7 +169,7 @@
                 </div>
                 <button 
                     id="btn-confirmar-permisos"
-                    class="py-2 px-3 wrapper font-15 bg-magenta-dark rounded-s line-height-s text-uppercase font-600 shadow-xl"
+                    class="py-2 px-2 wrapper font-15 bg-magenta-dark rounded-s line-height-s text-uppercase font-600 shadow-xl"
                 >
                     <span class="d-flex flex-row align-items-center gap-1">Confirmar</span>
                 </button>
@@ -182,21 +181,19 @@
         <div class="menu-title p-3">
             <div class="d-flex flex-row gap-2 align-items-center">
                 <i data-lucide="calendar-clock" class="lucide-icon" style="width: 2.5rem; height: 2.5rem;"></i>
-                <div>
-                    <!-- <p class="color-highlight font-10">{{ $plan->nombre }}</p> -->
+                <!-- <div class="d-flex flex-column justify-content-between align-content-center"> -->
+                    <!-- <p class="color-highlight font-10 m-0 mt-0">{{ $plan->nombre }}</p> -->
                     <h1 id="titulo-simple" class="font-20 p-0 m-0 line-height-m">Solicitar permiso</h1>
-                </div>
+                <!-- </div> -->
             </div>
             <a href="#" class="close-menu"><i data-lucide="x-circle" class="lucide-icon"></i></a>
         </div>
         <div class="content mt-0 mb-3 d-flex flex-column h-100 gap-3">
-            <p id="texto-simple" class="pe-3 mb-0">
-                Tu pedido para <span id="fecha-simple"></span>. será pospuesto por un dia.
-                
+            <p id="texto-simple" class="pe-3 mb-0 color-theme">                
             </p>
-            <div class="d-flex flex-row justify-content-between mb-0">
-                <a href="#" class="btn close-menu btn-s rounded-s text-uppercase bg-delight-red font-600 rounded-s">Cancelar</a>
-                <button id="btnConfirmarSimple" data-pedido="" href="#" class="btn btn-s rounded-s text-uppercase bg-highlight font-600 rounded-s">
+            <div class="d-flex flex-row gap-1 justify-content-between mb-0">
+                <a href="#" class="py-2 px-2 font-15 rounded-s text-uppercase bg-delight-red color-white font-600 line-height-s">Cancelar</a>
+                <button id="btnConfirmarSimple" data-pedido="" href="#" class="py-2 px-2 font-15 rounded-s text-uppercase bg-highlight font-600 line-height-s">
                     <span class="d-flex flex-row align-items-center gap-1">Confirmar</span>
                 </button>
             </div>
@@ -347,7 +344,7 @@
                     const badgeHTML = numPlanesDia > 1 ? `
                                     <div class="badge border d-flex align-items-center justify-content-center p-0 bg-theme bg-dtheme-blue color-theme bg-delight-red position-absolute top-0 end-0"
                                         style="width: 1.05rem !important; height: 1.05rem !important">
-                                        <span class="">${numPlanesDia}</span>
+                                        <span class="color-theme">${numPlanesDia}</span>
                                     </div>
                                 ` : '';
 
@@ -507,7 +504,8 @@
             // Asignar funcionalidad al boton de confirmación
             if (esPendiente) {
                 tituloSimple.text("Solicitar Permiso");
-                textoSimple.text("¿Deseas pedir permiso para el pedido de este día?");
+                // textoSimple.text(`¿Deseas pedir permiso para la fecha ${dia} de ${infoMes.nombre}  de ${infoMes.anio}?`);
+                textoSimple.html(`¿Deseas pedir permiso para la fecha <strong>${dia} de ${infoMes.nombre}  de ${infoMes.anio}</strong>?`);
                 $('#btnConfirmarSimple').off('click').on('click', async function(e) {
                     e.preventDefault();
                     
@@ -538,7 +536,9 @@
                 });
             } else {
                 tituloSimple.text("Deshacer Permiso");
-                textoSimple.text("¿Deseas retirar el permiso para este día?");
+                // textoSimple.text(`¿Deseas retirar el permiso para la fecha ${dia} de ${infoMes.nombre}  de ${infoMes.anio}?`);
+                textoSimple.html(`¿Deseas retirar el permiso para la fecha <strong>${dia} de ${infoMes.nombre}  de ${infoMes.anio}</strong>?`);
+
                 $('#btnConfirmarSimple').off('click').on('click', async function(e) {
                     e.preventDefault();
                     
@@ -643,6 +643,13 @@
                 $('#permisos-anchor').removeClass('d-none').addClass('d-flex');
             } else {
                 $('#permisos-anchor').removeClass('d-flex').addClass('d-none');
+            }
+
+            if (finalizados.length) {
+                console.log("parece que hay pedidos finalizados")
+                $('#finalizados-anchor').removeClass('d-none').addClass('d-flex');
+            } else {
+                $('#finalizados-anchor').removeClass('d-flex').addClass('d-none');
             }
         }
 
