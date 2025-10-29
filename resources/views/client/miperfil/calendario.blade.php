@@ -71,21 +71,113 @@
                                 @elseif($lista['estado'] == 'desarrollo')
                                     Ve a tu whatsapp para terminar de programar este plan!
                                 @else
-                                    <div class="px-3 py-2 d-flex flex-column align-items-center">
-                                        <ul class="icon-list ">
-                                            @foreach (json_decode($lista['detalle'], true) as $plato => $valor)
-                                                @if ($valor != '')
-                                                    <li>
-                                                        <i class="fa fa-check color-green-dark"></i>
-                                                        {{ $plato }} :
-                                                        <label for=""
-                                                            class="font-700 mb-0">{{ ucfirst($valor) }}</label>
-                                                    </li>
+                                    @php
+                                        $menuItems = [
+                                            'SOPA' => [
+                                                'label' => 'Sopa',
+                                                'icon' => 'soup',
+                                            ],
+                                            'PLATO' => [
+                                                'label' => 'Principal',
+                                                'icon' => 'utensils-crossed',
+                                            ],
+                                            'CARBOHIDRATO' => [
+                                                'label' => 'Carbohidrato',
+                                                'icon' => 'sprout',
+                                            ],
+                                            'ENSALADA' => [
+                                                'label' => 'Ensalada',
+                                                'icon' => 'salad',
+                                            ],
+                                            'JUGO' => [
+                                                'label' => 'Jugo',
+                                                'icon' => 'glass-water',
+                                            ],
+                                            'EMPAQUE' => [
+                                                'label' => 'Empaque',
+                                                'icon' => 'package-2',
+                                            ],
+                                            'ENVIO' => [
+                                                'label' => 'Envío',
+                                                'icon' => 'truck',
+                                            ],
+                                        ];
+                                    @endphp
+                                    @php
+                                        $menuItems = [
+                                            'SOPA' => [
+                                                'label' => 'Sopa',
+                                                'icon' => 'soup',
+                                                'color' => 'color-yellow-dark'
+                                            ],
+                                            'PLATO' => [
+                                                'label' => 'Principal',
+                                                'icon' => 'utensils-crossed',
+                                                'color' => 'color-delight-red'
+                                            ],
+                                            'CARBOHIDRATO' => [
+                                                'label' => 'Carbohidrato',
+                                                'icon' => 'sprout',
+                                                'color' => 'color-green-dark'
+                                            ],
+                                            'ENSALADA' => [
+                                                'label' => 'Ensalada',
+                                                'icon' => 'salad',
+                                                'color' => 'color-teal-dark'
+                                            ],
+                                            'JUGO' => [
+                                                'label' => 'Jugo',
+                                                'icon' => 'glass-water',
+                                                'color' => 'color-blue-light'
+                                            ],
+                                            'EMPAQUE' => [
+                                                'label' => 'Empaque',
+                                                'icon' => 'package-2',
+                                                'color' => 'color-gray-dark'
+                                            ],
+                                            'ENVIO' => [
+                                                'label' => 'Envío',
+                                                'icon' => 'truck',
+                                                'color' => 'color-gray-dark'
+                                            ],
+                                        ];
+                                        
+                                        // Count valid items
+                                        $validItemCount = 0;
+                                        $detalleDecoded = json_decode($lista['detalle'], true);
+                                        foreach ($detalleDecoded as $plato => $valor) {
+                                            if ($valor != '' && isset($menuItems[$plato])) {
+                                                $validItemCount++;
+                                            }
+                                        }
+                                        
+                                        // Determine button column class based on even/odd count
+                                        $buttonColClass = ($validItemCount % 2 === 0) ? 'col-12' : 'col-6';
+                                    @endphp
+                                    <div class="p-2 d-flex flex-column align-items-center">
+                                        <div class="row m-0">
+                                            @foreach ($detalleDecoded as $plato => $valor)
+                                                @if ($valor != '' && isset($menuItems[$plato]))
+                                                    <div class="col-6 px-0 py-2">
+                                                        <div class="d-flex flex-row gap-2 align-items-center">
+                                                            <i data-lucide="{{ $menuItems[$plato]['icon'] }}" class="lucide-icon {{ $menuItems[$plato]['color'] }}" style="min-height: 1.8rem; min-width: 1.8rem"></i>
+                                                            <div class="d-flex flex-column">
+                                                                <h3 class="detalle-label line-height-s font-15">{{ $menuItems[$plato]['label'] }}</h3>
+                                                                <span class="item-value line-height-xs font-12 m-0 color-theme">
+                                                                    {{ ucfirst($valor) }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 @endif
                                             @endforeach
-                                        </ul>
-                                        <a href="{{ route('editardia', $lista['id']) }}"
-                                            class="btn btn-xxs  rounded-s text-uppercase font-900 shadow-s border-red-dark  bg-red-light">Editar</a>
+                                            <div class="{{ $buttonColClass }} px-0 py-2">
+                                                <div class="d-flex flex-row gap-2 align-items-center justify-content-center">
+                                                    <a href="{{ route('editardia', $lista['id']) }}"
+                                                        class="py-2 px-3 font-15 color-white rounded-s text-uppercase font-600 line-height-s border-red-dark bg-delight-red">Editar</a>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 @endif
                             </div>
