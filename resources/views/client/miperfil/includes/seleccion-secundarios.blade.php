@@ -1,4 +1,4 @@
-<div class="row mb-0">
+<div class="row px-2 mb-0">
 
     @php
         $labels = [
@@ -12,10 +12,11 @@
         @if ($plan->$key)
             <div class="col-12 px-0 d-flex flex-row align-items-center justify-content-between">
                 <div class="d-flex flex-row gap-1 align-items-center">
-                    <strong class="color-theme">{{ $label }}</strong>
-                    <i data-lucide="check" class="lucide-icon color-teal-dark"></i>
+                    <strong class="">{{ $label }}</strong>
+                    <!-- <i data-lucide="check" class="lucide-icon color-teal-dark" style="width: 1.1rem; height: 1.1rem;"></i> -->
+                    <i class="fa fa-check color-green-dark"></i>
                 </div>
-                <p class="text-end font-400 mb-0">
+                <p class="text-end font-400 mb-0 color-theme">
                     {{ ucfirst($lista[$key]) }}
                 </p>
                 <input type="hidden" value="{{ $lista[$key] }}" name="{{ $key }}">
@@ -27,29 +28,22 @@
     <input type="hidden" value="{{ $lista['id'] }}" name="id">
     <input type="hidden" value="{{ $plan->id }}" name="plan">
 
-
-    <div class="col my-2">
-        <div class="d-flex flex-row justify-content-evenly align-items-center w-100 px-0 gap-3">
-            @if ($lista['estado'] == 'pendiente')
-                <a href="#" data-menu="permiso-menu-{{ $lista['id'] }}"
-                    class="btn btn-s rounded-s w-auto text-uppercase font-600 shadow-s bg-delight-red permiso-pedido-btn">
-                    <span class="text-white">Permiso</span>
-                </a>
-            @endif
-            <!-- <button type="submit" disabled
-                class="btn btn-s rounded-s w-auto text-uppercase font-600 shadow-s bg-teal-dark bg-dtheme-blue">
-                <span class="text-white">Guardar {{ $lista['dia'] }}</span>
-            </button> -->
-            <button type="submit" disabled
-                class="btn btn-s rounded-s w-auto text-uppercase font-600 shadow-s bg-teal-dark">
-                <span class="text-white">Guardar Pedido</span>
-            </button>
-        </div>
+    <div class="d-flex flex-row gap-1 justify-content-evenly px-0 my-2">
+        @if ($lista['estado'] == 'pendiente')
+            <a href="#" data-menu="permiso-menu-{{ $lista['id'] }}"
+                class="py-2 px-3 font-15 rounded-s text-uppercase bg-delight-red color-white font-600 line-height-s permiso-pedido-btn">
+                <span class="text-white">Permiso</span>
+            </a>
+        @endif
+        <button type="submit" disabled 
+            class="btn py-2 px-3 font-15 rounded-s text-uppercase bg-highlight font-600 line-height-s">
+            <span class="d-flex flex-row align-items-center gap-1">Confirmar</span>
+        </button>
     </div>
 </div>
 
 @push('modals')
-<div id="permiso-menu-{{ $lista['id'] }}" class="menu menu-box-modal pb-3 rounded-m overflow-hidden" style="width: 80%;">
+<div id="permiso-menu-{{ $lista['id'] }}" class="menu menu-box-modal pb-3 rounded-m overflow-hidden" style="width: 90%; max-width: 320px">
     <div class="menu-title p-3">
         <div class="d-flex flex-row gap-2 align-items-center">
             <i data-lucide="calendar-clock" class="lucide-icon" style="width: 2.5rem; height: 2.5rem;"></i>
@@ -61,12 +55,14 @@
         <a href="#" class="close-menu"><i data-lucide="x-circle" class="lucide-icon"></i></a>
     </div>
     <div class="content mt-0 mb-3 d-flex flex-column h-100 gap-3">
-        <p class="pe-3 mb-0">
+        <p class="pe-3 mb-0 color-theme">
             Tu pedido para {{ $lista['dia'] }} {{ $lista['fecha'] }}. será pospuesto por un dia.
         </p>
-        <div class="d-flex flex-row justify-content-between mb-0">
-            <a href="#" class="btn close-menu btn-s rounded-s text-uppercase bg-delight-red font-600 rounded-s">Cancelar</a>
-            <button data-pedido="{{ $lista['id'] }}" href="#" class="btn btn-s rounded-s text-uppercase bg-highlight font-600 rounded-s confirmar-pedido-permiso">Aceptar</button>
+        <div class="d-flex flex-row gap-1 justify-content-evenly mb-0">
+            <a href="#" class="close-menu py-2 px-2 font-15 rounded-s text-uppercase bg-delight-red color-white font-600 line-height-s">Cancelar</a>
+            <button data-pedido="{{ $lista['id'] }}" href="#" class="confirmar-pedido-permiso py-2 px-2 font-15 rounded-s text-uppercase bg-highlight font-600 line-height-s">
+                <span class="d-flex flex-row align-items-center gap-1">Confirmar</span>
+            </button>
         </div>
     </div>
 </div>

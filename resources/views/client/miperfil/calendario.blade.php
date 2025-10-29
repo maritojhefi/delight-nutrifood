@@ -24,6 +24,79 @@
                 <div class="accordion" id="accordion-3">
                     @foreach ($coleccion as $lista)
                         {{-- @dd($lista) --}}
+                        <div class="card card-style">
+                            <div
+                                class="list-group list-custom-small list-icon-0 bg-@if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'mint' }}@elseif($lista['estado'] == 'desarrollo'){{ 'yellow' }}@else{{ 'green' }}@endif-dark ps-3 pe-4 ">
+                                <a data-bs-toggle="collapse" class="{{ ($idPedidoEditar == $lista['id']) ? '' : 'collapsed' }}" href="#collapse-7{{ $lista['id'] }}"
+                                    aria-expanded="{{ ($idPedidoEditar == $lista['id']) ? 'true' : 'false' }}">
+
+                                    @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
+                                        <i class="fas fa-user-edit color-white"></i>
+                                        <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                    @elseif($lista['estado'] == 'desarrollo')
+                                        <i class="fab fa-whatsapp color-white"></i>
+                                        <span class="font-14 color-white">{{ $lista['dia'] }}</span>
+                                        <small for="" class="text-magenta text-white">
+                                            (En desarrollo por whatsapp)
+                                        </small>
+                                    @else
+                                        <i class="fas fa-save color-white"></i>
+                                        <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                        <span class="text-white">Guardado!</span>
+                                    @endif
+                                    <i class="fa fa-angle-down color-white"></i>
+                                </a>
+                            </div>
+                            <div class="collapse bordeado {{ ($idPedidoEditar == $lista['id']) ? 'show' : '' }}" id="collapse-7{{ $lista['id'] }}"
+                                data-bs-parent="#accordion-3">
+                                @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
+                                    <form class="d-flex flex-column flex-grow-1 px-3 py-2" action="{{ route('personalizardia') }}" id="{{ $lista['id'] }}"
+                                        method="POST">
+                                        @csrf
+                                        <div class="row px-2 mb-0">
+                                            @if ($plan->segundo)
+                                                @include('client.miperfil.includes.seleccion-segundo')
+                                                <hr class="my-2">
+                                            @endif
+
+                                            @if ($plan->carbohidrato)
+                                                @include('client.miperfil.includes.seleccion-carbohidrato')
+                                                <hr class="my-2">
+                                            @endif
+                                        </div>
+                                        @include('client.miperfil.includes.seleccion-envio')
+                                        <hr class="my-2">
+                                        @include('client.miperfil.includes.seleccion-secundarios')
+
+                                    </form>
+                                @elseif($lista['estado'] == 'desarrollo')
+                                    Ve a tu whatsapp para terminar de programar este plan!
+                                @else
+                                    <div class="px-3 py-2 d-flex flex-column align-items-center">
+                                        <ul class="icon-list ">
+                                            @foreach (json_decode($lista['detalle'], true) as $plato => $valor)
+                                                @if ($valor != '')
+                                                    <li>
+                                                        <i class="fa fa-check color-green-dark"></i>
+                                                        {{ $plato }} :
+                                                        <label for=""
+                                                            class="font-700 mb-0">{{ ucfirst($valor) }}</label>
+                                                    </li>
+                                                @endif
+                                            @endforeach
+                                        </ul>
+                                        <a href="{{ route('editardia', $lista['id']) }}"
+                                            class="btn btn-xxs  rounded-s text-uppercase font-900 shadow-s border-red-dark  bg-red-light">Editar</a>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                @push('content-comentado')
+                <div class="accordion" id="accordion-3">
+                    @foreach ($coleccion as $lista)
+                        {{-- @dd($lista) --}}
                         <div class="card card-style rounded-s ">
                             <div
                                 class="list-custom-small @if($lista['proximo']){{ 'proximo-dia' }}@endif rounded-top border-0 list-icon-0 @if($lista['proximo']){{ 'bg-highlight' }}@elseif($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'bg-highlight bg-dtheme-blue' }}@elseif($lista['estado'] == 'desarrollo'){{ 'bg-yellow-dark' }}@else{{ 'bg-green-dark bg-dtheme-blue' }}@endif px-3"
@@ -114,6 +187,7 @@
                         </div>
                     @endforeach
                 </div>
+                @endpush
             @endif
         @else
             <div class="content text-center pt-4">
@@ -208,17 +282,6 @@
     @push('header')
     <!-- Estilos para el calendario generado mediante -->
     <style>
-        .fc .fc-toolbar.fc-header-toolbar {
-            margin-bottom: 0px;
-            padding-bottom: 1rem;
-            padding-inline: 0.1rem;
-        }
-
-        .theme-dark .fc-scrollgrid table,
-        .theme-dark .fc-scrollgrid td {
-            background-color:  #0f1117 !important;
-            background-color:  #1f2937 !important;
-        }
 
         .list-custom-small {
             position: relative; 
@@ -236,7 +299,7 @@
             right: 0;
             bottom: 0;
             left: 0;
-            background-color: rgba(0, 0, 0, 0.4);
+            /* background-color: rgba(0, 0, 0, 0.4); */
             z-index: 2; /* Entre el fondo (1) y el contenido (3) */
         }
 

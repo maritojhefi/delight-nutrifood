@@ -1,6 +1,7 @@
-<div class="col-12" id="plato{{ $lista['id'] }}">
-    <div class="ms-n1 d-flex flex-row align-items-center gap-2 color-theme">
-        <i data-lucide="utensils" class="lucide-icon"></i>
+<div class="col-12 px-0" id="plato{{ $lista['id'] }}">
+    <div class="d-flex flex-row align-items-center gap-1">
+        <!-- <i data-lucide="utensils" class="lucide-icon"></i> -->
+        <i class="fa fa-star color-yellow-dark"></i> 
         <strong>Elija su plato</strong>
     </div>
     
@@ -46,15 +47,20 @@
                 <label for="{{ $plato['box_id'] }}{{ $lista['id'] }}"
                     class="d-flex flex-row gap-1 align-items-center me-0"
                 >
-                    <mark class="highlight px-2 line-height-xs font-10 bg-highlight bg-dtheme-blue color-white rounded-m">
+                    <!-- <mark class="highlight px-1 line-height-xs font-10 bg-highlight bg-dtheme-blue color-white rounded-m">
+                        {{ $plato['label'] }}
+                    </mark> -->
+                    <mark class="highlight px-1 line-height-xs font-10 bg-magenta-dark color-white rounded-m">
                         {{ $plato['label'] }}
                     </mark>
                     @if ($lista[$estadoKey])
-                        <p class="mb-0">{{ $lista[$plato['key']] }} </p>
-                        <i data-lucide="check" class="lucide-icon color-teal-dark"></i>
+                        <p class="mb-0 color-theme">{{ $lista[$plato['key']] }} </p>
+                        <!-- <i data-lucide="check" class="lucide-icon color-teal-dark" style="width: 1.1rem; height: 1.1rem;"></i> -->
+                        <i class="fa fa-check color-green-dark"></i>
                     @else
-                        <del>{{ $lista[$plato['key']] }}</del> 
-                        <i data-lucide="x" class="lucide-icon color-delight-red"></i>
+                        <del class="color-theme">{{ $lista[$plato['key']] }}</del> 
+                        <!-- <i data-lucide="x" class="lucide-icon color-delight-red" style="width: 1.1rem; height: 1.1rem;"></i> -->
+                        <i class="fa fa-ban color-red-dark"></i>
                     @endif
                 </label>
             </div>

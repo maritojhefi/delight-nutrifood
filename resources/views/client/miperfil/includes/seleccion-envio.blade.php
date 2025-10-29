@@ -1,8 +1,9 @@
-<div class="row mb-0">
+<div class="row px-2 mb-0">
     <div class="col-6 px-0" id="envio{{ $lista['id'] }}">
-        <div class="ms-n1 d-flex flex-row align-items-center gap-2 color-theme">
-            <i data-lucide="map-pin" class="lucide-icon"></i>
-            <strong>Tipo de envío</strong>
+        <div class="d-flex flex-row align-items-center gap-1">
+            <i class="fa fa-map-marker font-16 color-red-dark" style="margin-left: 0.1rem;"></i> 
+            <!-- <i data-lucide="map-pin" class="lucide-icon"></i> -->
+            <strong class=" ">Tipo de envío</strong>
         </div>
 
         @php
@@ -24,19 +25,18 @@
                     name="envio{{ $lista['id'] }}" 
                     value="{{ $envio['value'] }}"
                 >
-                <label for="{{ $envio['box_id'] }}{{ $lista['id'] }}">
-                    <p class="mb-0 line-height-s">
-                        {{ $envio['value'] }}
-                    </p>
+                <label for="{{ $envio['box_id'] }}{{ $lista['id'] }}" class=" color-theme">
+                    {{ $envio['value'] }}
                 </label>
             </div>
         @endforeach
     </div>
 
     <div class="col-6 px-0 empaques d-none" id="empaque{{ $lista['id'] }}">
-        <div class="ms-n2 d-flex flex-row align-items-center gap-1 color-theme">
-            <i data-lucide="package" class="lucide-icon"></i>
-            <strong class="line-height-s">Tipo de empaque</strong>
+        <div class="d-flex flex-row align-items-center gap-1 overflow-visible">
+            <!-- <i data-lucide="package" class="lucide-icon"></i> -->
+            <i class="fa fa-edit font-16 color-red-dark"></i>
+            <strong class=" text-nowrap">Tipo de empaque</strong>
         </div>
 
         @php
@@ -56,10 +56,8 @@
                     name="empaque{{ $lista['id'] }}"
                     value="{{ $empaque['value'] }}"
                 >
-                <label for="{{ $empaque['box_id'] }}{{ $lista['id'] }}">
-                    <p class="mb-0 line-height-s">
-                        {{ $empaque['label'] ?? $empaque['value'] }}
-                    </p>    
+                <label for="{{ $empaque['box_id'] }}{{ $lista['id'] }}" class=" color-theme">
+                    {{ $empaque['label'] ?? $empaque['value'] }}
                 </label>
             </div>
         @endforeach

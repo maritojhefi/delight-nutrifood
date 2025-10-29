@@ -1,6 +1,7 @@
-<div class="col-12" id="carb{{ $lista['id'] }}">
-    <div class="ms-n1 d-flex flex-row align-items-center gap-2 color-theme">
-        <i data-lucide="sprout" class="lucide-icon"></i>
+<div class="col-12 px-0" id="carb{{ $lista['id'] }}">
+    <div class="d-flex flex-row align-items-center gap-1">
+        <!-- <i data-lucide="sprout" class="lucide-icon"></i> -->
+        <i class="fa fa-star color-yellow-dark"></i>
         <strong>Elija su carbohidrato</strong>
     </div>
     
@@ -31,11 +32,13 @@
                     class="d-flex flex-row gap-1 align-items-center"
                 >
                     @if ($lista[$estadoKey])
-                        <p class="mb-0">{{ $lista[$carbo['key']] }}</p>
-                        <i data-lucide="check" class="lucide-icon color-teal-dark"></i>
+                        <p class="mb-0 color-theme">{{ $lista[$carbo['key']] }}</p>
+                        <!-- <i data-lucide="check" class="lucide-icon color-teal-dark" style="width: 1.1rem; height: 1.1rem;"></i> -->
+                        <i class="fa fa-check color-green-dark"></i>
                     @else
-                        <del>{{ $lista[$carbo['key']] }}</del> 
-                        <i data-lucide="x" class="lucide-icon color-delight-red"></i>                        
+                        <del class="color-theme">{{ $lista[$carbo['key']] }}</del> 
+                        <!-- <i data-lucide="x" class="lucide-icon color-delight-red" style="width: 1.1rem; height: 1.1rem;"></i> -->
+                        <i class="fa fa-ban color-red-dark"></i>
                     @endif
                 </label>
             </div>
@@ -51,7 +54,7 @@
             value="sin carbohidrato"
         >
         <label for="box13-fac-radio{{ $lista['id'] }}">
-            <p class="mb-0">
+            <p class="mb-0 color-theme">
                 Sin carbohidrato
             </p>
         </label>
