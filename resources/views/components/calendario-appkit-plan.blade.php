@@ -86,6 +86,7 @@
         </div>
         <div class="divider divider-margins my-2"></div>
         <div class="content mt-0">
+            <p id="texto-dia-permisos" class="color-theme d-none mb-2">Solicitaste permisos para los pedidos de este día.</p>
             <a id="pendientes-anchor" href="#" class="d-flex gap-3 align-items-center mb-3">
                 <div class="align-self-center">
                     <i data-lucide="notebook-pen" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
@@ -605,6 +606,16 @@
             });
 
             // // console.log("Permisos válidos a deshacerse:", permisos);
+
+            if (!pendientes.length && !permisos.length && !finalizados.length) {
+                console.log("Todos vacios");
+                $('#texto-dia-permisos').removeClass('d-none');
+                $('#texto-dia-permisos').addClass('d-block');
+            } else {
+                console.log("Alguno no vacio");
+                $('#texto-dia-permisos').removeClass('d-block');
+                $('#texto-dia-permisos').addClass('d-none');
+            }
 
             if (pendientes.length) {
                 $('#pendientes-anchor').off('click').on('click', async function (e) {
