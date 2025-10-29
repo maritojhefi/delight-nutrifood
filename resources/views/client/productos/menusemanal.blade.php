@@ -559,33 +559,22 @@
                                             </div>
                                         </div>
 
-                                        <div class="d-flex flex-row justify-content-between align-items-center w-100">
-                                            <div class="plan-summary">
-                                                <div class="d-flex flex-column gap-2">
-                                                    <strong class="day-title color-theme font-18">
+                                        <div class="d-flex flex-row justify-content-between gap-1 align-items-center">
+                                            {{-- FIX: Using align-items-center is usually better than align-items-between --}}
+                                            
+                                            <div class="plan-summary flex-shrink-1 text-wrap"> {{-- FIX: Added flex-grow-0 --}}
+                                                <div class="d-flex flex-column gap-2 text-wrap">
+                                                    <strong class="day-title color-theme font-18 text-wrap">
                                                         {{ $textodia }}
                                                     </strong>
-                                                    <!-- resumen badges -->
-                                                    <!-- @if(count($pedidos) >= 2)
-                                                        <p class="badge bg-delight-red rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
-                                                            <span>Porciones: {{ count($pedidos) }}</span>
-                                                            <i data-lucide="utensils" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
-                                                        </p>
-                                                    @endif -->
-                                                    <!-- Badge de tiempo con estado -->
-                                                    <!-- <p class="badge bg-highlight rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
-                                                        <span>{{ $mensajeTiempo }}</span>
-                                                        <i data-lucide="{{ $iconoTiempoLucide }}" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
-                                                    </p> -->
                                                 </div>
                                             </div>
+                                            
                                             @if ($plan->editable == 1 && count($pedidos) >= 1)
-                                                <!-- <i data-lucide="chevron-up"
-                                                class="lucide-icon plan-chevron color-gray-dark"
-                                                style="width: 4rem; height: 4rem;"></i> -->
+                                                {{-- Something here if the condition is met (it's empty now) --}}
                                             @else
                                                 <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
-                                                    class="btn bg-delight-red rounded-s color-white font-13" style="font-weight: 700 !important;">Controlar Plan</a>
+                                                    class="btn flex-shrink-0 bg-delight-red rounded-s color-white font-13" style="font-weight: 700 !important;">Controlar Plan</a>
                                             @endif
                                         </div>
                                     </div>
@@ -623,7 +612,7 @@
                                     ];
                                 @endphp
 
-                                @if (count($pedidos) > 1)
+                                @if (count($pedidos) > 1 && $plan->editable)
                                     <!-- Listado de pedidos para el plan -->
                                     <ul class="list-unstyled d-flex flex-column gap-3 mb-0 mt-2">
                                         @foreach ($pedidos as $pedido)
@@ -716,7 +705,7 @@
                                             </li>
                                         @endforeach
                                     </ul>
-                                @elseif (count($pedidos) == 1)
+                                @elseif (count($pedidos) == 1 && $plan->editable)
                                     <!-- Pedido individual -->
                                     @php
                                         $pedido = $pedidos->first();
