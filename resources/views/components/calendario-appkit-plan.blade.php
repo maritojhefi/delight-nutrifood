@@ -78,8 +78,7 @@
 </div>
 
 @push('modals')
-    <!-- <div id="menu-events" class="menu menu-box-bottom rounded-m menu-active" data-menu-height="420" style="display: block; height: 420px;"> -->
-    <div id="menu-pedidos-dia-calendario" class="menu menu-box-modal rounded-m" style="width: 90%">
+    <div id="menu-pedidos-dia-calendario" class="menu menu-box-modal rounded-m" style="width: 90%; max-width: 320px">
         <div class="menu-title flex-align-center">
             <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
                 <h1 id="fecha-menu-control-dia" class="font-20 mt-1 mb-0 fecha-seleccionada">Fecha del día</h1>
@@ -148,8 +147,7 @@
             <div id="menu-selector-permisos">Selector</div>
         </div>
     </div> -->
-
-    <div id="menu-pedir-permisos" class="menu menu-box-modal rounded-m" style="width: 90%">
+    <div id="menu-pedir-permisos" class="menu menu-box-modal rounded-m" style="width: 90%; max-width: 320px">
         <div class="menu-title flex-align-center">
             <a href="#" class="back-menu-pedidos-dia">
                 <i data-lucide="chevron-left" class="lucide-icon"></i>
@@ -157,11 +155,11 @@
             <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
             <h1 id="fecha-menu-control-permisos" class="font-20 mt-1 mb-0 fecha-seleccionada">Fecha del día</h1>
         </div>
-        <div class="divider divider-margins mt-1 mb-0"></div>
-        <div class="content m-0 p-3">
+        <div class="divider divider-margins my-2"></div>
+        <div class="content m-0 px-3">
             <p id="mensaje-permisos" class="mb-0 color-theme"></p>
-            
-            <div class="d-flex flex-row align-items-center justify-content-between mx-2 mt-2">
+        </div>
+        <div class="d-flex flex-ro mt-2 mb-3 align-items-center justify-content-evenly">
                 <div class="stepper rounded-s d-flex flex-row">
                     <a href="#" class="stepper-restar"><i class="fa fa-minus color-theme"></i></a>
                     <input type="number" id="cantidad-permisos" min="1" value="1">
@@ -174,10 +172,9 @@
                     <span class="d-flex flex-row align-items-center gap-1">Confirmar</span>
                 </button>
             </div>
-        </div>
     </div>
 
-    <div id="menu-permiso-simple" class="menu menu-box-modal pb-3 rounded-m overflow-hidden" style="width: 80%;">
+    <div id="menu-permiso-simple" class="menu menu-box-modal pb-3 rounded-m overflow-hidden" style="width: 90%; max-width: 320px">
         <div class="menu-title p-3">
             <div class="d-flex flex-row gap-2 align-items-center">
                 <i data-lucide="calendar-clock" class="lucide-icon" style="width: 2.5rem; height: 2.5rem;"></i>
@@ -191,7 +188,7 @@
         <div class="content mt-0 mb-3 d-flex flex-column h-100 gap-3">
             <p id="texto-simple" class="pe-3 mb-0 color-theme">                
             </p>
-            <div class="d-flex flex-row gap-1 justify-content-between mb-0">
+            <div class="d-flex flex-row gap-1 justify-content-evenly mb-0">
                 <a href="#" class="py-2 px-2 font-15 rounded-s text-uppercase bg-delight-red color-white font-600 line-height-s">Cancelar</a>
                 <button id="btnConfirmarSimple" data-pedido="" href="#" class="py-2 px-2 font-15 rounded-s text-uppercase bg-highlight font-600 line-height-s">
                     <span class="d-flex flex-row align-items-center gap-1">Confirmar</span>
