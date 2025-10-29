@@ -664,22 +664,22 @@ class UsuariosController extends Controller
 
         // Agrupar por fecha y contar pedidos
         $pedidosPorDia = $pedidos->groupBy('start')->map(function ($pedidosDelDia, $fecha) {
-            // Determine tipo segun jerarquia de estados permiso > pendiente > finalizado
+            // Determine tipo segun jerarquia de estados: pendiente > permiso > finalizado
             $tipoFinal = 'contador'; // default
             
-            // Revisar si existe un pedido con permiso
-            $tienePermiso = $pedidosDelDia->contains('estado', 'permiso');
+            // Revisar si existe un pedido pendiente (PRIORIDAD MÁXIMA)
+            $tienePendiente = $pedidosDelDia->contains('estado', 'pendiente');
             
-            if ($tienePermiso) {
-                // Establecer el tipo de dia como 'permiso'
-                $tipoFinal = 'permiso';
+            if ($tienePendiente) {
+                // Establecer el tipo de dia como 'pendiente'
+                $tipoFinal = 'pendiente';
             } else {
-                // Revisar si existen pedidos pendientes
-                $tienePendiente = $pedidosDelDia->contains('estado', 'pendiente');
+                // Revisar si existe un pedido con permiso
+                $tienePermiso = $pedidosDelDia->contains('estado', 'permiso');
                 
-                if ($tienePendiente) {
-                    // Establecer el tipo de dia como 'pendiente'
-                    $tipoFinal = 'pendiente';
+                if ($tienePermiso) {
+                    // Establecer el tipo de dia como 'permiso'
+                    $tipoFinal = 'permiso';
                 } else {
                     // Revisar si todos los pedidos para el dia estan finalizados
                     $todosFinalizado = $pedidosDelDia->every(function ($evento) {

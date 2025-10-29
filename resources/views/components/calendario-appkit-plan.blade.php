@@ -323,7 +323,7 @@
 
                     switch (diaInfo.tipo) {
                         case 'pendiente':
-                            bgColor = 'bg-highlight';
+                            bgColor = 'bg-green-dark';
                             break;
                         case 'permiso':
                             bgColor = 'bg-magenta-dark';
