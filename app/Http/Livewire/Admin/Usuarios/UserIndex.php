@@ -2,12 +2,14 @@
 
 namespace App\Http\Livewire\Admin\Usuarios;
 
-use App\Exports\UsersListExport;
 use App\Models\Role;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Helpers\GlobalHelper;
+use App\Exports\UsersListExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 
 class UserIndex extends Component
 {
@@ -122,18 +124,29 @@ class UserIndex extends Component
 
     public function eliminar(User $user)
     {
-
-
         try {
+            // Eliminar foto del usuario si existe
+            if ($user->foto) {
+                $rutaArchivo = User::RUTA_FOTO . $user->foto; // Construir ruta correcta
+                $disco = GlobalHelper::discoArchivos();
+                
+                if (Storage::disk($disco)->exists($rutaArchivo)) {
+                    Storage::disk($disco)->delete($rutaArchivo);
+                }
+            }
+            
+            // Eliminar usuario
             $user->delete();
+            
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'warning',
                 'message' => "Usuario: " . $user->name . " eliminado"
             ]);
+            
         } catch (\Throwable $th) {
             $this->dispatchBrowserEvent('alert', [
-                'type' => 'warning',
-                'message' => "No se puede eliminar este registro porque esta vinculado a otros"
+                'type' => 'error',
+                'message' => "No se puede eliminar este registro porque está vinculado a otros"
             ]);
         }
     }

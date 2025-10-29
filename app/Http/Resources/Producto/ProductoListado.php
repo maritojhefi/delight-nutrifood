@@ -19,7 +19,7 @@ class ProductoListado extends JsonResource
         return [
             'id' => $this->id,
             'nombre' => $this->nombre,
-            'imagen'=>  '/' . $this->pathAttachment(),
+            'imagen'=>  $this->pathAttachment(),
             'precio' => $precioFinal,
             'precio_original' => $tieneDescuento ? $precioOriginal : null,
             'tiene_stock' => $tiene_stock,

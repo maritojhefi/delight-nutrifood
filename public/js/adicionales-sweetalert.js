@@ -24,6 +24,7 @@ function mostrarSweetAlertAdicionales(producto, grupos) {
         cancelButtonText: "Cancelar",
         confirmButtonColor: "#20c996",
         cancelButtonColor: "#dc3545",
+        allowOutsideClick: false,
         showLoaderOnConfirm: true,
         preConfirm: () => {
             return validarYProcesarSeleccion(producto, grupos);
@@ -97,6 +98,18 @@ function crearHTMLModal(producto, grupos) {
                     : "";
             const sinStock = adicional.contable && adicional.cantidad <= 0;
 
+            // Mostrar cantidad disponible si es contable
+            let cantidadHTML = "";
+            if (adicional.contable) {
+                const colorCantidad =
+                    adicional.cantidad <= 0
+                        ? "text-danger"
+                        : adicional.cantidad <= 5
+                        ? "text-warning"
+                        : "text-info";
+                cantidadHTML = `<small class="${colorCantidad} fw-bold stock-info">(${adicional.cantidad})</small>`;
+            }
+
             html += `
                 <div class="form-check form-check-sm ${
                     sinStock ? "opacity-50" : ""
@@ -109,9 +122,9 @@ function crearHTMLModal(producto, grupos) {
                     <label class="form-check-label d-flex justify-content-between align-items-center" for="adicional_${
                         adicional.id
                     }">
-                        <span class="adicional-nombre">${
-                            adicional.nombre
-                        }</span>
+                        <span class="adicional-nombre">
+                            ${adicional.nombre} ${cantidadHTML}
+                        </span>
                         <span class="text-success fw-bold precio-adicional">${precioTexto}</span>
                     </label>
                 </div>
@@ -129,23 +142,33 @@ function crearHTMLModal(producto, grupos) {
     html += `
             </div>
             
-            <div class="resumen-precio mt-2 p-2 bg-light rounded">
-                <div class="d-flex justify-content-between small">
-                    <span>Costo Unitario:</span>
-                    <span id="precio-producto">Bs. ${producto.precio.toFixed(
-                        2
-                    )}</span>
+            <div class="row g-2 mt-2">
+                <div class="col-6">
+                    <div class="resumen-precio p-2 bg-light rounded h-100">
+                        <div class="d-flex justify-content-between small">
+                            <span>Costo Unitario:</span>
+                            <span id="precio-producto">Bs. ${producto.precio.toFixed(
+                                2
+                            )}</span>
+                        </div>
+                        <div class="d-flex justify-content-between small">
+                            <span>Adicionales:</span>
+                            <span id="precio-adicionales">Bs. 0.00</span>
+                        </div>
+                        <hr class="my-1">
+                        <div class="d-flex justify-content-between fw-bold small">
+                            <span>Total:</span>
+                            <span id="precio-total">Bs. ${producto.precio.toFixed(
+                                2
+                            )}</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="d-flex justify-content-between small">
-                    <span>Adicionales:</span>
-                    <span id="precio-adicionales">Bs. 0.00</span>
-                </div>
-                <hr class="my-1">
-                <div class="d-flex justify-content-between fw-bold small">
-                    <span>Total:</span>
-                    <span id="precio-total">Bs. ${producto.precio.toFixed(
-                        2
-                    )}</span>
+                <div class="col-6">
+                    <div class="observacion-section p-2 bg-light rounded h-100">
+                        <label class="form-label small mb-1 fw-bold">Observaciones (opcional):</label>
+                        <textarea class="form-control form-control-sm" id="observacion-producto" rows="3" placeholder="Ej: Sin cebolla, poco sal, etc." style="font-size: 0.75rem; resize: none;"></textarea>
+                    </div>
                 </div>
             </div>
         </div>
@@ -252,6 +275,9 @@ function actualizarPrecios() {
 
 function validarYProcesarSeleccion(producto, grupos) {
     const cantidad = parseInt(document.getElementById("cantidad").value);
+    const observacion = document
+        .getElementById("observacion-producto")
+        .value.trim();
     const adicionalesSeleccionados = [];
 
     // Limpiar errores previos
@@ -296,12 +322,13 @@ function validarYProcesarSeleccion(producto, grupos) {
         });
     }
 
-    // Enviar datos a Livewire
+    // Enviar datos a Livewire incluyendo observación
     Livewire.emit(
         "agregarProductoConAdicionales",
         producto.id,
         adicionalesSeleccionados,
-        cantidad
+        cantidad,
+        observacion
     );
 
     return true;
@@ -441,6 +468,14 @@ style.textContent = `
         font-weight: 600;
     }
     
+    .modal-adicionales .stock-info {
+        font-size: 0.65rem;
+        margin-left: 0.25rem;
+        padding: 0.1rem 0.3rem;
+        border-radius: 3px;
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    
     .modal-adicionales .grupo-contador {
         margin-top: 0.3rem;
         font-size: 0.65rem;
@@ -458,6 +493,22 @@ style.textContent = `
     .modal-adicionales .resumen-precio hr {
         margin: 0.3rem 0;
         border-color: #20c996;
+    }
+    
+    /* Sección de observaciones */
+    .modal-adicionales .observacion-section {
+        border: 1px solid #dee2e6;
+        background-color: #f8f9fa;
+    }
+    
+    .modal-adicionales .observacion-section textarea {
+        border: 1px solid #dee2e6;
+        background-color: white;
+    }
+    
+    .modal-adicionales .observacion-section textarea:focus {
+        border-color: #20c996;
+        box-shadow: 0 0 0 0.2rem rgba(32, 201, 150, 0.15);
     }
     
     /* Responsive para pantallas pequeñas */

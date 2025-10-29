@@ -4,9 +4,11 @@ namespace App\Http\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\GaleriaFotos;
+use App\Helpers\GlobalHelper;
+use App\Helpers\ProcesarImagen;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
-use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class TiendaComponent extends Component
@@ -25,36 +27,75 @@ class TiendaComponent extends Component
     public function submit()
     {
         $this->validate();
-        $filename = time() . "." . $this->foto->extension();
-        //$this->imagen->move(public_path('imagenes'),$filename);
-        $this->foto->storeAs('galeria', $filename, 'public_images');
-        //comprimir la foto
-        $img = Image::make('imagenes/galeria/' . $filename);
-        $img->resize(720, null, function ($constraint) {
-            $constraint->aspectRatio();
-        });
-        $img->rotate(0);
-        $img->save('imagenes/galeria/' . $filename);
+        
+        try {
+            // Usar el helper ProcesarImagen para procesar y guardar la imagen
+            $procesarImagen = ProcesarImagen::crear($this->foto)
+                ->carpeta(GaleriaFotos::RUTA_FOTO) // Carpeta donde se guardará
+                ->dimensiones(720, null) // Redimensionar a máximo 720px de ancho
+                ->formato($this->foto->getClientOriginalExtension()); // Mantener formato original
+            
+            // Guardar la imagen procesada (automáticamente usa el disco correcto según el ambiente)
+            $filename = $procesarImagen->guardar();
+            
+            // Log de la ubicación donde se guardó la imagen
+            $disco = GlobalHelper::discoArchivos();
+            if ($disco === 's3') {
+                $config = config('filesystems.disks.s3');
+                $bucket = $config['bucket'] ?? '';
+                $region = $config['region'] ?? 'us-east-1';
+                $urlCompleta = "https://{$bucket}.s3.{$region}.amazonaws.com" . GaleriaFotos::RUTA_FOTO . $filename;
+                Log::info("Imagen de galería guardada en S3", [
+                    'titulo' => $this->titulo,
+                    'nombre_archivo' => $filename,
+                    'url_s3' => $urlCompleta,
+                    'disco' => $disco
+                ]);
+            } else {
+                $rutaLocal = public_path('imagenes/galeria/' . $filename);
+                Log::info("Imagen de galería guardada en local", [
+                    'titulo' => $this->titulo,
+                    'nombre_archivo' => $filename,
+                    'ruta_local' => $rutaLocal,
+                    'disco' => $disco
+                ]);
+            }
 
-        GaleriaFotos::create([
-            'titulo' => $this->titulo,
-            'descripcion' => $this->descripcion,
-            'foto' => $filename,
+            GaleriaFotos::create([
+                'titulo' => $this->titulo,
+                'descripcion' => $this->descripcion,
+                'foto' => $filename,
+            ]);
 
-        ]);
-
-        $this->dispatchBrowserEvent('alert', [
-            'type' => 'success',
-            'message' => "Se agrego una nueva foto a la galeria!"
-        ]);
-        $this->reset();
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => "Se agrego una nueva foto a la galeria!"
+            ]);
+            $this->reset();
+            
+        } catch (\Exception $e) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Error al procesar la imagen: ' . $e->getMessage()
+            ]);
+            return;
+        }
     }
     public function delete(GaleriaFotos $foto)
     {
         try {
-            Storage::disk('public_images')->delete('galeria/' . $foto->foto);
+            // Eliminar foto de la galería si existe
+            if ($foto->foto) {
+                $rutaArchivo = GaleriaFotos::RUTA_FOTO . $foto->foto; // Construir ruta correcta
+                $disco = GlobalHelper::discoArchivos();
+                
+                if (Storage::disk($disco)->exists($rutaArchivo)) {
+                    Storage::disk($disco)->delete($rutaArchivo);
+                }
+            }
+            
+            // Eliminar foto de la galería
             $foto->delete();
-
 
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'warning',
@@ -63,7 +104,7 @@ class TiendaComponent extends Component
         } catch (\Throwable $th) {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'error',
-                'message' => "Ups! algo salio mal"
+                'message' => "No se puede eliminar este registro porque está vinculado a otros"
             ]);
         }
     }

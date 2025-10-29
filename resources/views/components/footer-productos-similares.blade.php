@@ -1,6 +1,6 @@
 @if (count($similares) >= 1) 
 <div class="card mx-n3 rounded-0" 
-    style="background-image: url({{ asset($producto->subcategoria->foto ? 'imagenes/subcategorias/'.$producto->subcategoria->foto:'imagenes/delight/stock_default.jpg' )  }}), url({{asset('imagenes/delight/stock_default.jpg')}}); height: 150px;" 
+    style="background-image: url({{ $producto->subcategoria->pathFoto ? $producto->subcategoria->pathFoto:'imagenes/delight/stock_default.jpg' }}), url({{asset('imagenes/delight/stock_default.jpg')}}); height: 150px;" 
     data-card-height="150">
     <div class="card-center text-end ms-2 me-3">
         <h1 class="color-white font-900 font-34 mb-n2">{{$producto->subcategoria->nombre}}</h1>

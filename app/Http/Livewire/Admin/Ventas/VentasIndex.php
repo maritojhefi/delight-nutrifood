@@ -39,6 +39,7 @@ use App\Services\Ventas\Contracts\VentaServiceInterface;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use App\Services\Ventas\Contracts\ProductoVentaServiceInterface;
 use App\Services\Ventas\Contracts\CalculadoraVentaServiceInterface;
+use App\Rules\ValidarTelefonoPorPais;
 
 class VentasIndex extends Component
 {
@@ -101,6 +102,10 @@ class VentasIndex extends Component
         'crearVentaReserva' => 'crearVentaReserva',
         'cambiarTipoEntregaVenta' => 'cambiarTipoEntregaVenta',
         'agregarProductoConAdicionales' => 'agregarProductoConAdicionales',
+        'crearClienteRapido' => 'crearClienteRapido',
+        'verDetalleItemPOS' => 'verDetalleItemPOS',
+        'eliminarItemPOS' => 'eliminarItemPOS',
+        'seleccionar' => 'seleccionar',
     ];
     public function boot(
         VentaServiceInterface $ventaService,
@@ -689,6 +694,99 @@ class VentasIndex extends Component
         ]);
         $this->resetExcept(['metodosPagos']);
     }
+
+    public function crearClienteRapido($nombreCompleto, $codigoPais, $telefono, $asignarACuenta = false)
+    {
+        try {
+            // Limpiar el teléfono (remover espacios, guiones, etc.)
+            $telefonoLimpio = preg_replace('/[^0-9]/', '', $telefono);
+
+            // Crear el teléfono completo con código de país
+            $telefonoCompleto = $codigoPais . $telefonoLimpio;
+
+            // Validar datos
+            $validator = Validator::make(
+                [
+                    'nombre' => $nombreCompleto,
+                    'telefono' => $telefonoLimpio,
+                    'codigo_pais' => $codigoPais,
+                ],
+                [
+                    'nombre' => 'required|min:3|max:255',
+                    'telefono' => ['required', 'numeric', new ValidarTelefonoPorPais($codigoPais)],
+                    'codigo_pais' => 'required',
+                ],
+                [
+                    'nombre.required' => 'El nombre completo es obligatorio',
+                    'nombre.min' => 'El nombre debe tener al menos 3 caracteres',
+                    'nombre.max' => 'El nombre no debe exceder 255 caracteres',
+                    'telefono.required' => 'El teléfono es obligatorio',
+                    'telefono.numeric' => 'El teléfono debe contener solo números',
+                    'codigo_pais.required' => 'Debe seleccionar un código de país',
+                ]
+            );
+
+            if ($validator->fails()) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => $validator->errors()->first(),
+                ]);
+                return false;
+            }
+
+            // Verificar si el teléfono ya existe
+            $telefonoExistente = User::where('telf', $telefonoLimpio)
+                ->where('codigo_pais', $codigoPais)
+                ->first();
+
+            if ($telefonoExistente) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => 'Este número de teléfono ya está registrado en el sistema',
+                ]);
+                return false;
+            }
+
+            // Generar email único basado en el teléfono
+            $appName = strtolower(str_replace(' ', '', config('app.name', 'delight')));
+            $emailBase = 'cliente' . $telefonoLimpio . '@' . $appName . '.com';
+
+            // Verificar si el email ya existe, si es así agregar timestamp
+            $email = $emailBase;
+            $counter = 1;
+            while (User::where('email', $email)->exists()) {
+                $email = 'cliente' . $telefonoLimpio . '_' . $counter . '@' . $appName . '.com';
+                $counter++;
+            }
+
+            // Crear el cliente
+            $cliente = User::create([
+                'name' => $nombreCompleto,
+                'email' => $email,
+                'password' => bcrypt($telefonoLimpio), // Password temporal igual al teléfono
+                'role_id' => 4,
+                'telf' => $telefonoLimpio,
+                'codigo_pais' => $codigoPais,
+            ]);
+
+            // Si se solicita asignar a cuenta Y hay una cuenta activa
+            if ($asignarACuenta && $this->cuenta) {
+                $this->cambiarClienteACuenta($cliente);
+            }
+
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => '¡Cliente creado exitosamente! ' . ($asignarACuenta && $this->cuenta ? 'Cliente asignado a la venta.' : ''),
+            ]);
+
+            return $cliente->id;
+        } catch (\Exception $e) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Error al crear el cliente: ' . $e->getMessage(),
+            ]);
+        }
+    }
     public function mostraradicionales(Producto $producto)
     {
         if ($producto->medicion == 'unidad') {
@@ -704,6 +802,81 @@ class VentasIndex extends Component
             $this->productoapuntado = $producto;
         } else {
             $this->reset(['adicionales', 'productoapuntado']);
+        }
+    }
+
+    public function verDetalleItemPOS($producto_venta_id)
+    {
+        $detalle = DB::table('producto_venta')->where('id', $producto_venta_id)->first();
+
+        if (!$detalle) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Producto no encontrado'
+            ]);
+            return;
+        }
+
+        $producto = Producto::find($detalle->producto_id);
+        $adicionales = json_decode($detalle->adicionales, true);
+
+        $items = [];
+        if ($adicionales) {
+            foreach ($adicionales as $indice => $itemData) {
+                // Compatibilidad con formato antiguo y nuevo
+                $adicionalesArray = $itemData['adicionales'] ?? $itemData;
+                $agregadoAt = $itemData['agregado_at'] ?? null;
+                $estado = $itemData['estado'] ?? null;
+
+                // Extraer nombres de adicionales
+                $nombresAdicionales = [];
+                if (is_array($adicionalesArray)) {
+                    foreach ($adicionalesArray as $adic) {
+                        if (is_array($adic)) {
+                            // Cada $adic es como {"Omelett de verduras":"0.00"}
+                            foreach ($adic as $nombre => $precio) {
+                                $nombresAdicionales[] = $nombre;
+                            }
+                        }
+                    }
+                }
+
+                $items[] = [
+                    'indice' => $indice,
+                    'adicionales' => $nombresAdicionales,
+                    'agregado_at' => $agregadoAt,
+                    'estado' => $estado
+                ];
+            }
+        }
+
+        $this->dispatchBrowserEvent('verDetalleItemPOS', [
+            'producto_venta_id' => $producto_venta_id,
+            'producto_nombre' => $producto->nombre,
+            'producto_tiene_seccion' => $producto->seccion ? true : false,
+            'cantidad_total' => $detalle->cantidad,
+            'observacion' => $detalle->observacion,
+            'items' => $items
+        ]);
+    }
+
+    public function eliminarItemPOS($producto_venta_id, $indice)
+    {
+        $response = $this->productoVentaService->eliminarItemPivotID(
+            $this->cuenta,
+            $producto_venta_id,
+            $indice
+        );
+
+        $this->dispatchBrowserEvent('alert', [
+            'type' => $response->type,
+            'message' => $response->message,
+        ]);
+
+        if ($response->success) {
+            $this->actualizarlista(Venta::find($this->cuenta->id));
+            // Volver a mostrar el detalle actualizado
+            $this->verDetalleItemPOS($producto_venta_id);
         }
     }
 
@@ -879,7 +1052,7 @@ class VentasIndex extends Component
                 'id' => $producto->id,
                 'nombre' => $producto->nombre,
                 'precio' => $producto->precioReal(),
-                'imagen' => asset($producto->pathAttachment()),
+                'imagen' => $producto->pathAttachment(),
             ],
             'grupos' => $grupos
         ]);
@@ -917,7 +1090,7 @@ class VentasIndex extends Component
         return array_values($grupos);
     }
 
-    public function agregarProductoConAdicionales($productoId, $adicionalesSeleccionados, $cantidad = 1)
+    public function agregarProductoConAdicionales($productoId, $adicionalesSeleccionados, $cantidad = 1, $observacion = null)
     {
         try {
             $producto = Producto::find($productoId);
@@ -927,7 +1100,8 @@ class VentasIndex extends Component
                 $this->cuenta,
                 $producto,
                 $adicionales,
-                $cantidad
+                $cantidad,
+                $observacion
             );
 
             $this->dispatchBrowserEvent('alert', [

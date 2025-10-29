@@ -45,16 +45,30 @@ class UsuariosController extends Controller
         });
         $estadoMenu = SwitchPlane::find(1);
         $menusemanal = "";
+
+        $primer_dia = null;
+        $esProximo = true;
+
         foreach ($planes as $dias) {
 
             if (WhatsappAPIHelper::saber_dia($dias->pivot->start) == 'Domingo') {
                 continue;
             }
             if (date('y-m-d', strtotime($dias->pivot->start)) <= $fechalimite && date('y-m-d', strtotime($dias->pivot->start)) >= $fechaactual) {
-                $menusemanal = Almuerzo::where('dia', WhatsappAPIHelper::saber_dia($dias->pivot->start))->first();
+                $dia = WhatsappAPIHelper::saber_dia($dias->pivot->start);
+                $menusemanal = Almuerzo::where('dia', $dia)->first();
                 if (!$menusemanal) {
                     continue;
                 }
+
+                // Marcar el primer conjunto de dias como proximo para ser resaltados
+                if ($primer_dia === null) {
+                    $primer_dia = $dia;
+                } else if ($primer_dia !== $dia) {
+                    $esProximo = false;
+                }
+                $proximo_value = $esProximo;
+
                 $coleccion->push([
                     'detalle' => $dias->pivot->detalle,
                     'estado' => $dias->pivot->estado,
@@ -84,6 +98,7 @@ class UsuariosController extends Controller
                     'envio3' => Plane::ENVIO3,
                     'empaque1' => 'Vianda',
                     'empaque2' => 'Empaque Bio(apto/microondas)',
+                    'proximo' => $proximo_value, // Assign the dynamically determined value
                 ]);
             }
         }

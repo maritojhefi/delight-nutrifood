@@ -111,7 +111,7 @@
                                         class="d-flex align-items-center justify-content-center col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-2">
                                         <div class="align-self-center">
                                             @if ($usuarioReferido->foto)
-                                                <img src="{{ asset('imagenes/perfil/' . $usuarioReferido->foto) }}"
+                                                <img src="{{ $usuarioReferido->pathFoto }}"
                                                     class="rounded-sm me-1" width="40">
                                             @else
                                                 <img src="{{ asset('user.png') }}" class="rounded-sm me-1" width="40">
@@ -224,7 +224,7 @@
                                     class="d-flex align-items-center justify-content-center col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-2 mt-4">
                                     <div class="align-self-center">
                                         @if ($usuarioReferido->foto)
-                                            <img src="{{ asset('imagenes/perfil/' . $usuarioReferido->foto) }}"
+                                            <img src="{{ $usuarioReferido->pathFoto }}"
                                                 class="rounded-sm me-1" width="40">
                                         @else
                                             <img src="{{ asset('user.png') }}" class="rounded-sm me-1" width="40">
@@ -299,7 +299,7 @@
                                     class="d-flex align-items-center justify-content-center col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-2 mt-4">
                                     <div class="align-self-center">
                                         @if ($usuarioReferido->foto)
-                                            <img src="{{ asset('imagenes/perfil/' . $usuarioReferido->foto) }}"
+                                            <img src="{{ $usuarioReferido->pathFoto }}"
                                                 class="rounded-sm me-1" width="40">
                                         @else
                                             <img src="{{ asset('user.png') }}" class="rounded-sm me-1" width="40">

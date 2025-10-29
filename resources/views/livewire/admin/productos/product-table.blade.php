@@ -31,6 +31,7 @@
                         <thead class="m-0 p-0">
                             <tr class="m-0 p-0">
                                 <th class="m-0 p-0"><strong>Nombre</strong></th>
+                                <th class="m-0 p-0  "><strong>Seccion</strong></th>
                                 <th class="m-0 p-0  "><strong>Stock</strong></th>
                                 <th class="m-0 p-0"><strong>Precio</strong></th>
                                 <th class="m-0 p-0  "><strong>Estado</strong></th>
@@ -51,13 +52,24 @@
                                     <td class="m-0 p-1">
                                         <div class="d-flex align-items-center">
                                             @if ($item->imagen)
-                                                <img src="{{ asset($item->pathAttachment()) }}" class="rounded-lg me-2"
+                                                <img src="{{ $item->pathAttachment() }}" class="rounded-lg me-2"
                                                 width="24" alt="">@else<img
                                                     src="{{ asset(GlobalHelper::getValorAtributoSetting('logo')) }}"
                                                     class="rounded-lg me-2" width="24" alt="">
                                             @endif
                                             <strong class="">{{ $item->nombre }}</strong>
                                         </div>
+                                    </td>
+                                    <td class="m-0 p-1  d-sm"><span class="w-space-no">
+                                        @if ($item->seccion)
+                                            <a href="#" class="badge badge-outline-primary badge-xxs p-1" onclick="cambiarSeccionProducto({{ $item->id }}, '{{ $item->seccion }}')">
+                                                {{ $item->seccion }}
+                                            </a>
+                                        @else
+                                            <small onclick="cambiarSeccionProducto({{ $item->id }}, '{{ $item->seccion }}')">
+                                                N/A
+                                            </small>
+                                        @endif
                                     </td>
                                     <td class="m-0 p-1  d-sm"><span class="w-space-no">
                                             @if ($item->contable)
@@ -163,6 +175,9 @@
                                                         wire:click="editarTags('{{ $item->id }}')"
                                                         data-bs-toggle="modal" data-bs-target="#modalTags"><i
                                                             class="fa fa-tag me-2"></i> Editar Tags</a>
+                                                    <a href="#" class="dropdown-item"
+                                                        onclick="cambiarSeccionProducto({{ $item->id }}, '{{ $item->seccion }}')"><i
+                                                            class="fa fa-folder me-2"></i> Editar Sección despacho</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -617,6 +632,47 @@
             inicializarLucideIcons();
         }, 100);
     });
+
+    // Definir las secciones disponibles para productos
+    const SECCIONES_PRODUCTO = {!! json_encode(array_keys(App\Models\Producto::SECCIONES)) !!};
+
+    function cambiarSeccionProducto(productoId, seccionActual) {
+        // Mostrar alerta para seleccionar la sección y emitir evento a Livewire con la selección
+        let seccionesArray = SECCIONES_PRODUCTO;
+        
+        // Crear opción para resetear a null
+        let opcionNull = `<option value="" ${!seccionActual ? 'selected' : ''}>-- Sin sección asignada --</option>`;
+        
+        let opciones = opcionNull + seccionesArray.map(s => {
+            let selected = s === seccionActual ? 'selected' : '';
+            return `<option value="${s}" ${selected}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>`;
+        }).join('');
+        let form = document.createElement('form');
+        form.innerHTML = `
+            <label for="seccion-select">Seleccione la sección de despacho:</label>
+            <select id="seccion-select" name="seccion" class="form-control mt-2">
+                ${opciones}
+            </select>
+        `;
+        Swal.fire({
+            title: 'Editar Sección despacho',
+            html: form,
+            showCancelButton: true,
+            confirmButtonText: 'Guardar',
+            cancelButtonText: 'Cancelar',
+            focusConfirm: false,
+            preConfirm: () => {
+                let select = form.querySelector('#seccion-select');
+                return select.value;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let seccionSeleccionada = result.value;
+                // Emitir evento Livewire para actualizar la sección del producto
+                Livewire.emit('actualizarSeccionProducto', productoId, seccionSeleccionada);
+            }
+        });
+    }
 
     // Función global para usar desde otros scripts
     window.inicializarLucideIcons = inicializarLucideIcons;

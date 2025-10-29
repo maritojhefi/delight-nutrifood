@@ -11,7 +11,7 @@
             @foreach ($subcategoria->productos->where('estado','activo')->shuffle() as $item)
            <x-producto-list-component 
            :ruta="route('delight.detalleproducto',$item->id)" 
-           :foto="asset($item->pathAttachment())" 
+           :foto="$item->pathAttachment()" 
            :nombre="$item->nombre()"
            :id="$item->id"
            :precio="$item->precio()" 

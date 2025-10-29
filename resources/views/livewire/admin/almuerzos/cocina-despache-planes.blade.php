@@ -112,9 +112,14 @@
                                 @elseif($lista['ENVIO'] == 'b.- Para llevar(Paso a recoger)') table-info
                                 @elseif($lista['ENVIO'] == 'c.- Para Mesa') table-success @endif"
                                 style="border-color:#211d1d !important">
-                                <td style="border-color:#211d1d !important">{!! $lista['ESTADO'] == 'permiso'
-                                    ? '<a href="javascript:void(0)" class="text-primary"><strong>PERMISO</strong> </a>'
-                                    : $loop->iteration !!}</td>
+                                <td style="border-color:#211d1d !important">
+                                    @if(isset($lista['CLIENTE_INGRESADO']) && $lista['CLIENTE_INGRESADO'])
+                                        <i class="fa fa-user fa-beat text-success" style="font-size: 16px;" title="Cliente ingresado"></i>
+                                    @endif
+                                    {!! $lista['ESTADO'] == 'permiso'
+                                        ? '<a href="javascript:void(0)" class="text-primary"><strong>PERMISO</strong> </a>'
+                                        : $loop->iteration !!}
+                                </td>
                                 <td style="border-color:#211d1d !important"><small>
                                         @if ($lista['ESTADO'] == 'permiso')
                                             <del class="text-muted">{{ Str::limit($lista['NOMBRE'], 25) }}</del>
@@ -286,7 +291,12 @@
                     <tbody style="">
                         @foreach ($coleccion->where('COCINA', 'despachado') as $lista)
                             <tr class="table-danger" style="">
-                                <td style="">{{ $loop->iteration }}</td>
+                                <td style="">
+                                    @if(isset($lista['CLIENTE_INGRESADO']) && $lista['CLIENTE_INGRESADO'])
+                                        <i class="fa fa-user fa-beat text-success" style="font-size: 16px;" title="Cliente ingresado"></i>
+                                    @endif
+                                    {{ $loop->iteration }}
+                                </td>
                                 <td style="">{{ Str::limit($lista['NOMBRE'], 20) }}</td>
                                 <td style="">{{ $lista['SOPA'] != '' ? 'SI' : '' }}</td>
                                 <td style="">{{ $lista['PLATO'] }}</td>

@@ -14,6 +14,7 @@ use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Rawilk\Printing\Facades\Printing;
+use App\Events\RefreshMenuHeaderEvent;
 
 class GlobalHelper
 {
@@ -219,6 +220,8 @@ class GlobalHelper
                     'PLAN' => $lista->nombre,
                     'PLAN_ID' => $lista->plane_id,
                     'USER_ID' => $lista->user_id,
+                    'CLIENTE_INGRESADO' => $lista->cliente_ingresado ?? false,
+                    'CLIENTE_INGRESADO_AT' => $lista->cliente_ingresado_at ?? null,
                 ]);
             } else {
                 $coleccion->push([
@@ -236,6 +239,8 @@ class GlobalHelper
                     'PLAN' => $lista->nombre,
                     'PLAN_ID' => $lista->plane_id,
                     'USER_ID' => $lista->user_id,
+                    'CLIENTE_INGRESADO' => $lista->cliente_ingresado ?? false,
+                    'CLIENTE_INGRESADO_AT' => $lista->cliente_ingresado_at ?? null,
                 ]);
             }
         }
@@ -293,7 +298,7 @@ class GlobalHelper
         }
     }
 
-    public static function actualizarMenuCantidadDesdePOS(Adicionale $adicional, $accion = 'reducir')
+    public static function actualizarMenuCantidadDesdePOS(Adicionale $adicional, $accion = 'reducir', $cantidad = 1)
     {
         // Obtén el menú de hoy
         $menuHoy = Almuerzo::withoutGlobalScope('diasActivos')->hoy()->first();
@@ -309,22 +314,22 @@ class GlobalHelper
         // Actualiza el campo correspondiente basado en el código de cocina
         switch ($adicional->codigo_cocina) {
             case 'segundo_ejecutivo':
-                $menuHoy->{$method}('ejecutivo_cant');
+                $menuHoy->{$method}('ejecutivo_cant', $cantidad);
                 break;
             case 'segundo_dieta':
-                $menuHoy->{$method}('dieta_cant');
+                $menuHoy->{$method}('dieta_cant', $cantidad);
                 break;
             case 'segundo_veggie':
-                $menuHoy->{$method}('vegetariano_cant');
+                $menuHoy->{$method}('vegetariano_cant', $cantidad);
                 break;
             case 'carbohidrato_1':
-                $menuHoy->{$method}('carbohidrato_1_cant');
+                $menuHoy->{$method}('carbohidrato_1_cant', $cantidad);
                 break;
             case 'carbohidrato_2':
-                $menuHoy->{$method}('carbohidrato_2_cant');
+                $menuHoy->{$method}('carbohidrato_2_cant', $cantidad);
                 break;
             case 'carbohidrato_3':
-                $menuHoy->{$method}('carbohidrato_3_cant');
+                $menuHoy->{$method}('carbohidrato_3_cant', $cantidad);
                 break;
             default:
                 // Código desconocido, no hacer nada
@@ -333,6 +338,7 @@ class GlobalHelper
 
         // Guarda los cambios en el menú de hoy
         $menuHoy->save();
+        event(new RefreshMenuHeaderEvent());
     }
     public static function cantidadColor($cantidad)
     {
@@ -430,7 +436,7 @@ class GlobalHelper
     public static function processSubcategoriaFoto($subcategorias)
     {
         return $subcategorias->map(function ($sub) {
-            $sub->foto = $sub->foto ? asset('imagenes/subcategorias/' . $sub->foto) : asset(GlobalHelper::getValorAtributoSetting('bg_default'));
+            $sub->foto = $sub->foto ? $sub->pathFoto : asset(GlobalHelper::getValorAtributoSetting('bg_default'));
             return $sub;
         });
     }
@@ -496,8 +502,8 @@ class GlobalHelper
         // Obtener planes del día actual con horarios cargados
         $planesHoy = $usuario->planesHoy($fecha)->get()->load('horario');
         // Filtrar planes que no tienen horario (la relación es null)
-        $planesHoy = $planesHoy->filter(fn ($plan) => $plan->horario !== null);
-        
+        $planesHoy = $planesHoy->filter(fn($plan) => $plan->horario !== null);
+
 
         // Si no hay planes hoy, buscar planes del día siguiente
         if ($planesHoy->isEmpty()) {
@@ -505,7 +511,7 @@ class GlobalHelper
             $planesSiguiente = $usuario->planesHoy($fechaSiguiente)->get()->load('horario');
 
             //  Filtrar planes que no tienen horario (la relación es null)
-            $planesSiguiente = $planesSiguiente->filter(fn ($plan) => $plan->horario !== null);
+            $planesSiguiente = $planesSiguiente->filter(fn($plan) => $plan->horario !== null);
 
             if ($planesSiguiente->isEmpty()) {
                 return null;
@@ -576,7 +582,7 @@ class GlobalHelper
             $planesSiguiente = $usuario->planesHoy($fechaSiguiente)->get()->load('horario');
 
             // Filtrar planes que no tienen horario (la relación es null)
-            $planesSiguiente = $planesSiguiente->filter(fn ($plan) => $plan->horario !== null);
+            $planesSiguiente = $planesSiguiente->filter(fn($plan) => $plan->horario !== null);
 
             if ($planesSiguiente->isNotEmpty()) {
                 // Ordenar planes del día siguiente por hora de inicio
@@ -632,8 +638,16 @@ class GlobalHelper
             ->whereDate('start', $fecha)
             // Filtro clave: Agrupar por la hora de inicio exacta del plan seleccionado
             ->where('start', $start_timestamp_plan_seleccionado)
+            // Filtrar para evitar pedidos con permiso
+            ->whereNotIn('estado', ['permiso'])
             ->get(); // Obtener la colección de todos los registros coincidentes
-        
+
         return $pedidos;
+    }
+
+
+    public static function discoArchivos()
+    {
+        return config('filesystems.default');
     }
 }

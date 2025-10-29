@@ -59,7 +59,7 @@ interface ProductoVentaServiceInterface
      * Guarda observación de un producto_venta indentificandolo por su id pivote
      */
     public function guardarObservacionPivotID(int $producto_venta_id, string $observacion): VentaResponse;
-    
+
     /**
      * Agrega producto desde plan de usuario
      */
@@ -68,7 +68,7 @@ interface ProductoVentaServiceInterface
     /**
      * Agrega un producto a la venta, considerando adicionales y cantidad (caso uso cliente)
      */
-    public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad): VentaResponse;
+    public function agregarProductoCliente(Venta $venta, Producto $producto, Collection $adicionales, int $cantidad, ?string $observacion = null): VentaResponse;
 
     /**
      * Disminuye ordenes de un producto sin aceptar por parte del cliente
@@ -94,4 +94,9 @@ interface ProductoVentaServiceInterface
      * Actualiza los adicionales asignados a una orden en un registro de producto_venta segun su indice;
      */
     public function actualizarOrdenVentaCliente(Venta $venta, $productoVenta, Producto $producto, Collection $adicionalesNuevos, int $indice): VentaResponse;
+
+    /**
+     * Cambia el estado de un item específico en el campo adicionales
+     */
+    public function cambiarEstadoItem(int $producto_venta_id, int $indice, string $nuevoEstado): VentaResponse;
 }

@@ -20,9 +20,17 @@ class CocinaPedidoEvent implements ShouldBroadcast
      * @return void
      */
     public $message;
-    public function __construct($message)
+    public $idVenta;
+    public $user;
+    public $seccion;
+    public $icono;
+    public function __construct($message = null, $idVenta = null, $user = null, $seccion = 'cocina', $icono = 'success')
     {
         $this->message = $message;
+        $this->idVenta = $idVenta;
+        $this->user = $user;
+        $this->seccion = $seccion;
+        $this->icono = $icono;
     }
 
     /**
@@ -32,6 +40,6 @@ class CocinaPedidoEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('pedido-cocina');
+        return new Channel('pedido-' . $this->seccion);
     }
 }

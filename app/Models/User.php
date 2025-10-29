@@ -9,6 +9,7 @@ use App\Models\Venta;
 use App\Models\Pensione;
 use App\Models\Traslado;
 use App\Models\Asistencia;
+use App\Helpers\GlobalHelper;
 use App\Models\Historial_venta;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
@@ -68,7 +69,34 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    protected $appends = ['saldo_formateado'];
+    protected $appends = ['saldo_formateado', 'pathFoto'];
+    
+    // Constante para la ruta de fotos de perfil en S3
+    const RUTA_FOTO = '/imagenes/perfil/';
+
+    /**
+     * Obtener la URL completa de la foto del usuario
+     */
+    public function getPathFotoAttribute()
+    {
+        if (empty($this->foto)) {
+            return null;
+        }
+        
+        // Usar el disco configurado para generar la URL correcta
+        $disk = GlobalHelper::discoArchivos();
+        if ($disk === 's3') {
+            // Para S3, usar la URL completa
+            $config = config('filesystems.disks.s3');
+            $bucket = $config['bucket'] ?? '';
+            $region = $config['region'] ?? 'us-east-1';
+            $baseUrl = "https://{$bucket}.s3.{$region}.amazonaws.com";
+            return $baseUrl . self::RUTA_FOTO . $this->foto;
+        } else {
+            // Para local, usar asset()
+            return asset('imagenes/perfil/' . $this->foto);
+        }
+    }
 
     public function getSaldoFormateadoAttribute()
     {

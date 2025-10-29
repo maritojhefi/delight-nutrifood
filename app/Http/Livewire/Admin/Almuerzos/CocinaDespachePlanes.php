@@ -21,6 +21,14 @@ class CocinaDespachePlanes extends Component
     public $search;
     public $estadoBuscador = "NOMBRE", $estadoColor = "success";
     public $dieta_cant, $ejecutivo_cant, $carbohidrato_1_cant, $carbohidrato_2_cant, $carbohidrato_3_cant, $vegetariano_cant;
+    protected $listeners = [
+        'echo:pensionados,RefreshListaPensionadosEvent' => 'actualizarListaPensionados'
+    ];
+    public function actualizarListaPensionados()
+    {
+
+        $this->render();
+    }
     public function cambiarCantidad($variable)
     {
         switch ($variable) {
@@ -221,6 +229,12 @@ class CocinaDespachePlanes extends Component
             ->get();            //dd($pens);
         // Suponiendo que estas funciones ya existen
         $coleccion = GlobalHelper::armarColeccionReporteDiarioVista($pens, $this->fechaSeleccionada);
+
+        // Ordenar dando prioridad a los clientes ingresados (true primero)
+        $coleccion = $coleccion->sortByDesc(function ($item) {
+            return $item['CLIENTE_INGRESADO_AT'] ?? false;
+        })->values();
+
         $coleccionEspera = $coleccion->whereIn('COCINA', ['espera', 'solo-sopa', 'solo-segundo']);
         $coleccionSopa = $coleccion->whereIn('COCINA', ['solo-sopa']);
         $coleccionSegundo = $coleccion->whereIn('COCINA', ['solo-segundo']);

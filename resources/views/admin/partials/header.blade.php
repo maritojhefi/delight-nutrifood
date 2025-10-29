@@ -33,7 +33,7 @@
                                 <small class="text-start fs-14 font-w400">{{ auth()->user()->role->nombre }}</small>
                             </div>
                             @if (auth()->user()->foto)
-                                <img src="{{ asset('imagenes/perfil/' . auth()->user()->foto) }}" width="20">
+                                <img src="{{ auth()->user()->pathFoto }}" width="20">
                             @else
                                 <img src="{{ asset('user.png') }}" width="20">
                             @endif

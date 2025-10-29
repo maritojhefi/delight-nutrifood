@@ -21,6 +21,8 @@
 
     <!-- Style css -->
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/toastr.css') }}" rel="stylesheet">
+
     <script>
         window.PUSHER_APP_KEY = '{{ config('broadcasting.connections.pusher.key') }}';
         window.APP_DEBUG = {{ config('app.debug') ? 'true' : 'false' }};
@@ -224,6 +226,8 @@
     <script src="{{ asset('js/custom.min.js') }}"></script>
     <script src="{{ asset('js/deznav-init.js') }}"></script>
     <script src="{{ asset('js/demo.js') }}"></script>
+    <script src="{{ asset('js/toastr.js') }}"></script>
+    {{-- <script src="{{ asset('js/toastr-init.js') }}"></script> --}}
     <script>
         const Toast = Swal.mixin({
             toast: true,

@@ -115,7 +115,7 @@ class EnviarPlanDiaAlmuerzoMananasCommand extends Command
                                 $menuDiaActual->vegetariano . '(veggie)',
                                 'Pedir Permiso'
                             ],
-                            env('APP_ENV') == 'local' ? asset(GlobalHelper::getValorAtributoSetting('logo')) : asset('imagenes/almuerzo/'.$menuDiaActual->foto),
+                            env('APP_ENV') == 'local' ? asset(GlobalHelper::getValorAtributoSetting('logo')) : $menuDiaActual->pathFoto,
                             'image',
                             $cliente->cliente->telf,
                             'es'

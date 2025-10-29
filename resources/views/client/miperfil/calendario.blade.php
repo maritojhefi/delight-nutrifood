@@ -1,6 +1,5 @@
 @extends('client.master')
 @section('content')
-    <!-- <x-cabecera-pagina titulo="{{ $plan->nombre }}" cabecera="appkit" /> -->
     <x-cabecera-pagina titulo="{{ $plan->nombre }}" cabecera="appkit" />
     @env('local')
     @php
@@ -18,10 +17,10 @@
                 <div class="content text-white">
                     <h4>Personaliza tu menú de esta semana!</h4>
                     <p>
-                        Quedan {{ $coleccion->count() }} pedidos en esta semana para tu plan. ¡Personaliza cada uno!
+                        Quedan {{ $coleccion->count() }} días, personaliza cada uno!
                     </p>
                 </div>
-                <div class="accordion" id="accordion-3">
+                <div class="accordion mt-4" id="accordion-3">
                     @foreach ($coleccion as $lista)
                         {{-- @dd($lista) --}}
                         <div class="card card-style">
@@ -99,89 +98,70 @@
                         {{-- @dd($lista) --}}
                         <div class="card card-style rounded-s ">
                             <div
-                                class="list-custom-small @if($lista['proximo']){{ 'proximo-dia' }}@endif rounded-top border-0 list-icon-0 @if($lista['proximo']){{ 'bg-highlight' }}@elseif($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'bg-highlight bg-dtheme-blue' }}@elseif($lista['estado'] == 'desarrollo'){{ 'bg-yellow-dark' }}@else{{ 'bg-green-dark bg-dtheme-blue' }}@endif px-3"
-                                style="@if($lista['estado'] != 'desarrollo') background-image: url('{{ asset('imagenes/delight/22.jpeg') }}'); background-position: center; background-size: cover; @endif"
-                            >
-                                <a data-bs-toggle="collapse" class="{{ ($idPedidoEditar == $lista['id']) ? '' : 'collapsed' }}" href="#collapse-7{{ $lista['id'] }}"
-                                    aria-expanded="{{ ($idPedidoEditar == $lista['id']) ? 'true' : 'false' }}">
-                                    <div class="d-flex flex-row align-items-center justify-content-between">
-                                        <div class="d-flex flex-row justify-content-between align-items-center w-100 me-2">
-                                        @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
-                                            <div class="d-flex flex-row gap-2 align-items-center">
-                                                <i data-lucide="notebook-pen" class="lucide-icon color-white"></i>
-                                                <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
-                                            </div>
-                                            @if ($lista['proximo'])
-                                            <span class="bg-delight-red font-12 line-height-s rounded-xs px-1 text-white" style="z-index: 4;">Próximo</span>
-                                            @endif
-                                        @elseif($lista['estado'] == 'desarrollo')
-                                            <div class="d-flex flex-row gap-2 align-items-center">
-                                                <i class="fab fa-whatsapp color-white"></i>
-                                                <span class="font-14 color-white">{{ $lista['dia'] }}</span>
-                                            </div>
-                                            <small for="" class="text-magenta text-white">
-                                                (En desarrollo por whatsapp)
-                                            </small>
-                                        @else
-                                            <div class="d-flex flex-row gap-2 align-items-center">
-                                                <i data-lucide="save" class="lucide-icon color-white"></i>
-                                                <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
-                                            </div>
-                                            <span class="bg-teal-dark font-12 line-height-s rounded-xs px-1 text-white" style="z-index: 4;">Guardado</span>
-                                        @endif
-                                        </div>
-                                        <i class="fa fa-angle-down color-white"></i>
-                                    </div>
+                                class="list-group list-custom-small list-icon-0 bg-@if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'mint' }}@elseif($lista['estado'] == 'desarrollo'){{ 'yellow' }}@else{{ 'green' }}@endif-dark ps-3 pe-4 ">
+                                <a data-bs-toggle="collapse" class="no-effect collapsed" href="#collapse-7{{ $lista['id'] }}"
+                                    aria-expanded="false">
+
+                                    @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
+                                        <i class="fas fa-user-edit color-white"></i>
+                                        <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                    @elseif($lista['estado'] == 'desarrollo')
+                                        <i class="fab fa-whatsapp color-white"></i>
+                                        <span class="font-14 color-white">{{ $lista['dia'] }}</span>
+                                        <small for="" class="text-magenta text-white">
+                                            (En desarrollo por whatsapp)
+                                        </small>
+                                    @else
+                                        <i class="fas fa-save color-white"></i>
+                                        <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                        <span class="text-white">Guardado!</span>
+                                    @endif
+                                    <i class="fa fa-angle-down color-white"></i>
                                 </a>
                             </div>
-                            <!-- <p class="hidden">{{ json_encode($lista) }}</p> -->
-                            <div class="px-2 border border-2 border-top-0 rounded-bottom collapse {{ ($idPedidoEditar == $lista['id']) ? 'show' : '' }}" id="collapse-7{{ $lista['id'] }}"
+                            <div class="ps-2 pe-4 collapse bordeado" id="collapse-7{{ $lista['id'] }}"
                                 data-bs-parent="#accordion-3" style="">
-                                <div class="p-2 d-flex flex-column gap-2 justify-content-center align-items-center">
+                                <div class="p-2">
                                     @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
                                         <form action="{{ route('personalizardia') }}" id="{{ $lista['id'] }}"
                                             method="POST">
                                             @csrf
-                                            <div class="row mb-0 d-flex flex-column justify-content-center align-items-center">
+                                            <div class="row mb-0">
                                                 @if ($plan->segundo)
                                                     @include('client.miperfil.includes.seleccion-segundo')
-                                                    <hr class="my-2">
+                                                    <hr>
                                                 @endif
 
                                                 @if ($plan->carbohidrato)
                                                     @include('client.miperfil.includes.seleccion-carbohidrato')
-                                                    <hr class="my-2">
+                                                    <hr>
                                                 @endif
 
+                                            </div>
 
                                             @include('client.miperfil.includes.seleccion-envio')
-                                            <hr class="my-2">
+                                            <hr>
                                             @include('client.miperfil.includes.seleccion-secundarios')
-                                            </div>
 
                                         </form>
                                     @elseif($lista['estado'] == 'desarrollo')
                                         Ve a tu whatsapp para terminar de programar este plan!
                                     @else
-                                        <div class="w-100 d-flex flex-column gap-2">
-                                            <ul class="icon-list mb-0">
-                                                @foreach (json_decode($lista['detalle'], true) as $plato => $valor)
-                                                    @if ($valor != '')
-                                                        <li class="d-flex flex-row align-items-center gap-2">
-                                                            <i data-lucide="check" class="lucide-icon color-teal-dark"></i>
-                                                            <label for="" class="font-700 color-theme">
-                                                                {{ $plato }}:
-                                                            </label>
-                                                            <p class="mb-0 line-height-s">{{ ucfirst($valor) }}</p>
-                                                        </li>
-                                                    @endif
-                                                @endforeach
-                                            </ul>
-                                        </div>
+                                        <ul class="icon-list">
+                                            @foreach (json_decode($lista['detalle'], true) as $plato => $valor)
+                                                @if ($valor != '')
+                                                    <li><i class="fa fa-check color-green-dark"></i>{{ $plato }} :
+                                                        <label for=""
+                                                            class="font-700 mb-0">{{ $valor }}</label>
+                                                    </li>
+                                                @endif
+                                            @endforeach
+                                        </ul>
                                         <a href="{{ route('editardia', $lista['id']) }}"
-                                                style="border-radius: 10px;"
-                                                class="btn btn-s w-auto text-uppercase font-600 shadow-s bg-highlight">Editar</a>
+                                            class="btn btn-xxs  rounded-s text-uppercase font-900 shadow-s border-red-dark  bg-red-light">Editar</a>
                                     @endif
+
+
                                 </div>
                             </div>
                         </div>
@@ -196,10 +176,14 @@
                 <p class="boxed-text-l">
                     Estamos planificando el menu para toda la semana! Estara listo en breve...
                 </p>
-            </div>
-        @endif
-    </div>
 
+            </div>
+
+        @endif
+
+
+
+    </div>
     @include('client.miperfil.includes.show-errores')
 
     <x-calendario-appkit-plan :plan="$plan" :usuario="$usuario" />
@@ -215,25 +199,26 @@
         <div id="toast-whatsapp" class="toast toast-tiny toast-top bg-yellow-dark fade hide" data-bs-delay="3000"
             data-bs-autohide="true"><i class="fab fa-whatsapp"></i> En desarrollo!</div>
 
-        <!-- <div class="card card-style bg-18" data-card-height="150" style="height: 150px;">
+        <div class="card card-style bg-18" data-card-height="150" style="height: 150px;">
             <div class="card-center ms-3">
                 <h1 class="color-white">Detalles del plan:</h1>
                 <p class="color-white mt-n1 mb-0 opacity-70">{{ $plan->detalle }}</p>
             </div>
             <div class="card-overlay bg-black opacity-80"></div>
-        </div> -->
+        </div>
 
         <div class="modal fade" id="basicModal" data-bs-backdrop="false">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content card card-style shadow-xl pt-2 mx-2">
                     <div class="card-header bg-transparent d-flex flex-row justify-content-between align-items-center">
-                        <h5 class="modal-title">¿Está seguro? Esta accion no se puede revertir</h5>
+                        <h5 class="modal-title">Esta seguro? Esta accion no se puede revertir</h5>
                             <button type="button" class="btn-close bg-magenta-dark p-2" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="card-body">
                         <span>El plan seleccionado pasara a un dia despues del ultimo plan encontrado</span>
                         <form action="" id="formBasic">
                             <input type="hidden" name="id" id="id">
+
                         </form>
                     </div>
                     <div class="card-footer align-self-end bg-transparent border-top-0">
@@ -259,9 +244,12 @@
                             dia despues de la ultima fecha que tenga en este plan</span>
                         <form action="" id="formPermiso">
                             <input type="hidden" name="id" id="id">
+
                         </form>
+
                     </div>
                     <div class="modal-footer">
+
                         <button type="button"
                             class="btn btn-xxs mb-3 rounded-s text-uppercase font-900 shadow-s border-green-dark  bg-green-light"
                             id="btnPermisoUno">Solo 1 permiso <span class="btn-icon-end"><i class="fa fa-check"></i></span>
@@ -271,10 +259,12 @@
                             id="btnPermisoTodos">Permiso para todos <span class="btn-icon-end"><i
                                     class="fa fa-check"></i></span>
                         </button>
+
                     </div>
                 </div>
             </div>
         </div>
+
         <div id="permiso-aceptado" class="snackbar-toast bg-magenta-dark color-white fade hide" data-delay="3000"
             data-autohide="true"><i class="fa fa-shopping-cart me-3"></i>Tu permiso fue aceptado!</div>
     @endpush
@@ -402,8 +392,7 @@
                     if (cont == data.length) {
                         $(this).find('button').prop('disabled', false);
                     } else {
-                        // $(this).find('button').prop('disabled', true);
-                        $(this).find('button').not('.bg-delight-red').prop('disabled', true);
+                        $(this).find('button').prop('disabled', true);
                     }
                     // console.log(cont);
                     // if ($("input[name='carb" + idForm + "']:checked").val() && $("input[name='plato" + idForm +

@@ -5,6 +5,7 @@
                 <x-sidebar-elements titulo="Cocina" linkglobal="cocina" :lista="[
                     'Despachar pedidos' => 'reporte.cocina',
                     'Agregar stock' => 'sucursal.stock',
+                    'Nutribar' => 'nutribar.index',
                 ]">
                     <i class="flaticon-025-dashboard"></i>
                 </x-sidebar-elements>
@@ -71,6 +72,7 @@
                     'Agregar Plan a Usuario' => 'planes',
                     'Planes por expirar' => 'planes.expirar',
                     'Cocina' => 'reporte.cocina',
+                    'Nutribar' => 'nutribar.index',
                     'Planes en desarrollo(whatsapp)' => 'reporte.whatsapp',
                 ]">
                     <i class="flaticon-381-photo"></i>

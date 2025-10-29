@@ -66,11 +66,11 @@ Route::prefix('/productos')->group(function () {
     Route::get('/add/carrito/{id}', [App\Http\Controllers\CarritoController::class, 'addToCarrito']);
     Route::get('/{id}/stock', [App\Http\Controllers\ProductoController::class, 'checkProductStock']);
     Route::get('/{id}', [App\Http\Controllers\ProductoController::class, 'getProduct']);
-    Route::get('/tag/{id}',[App\Http\Controllers\ProductoController::class, 'getProductoTag']);
+    Route::get('/tag/{id}', [App\Http\Controllers\ProductoController::class, 'getProductoTag']);
     Route::get('/limpiar-fotos/productos', [App\Http\Controllers\ProductoController::class, 'limpiarProductos']);
     Route::get('/buscar/{tipo}/{query}', [App\Http\Controllers\ProductoController::class, 'buscarProductos']);
-    Route::get('/{id}/detallado',[App\Http\Controllers\ProductoController::class, 'getProductoDetalle']);
-    Route::post('/validar-adicionales',[App\Http\Controllers\ProductoController::class, 'validarProductoAdicionales']);
+    Route::get('/{id}/detallado', [App\Http\Controllers\ProductoController::class, 'getProductoDetalle']);
+    Route::post('/validar-adicionales', [App\Http\Controllers\ProductoController::class, 'validarProductoAdicionales']);
 });
 //promociones
 Route::prefix('/lineadelight')->group(function () {
@@ -96,15 +96,15 @@ Route::prefix('/ventas')
     ->group(function () {
         Route::get('', [App\Http\Controllers\VentasCocinaController::class, 'index'])->name('ventas.cocina.pedido');
         Route::post('/ventaQR', [App\Http\Controllers\VentasWebController::class, 'generarVentaQR']);
-        Route::post('/sincronizar', [App\Http\Controllers\VentasWebController::class,'sincronizar_carrito']);
-        Route::get('/productos', [App\Http\Controllers\VentasWebController::class,'obtenerProductosVenta']);
-        Route::get('/productos/{producto_venta_ID}', [App\Http\Controllers\VentasWebController::class,'obtenerProductoVenta']);
-        Route::post('/producto/observacion', [App\Http\Controllers\VentasWebController::class,'actualizarObservacionVenta']);
-        Route::patch('/producto/eliminar-orden', [App\Http\Controllers\VentasWebController::class,'eliminarOrdenIndice']);
-        Route::patch('/producto/disminuir-orden', [App\Http\Controllers\VentasWebController::class,'disminuirProductoVenta']);
-        Route::delete('/producto/{producto_venta_ID}', [App\Http\Controllers\VentasWebController::class,'eliminarPedido']);
-        Route::get('/producto/{producto_venta_id}/orden/{indice}', [App\Http\Controllers\VentasWebController::class,'obtenerOrdenIndice']);
-        Route::patch('/productos/actualizar-orden', [App\Http\Controllers\VentasWebController::class,'actualizarOrdenIndice']);
+        Route::post('/sincronizar', [App\Http\Controllers\VentasWebController::class, 'sincronizar_carrito']);
+        Route::get('/productos', [App\Http\Controllers\VentasWebController::class, 'obtenerProductosVenta']);
+        Route::get('/productos/{producto_venta_ID}', [App\Http\Controllers\VentasWebController::class, 'obtenerProductoVenta']);
+        Route::post('/producto/observacion', [App\Http\Controllers\VentasWebController::class, 'actualizarObservacionVenta']);
+        Route::patch('/producto/eliminar-orden', [App\Http\Controllers\VentasWebController::class, 'eliminarOrdenIndice']);
+        Route::patch('/producto/disminuir-orden', [App\Http\Controllers\VentasWebController::class, 'disminuirProductoVenta']);
+        Route::delete('/producto/{producto_venta_ID}', [App\Http\Controllers\VentasWebController::class, 'eliminarPedido']);
+        Route::get('/producto/{producto_venta_id}/orden/{indice}', [App\Http\Controllers\VentasWebController::class, 'obtenerOrdenIndice']);
+        Route::patch('/productos/actualizar-orden', [App\Http\Controllers\VentasWebController::class, 'actualizarOrdenIndice']);
     });
 Route::post('/ventas/producto', [App\Http\Controllers\VentasWebController::class, 'agregarProductoVenta']);
 
@@ -224,6 +224,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
         Route::get('/reporte/semana', \App\Http\Livewire\Admin\Almuerzos\ReporteSemanal::class)->name('reporte.semana');
         Route::get('/reporte/cocina', \App\Http\Livewire\Admin\Almuerzos\CocinaDespachePlanes::class)->name('reporte.cocina');
         Route::get('/reporte/whatsapp', \App\Http\Livewire\Admin\WhatsappReporteDesarrolloComponent::class)->name('reporte.whatsapp');
+        Route::get('/nutribar', \App\Http\Livewire\Admin\Almuerzos\NutriBarPanelComponent::class)->name('nutribar.index');
     });
     Route::prefix('/perifericos')->group(function () {
         Route::get('/impresoras', \App\Http\Livewire\Perifericos\ImpresorasIndex::class)->name('impresoras.index');

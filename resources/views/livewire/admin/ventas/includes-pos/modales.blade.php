@@ -266,6 +266,13 @@
                         </div>
 
                     </div>
+
+                    <center>ó</center>
+                    <div class="col-12 mt-2">
+                            <button class="btn btn-success p-1 btn-block" data-bs-dismiss="modal"
+                                onclick="crearUsuarioRapido(true)" type="button"><i class="fa fa-user"></i> Crear Cliente Rapido</button>
+                       
+                    </div>
                 </div>
             </div>
         </div>
