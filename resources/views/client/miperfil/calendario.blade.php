@@ -17,10 +17,10 @@
                 <div class="content text-white">
                     <h4>Personaliza tu menú de esta semana!</h4>
                     <p>
-                        Quedan {{ $coleccion->count() }} días, personaliza cada uno!
+                        Quedan {{ $coleccion->count() }} pedidos esta semana, personaliza cada uno!
                     </p>
                 </div>
-                <div class="accordion mt-4" id="accordion-3">
+                <div class="accordion" id="accordion-3">
                     @foreach ($coleccion as $lista)
                         {{-- @dd($lista) --}}
                         <div class="card card-style">
