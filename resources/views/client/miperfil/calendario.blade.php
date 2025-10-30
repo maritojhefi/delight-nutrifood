@@ -204,24 +204,30 @@
                             <div class="ps-2 pe-4 collapse bordeado" id="collapse-7{{ $lista['id'] }}"
                                 data-bs-parent="#accordion-3" style="">
                                 <div class="p-2">
+                                <div class="p-2">
                                     @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
                                         <form action="{{ route('personalizardia') }}" id="{{ $lista['id'] }}"
                                             method="POST">
                                             @csrf
                                             <div class="row mb-0">
+                                            <div class="row mb-0">
                                                 @if ($plan->segundo)
                                                     @include('client.miperfil.includes.seleccion-segundo')
+                                                    <hr>
                                                     <hr>
                                                 @endif
 
                                                 @if ($plan->carbohidrato)
                                                     @include('client.miperfil.includes.seleccion-carbohidrato')
                                                     <hr>
+                                                    <hr>
                                                 @endif
 
                                             </div>
+                                            </div>
 
                                             @include('client.miperfil.includes.seleccion-envio')
+                                            <hr>
                                             <hr>
                                             @include('client.miperfil.includes.seleccion-secundarios')
 
@@ -239,9 +245,22 @@
                                                 @endif
                                             @endforeach
                                         </ul>
+                                        <ul class="icon-list">
+                                            @foreach (json_decode($lista['detalle'], true) as $plato => $valor)
+                                                @if ($valor != '')
+                                                    <li><i class="fa fa-check color-green-dark"></i>{{ $plato }} :
+                                                        <label for=""
+                                                            class="font-700 mb-0">{{ $valor }}</label>
+                                                    </li>
+                                                @endif
+                                            @endforeach
+                                        </ul>
                                         <a href="{{ route('editardia', $lista['id']) }}"
                                             class="btn btn-xxs  rounded-s text-uppercase font-900 shadow-s border-red-dark  bg-red-light">Editar</a>
+                                            class="btn btn-xxs  rounded-s text-uppercase font-900 shadow-s border-red-dark  bg-red-light">Editar</a>
                                     @endif
+
+
 
 
                                 </div>
@@ -259,9 +278,14 @@
                     Estamos planificando el menu para toda la semana! Estara listo en breve...
                 </p>
 
+
             </div>
 
+
         @endif
+
+
+
 
 
 
@@ -281,18 +305,19 @@
         <div id="toast-whatsapp" class="toast toast-tiny toast-top bg-yellow-dark fade hide" data-bs-delay="3000"
             data-bs-autohide="true"><i class="fab fa-whatsapp"></i> En desarrollo!</div>
 
-        <!-- <div class="card card-style bg-18" data-card-height="150" style="height: 150px;">
+        <div class="card card-style bg-18" data-card-height="150" style="height: 150px;">
             <div class="card-center ms-3">
                 <h1 class="color-white">Detalles del plan:</h1>
                 <p class="color-white mt-n1 mb-0 opacity-70">{{ $plan->detalle }}</p>
             </div>
             <div class="card-overlay bg-black opacity-80"></div>
-        </div> -->
+        </div>
 
         <div class="modal fade" id="basicModal" data-bs-backdrop="false">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content card card-style shadow-xl pt-2 mx-2">
                     <div class="card-header bg-transparent d-flex flex-row justify-content-between align-items-center">
+                        <h5 class="modal-title">Esta seguro? Esta accion no se puede revertir</h5>
                         <h5 class="modal-title">Esta seguro? Esta accion no se puede revertir</h5>
                             <button type="button" class="btn-close bg-magenta-dark p-2" data-bs-dismiss="modal"></button>
                     </div>
@@ -300,6 +325,7 @@
                         <span>El plan seleccionado pasara a un dia despues del ultimo plan encontrado</span>
                         <form action="" id="formBasic">
                             <input type="hidden" name="id" id="id">
+
 
                         </form>
                     </div>
@@ -327,10 +353,13 @@
                         <form action="" id="formPermiso">
                             <input type="hidden" name="id" id="id">
 
+
                         </form>
+
 
                     </div>
                     <div class="modal-footer">
+
 
                         <button type="button"
                             class="btn btn-xxs mb-3 rounded-s text-uppercase font-900 shadow-s border-green-dark  bg-green-light"
@@ -342,10 +371,12 @@
                                     class="fa fa-check"></i></span>
                         </button>
 
+
                     </div>
                 </div>
             </div>
         </div>
+
 
         <div id="permiso-aceptado" class="snackbar-toast bg-magenta-dark color-white fade hide" data-delay="3000"
             data-autohide="true"><i class="fa fa-shopping-cart me-3"></i>Tu permiso fue aceptado!</div>
@@ -475,6 +506,7 @@
                         $(this).find('button').prop('disabled', false);
                     } else {
                         $(this).find('button').prop('disabled', true);
+                        $(this).find('button').prop('disabled', true);
                     }
                     // console.log(cont);
                     // if ($("input[name='carb" + idForm + "']:checked").val() && $("input[name='plato" + idForm +
@@ -486,44 +518,6 @@
 
                 })
             });
-        </script>
-        <!-- Script para el retirado de pedidos individuales de un acordeon plan -->
-        <script>
-            $(document).ready( function () {
-                    $('.confirmar-pedido-permiso').on('click', async function (e) {
-                        e.preventDefault();
-                        const idPedido = $(this).data('pedido');
-                        console.log(`click en confirmar permiso para el pedido ${idPedido}`);
-
-                        await PlanesService.permisoPedido(idPedido).then(
-                            (respuestaPermiso) => {
-                                // Cerrar modal
-                                mostrarToastSuccess("¡Permiso obtenido!");
-                                cerrarModalConfirmarPermiso(idPedido);
-                                // Recargar pagina
-                                location.reload();
-                                // (Posible caso) En el caso de quedar pocos dias en el plan, se deberan renderizar el acordeon para el nuevo pedido
-                                // Empujado un dia al final del plan, (lo mas sencillo es re renderizar toda la pagina)
-                            }
-                        ).catch(error => {
-                            if (error.response) {
-                                console.log("Respuesta al error permiso pedido:", error.response);
-                            }
-                            cerrarModalConfirmarPermiso(idPedido);
-                            mostrarToastError("Ocurrio un error al solicitar el permiso");
-                            console.log(`Ocurrio un error al solicitar el permiso ${idPedido}:`, error);
-                        });
-
-                        $(`#permiso-menu-${idPedido}`).removeClass('menu-active');
-                        $(`.menu-hider`).removeClass('menu-active');
-                    });
-                }
-            );
-
-            const cerrarModalConfirmarPermiso = (idPedido) => {
-                $(`#permiso-menu-${idPedido}`).removeClass('menu-active');
-                $(`.menu-hider`).removeClass('menu-active');
-            }
         </script>
     @endpush
 @endsection

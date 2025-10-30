@@ -499,10 +499,14 @@
                             <div class="accordion-header" id="planHeader">
                                 <button class="accordion-button plan-accordion-button {{ $gradienteClass }}" type="button"
                                     aria-expanded="false" aria-controls="planCollapse"
+                                <button class="accordion-button plan-accordion-button {{ $gradienteClass }}" type="button"
+                                    aria-expanded="false" aria-controls="planCollapse"
                                     {{ $plan->editable != 1 ? 'disabled':'' }}>
+                                    <div class="plan-header-content mt-3 px-0"
                                     <div class="plan-header-content mt-3 px-0"
                                         style="padding-right: 2% !important; padding-left: 2% !important;">
 
+                                        <div class="day-info d-flex justify-content-evenly">
                                         <div class="day-info d-flex justify-content-evenly">
                                             <div class="day-icon-container">
                                                 <div class="day-icon">
@@ -551,13 +555,61 @@
                                                         <i data-lucide="{{ $iconoTiempoLucide }}" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
                                                     </p> -->
 
+                                                <div class="d-flex flex-column gap-1">
+                                                    <p class="badge gradient-blue rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                        <span>Despacho: {{ $plan->horario->hora_inicio . ' - ' . $plan->horario->hora_fin }}</span>
+                                                        <i data-lucide="clock" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
+                                                    </p>
+                                                    <!-- Badge de tiempo con estado -->
+                                                    @if (count($pedidos->filter(fn($pedido) => $pedido->detalle == null)))
+                                                    <p class="badge bg-highlight rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                        
+                                                        @php
+                                                            // 1. Get the current time in Carbon
+                                                            $now = Carbon\Carbon::now();
+                                                            
+                                                            // 2. Set the target time to 9:00 AM today
+                                                            $targetTime = $now->copy()->setTime(9, 0, 0);
+                                                            
+                                                            // 3. If 9:00 AM has already passed today, set the target for 9:00 AM tomorrow
+                                                            if ($now->greaterThan($targetTime)) {
+                                                                $targetTime->addDay();
+                                                            }
+                                                            
+                                                            // 4. Get the UNIX timestamp (seconds since epoch) for JavaScript
+                                                            $targetTimestamp = $targetTime->timestamp;
+                                                            
+                                                        @endphp
+
+                                                        {{-- The countdown display area --}}
+                                                        <span id="countdown-timer" data-target="{{ $targetTimestamp }}">
+                                                            Calculando...
+                                                        </span>
+
+                                                        <i data-lucide="{{ $iconoTiempoLucide }}" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
+                                                    </p>
+                                                    @endif
+                                                    
+                                                    <!-- <p class="badge bg-highlight rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                        <span>{{ $mensajeTiempo }}</span>
+                                                        <i data-lucide="{{ $iconoTiempoLucide }}" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
+                                                    </p> -->
+
                                                     @if(count($pedidos) >= 2)
+                                                    <p class="badge bg-delight-red rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                        <span>Porciones: {{ count($pedidos) }}</span>
+                                                        <i data-lucide="utensils" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
+                                                    </p>
                                                     <p class="badge bg-delight-red rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
                                                         <span>Porciones: {{ count($pedidos) }}</span>
                                                         <i data-lucide="utensils" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
                                                     </p>
                                                     @endif
                                                 </div>
+                                                
+                                                
+                                                
+                                                
                                                 
                                                 
                                                 
@@ -581,12 +633,14 @@
                                             @else
                                                 <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
                                                     class="btn flex-shrink-0 bg-delight-red rounded-s color-white font-13" style="font-weight: 700 !important;">Controlar Plan</a>
+                                                    class="btn flex-shrink-0 bg-delight-red rounded-s color-white font-13" style="font-weight: 700 !important;">Controlar Plan</a>
                                             @endif
                                         </div>
                                     </div>
                                 </button>
                             </div>
                             <!-- Contenido colapsable del acordeón -->
+                            <div id="planCollapse" class="accordion-collapse" aria-labelledby="planHeader"
                             <div id="planCollapse" class="accordion-collapse" aria-labelledby="planHeader"
                                 data-bs-parent="#planAccordion">
                                 @php
@@ -615,9 +669,12 @@
                                             'label' => 'Empaque',
                                             'icon' => 'package-2',
                                         ],
+                                            'icon' => 'package-2',
+                                        ],
                                     ];
                                 @endphp
 
+                                @if (count($pedidos) > 1 && $plan->editable)
                                 @if (count($pedidos) > 1 && $plan->editable)
                                     <!-- Listado de pedidos para el plan -->
                                     <ul class="list-unstyled d-flex flex-column gap-3 mb-0 mt-2">
@@ -634,7 +691,9 @@
                                                 @if (empty($detallePedido))
                                                     <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}"
                                                         class="btn pedido-pendiente btn-s bg-highlight bg-dtheme-blue rounded rounded-s m-0 ">
+                                                        class="btn pedido-pendiente btn-s bg-highlight bg-dtheme-blue rounded rounded-s m-0 ">
                                                         <div class="d-flex flex-row justify-content-between align-items-center">
+                                                            <h3 class="mb-0 color-white font-18">Pedido {{ $loop->iteration }}</h3>
                                                             <h3 class="mb-0 color-white font-18">Pedido {{ $loop->iteration }}</h3>
                                                             <p class="badge bg-delight-red rounded rounded-s color-white mb-0 font-12">¡Pendiente!</p>
                                                         </div>
@@ -649,9 +708,16 @@
                                                                 @if ($pedido->detalle != null)
                                                                     <p class="badge bg-green-dark rounded rounded-s color-white mb-0 font-12">Guardado</p>
                                                                 @endif
+                                                                <h3 class="mb-0 color-white font-18">Pedido {{ $loop->iteration }}</h3>
+                                                                @if ($pedido->detalle != null)
+                                                                    <p class="badge bg-green-dark rounded rounded-s color-white mb-0 font-12">Guardado</p>
+                                                                @endif
                                                             </div>
                                                         </button>
                                                     </div>
+                                                    <div id="{{ $pedidoCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $pedidoHeaderId }}">
+                                                        <div class="accordion-body m-0 mt-0 px-2 py-0 card card-style bg-dtheme-dkblue">
+                                                            <div class="row m-0">
                                                     <div id="{{ $pedidoCollapseId }}" class="accordion-collapse collapse" aria-labelledby="{{ $pedidoHeaderId }}">
                                                         <div class="accordion-body m-0 mt-0 px-2 py-0 card card-style bg-dtheme-dkblue">
                                                             <div class="row m-0">
@@ -670,6 +736,16 @@
                                                                                 <!-- <div class="{{ $bgClass }} rounded-circle d-flex align-items-center justify-content-center p-1" style="height: 1.8rem; width: 1.8rem"> -->
                                                                                     <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-theme" style="min-height: 1.8rem; min-width: 1.8rem"></i>
                                                                                 <!-- </div> -->
+                                                                        @php
+                                                                            $iteracionValidaDetalle++;
+                                                                            $bgClass = ($iteracionValidaDetalle % 2 !== 0) ? 'bg-delight-red' : 'bg-highlight';
+                                                                            $colorClass = ($iteracionValidaDetalle % 2 !== 0) ? 'color-delight-red' : 'color-highlight';
+                                                                        @endphp
+                                                                        <div class="col-6 px-1 py-2">
+                                                                            <div class="d-flex flex-row gap-2 align-items-center">
+                                                                                <!-- <div class="{{ $bgClass }} rounded-circle d-flex align-items-center justify-content-center p-1" style="height: 1.8rem; width: 1.8rem"> -->
+                                                                                    <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-theme" style="min-height: 1.8rem; min-width: 1.8rem"></i>
+                                                                                <!-- </div> -->
                                                                                 <div class="d-flex flex-column">
                                                                                     <h3 class="detalle-label line-height-s font-15 {{ $colorClass }}">{{ $item['label'] }}</h3>
                                                                                     <span class="item-value line-height-xs font-12 m-0 color-theme">
@@ -677,9 +753,11 @@
                                                                                     </span>
                                                                                 </div>
                                                                             </div>
+                                                                            </div>
                                                                         </div>
                                                                     @endif
                                                                 @endforeach
+                                                            </div>
                                                             </div>
                                                         </div>
                                                         @if (isset($detallePedido['ENVIO']) && $detallePedido['ENVIO'] != '')
@@ -699,7 +777,9 @@
                                                                         data-bs-target="#confirmarModificarPedidoModal"
                                                                         data-url="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}"
                                                                         class="btn rounded-s gradient-blue d-flex align-items-center justify-content-center m-0 py-1 px-2 w-auto modificar-pedido-trigger"
+                                                                        class="btn rounded-s gradient-blue d-flex align-items-center justify-content-center m-0 py-1 px-2 w-auto modificar-pedido-trigger"
                                                                         {{ $pedido->estado == 'finalizado' ? 'disabled' : '' }}>
+                                                                            <span class="w-auto color-white text-center font-13 font-700 line-height-s">Modificar Pedido</span>
                                                                             <span class="w-auto color-white text-center font-13 font-700 line-height-s">Modificar Pedido</span>
                                                                     </a>
                                                                 @endif
@@ -712,21 +792,27 @@
                                         @endforeach
                                     </ul>
                                 @elseif (count($pedidos) == 1 && $plan->editable)
+                                @elseif (count($pedidos) == 1 && $plan->editable)
                                     <!-- Pedido individual -->
                                     @php
                                         $pedido = $pedidos->first();
                                         $detallePedido = $pedido->detalle ? json_decode($pedido->detalle, true) : [];
                                     @endphp
                                     <div class="card card-style bg-transparent rounded-s mt-0 mx-0 mb-0">
+                                    <div class="card card-style bg-transparent rounded-s mt-0 mx-0 mb-0">
                                         @if (empty($detallePedido))
                                             <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}"
                                                 class="btn btn-s bg-highlight bg-dtheme-blue rounded rounded-s m-0">
+                                                class="btn btn-s bg-highlight bg-dtheme-blue rounded rounded-s m-0">
                                                 <div class="d-flex flex-row justify-content-between align-items-center">
+                                                    <h3 class="mb-0 color-white font-18">Pedido</h3>
                                                     <h3 class="mb-0 color-white font-18">Pedido</h3>
                                                     <p class="badge bg-delight-red rounded rounded-s color-white mb-0 font-12">¡Pendiente!</p>
                                                 </div>
                                             </a>
                                         @else
+                                            <div class="m-0 p-0 card card-style bg-dtheme-dkblue">
+                                                <div class="row m-0">
                                             <div class="m-0 p-0 card card-style bg-dtheme-dkblue">
                                                 <div class="row m-0">
                                                     @php
@@ -752,8 +838,27 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            @php
+                                                                $iteracionValidaDetalle++;
+                                                                $bgClass = ($iteracionValidaDetalle % 2 !== 0) ? 'bg-delight-red' : 'bg-highlight';
+                                                                $colorClass = ($iteracionValidaDetalle % 2 !== 0) ? 'color-delight-red' : 'color-highlight';
+                                                            @endphp
+                                                            <div class="col-6 px-1 py-2">
+                                                                <div class="d-flex flex-row gap-2 align-items-center">
+                                                                    <!-- <div class="{{ $bgClass }} rounded-circle d-flex align-items-center justify-content-center p-1" style="height: 1.8rem; width: 1.8rem"> -->
+                                                                        <i data-lucide="{{ $item['icon'] }}" class="lucide-icon color-theme" style="min-height: 1.8rem; min-width: 1.8rem"></i>
+                                                                    <!-- </div> -->
+                                                                    <div class="d-flex flex-column">
+                                                                        <h3 class="detalle-label line-height-s font-15 {{ $colorClass }}">{{ $item['label'] }}</h3>
+                                                                        <span class="item-value line-height-xs font-12 m-0 color-theme">
+                                                                            {{ ucfirst($detallePedido[$key]) }}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         @endif
                                                     @endforeach
+                                                </div>
                                                 </div>
                                             </div>
                                             @if (isset($detallePedido['ENVIO']) && $detallePedido['ENVIO'] != '')
@@ -773,7 +878,9 @@
                                                             data-bs-target="#confirmarModificarPedidoModal"
                                                             data-url="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}?pedido={{ $pedido->id }}"
                                                             class="btn rounded-s gradient-blue d-flex align-items-center justify-content-center m-0 py-1 px-2 w-auto modificar-pedido-trigger"
+                                                            class="btn rounded-s gradient-blue d-flex align-items-center justify-content-center m-0 py-1 px-2 w-auto modificar-pedido-trigger"
                                                             {{ $pedido->estado == 'finalizado' ? 'disabled' : '' }}>
+                                                                <span class="w-auto color-white text-center font-13 font-700 line-height-s">Modificar Pedido</span>
                                                                 <span class="w-auto color-white text-center font-13 font-700 line-height-s">Modificar Pedido</span>
                                                         </a>
                                                     @endif
@@ -782,6 +889,8 @@
                                         @endif
                                     </div>
                                 @endif
+                            </div>
+                        </div>
                             </div>
                         </div>
                     </div>
@@ -881,6 +990,7 @@
                     justify-content: space-between;
                     align-items: flex-start;
                     gap: 0.5rem;
+                    gap: 0.5rem;
                     width: 100%;
                     position: relative;
                     z-index: 2;
@@ -889,6 +999,9 @@
                 .day-info {
                     display: flex;
                     align-items: center;
+                    /* justify-content: space; */
+                    gap: 1.5rem;
+                    width: 100%;
                     /* justify-content: space; */
                     gap: 1.5rem;
                     width: 100%;
@@ -1128,6 +1241,7 @@
                 @media (max-width: 480px) {
                     .plan-header-content {
                         flex-direction: column;
+                        gap: 0.5rem;
                         gap: 0.5rem;
                         align-items: flex-start;
                         text-align: left;
@@ -1400,13 +1514,16 @@
             <div class="card-top mt-3 me-3">
                 <a href="{{ route('miperfil') }}"
                     class="float-end bg-white color-black btn btn-s rounded-xl font-700 mt-2 text-uppercase font-11">Ir a mi
+                    class="float-end bg-white color-black btn btn-s rounded-xl font-700 mt-2 text-uppercase font-11">Ir a mi
                     perfil</a>
             </div>
 
             <div class="card-bottom ms-3 mb-3">
                 @if (auth()->user()->foto)
                     <img data-src="{{ auth()->user()->pathFoto }}" alt="img" width="40"
+                    <img data-src="{{ auth()->user()->pathFoto }}" alt="img" width="40"
                         class="pb-1 preload-img shadow-xl rounded-m entered loaded" data-ll-status="loaded"
+                        src="{{ auth()->user()->pathFoto }}">
                         src="{{ auth()->user()->pathFoto }}">
                 @else
                     <img data-src="{{ asset('user.png') }}" alt="img" width="40"
@@ -1663,6 +1780,60 @@ $(document).ready(function() {
             // y abusos en generacion de producto_venta
             carritoStorage.vaciarCarrito();
         }
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        // Find the countdown element
+        const $countdownElement = $('#countdown-timer');
+        
+        // Get the target timestamp (in seconds) from the data attribute
+        const targetTimestamp = parseInt($countdownElement.data('target'));
+        
+        if (isNaN(targetTimestamp)) {
+            $countdownElement.text('Error en la hora.');
+            return;
+        }
+
+        // Main update function
+        function updateCountdown() {
+            // Get current time in seconds
+            const now = Math.floor(Date.now() / 1000);
+            
+            // Calculate the total remaining seconds
+            let remainingSeconds = targetTimestamp - now;
+
+            if (remainingSeconds <= 0) {
+                // Countdown is finished or passed
+                $countdownElement.text('¡Hora de servir!');
+                // Stop the timer
+                clearInterval(timerInterval); 
+                // Optionally reload the page or update the target time again
+                return;
+            }
+
+            // --- Calculation ---
+            const hours = Math.floor(remainingSeconds / 3600);
+            remainingSeconds %= 3600;
+            
+            const minutes = Math.floor(remainingSeconds / 60);
+            const seconds = remainingSeconds % 60;
+
+            // --- Formatting (Pads single digits with a leading zero) ---
+            const hDisplay = String(hours).padStart(2, '0');
+            const mDisplay = String(minutes).padStart(2, '0');
+            const sDisplay = String(seconds).padStart(2, '0');
+            
+            // --- Output ---
+            $countdownElement.text(`Tiempo: ${hDisplay}h ${mDisplay}m ${sDisplay}s`);
+        }
+
+        // Run the update function immediately
+        updateCountdown();
+
+        // Run the update function every second
+        const timerInterval = setInterval(updateCountdown, 1000);
     });
 </script>
 
