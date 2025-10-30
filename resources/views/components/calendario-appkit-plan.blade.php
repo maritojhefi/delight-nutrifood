@@ -86,7 +86,7 @@
         </div>
         <div class="divider divider-margins my-2"></div>
         <div class="content mt-0">
-            <p id="texto-dia-permisos" class="color-theme d-none mb-2">Solicitaste permisos para los pedidos de este día.</p>
+            <p id="texto-dia-permisos" class="color-theme d-none mb-2">Solicitaste permiso para los pedidos de este día.</p>
             <a id="pendientes-anchor" href="#" class="d-flex gap-3 align-items-center mb-3">
                 <div class="align-self-center">
                     <i data-lucide="notebook-pen" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
@@ -137,7 +137,7 @@
     <div id="menu-pedir-permisos" class="menu menu-box-modal rounded-m" style="width: 90%; max-width: 320px">
         <div class="menu-title flex-align-center">
             <a href="#" class="back-menu-pedidos-dia">
-                <i data-lucide="chevron-left" class="lucide-icon"></i>
+                <i class="fa fa-arrow-circle-left"></i>
             </a>
             <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
             <h1 id="fecha-menu-control-permisos" class="font-20 mt-1 mb-0 fecha-seleccionada">Fecha del día</h1>

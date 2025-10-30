@@ -471,7 +471,12 @@
                         $iconoTiempo = 'fa-calendar-plus';
                         $iconoTiempoLucide = 'calendar';
                         $colorTiempo = 'info';
-                        $textodia = 'Mañana '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()->addDay())) .' te servirás:';
+                        
+                        if (!$todosPermiso) {
+                            $textodia = 'Mañana '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()->addDay())) .' te servirás:';
+                        } else {
+                            $textodia = 'Solicitaste permiso este '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()->addDay()));
+                        }
                         break;
                     default:
                         $textoTiempo = '';

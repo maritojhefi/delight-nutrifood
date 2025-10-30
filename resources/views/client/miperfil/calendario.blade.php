@@ -35,27 +35,37 @@
                         {{-- @dd($lista) --}}
                         <div class="card card-style mb-3">
                             <div
-                                class="list-group list-custom-small list-icon-0 bg-@if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'mint' }}@elseif($lista['estado'] == 'desarrollo'){{ 'yellow' }}@else{{ 'green' }}@endif-dark ps-3 pe-4 ">
+                                class="list-group list-custom-small list-icon-0 bg-@if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'mint-dark' }}@elseif($lista['estado'] == 'desarrollo'){{ 'yellow-dark' }}@else{{ 'green-dark' }}@endif ps-3 pe-4 ">
                                 <a data-bs-toggle="collapse" class="{{ ($idPedidoEditar == $lista['id']) ? '' : 'collapsed' }}" href="#collapse-7{{ $lista['id'] }}"
                                     aria-expanded="{{ ($idPedidoEditar == $lista['id']) ? 'true' : 'false' }}">
-
+                                    <div class="d-flex flex-row align-items-center justify-content-between">
                                     @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
                                         <!-- <i class="fas fa-user-edit color-white"></i> -->
-                                        <i data-lucide="notebook-pen" class="lucide-icon color-white" style="width: 1.3rem; height: 1.3rem;"></i>
-                                        <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                        <div class="d-flex flex-row gap-2 align-items-center">
+                                            <i data-lucide="notebook-pen" class="lucide-icon color-white" style="width: 1.3rem; height: 1.3rem;"></i>
+                                            <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                        </div>
+                                        @if ($lista['proximo'])
+                                            <span class="bg-delight-red font-12 line-height-s rounded-xs px-1 text-white" style="z-index: 4;">Próximo</span>
+                                        @endif
                                     @elseif($lista['estado'] == 'desarrollo')
-                                        <i class="fab fa-whatsapp color-white"></i>
-                                        <span class="font-14 color-white">{{ $lista['dia'] }}</span>
+                                        <div class="d-flex flex-row gap-2 align-items-center">
+                                            <i class="fab fa-whatsapp color-white"></i>
+                                            <span class="font-14 color-white">{{ $lista['dia'] }}</span>
+                                        </div>
                                         <small for="" class="text-magenta text-white">
                                             (En desarrollo por whatsapp)
                                         </small>
                                     @else
                                         <!-- <i class="fas fa-save color-white"></i> -->
-                                        <i data-lucide="save" class="lucide-icon color-white" style="width: 1.3rem; height: 1.3rem;"></i>
-                                        <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                        <div class="d-flex flex-row gap-2 align-items-center">
+                                            <i data-lucide="save" class="lucide-icon color-white" style="width: 1.3rem; height: 1.3rem;"></i>
+                                            <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                        </div>
                                         <span class="text-white">Guardado!</span>
                                     @endif
                                     <i class="fa fa-angle-down color-white"></i>
+                                    </div>
                                 </a>
                             </div>
                             <div class="collapse bordeado {{ ($idPedidoEditar == $lista['id']) ? 'show' : '' }}" id="collapse-7{{ $lista['id'] }}"
@@ -134,11 +144,11 @@
                                         // Determine button column class based on even/odd count
                                         $buttonColClass = ($validItemCount % 2 === 0) ? 'col-12' : 'col-6';
                                     @endphp
-                                    <div class="p-2 d-flex flex-column align-items-center">
+                                    <div class="p-1 d-flex flex-column align-items-center">
                                         <div class="row m-0">
                                             @foreach ($detalleDecoded as $plato => $valor)
                                                 @if ($valor != '' && isset($menuItems[$plato]))
-                                                    <div class="col-6 px-0 py-2">
+                                                    <div class="col-6 px-0 py-2 overflow-hidden">
                                                         <div class="d-flex flex-row gap-2 align-items-top">
                                                             <i data-lucide="{{ $menuItems[$plato]['icon'] }}" class="lucide-icon {{ $menuItems[$plato]['color'] }}" style="min-height: 1.8rem; min-width: 1.8rem"></i>
                                                             <div class="d-flex flex-column">
@@ -515,7 +525,5 @@
                 $(`.menu-hider`).removeClass('menu-active');
             }
         </script>
-        
     @endpush
-
 @endsection
