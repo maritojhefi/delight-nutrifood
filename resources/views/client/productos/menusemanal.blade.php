@@ -433,6 +433,7 @@
                 $plan = $planData->plan;
                 $pedidos = $planData->pedidos;
                 $detalle = $plan->pivot->detalle ? json_decode($plan->pivot->detalle, true) : [];
+                $todosPermiso = count($pedidos) > 0 ? false : true;
                 // dd($detalle, $plan);
                 $estado = $planData->estado;
                 $tiempoRestanteMinutos = $planData->tiempo_restante;
@@ -454,7 +455,7 @@
                         $iconoTiempo = 'fa-clock';
                         $iconoTiempoLucide = 'clock';
                         $colorTiempo = 'success';
-                        $textodia = 'Hoy '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()) ) .' te servirás:';
+                        $textodia = 'Hoy '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()) ) . (!$todosPermiso ? ' te servirás:' : ' solicitaste permiso');
                         break;
                     case 'proximo':
                         $textoTiempo = 'Inicia en: ';
@@ -462,7 +463,7 @@
                         $iconoTiempo = 'fa-hourglass-start';
                         $iconoTiempoLucide = 'hourglass';
                         $colorTiempo = 'warning';
-                        $textodia = $textodia = 'Hoy '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now())) .' te servirás:';
+                        $textodia = 'Hoy '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()) ) . (!$todosPermiso ? ' te servirás:' : ' solicitaste permiso');
                         break;
                     case 'proximo_dia':
                         $textoTiempo = 'Mañana en: ';
@@ -559,7 +560,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="d-flex flex-row justify-content-between gap-1 align-items-center">
+                                        <div class="d-flex flex-row justify-content-between w-100 gap-1 align-items-center">
                                             {{-- FIX: Using align-items-center is usually better than align-items-between --}}
                                             
                                             <div class="plan-summary flex-shrink-1 text-wrap"> {{-- FIX: Added flex-grow-0 --}}
