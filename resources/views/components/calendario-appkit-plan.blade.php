@@ -190,7 +190,7 @@
             <p id="texto-simple" class="pe-3 mb-0 color-theme">                
             </p>
             <div class="d-flex flex-row gap-1 justify-content-evenly mb-0">
-                <a href="#" class="py-2 px-2 font-15 rounded-s text-uppercase bg-delight-red color-white font-600 line-height-s">Cancelar</a>
+                <a href="#" class="close-menu py-2 px-2 font-15 rounded-s text-uppercase bg-delight-red color-white font-600 line-height-s">Cancelar</a>
                 <button id="btnConfirmarSimple" data-pedido="" href="#" class="py-2 px-2 font-15 rounded-s text-uppercase bg-highlight font-600 line-height-s">
                     <span class="d-flex flex-row align-items-center gap-1">Confirmar</span>
                 </button>

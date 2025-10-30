@@ -11,7 +11,7 @@
             $path = GlobalHelper::getValorAtributoSetting('url_web');
         @endphp
     @endproduction
-    <div class="card card-style">
+    <div class="card card-style mt-n4 mb-3">
         @if ($estadoMenu->activo)
             @if ($plan->editable)
                 <div class="content text-white">
@@ -23,7 +23,7 @@
                 <div class="accordion" id="accordion-3">
                     @foreach ($coleccion as $lista)
                         {{-- @dd($lista) --}}
-                        <div class="card card-style">
+                        <div class="card card-style mb-3">
                             <div
                                 class="list-group list-custom-small list-icon-0 bg-@if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'mint' }}@elseif($lista['estado'] == 'desarrollo'){{ 'yellow' }}@else{{ 'green' }}@endif-dark ps-3 pe-4 ">
                                 <a data-bs-toggle="collapse" class="{{ ($idPedidoEditar == $lista['id']) ? '' : 'collapsed' }}" href="#collapse-7{{ $lista['id'] }}"
