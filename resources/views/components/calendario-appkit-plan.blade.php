@@ -887,8 +887,12 @@
                     await config.accion(infoDia.start, cantidad);
                     mostrarToastSuccess(config.mensajeExito);
                     await renderizarCalendario(infoDia.start);
+                    
                     ocultarMenusPermisos();
                     ocultarTodosMenus();
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+                    // Refresh the page
+                    window.location.reload();
                 } 
                 catch (error) {
                     console.error(config.mensajeError, error);
