@@ -15,12 +15,22 @@
         @if ($estadoMenu->activo)
             @if ($plan->editable)
                 <div class="content text-white">
-                    <h4>Personaliza tu menú de esta semana!</h4>
-                    <p>
-                        Quedan {{ $coleccion->count() }} pedidos esta semana, personaliza cada uno!
-                    </p>
+                    @if ($coleccion->count() > 0)
+                        <h4>Personaliza tu menú de esta semana!</h4>
+                        <p class="mb-0">
+                            <p class="mb-0">
+                                @if ($coleccion->count() > 0)
+                                    Quedan {{ $coleccion->count() }} pedidos esta semana, personaliza cada uno!
+                                @else
+                                    No hay pedidos pendientes para esta semana.
+                                @endif
+                            </p>
+                        </p>
+                    @else
+                        <h4 class="mb-3">No hay pedidos pendientes para esta semana.</h4>
+                    @endif
                 </div>
-                <div class="accordion" id="accordion-3">
+                <div class="accordion mt-n3" id="accordion-3">
                     @foreach ($coleccion as $lista)
                         {{-- @dd($lista) --}}
                         <div class="card card-style mb-3">
@@ -30,7 +40,8 @@
                                     aria-expanded="{{ ($idPedidoEditar == $lista['id']) ? 'true' : 'false' }}">
 
                                     @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
-                                        <i class="fas fa-user-edit color-white"></i>
+                                        <!-- <i class="fas fa-user-edit color-white"></i> -->
+                                        <i data-lucide="notebook-pen" class="lucide-icon color-white" style="width: 1.3rem; height: 1.3rem;"></i>
                                         <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
                                     @elseif($lista['estado'] == 'desarrollo')
                                         <i class="fab fa-whatsapp color-white"></i>
@@ -39,7 +50,8 @@
                                             (En desarrollo por whatsapp)
                                         </small>
                                     @else
-                                        <i class="fas fa-save color-white"></i>
+                                        <!-- <i class="fas fa-save color-white"></i> -->
+                                        <i data-lucide="save" class="lucide-icon color-white" style="width: 1.3rem; height: 1.3rem;"></i>
                                         <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
                                         <span class="text-white">Guardado!</span>
                                     @endif
@@ -259,13 +271,13 @@
         <div id="toast-whatsapp" class="toast toast-tiny toast-top bg-yellow-dark fade hide" data-bs-delay="3000"
             data-bs-autohide="true"><i class="fab fa-whatsapp"></i> En desarrollo!</div>
 
-        <div class="card card-style bg-18" data-card-height="150" style="height: 150px;">
+        <!-- <div class="card card-style bg-18" data-card-height="150" style="height: 150px;">
             <div class="card-center ms-3">
                 <h1 class="color-white">Detalles del plan:</h1>
                 <p class="color-white mt-n1 mb-0 opacity-70">{{ $plan->detalle }}</p>
             </div>
             <div class="card-overlay bg-black opacity-80"></div>
-        </div>
+        </div> -->
 
         <div class="modal fade" id="basicModal" data-bs-backdrop="false">
             <div class="modal-dialog modal-dialog-centered" role="document">
