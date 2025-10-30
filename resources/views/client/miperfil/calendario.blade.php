@@ -76,38 +76,6 @@
                                             'SOPA' => [
                                                 'label' => 'Sopa',
                                                 'icon' => 'soup',
-                                            ],
-                                            'PLATO' => [
-                                                'label' => 'Principal',
-                                                'icon' => 'utensils-crossed',
-                                            ],
-                                            'CARBOHIDRATO' => [
-                                                'label' => 'Carbohidrato',
-                                                'icon' => 'sprout',
-                                            ],
-                                            'ENSALADA' => [
-                                                'label' => 'Ensalada',
-                                                'icon' => 'salad',
-                                            ],
-                                            'JUGO' => [
-                                                'label' => 'Jugo',
-                                                'icon' => 'glass-water',
-                                            ],
-                                            'EMPAQUE' => [
-                                                'label' => 'Empaque',
-                                                'icon' => 'package-2',
-                                            ],
-                                            'ENVIO' => [
-                                                'label' => 'Envío',
-                                                'icon' => 'truck',
-                                            ],
-                                        ];
-                                    @endphp
-                                    @php
-                                        $menuItems = [
-                                            'SOPA' => [
-                                                'label' => 'Sopa',
-                                                'icon' => 'soup',
                                                 'color' => 'color-yellow-dark'
                                             ],
                                             'PLATO' => [
@@ -159,7 +127,7 @@
                                             @foreach ($detalleDecoded as $plato => $valor)
                                                 @if ($valor != '' && isset($menuItems[$plato]))
                                                     <div class="col-6 px-0 py-2">
-                                                        <div class="d-flex flex-row gap-2 align-items-center">
+                                                        <div class="d-flex flex-row gap-2 align-items-top">
                                                             <i data-lucide="{{ $menuItems[$plato]['icon'] }}" class="lucide-icon {{ $menuItems[$plato]['color'] }}" style="min-height: 1.8rem; min-width: 1.8rem"></i>
                                                             <div class="d-flex flex-column">
                                                                 <h3 class="detalle-label line-height-s font-15">{{ $menuItems[$plato]['label'] }}</h3>

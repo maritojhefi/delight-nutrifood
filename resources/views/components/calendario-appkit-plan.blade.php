@@ -92,7 +92,7 @@
                     <i data-lucide="notebook-pen" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
                 </div>
                 <div class="align-self-center">
-                    <h5 class="">Solicitar Permisos (<span id="contador-pendientes-menu"></span>)</h5>
+                    <h5 class="">Solicitar Permisos: <span id="contador-pendientes-menu"></span></h5>
                     <p class="mb-0 mt-n1 font-10 line-height-s">
                         <span><i class="fa fa-book color-blue-dark pe-1"></i>Solicitar permisos para mis pedidos del día</span>
                         <!-- <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span> -->
@@ -102,26 +102,26 @@
                     <i class="fa fa-arrow-right pe-2 opacity-30"></i>
                 </div>
             </a>
-            <a id="finalizados-anchor" href="#" class="d-flex gap-3 align-items-center mb-3">
+            <!-- <a id="finalizados-anchor" href="#" class="d-flex gap-3 align-items-center mb-3">
                 <div class="align-self-center">
                     <i data-lucide="calendar-check" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
                 </div>
                 <div class="align-self-center">
                     <h5 class="color-orange-dark">Pedidos Finalizados</h5>
                     <p class="mb-0 mt-n1 font-10 line-height-s">
-                        <span><i class="fa fa-book color-blue-dark pe-1"></i>Ver el historial de mis pedidos este día (pronto)</span>
+                        <span><i class="fa fa-book color-blue-dark pe-1"></i>Ver el historial de mis pedidos este día</span>
                     </p>
                 </div>
-                <!-- <div class="align-self-center ms-auto">
+                <div class="align-self-center ms-auto">
                     <i class="fa fa-arrow-right pe-2 opacity-30"></i>
-                </div> -->
-            </a>
+                </div>
+            </a> -->
             <a id="permisos-anchor" href="#" class="d-flex gap-3 align-items-center mb-3">
                 <div class="align-self-center">
                     <i data-lucide="calendar-clock" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
                 </div>
                 <div class="align-self-center">
-                    <h5 class="color-magenta-dark">Retirar Permisos (<span id="contador-permisos-menu"></span>)</h5>
+                    <h5 class="color-magenta-dark">Retirar Permisos: <span id="contador-permisos-menu"></span></h5>
                     <p class="mb-0 mt-n1 font-10 line-height-s">
                         <span><i class="fa fa-book color-blue-dark pe-1"></i>Retirar permisos para mis pedidos este día</span>
                         <!-- <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span> -->
@@ -134,20 +134,6 @@
         </div>
     </div>
 
-    <!-- <div id="menu-pedir-permisos" class="menu menu-box-modal rounded-m" style="width: 90%">
-        <div class="menu-title flex-align-center">
-            <a href="#" class="back-menu-pedidos-dia">
-                <i data-lucide="chevron-left" class="lucide-icon"></i>
-            </a>
-            <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
-            <h1 id="fecha-menu-dia-calendario" class="font-24 mt-1 mb-0">29 de Febrero 2025</h1>
-        </div>
-        <div class="divider divider-margins mt-1 mb-0"></div>
-        <div class="content m-0 p-3">
-                <p class="mb-0">Tienes <span id="mensaje-cantidad-permisos"></span> pedidos disponibles para marcar con permiso este día.</p>
-            <div id="menu-selector-permisos">Selector</div>
-        </div>
-    </div> -->
     <div id="menu-pedir-permisos" class="menu menu-box-modal rounded-m" style="width: 90%; max-width: 320px">
         <div class="menu-title flex-align-center">
             <a href="#" class="back-menu-pedidos-dia">
@@ -173,6 +159,24 @@
                     <span class="d-flex flex-row align-items-center gap-1">Confirmar</span>
                 </button>
             </div>
+    </div>
+
+    <div id="menu-historial-finalizados" class="menu menu-box-modal rounded-m" style="width: 90%; max-width: 320px">
+        <div class="menu-title flex-align-center">
+            <!-- <a href="#" class="back-menu-pedidos-dia">
+                <i data-lucide="chevron-left" class="lucide-icon"></i>
+            </a> -->
+            <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
+            <h1 id="fecha-historial-permisos" class="font-20 mt-1 mb-0 fecha-seleccionada">Fecha del día</h1>
+            <a href="#" class="close-menu"><i class="fa fa-times-circle"></i></a>
+        </div>
+        <div class="divider divider-margins my-2"></div>
+        <div class="content m-0 px-3">
+            <h2 class="color-teal-dark">Historial de pedidos</h2>
+            <ul id="lista-historial-finalizado" class=" d-flex flex-column gap-1 list-unstyled">
+                <!-- LISTADO DE PEDIDOS FINALIZADOS EN EL DÍA -->
+            </ul>
+        </div>
     </div>
 
     <div id="menu-permiso-simple" class="menu menu-box-modal pb-3 rounded-m overflow-hidden" style="width: 90%; max-width: 320px">
@@ -383,7 +387,9 @@
                     const numPendientesDia = contarEventosPorEstado(diaInfo.eventos, 'pendiente');
                     
                     // Determinar clases de acción
-                    const claseAccion = numPlanesDia > 1 ? 'cal-menu-opener' : 'cal-disabled-menu';
+                    // const claseAccion = numPlanesDia > 1 ? 'cal-menu-opener' : 'cal-disabled-menu';
+                    const claseAccion = numPlanesDia > 1 ? diaInfo.tipo == "finalizado" ? 'historial-dia':'cal-menu-opener' : 'cal-disabled-menu';
+
                     const claseAccionSimple = numPlanesDia === 1 ? determinarClaseAccionSimple(diaInfo) : '';
                     
                     // Construir badge container
@@ -434,6 +440,8 @@
             
             // Agregar clearfix
             calendarHTML.push('<div class="clearfix"></div>');
+
+            // const finalizados = diaInfo.eventos.filter((pedido) => pedido.estado == "finalizado");
             
             // Actualizar elementos del calendario
             $('#fechas-calendario-plan').html(calendarHTML.join(''));
@@ -498,7 +506,14 @@
                 }
             });
 
-
+            $('.historial-dia').off('click').on('click', async function (e) {
+                e.preventDefault();                  
+                const fecha = $(this).data('fecha');
+                const diaInfo = diasDisponibles[fecha];
+                const finalizados = diaInfo.eventos.filter((pedido) => pedido.estado == "finalizado");
+                construirListadoFinalizados(finalizados, diaInfo, infoMes);
+                revelarMenuFinalizados();
+            });
         }
 
         const construirBadgesContadorPermiso = (contador, esPermiso) => {
@@ -597,7 +612,6 @@
         }
 
         const construirMenuPedidosDia = (infoDia, infoMes) => {
-            console.log("Construccion del modal/menu para controlar los pedidos del cliente");
             console.log("Informacion para construir el modal:", infoDia);
             console.log("Informacion del mes pal modal", infoMes);
 
@@ -609,7 +623,6 @@
 
             // Agrupar pedidos
             const pendientes = infoDia.eventos.filter((pedido) => pedido.estado == "pendiente");
-            const finalizados = infoDia.eventos.filter((pedido) => pedido.estado == "finalizado");
             const permisos = infoDia.eventos.filter((pedido) => {
                 if (pedido.estado !== "permiso") return false;
 
@@ -634,12 +647,9 @@
             });
 
             $('#contador-pendientes-menu').text(pendientes.length);
-            $('#contador-finalizados-menu').text(pendientes.length);
             $('#contador-permisos-menu').text(permisos.length);
 
-            // // console.log("Permisos válidos a deshacerse:", permisos);
-
-            if (!pendientes.length && !permisos.length && !finalizados.length) {
+            if (!pendientes.length && !permisos.length) {
                 console.log("Todos vacios");
                 $('#texto-dia-permisos').removeClass('d-none');
                 $('#texto-dia-permisos').addClass('d-block');
@@ -684,14 +694,121 @@
             } else {
                 $('#permisos-anchor').removeClass('d-flex').addClass('d-none');
             }
-
-            if (finalizados.length) {
-                console.log("parece que hay pedidos finalizados")
-                $('#finalizados-anchor').removeClass('d-none').addClass('d-flex');
-            } else {
-                $('#finalizados-anchor').removeClass('d-flex').addClass('d-none');
-            }
         }
+
+        const menuItems = {
+            "SOPA": {
+                "label": "Sopa",
+                "icon": "soup",
+                "color": "color-yellow-dark"
+            },
+            "PLATO": {
+                "label": "Principal",
+                "icon": "utensils-crossed",
+                "color": "color-delight-red"
+            },
+            "CARBOHIDRATO": {
+                "label": "Carbohidrato",
+                "icon": "sprout",
+                "color": "color-green-dark"
+            },
+            "ENSALADA": {
+                "label": "Ensalada",
+                "icon": "salad",
+                "color": "color-teal-dark"
+            },
+            "JUGO": {
+                "label": "Jugo",
+                "icon": "glass-water",
+                "color": "color-blue-light"
+            },
+            "EMPAQUE": {
+                "label": "Empaque",
+                "icon": "package-2",
+                "color": "color-gray-dark"
+            },
+            "ENVIO": {
+                "label": "Envío",
+                "icon": "truck",
+                "color": "color-gray-dark"
+            }
+        };
+
+        const construirListadoFinalizados = (finalizados, infoDia, infoMes) => {
+             // CAMBIAR LA FECHA DEL MODAL
+            const stringFecha = `${infoDia.start}T00:00:00Z`;
+            const dateObj = new Date(stringFecha);
+            const dia = dateObj.getUTCDate();
+            $('#fecha-historial-permisos').text(`${dia} de ${infoMes.nombre}  de ${infoMes.anio}`);
+            const contenedorListado = $('#lista-historial-finalizado');
+            let listadoHTML = '';
+
+            finalizados.forEach((pedido, index) => {
+                listadoHTML += construirDetalleFinalizado(index + 1, pedido);
+            });
+
+            contenedorListado.html(listadoHTML);
+            
+            reinitializeLucideIcons();
+        };
+
+        const construirDetalleFinalizado = (indice, pedido) => {            
+            let detalleDecoded;
+            try {
+                detalleDecoded = typeof pedido.detalle === 'string' 
+                    ? JSON.parse(pedido.detalle) 
+                    : pedido.detalle;
+            } catch (e) {
+                console.error("Error parseando detalle:", e);
+                detalleDecoded = {};
+            }
+            
+            let validItemCount = 0;
+            for (const plato in detalleDecoded) {
+                const valor = detalleDecoded[plato];
+                if (valor && valor !== '' && menuItems[plato]) {
+                    validItemCount++;
+                }
+            }
+            
+            // const buttonColClass = (validItemCount % 2 === 0) ? 'col-12' : 'col-6';
+            
+            // Build menu items HTML
+            let menuItemsHTML = '';
+            for (const plato in detalleDecoded) {
+                const valor = detalleDecoded[plato];
+                
+                // Only render if value exists and plato is in menuItems
+                if (valor && valor !== '' && menuItems[plato]) {
+                    const item = menuItems[plato];
+                    const valorCapitalizado = valor.charAt(0).toUpperCase() + valor.slice(1);
+                    
+                    menuItemsHTML += `
+                        <div class="col-6 px-0 py-1">
+                            <div class="d-flex flex-row gap-2 align-items-center">
+                                <i data-lucide="${item.icon}" class="lucide-icon ${item.color}" style="min-height: 1.8rem; min-width: 1.8rem"></i>
+                                <div class="d-flex flex-column">
+                                    <span class="item-value line-height-xs font-12 m-0 color-theme">
+                                        ${valorCapitalizado}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            return `
+                <li>
+                    <h3 class="font-18">Pedido ${indice}</h3>
+                    <div class="d-flex flex-column align-items-center">
+                        <div class="row m-0">
+                            ${menuItemsHTML}
+                        </div>
+                    </div>
+                </li>
+            `;
+        };
 
         const construirSelectorPermisos = (infoDia, infoMes, items, config) => {
             reiniciarBackButton(infoDia, infoMes);
@@ -787,13 +904,14 @@
             });
         };
 
-        const construirSelectorDeshacer = (infoDia, infoMes) => {
-            reiniciarBackButton(infoDia, infoMes);
-        }
-
         const revelarMenuPermisos = () => {
             ocultarrMenuDiaSinHider();
             $('#menu-pedir-permisos').addClass('menu-active')
+        }
+
+        const revelarMenuFinalizados = () => {
+            ocultarrMenuDiaSinHider();
+            $('#menu-historial-finalizados').addClass('menu-active'); 
         }
 
         const revelarMenuPermisoSimple = () => {
@@ -824,6 +942,7 @@
         const ocultarMenusPermisos = () => {
             $('#menu-pedir-permisos').removeClass('menu-active');
             $('#menu-deshacer-permisos').removeClass('menu-active');
+            $('#menu-historial-finalizados').removeClass('menu-active');
         }
 
         const ocultarTodosMenus = () => {
@@ -831,6 +950,7 @@
         }
 
         const reiniciarBackButton = (infoDia, infoMes) => {
+            console.log("Se deberia haber reiniciado el boton")
             $('.back-menu-pedidos-dia').off('click').on('click', function (e) {
                 e.preventDefault();
                 ocultarMenusPermisos();
