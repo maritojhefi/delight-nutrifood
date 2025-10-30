@@ -78,7 +78,7 @@
 </div>
 
 @push('modals')
-    <div id="menu-pedidos-dia-calendario" class="menu menu-box-modal rounded-m" style="width: 90%; max-width: 320px">
+    <div id="menu-pedidos-dia-calendario" class="menu menu-box-modal rounded-m" style="width: 90%; max-width: 320px;">
         <div class="menu-title flex-align-center">
             <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
                 <h1 id="fecha-menu-control-dia" class="font-20 mt-1 mb-0 fecha-seleccionada">Fecha del día</h1>
@@ -92,7 +92,7 @@
                     <i data-lucide="notebook-pen" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
                 </div>
                 <div class="align-self-center">
-                    <h5 class="">Solicitar Permisos</h5>
+                    <h5 class="">Solicitar Permisos (<span id="contador-pendientes-menu"></span>)</h5>
                     <p class="mb-0 mt-n1 font-10 line-height-s">
                         <span><i class="fa fa-book color-blue-dark pe-1"></i>Solicitar permisos para mis pedidos del día</span>
                         <!-- <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span> -->
@@ -121,7 +121,7 @@
                     <i data-lucide="calendar-clock" class="lucide-icon color-theme" style=" width: 2rem; height: 2rem;"></i>
                 </div>
                 <div class="align-self-center">
-                    <h5 class="color-magenta-dark">Retirar Permisos</h5>
+                    <h5 class="color-magenta-dark">Retirar Permisos (<span id="contador-permisos-menu"></span>)</h5>
                     <p class="mb-0 mt-n1 font-10 line-height-s">
                         <span><i class="fa fa-book color-blue-dark pe-1"></i>Retirar permisos para mis pedidos este día</span>
                         <!-- <span class="ps-2"><i class="fa fa-user color-green-dark pe-1"></i>25k+ Attending</span> -->
@@ -260,142 +260,155 @@
             // Actualizar el titulo del mes
             $('#mes-calendario').text(`${infoMes.nombre} ${infoMes.anio}`);
 
-            
             // Actualizar botones
-            $('#mes-anterior-btn').data('mes-anterior', infoMes.numero === 1 ? 12 : infoMes.numero - 1);
-            $('#mes-anterior-btn').data('anio', infoMes.numero === 1 ? infoMes.anio - 1 :infoMes.anio);
-            $('#mes-siguiente-btn').data('mes-siguiente', infoMes.numero === 12 ? 1 : infoMes.numero + 1);
-            $('#mes-siguiente-btn').data('anio', infoMes.numero === 12 ? infoMes.anio + 1 :infoMes.anio);
-            
+            const mesAnterior = infoMes.numero === 1 ? 12 : infoMes.numero - 1;
+            const anioAnterior = infoMes.numero === 1 ? infoMes.anio - 1 : infoMes.anio;
+            const mesSiguiente = infoMes.numero === 12 ? 1 : infoMes.numero + 1;
+            const anioSiguiente = infoMes.numero === 12 ? infoMes.anio + 1 : infoMes.anio;
+
+            $('#mes-anterior-btn').data('mes-anterior', mesAnterior).data('anio', anioAnterior);
+            $('#mes-siguiente-btn').data('mes-siguiente', mesSiguiente).data('anio', anioSiguiente);
+
+            // Constantes reutilizables
+            const FONT_CLASS = 'font-18';
+            const ROUNDED_CLASS = 'rounded-xs';
+            const LINE_HEIGHT_CLASS = 'line-height-xs';
+            const BG_COLORS = {
+                pendiente: 'bg-green-dark',
+                permiso: 'bg-magenta-dark',
+                finalizado: 'bg-orange-dark'
+            };
+
             // Mapear dias con planes
             const diasDisponibles = {};
             infoMes.dias.forEach(dia => {
-                const fecha = dia.start; // Formato: YYYY-MM-DD
-                diasDisponibles[fecha] = dia;
+                diasDisponibles[dia.start] = dia;
             });
-            
+
             // Obtener mes y año
             const year = infoMes.anio;
             const month = infoMes.numero; // 1-12
-            
-            // Primer dia del mes
+
+            // Primer y ultimo dia del mes
             const primerDia = new Date(year, month - 1, 1);
-            // Ultimo dia del mes
             const ultimoDia = new Date(year, month, 0);
-            
+
             // Calcular el primer dia de la semana del mes (0 = Sunday, 6 = Saturday)
             const primerDiaSemana = primerDia.getDay();
-            
-            // Calcular cuantos dias se mostraran del mes anterior 
+
+            // Calcular cuantos dias se mostraran de meses adyacentes
             const diasMesAnterior = primerDiaSemana;
-            
-            // Calcular cuantos dias se mostraran del mes siguiente 
             const ultimoDiaSemana = ultimoDia.getDay();
             const diasMesSiguiente = ultimoDiaSemana === 6 ? 0 : 6 - ultimoDiaSemana;
-            
-            // Build the calendar grid
+
+            // Funciones auxiliares
+            const formatFecha = (year, month, dia) => 
+                `${year}-${String(month).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+
+            const esHoy = (dia) => {
+                const hoy = new Date();
+                return hoy.getDate() === dia && 
+                    hoy.getMonth() === (month - 1) && 
+                    hoy.getFullYear() === year;
+            };
+
+            const crearBotonCalendario = (dia, bgColor = '', badgeHTML = '') => {
+                const clases = `${FONT_CLASS} ${bgColor} position-relative ${ROUNDED_CLASS} ${LINE_HEIGHT_CLASS}`.trim();
+                return `<button class="${clases}">${dia} ${badgeHTML}</button>`;
+            };
+
+            const crearEnlaceCalendario = (dia, clases = '', dataFecha = '', contenido = '') => {
+                const dataAttr = dataFecha ? `data-fecha="${dataFecha}"` : '';
+                return `<a href="#" class="${clases}" ${dataAttr}>${contenido}</a>`;
+            };
+
+            const contarEventosPorEstado = (eventos, estado) => 
+                (eventos || []).filter(evento => evento.estado === estado).length;
+
+            const construirBadgeContainer = (numPlanes, numPermisos, numPendientes) => {
+                if (numPermisos >= 1 && numPermisos < numPlanes) {
+                    return `
+                        <div class="d-flex flex-row align-items-center position-absolute top-0 end-0" style="transform: translate(40%, -50%);">
+                            ${construirBadgesContadorPermiso(numPendientes, false)}
+                            ${construirBadgesContadorPermiso(numPermisos, true)}
+                        </div>
+                    `;
+                }
+                return `
+                    <div class="position-absolute top-0 end-0" style="transform: translate(50%, -50%);">
+                        ${construirBadgesContadorPermiso(numPlanes, false)}
+                    </div>
+                `;
+            };
+
+            const determinarClaseAccionSimple = (diaInfo) => {
+                if (!diaInfo.eventos || diaInfo.eventos.length !== 1) return '';
+                
+                const evento = diaInfo.eventos[0];
+                const fechaPedido = new Date(diaInfo.end + 'T08:55:00');
+                const ahora = new Date();
+                const habilitadoAccion = fechaPedido > ahora;
+                
+                if (!habilitadoAccion) return '';
+                
+                if (evento.estado === "pendiente") return 'pedir-permiso-simple';
+                if (evento.estado === "permiso") return `deshacer-menu-${evento.id}`;
+                
+                return '';
+            };
+
+            // Construir las grillas del calendario
             const calendarHTML = [];
-            
-            // Add days from previous month
-            const mesAnterior = new Date(year, month - 1, 0);
-            const ultimoDiaMesAnterior = mesAnterior.getDate();
-            
+
             // Dias de mes anterior
+            const fechaMesAnterior = new Date(year, month - 1, 0);
+            const ultimoDiaMesAnterior = fechaMesAnterior.getDate();
+
             for (let i = diasMesAnterior - 1; i >= 0; i--) {
                 const dia = ultimoDiaMesAnterior - i;
-                calendarHTML.push(`<a href="#" class="cal-disabled font-14">${dia}</a>`);
+                calendarHTML.push(crearEnlaceCalendario(dia, `cal-disabled ${FONT_CLASS}`, '', dia));
             }
-            
+
             // Agregar los dias del mes actual
             const totalDiasMes = ultimoDia.getDate();
-            const hoy = new Date();
-            const esHoy = (dia) => {
-                return hoy.getDate() === dia && 
-                        hoy.getMonth() === (month - 1) && 
-                        hoy.getFullYear() === year;
-            };
-            
+
             for (let dia = 1; dia <= totalDiasMes; dia++) {
-                const fecha = `${year}-${String(month).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+                const fecha = formatFecha(year, month, dia);
                 const diaInfo = diasDisponibles[fecha];
-                let bgColor = '';
+                
                 if (diaInfo) {
-
-                    switch (diaInfo.tipo) {
-                        case 'pendiente':
-                            bgColor = 'bg-green-dark';
-                            break;
-                        case 'permiso':
-                            bgColor = 'bg-magenta-dark';
-                            break;
-                        case 'finalizado':
-                            bgColor = 'bg-orange-dark';
-                            break;
-                        default:
-                            break;
-                    }
-
-                    // Revisar el número de pedidos pedidos asignados para el dia,
-                    // de no haberlos, asignar 0
-                    let numPlanesDia = diaInfo.eventos ? diaInfo.eventos.length : 0;
-
-                    const badgeHTML = numPlanesDia > 1 ? `
-                                    <div class="badge border d-flex align-items-center justify-content-center p-0 bg-theme bg-dtheme-blue color-theme bg-delight-red position-absolute top-0 end-0"
-                                        style="width: 1.05rem !important; height: 1.05rem !important">
-                                        <span class="color-theme">${numPlanesDia}</span>
-                                    </div>
-                                ` : '';
-
+                    // Contar eventos por estado
+                    const numPlanesDia = diaInfo.eventos ? diaInfo.eventos.length : 0;
+                    const numPermisosDia = contarEventosPorEstado(diaInfo.eventos, 'permiso');
+                    const numPendientesDia = contarEventosPorEstado(diaInfo.eventos, 'pendiente');
+                    
+                    // Determinar clases de acción
                     const claseAccion = numPlanesDia > 1 ? 'cal-menu-opener' : 'cal-disabled-menu';
-
-                    let claseAccionSimple = '';
-
-                    if (numPlanesDia == 1) {
-                        // Determinar si diaInfo es apropiado para pedir permiso o remover permiso
-                        // Dependiendo del resultado, se les asignará una clase
-
-                        const fechaPedido = new Date(diaInfo.end + 'T08:55:00');
-                        const ahora = new Date();
-                        const habilitadoAccion = fechaPedido > ahora;
-
-                        // console.log("InfoDiaSimple:", diaInfo);
-                        // console.log("HabilitadoAccion:", habilitadoAccion);
-                            
-                        if (diaInfo.eventos[0].estado == "pendiente" && habilitadoAccion) {
-                            claseAccionSimple = `pedir-permiso-simple`;
-                            // console.log("Hay boton pedido simple calendario");
-                        } else if (diaInfo.eventos[0].estado == "permiso" && habilitadoAccion) {
-                            claseAccionSimple = `deshacer-menu-${diaInfo.eventos[0].id}`;
-                            // console.log("Hay boton deshacer simple calendario");
-                        }
-                    }
-                    // REALIZAR LA ASIGNACION APROPIADA DE INFORMACION PARA EL DESPLIEGUE DEL MODAL/MENU
-                    // Si el dia dispone de un plan/feriado
-                    if (esHoy(dia)) {
-                        // Dia de hoy con plan
-                        // console.log("diaInfo:",diaInfo);
-
-                        calendarHTML.push(`
-                            <a href="#" class="cal-selected ${claseAccion} position-relative" data-fecha="${fecha}">
-                                <button class=" font-14 ${bgColor} rounded-xs line-height-xs">${dia} </button>${badgeHTML}
-                            </a>
-                        `);
-                    } else if (diaInfo.tipo === 'feriado') {
+                    const claseAccionSimple = numPlanesDia === 1 ? determinarClaseAccionSimple(diaInfo) : '';
+                    
+                    // Construir badge container
+                    let badgeContainerHTML = diaInfo.tipo === 'finalizado' 
+                        ? '' 
+                        : construirBadgeContainer(numPlanesDia, numPermisosDia, numPendientesDia);
+                    
+                    // Determinar color de fondo
+                    const bgColor = BG_COLORS[diaInfo.tipo] || '';
+                    
+                    // Construir HTML según el tipo de día
+                    if (diaInfo.tipo === 'feriado') {
                         // Feriado
-                        calendarHTML.push(`
-                            <a href="#" data-menu="menu-events" data-fecha="${fecha}" class="cal-feriado">
-                                <button class=" font-14 bg-red-dark rounded-xs line-height-xs">${dia}</button>
-                            </a>
-                        `);
+                        const boton = crearBotonCalendario(dia, 'bg-red-dark');
+                        calendarHTML.push(crearEnlaceCalendario('', 'cal-feriado', fecha, boton)
+                            .replace('class="cal-feriado"', 'class="cal-feriado" data-menu="menu-events"'));
                     } else {
-                        // Dia regular con plan
-                        calendarHTML.push(`
-                            <a href="#" class="${claseAccion} position-relative"  data-fecha="${fecha}">
-                                <button class=" font-14 ${bgColor} rounded-xs line-height-xs">${dia} </button>${badgeHTML}
-                            </a>
-                        `);
+                        // Dia con plan
+                        const claseContainer = esHoy(dia) 
+                            ? `cal-selected overflow-visible ${claseAccion} ${claseAccionSimple}`.trim()
+                            : `overflow-visible ${claseAccion} ${claseAccionSimple}`.trim();
+                        
+                        const boton = crearBotonCalendario(dia, bgColor, badgeContainerHTML);
+                        calendarHTML.push(crearEnlaceCalendario('', claseContainer, fecha, boton));
                     }
-
                 } else {
                     // Dias sin planes
                     if (esHoy(dia)) {
@@ -403,20 +416,20 @@
                         calendarHTML.push(`
                             <a href="#" data-fecha="${fecha}">
                                 <button>
-                                    <span class="font-14">${dia}</span>
+                                    <span class="${FONT_CLASS}">${dia}</span>
                                 </button>
                             </a>
                         `);
                     } else {
                         // Dia cualquiera sin plan
-                        calendarHTML.push(`<a href="#" class="font-14" data-fecha="${fecha}">${dia}</a>`);
+                        calendarHTML.push(crearEnlaceCalendario(dia, FONT_CLASS, fecha, dia));
                     }
                 }
             }
-            
+
             // Dias del siguiente mes
             for (let dia = 1; dia <= diasMesSiguiente; dia++) {
-                calendarHTML.push(`<a href="#" class="cal-disabled">${dia}</a>`);
+                calendarHTML.push(crearEnlaceCalendario(dia, 'cal-disabled', '', dia));
             }
             
             // Agregar clearfix
@@ -485,6 +498,21 @@
                 }
             });
 
+
+        }
+
+        const construirBadgesContadorPermiso = (contador, esPermiso) => {
+            const propiedades = {
+                "bgColor": esPermiso ? "bg-magenta-dark" : "bg-theme bg-dtheme-blue" ,
+                "textColor": esPermiso ? "color-white" : "color-theme",
+            }
+
+            return `
+                <div class="badge border d-flex align-items-center justify-content-center p-0 ${propiedades.bgColor}  ${propiedades.textColor}"
+                    style="width: 0.95rem !important; height: 0.95rem !important">
+                    <span class="${propiedades.textColor}" style="font-size: 0.7rem">${contador}</span>
+                </div>
+            `
 
         }
 
@@ -604,6 +632,10 @@
                 // Retornar permisos validos
                 return true;
             });
+
+            $('#contador-pendientes-menu').text(pendientes.length);
+            $('#contador-finalizados-menu').text(pendientes.length);
+            $('#contador-permisos-menu').text(permisos.length);
 
             // // console.log("Permisos válidos a deshacerse:", permisos);
 
