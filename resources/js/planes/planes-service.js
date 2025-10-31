@@ -1,33 +1,63 @@
 import axios from "axios";
+import cachedAxios from "../config/axios/axios-instance";
 
 export const permisoPedido = async(idPlaneUser) => {
     const response = await axios.get(`/miperfil/permiso/${idPlaneUser}/2`);
+    return response;
+}
+
+// export const obtenerCalendarioPlan = async(idPlan, idUser) => {
+//     const response = await cachedAxios.get(`/miperfil/calendario-plan/${idPlan}/${idUser}`, {
+//         cache: {
+//             ttl: 1000 * 60 * 5,
+//             interpretHeader: false,
+//         }
+//     });
+//     return response; 
+// }
+
+export const obtenerCalendarioPlan = async(idPlan, idUser) => {
+    const response = await axios.get(`/miperfil/calendario-plan/${idPlan}/${idUser}`);
+    // console.log("Respuesta obtenida sobre la informacion del plan: ", response.data);
+    // console.log("Respuesta servida desde la cache: ", response.cached);
     return response; 
 }
 
-// axios.get('{{ $path }}/miperfil/permiso/' + formBasic.id.value + '/2').
-// then(
-//     (respuesta) => {
-//         if (respuesta.data == "varios") {
-//             $("#basicModal").modal('hide');
-//             $("#modalPermiso").modal('show');
-//         } else {
-//             calendar.refetchEvents();
-//             const asd = setTimeout(resetear, 100);
-//             const dsad = setTimeout(resetear, 300);
-//             const asfdfd = setTimeout(resetear, 500);
-//             const asfdffd = setTimeout(resetear, 1000);
-//             $("#basicModal").modal('hide');
-//             $("#modalPermiso").modal('hide');
-//             var toastID = document.getElementById('permiso-aceptado');
-//                 toastID = new bootstrap.Toast(toastID);
-//                 toastID.show();
-//         }
+// export const asignarPermisosVarios = async(fecha, cantidad, planId) => {
+//     const response = await axios.get(`/miperfil/permisos/${fecha}/${cantidad}/${planId}`);
+//     return response;
+// }
+
+export const asignarPermisosVarios = async (fecha, cantidad, planId) => {
+    const response = await axios.post(`/miperfil/permisos/asignar-permisos`, {
+        fecha,
+        cantidad,
+        planId,
+    });
+    return response;
+};
 
 
-//     }
-// ).
+export const deshacerPermisosVarios = async(fecha, cantidad, planId) => {
+    const response = await axios.post(`/miperfil/permisos/deshacer-permisos`, {
+        fecha: fecha,
+        cantidad: cantidad,
+        planId: planId
+    });
+    return response;
+}
+
+
+// Limpiar la cache de las solicitudes al plan del calendario
+// Util en el caso de que el usuario actualice sus planes y sea necesaria la actualizacion de la cache
+
+// import { clearCache } from 'axios-cache-interceptor';
+
+// clearCache(`/miperfil/calendario-plan/${idPlan}/${idUser}`);
 
 window.PlanesService = {
     permisoPedido,
+    obtenerCalendarioPlan,
+    asignarPermisosVarios,
+    deshacerPermisosVarios
 };

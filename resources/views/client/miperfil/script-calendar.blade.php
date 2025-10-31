@@ -7,7 +7,21 @@
 @push('scripts')
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+
+            // await PlanesService.obtenerCalendarioPlan( {{ $plan->id }},{{ $usuario->id }} ).then(
+            //     (respuestaCalendario) => {
+            //         console.log("Respuesta obtenida sobre la informacion del plan: ", respuestaCalendario.data);
+            //         console.log("Respuesta servida desde la cache: ", respuestaCalendario.cached);
+            //     }
+            // );
+
+            // await PlanesService.obtenerCalendarioPlan( {{ $plan->id }},{{ $usuario->id }} ).then(
+            //     (respuestaCalendario) => {
+            //         console.log("Respuesta obtenida sobre la informacion del plan: ", respuestaCalendario.data);
+            //         console.log("Respuesta servida desde la cache: ", respuestaCalendario.cached);
+            //     }
+            // );
 
             let formulario = document.getElementById("form-cal");
             let formBasic = document.getElementById("formBasic");
@@ -19,13 +33,18 @@
                 hiddenDays: [0],
                 selectable: true,
                 //eventContent: { html: '<i>some html</i>' },
+                // Cada evento es una construccion de url para mostrar plan
                 events: "{{ $path }}/miperfil/mostrar/" + {{ $plan->id }} + "/" +
                     {{ $usuario->id }},
+
+                // events: "{{ $path }}/miperfil/calendario-plan/" + {{ $plan->id }} + "/" +
+                //     {{ $usuario->id }},
+                // events:undefined,
 
 
                 eventClick: function(info) {
                     var evento = info.event;
-
+                    // Al hacer click en un evento, se realiza la solicitud a la url
                     axios.get('{{ $path }}/miperfil/editar/' + info.event.id).
                     then(
                         (respuesta) => {
@@ -40,7 +59,7 @@
                                 toastID = new bootstrap.Toast(toastID);
                                 toastID.show();
                             }
-                             else if (respuesta.data.estado == "pendiente" && respuesta.data
+                            else if (respuesta.data.estado == "pendiente" && respuesta.data
                                 .title !=
                                 "feriado") {
 
@@ -67,6 +86,7 @@
 
 
             });
+            console.log("Info calendario a renderizar: ", calendar);
             calendar.render();
             window.onload = function() {
                 const myTimeout = setTimeout(resetear, 500);

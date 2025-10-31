@@ -433,6 +433,7 @@
                 $plan = $planData->plan;
                 $pedidos = $planData->pedidos;
                 $detalle = $plan->pivot->detalle ? json_decode($plan->pivot->detalle, true) : [];
+                $todosPermiso = count($pedidos) > 0 ? false : true;
                 // dd($detalle, $plan);
                 $estado = $planData->estado;
                 $tiempoRestanteMinutos = $planData->tiempo_restante;
@@ -454,7 +455,7 @@
                         $iconoTiempo = 'fa-clock';
                         $iconoTiempoLucide = 'clock';
                         $colorTiempo = 'success';
-                        $textodia = 'Hoy '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()) ) .' te servirás:';
+                        $textodia = 'Hoy '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()) ) . (!$todosPermiso ? ' te servirás:' : ' solicitaste permiso');
                         break;
                     case 'proximo':
                         $textoTiempo = 'Inicia en: ';
@@ -462,7 +463,7 @@
                         $iconoTiempo = 'fa-hourglass-start';
                         $iconoTiempoLucide = 'hourglass';
                         $colorTiempo = 'warning';
-                        $textodia = $textodia = 'Hoy '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now())) .' te servirás:';
+                        $textodia = 'Hoy '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()) ) . (!$todosPermiso ? ' te servirás:' : ' solicitaste permiso');
                         break;
                     case 'proximo_dia':
                         $textoTiempo = 'Mañana en: ';
@@ -470,7 +471,12 @@
                         $iconoTiempo = 'fa-calendar-plus';
                         $iconoTiempoLucide = 'calendar';
                         $colorTiempo = 'info';
-                        $textodia = 'Mañana '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()->addDay())) .' te servirás:';
+                        
+                        if (!$todosPermiso) {
+                            $textodia = 'Mañana '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()->addDay())) .' te servirás:';
+                        } else {
+                            $textodia = 'Solicitaste permiso este '. lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()->addDay()));
+                        }
                         break;
                     default:
                         $textoTiempo = '';
@@ -559,7 +565,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="d-flex flex-row justify-content-between gap-1 align-items-center">
+                                        <div class="d-flex flex-row justify-content-between w-100 gap-1 align-items-center">
                                             {{-- FIX: Using align-items-center is usually better than align-items-between --}}
                                             
                                             <div class="plan-summary flex-shrink-1 text-wrap"> {{-- FIX: Added flex-grow-0 --}}
@@ -636,7 +642,7 @@
                                                 @else
                                                 <div class="card card-style bg-transparent rounded-s mx-0 mb-0">
                                                     <div class="accordion-header" id="{{ $pedidoHeaderId }}">
-                                                        <button type="button" class="accordion-button pedido-accordion-button btn rounded rounded-s bg-highlight bg-dtheme-blue py-2" data-bs-toggle="collapse"
+                                                        <button type="button" class="accordion-button pedido-accordion-button btn rounded rounded-s bg-highlight bg-dtheme-blue py-2 collapsed" data-bs-toggle="collapse"
                                                             data-bs-target="#{{ $pedidoCollapseId }}" aria-expanded="false" aria-controls="{{ $pedidoCollapseId }}">
                                                             <div class="d-flex flex-row align-items-center justify-content-between w-100 me-2">
                                                                 <h3 class="mb-0 color-white font-18">Pedido {{ $loop->iteration }}</h3>
@@ -678,7 +684,7 @@
                                                         </div>
                                                         @if (isset($detallePedido['ENVIO']) && $detallePedido['ENVIO'] != '')
                                                             <hr class="my-2">
-                                                            <div class="accordion-body m-0 card card-style py-1 px-3 bg-dtheme-dkblue d-flex flex-row justify-content-evenly w-100">
+                                                            <div class="accordion-body m-0 card card-style py-1 px-3 gap-2 bg-dtheme-dkblue d-flex flex-row justify-content-evenly w-100">
                                                                 <div class="d-flex flex-row gap-2 color-theme align-items-center">
                                                                     <!-- <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-1" style="height: 1.8rem; width: 1.8rem"> -->
                                                                         <i data-lucide="truck" class="lucide-icon color-theme" style="height: 2rem; width: 2rem"></i>
@@ -752,7 +758,7 @@
                                             </div>
                                             @if (isset($detallePedido['ENVIO']) && $detallePedido['ENVIO'] != '')
                                                 <hr class="my-2">
-                                                <div class="accordion-body m-0 card card-style py-1 px-3 bg-dtheme-dkblue d-flex flex-row justify-content-evenly w-100">
+                                                <div class="accordion-body m-0 card card-style py-1 px-3 gap-2  bg-dtheme-dkblue d-flex flex-row justify-content-evenly w-100">
                                                     <div class="d-flex flex-row gap-2 color-theme align-items-center">
                                                         <!-- <div class="gradient-blue rounded rounded-circle d-flex align-items-center justify-content-center p-1" style="height: 1.8rem; width: 1.8rem"> -->
                                                             <i data-lucide="truck" class="lucide-icon color-theme" style="height: 2rem; width: 2rem"></i>
@@ -797,13 +803,14 @@
                                 </p>
                             </div>
                             <div class="modal-footer bg-white bg-dtheme-blue border-0 pt-0 d-flex flex-row align-items-center justify-content-between px-3">
-                                <button type="button" class="btn bg-delight-red" data-bs-dismiss="modal">
-                                    Cancelar
-                                    <i data-lucide="x" class="lucide-icon"></i>
-                                </button>
-                                <a href="#" class="btn bg-teal-light" id="confirmarModificarPedido">
-                                    Confirmar
-                                    <i data-lucide="check" class="lucide-iconj"></i>
+                                
+                                <a href="#" class="py-2 px-2 font-15 rounded-s text-uppercase bg-delight-red color-white font-600 line-height-s"
+                                data-bs-dismiss="modal">Cancelar</a>
+                                <a 
+                                    id="confirmarModificarPedido"
+                                    class="py-2 px-2 wrapper font-15 bg-teal-dark rounded-s line-height-s text-uppercase font-600 shadow-xl"
+                                >
+                                    <span class="d-flex flex-row align-items-center gap-1">Confirmar</span>
                                 </a>
                             </div>
                         </div>
@@ -922,16 +929,14 @@
                     text-align: right;
                 }
 
-                .plan-chevron {
+                /* .plan-chevron {
                     transform: rotate(0deg);
-                    /* transition: transform 0.3s ease-in-out; */
-
                     transition: transform 0.3s step-start;
-                }
+                } */
 
-                .plan-accordion-button.collapsed .plan-chevron {
+                /* .plan-accordion-button.collapsed .plan-chevron {
                     transform: rotate(180deg);
-                }
+                } */
 
 
                 .time-badge {

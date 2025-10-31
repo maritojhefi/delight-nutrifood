@@ -118,7 +118,11 @@ Route::prefix('/miperfil')
     ->middleware('auth')
     ->group(function () {
         Route::get('/mostrar/{idplan}/{iduser}', [App\Http\Controllers\admin\UsuariosController::class, 'mostrar']);
+        Route::get('/calendario-plan/{idplan}/{iduser}', [App\Http\Controllers\admin\UsuariosController::class,'contarPedidosDisponiblesPlan']);
         Route::get('/permiso/{id}/{todos}', [App\Http\Controllers\admin\UsuariosController::class, 'permiso']);
+        // Route::get('/permisos/{fecha}/{cantidad}/{planId}', [App\Http\Controllers\admin\UsuariosController::class, 'permisoVarios']);
+        Route::post('/permisos/asignar-permisos', [App\Http\Controllers\admin\UsuariosController::class, 'permisoVarios']);
+        Route::post('/permisos/deshacer-permisos', [App\Http\Controllers\admin\UsuariosController::class,'deshacerPermisosVarios']);
         Route::get('/editar/{id}', [App\Http\Controllers\admin\UsuariosController::class, 'editar']);
         Route::get('/saldo/usuario', [App\Http\Controllers\admin\UsuariosController::class, 'saldo'])->name('usuario.saldo');
         Route::get('/saldo/historial', [App\Http\Controllers\admin\UsuariosController::class, 'saldoHistorial']);

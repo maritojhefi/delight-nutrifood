@@ -395,6 +395,176 @@ class UsuariosController extends Controller
 
         return response()->json($evento);
     }
+
+    public function permisoVarios(Request $request)
+    {
+        $fecha = $request->fecha; // string
+        $cantidad = $request->cantidad;
+        $planId = $request->planId;
+
+        $fechaSeleccionada = Carbon::parse($fecha)->startOfDay();
+        $fechaHoy = Carbon::now();
+        $horaActual = $fechaHoy->hour;
+
+        // No permitir fechas pasadas
+        if ($fechaSeleccionada->lessThan($fechaHoy->startOfDay())) {
+            return response()->json([
+                'error' => 'No se pueden asignar permisos en fechas pasadas.'
+            ], 400);
+        }
+
+        // Condición: si la fecha seleccionada es hoy y ya pasó de las 9AM → fallar
+        if ($fechaSeleccionada->isSameDay($fechaHoy) && $horaActual >= 9) {
+            return response()->json([
+                'error' => 'Ya no se pueden solicitar permisos después de las 9AM.'
+            ], 400);
+        }
+
+        // Obtener los eventos "pendientes" permisibles
+        $eventosPermisibles = DB::table('plane_user')
+            ->whereDate('start', $fechaSeleccionada)
+            ->where('estado', 'pendiente')
+            ->where('user_id', auth()->id())
+            ->where('plane_id', $planId)
+            ->limit($cantidad)
+            ->get();
+
+        if ($eventosPermisibles->isEmpty()) {
+            return response()->json(['error' => 'No hay eventos permisibles'], 404);
+        }
+
+        $permisibleComparacion = $eventosPermisibles->first();
+
+        // Calcular fecha siguiente
+        $extraerUltimo = DB::table('plane_user')
+            ->where('user_id', $permisibleComparacion->user_id)
+            ->where('plane_id', $permisibleComparacion->plane_id)
+            ->where('title', '!=', 'feriado')
+            ->orderBy('start', 'DESC')
+            ->first();
+
+        $fechaParaAgregar = $this->diaSiguienteAlUltimo(
+            $extraerUltimo->start,
+            $permisibleComparacion->plane_id,
+            $permisibleComparacion->user_id
+        );
+
+        $saberDia = WhatsappAPIHelper::saber_dia($fechaParaAgregar);
+        if ($saberDia == "Domingo") {
+            $fechaParaAgregar = Carbon::parse($fechaParaAgregar)->addDay();
+        }
+
+        $idsActualizados = [];
+
+        foreach ($eventosPermisibles as $permisible) {
+            // Crear nuevos registros "pendientes" para el usuario tras su ultimo día
+            DB::table('plane_user')->insert([
+                'start' => $fechaParaAgregar,
+                'end' => $fechaParaAgregar,
+                'title' => $permisible->title,
+                'plane_id' => $permisible->plane_id,
+                'user_id' => $permisible->user_id
+            ]);
+
+            // Actualizar los registros pendientes seleccionados a "permisos"
+            DB::table('plane_user')
+                ->where('id', $permisible->id)
+                ->update([
+                    'estado' => Plane::ESTADOPERMISO,
+                    'color' => Plane::COLORPERMISO,
+                    'detalle' => null
+                ]);
+
+            $idsActualizados[] = $permisible->id;
+        }
+
+        return response()->json([
+            'success' => true,
+            'cantidad' => count($idsActualizados),
+            'ids_actualizados' => $idsActualizados,
+            'fecha_original' => $fecha,
+            'fecha_agregada' => $fechaParaAgregar
+        ]);
+    }
+
+    public function deshacerPermisosVarios(Request $request)
+    {
+        $fecha = $request->fecha; // string
+        $cantidad = $request->cantidad;
+        $planId = $request->planId;
+
+        $fechaSeleccionada = Carbon::parse($fecha)->startOfDay();
+        $fechaHoy = Carbon::now();
+        $horaActual = $fechaHoy->hour;
+
+        // Condición: si la fecha seleccionada es hoy y ya pasó de las 9AM → fallar
+        if ($fechaSeleccionada->isSameDay($fechaHoy) && $horaActual >= 9) {
+            return response()->json([
+                'error' => 'Ya no se pueden deshacer permisos después de las 9AM.'
+            ], 400);
+        }
+
+        // No permitir fechas pasadas
+        if ($fechaSeleccionada->lessThan($fechaHoy->startOfDay())) {
+            return response()->json([
+                'error' => 'No se pueden deshacer permisos de días anteriores.'
+            ], 400);
+        }
+
+        // Obtener permisos de la fecha solicitada
+        $permisosRemovibles = DB::table('plane_user')
+            ->whereDate('start', $fechaSeleccionada)
+            ->where('estado', 'permiso')
+            ->where('user_id', auth()->id())
+            ->where('plane_id', $planId)
+            ->orderBy('start', 'ASC')
+            ->limit($cantidad)
+            ->get();
+
+        // En caso de no haber permisos removibles -> fallar
+        if ($permisosRemovibles->isEmpty()) {
+            return response()->json(['error' => 'No hay permisos que puedan deshacerse'], 404);
+        }
+
+        // Eliminar los últimos "pendientes" del usuario (más recientes)
+        $pendientesAEliminar = DB::table('plane_user')
+            ->where('user_id', auth()->id())
+            ->where('plane_id', $planId)
+            ->whereNotIn('estado', [Plane::ESTADOFINALIZADO, Plane::ESTADOFERIADO])
+            ->orderBy('start', 'DESC')
+            ->limit($permisosRemovibles->count())
+            ->pluck('id'); // solo obtener IDs
+
+
+        if ($pendientesAEliminar->isNotEmpty()) {
+            DB::table('plane_user')->whereIn('id', $pendientesAEliminar)->delete();
+        }
+
+        // Actualizar los permisos removibles a pendientes
+        $idsActualizados = [];
+        foreach ($permisosRemovibles as $removible) {
+            DB::table('plane_user')
+                ->where('id', $removible->id)
+                ->update([
+                    'estado' => Plane::ESTADOPENDIENTE,
+                    'color' => Plane::COLORPENDIENTE,
+                    'detalle' => null
+                ]);
+
+            $idsActualizados[] = $removible->id;
+        }
+
+        return response()->json([
+            'success' => true,
+            'cantidad_actualizados' => count($idsActualizados),
+            'cantidad_eliminados' => $pendientesAEliminar->count(),
+            'ids_actualizados' => $idsActualizados,
+            'fecha_original' => $fechaSeleccionada->toDateString(),
+        ]);
+    }
+
+
+
     public function quitarpermiso($id)
     {
         $evento = DB::table('plane_user')->where('id', $id)->update(['estado' => Plane::ESTADOPENDIENTE, 'color' => Plane::COLORPENDIENTE]);
@@ -410,8 +580,174 @@ class UsuariosController extends Controller
             $eventos->push($feriado);
         }
 
+        // Log::debug("Informacion de eventos obtenida: ", [$eventos]);
+
 
         return response()->json($eventos);
+    }
+
+    // public function contarPedidosDisponiblesPlan($idplan, $iduser) 
+    // {
+    //     // Get all events for the user and plan
+    //     $eventos = DB::table('plane_user')
+    //         ->where('plane_id', $idplan)
+    //         ->where('user_id', $iduser)
+    //         ->get();
+        
+    //     // Get feriados separately
+
+    //     $fechaMinima = $eventos->min('start');
+    //     $fechaMaxima = $eventos->max('end');
+
+    //     // Obtemer las fechas feriadas desde el primer dia de registro del plan hasta el ultimo dia del mes del final del plan
+    //     $feriados = DB::table('plane_user')
+    //         ->where('title', 'feriado')
+    //         ->get();
+
+    //     $feriados = DB::table('plane_user')
+    //         ->where('title', 'feriado')
+    //         // Filter feriados whose 'start' date is between the plan's min start and max end.
+    //         ->whereBetween('start', [$fechaMinima, $fechaMaxima])
+    //         ->get();
+
+    //     // Group events by date and count them
+    //     $eventosPorDia = $eventos->groupBy('start')->map(function ($eventosDelDia, $fecha) {
+    //         return [
+    //             'id' => 'count_' . $fecha, // Unique identifier
+    //             'start' => $fecha,
+    //             'end' => $fecha,
+    //             'title' => $eventosDelDia->count() . ' disponibles', // "X disponibles"
+    //             'color' => '#F7843A',
+    //             'eventos' => $eventosDelDia->toArray(), // Keep original events for reference if needed
+    //             'tipo' => 'contador'
+    //         ];
+    //     })->values(); // Reset keys to get a clean array
+
+    //     // Add feriados to the collection
+    //     foreach ($feriados as $feriado) {
+    //         $eventosPorDia->push([
+    //             'id' => $feriado->id,
+    //             'start' => $feriado->start,
+    //             'end' => $feriado->end,
+    //             'title' => $feriado->title,
+    //             'color' => $feriado->color ?? '#FF0000',
+    //             'tipo' => 'feriado'
+    //         ]);
+    //     }
+
+    //     $meses = // Filter the existing months from the availables dates in $eventosPorDia, and store the days inside too, like a month["numero"=>10,"nombre"=>"Octubre","dias"=>$filteredEventosPorDia]
+
+
+    //     // Log::debug("Información de eventos agrupados obtenida: ", [$eventosPorDia]);
+
+    //     return response()->json([
+    //         "dias" => $eventosPorDia,
+    //     ]);
+    // }
+
+    public function contarPedidosDisponiblesPlan($idplan, $iduser) 
+    {
+        // Get all events for the user and plan
+        $pedidos = DB::table('plane_user')
+            ->where('plane_id', $idplan)
+            ->where('user_id', $iduser)
+            ->get();
+        
+        $fechaMinima = $pedidos->min('start');
+        $fechaMaxima = $pedidos->max('end');
+
+        // Obtener los dias feriados en el rango del plan del usuario
+        $feriados = DB::table('plane_user')
+            ->where('title', 'feriado')
+            ->whereBetween('start', [$fechaMinima, $fechaMaxima])
+            ->get();
+
+        // Agrupar por fecha y contar pedidos
+        $pedidosPorDia = $pedidos->groupBy('start')->map(function ($pedidosDelDia, $fecha) {
+            // Determine tipo segun jerarquia de estados: pendiente > permiso > finalizado
+            $tipoFinal = 'contador'; // default
+            
+            // Revisar si existe un pedido pendiente (PRIORIDAD MÁXIMA)
+            $tienePendiente = $pedidosDelDia->contains('estado', 'pendiente');
+            
+            if ($tienePendiente) {
+                // Establecer el tipo de dia como 'pendiente'
+                $tipoFinal = 'pendiente';
+            } else {
+                // Revisar si existe un pedido con permiso
+                $tienePermiso = $pedidosDelDia->contains('estado', 'permiso');
+                
+                if ($tienePermiso) {
+                    // Establecer el tipo de dia como 'permiso'
+                    $tipoFinal = 'permiso';
+                } else {
+                    // Revisar si todos los pedidos para el dia estan finalizados
+                    $todosFinalizado = $pedidosDelDia->every(function ($evento) {
+                        return $evento->estado === 'finalizado';
+                    });
+                    
+                    if ($todosFinalizado) {
+                        // Establecer el tipo de dia como 'finalizado'
+                        $tipoFinal = 'finalizado';
+                    }
+                }
+            }
+
+            return [
+                'id' => 'count_' . $fecha,
+                'start' => $fecha,
+                'end' => $fecha,
+                'title' => $pedidosDelDia->count() . ' disponibles',
+                'color' => '#F7843A',
+                'eventos' => $pedidosDelDia->toArray(),
+                'tipo' => $tipoFinal,
+            ];
+        })->values();
+
+        // Agregar dias feriados
+        foreach ($feriados as $feriado) {
+            $pedidosPorDia->push([
+                'id' => $feriado->id,
+                'start' => $feriado->start,
+                'end' => $feriado->end,
+                'title' => $feriado->title,
+                'color' => $feriado->color ?? '#FF0000',
+                'tipo' => 'feriado'
+            ]);
+        }
+
+        // Get current date for flag
+        $currentDate = now()->format('Y-m-d');
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+
+        // Group events by month and extract available months
+        $meses = $pedidosPorDia->groupBy(function ($evento) {
+            return Carbon::parse($evento['start'])->format('Y-m');
+        })->map(function ($diasDelMes, $yearMonth) use ($currentDate, $currentMonth, $currentYear) {
+            $date = Carbon::parse($yearMonth . '-01');
+            $month = $date->month;
+            $year = $date->year;
+            
+            // Check if this month contains the current date
+            $currentDayFlag = null;
+            if ($month == $currentMonth && $year == $currentYear) {
+                $currentDayFlag = $currentDate;
+            }
+            
+            return [
+                'numero' => $month,
+                'anio' => $year,
+                'nombre' => ucfirst($date->locale('es')->monthName), // Spanish month name
+                'dias' => $diasDelMes->values()->toArray(),
+                'currentDayFlag' => $currentDayFlag // null if not current month, date string if current month
+            ];
+        })->values(); // Reset keys to get clean array
+
+        return response()->json([
+            "meses" => $meses,
+            // "dias" => $pedidosPorDia, // Keep this if you still need it
+        ]);
     }
 
 

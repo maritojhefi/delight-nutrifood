@@ -11,20 +11,174 @@
             $path = GlobalHelper::getValorAtributoSetting('url_web');
         @endphp
     @endproduction
-    @include('client.miperfil.script-calendar')
-    <div class="card card-style">
+    <div class="card card-style mt-n4 mb-3">
         @if ($estadoMenu->activo)
             @if ($plan->editable)
                 <div class="content text-white">
-                    <h4>Personaliza tu menú de esta semana!</h4>
-                    <p>
-                        Quedan {{ $coleccion->count() }} días, personaliza cada uno!
-                    </p>
+                    @if ($coleccion->count() > 0)
+                        <h4>Personaliza tu menú de esta semana!</h4>
+                        <p class="mb-0">
+                            <p class="mb-0">
+                                @if ($coleccion->count() > 0)
+                                    Quedan {{ $coleccion->count() }} pedidos esta semana, personaliza cada uno!
+                                @else
+                                    No hay pedidos pendientes para esta semana.
+                                @endif
+                            </p>
+                        </p>
+                    @else
+                        <h4 class="mb-3">No hay pedidos pendientes para esta semana.</h4>
+                    @endif
                 </div>
-                <div class="accordion mt-4" id="accordion-3">
+                <div class="accordion mt-n3" id="accordion-3">
                     @foreach ($coleccion as $lista)
                         {{-- @dd($lista) --}}
-                        <div class="card card-style">
+                        <div class="card card-style mb-3">
+                            <div
+                                class="list-group list-custom-small list-icon-0 bg-@if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'mint-dark' }}@elseif($lista['estado'] == 'desarrollo'){{ 'yellow-dark' }}@else{{ 'green-dark' }}@endif ps-3 pe-4 ">
+                                <a data-bs-toggle="collapse" class="{{ ($idPedidoEditar == $lista['id']) ? '' : 'collapsed' }}" href="#collapse-7{{ $lista['id'] }}"
+                                    aria-expanded="{{ ($idPedidoEditar == $lista['id']) ? 'true' : 'false' }}">
+                                    <div class="d-flex flex-row align-items-center justify-content-between">
+                                    @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
+                                        <!-- <i class="fas fa-user-edit color-white"></i> -->
+                                        <div class="d-flex flex-row gap-2 align-items-center">
+                                            <i data-lucide="notebook-pen" class="lucide-icon color-white" style="width: 1.3rem; height: 1.3rem;"></i>
+                                            <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                        </div>
+                                        @if ($lista['proximo'])
+                                            <span class="bg-delight-red font-12 line-height-s rounded-xs px-1 text-white" style="z-index: 4;">Próximo</span>
+                                        @endif
+                                    @elseif($lista['estado'] == 'desarrollo')
+                                        <div class="d-flex flex-row gap-2 align-items-center">
+                                            <i class="fab fa-whatsapp color-white"></i>
+                                            <span class="font-14 color-white">{{ $lista['dia'] }}</span>
+                                        </div>
+                                        <small for="" class="text-magenta text-white">
+                                            (En desarrollo por whatsapp)
+                                        </small>
+                                    @else
+                                        <!-- <i class="fas fa-save color-white"></i> -->
+                                        <div class="d-flex flex-row gap-2 align-items-center">
+                                            <i data-lucide="save" class="lucide-icon color-white" style="width: 1.3rem; height: 1.3rem;"></i>
+                                            <span class="font-14 color-white">{{ $lista['dia'] }}({{ $lista['fecha'] }})</span>
+                                        </div>
+                                        <span class="text-white">Guardado!</span>
+                                    @endif
+                                    <i class="fa fa-angle-down color-white"></i>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="collapse bordeado {{ ($idPedidoEditar == $lista['id']) ? 'show' : '' }}" id="collapse-7{{ $lista['id'] }}"
+                                data-bs-parent="#accordion-3">
+                                @if ($lista['detalle'] == null && $lista['estado'] == 'pendiente')
+                                    <form class="d-flex flex-column flex-grow-1 px-3 py-2" action="{{ route('personalizardia') }}" id="{{ $lista['id'] }}"
+                                        method="POST">
+                                        @csrf
+                                        <div class="row px-2 mb-0">
+                                            @if ($plan->segundo)
+                                                @include('client.miperfil.includes.seleccion-segundo')
+                                                <hr class="my-2">
+                                            @endif
+
+                                            @if ($plan->carbohidrato)
+                                                @include('client.miperfil.includes.seleccion-carbohidrato')
+                                                <hr class="my-2">
+                                            @endif
+                                        </div>
+                                        @include('client.miperfil.includes.seleccion-envio')
+                                        <hr class="my-2">
+                                        @include('client.miperfil.includes.seleccion-secundarios')
+
+                                    </form>
+                                @elseif($lista['estado'] == 'desarrollo')
+                                    Ve a tu whatsapp para terminar de programar este plan!
+                                @else
+                                    @php
+                                        $menuItems = [
+                                            'SOPA' => [
+                                                'label' => 'Sopa',
+                                                'icon' => 'soup',
+                                                'color' => 'color-yellow-dark'
+                                            ],
+                                            'PLATO' => [
+                                                'label' => 'Principal',
+                                                'icon' => 'utensils-crossed',
+                                                'color' => 'color-delight-red'
+                                            ],
+                                            'CARBOHIDRATO' => [
+                                                'label' => 'Carbohidrato',
+                                                'icon' => 'sprout',
+                                                'color' => 'color-green-dark'
+                                            ],
+                                            'ENSALADA' => [
+                                                'label' => 'Ensalada',
+                                                'icon' => 'salad',
+                                                'color' => 'color-teal-dark'
+                                            ],
+                                            'JUGO' => [
+                                                'label' => 'Jugo',
+                                                'icon' => 'glass-water',
+                                                'color' => 'color-blue-light'
+                                            ],
+                                            'EMPAQUE' => [
+                                                'label' => 'Empaque',
+                                                'icon' => 'package-2',
+                                                'color' => 'color-gray-dark'
+                                            ],
+                                            'ENVIO' => [
+                                                'label' => 'Envío',
+                                                'icon' => 'truck',
+                                                'color' => 'color-gray-dark'
+                                            ],
+                                        ];
+                                        
+                                        // Count valid items
+                                        $validItemCount = 0;
+                                        $detalleDecoded = json_decode($lista['detalle'], true);
+                                        foreach ($detalleDecoded as $plato => $valor) {
+                                            if ($valor != '' && isset($menuItems[$plato])) {
+                                                $validItemCount++;
+                                            }
+                                        }
+                                        
+                                        // Determine button column class based on even/odd count
+                                        $buttonColClass = ($validItemCount % 2 === 0) ? 'col-12' : 'col-6';
+                                    @endphp
+                                    <div class="p-1 d-flex flex-column align-items-center">
+                                        <div class="row m-0">
+                                            @foreach ($detalleDecoded as $plato => $valor)
+                                                @if ($valor != '' && isset($menuItems[$plato]))
+                                                    <div class="col-6 px-0 py-2 overflow-hidden">
+                                                        <div class="d-flex flex-row gap-2 align-items-top">
+                                                            <i data-lucide="{{ $menuItems[$plato]['icon'] }}" class="lucide-icon {{ $menuItems[$plato]['color'] }}" style="min-height: 1.8rem; min-width: 1.8rem"></i>
+                                                            <div class="d-flex flex-column">
+                                                                <h3 class="detalle-label line-height-s font-15">{{ $menuItems[$plato]['label'] }}</h3>
+                                                                <span class="item-value line-height-xs font-12 m-0 color-theme">
+                                                                    {{ ucfirst($valor) }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                            <div class="{{ $buttonColClass }} px-0 py-2">
+                                                <div class="d-flex flex-row gap-2 align-items-center justify-content-center">
+                                                    <a href="{{ route('editardia', $lista['id']) }}"
+                                                        class="py-2 px-3 font-15 color-white rounded-s text-uppercase font-600 line-height-s border-red-dark bg-delight-red">Editar</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                @push('content-comentado')
+                <div class="accordion" id="accordion-3">
+                    @foreach ($coleccion as $lista)
+                        {{-- @dd($lista) --}}
+                        <div class="card card-style rounded-s ">
                             <div
                                 class="list-group list-custom-small list-icon-0 bg-@if($lista['detalle'] == null && $lista['estado'] == 'pendiente'){{ 'mint' }}@elseif($lista['estado'] == 'desarrollo'){{ 'yellow' }}@else{{ 'green' }}@endif-dark ps-3 pe-4 ">
                                 <a data-bs-toggle="collapse" class="no-effect collapsed" href="#collapse-7{{ $lista['id'] }}"
@@ -95,6 +249,7 @@
                         </div>
                     @endforeach
                 </div>
+                @endpush
             @endif
         @else
             <div class="content text-center pt-4">
@@ -113,14 +268,9 @@
     </div>
     @include('client.miperfil.includes.show-errores')
 
+    <x-calendario-appkit-plan :plan="$plan" :usuario="$usuario" />
 
-    <div class="card card-style bg-18">
-        <div class="card">
-            <div class="card-body">
-                <div id="calendar" class="app-fullcalendar"></div>
-            </div>
-        </div>
-    </div>
+    
     @push('modals')
         <div id="toast-finalizado" class="toast toast-tiny toast-top bg-orange-dark fade hide" data-bs-delay="2000"
             data-bs-autohide="true"><i class="fa fa-exclamation"></i> Dia finalizado...</div>
@@ -131,13 +281,13 @@
         <div id="toast-whatsapp" class="toast toast-tiny toast-top bg-yellow-dark fade hide" data-bs-delay="3000"
             data-bs-autohide="true"><i class="fab fa-whatsapp"></i> En desarrollo!</div>
 
-        <div class="card card-style bg-18" data-card-height="150" style="height: 150px;">
+        <!-- <div class="card card-style bg-18" data-card-height="150" style="height: 150px;">
             <div class="card-center ms-3">
                 <h1 class="color-white">Detalles del plan:</h1>
                 <p class="color-white mt-n1 mb-0 opacity-70">{{ $plan->detalle }}</p>
             </div>
             <div class="card-overlay bg-black opacity-80"></div>
-        </div>
+        </div> -->
 
         <div class="modal fade" id="basicModal" data-bs-backdrop="false">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -200,6 +350,37 @@
         <div id="permiso-aceptado" class="snackbar-toast bg-magenta-dark color-white fade hide" data-delay="3000"
             data-autohide="true"><i class="fa fa-shopping-cart me-3"></i>Tu permiso fue aceptado!</div>
     @endpush
+
+    @push('header')
+    <!-- Estilos para el calendario generado mediante -->
+    <style>
+
+        .list-custom-small {
+            position: relative; 
+            z-index: 1; 
+            
+            /* background-color: rgba(0, 0, 0, 0.4);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            color: white; */
+        }
+
+        .list-custom-small::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            /* background-color: rgba(0, 0, 0, 0.4); */
+            z-index: 2; /* Entre el fondo (1) y el contenido (3) */
+        }
+
+        .list-custom-small > * {
+            z-index: 3;
+            position: relative;
+        }
+    </style>
+    @endpush()
     @push('scripts')
         <script>
             $(document).ready(function() {
@@ -306,6 +487,43 @@
                 })
             });
         </script>
-    @endpush
+        <!-- Script para el retirado de pedidos individuales de un acordeon plan -->
+        <script>
+            $(document).ready( function () {
+                    $('.confirmar-pedido-permiso').on('click', async function (e) {
+                        e.preventDefault();
+                        const idPedido = $(this).data('pedido');
+                        console.log(`click en confirmar permiso para el pedido ${idPedido}`);
 
+                        await PlanesService.permisoPedido(idPedido).then(
+                            (respuestaPermiso) => {
+                                // Cerrar modal
+                                mostrarToastSuccess("¡Permiso obtenido!");
+                                cerrarModalConfirmarPermiso(idPedido);
+                                // Recargar pagina
+                                location.reload();
+                                // (Posible caso) En el caso de quedar pocos dias en el plan, se deberan renderizar el acordeon para el nuevo pedido
+                                // Empujado un dia al final del plan, (lo mas sencillo es re renderizar toda la pagina)
+                            }
+                        ).catch(error => {
+                            if (error.response) {
+                                console.log("Respuesta al error permiso pedido:", error.response);
+                            }
+                            cerrarModalConfirmarPermiso(idPedido);
+                            mostrarToastError("Ocurrio un error al solicitar el permiso");
+                            console.log(`Ocurrio un error al solicitar el permiso ${idPedido}:`, error);
+                        });
+
+                        $(`#permiso-menu-${idPedido}`).removeClass('menu-active');
+                        $(`.menu-hider`).removeClass('menu-active');
+                    });
+                }
+            );
+
+            const cerrarModalConfirmarPermiso = (idPedido) => {
+                $(`#permiso-menu-${idPedido}`).removeClass('menu-active');
+                $(`.menu-hider`).removeClass('menu-active');
+            }
+        </script>
+    @endpush
 @endsection
