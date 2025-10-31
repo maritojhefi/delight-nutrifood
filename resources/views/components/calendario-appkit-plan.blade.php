@@ -213,6 +213,11 @@
 @endpush
 
 @push('scripts')
+
+    @php
+        use App\Helpers\GlobalHelper;
+        $horaFinalizacionPlanes = GlobalHelper::getValorAtributoSetting('hora_finalizacion_planes');
+    @endphp
     <!-- Script para el control del calendario appkit -->
     <script>
         $(document).ready( async function () {
@@ -280,7 +285,7 @@
             const BG_COLORS = {
                 pendiente: 'bg-green-dark',
                 permiso: 'bg-magenta-dark',
-                finalizado: 'bg-orange-dark'
+                finalizado: 'bg-orange-light'
             };
 
             // Mapear dias con planes
@@ -329,11 +334,11 @@
             const contarEventosPorEstado = (eventos, estado) => 
                 (eventos || []).filter(evento => evento.estado === estado).length;
 
-            const construirBadgeContainer = (numPlanes, numPermisos, numPendientes) => {
+            const construirBadgeContainer = (numPlanes, numPermisos, numPendientes, numFinalizados) => {
                 if (numPermisos >= 1 && numPermisos < numPlanes) {
                     return `
                         <div class="d-flex flex-row align-items-center position-absolute top-0 end-0" style="transform: translate(40%, -50%);">
-                            ${construirBadgesContadorPermiso(numPendientes, false)}
+                            ${construirBadgesContadorPermiso(numPendientes + numFinalizados, false)}
                             ${construirBadgesContadorPermiso(numPermisos, true)}
                         </div>
                     `;
@@ -385,11 +390,9 @@
                     const numPlanesDia = diaInfo.eventos ? diaInfo.eventos.length : 0;
                     const numPermisosDia = contarEventosPorEstado(diaInfo.eventos, 'permiso');
                     const numPendientesDia = contarEventosPorEstado(diaInfo.eventos, 'pendiente');
+                    const numFinalizadosDia = contarEventosPorEstado(diaInfo.eventos, 'finalizado');
                     
                     // Determinar clases de acción
-                    // const claseAccion = numPlanesDia > 1 ? 'cal-menu-opener' : 'cal-disabled-menu';
-                    // const claseAccion = numPlanesDia > 1 ? diaInfo.tipo == "finalizado" ? 'historial-dia':'cal-menu-opener' : 'cal-disabled-menu';
-
                     const claseAccion = diaInfo.tipo == "finalizado" ? 'historial-dia' : (numPlanesDia > 1 ? 'cal-menu-opener' : 'cal-disabled-menu' );
 
                     const claseAccionSimple = numPlanesDia === 1 ? determinarClaseAccionSimple(diaInfo) : '';
@@ -397,7 +400,7 @@
                     // Construir badge container
                     let badgeContainerHTML = diaInfo.tipo === 'finalizado' 
                         ? '' 
-                        : construirBadgeContainer(numPlanesDia, numPermisosDia, numPendientesDia);
+                        : construirBadgeContainer(numPlanesDia, numPermisosDia, numPendientesDia, numFinalizadosDia);
                     
                     // Determinar color de fondo
                     const bgColor = BG_COLORS[diaInfo.tipo] || '';
@@ -476,13 +479,22 @@
                 e.preventDefault();
                 const fecha = $(this).data('fecha');
                 const diaInfo = diasDisponibles[fecha];
+
+                // console.log("DiaInfo")
                 
                 if (diaInfo) {
-                    // // console.log('Día seleccionado:', fecha, diaInfo);
+                    console.log('Día seleccionado:', fecha, diaInfo);
 
                     if (diaInfo.tipo != 'feriado') {
-                        revelarMenuDia(diaInfo, infoMes);
+                        if (diaInfo.tipo == 'permiso' && contarEventosPorEstado(diaInfo.eventos, 'finalizado') > 0) {
+                            const finalizadosJuntoPermisos = diaInfo.eventos.filter((pedido) => pedido.estado == 'finalizado');
+                            construirListadoFinalizados(finalizadosJuntoPermisos, diaInfo, infoMes);
+                            revelarMenuFinalizados();
+                        } else {
+                            revelarMenuDia(diaInfo, infoMes);
+                        }
                     }
+                    
                     // Handle day selection - show events menu, etc.
                 }
             });
@@ -506,6 +518,11 @@
                     default:
                         break;
                 }
+            });
+
+            $('.cal-feriado').off('click').on('click', function(e) {
+                e.preventDefault();
+                mostrarToastError("¡Día Feriado!");
             });
 
             $('.historial-dia').off('click').on('click', async function (e) {
@@ -565,6 +582,7 @@
                         const response = await PlanesService.asignarPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }});
                         mostrarToastSuccess("Se asignó el permiso solicitado");
                         await renderizarCalendario(infoDia.start);
+                        
                         // console.log('Permisos marcados exitosamente:', response.data);
                         ocultarMenusPermisos();
                         ocultarTodosMenus();
@@ -577,12 +595,14 @@
                         else {
                             mostrarToastError("Ocurrió un error con los permisos");
                         }
-                        await new Promise(resolve => setTimeout(resolve, 3000));
-                        window.location.reload();
+                        // // await new Promise(resolve => setTimeout(resolve, 3000));
+                        // // window.location.reload();
                     } finally {
                         // Re-habilitar
                         $btn.prop('disabled', false);
                         $span.text(textoOriginal);
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        window.location.reload();
                     }
                 });
             } else {
@@ -613,12 +633,14 @@
                     } catch (error) {
                         console.error('Error al retirar permisos:', error);
                         mostrarToastError(error.response.data.error);
-                        await new Promise(resolve => setTimeout(resolve, 3000));
-                        window.location.reload();
+                        // // await new Promise(resolve => setTimeout(resolve, 3000));
+                        // // window.location.reload();
                     } finally {
                         // Re-habilitar
                         $btn.prop('disabled', false);
                         $span.text(textoOriginal);
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        window.location.reload();
                     }
                 });
             }
@@ -633,6 +655,10 @@
             const dateObj = new Date(stringFecha);
             const dia = dateObj.getUTCDate();
             $('.fecha-seleccionada').text(`${dia} de ${infoMes.nombre}  de ${infoMes.anio}`);
+
+            // Parse the configured time limit
+            const horaFinalizacion = "{{$horaFinalizacionPlanes}}"; // e.g., "09:25"
+            const [horaLimite, minutoLimite] = horaFinalizacion.split(':').map(Number);
 
             // Agrupar pedidos
             const pendientes = infoDia.eventos.filter((pedido) => pedido.estado == "pendiente");
@@ -649,15 +675,25 @@
                 // Rechazar fechas pasadas
                 if (inicioSeleccionado < inicioDeHoy) return false;
 
-                // Rechazar la fecha de hoy si excede las 9:00 AM
-                const horaActual = new Date().getHours();
-                if (inicioSeleccionado.getTime() === inicioDeHoy.getTime() && horaActual >= 9) {
-                    return false;
+                // Rechazar la fecha de hoy si excede la hora límite configurada
+                if (inicioSeleccionado.getTime() === inicioDeHoy.getTime()) {
+                    const ahora = new Date();
+                    const horaActual = ahora.getHours();
+                    const minutoActual = ahora.getMinutes();
+                    
+                    // Compare hours and minutes
+                    if (horaActual > horaLimite || (horaActual === horaLimite && minutoActual >= minutoLimite)) {
+                        return false;
+                    }
                 }
 
                 // Retornar permisos validos
                 return true;
             });
+
+            console.log("Pendientes:", pendientes);
+            console.log("Finalizados:");
+            console.log("Permisos habilitados a deshacerse: ", permisos);
 
             $('#contador-pendientes-menu').text(pendientes.length);
             $('#contador-permisos-menu').text(permisos.length);
