@@ -161,7 +161,7 @@
             </div>
     </div>
 
-    <div id="menu-historial-finalizados" class="menu menu-box-modal rounded-m" style="width: 90%; max-width: 320px">
+    <div id="menu-historial-finalizados" class="menu menu-box-modal overflow rounded-m" style="width: 90%; max-width: 320px">
         <div class="menu-title flex-align-center">
             <!-- <a href="#" class="back-menu-pedidos-dia">
                 <i data-lucide="chevron-left" class="lucide-icon"></i>
@@ -173,7 +173,7 @@
         <div class="divider divider-margins my-2"></div>
         <div class="content m-0 px-3">
             <h2 class="color-teal-dark">Historial de pedidos</h2>
-            <ul id="lista-historial-finalizado" class=" d-flex flex-column gap-1 list-unstyled">
+            <ul id="lista-historial-finalizado" class=" d-flex flex-column gap-2 list-unstyled overflow-scroll" style="max-height: 50vh;">
                 <!-- LISTADO DE PEDIDOS FINALIZADOS EN EL DÍA -->
             </ul>
         </div>
@@ -240,7 +240,7 @@
                             mes.numero === mesSeleccionado && mes.anio === anioSeleccionado
                         );
                         
-                        console.log(`Buscando mes ${mesSeleccionado}/${anioSeleccionado} para fecha: ${fechaSeleccionada}`);
+                        // // console.log(`Buscando mes ${mesSeleccionado}/${anioSeleccionado} para fecha: ${fechaSeleccionada}`);
                     } else {
                         // Comportamiento por defecto: usar el mes actual
                         infoMesActual = mesesPlan.find((mes) => mes.currentDayFlag);
@@ -388,7 +388,9 @@
                     
                     // Determinar clases de acción
                     // const claseAccion = numPlanesDia > 1 ? 'cal-menu-opener' : 'cal-disabled-menu';
-                    const claseAccion = numPlanesDia > 1 ? diaInfo.tipo == "finalizado" ? 'historial-dia':'cal-menu-opener' : 'cal-disabled-menu';
+                    // const claseAccion = numPlanesDia > 1 ? diaInfo.tipo == "finalizado" ? 'historial-dia':'cal-menu-opener' : 'cal-disabled-menu';
+
+                    const claseAccion = diaInfo.tipo == "finalizado" ? 'historial-dia' : (numPlanesDia > 1 ? 'cal-menu-opener' : 'cal-disabled-menu' );
 
                     const claseAccionSimple = numPlanesDia === 1 ? determinarClaseAccionSimple(diaInfo) : '';
                     
@@ -476,7 +478,7 @@
                 const diaInfo = diasDisponibles[fecha];
                 
                 if (diaInfo) {
-                    console.log('Día seleccionado:', fecha, diaInfo);
+                    // // console.log('Día seleccionado:', fecha, diaInfo);
 
                     if (diaInfo.tipo != 'feriado') {
                         revelarMenuDia(diaInfo, infoMes);
@@ -489,7 +491,7 @@
                 e.preventDefault();
                 const fecha = $(this).data('fecha');
                 const diaInfo = diasDisponibles[fecha];
-                console.log("Diainfo para evento con permiso simple: ", diaInfo);
+                // // console.log("Diainfo para evento con permiso simple: ", diaInfo);
                 switch (diaInfo.eventos[0].estado) {
                     case "pendiente":
                         // // console.log("Es pendiente");
@@ -612,8 +614,8 @@
         }
 
         const construirMenuPedidosDia = (infoDia, infoMes) => {
-            console.log("Informacion para construir el modal:", infoDia);
-            console.log("Informacion del mes pal modal", infoMes);
+            // // console.log("Informacion para construir el modal:", infoDia);
+            // // console.log("Informacion del mes pal modal", infoMes);
 
             // CAMBIAR LA FECHA DEL MODAL
             const stringFecha = `${infoDia.start}T00:00:00Z`;
@@ -650,11 +652,9 @@
             $('#contador-permisos-menu').text(permisos.length);
 
             if (!pendientes.length && !permisos.length) {
-                console.log("Todos vacios");
                 $('#texto-dia-permisos').removeClass('d-none');
                 $('#texto-dia-permisos').addClass('d-block');
             } else {
-                console.log("Alguno no vacio");
                 $('#texto-dia-permisos').removeClass('d-block');
                 $('#texto-dia-permisos').addClass('d-none');
             }
@@ -891,12 +891,13 @@
                     ocultarMenusPermisos();
                     ocultarTodosMenus();
                     await new Promise(resolve => setTimeout(resolve, 3000));
-                    // Refresh the page
                     window.location.reload();
                 } 
                 catch (error) {
                     console.error(config.mensajeError, error);
-                    mostrarToastError(config.mensajeError);
+                    mostrarToastError("Ocurrió un error con el permiso");
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+                    window.location.reload();
                 }
                 finally {
                     $btn.prop('disabled', false);
@@ -954,7 +955,6 @@
         }
 
         const reiniciarBackButton = (infoDia, infoMes) => {
-            console.log("Se deberia haber reiniciado el boton")
             $('.back-menu-pedidos-dia').off('click').on('click', function (e) {
                 e.preventDefault();
                 ocultarMenusPermisos();

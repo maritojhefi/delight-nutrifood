@@ -493,7 +493,6 @@
                     $('.confirmar-pedido-permiso').on('click', async function (e) {
                         e.preventDefault();
                         const idPedido = $(this).data('pedido');
-                        console.log(`click en confirmar permiso para el pedido ${idPedido}`);
 
                         await PlanesService.permisoPedido(idPedido).then(
                             (respuestaPermiso) => {
@@ -507,11 +506,11 @@
                             }
                         ).catch(error => {
                             if (error.response) {
-                                console.log("Respuesta al error permiso pedido:", error.response);
+                                console.error("Respuesta al error permiso pedido:", error.response);
                             }
                             cerrarModalConfirmarPermiso(idPedido);
                             mostrarToastError("Ocurrio un error al solicitar el permiso");
-                            console.log(`Ocurrio un error al solicitar el permiso ${idPedido}:`, error);
+                            console.error(`Ocurrio un error al solicitar el permiso ${idPedido}:`, error);
                         });
 
                         $(`#permiso-menu-${idPedido}`).removeClass('menu-active');
