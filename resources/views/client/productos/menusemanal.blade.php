@@ -702,6 +702,13 @@
                                                                         {{ $pedido->estado == 'finalizado' ? 'disabled' : '' }}>
                                                                             <span class="w-auto color-white text-center font-13 font-700 line-height-s">Modificar Pedido</span>
                                                                     </a>
+                                                                @else
+                                                                    <!-- <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
+                                                                    class="btn btn-xs flex-shrink-0 gradient-blue rounded-s color-white font-13" style="font-weight: 700 !important;">Controlar Plan</a> -->
+                                                                    <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
+                                                                    class="btn rounded-s gradient-blue d-flex align-items-center justify-content-center m-0 py-1 px-2 w-auto">
+                                                                        <span class="w-auto color-white text-center font-13 font-700 line-height-s">Controlar Plan</span>
+                                                                    </a>
                                                                 @endif
                                                             </div>
                                                         @endif
@@ -711,6 +718,7 @@
                                             </li>
                                         @endforeach
                                     </ul>
+                                    
                                 @elseif (count($pedidos) == 1 && $plan->editable)
                                     <!-- Pedido individual -->
                                     @php
@@ -775,6 +783,13 @@
                                                             class="btn rounded-s gradient-blue d-flex align-items-center justify-content-center m-0 py-1 px-2 w-auto modificar-pedido-trigger"
                                                             {{ $pedido->estado == 'finalizado' ? 'disabled' : '' }}>
                                                                 <span class="w-auto color-white text-center font-13 font-700 line-height-s">Modificar Pedido</span>
+                                                        </a>
+                                                    @else
+                                                        <!-- <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
+                                                        class="btn btn-xs flex-shrink-0 gradient-blue rounded-s color-white font-13" style="font-weight: 700 !important;">Controlar Plan</a> -->
+                                                        <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
+                                                        class="btn rounded-s gradient-blue d-flex align-items-center justify-content-center m-0 py-1 px-2 w-auto">
+                                                            <span class="w-auto color-white text-center font-13 font-700 line-height-s">Controlar Plan</span>
                                                         </a>
                                                     @endif
                                                 </div>
