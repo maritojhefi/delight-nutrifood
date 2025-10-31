@@ -18,8 +18,6 @@ export const permisoPedido = async(idPlaneUser) => {
 
 export const obtenerCalendarioPlan = async(idPlan, idUser) => {
     const response = await axios.get(`/miperfil/calendario-plan/${idPlan}/${idUser}`);
-    // console.log("Respuesta obtenida sobre la informacion del plan: ", response.data);
-    // console.log("Respuesta servida desde la cache: ", response.cached);
     return response; 
 }
 

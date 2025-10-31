@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Helpers\GlobalHelper;
 use App\Models\Caja;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Scheduling\Schedule;
@@ -35,7 +36,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('plan:diario')
             ->hourly();
         $schedule->command('finalizarPlanTodos:diario')
-            ->dailyAt('09:00');
+            ->dailyAt(GlobalHelper::getValorAtributoSetting('hora_finalizacion_planes'));
 
         $schedule->command('eliminar:stocks-vacios')
             ->dailyAt('01:30');

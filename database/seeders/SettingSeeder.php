@@ -53,6 +53,7 @@ class SettingSeeder extends Seeder
             'url_whatsapp' => ['https://wa.link/ewfjau', false],
             'url_instagram' => ['https://www.instagram.com/delight_nutrifood_ecotienda/', false],
             'url_youtube' => ['https://www.youtube.com/channel/UC5MWq8AsnpRYocjfyg_LY8w', false],
+            'hora_finalizacion_planes' => ['09:00', false],
 
         ];
         foreach ($array as $nombre => $valor) {

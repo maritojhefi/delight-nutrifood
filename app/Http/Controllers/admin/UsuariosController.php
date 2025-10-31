@@ -404,19 +404,12 @@ class UsuariosController extends Controller
 
         $fechaSeleccionada = Carbon::parse($fecha)->startOfDay();
         $fechaHoy = Carbon::now();
-        $horaActual = $fechaHoy->hour;
+        // $horaActual = $fechaHoy->hour;
 
         // No permitir fechas pasadas
         if ($fechaSeleccionada->lessThan($fechaHoy->startOfDay())) {
             return response()->json([
                 'error' => 'No se pueden asignar permisos en fechas pasadas.'
-            ], 400);
-        }
-
-        // Condición: si la fecha seleccionada es hoy y ya pasó de las 9AM → fallar
-        if ($fechaSeleccionada->isSameDay($fechaHoy) && $horaActual >= 9) {
-            return response()->json([
-                'error' => 'Ya no se pueden solicitar permisos después de las 9AM.'
             ], 400);
         }
 
@@ -430,7 +423,7 @@ class UsuariosController extends Controller
             ->get();
 
         if ($eventosPermisibles->isEmpty()) {
-            return response()->json(['error' => 'No hay eventos permisibles'], 404);
+            return response()->json(['error' => 'Pedido(s) no habilitado(s) para permiso'], 404);
         }
 
         $permisibleComparacion = $eventosPermisibles->first();
@@ -489,22 +482,22 @@ class UsuariosController extends Controller
 
     public function deshacerPermisosVarios(Request $request)
     {
-        $fecha = $request->fecha; // string
+        $fecha = $request->fecha;
         $cantidad = $request->cantidad;
         $planId = $request->planId;
 
         $fechaSeleccionada = Carbon::parse($fecha)->startOfDay();
         $fechaHoy = Carbon::now();
-        $horaActual = $fechaHoy->hour;
 
-        // Condición: si la fecha seleccionada es hoy y ya pasó de las 9AM → fallar
-        if ($fechaSeleccionada->isSameDay($fechaHoy) && $horaActual >= 9) {
+        $horaFinalización = GlobalHelper::getValorAtributoSetting('hora_finalizacion_planes');
+        $fechaLimite = Carbon::today()->setTimeFromTimeString($horaFinalización);
+
+        if ($fechaSeleccionada->isSameDay($fechaHoy) && $fechaHoy->greaterThanOrEqualTo($fechaLimite)) {
             return response()->json([
-                'error' => 'Ya no se pueden deshacer permisos después de las 9AM.'
+                'error' => "Ya no se pueden deshacer permisos después de las {$horaFinalización}."
             ], 400);
         }
 
-        // No permitir fechas pasadas
         if ($fechaSeleccionada->lessThan($fechaHoy->startOfDay())) {
             return response()->json([
                 'error' => 'No se pueden deshacer permisos de días anteriores.'
@@ -521,20 +514,61 @@ class UsuariosController extends Controller
             ->limit($cantidad)
             ->get();
 
-        // En caso de no haber permisos removibles -> fallar
         if ($permisosRemovibles->isEmpty()) {
             return response()->json(['error' => 'No hay permisos que puedan deshacerse'], 404);
         }
 
-        // Eliminar los últimos "pendientes" del usuario (más recientes)
+        $cantidadBase = $permisosRemovibles->count();
+        $cantidadTotal = $cantidadBase;
+        $debtasEncontradas = 0;
+
+        // Loop para contar deudas en los días que vamos a eliminar
+        do {
+            // Obtener los últimos N días candidatos
+            $candidatos = DB::table('plane_user')
+                ->where('user_id', auth()->id())
+                ->where('plane_id', $planId)
+                ->whereNotIn('estado', [Plane::ESTADOFINALIZADO, Plane::ESTADOFERIADO])
+                ->orderBy('start', 'DESC')
+                ->limit($cantidadTotal)
+                ->get();
+
+            if ($candidatos->count() < $cantidadTotal) {
+                return response()->json([
+                    'error' => 'No hay suficientes días disponibles para deshacer estos permisos.'
+                ], 400);
+            }
+
+            // Contar cuántos de estos candidatos son permisos (deudas)
+            $debtasEnEstaIteracion = $candidatos->where('estado', Plane::ESTADOPERMISO)->count();
+            
+            // Si encontramos nuevas deudas, agregar a la cantidad total
+            if ($debtasEnEstaIteracion > $debtasEncontradas) {
+                $nuevasDeudas = $debtasEnEstaIteracion - $debtasEncontradas;
+                $cantidadTotal += $nuevasDeudas;
+                $debtasEncontradas = $debtasEnEstaIteracion;
+            } else {
+                // No hay más deudas, salir del loop
+                break;
+            }
+
+            // Límite de seguridad para evitar loops infinitos
+            if ($cantidadTotal > 100) {
+                return response()->json([
+                    'error' => 'Error en el cálculo de permisos. Contacte al administrador.'
+                ], 500);
+            }
+
+        } while (true);
+
+        // Ahora eliminar la cantidad total calculada
         $pendientesAEliminar = DB::table('plane_user')
             ->where('user_id', auth()->id())
             ->where('plane_id', $planId)
             ->whereNotIn('estado', [Plane::ESTADOFINALIZADO, Plane::ESTADOFERIADO])
             ->orderBy('start', 'DESC')
-            ->limit($permisosRemovibles->count())
-            ->pluck('id'); // solo obtener IDs
-
+            ->limit($cantidadTotal)
+            ->pluck('id');
 
         if ($pendientesAEliminar->isNotEmpty()) {
             DB::table('plane_user')->whereIn('id', $pendientesAEliminar)->delete();
@@ -558,6 +592,7 @@ class UsuariosController extends Controller
             'success' => true,
             'cantidad_actualizados' => count($idsActualizados),
             'cantidad_eliminados' => $pendientesAEliminar->count(),
+            'deudas_compensadas' => $debtasEncontradas,
             'ids_actualizados' => $idsActualizados,
             'fecha_original' => $fechaSeleccionada->toDateString(),
         ]);

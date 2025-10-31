@@ -161,7 +161,7 @@
             </div>
     </div>
 
-    <div id="menu-historial-finalizados" class="menu menu-box-modal rounded-m" style="width: 90%; max-width: 320px">
+    <div id="menu-historial-finalizados" class="menu menu-box-modal overflow rounded-m" style="width: 90%; max-width: 320px">
         <div class="menu-title flex-align-center">
             <!-- <a href="#" class="back-menu-pedidos-dia">
                 <i data-lucide="chevron-left" class="lucide-icon"></i>
@@ -173,7 +173,7 @@
         <div class="divider divider-margins my-2"></div>
         <div class="content m-0 px-3">
             <h2 class="color-teal-dark">Historial de pedidos</h2>
-            <ul id="lista-historial-finalizado" class=" d-flex flex-column gap-1 list-unstyled">
+            <ul id="lista-historial-finalizado" class=" d-flex flex-column gap-2 list-unstyled overflow-scroll" style="max-height: 50vh;">
                 <!-- LISTADO DE PEDIDOS FINALIZADOS EN EL DÍA -->
             </ul>
         </div>
@@ -213,6 +213,11 @@
 @endpush
 
 @push('scripts')
+
+    @php
+        use App\Helpers\GlobalHelper;
+        $horaFinalizacionPlanes = GlobalHelper::getValorAtributoSetting('hora_finalizacion_planes');
+    @endphp
     <!-- Script para el control del calendario appkit -->
     <script>
         $(document).ready( async function () {
@@ -240,7 +245,7 @@
                             mes.numero === mesSeleccionado && mes.anio === anioSeleccionado
                         );
                         
-                        console.log(`Buscando mes ${mesSeleccionado}/${anioSeleccionado} para fecha: ${fechaSeleccionada}`);
+                        // // console.log(`Buscando mes ${mesSeleccionado}/${anioSeleccionado} para fecha: ${fechaSeleccionada}`);
                     } else {
                         // Comportamiento por defecto: usar el mes actual
                         infoMesActual = mesesPlan.find((mes) => mes.currentDayFlag);
@@ -280,7 +285,7 @@
             const BG_COLORS = {
                 pendiente: 'bg-green-dark',
                 permiso: 'bg-magenta-dark',
-                finalizado: 'bg-orange-dark'
+                finalizado: 'bg-orange-light'
             };
 
             // Mapear dias con planes
@@ -329,11 +334,11 @@
             const contarEventosPorEstado = (eventos, estado) => 
                 (eventos || []).filter(evento => evento.estado === estado).length;
 
-            const construirBadgeContainer = (numPlanes, numPermisos, numPendientes) => {
+            const construirBadgeContainer = (numPlanes, numPermisos, numPendientes, numFinalizados) => {
                 if (numPermisos >= 1 && numPermisos < numPlanes) {
                     return `
                         <div class="d-flex flex-row align-items-center position-absolute top-0 end-0" style="transform: translate(40%, -50%);">
-                            ${construirBadgesContadorPermiso(numPendientes, false)}
+                            ${construirBadgesContadorPermiso(numPendientes + numFinalizados, false)}
                             ${construirBadgesContadorPermiso(numPermisos, true)}
                         </div>
                     `;
@@ -385,17 +390,17 @@
                     const numPlanesDia = diaInfo.eventos ? diaInfo.eventos.length : 0;
                     const numPermisosDia = contarEventosPorEstado(diaInfo.eventos, 'permiso');
                     const numPendientesDia = contarEventosPorEstado(diaInfo.eventos, 'pendiente');
+                    const numFinalizadosDia = contarEventosPorEstado(diaInfo.eventos, 'finalizado');
                     
                     // Determinar clases de acción
-                    // const claseAccion = numPlanesDia > 1 ? 'cal-menu-opener' : 'cal-disabled-menu';
-                    const claseAccion = numPlanesDia > 1 ? diaInfo.tipo == "finalizado" ? 'historial-dia':'cal-menu-opener' : 'cal-disabled-menu';
+                    const claseAccion = diaInfo.tipo == "finalizado" ? 'historial-dia' : (numPlanesDia > 1 ? 'cal-menu-opener' : 'cal-disabled-menu' );
 
                     const claseAccionSimple = numPlanesDia === 1 ? determinarClaseAccionSimple(diaInfo) : '';
                     
                     // Construir badge container
                     let badgeContainerHTML = diaInfo.tipo === 'finalizado' 
                         ? '' 
-                        : construirBadgeContainer(numPlanesDia, numPermisosDia, numPendientesDia);
+                        : construirBadgeContainer(numPlanesDia, numPermisosDia, numPendientesDia, numFinalizadosDia);
                     
                     // Determinar color de fondo
                     const bgColor = BG_COLORS[diaInfo.tipo] || '';
@@ -474,13 +479,22 @@
                 e.preventDefault();
                 const fecha = $(this).data('fecha');
                 const diaInfo = diasDisponibles[fecha];
+
+                // console.log("DiaInfo")
                 
                 if (diaInfo) {
                     console.log('Día seleccionado:', fecha, diaInfo);
 
                     if (diaInfo.tipo != 'feriado') {
-                        revelarMenuDia(diaInfo, infoMes);
+                        if (diaInfo.tipo == 'permiso' && contarEventosPorEstado(diaInfo.eventos, 'finalizado') > 0) {
+                            const finalizadosJuntoPermisos = diaInfo.eventos.filter((pedido) => pedido.estado == 'finalizado');
+                            construirListadoFinalizados(finalizadosJuntoPermisos, diaInfo, infoMes);
+                            revelarMenuFinalizados();
+                        } else {
+                            revelarMenuDia(diaInfo, infoMes);
+                        }
                     }
+                    
                     // Handle day selection - show events menu, etc.
                 }
             });
@@ -489,7 +503,7 @@
                 e.preventDefault();
                 const fecha = $(this).data('fecha');
                 const diaInfo = diasDisponibles[fecha];
-                console.log("Diainfo para evento con permiso simple: ", diaInfo);
+                // // console.log("Diainfo para evento con permiso simple: ", diaInfo);
                 switch (diaInfo.eventos[0].estado) {
                     case "pendiente":
                         // // console.log("Es pendiente");
@@ -504,6 +518,11 @@
                     default:
                         break;
                 }
+            });
+
+            $('.cal-feriado').off('click').on('click', function(e) {
+                e.preventDefault();
+                mostrarToastError("¡Día Feriado!");
             });
 
             $('.historial-dia').off('click').on('click', async function (e) {
@@ -563,16 +582,27 @@
                         const response = await PlanesService.asignarPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }});
                         mostrarToastSuccess("Se asignó el permiso solicitado");
                         await renderizarCalendario(infoDia.start);
+                        
                         // console.log('Permisos marcados exitosamente:', response.data);
                         ocultarMenusPermisos();
                         ocultarTodosMenus();
                         
                     } catch (error) {
                         console.error('Error al marcar permisos:', error);
+                        if (error.response.data.error) {
+                            mostrarToastError(error.response.data.error);
+                        }
+                        else {
+                            mostrarToastError("Ocurrió un error con los permisos");
+                        }
+                        // // await new Promise(resolve => setTimeout(resolve, 3000));
+                        // // window.location.reload();
                     } finally {
                         // Re-habilitar
                         $btn.prop('disabled', false);
                         $span.text(textoOriginal);
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        window.location.reload();
                     }
                 });
             } else {
@@ -602,24 +632,33 @@
                         
                     } catch (error) {
                         console.error('Error al retirar permisos:', error);
+                        mostrarToastError(error.response.data.error);
+                        // // await new Promise(resolve => setTimeout(resolve, 3000));
+                        // // window.location.reload();
                     } finally {
                         // Re-habilitar
                         $btn.prop('disabled', false);
                         $span.text(textoOriginal);
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        window.location.reload();
                     }
                 });
             }
         }
 
         const construirMenuPedidosDia = (infoDia, infoMes) => {
-            console.log("Informacion para construir el modal:", infoDia);
-            console.log("Informacion del mes pal modal", infoMes);
+            // // console.log("Informacion para construir el modal:", infoDia);
+            // // console.log("Informacion del mes pal modal", infoMes);
 
             // CAMBIAR LA FECHA DEL MODAL
             const stringFecha = `${infoDia.start}T00:00:00Z`;
             const dateObj = new Date(stringFecha);
             const dia = dateObj.getUTCDate();
             $('.fecha-seleccionada').text(`${dia} de ${infoMes.nombre}  de ${infoMes.anio}`);
+
+            // Parse the configured time limit
+            const horaFinalizacion = "{{$horaFinalizacionPlanes}}"; // e.g., "09:25"
+            const [horaLimite, minutoLimite] = horaFinalizacion.split(':').map(Number);
 
             // Agrupar pedidos
             const pendientes = infoDia.eventos.filter((pedido) => pedido.estado == "pendiente");
@@ -636,25 +675,33 @@
                 // Rechazar fechas pasadas
                 if (inicioSeleccionado < inicioDeHoy) return false;
 
-                // Rechazar la fecha de hoy si excede las 9:00 AM
-                const horaActual = new Date().getHours();
-                if (inicioSeleccionado.getTime() === inicioDeHoy.getTime() && horaActual >= 9) {
-                    return false;
+                // Rechazar la fecha de hoy si excede la hora límite configurada
+                if (inicioSeleccionado.getTime() === inicioDeHoy.getTime()) {
+                    const ahora = new Date();
+                    const horaActual = ahora.getHours();
+                    const minutoActual = ahora.getMinutes();
+                    
+                    // Compare hours and minutes
+                    if (horaActual > horaLimite || (horaActual === horaLimite && minutoActual >= minutoLimite)) {
+                        return false;
+                    }
                 }
 
                 // Retornar permisos validos
                 return true;
             });
 
+            console.log("Pendientes:", pendientes);
+            console.log("Finalizados:");
+            console.log("Permisos habilitados a deshacerse: ", permisos);
+
             $('#contador-pendientes-menu').text(pendientes.length);
             $('#contador-permisos-menu').text(permisos.length);
 
             if (!pendientes.length && !permisos.length) {
-                console.log("Todos vacios");
                 $('#texto-dia-permisos').removeClass('d-none');
                 $('#texto-dia-permisos').addClass('d-block');
             } else {
-                console.log("Alguno no vacio");
                 $('#texto-dia-permisos').removeClass('d-block');
                 $('#texto-dia-permisos').addClass('d-none');
             }
@@ -696,119 +743,154 @@
             }
         }
 
-        const menuItems = {
-            "SOPA": {
-                "label": "Sopa",
-                "icon": "soup",
-                "color": "color-yellow-dark"
-            },
-            "PLATO": {
-                "label": "Principal",
-                "icon": "utensils-crossed",
-                "color": "color-delight-red"
-            },
-            "CARBOHIDRATO": {
-                "label": "Carbohidrato",
-                "icon": "sprout",
-                "color": "color-green-dark"
-            },
-            "ENSALADA": {
-                "label": "Ensalada",
-                "icon": "salad",
-                "color": "color-teal-dark"
-            },
-            "JUGO": {
-                "label": "Jugo",
-                "icon": "glass-water",
-                "color": "color-blue-light"
-            },
-            "EMPAQUE": {
-                "label": "Empaque",
-                "icon": "package-2",
-                "color": "color-gray-dark"
-            },
-            "ENVIO": {
-                "label": "Envío",
-                "icon": "truck",
-                "color": "color-gray-dark"
-            }
-        };
+const menuItems = {
+    "SOPA": {
+        "label": "Sopa",
+        "icon": "soup",
+        "color": "color-yellow-dark"
+    },
+    "PLATO": {
+        "label": "Principal",
+        "icon": "utensils-crossed",
+        "color": "color-delight-red"
+    },
+    "CARBOHIDRATO": {
+        "label": "Carbohidrato",
+        "icon": "sprout",
+        "color": "color-green-dark"
+    },
+    "ENSALADA": {
+        "label": "Ensalada",
+        "icon": "salad",
+        "color": "color-teal-dark"
+    },
+    "JUGO": {
+        "label": "Jugo",
+        "icon": "glass-water",
+        "color": "color-blue-light"
+    },
+    "EMPAQUE": {
+        "label": "Empaque",
+        "icon": "package-2",
+        "color": "color-gray-dark"
+    },
+    "ENVIO": {
+        "label": "Envío",
+        "icon": "truck",
+        "color": "color-gray-dark"
+    }
+};
 
-        const construirListadoFinalizados = (finalizados, infoDia, infoMes) => {
-             // CAMBIAR LA FECHA DEL MODAL
-            const stringFecha = `${infoDia.start}T00:00:00Z`;
-            const dateObj = new Date(stringFecha);
-            const dia = dateObj.getUTCDate();
-            $('#fecha-historial-permisos').text(`${dia} de ${infoMes.nombre}  de ${infoMes.anio}`);
-            const contenedorListado = $('#lista-historial-finalizado');
-            let listadoHTML = '';
+const construirListadoFinalizados = (finalizados, infoDia, infoMes) => {
+    // CAMBIAR LA FECHA DEL MODAL
+    const stringFecha = `${infoDia.start}T00:00:00Z`;
+    const dateObj = new Date(stringFecha);
+    const dia = dateObj.getUTCDate();
+    $('#fecha-historial-permisos').text(`${dia} de ${infoMes.nombre}  de ${infoMes.anio}`);
+    const contenedorListado = $('#lista-historial-finalizado');
+    let listadoHTML = '';
 
-            finalizados.forEach((pedido, index) => {
-                listadoHTML += construirDetalleFinalizado(index + 1, pedido);
-            });
+    finalizados.forEach((pedido, index) => {
+        listadoHTML += construirDetalleFinalizado(index + 1, pedido);
+    });
 
-            contenedorListado.html(listadoHTML);
-            
-            reinitializeLucideIcons();
-        };
+    contenedorListado.html(listadoHTML);
+    
+    reinitializeLucideIcons();
+};
 
-        const construirDetalleFinalizado = (indice, pedido) => {            
-            let detalleDecoded;
-            try {
-                detalleDecoded = typeof pedido.detalle === 'string' 
-                    ? JSON.parse(pedido.detalle) 
-                    : pedido.detalle;
-            } catch (e) {
-                console.error("Error parseando detalle:", e);
-                detalleDecoded = {};
-            }
-            
-            let validItemCount = 0;
-            for (const plato in detalleDecoded) {
-                const valor = detalleDecoded[plato];
-                if (valor && valor !== '' && menuItems[plato]) {
-                    validItemCount++;
-                }
-            }
-            
-            // const buttonColClass = (validItemCount % 2 === 0) ? 'col-12' : 'col-6';
-            
-            // Build menu items HTML
-            let menuItemsHTML = '';
-            for (const plato in detalleDecoded) {
-                const valor = detalleDecoded[plato];
-                
-                // Only render if value exists and plato is in menuItems
-                if (valor && valor !== '' && menuItems[plato]) {
-                    const item = menuItems[plato];
-                    const valorCapitalizado = valor.charAt(0).toUpperCase() + valor.slice(1);
-                    
-                    menuItemsHTML += `
-                        <div class="col-6 px-0 py-1">
-                            <div class="d-flex flex-row gap-2 align-items-center">
-                                <i data-lucide="${item.icon}" class="lucide-icon ${item.color}" style="min-height: 1.8rem; min-width: 1.8rem"></i>
-                                <div class="d-flex flex-column">
-                                    <span class="item-value line-height-xs font-12 m-0 color-theme">
-                                        ${valorCapitalizado}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            
-            return `
-                <li>
-                    <h3 class="font-18">Pedido ${indice}</h3>
-                    <div class="d-flex flex-column align-items-center">
-                        <div class="row m-0">
-                            ${menuItemsHTML}
+const construirDetalleFinalizado = (indice, pedido) => {
+    // Check if detalle is null or undefined
+    if (!pedido.detalle) {
+        return `
+            <li>
+                <h3 class="font-18">Pedido ${indice}</h3>
+                <div class="d-flex flex-column align-items-center">
+                    <div class="row m-0">
+                        <div class="col-12 px-0 py-2">
+                            <p class="text-center color-gray-dark font-14 mb-0">
+                                No hay detalles disponibles para este pedido
+                            </p>
                         </div>
                     </div>
-                </li>
+                </div>
+            </li>
+        `;
+    }
+    
+    let detalleDecoded;
+    console.log("Pedido a listarse:", pedido);
+    try {
+        detalleDecoded = typeof pedido.detalle === 'string' 
+            ? JSON.parse(pedido.detalle) 
+            : pedido.detalle;
+    } catch (e) {
+        console.error("Error parseando detalle:", e);
+        detalleDecoded = {};
+    }
+    
+    let validItemCount = 0;
+    for (const plato in detalleDecoded) {
+        const valor = detalleDecoded[plato];
+        if (valor && valor !== '' && menuItems[plato]) {
+            validItemCount++;
+        }
+    }
+    
+    // If no valid items after parsing, show no details message
+    if (validItemCount === 0) {
+        return `
+            <li>
+                <h3 class="font-18">Pedido ${indice}</h3>
+                <div class="d-flex flex-column align-items-center">
+                    <div class="row m-0">
+                        <div class="col-12 px-0 py-2">
+                            <p class="text-center color-gray-dark font-14 mb-0">
+                                No hay detalles disponibles para este pedido
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        `;
+    }
+    
+    // Build menu items HTML
+    let menuItemsHTML = '';
+    for (const plato in detalleDecoded) {
+        const valor = detalleDecoded[plato];
+        
+        // Only render if value exists and plato is in menuItems
+        if (valor && valor !== '' && menuItems[plato]) {
+            const item = menuItems[plato];
+            const valorCapitalizado = valor.charAt(0).toUpperCase() + valor.slice(1);
+            
+            menuItemsHTML += `
+                <div class="col-6 px-0 py-1">
+                    <div class="d-flex flex-row gap-2 align-items-center">
+                        <i data-lucide="${item.icon}" class="lucide-icon ${item.color}" style="min-height: 1.8rem; min-width: 1.8rem"></i>
+                        <div class="d-flex flex-column">
+                            <span class="item-value line-height-xs font-12 m-0 color-theme">
+                                ${valorCapitalizado}
+                            </span>
+                        </div>
+                    </div>
+                </div>
             `;
-        };
+        }
+    }
+    
+    return `
+        <li>
+            <h3 class="font-18">Pedido ${indice}</h3>
+            <div class="d-flex flex-column align-items-center">
+                <div class="row m-0">
+                    ${menuItemsHTML}
+                </div>
+            </div>
+        </li>
+    `;
+};
 
         const construirSelectorPermisos = (infoDia, infoMes, items, config) => {
             reiniciarBackButton(infoDia, infoMes);
@@ -891,12 +973,13 @@
                     ocultarMenusPermisos();
                     ocultarTodosMenus();
                     await new Promise(resolve => setTimeout(resolve, 3000));
-                    // Refresh the page
                     window.location.reload();
                 } 
                 catch (error) {
                     console.error(config.mensajeError, error);
-                    mostrarToastError(config.mensajeError);
+                    mostrarToastError("Ocurrió un error con el permiso");
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+                    window.location.reload();
                 }
                 finally {
                     $btn.prop('disabled', false);
@@ -914,8 +997,8 @@
         }
 
         const revelarMenuFinalizados = () => {
-            ocultarrMenuDiaSinHider();
             $('#menu-historial-finalizados').addClass('menu-active'); 
+            $('.menu-hider').addClass('menu-active');
         }
 
         const revelarMenuPermisoSimple = () => {
@@ -954,7 +1037,6 @@
         }
 
         const reiniciarBackButton = (infoDia, infoMes) => {
-            console.log("Se deberia haber reiniciado el boton")
             $('.back-menu-pedidos-dia').off('click').on('click', function (e) {
                 e.preventDefault();
                 ocultarMenusPermisos();
