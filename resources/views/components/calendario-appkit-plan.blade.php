@@ -571,6 +571,14 @@
                         
                     } catch (error) {
                         console.error('Error al marcar permisos:', error);
+                        if (error.response.data.error) {
+                            mostrarToastError(error.response.data.error);
+                        }
+                        else {
+                            mostrarToastError("Ocurrió un error con los permisos");
+                        }
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        window.location.reload();
                     } finally {
                         // Re-habilitar
                         $btn.prop('disabled', false);
@@ -604,6 +612,9 @@
                         
                     } catch (error) {
                         console.error('Error al retirar permisos:', error);
+                        mostrarToastError(error.response.data.error);
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        window.location.reload();
                     } finally {
                         // Re-habilitar
                         $btn.prop('disabled', false);
@@ -696,119 +707,154 @@
             }
         }
 
-        const menuItems = {
-            "SOPA": {
-                "label": "Sopa",
-                "icon": "soup",
-                "color": "color-yellow-dark"
-            },
-            "PLATO": {
-                "label": "Principal",
-                "icon": "utensils-crossed",
-                "color": "color-delight-red"
-            },
-            "CARBOHIDRATO": {
-                "label": "Carbohidrato",
-                "icon": "sprout",
-                "color": "color-green-dark"
-            },
-            "ENSALADA": {
-                "label": "Ensalada",
-                "icon": "salad",
-                "color": "color-teal-dark"
-            },
-            "JUGO": {
-                "label": "Jugo",
-                "icon": "glass-water",
-                "color": "color-blue-light"
-            },
-            "EMPAQUE": {
-                "label": "Empaque",
-                "icon": "package-2",
-                "color": "color-gray-dark"
-            },
-            "ENVIO": {
-                "label": "Envío",
-                "icon": "truck",
-                "color": "color-gray-dark"
-            }
-        };
+const menuItems = {
+    "SOPA": {
+        "label": "Sopa",
+        "icon": "soup",
+        "color": "color-yellow-dark"
+    },
+    "PLATO": {
+        "label": "Principal",
+        "icon": "utensils-crossed",
+        "color": "color-delight-red"
+    },
+    "CARBOHIDRATO": {
+        "label": "Carbohidrato",
+        "icon": "sprout",
+        "color": "color-green-dark"
+    },
+    "ENSALADA": {
+        "label": "Ensalada",
+        "icon": "salad",
+        "color": "color-teal-dark"
+    },
+    "JUGO": {
+        "label": "Jugo",
+        "icon": "glass-water",
+        "color": "color-blue-light"
+    },
+    "EMPAQUE": {
+        "label": "Empaque",
+        "icon": "package-2",
+        "color": "color-gray-dark"
+    },
+    "ENVIO": {
+        "label": "Envío",
+        "icon": "truck",
+        "color": "color-gray-dark"
+    }
+};
 
-        const construirListadoFinalizados = (finalizados, infoDia, infoMes) => {
-             // CAMBIAR LA FECHA DEL MODAL
-            const stringFecha = `${infoDia.start}T00:00:00Z`;
-            const dateObj = new Date(stringFecha);
-            const dia = dateObj.getUTCDate();
-            $('#fecha-historial-permisos').text(`${dia} de ${infoMes.nombre}  de ${infoMes.anio}`);
-            const contenedorListado = $('#lista-historial-finalizado');
-            let listadoHTML = '';
+const construirListadoFinalizados = (finalizados, infoDia, infoMes) => {
+    // CAMBIAR LA FECHA DEL MODAL
+    const stringFecha = `${infoDia.start}T00:00:00Z`;
+    const dateObj = new Date(stringFecha);
+    const dia = dateObj.getUTCDate();
+    $('#fecha-historial-permisos').text(`${dia} de ${infoMes.nombre}  de ${infoMes.anio}`);
+    const contenedorListado = $('#lista-historial-finalizado');
+    let listadoHTML = '';
 
-            finalizados.forEach((pedido, index) => {
-                listadoHTML += construirDetalleFinalizado(index + 1, pedido);
-            });
+    finalizados.forEach((pedido, index) => {
+        listadoHTML += construirDetalleFinalizado(index + 1, pedido);
+    });
 
-            contenedorListado.html(listadoHTML);
-            
-            reinitializeLucideIcons();
-        };
+    contenedorListado.html(listadoHTML);
+    
+    reinitializeLucideIcons();
+};
 
-        const construirDetalleFinalizado = (indice, pedido) => {            
-            let detalleDecoded;
-            try {
-                detalleDecoded = typeof pedido.detalle === 'string' 
-                    ? JSON.parse(pedido.detalle) 
-                    : pedido.detalle;
-            } catch (e) {
-                console.error("Error parseando detalle:", e);
-                detalleDecoded = {};
-            }
-            
-            let validItemCount = 0;
-            for (const plato in detalleDecoded) {
-                const valor = detalleDecoded[plato];
-                if (valor && valor !== '' && menuItems[plato]) {
-                    validItemCount++;
-                }
-            }
-            
-            // const buttonColClass = (validItemCount % 2 === 0) ? 'col-12' : 'col-6';
-            
-            // Build menu items HTML
-            let menuItemsHTML = '';
-            for (const plato in detalleDecoded) {
-                const valor = detalleDecoded[plato];
-                
-                // Only render if value exists and plato is in menuItems
-                if (valor && valor !== '' && menuItems[plato]) {
-                    const item = menuItems[plato];
-                    const valorCapitalizado = valor.charAt(0).toUpperCase() + valor.slice(1);
-                    
-                    menuItemsHTML += `
-                        <div class="col-6 px-0 py-1">
-                            <div class="d-flex flex-row gap-2 align-items-center">
-                                <i data-lucide="${item.icon}" class="lucide-icon ${item.color}" style="min-height: 1.8rem; min-width: 1.8rem"></i>
-                                <div class="d-flex flex-column">
-                                    <span class="item-value line-height-xs font-12 m-0 color-theme">
-                                        ${valorCapitalizado}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            
-            return `
-                <li>
-                    <h3 class="font-18">Pedido ${indice}</h3>
-                    <div class="d-flex flex-column align-items-center">
-                        <div class="row m-0">
-                            ${menuItemsHTML}
+const construirDetalleFinalizado = (indice, pedido) => {
+    // Check if detalle is null or undefined
+    if (!pedido.detalle) {
+        return `
+            <li>
+                <h3 class="font-18">Pedido ${indice}</h3>
+                <div class="d-flex flex-column align-items-center">
+                    <div class="row m-0">
+                        <div class="col-12 px-0 py-2">
+                            <p class="text-center color-gray-dark font-14 mb-0">
+                                No hay detalles disponibles para este pedido
+                            </p>
                         </div>
                     </div>
-                </li>
+                </div>
+            </li>
+        `;
+    }
+    
+    let detalleDecoded;
+    console.log("Pedido a listarse:", pedido);
+    try {
+        detalleDecoded = typeof pedido.detalle === 'string' 
+            ? JSON.parse(pedido.detalle) 
+            : pedido.detalle;
+    } catch (e) {
+        console.error("Error parseando detalle:", e);
+        detalleDecoded = {};
+    }
+    
+    let validItemCount = 0;
+    for (const plato in detalleDecoded) {
+        const valor = detalleDecoded[plato];
+        if (valor && valor !== '' && menuItems[plato]) {
+            validItemCount++;
+        }
+    }
+    
+    // If no valid items after parsing, show no details message
+    if (validItemCount === 0) {
+        return `
+            <li>
+                <h3 class="font-18">Pedido ${indice}</h3>
+                <div class="d-flex flex-column align-items-center">
+                    <div class="row m-0">
+                        <div class="col-12 px-0 py-2">
+                            <p class="text-center color-gray-dark font-14 mb-0">
+                                No hay detalles disponibles para este pedido
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        `;
+    }
+    
+    // Build menu items HTML
+    let menuItemsHTML = '';
+    for (const plato in detalleDecoded) {
+        const valor = detalleDecoded[plato];
+        
+        // Only render if value exists and plato is in menuItems
+        if (valor && valor !== '' && menuItems[plato]) {
+            const item = menuItems[plato];
+            const valorCapitalizado = valor.charAt(0).toUpperCase() + valor.slice(1);
+            
+            menuItemsHTML += `
+                <div class="col-6 px-0 py-1">
+                    <div class="d-flex flex-row gap-2 align-items-center">
+                        <i data-lucide="${item.icon}" class="lucide-icon ${item.color}" style="min-height: 1.8rem; min-width: 1.8rem"></i>
+                        <div class="d-flex flex-column">
+                            <span class="item-value line-height-xs font-12 m-0 color-theme">
+                                ${valorCapitalizado}
+                            </span>
+                        </div>
+                    </div>
+                </div>
             `;
-        };
+        }
+    }
+    
+    return `
+        <li>
+            <h3 class="font-18">Pedido ${indice}</h3>
+            <div class="d-flex flex-column align-items-center">
+                <div class="row m-0">
+                    ${menuItemsHTML}
+                </div>
+            </div>
+        </li>
+    `;
+};
 
         const construirSelectorPermisos = (infoDia, infoMes, items, config) => {
             reiniciarBackButton(infoDia, infoMes);
@@ -915,8 +961,8 @@
         }
 
         const revelarMenuFinalizados = () => {
-            ocultarrMenuDiaSinHider();
             $('#menu-historial-finalizados').addClass('menu-active'); 
+            $('.menu-hider').addClass('menu-active');
         }
 
         const revelarMenuPermisoSimple = () => {
