@@ -296,6 +296,7 @@ class GlobalHelper
             }
             $adicional->save();
         }
+        event(new RefreshMenuHeaderEvent());
     }
 
     public static function actualizarMenuCantidadDesdePOS(Adicionale $adicional, $accion = 'reducir', $cantidad = 1)

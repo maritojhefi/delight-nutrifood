@@ -17,6 +17,7 @@ class Almuerzo extends Model
         'estado_dia',
         'ensalada',
         'sopa',
+        'sopa_estado',
         'foto',
         'ejecutivo',
         'vegetariano',
@@ -44,10 +45,10 @@ class Almuerzo extends Model
         'vegetariano_tiene_carbo',
         'dieta_tiene_carbo'
     ];
-    
+
     // Constante para la ruta de fotos de almuerzos en S3
     const RUTA_FOTO = '/imagenes/almuerzo/';
-    
+
     protected $appends = ['pathFoto'];
 
     /**
@@ -58,7 +59,7 @@ class Almuerzo extends Model
         if (empty($this->foto)) {
             return null;
         }
-        
+
         // Usar el disco configurado para generar la URL correcta
         $disk = GlobalHelper::discoArchivos();
         if ($disk === 's3') {

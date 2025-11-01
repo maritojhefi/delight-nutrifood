@@ -254,7 +254,33 @@
                 title: message
             })
         })
+        window.addEventListener('toastAlert', ({
+            detail: {
+                type,
+                message,
+                title
+            }
+        }) => {
+            toastr[type](title, message, {
+                positionClass: "toast-bottom-right",
+                timeOut: 6000,
+                closeButton: !0,
+                debug: !1,
+                newestOnTop: !0,
+                progressBar: !0,
+                preventDuplicates: !1,
+                onclick: null,
+                showDuration: "300",
+                hideDuration: "1000",
+                extendedTimeOut: "1000",
+                showEasing: "swing",
+                hideEasing: "linear",
+                showMethod: "fadeIn",
+                hideMethod: "fadeOut",
+                tapToDismiss: !1,
+            });
 
+        })
         window.addEventListener('copiarTexto', ({
             detail: {
                 id,

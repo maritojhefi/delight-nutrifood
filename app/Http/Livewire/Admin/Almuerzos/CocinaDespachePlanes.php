@@ -20,7 +20,7 @@ class CocinaDespachePlanes extends Component
     public $fechaSeleccionada, $cambioFecha = false;
     public $search;
     public $estadoBuscador = "NOMBRE", $estadoColor = "success";
-    public $dieta_cant, $ejecutivo_cant, $carbohidrato_1_cant, $carbohidrato_2_cant, $carbohidrato_3_cant, $vegetariano_cant;
+    public $dieta_cant, $ejecutivo_cant, $carbohidrato_1_cant, $carbohidrato_2_cant, $carbohidrato_3_cant, $vegetariano_cant, $sopa_cant;
     protected $listeners = [
         'echo:pensionados,RefreshListaPensionadosEvent' => 'actualizarListaPensionados'
     ];
@@ -29,33 +29,39 @@ class CocinaDespachePlanes extends Component
 
         $this->render();
     }
-    public function cambiarCantidad($variable)
+    public function cambiarCantidad($variable, $cantidad)
     {
+        // Actualizar la propiedad del componente
         switch ($variable) {
             case 'dieta_cant':
-                $cantidad = $this->dieta_cant;
+                $this->dieta_cant = $cantidad;
                 break;
             case 'vegetariano_cant':
-                $cantidad = $this->vegetariano_cant;
+                $this->vegetariano_cant = $cantidad;
                 break;
             case 'ejecutivo_cant':
-                $cantidad = $this->ejecutivo_cant;
+                $this->ejecutivo_cant = $cantidad;
                 break;
             case 'carbohidrato_1_cant':
-                $cantidad = $this->carbohidrato_1_cant;
+                $this->carbohidrato_1_cant = $cantidad;
                 break;
             case 'carbohidrato_2_cant':
-                $cantidad = $this->carbohidrato_2_cant;
+                $this->carbohidrato_2_cant = $cantidad;
                 break;
             case 'carbohidrato_3_cant':
-                $cantidad = $this->carbohidrato_3_cant;
+                $this->carbohidrato_3_cant = $cantidad;
                 break;
-            default:
-                # code...
+            case 'sopa_cant':
+                $this->sopa_cant = $cantidad;
                 break;
         }
+
+        // Actualizar en la base de datos
         DB::table('almuerzos')->where('id', $this->menuHoy->id)->update([$variable => $cantidad]);
         GlobalHelper::actualizarCarbosDisponibilidad();
+
+        // Recargar el modelo para tener los datos actualizados
+        $this->menuHoy->refresh();
     }
     public function cambiarEstadoPlato($variable)
     {
@@ -103,15 +109,49 @@ class CocinaDespachePlanes extends Component
                 }
                 $this->menuHoy->save();
                 break;
+            case 'sopa_estado':
+                $this->menuHoy->sopa_estado = $this->menuHoy->sopa_estado == true ? false : true;
+                if (!$this->menuHoy->sopa_estado) {
+                    $this->menuHoy->sopa_cant = 0;
+                }
+                $this->menuHoy->save();
+                break;
             default:
                 // Código adicional para casos no manejados
                 break;
         }
 
         GlobalHelper::actualizarCarbosDisponibilidad();
-        $this->dispatchBrowserEvent('alert', [
+        $this->dispatchBrowserEvent('toastAlert', [
             'type' => 'success',
             'message' => "Se actualizo correctamente!"
+        ]);
+
+        // Actualizar el Sweet Alert con los nuevos datos
+        $this->dispatchBrowserEvent('actualizarDisponibilidad', [
+            'menu' => [
+                'ejecutivo' => $this->menuHoy->ejecutivo,
+                'ejecutivo_cant' => $this->menuHoy->ejecutivo_cant,
+                'ejecutivo_estado' => $this->menuHoy->ejecutivo_estado,
+                'dieta' => $this->menuHoy->dieta,
+                'dieta_cant' => $this->menuHoy->dieta_cant,
+                'dieta_estado' => $this->menuHoy->dieta_estado,
+                'vegetariano' => $this->menuHoy->vegetariano,
+                'vegetariano_cant' => $this->menuHoy->vegetariano_cant,
+                'vegetariano_estado' => $this->menuHoy->vegetariano_estado,
+                'carbohidrato_1' => $this->menuHoy->carbohidrato_1,
+                'carbohidrato_1_cant' => $this->menuHoy->carbohidrato_1_cant,
+                'carbohidrato_1_estado' => $this->menuHoy->carbohidrato_1_estado,
+                'carbohidrato_2' => $this->menuHoy->carbohidrato_2,
+                'carbohidrato_2_cant' => $this->menuHoy->carbohidrato_2_cant,
+                'carbohidrato_2_estado' => $this->menuHoy->carbohidrato_2_estado,
+                'carbohidrato_3' => $this->menuHoy->carbohidrato_3,
+                'carbohidrato_3_cant' => $this->menuHoy->carbohidrato_3_cant,
+                'carbohidrato_3_estado' => $this->menuHoy->carbohidrato_3_estado,
+                'sopa' => $this->menuHoy->sopa,
+                'sopa_cant' => $this->menuHoy->sopa_cant,
+                'sopa_estado' => $this->menuHoy->sopa_estado,
+            ]
         ]);
     }
     public function cambiarDisponibilidad()
@@ -120,6 +160,12 @@ class CocinaDespachePlanes extends Component
         $fecha = date('Y-m-d');
         $resultado = $this->saber_dia($fecha);
         $this->menuHoy = Almuerzo::withoutGlobalScope('diasActivos')->where('dia', $resultado)->first();
+
+        if (!$this->menuHoy) {
+            $this->dispatchBrowserEvent('mostrarDisponibilidad', ['menu' => null]);
+            return;
+        }
+
         // dd($this->menuHoy);
         $this->ejecutivo_cant = $this->menuHoy->ejecutivo_cant;
         $this->dieta_cant = $this->menuHoy->dieta_cant;
@@ -127,6 +173,33 @@ class CocinaDespachePlanes extends Component
         $this->carbohidrato_1_cant = $this->menuHoy->carbohidrato_1_cant;
         $this->carbohidrato_2_cant = $this->menuHoy->carbohidrato_2_cant;
         $this->carbohidrato_3_cant = $this->menuHoy->carbohidrato_3_cant;
+        $this->sopa_cant = $this->menuHoy->sopa_cant;
+
+        $this->dispatchBrowserEvent('mostrarDisponibilidad', [
+            'menu' => [
+                'ejecutivo' => $this->menuHoy->ejecutivo,
+                'ejecutivo_cant' => $this->menuHoy->ejecutivo_cant,
+                'ejecutivo_estado' => $this->menuHoy->ejecutivo_estado,
+                'dieta' => $this->menuHoy->dieta,
+                'dieta_cant' => $this->menuHoy->dieta_cant,
+                'dieta_estado' => $this->menuHoy->dieta_estado,
+                'vegetariano' => $this->menuHoy->vegetariano,
+                'vegetariano_cant' => $this->menuHoy->vegetariano_cant,
+                'vegetariano_estado' => $this->menuHoy->vegetariano_estado,
+                'carbohidrato_1' => $this->menuHoy->carbohidrato_1,
+                'carbohidrato_1_cant' => $this->menuHoy->carbohidrato_1_cant,
+                'carbohidrato_1_estado' => $this->menuHoy->carbohidrato_1_estado,
+                'carbohidrato_2' => $this->menuHoy->carbohidrato_2,
+                'carbohidrato_2_cant' => $this->menuHoy->carbohidrato_2_cant,
+                'carbohidrato_2_estado' => $this->menuHoy->carbohidrato_2_estado,
+                'carbohidrato_3' => $this->menuHoy->carbohidrato_3,
+                'carbohidrato_3_cant' => $this->menuHoy->carbohidrato_3_cant,
+                'carbohidrato_3_estado' => $this->menuHoy->carbohidrato_3_estado,
+                'sopa' => $this->menuHoy->sopa,
+                'sopa_cant' => $this->menuHoy->sopa_cant,
+                'sopa_estado' => $this->menuHoy->sopa_estado,
+            ]
+        ]);
     }
     public function cambiarEstadoBuscador()
     {
