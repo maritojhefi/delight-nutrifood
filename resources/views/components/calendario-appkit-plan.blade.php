@@ -220,6 +220,8 @@
     @endphp
     <!-- Script para el control del calendario appkit -->
     <script>
+        const USUARIO_ID = {{ $usuario->id }};
+
         $(document).ready( async function () {
             await renderizarCalendario();
         });
@@ -579,7 +581,7 @@
                     $span.html('<i class="fa fa-spinner fa-spin me-1"></i>Procesando');
                     
                     try {
-                        const response = await PlanesService.asignarPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }}, {{ $usuario->id }});
+                        const response = await PlanesService.asignarPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }}, USUARIO_ID);
                         mostrarToastSuccess("Se asignó el permiso solicitado");
                         await renderizarCalendario(infoDia.start);
                         
@@ -601,8 +603,8 @@
                         // Re-habilitar
                         $btn.prop('disabled', false);
                         $span.text(textoOriginal);
-                        await new Promise(resolve => setTimeout(resolve, 3000));
-                        window.location.reload();
+                        // await new Promise(resolve => setTimeout(resolve, 3000));
+                        // window.location.reload();
                     }
                 });
             } else {
@@ -623,14 +625,14 @@
                     $span.html('<i class="fa fa-spinner fa-spin me-1"></i>Procesando');
                     
                     try {
-                        const response = await PlanesService.deshacerPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }}, {{ $usuario->id }});
+                        const response = await PlanesService.deshacerPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }}, USUARIO_ID);
                         mostrarToastSuccess("Se retiró el permiso solicitado");
                         await renderizarCalendario(infoDia.start);
                         // console.log('Permisos retirados exitosamente:', response.data);
                         ocultarMenusPermisos();
                         ocultarTodosMenus();
 
-                        
+
                         
                     } catch (error) {
                         console.error('Error al retirar permisos:', error);
@@ -642,7 +644,7 @@
                         $btn.prop('disabled', false);
                         $span.text(textoOriginal);
                         await new Promise(resolve => setTimeout(resolve, 3000));
-                        window.location.reload();
+                        // window.location.reload();
                     }
                 });
             }
@@ -715,7 +717,7 @@
                     construirSelectorPermisos(infoDia, infoMes, pendientes, {
                         mensaje: 'Tienes {cantidad} pedidos disponibles para marcar con permiso este día.',
                         accion: async (fecha, cantidad) => {
-                            return await PlanesService.asignarPermisosVarios(fecha, cantidad, {{ $plan->id }});
+                            return await PlanesService.asignarPermisosVarios(fecha, cantidad, {{ $plan->id }}, USUARIO_ID);
                         },
                         mensajeExito: 'Se asignaron los permisos solicitados.',
                         mensajeError: 'Error al marcar permisos'
@@ -732,7 +734,7 @@
                     construirSelectorPermisos(infoDia, infoMes, permisos, {
                         mensaje: 'Tienes {cantidad} permisos asignados que puedes deshacer este día.',
                         accion: async (fecha, cantidad) => {
-                            return await PlanesService.deshacerPermisosVarios(fecha, cantidad, {{ $plan->id }});
+                            return await PlanesService.deshacerPermisosVarios(fecha, cantidad, {{ $plan->id }}, USUARIO_ID);
                         },
                         mensajeExito: 'Se deshicieron los permisos solicitados.',
                         mensajeError: 'Error al deshacer permisos'
@@ -975,13 +977,13 @@ const construirDetalleFinalizado = (indice, pedido) => {
                     ocultarMenusPermisos();
                     ocultarTodosMenus();
                     await new Promise(resolve => setTimeout(resolve, 3000));
-                    window.location.reload();
+                    // window.location.reload();
                 } 
                 catch (error) {
                     console.error(config.mensajeError, error);
                     mostrarToastError("Ocurrió un error con el permiso");
                     await new Promise(resolve => setTimeout(resolve, 3000));
-                    window.location.reload();
+                    // window.location.reload();
                 }
                 finally {
                     $btn.prop('disabled', false);

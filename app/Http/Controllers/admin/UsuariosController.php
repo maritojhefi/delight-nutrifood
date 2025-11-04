@@ -13,6 +13,7 @@ use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -413,6 +414,8 @@ class UsuariosController extends Controller
                 'error' => 'No se pueden asignar permisos en fechas pasadas.'
             ], 400);
         }
+
+        Log::debug("usuario_id", [$user_id]);
 
         // Obtener los eventos "pendientes" permisibles
         $eventosPermisibles = DB::table('plane_user')
