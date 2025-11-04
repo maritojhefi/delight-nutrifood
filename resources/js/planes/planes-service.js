@@ -26,21 +26,23 @@ export const obtenerCalendarioPlan = async(idPlan, idUser) => {
 //     return response;
 // }
 
-export const asignarPermisosVarios = async (fecha, cantidad, planId) => {
+export const asignarPermisosVarios = async (fecha, cantidad, planId, usuarioId) => {
     const response = await axios.post(`/miperfil/permisos/asignar-permisos`, {
         fecha,
         cantidad,
         planId,
+        usuarioId
     });
     return response;
 };
 
 
-export const deshacerPermisosVarios = async(fecha, cantidad, planId) => {
+export const deshacerPermisosVarios = async(fecha, cantidad, planId, usuarioId) => {
     const response = await axios.post(`/miperfil/permisos/deshacer-permisos`, {
         fecha: fecha,
         cantidad: cantidad,
-        planId: planId
+        planId: planId,
+        usuarioId: usuarioId
     });
     return response;
 }

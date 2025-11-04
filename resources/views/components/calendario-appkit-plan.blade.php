@@ -579,7 +579,7 @@
                     $span.html('<i class="fa fa-spinner fa-spin me-1"></i>Procesando');
                     
                     try {
-                        const response = await PlanesService.asignarPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }});
+                        const response = await PlanesService.asignarPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }}, {{ $usuario->id }});
                         mostrarToastSuccess("Se asignó el permiso solicitado");
                         await renderizarCalendario(infoDia.start);
                         
@@ -623,12 +623,14 @@
                     $span.html('<i class="fa fa-spinner fa-spin me-1"></i>Procesando');
                     
                     try {
-                        const response = await PlanesService.deshacerPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }});
+                        const response = await PlanesService.deshacerPermisosVarios(infoDia.start, cantidadPermisos, {{ $plan->id }}, {{ $usuario->id }});
                         mostrarToastSuccess("Se retiró el permiso solicitado");
                         await renderizarCalendario(infoDia.start);
                         // console.log('Permisos retirados exitosamente:', response.data);
                         ocultarMenusPermisos();
                         ocultarTodosMenus();
+
+                        
                         
                     } catch (error) {
                         console.error('Error al retirar permisos:', error);

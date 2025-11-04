@@ -401,6 +401,7 @@ class UsuariosController extends Controller
         $fecha = $request->fecha; // string
         $cantidad = $request->cantidad;
         $planId = $request->planId;
+        $user_id = $request->usuarioId;
 
         $fechaSeleccionada = Carbon::parse($fecha)->startOfDay();
         $fechaHoy = Carbon::now();
@@ -417,7 +418,7 @@ class UsuariosController extends Controller
         $eventosPermisibles = DB::table('plane_user')
             ->whereDate('start', $fechaSeleccionada)
             ->where('estado', 'pendiente')
-            ->where('user_id', auth()->id())
+            ->where('user_id', $user_id)
             ->where('plane_id', $planId)
             ->limit($cantidad)
             ->get();
@@ -485,6 +486,7 @@ class UsuariosController extends Controller
         $fecha = $request->fecha;
         $cantidad = $request->cantidad;
         $planId = $request->planId;
+        $user_id = $request->usuarioId;
 
         $fechaSeleccionada = Carbon::parse($fecha)->startOfDay();
         $fechaHoy = Carbon::now();
@@ -508,7 +510,7 @@ class UsuariosController extends Controller
         $permisosRemovibles = DB::table('plane_user')
             ->whereDate('start', $fechaSeleccionada)
             ->where('estado', 'permiso')
-            ->where('user_id', auth()->id())
+            ->where('user_id', $user_id)
             ->where('plane_id', $planId)
             ->orderBy('start', 'ASC')
             ->limit($cantidad)
