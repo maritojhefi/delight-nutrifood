@@ -1234,6 +1234,24 @@ hover-blue:hover {
     position: absolute;
 }
 
+/* Targets the browser-specific icon in password fields */
+#password-input::-ms-reveal,
+#password-input::-ms-clear {
+    display: none !important;
+}
+
+/* For Chrome/Safari/Edge, use the more common approach
+   to generally hide default styles and autofill background */
+#password-input {
+    /* Prevents the eye icon in some specific browser versions/setups */
+    -webkit-text-security: none;
+    
+    /* Hides the default clear button/reveal button added by some browsers */
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+}
+
 /*
 .product-quantity-controls {
     display: flex;
