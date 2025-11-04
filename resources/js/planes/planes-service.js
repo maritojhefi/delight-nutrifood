@@ -27,8 +27,6 @@ export const obtenerCalendarioPlan = async(idPlan, idUser) => {
 // }
 
 export const asignarPermisosVarios = async (fecha, cantidad, planId, usuarioId) => {
-        console.log("Payload:", { fecha, cantidad, planId, usuarioId });
-
     const response = await axios.post(`/miperfil/permisos/asignar-permisos`, {
         fecha,
         cantidad,

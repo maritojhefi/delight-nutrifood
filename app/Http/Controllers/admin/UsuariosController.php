@@ -415,8 +415,6 @@ class UsuariosController extends Controller
             ], 400);
         }
 
-        Log::debug("usuario_id", [$user_id]);
-
         // Obtener los eventos "pendientes" permisibles
         $eventosPermisibles = DB::table('plane_user')
             ->whereDate('start', $fechaSeleccionada)
