@@ -9,39 +9,65 @@ use Illuminate\Support\Facades\Http;
 
 class WhatsappHelper
 {
-    private $appKey;
-    private $authKey;
+    private const BASE_URL = 'https://evo-api.mbyte.click';
+
+    private $instance;
+    private $apikey;
     private $receiver;
+    private $remoteJid; // JID completo para operaciones especiales
     private $message;
-    private $file;
-    private $type; // texto, imagen, documento, plantilla
+    private $mediaUrl;
+    private $mediaType; // image, video, document
+    private $mimetype;
+    private $caption;
+    private $fileName;
+    private $type; // texto, imagen, video, documento, ubicacion, plantilla
     private $template;
     private $variables = [];
+    private $locationData = []; // name, address, latitude, longitude
+    private $delay;
+    private $linkPreview = false;
 
     /**
-     * Establece las credenciales a partir de la tarjeta seleccionada.
+     * Establece las credenciales a partir del registro de NumeroWhatsapp.
      */
     public static function setNumero(string $idRegistro)
     {
         $registro = NumeroWhatsapp::find($idRegistro);
 
         if (!$registro) {
-            throw new \Exception('Tarjeta no encontrada o configuración inválida.');
+            throw new \Exception('Registro de WhatsApp no encontrado o configuración inválida.');
         }
 
         $helper = new self();
-        $helper->appKey = $registro->app_key;
-        $helper->authKey = $registro->auth_key;
+        $helper->instance = $registro->app_key; // appKey es la instancia
+        $helper->apikey = $registro->auth_key;  // authKey es la apikey
 
         return $helper;
     }
 
     /**
      * Define el receptor del mensaje.
+     * Acepta: '59175140175', '+59175140175', '59175140175@s.whatsapp.net'
+     * Genera automáticamente el remoteJid para operaciones especiales.
      */
     public function para($receiver)
     {
-        $this->receiver = $receiver;
+        // Normalizar número: quitar el + si existe
+        $receiver = ltrim($receiver, '+');
+
+        // Detectar si ya tiene sufijo (@s.whatsapp.net, @c.us, @lid, @g.us)
+        if (preg_match('/@(s\.whatsapp\.net|c\.us|lid|g\.us)$/', $receiver)) {
+            // Ya tiene sufijo, extraer número limpio y preservar remoteJid completo
+            $this->remoteJid = $receiver;
+            $this->receiver = preg_replace('/@(s\.whatsapp\.net|c\.us|lid|g\.us)$/', '', $receiver);
+        } else {
+            // No tiene sufijo, es solo el número
+            $this->receiver = $receiver;
+            // Generar remoteJid por defecto con @s.whatsapp.net
+            $this->remoteJid = $receiver . '@s.whatsapp.net';
+        }
+
         return $this;
     }
 
@@ -72,38 +98,87 @@ class WhatsappHelper
     }
 
     /**
-     * Define el tipo de mensaje (texto, imagen, documento).
-     */
-    public function tipo($type)
-    {
-        $this->type = $type;
-        return $this;
-    }
-
-    /**
      * Establece el texto del mensaje.
      */
     public function texto($text)
     {
+        $this->type = 'texto';
         $this->message = $text;
         return $this;
     }
 
     /**
-     * Establece la URL de la imagen.
+     * Establece una imagen para enviar.
      */
-    public function imagen($url)
+    public function imagen($url, $caption = null, $mimetype = 'image/png', $fileName = null)
     {
-        $this->file = $url;
+        $this->type = 'media';
+        $this->mediaType = 'image';
+        $this->mediaUrl = $url;
+        $this->caption = $caption;
+        $this->mimetype = $mimetype;
+        $this->fileName = $fileName ?? 'image.png';
         return $this;
     }
 
     /**
-     * Establece la URL del documento.
+     * Establece un video para enviar.
      */
-    public function documento($url)
+    public function video($url, $caption = null, $mimetype = 'video/mp4', $fileName = null)
     {
-        $this->file = $url;
+        $this->type = 'media';
+        $this->mediaType = 'video';
+        $this->mediaUrl = $url;
+        $this->caption = $caption;
+        $this->mimetype = $mimetype;
+        $this->fileName = $fileName ?? 'video.mp4';
+        return $this;
+    }
+
+    /**
+     * Establece un documento para enviar.
+     */
+    public function documento($url, $caption = null, $mimetype = 'application/pdf', $fileName = null)
+    {
+        $this->type = 'media';
+        $this->mediaType = 'document';
+        $this->mediaUrl = $url;
+        $this->caption = $caption;
+        $this->mimetype = $mimetype;
+        $this->fileName = $fileName ?? 'document.pdf';
+        return $this;
+    }
+
+    /**
+     * Establece una ubicación para enviar.
+     */
+    public function ubicacion($latitude, $longitude, $name, $address = null)
+    {
+        $this->type = 'ubicacion';
+        $this->locationData = [
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'name' => $name,
+            'address' => $address ?? $name,
+        ];
+        return $this;
+    }
+
+    /**
+     * Establece un delay antes de enviar el mensaje (en milisegundos).
+     */
+    public function conDelay($milliseconds)
+    {
+        $this->delay = $milliseconds;
+        return $this;
+    }
+
+    /**
+     * Habilita la vista previa de enlaces.
+     */
+    public function conVistaPrevia($enabled = true)
+    {
+        $this->linkPreview = $enabled;
         return $this;
     }
 
@@ -122,7 +197,7 @@ class WhatsappHelper
      */
     public function enviar()
     {
-        if (!$this->appKey || !$this->authKey) {
+        if (!$this->instance || !$this->apikey) {
             throw new \Exception('Las credenciales no están configuradas.');
         }
 
@@ -130,50 +205,147 @@ class WhatsappHelper
             throw new \Exception('El receptor del mensaje no está definido.');
         }
 
-        $endpoint = 'https://whatsapp.macrobyte.cloud/api/create-message';
-        $payload = [
-            'appkey' => $this->appKey,
-            'authkey' => $this->authKey,
-            'to' => $this->receiver,
-        ];
+        // Determinar qué método de envío usar según el tipo
+        switch ($this->type) {
+            case 'plantilla':
+            case 'texto':
+                return $this->enviarTexto();
 
+            case 'media':
+                return $this->enviarMedia();
+
+            case 'ubicacion':
+                return $this->enviarUbicacion();
+
+            default:
+                throw new \Exception('Tipo de mensaje no definido o no soportado.');
+        }
+    }
+
+    /**
+     * Envía un mensaje de texto usando el endpoint /sendText
+     */
+    private function enviarTexto()
+    {
+        $endpoint = self::BASE_URL . "/message/sendText/{$this->instance}";
+
+        // Si es plantilla, reemplazar variables
         if ($this->type === 'plantilla') {
             if (!$this->template) {
                 throw new \Exception('No se ha definido la plantilla.');
             }
 
-            // Reemplazar variables en la plantilla
             $mensaje = $this->template;
             foreach ($this->variables as $key => $value) {
                 $mensaje = str_replace("{{{$key}}}", $value, $mensaje);
             }
-
-            $payload['message'] = $mensaje;
-        } else {
-            if (!$this->message && !$this->file) {
-                throw new \Exception('Debe proporcionar al menos un mensaje de texto o un archivo.');
-            }
-
-            if ($this->message) {
-                $payload['message'] = $this->message;
-            }
-
-            if ($this->file) {
-                $payload['file'] = $this->file;
-            }
+            $this->message = $mensaje;
         }
 
-        // Enviar solicitud HTTP
-        $response = Http::asMultipart()->post($endpoint, $payload);
+        if (!$this->message) {
+            throw new \Exception('El mensaje de texto no está definido.');
+        }
 
-        if ($response->status() !== 200) {
+        $payload = [
+            'number' => $this->receiver,
+            'text' => $this->message,
+        ];
+
+        // Parámetros opcionales
+        if ($this->delay) {
+            $payload['delay'] = $this->delay;
+        }
+        if ($this->linkPreview) {
+            $payload['linkPreview'] = true;
+        }
+
+        return $this->ejecutarRequest($endpoint, $payload);
+    }
+
+    /**
+     * Envía media (imagen, video, documento) usando el endpoint /sendMedia
+     */
+    private function enviarMedia()
+    {
+        $endpoint = self::BASE_URL . "/message/sendMedia/{$this->instance}";
+
+        if (!$this->mediaUrl) {
+            throw new \Exception('La URL del archivo no está definida.');
+        }
+
+        $payload = [
+            'number' => $this->receiver,
+            'mediatype' => $this->mediaType,
+            'media' => $this->mediaUrl,
+            'mimetype' => $this->mimetype,
+            'fileName' => $this->fileName,
+        ];
+
+        // Parámetros opcionales
+        if ($this->caption) {
+            $payload['caption'] = $this->caption;
+        }
+        if ($this->delay) {
+            $payload['delay'] = $this->delay;
+        }
+        if ($this->linkPreview) {
+            $payload['linkPreview'] = true;
+        }
+
+        return $this->ejecutarRequest($endpoint, $payload);
+    }
+
+    /**
+     * Envía una ubicación usando el endpoint /sendLocation
+     */
+    private function enviarUbicacion()
+    {
+        $endpoint = self::BASE_URL . "/message/sendLocation/{$this->instance}";
+
+        if (empty($this->locationData)) {
+            throw new \Exception('Los datos de ubicación no están definidos.');
+        }
+
+        $payload = [
+            'number' => $this->receiver,
+            'latitude' => $this->locationData['latitude'],
+            'longitude' => $this->locationData['longitude'],
+            'name' => $this->locationData['name'],
+            'address' => $this->locationData['address'],
+        ];
+
+        // Parámetros opcionales
+        if ($this->delay) {
+            $payload['delay'] = $this->delay;
+        }
+
+        return $this->ejecutarRequest($endpoint, $payload);
+    }
+
+    /**
+     * Ejecuta la petición HTTP a la API de Evolution
+     */
+    private function ejecutarRequest($endpoint, $payload)
+    {
+        $response = Http::withHeaders([
+            'apikey' => $this->apikey,
+            'Content-Type' => 'application/json',
+        ])->post($endpoint, $payload);
+
+        // Validar respuesta
+        if (!in_array($response->status(), [200, 201])) {
             $errorMessage = $response->body();
             $statusCode = $response->status();
+
             Log::channel('whatsapp-errores')->error('Error al enviar el mensaje', [
+                'endpoint' => $endpoint,
                 'telefono' => $this->receiver,
+                'tipo' => $this->type,
+                'status_code' => $statusCode,
                 'error_mensaje' => $errorMessage,
                 'fecha_error' => now()->format('Y-m-d H:i:s')
             ]);
+
             throw new \Exception("Error al enviar el mensaje (Código: {$statusCode}): {$errorMessage}");
         }
 
@@ -203,5 +375,262 @@ class WhatsappHelper
         }
 
         return $plantilla;
+    }
+
+    /**
+     * Marca un mensaje como leído (doble check azul).
+     * Método de instancia - Requiere ->para() antes.
+     * Ejecución inmediata (no requiere ->enviar()).
+     * 
+     * @param string $messageId ID del mensaje a marcar como leído
+     * @param bool $fromMe Indica si el mensaje es propio (default: false)
+     * @return array Respuesta de la API
+     */
+    public function marcarComoLeido($messageId, $fromMe = false)
+    {
+        if (!$this->instance || !$this->apikey) {
+            throw new \Exception('Las credenciales no están configuradas. Usa setNumero() primero.');
+        }
+
+        if (!$this->remoteJid) {
+            throw new \Exception('El receptor no está definido. Usa para() primero.');
+        }
+
+        $endpoint = self::BASE_URL . "/chat/markMessageAsRead/{$this->instance}";
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'apikey' => $this->apikey,
+        ])->timeout(60)->post($endpoint, [
+            'readMessages' => [
+                [
+                    'remoteJid' => $this->remoteJid,
+                    'fromMe' => $fromMe,
+                    'id' => $messageId
+                ]
+            ]
+        ]);
+
+        if (!in_array($response->status(), [200, 201])) {
+            $errorMessage = $response->body();
+            $statusCode = $response->status();
+
+            Log::channel('whatsapp-errores')->error('Error al marcar mensaje como leído', [
+                'endpoint' => $endpoint,
+                'remote_jid' => $this->remoteJid,
+                'message_id' => $messageId,
+                'status_code' => $statusCode,
+                'error_mensaje' => $errorMessage,
+                'fecha_error' => now()->format('Y-m-d H:i:s')
+            ]);
+
+            throw new \Exception("Error al marcar mensaje como leído (Código: {$statusCode}): {$errorMessage}");
+        }
+
+        return $response->json();
+    }
+
+    /**
+     * Marca un mensaje como leído (doble check azul).
+     * Método estático (legacy) - Acepta parámetros directos.
+     * 
+     * @param string|int $numeroWhatsappId ID del registro NumeroWhatsapp
+     * @param string $remoteJid JID del chat (ej: "59160268333@s.whatsapp.net")
+     * @param string $messageId ID del mensaje a marcar como leído
+     * @param bool $fromMe Indica si el mensaje es propio (default: false)
+     * @return array Respuesta de la API
+     */
+    public static function marcarComoLeidoDirecto($numeroWhatsappId, $remoteJid, $messageId, $fromMe = false)
+    {
+        $numeroWhatsapp = NumeroWhatsapp::find($numeroWhatsappId);
+
+        if (!$numeroWhatsapp) {
+            throw new \Exception('Registro de WhatsApp no encontrado.');
+        }
+
+        $endpoint = self::BASE_URL . "/chat/markMessageAsRead/{$numeroWhatsapp->app_key}";
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'apikey' => $numeroWhatsapp->auth_key,
+        ])->timeout(60)->post($endpoint, [
+            'readMessages' => [
+                [
+                    'remoteJid' => $remoteJid,
+                    'fromMe' => $fromMe,
+                    'id' => $messageId
+                ]
+            ]
+        ]);
+
+        if (!in_array($response->status(), [200, 201])) {
+            $errorMessage = $response->body();
+            $statusCode = $response->status();
+
+            Log::channel('whatsapp-errores')->error('Error al marcar mensaje como leído', [
+                'endpoint' => $endpoint,
+                'remote_jid' => $remoteJid,
+                'message_id' => $messageId,
+                'status_code' => $statusCode,
+                'error_mensaje' => $errorMessage,
+                'fecha_error' => now()->format('Y-m-d H:i:s')
+            ]);
+
+            throw new \Exception("Error al marcar mensaje como leído (Código: {$statusCode}): {$errorMessage}");
+        }
+
+        return $response->json();
+    }
+
+    /**
+     * Muestra el indicador "escribiendo..." en el chat.
+     * Método de instancia - Requiere ->para() antes.
+     * Despacha Job asíncrono (no bloquea, ejecuta en background).
+     * 
+     * @param int $delay Duración en milisegundos (default: 5000)
+     * @return $this Para permitir chaining si se necesita
+     */
+    public function mostrarEscribiendo($delay = 5000)
+    {
+        if (!$this->instance || !$this->apikey) {
+            throw new \Exception('Las credenciales no están configuradas. Usa setNumero() primero.');
+        }
+
+        if (!$this->receiver) {
+            throw new \Exception('El receptor no está definido. Usa para() primero.');
+        }
+
+        // Obtener el ID del NumeroWhatsapp desde el app_key (instance)
+        $numeroWhatsapp = NumeroWhatsapp::where('app_key', $this->instance)->first();
+
+        if (!$numeroWhatsapp) {
+            throw new \Exception('No se pudo encontrar el registro de NumeroWhatsapp.');
+        }
+
+        // Despachar Job asíncrono
+        \App\Jobs\MostrarServicioEscribiendoRespuestaJob::dispatch(
+            'texto',
+            $delay,
+            $this->receiver,
+            $numeroWhatsapp->id
+        )->onQueue('whatsapp_queue');
+
+        return $this;
+    }
+
+    /**
+     * Muestra el indicador "grabando audio..." en el chat.
+     * Método de instancia - Requiere ->para() antes.
+     * Despacha Job asíncrono (no bloquea, ejecuta en background).
+     * 
+     * @param int $delay Duración en milisegundos (default: 5000)
+     * @return $this Para permitir chaining si se necesita
+     */
+    public function mostrarGrabando($delay = 5000)
+    {
+        if (!$this->instance || !$this->apikey) {
+            throw new \Exception('Las credenciales no están configuradas. Usa setNumero() primero.');
+        }
+
+        if (!$this->receiver) {
+            throw new \Exception('El receptor no está definido. Usa para() primero.');
+        }
+
+        // Obtener el ID del NumeroWhatsapp desde el app_key (instance)
+        $numeroWhatsapp = NumeroWhatsapp::where('app_key', $this->instance)->first();
+
+        if (!$numeroWhatsapp) {
+            throw new \Exception('No se pudo encontrar el registro de NumeroWhatsapp.');
+        }
+
+        // Despachar Job asíncrono
+        \App\Jobs\MostrarServicioEscribiendoRespuestaJob::dispatch(
+            'audio',
+            $delay,
+            $this->receiver,
+            $numeroWhatsapp->id
+        )->onQueue('whatsapp_queue');
+
+        return $this;
+    }
+
+    /**
+     * Muestra el indicador "escribiendo..." en el chat.
+     * Método estático (legacy) - Acepta parámetros directos.
+     * 
+     * @param string|int $numeroWhatsappId ID del registro NumeroWhatsapp
+     * @param string $destino Número del destinatario (ej: "59160268333")
+     * @param int $delay Duración en milisegundos (default: 5000)
+     * @return array Respuesta de la API
+     */
+    public static function mostrarEscribiendoDirecto($numeroWhatsappId, $destino, $delay = 5000)
+    {
+        return self::enviarPresencia($numeroWhatsappId, $destino, 'composing', $delay);
+    }
+
+    /**
+     * Muestra el indicador "grabando audio..." en el chat.
+     * Método estático (legacy) - Acepta parámetros directos.
+     * 
+     * @param string|int $numeroWhatsappId ID del registro NumeroWhatsapp
+     * @param string $destino Número del destinatario (ej: "59160268333")
+     * @param int $delay Duración en milisegundos (default: 5000)
+     * @return array Respuesta de la API
+     */
+    public static function mostrarGrabandoDirecto($numeroWhatsappId, $destino, $delay = 5000)
+    {
+        return self::enviarPresencia($numeroWhatsappId, $destino, 'recording', $delay);
+    }
+
+    /**
+     * Envía una presencia (typing/recording) al chat.
+     * Método privado usado por mostrarEscribiendo() y mostrarGrabando().
+     * 
+     * @param string|int $numeroWhatsappId ID del registro NumeroWhatsapp
+     * @param string $destino Número del destinatario
+     * @param string $presence Tipo de presencia: 'composing' o 'recording'
+     * @param int $delay Duración en milisegundos
+     * @return array Respuesta de la API
+     */
+    private static function enviarPresencia($numeroWhatsappId, $destino, $presence, $delay)
+    {
+        $numeroWhatsapp = NumeroWhatsapp::find($numeroWhatsappId);
+
+        if (!$numeroWhatsapp) {
+            throw new \Exception('Registro de WhatsApp no encontrado.');
+        }
+
+        // Normalizar número: quitar el + si existe
+        $destino = ltrim($destino, '+');
+
+        $endpoint = self::BASE_URL . "/chat/sendPresence/{$numeroWhatsapp->app_key}";
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'apikey' => $numeroWhatsapp->auth_key,
+        ])->timeout(60)->post($endpoint, [
+            'number' => $destino,
+            'delay' => $delay,
+            'presence' => $presence
+        ]);
+
+        if (!in_array($response->status(), [200, 201])) {
+            $errorMessage = $response->body();
+            $statusCode = $response->status();
+
+            Log::channel('whatsapp-errores')->error('Error al enviar presencia', [
+                'endpoint' => $endpoint,
+                'destino' => $destino,
+                'presence' => $presence,
+                'delay' => $delay,
+                'status_code' => $statusCode,
+                'error_mensaje' => $errorMessage,
+                'fecha_error' => now()->format('Y-m-d H:i:s')
+            ]);
+
+            throw new \Exception("Error al enviar presencia (Código: {$statusCode}): {$errorMessage}");
+        }
+
+        return $response->json();
     }
 }
