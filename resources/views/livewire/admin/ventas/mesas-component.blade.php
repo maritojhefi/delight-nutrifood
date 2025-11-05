@@ -96,6 +96,9 @@
                         </div>
                     @endif
                 </div>
+                <div class="card-footer">
+                    {{ $mesas->links() }}
+                </div>
             </div>
         </div>
     </div>

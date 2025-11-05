@@ -14,6 +14,7 @@ class Mesa extends Model
         'numero',
         'url',
         'codigo',
+        'sucursale_id',
     ];
     public function sucursale()
     {
