@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -59,6 +60,15 @@ class LoginController extends Controller
             'telf.required' => 'El número de teléfono es requerido.',
             'password.required' => 'La contraseña es requerida.',
             'codigo_pais.required' => 'El código de país es requerido.',
+        ]);
+    }
+
+    // ADD THIS METHOD
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        throw ValidationException::withMessages([
+            // 'telf' => [trans('auth.failed')],
+            'password' => [trans('auth.failed')],
         ]);
     }
 }
