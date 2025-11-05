@@ -290,6 +290,10 @@ class GlobalHelper
                     $adicional->nombre = $menuHoy->carbohidrato_3;
                     $adicional->cantidad = $menuHoy->carbohidrato_3_estado ? $menuHoy->carbohidrato_3_cant : 0;
                     break;
+                case 'sopa':
+                    $adicional->nombre = $menuHoy->sopa;
+                    $adicional->cantidad = $menuHoy->sopa_estado ? $menuHoy->sopa_cant : 0;
+                    break;
                 default:
                     # code...
                     break;
@@ -331,6 +335,9 @@ class GlobalHelper
                 break;
             case 'carbohidrato_3':
                 $menuHoy->{$method}('carbohidrato_3_cant', $cantidad);
+                break;
+            case 'sopa':
+                $menuHoy->{$method}('sopa_cant', $cantidad);
                 break;
             default:
                 // Código desconocido, no hacer nada

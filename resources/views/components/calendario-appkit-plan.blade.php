@@ -205,9 +205,36 @@
 
 @push('header')
     <style>
+        .cal-dates {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.25rem;
+            padding: 0.5rem;
+        }
+        
+        .cal-dates a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 2.5rem;
+            text-decoration: none;
+        }
+        
         .cal-dates button {
-            height: 1.8rem;
-            width: 1.8rem;
+            height: 2rem;
+            width: 2rem;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+            border: none;
+            flex-shrink: 0;
+        }
+        
+        .clearfix {
+            display: none;
         }
     </style>
 @endpush
@@ -266,8 +293,6 @@
         }
 
         const construirCalendario = (infoMes, infoMeses) => {
-            // console.log("Construyendo calendario para: ", infoMes);
-            
             // Actualizar el titulo del mes
             $('#mes-calendario').text(`${infoMes.nombre} ${infoMes.anio}`);
 
@@ -324,8 +349,8 @@
             };
 
             const crearBotonCalendario = (dia, bgColor = '', badgeHTML = '') => {
-                const clases = `${FONT_CLASS} ${bgColor} position-relative ${ROUNDED_CLASS} ${LINE_HEIGHT_CLASS}`.trim();
-                return `<button class="${clases}">${dia} ${badgeHTML}</button>`;
+                const clases = `${FONT_CLASS} ${bgColor} ${ROUNDED_CLASS} ${LINE_HEIGHT_CLASS}`.trim();
+                return `<button class="${clases} position-relative">${dia}${badgeHTML}</button>`;
             };
 
             const crearEnlaceCalendario = (dia, clases = '', dataFecha = '', contenido = '') => {
@@ -338,18 +363,9 @@
 
             const construirBadgeContainer = (numPlanes, numPermisos, numPendientes, numFinalizados) => {
                 if (numPermisos >= 1 && numPermisos < numPlanes) {
-                    return `
-                        <div class="d-flex flex-row align-items-center position-absolute top-0 end-0" style="transform: translate(40%, -50%);">
-                            ${construirBadgesContadorPermiso(numPendientes + numFinalizados, false)}
-                            ${construirBadgesContadorPermiso(numPermisos, true)}
-                        </div>
-                    `;
+                    return `<span class="position-absolute" style="top: -0.4rem; right: -0.4rem; display: flex; gap: 0.1rem;">${construirBadgesContadorPermiso(numPendientes + numFinalizados, false)}${construirBadgesContadorPermiso(numPermisos, true)}</span>`;
                 }
-                return `
-                    <div class="position-absolute top-0 end-0" style="transform: translate(50%, -50%);">
-                        ${construirBadgesContadorPermiso(numPlanes, false)}
-                    </div>
-                `;
+                return `<span class="position-absolute" style="top: -0.4rem; right: -0.4rem;">${construirBadgesContadorPermiso(numPlanes, false)}</span>`;
             };
 
             const determinarClaseAccionSimple = (diaInfo) => {
@@ -447,8 +463,6 @@
             
             // Agregar clearfix
             calendarHTML.push('<div class="clearfix"></div>');
-
-            // const finalizados = diaInfo.eventos.filter((pedido) => pedido.estado == "finalizado");
             
             // Actualizar elementos del calendario
             $('#fechas-calendario-plan').html(calendarHTML.join(''));
@@ -539,17 +553,11 @@
 
         const construirBadgesContadorPermiso = (contador, esPermiso) => {
             const propiedades = {
-                "bgColor": esPermiso ? "bg-magenta-dark" : "bg-theme bg-dtheme-blue" ,
+                "bgColor": esPermiso ? "bg-magenta-dark" : "bg-theme bg-dtheme-blue",
                 "textColor": esPermiso ? "color-white" : "color-theme",
             }
 
-            return `
-                <div class="badge border d-flex align-items-center justify-content-center p-0 ${propiedades.bgColor}  ${propiedades.textColor}"
-                    style="width: 0.95rem !important; height: 0.95rem !important">
-                    <span class="${propiedades.textColor}" style="font-size: 0.7rem">${contador}</span>
-                </div>
-            `
-
+            return `<div class="badge border ${propiedades.bgColor} ${propiedades.textColor}" style="width: 0.95rem; height: 0.95rem; padding: 0; font-size: 0.7rem; display: inline-flex; align-items: center; justify-content: center;">${contador}</div>`;
         }
 
         const construirMenuPermisoSimple = (esPendiente, infoDia, infoMes) => {
