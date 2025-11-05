@@ -586,6 +586,9 @@
     <script>
         var formData = new FormData();
         let currentStep = 0;
+        let omitirValidacionWhatsapp = false;
+        let otpRetryCount = 0;
+        const MAX_OTP_RETRIES = 3;
 
         document.addEventListener('DOMContentLoaded', function() {
             const steps = document.querySelectorAll('.form-step');
@@ -747,7 +750,7 @@
                 }
             }
 
-            const validacionOTPStep = () => {
+            const validacionOTPStep = function() {
                 var telefono = document.getElementById('telefono').value;
                 var codigoPais = document.getElementById('country-code-selector').value;
                 var digitosPais = document.getElementById('digitos_pais').value;
@@ -775,6 +778,14 @@
                 this.disabled = true;
                 this.textContent = 'Enviando...';
 
+                if (omitirValidacionWhatsapp) {
+                    $('#step-1').addClass('d-none');
+                    $('#step-2').removeClass('d-none');
+                    currentStep = 1;
+                    habilitarBotonesValidando();
+                    return;
+                }
+
                 $.ajax({
                     type: "post",
                     url: "{{ route('usuario.enviar-codigo-verificacion') }}",
@@ -787,36 +798,74 @@
                         if (response.status === 'success') {
                             codigoVerificacion = response.codigo_generado;
                             console.log('✅ Código enviado exitosamente');
+                            // Resetear contador en caso de éxito
+                            otpRetryCount = 0;
                             // Mostrar modal de verificación
                             $('#menu-verificacion').addClass('menu-active');
                             $('.menu-hider').addClass('menu-active');
                         } else {
                             console.log('❌ Error en la respuesta:', response);
-                            alert('Error: ' + (response.errors.telefono ? response.errors
-                                .telefono[0] : 'Error desconocido'));
+                            alert('Error: ' + (response.errors.telefono ? response.errors.telefono[0] : 'Error desconocido'));
                         }
                         habilitarBotonesValidando();
                     },
                     error: function(xhr, status, error) {
-                        // console.log("❌ Error: ", xhr.responseJSON, 'skhfkhgkhkjhgkjhs');
-                        var codigo = xhr.responseJSON.codigo_error;
-                        // console.log("❌ Error: ", codigo);
+                        // Incrementar contador de reintentos
+                        otpRetryCount++;
+                        console.log(`❌ Intento fallido ${otpRetryCount} de ${MAX_OTP_RETRIES}`);
+
+                        var codigo = xhr.responseJSON?.codigo_error;
+                        
+                        // Si alcanzamos el máximo de reintentos, omitir validación OTP
+                        if (otpRetryCount >= MAX_OTP_RETRIES) {
+                            console.log('⚠️ Máximo de reintentos alcanzado. Omitiendo validación OTP.');
+                            
+                            // Marcar teléfono como no verificado pero permitir continuar
+                            $('#telefono_verificado').val(0);
+                            
+                            // Mostrar mensaje al usuario
+                            $('#mensaje-toast-error-snackbar').text(
+                                'No pudimos verificar tu número. Continuarás sin verificación de teléfono.'
+                            );
+                            $('#snackbar-error').removeClass('hide').addClass('show');
+                            setTimeout(() => {
+                                $('#snackbar-error').removeClass('show').addClass('hide');
+                            }, 3000);
+                            
+                            // TODO: Aquí debes avanzar al siguiente paso
+                            // Por ejemplo, si estás en un wizard de pasos:
+                            // steps[currentStep].classList.add('d-none');
+                            // currentStep++;
+                            // steps[currentStep].classList.remove('d-none');
+                            $('#step-1').addClass('d-none');
+                            $('#step-2').removeClass('d-none');
+
+                            currentStep = 1;
+                            omitirValidacionWhatsapp = true;
+                            
+                            // O cerrar el modal y permitir continuar
+                            $('#menu-verificacion').removeClass('menu-active');
+                            $('.menu-hider').removeClass('menu-active');
+                            
+                            habilitarBotonesValidando();
+                            return;
+                        }
+
+                        // Lógica normal de error si no hemos alcanzado el máximo
                         if (codigo == 401 || codigo == 500) {
                             $('#menu-verificacion').removeClass('menu-active');
                             $('.menu-hider').removeClass('menu-active');
-                            // $('#codigo-incorrecto').addClass('menu-active');
                             $('#verificar-numero').addClass('d-none');
                             $('#telefono_verificado').val(0);
-                            $('#telefono_verificado').val(0);
-                            // $('#digitos_pais').val('');
-                            $('#mensaje-toast-error-snackbar').text(xhr.responseJSON.errors
-                                .general[0]);
+                            
+                            var mensajeError = xhr.responseJSON?.errors?.general?.[0] || 'Error al enviar el código';
+                            mensajeError += ` (Intento ${otpRetryCount}/${MAX_OTP_RETRIES})`;
+                            
+                            $('#mensaje-toast-error-snackbar').text(mensajeError);
                             $('#snackbar-error').removeClass('hide').addClass('show');
                             setTimeout(() => {
-                                $('#snackbar-error').removeClass('show').addClass(
-                                    'hide');
+                                $('#snackbar-error').removeClass('show').addClass('hide');
                             }, 5000);
-
                         } else {
                             var errorMessage = 'Error al enviar el código de verificación.';
                             if (xhr.responseJSON && xhr.responseJSON.errors) {
@@ -827,8 +876,11 @@
                                     errorMessage = errors.general[0];
                                 }
                             }
+                            errorMessage += ` (Intento ${otpRetryCount}/${MAX_OTP_RETRIES})`;
                             alert(errorMessage);
                         }
+                        
+                        habilitarBotonesValidando();
                     },
                 });
             }

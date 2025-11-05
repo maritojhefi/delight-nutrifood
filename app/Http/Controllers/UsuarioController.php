@@ -489,6 +489,15 @@ class UsuarioController extends Controller
 
     public function enviarCodigoVerificacion(Request $request)
     {
+        // Simulación de solicitudes
+        // // if (session('otp_test_count', 0) < 3) {
+        // //     session(['otp_test_count' => session('otp_test_count', 0) + 1]);
+        // //     return response()->json([
+        // //         'errors' => ['general' => ['Servicio de mensajería temporalmente no disponible']],
+        // //         'codigo_error' => 500
+        // //     ], 500);
+        // // }
+        // // session()->forget('otp_test_count');
 
         $numeroWhatsapp = NumeroWhatsapp::first();
         if ($numeroWhatsapp) {
