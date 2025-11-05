@@ -203,6 +203,10 @@ class VentaService implements VentaServiceInterface
             $venta->usuario_manual = null;
             $venta->save();
 
+            // Actualizar totales y descuentos ya que el nuevo cliente puede tener convenios diferentes
+            $this->calculadoraService->actualizarTotalesVenta($venta);
+            $this->actualizarTodosLosCamposDescuentos($venta);
+
             return VentaResponse::success(
                 $venta->fresh(),
                 "Se asignó a esta venta el cliente: {$cliente->name}"
@@ -234,12 +238,11 @@ class VentaService implements VentaServiceInterface
             $venta->descuento = $descuento;
             $venta->save();
 
-            // Actualizar campos de descuentos para todos los productos en la venta
-            foreach ($venta->productos as $producto) {
-                $this->actualizarCamposDescuentosProducto($venta, $producto);
-            }
-
+            // Actualizar totales primero
             $this->calculadoraService->actualizarTotalesVenta($venta);
+
+            // Actualizar campos de descuentos para todos los productos de manera eficiente
+            $this->actualizarTodosLosCamposDescuentos($venta);
 
             return VentaResponse::success($venta->fresh(), 'Descuento actualizado!');
         } catch (\Exception $e) {
@@ -247,17 +250,29 @@ class VentaService implements VentaServiceInterface
         }
     }
 
-    private function actualizarCamposDescuentosProducto(Venta $venta, $producto): void
+    /**
+     * Actualiza los campos de descuentos para TODOS los productos de la venta
+     * Este método calcula una sola vez y actualiza todos los productos en batch
+     * Más eficiente que calcular por cada producto individualmente
+     */
+    private function actualizarTodosLosCamposDescuentos(Venta $venta): void
     {
-        // Calcular descuentos usando el servicio de convenio
+        // Calcular descuentos una sola vez para todos los productos
         $calculos = $this->calculadoraService->calcularVenta($venta);
-        $prodLista = collect($calculos->listaCuenta)->firstWhere('id', $producto->id);
 
-        if ($prodLista) {
+        if (empty($calculos->listaCuenta)) {
+            return;
+        }
+
+        foreach ($calculos->listaCuenta as $prodLista) {
+            // Calcular total original (precio original * cantidad)
+            $totalOriginal = $prodLista['precio_original'] * $prodLista['cantidad'];
+
             DB::table('producto_venta')
                 ->where('venta_id', $venta->id)
-                ->where('producto_id', $producto->id)
+                ->where('producto_id', $prodLista['id'])
                 ->update([
+                    'total' => $totalOriginal,
                     'descuento_producto' => $prodLista['descuento_producto'] ?? 0,
                     'descuento_convenio' => $prodLista['descuento_convenio'] ?? 0,
                     'total_adicionales' => $prodLista['total_adicionales'] ?? 0,

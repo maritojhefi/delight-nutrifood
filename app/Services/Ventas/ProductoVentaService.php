@@ -115,7 +115,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 }
             }
 
-            // Restaurar stock si es contable
+            // Restaurar stock del producto si es contable
             if ($producto->contable) {
                 $stockResponse = $this->stockService->actualizarStock($producto, 'restar', 1, $venta->sucursale_id);
                 if (!$stockResponse->success) {
@@ -125,8 +125,16 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             // Actualizar o eliminar registro
             if ($registro->cantidad == 1) {
+                // Si es el último, restaurar stock de adicionales antes de eliminar
+                if ($adicionales && count($adicionales) > 0) {
+                    $ultimoItem = $adicionales[count($adicionales)];
+                    $this->restaurarStockAdicionales([$ultimoItem]);
+                }
                 $venta->productos()->detach($producto->id);
             } else {
+                // Si quedan más, actualizar adicionales (esto restaura stock automáticamente)
+                $this->actualizarAdicionales($venta, $producto, 'restar');
+
                 DB::table('producto_venta')
                     ->where('venta_id', $venta->id)
                     ->where('producto_id', $producto->id)
@@ -136,10 +144,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 $this->actualizarCamposDescuentos($venta, $producto);
             }
 
-            // Actualizar adicionales
-            $this->actualizarAdicionales($venta, $producto, 'restar');
-
-            // Actualizar totales primero
+            // Actualizar totales
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
             $productoVenta = $venta->productos()
@@ -178,20 +183,32 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 return VentaResponse::warning("El producto {$producto->nombre} no existe en esta venta");
             }
 
-            // Verificar si tiene adicionales personalizados
-            $arrayAdicionales = json_decode($registro->adicionales);
-            $todoVacio = $this->verificarAdicionalesVacios($arrayAdicionales);
+            // Decodificar adicionales
+            $arrayAdicionales = json_decode($registro->adicionales, true);
 
-            if (!$todoVacio) {
-                throw VentaException::productoConAdicionales($producto->nombre);
+            // Validar que todos los items estén pendientes si el producto tiene sección
+            if ($producto->seccion && $arrayAdicionales) {
+                foreach ($arrayAdicionales as $indice => $itemData) {
+                    $estado = $itemData['estado'] ?? 'pendiente';
+                    if ($estado !== 'pendiente') {
+                        throw new \Exception(
+                            "No se puede eliminar el producto completo. Tiene items en estado '{$estado}' que ya están siendo preparados. Solo se pueden eliminar productos con todos los items pendientes."
+                        );
+                    }
+                }
             }
 
-            // Restaurar stock si es contable
+            // Restaurar stock del producto si es contable
             if ($producto->contable) {
                 $stockResponse = $this->stockService->actualizarStock($producto, 'restar', $registro->cantidad, $venta->sucursale_id);
                 if (!$stockResponse->success) {
                     return VentaResponse::error('Error al restaurar stock: ' . $stockResponse->message);
                 }
+            }
+
+            // Restaurar stock de TODOS los adicionales
+            if ($arrayAdicionales) {
+                $this->restaurarStockAdicionales($arrayAdicionales);
             }
 
             // Eliminar producto
@@ -313,7 +330,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             }
 
 
-            // Restaurar stock si es contable
+            // Restaurar stock del producto si es contable
             if ($producto->contable) {
                 $stockResponse = $this->stockService->actualizarStock($producto, 'restar', 1, $venta->sucursale_id);
                 if (!$stockResponse->success) {
@@ -321,18 +338,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 }
             }
 
-            // Restaurar stock de adicionales
-            $itemData = $array[$posicion];
-            $adicionalesItem = $itemData['adicionales'] ?? $itemData; // Compatibilidad con formato antiguo
-
-            foreach ($adicionalesItem as $adic) {
-                $adicional = Adicionale::where('nombre', key($adic))->first();
-                if ($adicional && $adicional->contable) {
-                    $adicional->increment('cantidad');
-                    $adicional->save();
-                    GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
-                }
-            }
+            // Restaurar stock de adicionales del item
+            $itemEliminado = $array[$posicion];
+            $this->restaurarStockAdicionales([$itemEliminado]);
 
             // Eliminar item y reorganizar
             unset($array[$posicion]);
@@ -418,18 +426,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
                     case 'restar':
                         if ($registro->cantidad > 0) {
-                            // Restaurar stock de adicionales
-                            $itemData = $json[$cantidad];
-                            $adicionalesItem = $itemData['adicionales'] ?? $itemData; // Compatibilidad con formato antiguo
-
-                            foreach ($adicionalesItem as $adic) {
-                                $adicional = Adicionale::where('nombre', key($adic))->first();
-                                if ($adicional && $adicional->contable) {
-                                    $adicional->increment('cantidad');
-                                    $adicional->save();
-                                    GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
-                                }
-                            }
+                            // Restaurar stock de adicionales del último item
+                            $ultimoItem = $json[$cantidad];
+                            $this->restaurarStockAdicionales([$ultimoItem]);
                             unset($json[$cantidad]);
                         }
                         break;
@@ -590,6 +589,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             $this->calculadoraService->actualizarTotalesVenta($venta);
 
+            // Actualizar campos de descuentos para todos los productos
+            $this->actualizarTodosLosCamposDescuentos($venta);
+
             // Disparar evento para cocina/nutribar según sección del producto
             $this->dispararEventoPedido($venta, $producto, "Se agregó pedido de {$producto->nombre}", 'success');
 
@@ -693,21 +695,10 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             $adicionalesOriginales = json_decode($productoVenta->adicionales, true);
 
+            // Restaurar stock de los adicionales originales del item
             if (isset($adicionalesOriginales[$indice])) {
-                // Obtener los adicionales del item (compatibilidad con formato antiguo)
-                $itemData = $adicionalesOriginales[$indice];
-                $adicionalesDelItem = $itemData['adicionales'] ?? $itemData;
-
-                foreach ($adicionalesDelItem as $nombreAdicional) {
-                    $adicional = Adicionale::where('nombre', key($nombreAdicional))->first();
-                    if ($adicional) {
-                        if ($adicional->contable) {
-                            $adicional->increment('cantidad');
-                            $adicional->save();
-                            GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
-                        }
-                    }
-                }
+                $itemOriginal = $adicionalesOriginales[$indice];
+                $this->restaurarStockAdicionales([$itemOriginal]);
             }
 
             $adicionalesNuevos = $adicionalesNuevos->fresh();
@@ -754,6 +745,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
             }
 
             $this->calculadoraService->actualizarTotalesVenta($venta);
+
+            // Actualizar campos de descuentos para todos los productos
+            $this->actualizarTodosLosCamposDescuentos($venta);
 
             // Disparar evento para cocina/nutribar según sección del producto
             $this->dispararEventoPedido($venta, $producto, "Se actualizó pedido de {$producto->nombre}", 'success');
@@ -819,12 +813,13 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 // Actualizar totales
                 $this->calculadoraService->actualizarTotalesVenta($venta);
 
+                // Actualizar campos de descuentos para todos los productos
+                $this->actualizarTodosLosCamposDescuentos($venta);
+
                 $productoVentaInfo = $this->obtenerProductoVentaIndividual($venta, $producto_venta_id);
                 if (!$productoVentaInfo->success) {
                     throw new VentaException("Error al obtener el registro correspondiente", "error", [], 404);
                 }
-
-                $this->calculadoraService->actualizarTotalesVenta($venta);
 
                 // Disparar evento para cocina/nutribar según sección del producto
                 $this->dispararEventoPedido($venta, $producto, "Se disminuyó cantidad de {$producto->nombre}", 'warning');
@@ -885,23 +880,14 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     return $validacion;
                 }
 
-                // Restaurar stock si es contable
+                // Restaurar stock del producto si es contable
                 if ($producto->contable) {
                     $this->stockService->actualizarStock($producto, 'restar', 1, $venta->sucursale_id);
                 }
 
-                // Restaurar stock de adicionales
-                $itemData = $array[$posicion];
-                $adicionalesItem = $itemData['adicionales'] ?? $itemData; // Compatibilidad con formato antiguo
-
-                foreach ($adicionalesItem as $nombreAdicional) {
-                    $adicional = Adicionale::where('nombre', key($nombreAdicional))->first();
-                    if ($adicional && $adicional->contable) {
-                        $adicional->increment('cantidad');
-                        $adicional->save();
-                        GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
-                    }
-                }
+                // Restaurar stock de adicionales del item
+                $itemEliminado = $array[$posicion];
+                $this->restaurarStockAdicionales([$itemEliminado]);
 
                 // Eliminar item y reorganizar
                 unset($array[$posicion]);
@@ -918,6 +904,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     ->decrement('cantidad');
 
                 $this->calculadoraService->actualizarTotalesVenta($venta);
+
+                // Actualizar campos de descuentos para todos los productos
+                $this->actualizarTodosLosCamposDescuentos($venta);
 
                 // Disparar evento para cocina/nutribar según sección del producto
                 $this->dispararEventoPedido($venta, $producto, "Se eliminó un item de {$producto->nombre}", 'warning');
@@ -971,45 +960,23 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     }
                 }
 
-                // Restaurar stock si es contable
+                // Restaurar stock del producto si es contable
                 if ($producto->contable) {
                     $this->stockService->actualizarStock($producto, 'restar', $pivot->cantidad, $venta->sucursale_id);
                 }
 
-                // Extraer todos los nombres de adicionales
-                $nombresAdicionales = [];
-                foreach ($arrayOrdenes as $orden) {
-                    foreach ($orden as $adicionalData) {
-                        $nombresAdicionales[] = key($adicionalData);
-                    }
-                }
-
-                // Cargar todos los adicionales de una vez, indexados por nombre
-                $adicionales = Adicionale::whereIn('nombre', array_unique($nombresAdicionales))
-                    ->get()
-                    ->keyBy('nombre');
-
-                // Restaurar el stock de los adicionales del producto_venta
-                for ($i = 1; $i <= count($arrayOrdenes); $i++) {
-                    $itemData = $arrayOrdenes[$i];
-                    $adicionalesItem = $itemData['adicionales'] ?? $itemData; // Compatibilidad con formato antiguo
-
-                    foreach ($adicionalesItem as $nombreAdicional) {
-                        $nombre = key($nombreAdicional);
-                        $adicional = $adicionales->get($nombre);
-
-                        if ($adicional && $adicional->contable) {
-                            $adicional->increment('cantidad');
-                            $adicional->save();
-                            GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar');
-                        }
-                    }
+                // Restaurar stock de TODOS los adicionales del producto_venta
+                if ($arrayOrdenes) {
+                    $this->restaurarStockAdicionales($arrayOrdenes);
                 }
 
                 // Eliminar registrod de la tabla pivote
                 DB::table('producto_venta')->where('id', $pivot->id)->delete();
 
                 $this->calculadoraService->actualizarTotalesVenta($venta);
+
+                // Actualizar campos de descuentos para todos los productos
+                $this->actualizarTodosLosCamposDescuentos($venta);
 
                 // Disparar evento para cocina/nutribar según sección del producto
                 $this->dispararEventoPedido($venta, $producto, "Se eliminó pedido de {$producto->nombre}", 'warning');
@@ -1332,6 +1299,39 @@ class ProductoVentaService implements ProductoVentaServiceInterface
     }
 
     /**
+     * Actualiza los campos de descuentos para TODOS los productos de la venta
+     * Utilizar este método cuando se necesite recalcular todos los productos
+     * (por ejemplo, cuando cambian convenios o descuentos globales)
+     */
+    private function actualizarTodosLosCamposDescuentos(Venta $venta): void
+    {
+        // Calcular descuentos usando el servicio de convenio
+        $calculos = $this->calculadoraService->calcularVenta($venta);
+
+        if (empty($calculos->listaCuenta)) {
+            Log::warning('Lista de cuenta vacía al actualizar campos de descuentos', [
+                'venta_id' => $venta->id
+            ]);
+            return;
+        }
+
+        foreach ($calculos->listaCuenta as $prodLista) {
+            // Calcular total original (precio original * cantidad)
+            $totalOriginal = $prodLista['precio_original'] * $prodLista['cantidad'];
+
+            DB::table('producto_venta')
+                ->where('venta_id', $venta->id)
+                ->where('producto_id', $prodLista['id'])
+                ->update([
+                    'total' => $totalOriginal,
+                    'descuento_producto' => $prodLista['descuento_producto'] ?? 0,
+                    'descuento_convenio' => $prodLista['descuento_convenio'] ?? 0,
+                    'total_adicionales' => $prodLista['total_adicionales'] ?? 0,
+                ]);
+        }
+    }
+
+    /**
      * Cambia el estado de un item específico en el campo adicionales
      * 
      * @param int $producto_venta_id ID del registro en producto_venta
@@ -1481,6 +1481,65 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         }
 
         return true;
+    }
+
+    /**
+     * Restaura el stock de adicionales contables de un item o varios items
+     * 
+     * @param array $items Array de items (formato: [['adicionales' => [...]] ó formato antiguo])
+     * @param int|null $cantidad Cantidad de veces a restaurar (default: 1 por cada item)
+     * @return void
+     */
+    private function restaurarStockAdicionales(array $items, ?int $cantidad = null): void
+    {
+        // Si está vacío, no hacer nada
+        if (empty($items)) {
+            return;
+        }
+
+        // Detectar si es un solo item o un array de items
+        // Un solo item tiene la clave 'adicionales' directamente
+        if (isset($items['adicionales'])) {
+            // Es un solo item en formato nuevo
+            $items = [$items];
+        } else {
+            // Es un array de items, convertir a indexado desde 0
+            $primerElemento = reset($items);
+
+            // Si el primer elemento no es un array, es formato antiguo de un solo item
+            if (!is_array($primerElemento)) {
+                $items = [$items];
+            } else {
+                // Es array de items, normalizar índices
+                $items = array_values($items);
+            }
+        }
+
+        foreach ($items as $itemData) {
+            // Compatibilidad con formato antiguo y nuevo
+            $adicionalesItem = $itemData['adicionales'] ?? $itemData;
+
+            // Si está vacío, continuar con el siguiente
+            if (empty($adicionalesItem)) {
+                continue;
+            }
+
+            foreach ($adicionalesItem as $adic) {
+                $nombreAdicional = is_array($adic) ? key($adic) : $adic;
+                $adicional = Adicionale::where('nombre', $nombreAdicional)->first();
+
+                if ($adicional && $adicional->contable) {
+                    $cantidadRestaurar = $cantidad ?? 1;
+
+                    // Restaurar stock en la tabla adicionales
+                    $adicional->increment('cantidad', $cantidadRestaurar);
+                    $adicional->save();
+
+                    // Actualizar en el menú del día (tabla almuerzos) - UNA sola llamada con la cantidad
+                    GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'aumentar', $cantidadRestaurar);
+                }
+            }
+        }
     }
 
     /**

@@ -250,9 +250,7 @@
             const precioOriginalTotal = precioOriginal * cantidad;
 
             Swal.fire({
-                customClass: {
-                    popup: 'swal-fondo-blanco'
-                },
+
                 allowOutsideClick: false,
                 title: false,
                 html: `
@@ -1481,16 +1479,22 @@
                     : '#6c757d';
 
                 itemsHTML += `
-                    <div class="card mb-2" style="border-left: 3px solid ${borderColor};">
-                        <div class="card-body p-2">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <strong style="font-size: 12px;">Item ${item.indice}</strong>
-                                ${estadoHTML}
+                    <div class="col-6">
+                        <div class="card mb-2 h-100" style="border-left: 3px solid ${borderColor};">
+                            <div class="card-body p-2 d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <strong style="font-size: 12px;">Item ${item.indice}</strong>
+                                    ${estadoHTML}
+                                </div>
+                                ${tiempoHTML}
+                                <div class="mt-1">
+                                    <div style="font-size: 11px; color: #666; margin-bottom: 2px;">Adicionales:</div>
+                                    ${adicionalesHTML}
+                                </div>
+                                <div class="mt-auto">
+                                    ${botonEliminar}
+                                </div>
                             </div>
-                            ${tiempoHTML}
-                            <div style="font-size: 11px; color: #666; margin-bottom: 2px;">Adicionales:</div>
-                            ${adicionalesHTML}
-                            ${botonEliminar}
                         </div>
                     </div>
                 `;
@@ -1519,10 +1523,12 @@
                             <strong>Total de items:</strong> ${cantidad_total}
                         </div>
                         ${observacionHTML}
-                        ${itemsHTML}
+                        <div class="row g-2">
+                            ${itemsHTML}
+                        </div>
                     </div>
                 `,
-                width: '450px',
+                width: '600px',
                 showCloseButton: true,
                 showConfirmButton: false,
                 customClass: {
