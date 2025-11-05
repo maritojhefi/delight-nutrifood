@@ -730,6 +730,7 @@
                         validacionOTPStep();
                     } else {
                         const errors = data.errors;
+                        habilitarBotonesValidando();
                         displayErrorMessages(errors);
                         return {
                             valid: false,
@@ -738,6 +739,7 @@
                     }
                 } catch (error) {
                     console.error('Validation error:', error);
+                    habilitarBotonesValidando();
                     return {
                         valid: false,
                         error: 'Network error occurred'
