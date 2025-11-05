@@ -93,7 +93,6 @@ class UsuarioController extends Controller
             $request->all(),
             [
                 'name' => 'required|string|max:80',
-                'email' => 'required|email',
                 'codigo_pais' => 'required|string|max:20',
                 'telefono' => 'required|string',
                 'profesion' => 'required|string|max:40',
@@ -114,9 +113,6 @@ class UsuarioController extends Controller
             [
                 // Mensajes personalizados
                 'name.required' => 'Por favor, ingresa tu nombre.',
-                'email.required' => 'El correo electrónico es obligatorio.',
-                'email.email' => 'Por favor, ingresa un correo electrónico válido.',
-                'email.unique' => 'Este correo electrónico ya está registrado.',
                 'codigo_pais.required' => 'El codigo de pais es obligatorio',
                 'telefono.required' => 'El número de teléfono es obligatorio.',
                 'telefono.string' => 'Por favor, ingresa un número de teléfono válido.',
@@ -172,7 +168,8 @@ class UsuarioController extends Controller
             // El usuario no existe, entonces creamos uno nuevo
             $user = new User();
             $user->name = $request->name;
-            $user->email = $request->email;
+            // $user->email = $request->email;
+            $user->email = '';
             $user->codigo_pais = $request->codigo_pais;
             $user->telf = $request->telefono;
             $user->profesion = $request->profesion;
@@ -262,7 +259,6 @@ class UsuarioController extends Controller
             $request->all(),
             [
                 'name' => 'required|string|max:80',
-                'email' => 'required|email',
                 'codigo_pais' => 'required|string|max:20',
                 'telefono' => 'required|' . $validacion,
                 'foto' => [
@@ -274,9 +270,6 @@ class UsuarioController extends Controller
             [
                 // Mensajes personalizados
                 'name.required' => 'Por favor, ingresa tu nombre.',
-                'email.required' => 'El correo electrónico es obligatorio.',
-                'email.email' => 'Por favor, ingresa un correo electrónico válido.',
-                'email.unique' => 'Este correo electrónico ya está registrado.',
                 'telefono.required' => 'El número de teléfono es obligatorio.',
                 'telefono.string' => 'Por favor, ingresa un número de teléfono válido.',
                 'foto.mimes' => 'El archivo debe ser una imagen en formato JPEG, PNG, JPG, HEIC o HEIF.',
@@ -312,7 +305,9 @@ class UsuarioController extends Controller
         }
 
         if ($request->telefono_verificado == 0) {
-            $telefonoExists = User::where('codigo_pais', $request->codigo_pais)->where('telf', $request->telefono)->where('verificado', 1)->exists();
+            $telefonoExists = User::where('codigo_pais', $request->codigo_pais)->where('telf', $request->telefono)->exists();
+
+            Log::debug("Existe ya un usuario con codigo pais $request->codigo_pais y numero $request->telefono ?", [$telefonoExists]);
 
             if ($telefonoExists) {
                 $customErrors = [
@@ -327,6 +322,12 @@ class UsuarioController extends Controller
                     422,
                 );
             }
+
+            return response()->json([
+                'status' => 'otp-register-validation',
+                'message' => 'Verificando vía whatsapp',
+                'user_exists' => $userExists,
+            ]);
         }
 
         return response()->json([
