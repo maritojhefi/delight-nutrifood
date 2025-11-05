@@ -65,8 +65,61 @@
     </div>
 @endsection
 
+@push('header')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slim-select@2/dist/slimselect.min.css" />
+<style>
+    /* Target the main container created by Slim Select based on your original select's ID */
+    #country-code-selector + .ss-main .ss-single-selected,
+    #country-code-selector + .ss-main .ss-selected-text {
+        /* These properties prevent the text from breaking inside the element */
+        word-break: normal !important; 
+        overflow-wrap: normal !important;
+        white-space: nowrap !important; /* Forces text to stay on one line */
+    }
+
+    /* Selects the specific text container within the Slim Select element */
+    .ss-main .ss-single {
+        /* Prevents the text from wrapping to the next line */
+        white-space: nowrap !important; 
+        
+        /* Ensures words are not broken forcefully */
+        word-break: normal !important; 
+        overflow-wrap: normal !important;
+    }
+</style>
+@endpush
+
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/slim-select@2/dist/slimselect.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/google-libphonenumber/dist/libphonenumber.js"></script>
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectId = '{{ $id ?? 'country-code-selector' }}';
+
+        const selectElement = document.getElementById(selectId);
+
+        let select = document.getElementById(selectId);
+        select.classList.remove('select2-hidden-accessible'); // limpia restos de select2
+        select.style.display = '';
+
+        console.log(select, selectElement);
+
+        if (selectElement) {
+
+            // muestra de nuevo el select si fue ocultado
+
+            // Inicializar SlimSelect
+            new SlimSelect({
+                select: '#' + selectId,
+                placeholder: 'Seleccione un país',
+                allowDeselect: false,
+                searchPlaceholder: 'Buscar país...',
+                searchText: 'Sin resultados',
+                showSearch: true
+            });
+        }
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
         const passwordInput = document.getElementById('password-input');
         const toggleButton = document.querySelector('.password-toggle');

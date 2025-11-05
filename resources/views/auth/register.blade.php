@@ -51,7 +51,7 @@
                             {{-- Telefono --}}
                             <div class="d-flex flex-column">
                                 <label for="telefono">Teléfono</label>
-                                <div class="input-style remove-mb d-flex flex-row justify-content-between ">
+                                <div class="input-style remove-mb d-flex flex-row justify-content-between gap-2">
                                     <x-countrycode-select></x-countrycode-select>
                                     <div class="d-flex flex-column w-99">
                                         <input type="number" class="no-padding text-center form-control rounded-sm"
@@ -435,6 +435,30 @@
         <p class="color-white mb-0 pb-3" id="mensaje-toast-error-snackbar" style="line-height: 18px;"></p>
     </div>
 @endpush
+
+@push('header')
+<style>
+    /* Target the main container created by Slim Select based on your original select's ID */
+    #country-code-selector + .ss-main .ss-single-selected,
+    #country-code-selector + .ss-main .ss-selected-text {
+        /* These properties prevent the text from breaking inside the element */
+        word-break: normal !important; 
+        overflow-wrap: normal !important;
+        white-space: nowrap !important; /* Forces text to stay on one line */
+    }
+
+    /* Selects the specific text container within the Slim Select element */
+    .ss-main .ss-single {
+        /* Prevents the text from wrapping to the next line */
+        white-space: nowrap !important; 
+        
+        /* Ensures words are not broken forcefully */
+        word-break: normal !important; 
+        overflow-wrap: normal !important;
+    }
+</style>
+@endpush
+
 @push('scripts')
     <!-- Revisar contraseña -->
     <script>
@@ -999,7 +1023,7 @@
     <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/slim-select@2/dist/slimselect.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/google-libphonenumber/dist/libphonenumber.js"></script>s
+    <script src="https://cdn.jsdelivr.net/npm/google-libphonenumber/dist/libphonenumber.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const selectId = '{{ $id ?? 'country-code-selector' }}';
