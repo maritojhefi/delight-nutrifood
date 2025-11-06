@@ -147,11 +147,19 @@ class UsuarioController extends Controller
         // Verificar si el usuario ya existe por su correo electrónico
         $user = User::where('email', $request->email)->first();
 
+        // Obtener el primer nombre del usuario para generar su correo
+        $nameParts = explode(' ', $request->name);
+        $firstName = strtolower($nameParts[0]);
+
+        // Concatenar codigo pais y numero telefonico
+        $phoneNumber = $request->codigo_pais . $request->telefono;
+
         if ($user) {
             // El usuario ya existe, entonces actualizamos su información
             $user->name = $request->name;
             $user->codigo_pais = $request->codigo_pais;
             $user->telf = $request->telefono;
+            $user->email = $firstName . $phoneNumber . '@dmail.com';
             $user->profesion = $request->profesion;
             $user->nacimiento = $request->ano_nacimiento . '-' . $request->mes_nacimiento . '-' . $request->dia_nacimiento;
             // $user->nacimiento = $request->nacimiento;
@@ -169,7 +177,7 @@ class UsuarioController extends Controller
             $user = new User();
             $user->name = $request->name;
             // $user->email = $request->email;
-            $user->email = '';
+            $user->email = $firstName . $phoneNumber . '@dmail.com';
             $user->codigo_pais = $request->codigo_pais;
             $user->telf = $request->telefono;
             $user->profesion = $request->profesion;
