@@ -1561,6 +1561,9 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     $seccion = 'cocina';
                     break;
             }
+            if ($venta->cliente) {
+                $mensaje = $mensaje . ', para el cliente: ' . $venta->cliente->name;
+            }
             event(new CocinaPedidoEvent($mensaje, $venta->id, $userId, $seccion, $icono));
         }
     }

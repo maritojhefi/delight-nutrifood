@@ -408,35 +408,35 @@ class CocinaDespachePlanes extends Component
             }
         }
 
-        // Seleccionar automáticamente el plan según la hora actual solo en la primera carga
-        // Solo si el usuario no ha interactuado manualmente con los filtros
-        if (!$this->filtroInicializado && $this->planSeleccionado === null && empty($this->planesSeleccionados)) {
-            $horaActual = Carbon::now()->format('H:i:s');
-            $planEncontrado = false;
+        // // Seleccionar automáticamente el plan según la hora actual solo en la primera carga
+        // // Solo si el usuario no ha interactuado manualmente con los filtros
+        // if (!$this->filtroInicializado && $this->planSeleccionado === null && empty($this->planesSeleccionados)) {
+        //     $horaActual = Carbon::now()->format('H:i:s');
+        //     $planEncontrado = false;
 
-            foreach ($planesColeccion as $plan) {
-                if ($plan->hora_inicio && $plan->hora_fin) {
-                    try {
-                        $horaInicio = Carbon::parse($plan->hora_inicio)->format('H:i:s');
-                        $horaFin = Carbon::parse($plan->hora_fin)->format('H:i:s');
-                        // Verificar si la hora actual está dentro del rango
-                        if ($horaActual >= $horaInicio && $horaActual <= $horaFin) {
-                            // Agregar el plan encontrado al array de planes seleccionados
-                            $this->planesSeleccionados[] = $plan->id;
-                            $planEncontrado = true;
-                            break;
-                        }
-                    } catch (\Exception $e) {
-                        // Si hay error al parsear las horas, continuar con el siguiente plan
-                        continue;
-                    }
-                }
-            }
-            // Si no se encontró ningún plan activo, seleccionar el primero
-            if (!$planEncontrado && $planesColeccion->count() > 0) {
-                $this->planesSeleccionados[] = $planesColeccion->first()->id;
-            }
-        }
+        //     foreach ($planesColeccion as $plan) {
+        //         if ($plan->hora_inicio && $plan->hora_fin) {
+        //             try {
+        //                 $horaInicio = Carbon::parse($plan->hora_inicio)->format('H:i:s');
+        //                 $horaFin = Carbon::parse($plan->hora_fin)->format('H:i:s');
+        //                 // Verificar si la hora actual está dentro del rango
+        //                 if ($horaActual >= $horaInicio && $horaActual <= $horaFin) {
+        //                     // Agregar el plan encontrado al array de planes seleccionados
+        //                     $this->planesSeleccionados[] = $plan->id;
+        //                     $planEncontrado = true;
+        //                     break;
+        //                 }
+        //             } catch (\Exception $e) {
+        //                 // Si hay error al parsear las horas, continuar con el siguiente plan
+        //                 continue;
+        //             }
+        //         }
+        //     }
+        //     // Si no se encontró ningún plan activo, seleccionar el primero
+        //     if (!$planEncontrado && $planesColeccion->count() > 0) {
+        //         $this->planesSeleccionados[] = $planesColeccion->first()->id;
+        //     }
+        // }
 
         // Limpiar planes seleccionados que ya no existen en la colección actual
         if (!empty($this->planesSeleccionados)) {

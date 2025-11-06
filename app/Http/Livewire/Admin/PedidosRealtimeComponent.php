@@ -88,6 +88,15 @@ class PedidosRealtimeComponent extends Component
         //     'type' => 'warning',
         //     'message' => "" . $data['message']
         // ]);
+        $this->dispatchBrowserEvent('reproducirTexto', [
+            'texto' => $data['message'],
+            'voz' => 'Spanish Latin American Female',
+            'opciones' => [
+                'rate' => 1.2,
+                'pitch' => 1,
+                'volume' => 1
+            ]
+        ]);
         $this->emit('notificacionCocina', $data);
     }
     public function cambiarEstado($id, $estadoActual)
