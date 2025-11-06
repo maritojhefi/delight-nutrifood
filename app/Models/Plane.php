@@ -49,7 +49,7 @@ class Plane extends Model
     public function usuarios()
     {
         return $this->belongsToMany(User::class)
-            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'cocina');
+            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'cocina', 'sopa_despachada_at', 'segundo_despachado_at', 'despachado_at');
     }
     public function producto()
     {

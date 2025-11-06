@@ -204,7 +204,20 @@ class GlobalHelper
                 if ($det['ENVIO'] == Plane::ENVIO3) {
                     $tipoEnvio = 'a.- ' . Plane::ENVIO3;
                 }
-
+                switch ($det['ENVIO']) {
+                    case Plane::ENVIO1:
+                        $envioIcon = 'fa fa-table';
+                        break;
+                    case Plane::ENVIO2:
+                        $envioIcon = 'fa fa-user';
+                        break;
+                    case Plane::ENVIO3:
+                        $envioIcon = 'fa fa-truck';
+                        break;
+                    default:
+                        $envioIcon = 'fa fa-user';
+                        break;
+                }
                 $coleccion->push([
                     'ID' => $lista->id,
                     'NOMBRE' => $lista->name,
@@ -222,6 +235,10 @@ class GlobalHelper
                     'USER_ID' => $lista->user_id,
                     'CLIENTE_INGRESADO' => $lista->cliente_ingresado ?? false,
                     'CLIENTE_INGRESADO_AT' => $lista->cliente_ingresado_at ?? null,
+                    'ENVIO_ICON' => $envioIcon,
+                    'SOPA_DESPACHADA_AT' => $lista->sopa_despachada_at ?? null,
+                    'SEGUNDO_DESPACHADO_AT' => $lista->segundo_despachado_at ?? null,
+                    'DESPACHADO_AT' => $lista->despachado_at ?? null,
                 ]);
             } else {
                 $coleccion->push([
@@ -241,6 +258,10 @@ class GlobalHelper
                     'USER_ID' => $lista->user_id,
                     'CLIENTE_INGRESADO' => $lista->cliente_ingresado ?? false,
                     'CLIENTE_INGRESADO_AT' => $lista->cliente_ingresado_at ?? null,
+                    'ENVIO_ICON' => 'fa fa-user',
+                    'SOPA_DESPACHADA_AT' => null,
+                    'SEGUNDO_DESPACHADO_AT' => null,
+                    'DESPACHADO_AT' => null,
                 ]);
             }
         }

@@ -70,7 +70,7 @@ class User extends Authenticatable
     ];
 
     protected $appends = ['saldo_formateado', 'pathFoto'];
-    
+
     // Constante para la ruta de fotos de perfil en S3
     const RUTA_FOTO = '/imagenes/perfil/';
 
@@ -82,7 +82,7 @@ class User extends Authenticatable
         if (empty($this->foto)) {
             return null;
         }
-        
+
         // Usar el disco configurado para generar la URL correcta
         $disk = GlobalHelper::discoArchivos();
         if ($disk === 's3') {
@@ -153,7 +153,7 @@ class User extends Authenticatable
     public function planes()
     {
         return $this->belongsToMany(Plane::class)
-            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'estado', 'cocina');
+            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'estado', 'cocina', 'sopa_despachada_at', 'segundo_despachado_at', 'despachado_at');
     }
     public function planesPendientes()
     {
@@ -166,12 +166,12 @@ class User extends Authenticatable
     {
         //dd($this->belongsToMany(Plane::class)->wherePivot('start',$fecha));
         return $this->belongsToMany(Plane::class)->wherePivot('start', $fecha) //->wherePivot('detalle','!=',null)
-            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'estado', 'cocina');
+            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'estado', 'cocina', 'sopa_despachada_at', 'segundo_despachado_at', 'despachado_at');
     }
     public function planesSemana()
     {
         return $this->belongsToMany(Plane::class)->wherePivotBetween('start', [date("y-m-d", strtotime("last sunday")), date("y-m-d", strtotime("next sunday"))])
-            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'cocina');
+            ->withPivot('start', 'end', 'title', 'detalle', 'id', 'cocina', 'sopa_despachada_at', 'segundo_despachado_at', 'despachado_at');
     }
 
     public function asistencias()

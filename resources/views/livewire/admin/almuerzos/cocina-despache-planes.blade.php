@@ -1,54 +1,94 @@
 <div>
     @livewire('admin.pedidos-realtime-component')
     <div class="card col-12 letra12 bordeado">
-        <div class="card-header">
-            <div class="row ">
-                <div class="col-sm-6 d-flex">
+        <div class="card-header d-block">
+            <div class="row align-items-center mx-auto justify-content-center">
+                <div class="col-12 col-md-6 col-lg-3 mb-2 mb-lg-0 text-center">
                     <a href="#" wire:click="cambiarDisponibilidad" onclick="event.preventDefault()">
-                        <span class="badge badge-pill badge-primary">Disponibilidad</span>
+                        <span class="badge badge-pill badge-primary">Revisar disponibilidad</span>
                     </a>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3 mb-2 mb-lg-0 text-center">
+                    <strong>{{ App\Helpers\GlobalHelper::fechaFormateada(2, $fechaSeleccionada) }}</strong>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3 mb-2 mb-lg-0">
+                    <input type="date" class="form-control bordeado p-1 m-0 px-2" style="height: 30px"
+                        wire:model="fechaSeleccionada" wire:change="cambioDeFecha">
+                </div>
+                <div class="col-12 col-md-6 col-lg-3 mb-2 mb-lg-0">
+                    <input type="text" class="form-control form-control-sm px-2 m-0" style="height: 30px"
+                        wire:model.debounce.500ms="search" placeholder="Buscar cliente">
+                </div>
+            </div>
+
+            <hr class="my-2">
+
+            <!-- Fila de filtros de planes -->
+            <div class="row align-items-center mx-auto justify-content-center">
+                <div class="col-12 col-md-auto mb-2 mb-md-0">
+                    <select class="form-control p-1 py-0 m-0 bordeado" style="height: 30px"
+                        wire:model="planSeleccionado">
+                        <option value="">Seleccionar plan para filtrar</option>
+                        @foreach ($planesColeccion as $plan)
+                            @if (!in_array($plan->id, $planesSeleccionados))
+                                <option value="{{ $plan->id }}">{{ $plan->nombre }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-auto d-none d-md-block">
                     <div class="m-1">
                         <div wire:loading class="spinner-border" style="width: 20px;height:20px" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <strong>Viendo fecha : {{ date_format(date_create($fechaSeleccionada), 'd-M') }} </strong>
+            </div>
 
-                </div>
-                <div class="col-sm-4">
-                    <h4 class="letra12">Planes por despachar</h4>
-                </div>
-                <div class="col-sm-8">
-                    <div class="row">
-                        <div class="col-sm-6 col-md-3 col-lg-5">
-                            <div class="input-group input-{{ $estadoColor }}">
-                                <a href="#" wire:click="cambiarEstadoBuscador"
-                                    class="input-group-text p-0 m-0 letra12"
-                                    style="height: 30px">{{ $estadoBuscador }}</a>
-                                <input type="text" class="form-control form-control-sm p-0 m-0" style="height: 30px"
-                                    wire:model.debounce.500ms="search">
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-md-4 col-lg-4"><input type="date"
-                                class="form-control bordeado p-0 m-0 ps-1" style="height: 30px"
-                                wire:model="fechaSeleccionada" wire:change="cambioDeFecha"></div>
+            <!-- Fila de badges de planes seleccionados -->
+            @if (!empty($planesSeleccionados))
+                <div class="row mt-2">
+                    <div class="col-12 d-flex align-items-center flex-wrap justify-content-center" style="gap: 8px;">
+                        <span class="text-muted" style="font-size: 12px; font-weight: 600;">
+                            Filtrando por:
+                        </span>
+                        @foreach ($planesColeccion as $plan)
+                            @if (in_array($plan->id, $planesSeleccionados))
+                                <span class="badge badge-primary d-inline-flex align-items-center plan-badge"
+                                    style="padding: 6px 12px; font-size: 12px; border-radius: 15px; cursor: default; animation: fadeIn 0.3s;">
+                                    <span>{{ $plan->nombre }}</span>
+                                    <button wire:click="removerPlan({{ $plan->id }})" class="btn btn-link p-0 ml-1"
+                                        style="color: white; text-decoration: none; font-size: 14px; line-height: 1; margin-left: 6px;"
+                                        title="Remover filtro">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </span>
+                            @endif
+                        @endforeach
+
+                        <!-- Botón para limpiar todos los filtros si hay más de uno -->
+                        @if (count($planesSeleccionados) > 1)
+                            <button wire:click="limpiarFiltrosPlanes" class="btn btn-sm btn-outline-danger btn-limpiar"
+                                style="padding: 4px 10px; font-size: 11px; border-radius: 12px; font-weight: 600;"
+                                title="Limpiar todos los filtros">
+                                <i class="fa fa-trash"></i> Limpiar todo
+                            </button>
+                        @endif
                     </div>
-
-
                 </div>
+            @else
+                <div class="row mt-2">
+                    <div class="col-12 text-center">
+                        <span class="badge badge-info">
+                            <i class="fa fa-info-circle"></i> Mostrando todos los planes
+                        </span>
+                    </div>
+                </div>
+            @endif
 
-            </div>
         </div>
-        {{-- <div class="row">
-            <div class="col-12">
-                <select class="form-control text-center bg-info text-white">
-                    <option value="">asdasdsa</option>
-                </select>
-            </div>
-           
-        </div> --}}
+
         <div class="">
             <div class="table-responsive letra14" style="">
                 <table class="table table-responsive-sm" style="table-layout: auto;">
@@ -72,14 +112,17 @@
                                                     $color = $colores[$colorIndex];
                                                 @endphp
                                                 @if ($cont == 1)
-                                                    <small
-                                                        class="text-{{ $color }}">{{ $cantidad }}</small><br>
+                                                    <span class="badge  badge-xxs badge-{{ $color }}"> <small
+                                                            class="text-white">{{ $cantidad }}</small></span>
+                                                    <br>
                                                 @elseif ($cont == 4)
-                                                    <strong
-                                                        class="text-{{ $color }}">{{ Str::limit($nombre, 8) }}:{{ $cantidad }}</strong><br>
+                                                    <span class="badge  badge-xxs badge-{{ $color }}"> <small
+                                                            class="text-white">{{ Str::limit($nombre, 8, '') }}:{{ $cantidad }}</small></span>
+                                                    <br>
                                                 @else
-                                                    <strong
-                                                        class="text-{{ $color }}">{{ Str::limit($nombre, 15) }}:{{ $cantidad }}</strong><br>
+                                                    <span class="badge  badge-xxs badge-{{ $color }}"> <small
+                                                            class="text-white">{{ Str::limit($nombre, 15, '') }}:{{ $cantidad }}</small></span>
+                                                    <br>
                                                 @endif
                                             @endif
                                             @php
@@ -110,29 +153,63 @@
                                 @if ($lista['ENVIO'] == 'a.- Delivery') table-primary
                                 @elseif($lista['ENVIO'] == 'b.- Para llevar(Paso a recoger)') table-info
                                 @elseif($lista['ENVIO'] == 'c.- Para Mesa') table-success @endif"
-                                style="border-color:#211d1d !important">
+                                style="border-color:#211d1d !important;cursor: pointer;"
+                                @if ($lista['ESTADO'] != 'permiso') onclick="event.preventDefault(); mostrarPlanCocina({
+                                    id: {{ $lista['ID'] }},
+                                    nombre: '{{ addslashes($lista['NOMBRE']) }}',
+                                    plan: '{{ addslashes($lista['PLAN']) }}',
+                                    sopa: '{{ addslashes($lista['SOPA']) }}',
+                                    plato: '{{ addslashes($lista['PLATO']) }}',
+                                    carbohidrato: '{{ addslashes($lista['CARBOHIDRATO']) }}',
+                                    envio: '{{ addslashes($lista['ENVIO']) }}',
+                                    empaque: '{{ addslashes($lista['EMPAQUE']) }}',
+                                    cocina: '{{ $lista['COCINA'] }}',
+                                    envio_icon: '{{ $lista['ENVIO_ICON'] }}'
+                                })" @endif>
                                 <td style="border-color:#211d1d !important">
-                                    @if(isset($lista['CLIENTE_INGRESADO']) && $lista['CLIENTE_INGRESADO'])
-                                        <i class="fa fa-user fa-beat text-success" style="font-size: 16px;" title="Cliente ingresado"></i>
-                                    @endif
                                     {!! $lista['ESTADO'] == 'permiso'
                                         ? '<a href="javascript:void(0)" class="text-primary"><strong>PERMISO</strong> </a>'
                                         : $loop->iteration !!}
+                                    @if (isset($lista['CLIENTE_INGRESADO']) && $lista['CLIENTE_INGRESADO'])
+                                        <img src="{{ asset('images/welcome.gif') }}" alt="Cliente ingresado"
+                                            style="width: 20px; height: 20px;">
+                                        @if (isset($lista['CLIENTE_INGRESADO_AT']) && $lista['CLIENTE_INGRESADO_AT'])
+                                            <br>
+                                            <span class="timer-simple text-muted"
+                                                data-timestamp="{{ $lista['CLIENTE_INGRESADO_AT'] }}"
+                                                style="font-size: 9px;">
+                                                00:00
+                                            </span>
+                                        @endif
+                                    @endif
+                                    
                                 </td>
                                 <td style="border-color:#211d1d !important"><small>
                                         @if ($lista['ESTADO'] == 'permiso')
-                                            <del class="text-muted">{{ Str::limit($lista['NOMBRE'], 25) }}</del>
+                                            <del class="text-muted">{{ Str::limit($lista['NOMBRE'], 35) }}</del>
                                         @else
-                                            <a href="#" data-toggle="modal"
-                                                data-target="#modalCocina{{ $lista['ID'] }}">{{ Str::limit($lista['NOMBRE'], 25) }}</a>
+                                            <a
+                                                href="javascript:void(0)"><strong>{{ Str::limit($lista['NOMBRE'], 35) }}</strong></a>
                                         @endif
-
                                     </small>
                                 </td>
                                 @if ($lista['COCINA'] == 'solo-sopa')
-                                    <td style="border-color:#211d1d !important"><small><a href="javascript:void(0)"
-                                                class="badge badge-circle badge-sm badge-success p-1"><i
-                                                    class="fa fa-check"></i></a> </small></td>
+                                    <td style="border-color:#211d1d !important">
+                                        <small>
+                                            <a href="javascript:void(0)"
+                                                class="badge badge-circle badge-sm badge-success p-1">
+                                                <i class="fa fa-check"></i>
+                                            </a>
+                                            @if ($lista['SOPA_DESPACHADA_AT'])
+                                                <br>
+                                                <span class="timer-badge badge badge-info badge-xs mt-1"
+                                                    data-timestamp="{{ $lista['SOPA_DESPACHADA_AT'] }}"
+                                                    style="font-size: 10px;">
+                                                    00:00
+                                                </span>
+                                            @endif
+                                        </small>
+                                    </td>
                                 @else
                                     <td style="border-color:#211d1d !important">
                                         <small>{{ $lista['SOPA'] != '' ? 'SI' : '' }}</small>
@@ -140,9 +217,22 @@
                                 @endif
 
                                 @if ($lista['COCINA'] == 'solo-segundo')
-                                    <td style="border-color:#211d1d !important"><small><a href="javascript:void(0)"
-                                                class="badge badge-circle badge-sm badge-success p-1"><i
-                                                    class="fa fa-check"></i></a> </small></td>
+                                    <td style="border-color:#211d1d !important">
+                                        <small>
+                                            <a href="javascript:void(0)"
+                                                class="badge badge-circle badge-sm badge-success p-1">
+                                                <i class="fa fa-check"></i>
+                                            </a>
+                                            @if ($lista['SEGUNDO_DESPACHADO_AT'])
+                                                <br>
+                                                <span class="timer-badge badge badge-info badge-xs mt-1"
+                                                    data-timestamp="{{ $lista['SEGUNDO_DESPACHADO_AT'] }}"
+                                                    style="font-size: 10px;">
+                                                    00:00
+                                                </span>
+                                            @endif
+                                        </small>
+                                    </td>
                                 @else
                                     <td style="border-color:#211d1d !important"><small>{{ $lista['PLATO'] }}</small>
                                     </td>
@@ -161,115 +251,6 @@
                                     <small>{{ Str::limit($lista['PLAN'], 25) }}</small>
                                 </td>
                             </tr>
-                            <div wire:ignore.self class="modal fade" id="modalCocina{{ $lista['ID'] }}" tabindex="-1"
-                                role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content m-0 p-0">
-                                        <div class="modal-header m-0 p-2">
-                                            <h5 class="modal-title mx-auto">
-                                                Plan de: <strong>{{ $lista['NOMBRE'] }}</strong></h5>
-                                            <button type="button" class="btn-close" data-dismiss="modal"
-                                                aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body m-0 p-0">
-                                            <ul class="list-group  m-0 p-0">
-                                                <li
-                                                    class="list-group-item d-flex justify-content-between lh-condensed py-2">
-                                                    <div>
-                                                        <small class="text-muted">Nombre del plan</small>
-                                                    </div>
-                                                    <span class="">
-                                                        <h6 class="my-0">{{ $lista['PLAN'] }}</h6>
-                                                    </span>
-                                                </li>
-                                                <li
-                                                    class="list-group-item d-flex justify-content-between lh-condensed  py-2">
-                                                    <div>
-                                                        <small class="text-muted">Sopa</small>
-                                                    </div>
-                                                    <h6 class="my-0 {{ $lista['SOPA'] != '' ? '' : 'text-danger' }}">
-                                                        {{ $lista['SOPA'] != '' ? $lista['SOPA'] : 'SIN SOPA' }}
-                                                        @if ($lista['SOPA'] != '')
-                                                            <span class="letra10 p-2">
-                                                                @if ($lista['COCINA'] == 'espera' || $lista['COCINA'] == 'solo-segundo')
-                                                                    <a href="#"
-                                                                        wire:click="despacharSopa({{ $lista['ID'] }})"
-                                                                        data-dismiss="modal"><span
-                                                                            class="badge badge-xs  badge-primary">Despachar
-                                                                        </span></a>
-                                                                @else
-                                                                    <del class="text-danger"><span
-                                                                            class="text-black">Despachado</span></del>
-                                                                @endif
-                                                            </span>
-                                                        @endif
-                                                    </h6>
-
-
-                                                </li>
-                                                <li
-                                                    class="list-group-item d-flex justify-content-between lh-condensed  py-2">
-                                                    <div>
-
-                                                        <small class="text-muted">Segundo</small>
-
-                                                    </div>
-                                                    @if ($lista['PLATO'] != '')
-                                                        <h6
-                                                            class="my-0 {{ $lista['PLATO'] != '' ? '' : 'text-danger' }}">
-                                                            {{ $lista['PLATO'] != '' ? $lista['PLATO'] : 'DESCONOCIDO' }}
-                                                            <span class="letra10 p-2">
-                                                                @if ($lista['COCINA'] == 'espera' || $lista['COCINA'] == 'solo-sopa')
-                                                                    <a href="#"
-                                                                        wire:click="despacharSegundo({{ $lista['ID'] }})"
-                                                                        data-dismiss="modal"><span
-                                                                            class="badge badge-xs  badge-primary">
-                                                                            Despachar</span>
-                                                                    </a>
-                                                                @else
-                                                                    <del class="text-danger"><span
-                                                                            class="text-black">Despachado</span></del>
-                                                                @endif
-                                                            </span>
-                                                        </h6>
-                                                    @endif
-                                                </li>
-                                                <li
-                                                    class="list-group-item d-flex justify-content-between lh-condensed  py-2">
-                                                    <div>
-
-                                                        <small class="text-muted">Carbohidrato</small>
-                                                    </div>
-                                                    <h6
-                                                        class="my-0 {{ $lista['CARBOHIDRATO'] != '' ? '' : 'text-danger' }}">
-                                                        {{ $lista['CARBOHIDRATO'] != '' ? $lista['CARBOHIDRATO'] : 'SIN CARBOHIDRATO' }}
-                                                    </h6>
-                                                </li>
-                                                <li class="list-group-item d-flex justify-content-between  py-2">
-                                                    <span>Envio</span>
-                                                    <strong>{{ $lista['ENVIO'] }}</strong>
-                                                </li>
-                                                <li class="list-group-item d-flex justify-content-between  py-2">
-                                                    <span>Empaque</span>
-                                                    <strong>{{ $lista['EMPAQUE'] }}</strong>
-                                                </li>
-
-                                            </ul>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary btn-xxs mx-auto"
-                                                wire:click="restablecerPlan({{ $lista['ID'] }})"
-                                                data-dismiss="modal">Restablecer</button>
-                                            <button type="button" class="btn btn-primary btn-sm"
-                                                wire:click="confirmarDespacho({{ $lista['ID'] }})"
-                                                data-dismiss="modal">Despachar todo</button>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         @endforeach
                     </tbody>
                 </table>
@@ -291,9 +272,6 @@
                         @foreach ($coleccion->where('COCINA', 'despachado') as $lista)
                             <tr class="table-danger" style="">
                                 <td style="">
-                                    @if(isset($lista['CLIENTE_INGRESADO']) && $lista['CLIENTE_INGRESADO'])
-                                        <i class="fa fa-user fa-beat text-success" style="font-size: 16px;" title="Cliente ingresado"></i>
-                                    @endif
                                     {{ $loop->iteration }}
                                 </td>
                                 <td style="">{{ Str::limit($lista['NOMBRE'], 20) }}</td>
@@ -343,50 +321,256 @@
 </div>
 
 @push('scripts')
-<script>
-    document.addEventListener('livewire:load', function () {
-        
-        // Escuchar evento de actualización
-        window.addEventListener('actualizarDisponibilidad', event => {
-            const menu = event.detail.menu;
-            if (!menu) return;
-            
-            // Actualizar cada item del menú en el Sweet Alert
-            actualizarItemMenu('ejecutivo', menu.ejecutivo, menu.ejecutivo_cant, menu.ejecutivo_estado);
-            actualizarItemMenu('dieta', menu.dieta, menu.dieta_cant, menu.dieta_estado);
-            actualizarItemMenu('vegetariano', menu.vegetariano, menu.vegetariano_cant, menu.vegetariano_estado);
-            actualizarItemMenu('carbohidrato_1', menu.carbohidrato_1, menu.carbohidrato_1_cant, menu.carbohidrato_1_estado);
-            actualizarItemMenu('carbohidrato_2', menu.carbohidrato_2, menu.carbohidrato_2_cant, menu.carbohidrato_2_estado);
-            actualizarItemMenu('carbohidrato_3', menu.carbohidrato_3, menu.carbohidrato_3_cant, menu.carbohidrato_3_estado);
-            actualizarItemMenu('sopa', menu.sopa, menu.sopa_cant, menu.sopa_estado);
-        });
-        
-        function actualizarItemMenu(tipo, nombre, cantidad, estado) {
-            const container = document.querySelector(`[data-item-tipo="${tipo}"]`);
-            if (!container) return;
-            
-            const estadoTexto = estado ? 'Disponible' : 'Agotado';
-            const estadoColor = estado ? '#10b981' : '#ef4444';
-            const estadoIcon = estado ? 'fa-check-circle' : 'fa-times-circle';
-            
-            // Agregar efecto visual de actualización con pulso
-            container.style.transform = 'scale(1.05)';
-            container.style.boxShadow = '0 8px 24px rgba(102, 126, 234, 0.5)';
-            
-            setTimeout(() => {
-                container.style.transform = 'scale(1)';
-                container.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
-            }, 400);
-            
-            // Actualizar borde del contenedor
-            container.style.borderColor = estadoColor;
-            container.style.borderWidth = '3px';
-            
-            // Actualizar input de cantidad o mostrar N/A
-            const inputContainer = container.querySelector('.input-container');
-            if (inputContainer) {
-                if (estado) {
-                    inputContainer.innerHTML = `
+    <script>
+        // Función para mostrar el plan de cocina en SweetAlert
+        function mostrarPlanCocina(planData) {
+            const tieneSopa = planData.sopa !== '';
+            const tienePlato = planData.plato !== '';
+            const puedeDespacharSopa = tieneSopa && (planData.cocina === 'espera' || planData.cocina === 'solo-segundo');
+            const puedeDespacharPlato = tienePlato && (planData.cocina === 'espera' || planData.cocina === 'solo-sopa');
+
+            Swal.fire({
+                title: `<div>
+                            <h3 style="color: white; margin: 0; font-weight: 700;" class="mb-0">Plan de ${planData.nombre}</h3>
+                            <h2 style="color: white; margin: 0; font-weight: 700;" class="mb-0">${planData.plan}</h2>
+                        </div>`,
+                html: `
+                    <div style="display: grid; gap: 20px; padding: 10px;">
+                       
+                        <!-- Grid de Platillos -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <!-- Tarjeta de Sopa -->
+                            <div style="background: white; border: 3px solid ${tieneSopa ? '#10b981' : '#ef4444'}; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s;">
+                                <div style="text-align: center;">
+                                    <i class="fa fa-bowl-food" style="font-size: 32px; color: ${tieneSopa ? '#10b981' : '#ef4444'}; margin-bottom: 10px;"></i>
+                                    <div style="font-size: 13px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px;">Sopa</div>
+                                    <div style="font-size: 18px; font-weight: 700; color: ${tieneSopa ? '#1f2937' : '#ef4444'}; min-height: 50px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                                        ${tieneSopa ? planData.sopa : 'SIN SOPA'}
+                                    </div>
+                                    ${tieneSopa ? `
+                                                ${puedeDespacharSopa ? `
+                                            <button onclick="despacharItemSopa(${planData.id})" 
+                                                    style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);"
+                                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)'"
+                                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.4)'">
+                                                Despachar Sopa ?
+                                            </button>
+                                        ` : `
+                                            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 14px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);">
+                                                <i class="fa fa-check-circle fs-22"></i> Despachado
+                                            </div>
+                                        `}
+                                            ` : ''}
+                                </div>
+                            </div>
+
+                            <!-- Tarjeta de Segundo -->
+                            <div style="background: white; border: 3px solid ${tienePlato ? '#f59e0b' : '#ef4444'}; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s;">
+                                <div style="text-align: center;">
+                                    <i class="fa fa-drumstick-bite" style="font-size: 32px; color: ${tienePlato ? '#f59e0b' : '#ef4444'}; margin-bottom: 10px;"></i>
+                                    <div style="font-size: 13px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px;">Segundo</div>
+                                    <div style="font-size: 18px; font-weight: 700; color: ${tienePlato ? '#1f2937' : '#ef4444'}; min-height: 50px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                                        ${tienePlato ? planData.plato : 'SIN PLATO'}
+                                    </div>
+                                    ${tienePlato ? `
+                                                ${puedeDespacharPlato ? `
+                                            <button onclick="despacharItemSegundo(${planData.id})" 
+                                                    style="width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);"
+                                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(245, 158, 11, 0.6)'"
+                                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(245, 158, 11, 0.4)'">
+                                                Despachar Segundo ?
+                                            </button>
+                                        ` : `
+                                            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 14px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);">
+                                                <i class="fa fa-check-circle fs-22"></i> Despachado
+                                            </div>
+                                        `}
+                                            ` : ''}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Grid de Información Adicional -->
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px;">
+                            <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(168, 237, 234, 0.3);">
+                                <i class="flaticon-033-feather text-black" ></i>
+                                <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; color: black;">Carbohidrato</div>
+                                <div style="font-size: 14px; color: black; font-weight: 700; margin-top: 5px;">${planData.carbohidrato || 'SIN CARBO'}</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(168, 237, 234, 0.3);">
+                                <i class="${planData.envio_icon} text-black" ></i>
+                                <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; color: black;">Envío</div>
+                                <div style="font-size: 13px; color: black; font-weight: 700; margin-top: 5px;">${planData.envio.replace(/^[a-z]\.- /, '')}</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(168, 237, 234, 0.3);">
+                                <i class="flaticon-381-gift text-black" ></i>
+                                <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; color: black;">Empaque</div>
+                                <div style="font-size: 14px; color: black; font-weight: 700; margin-top: 5px;">${planData.empaque}</div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                width: '700px',
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonText: '<i class="fa fa-check-double"></i> Despachar Todo',
+                denyButtonText: '<i class="fa fa-undo"></i> Restablecer',
+                cancelButtonText: '<i class="fa fa-times"></i> Cerrar',
+                confirmButtonColor: '#10b981',
+                denyButtonColor: '#6b7280',
+                cancelButtonColor: '#ef4444',
+                customClass: {
+                    popup: 'animate__animated animate__zoomIn',
+                    confirmButton: 'btn-swal-custom',
+                    denyButton: 'btn-swal-custom',
+                    cancelButton: 'btn-swal-custom'
+                },
+                showClass: {
+                    popup: 'animate__animated animate__zoomIn animate__faster'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__zoomOut animate__faster'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    @this.call('confirmarDespacho', planData.id);
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Despachado!',
+                        text: 'Plan completo despachado exitosamente',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } else if (result.isDenied) {
+                    @this.call('restablecerPlan', planData.id);
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Restablecido',
+                        text: 'El plan ha sido restablecido',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
+
+        function despacharItemSopa(id) {
+            Swal.close();
+            @this.call('despacharSopa', id);
+            Swal.fire({
+                icon: 'success',
+                title: '¡Sopa Despachada!',
+                timer: 1200,
+                showConfirmButton: false
+            });
+        }
+
+        function despacharItemSegundo(id) {
+            Swal.close();
+            @this.call('despacharSegundo', id);
+            Swal.fire({
+                icon: 'success',
+                title: '¡Segundo Despachado!',
+                timer: 1200,
+                showConfirmButton: false
+            });
+        }
+
+        // Función para actualizar los timers
+        function actualizarTimers() {
+            const timers = document.querySelectorAll('.timer-badge, .timer-simple');
+
+            timers.forEach(timer => {
+                const timestamp = timer.getAttribute('data-timestamp');
+                if (!timestamp) return;
+
+                // Crear fecha desde el timestamp
+                const fechaDespacho = new Date(timestamp);
+                const ahora = new Date();
+
+                // Calcular diferencia en milisegundos
+                const diferencia = ahora - fechaDespacho;
+
+                // Convertir a minutos y segundos
+                const totalSegundos = Math.floor(diferencia / 1000);
+                const minutos = Math.floor(totalSegundos / 60);
+                const segundos = totalSegundos % 60;
+
+                // Formatear el tiempo
+                const minutosStr = String(minutos).padStart(2, '0');
+                const segundosStr = String(segundos).padStart(2, '0');
+
+                // Actualizar el contenido
+                timer.textContent = `${minutosStr}:${segundosStr}`;
+
+                // Cambiar color según el tiempo transcurrido (solo para timer-badge)
+                if (timer.classList.contains('timer-badge')) {
+                    if (minutos < 5) {
+                        timer.className = 'timer-badge badge badge-success badge-xs mt-1';
+                    } else if (minutos < 10) {
+                        timer.className = 'timer-badge badge badge-warning badge-xs mt-1';
+                    } else {
+                        timer.className = 'timer-badge badge badge-danger badge-xs mt-1';
+                    }
+                }
+            });
+        }
+
+        // Actualizar timers cada segundo
+        setInterval(actualizarTimers, 1000);
+
+        // Inicializar timers al cargar la página
+        actualizarTimers();
+
+        document.addEventListener('livewire:load', function() {
+            // Inicializar timers después de que Livewire cargue
+            actualizarTimers();
+
+            // Escuchar evento de actualización
+            window.addEventListener('actualizarDisponibilidad', event => {
+                const menu = event.detail.menu;
+                if (!menu) return;
+
+                // Actualizar cada item del menú en el Sweet Alert
+                actualizarItemMenu('ejecutivo', menu.ejecutivo, menu.ejecutivo_cant, menu.ejecutivo_estado);
+                actualizarItemMenu('dieta', menu.dieta, menu.dieta_cant, menu.dieta_estado);
+                actualizarItemMenu('vegetariano', menu.vegetariano, menu.vegetariano_cant, menu
+                    .vegetariano_estado);
+                actualizarItemMenu('carbohidrato_1', menu.carbohidrato_1, menu.carbohidrato_1_cant, menu
+                    .carbohidrato_1_estado);
+                actualizarItemMenu('carbohidrato_2', menu.carbohidrato_2, menu.carbohidrato_2_cant, menu
+                    .carbohidrato_2_estado);
+                actualizarItemMenu('carbohidrato_3', menu.carbohidrato_3, menu.carbohidrato_3_cant, menu
+                    .carbohidrato_3_estado);
+                actualizarItemMenu('sopa', menu.sopa, menu.sopa_cant, menu.sopa_estado);
+            });
+
+            function actualizarItemMenu(tipo, nombre, cantidad, estado) {
+                const container = document.querySelector(`[data-item-tipo="${tipo}"]`);
+                if (!container) return;
+
+                const estadoTexto = estado ? 'Disponible' : 'Agotado';
+                const estadoColor = estado ? '#10b981' : '#ef4444';
+                const estadoIcon = estado ? 'fa-check-circle' : 'fa-times-circle';
+
+                // Agregar efecto visual de actualización con pulso
+                container.style.transform = 'scale(1.05)';
+                container.style.boxShadow = '0 8px 24px rgba(102, 126, 234, 0.5)';
+
+                setTimeout(() => {
+                    container.style.transform = 'scale(1)';
+                    container.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+                }, 400);
+
+                // Actualizar borde del contenedor
+                container.style.borderColor = estadoColor;
+                container.style.borderWidth = '3px';
+
+                // Actualizar input de cantidad o mostrar N/A
+                const inputContainer = container.querySelector('.input-container');
+                if (inputContainer) {
+                    if (estado) {
+                        inputContainer.innerHTML = `
                         <input type="number" 
                                min="0" 
                                value="${cantidad || 0}"
@@ -396,40 +580,41 @@
                                onfocus="this.style.borderColor='#667eea'; this.style.background='white'"
                                onblur="this.style.borderColor='#e5e7eb'; this.style.background='#f9fafb'">
                     `;
-                    // Re-adjuntar el event listener
-                    const newInput = inputContainer.querySelector('.cantidad-input');
-                    newInput.addEventListener('change', function() {
-                        const tipo = this.dataset.tipo;
-                        const valor = this.value;
-                        @this.call('cambiarCantidad', tipo + '_cant', valor);
-                    });
-                } else {
-                    inputContainer.innerHTML = '<div style="padding: 10px; color: #9ca3af; font-size: 16px; font-weight: 600;">N/A</div>';
+                        // Re-adjuntar el event listener
+                        const newInput = inputContainer.querySelector('.cantidad-input');
+                        newInput.addEventListener('change', function() {
+                            const tipo = this.dataset.tipo;
+                            const valor = this.value;
+                            @this.call('cambiarCantidad', tipo + '_cant', valor);
+                        });
+                    } else {
+                        inputContainer.innerHTML =
+                            '<div style="padding: 10px; color: #9ca3af; font-size: 16px; font-weight: 600;">N/A</div>';
+                    }
+                }
+
+                // Actualizar botón de estado
+                const btn = container.querySelector('.estado-btn');
+                if (btn) {
+                    btn.style.background = estadoColor;
+                    btn.innerHTML = `<i class="fa ${estadoIcon}"></i> ${estadoTexto}`;
                 }
             }
-            
-            // Actualizar botón de estado
-            const btn = container.querySelector('.estado-btn');
-            if (btn) {
-                btn.style.background = estadoColor;
-                btn.innerHTML = `<i class="fa ${estadoIcon}"></i> ${estadoTexto}`;
-            }
-        }
-        
-        window.addEventListener('mostrarDisponibilidad', event => {
-            const menu = event.detail.menu;
-            
-            if (!menu) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Sin información',
-                    text: 'No hay menú disponible para el día de hoy'
-                });
-                return;
-            }
 
-            // Generar HTML para los items
-            let htmlContent = `
+            window.addEventListener('mostrarDisponibilidad', event => {
+                const menu = event.detail.menu;
+
+                if (!menu) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Sin información',
+                        text: 'No hay menú disponible para el día de hoy'
+                    });
+                    return;
+                }
+
+                // Generar HTML para los items
+                let htmlContent = `
                 <div style="text-align: left; max-height: 700px; overflow-y: auto; padding: 10px;">
                     
                     <div style="margin-bottom: 30px;">
@@ -471,49 +656,51 @@
                 </div>
             `;
 
-            Swal.fire({
-                title: false,
-                html: htmlContent,
-                width: '1100px',
-                showConfirmButton: true,
-                confirmButtonText: '<i class="fa fa-check"></i> Cerrar',
-                confirmButtonColor: '#667eea',
-                customClass: {
-                    container: 'swal-container-custom'
-                },
-                showClass: {
-                    popup: 'animate__animated animate__fadeInDown'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutUp'
-                },
-                didOpen: () => {
-                    // Agregar event listeners para los inputs de cantidad
-                    document.querySelectorAll('.cantidad-input').forEach(input => {
-                        input.addEventListener('change', function() {
-                            const tipo = this.dataset.tipo;
-                            const valor = this.value;
-                            @this.call('cambiarCantidad', tipo + '_cant', valor);
+                Swal.fire({
+                    title: false,
+                    html: htmlContent,
+                    width: '1100px',
+                    showConfirmButton: true,
+                    confirmButtonText: '<i class="fa fa-check"></i> Cerrar',
+                    confirmButtonColor: '#667eea',
+                    customClass: {
+                        container: 'swal-container-custom'
+                    },
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    },
+                    didOpen: () => {
+                        // Agregar event listeners para los inputs de cantidad
+                        document.querySelectorAll('.cantidad-input').forEach(input => {
+                            input.addEventListener('change', function() {
+                                const tipo = this.dataset.tipo;
+                                const valor = this.value;
+                                @this.call('cambiarCantidad', tipo + '_cant',
+                                    valor);
+                            });
                         });
-                    });
 
-                    // Agregar event listeners para los botones de estado
-                    document.querySelectorAll('.estado-btn').forEach(btn => {
-                        btn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            const tipo = this.dataset.tipo;
-                            @this.call('cambiarEstadoPlato', tipo + '_estado');
+                        // Agregar event listeners para los botones de estado
+                        document.querySelectorAll('.estado-btn').forEach(btn => {
+                            btn.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                const tipo = this.dataset.tipo;
+                                @this.call('cambiarEstadoPlato', tipo +
+                                    '_estado');
+                            });
                         });
-                    });
-                }
-            });
+                    }
+                });
 
-            function crearItemMenu(label, nombre, cantidad, estado, tipo) {
-                const estadoTexto = estado ? 'Disponible' : 'Agotado';
-                const estadoColor = estado ? '#10b981' : '#ef4444';
-                const estadoIcon = estado ? 'fa-check-circle' : 'fa-times-circle';
-                
-                return `
+                function crearItemMenu(label, nombre, cantidad, estado, tipo) {
+                    const estadoTexto = estado ? 'Disponible' : 'Agotado';
+                    const estadoColor = estado ? '#10b981' : '#ef4444';
+                    const estadoIcon = estado ? 'fa-check-circle' : 'fa-times-circle';
+
+                    return `
                     <div data-item-tipo="${tipo}" style="background: white; border: 3px solid ${estadoColor}; border-radius: 12px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.3s; display: flex; flex-direction: column; gap: 12px;">
                         <div style="text-align: center;">
                             <div style="font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 6px;">${label}</div>
@@ -522,15 +709,15 @@
                         
                         <div class="input-container" style="text-align: center;">
                             ${estado ? `
-                                <input type="number" 
-                                       min="0" 
-                                       value="${cantidad || 0}"
-                                       data-tipo="${tipo}"
-                                       class="cantidad-input"
-                                       style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 20px; font-weight: 700; text-align: center; transition: all 0.3s; background: #f9fafb;"
-                                       onfocus="this.style.borderColor='#667eea'; this.style.background='white'"
-                                       onblur="this.style.borderColor='#e5e7eb'; this.style.background='#f9fafb'">
-                            ` : '<div style="padding: 10px; color: #9ca3af; font-size: 16px; font-weight: 600;">N/A</div>'}
+                                                                            <input type="number" 
+                                                                                   min="0" 
+                                                                                   value="${cantidad || 0}"
+                                                                                   data-tipo="${tipo}"
+                                                                                   class="cantidad-input"
+                                                                                   style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 20px; font-weight: 700; text-align: center; transition: all 0.3s; background: #f9fafb;"
+                                                                                   onfocus="this.style.borderColor='#667eea'; this.style.background='white'"
+                                                                                   onblur="this.style.borderColor='#e5e7eb'; this.style.background='#f9fafb'">
+                                                                        ` : '<div style="padding: 10px; color: #9ca3af; font-size: 16px; font-weight: 600;">N/A</div>'}
                         </div>
                         
                         <button data-tipo="${tipo}" 
@@ -542,10 +729,17 @@
                         </button>
                     </div>
                 `;
-            }
+                }
+            });
         });
-    });
-</script>
+
+        // Actualizar timers después de que Livewire actualice el DOM
+        Livewire.hook('message.processed', (message, component) => {
+            setTimeout(() => {
+                actualizarTimers();
+            }, 100);
+        });
+    </script>
 @endpush
 @push('css')
     <style>
@@ -570,6 +764,120 @@
 
         table {
             font-size: 15px !important;
+        }
+
+        /* Estilos para los badges de planes */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .plan-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .plan-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .plan-badge button {
+            transition: all 0.2s ease;
+        }
+
+        .plan-badge button:hover {
+            transform: scale(1.2);
+        }
+
+        .plan-badge button:hover i {
+            transform: rotate(90deg);
+            transition: transform 0.2s ease;
+        }
+
+        .btn-limpiar {
+            transition: all 0.3s ease;
+            border-width: 2px !important;
+        }
+
+        .btn-limpiar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            background-color: #dc2626 !important;
+            color: white !important;
+        }
+
+        /* Estilos personalizados para botones de SweetAlert */
+        .btn-swal-custom {
+            font-weight: 700 !important;
+            font-size: 14px !important;
+            padding: 12px 24px !important;
+            border-radius: 10px !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .btn-swal-custom:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+        }
+
+        .swal2-popup {
+            border-radius: 20px !important;
+            padding: 20px !important;
+        }
+
+        .swal2-title {
+            padding: 0 !important;
+        }
+
+        /* Estilos para los timers */
+        .timer-badge {
+            display: inline-block;
+            font-weight: 700;
+            padding: 4px 8px !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .timer-badge.badge-danger {
+            animation: pulse-danger 1s infinite;
+        }
+
+        @keyframes pulse-danger {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+            }
+
+            50% {
+                transform: scale(1.08);
+                box-shadow: 0 4px 8px rgba(220, 53, 69, 0.6);
+            }
         }
     </style>
 @endpush
