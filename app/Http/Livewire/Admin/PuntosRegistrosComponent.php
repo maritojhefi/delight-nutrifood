@@ -72,11 +72,6 @@ class PuntosRegistrosComponent extends Component
 
         $this->showModalHistorial = true;
 
-        // Debug: verificar valores antes de emitir
-        Log::info('verHistorial - showModalHistorial: ' . ($this->showModalHistorial ? 'true' : 'false'));
-        Log::info('verHistorial - clienteSeleccionado: ' . ($this->clienteSeleccionado ? 'exists' : 'null'));
-        Log::info('verHistorial - historialCliente count: ' . ($this->historialCliente ? count($this->historialCliente) : 'null'));
-
         $this->emit('abrirModalHistorial');
     }
     public $ventaSeleccionada = null;
@@ -90,10 +85,6 @@ class PuntosRegistrosComponent extends Component
         if ($this->registroSeleccionado->historialVenta) {
             $this->detalleVenta = $this->registroSeleccionado->historialVenta;
             $this->detalleVentaProductos = $this->registroSeleccionado->historialVenta->productos;
-
-            // Debug: verificar productos
-            $count = is_object($this->detalleVentaProductos) && method_exists($this->detalleVentaProductos, 'count') ? $this->detalleVentaProductos->count() : (is_array($this->detalleVentaProductos) ? count($this->detalleVentaProductos) : 0);
-            Log::info('verDetalleVenta - detalleVentaProductos count: ' . $count);
 
             // Emitir datos de productos al frontend
             $productos = [];

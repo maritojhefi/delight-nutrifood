@@ -1271,12 +1271,6 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         $prodLista = collect($calculos->listaCuenta)->firstWhere('id', $producto->id);
 
         if ($prodLista) {
-            // Debug temporal
-            Log::info('Actualizando campos descuentos para producto: ' . $producto->id, [
-                'descuento_producto' => $prodLista['descuento_producto'] ?? 0,
-                'descuento_convenio' => $prodLista['descuento_convenio'] ?? 0,
-                'total_adicionales' => $prodLista['total_adicionales'] ?? 0,
-            ]);
 
             // Calcular total original (precio original * cantidad)
             $totalOriginal = $prodLista['precio_original'] * $prodLista['cantidad'];

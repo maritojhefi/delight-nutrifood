@@ -47,7 +47,7 @@ class SubcategoryCreate extends Component
             $this->validate([
                 'foto' => 'required|mimes:jpeg,bmp,png,gif|max:5120'
             ]);
-            
+
             try {
                 // Si ya existe una foto, eliminar la anterior del disco correcto
                 if ($this->subcategoria->foto) {
@@ -57,45 +57,21 @@ class SubcategoryCreate extends Component
                         Storage::disk($disco)->delete($rutaArchivoAnterior);
                     }
                 }
-                
+
                 // Usar el helper ProcesarImagen para procesar y guardar la imagen
                 $procesarImagen = ProcesarImagen::crear($this->foto)
                     ->carpeta(Subcategoria::RUTA_FOTO) // Carpeta donde se guardará
                     ->dimensiones(480, null) // Redimensionar a máximo 480px de ancho
                     ->formato($this->foto->getClientOriginalExtension()); // Mantener formato original
-                
+
                 // Si ya existe una foto, usar el mismo nombre
                 if ($this->subcategoria->foto) {
                     $nombreSinExtension = pathinfo($this->subcategoria->foto, PATHINFO_FILENAME);
                     $procesarImagen->nombreArchivo($nombreSinExtension);
                 }
-                
+
                 // Guardar la imagen procesada (automáticamente usa el disco correcto según el ambiente)
                 $filename = $procesarImagen->guardar();
-                
-                // Log de la ubicación donde se guardó la imagen
-                $disco = GlobalHelper::discoArchivos();
-                if ($disco === 's3') {
-                    $config = config('filesystems.disks.s3');
-                    $bucket = $config['bucket'] ?? '';
-                    $region = $config['region'] ?? 'us-east-1';
-                    $urlCompleta = "https://{$bucket}.s3.{$region}.amazonaws.com" . Subcategoria::RUTA_FOTO . $filename;
-                    Log::info("Imagen de subcategoría actualizada en S3", [
-                        'subcategoria_id' => $this->subcategoria->id,
-                        'nombre_archivo' => $filename,
-                        'url_s3' => $urlCompleta,
-                        'disco' => $disco
-                    ]);
-                } else {
-                    $rutaLocal = public_path('imagenes/subcategorias/' . $filename);
-                    Log::info("Imagen de subcategoría actualizada en local", [
-                        'subcategoria_id' => $this->subcategoria->id,
-                        'nombre_archivo' => $filename,
-                        'ruta_local' => $rutaLocal,
-                        'disco' => $disco
-                    ]);
-                }
-                
             } catch (\Exception $e) {
                 $this->dispatchBrowserEvent('alert', [
                     'type' => 'error',
@@ -140,21 +116,21 @@ class SubcategoryCreate extends Component
     }
 
     public function eliminar(Subcategoria $subcat)
-    {  
+    {
         try {
             // Eliminar foto de la subcategoría si existe
             if ($subcat->foto) {
                 $rutaArchivo = Subcategoria::RUTA_FOTO . $subcat->foto; // Construir ruta correcta
                 $disco = GlobalHelper::discoArchivos();
-                
+
                 if (Storage::disk($disco)->exists($rutaArchivo)) {
                     Storage::disk($disco)->delete($rutaArchivo);
                 }
             }
-            
+
             // Eliminar subcategoría
             $subcat->delete();
-            
+
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'warning',
                 'message' => "Subcategoria: " . $subcat->nombre . " eliminada"

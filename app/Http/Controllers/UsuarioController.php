@@ -191,44 +191,19 @@ class UsuarioController extends Controller
             } else {
                 $imagen = $request->file('foto');
             }
-            
+
             try {
                 // Usar el helper ProcesarImagen para procesar y guardar la imagen
                 $procesarImagen = \App\Helpers\ProcesarImagen::crear($imagen)
                     ->carpeta(User::RUTA_FOTO) // Carpeta donde se guardará
                     ->dimensiones(600, null) // Redimensionar a máximo 600px de ancho
                     ->formato($imagen->getClientOriginalExtension()); // Mantener formato original
-                
+
                 // Guardar la imagen procesada (automáticamente usa el disco correcto según el ambiente)
                 $nombreArchivo = $procesarImagen->guardar();
-                
+
                 // Actualizar solo el nombre del archivo en la base de datos
                 $user->foto = $nombreArchivo;
-                
-                // Log de la ubicación donde se guardó la imagen
-                $disco = \App\Helpers\GlobalHelper::discoArchivos();
-                if ($disco === 's3') {
-                    $config = config('filesystems.disks.s3');
-                    $bucket = $config['bucket'] ?? '';
-                    $region = $config['region'] ?? 'us-east-1';
-                    $urlCompleta = "https://{$bucket}.s3.{$region}.amazonaws.com" . \App\Models\User::RUTA_FOTO . $nombreArchivo;
-                    \Log::info("Foto de perfil guardada en S3 (registro)", [
-                        'usuario_id' => $user->id,
-                        'nombre_archivo' => $nombreArchivo,
-                        'url_s3' => $urlCompleta,
-                        'disco' => $disco
-                    ]);
-                } else {
-                    $rutaLocal = public_path('imagenes/perfil/' . $nombreArchivo);
-                    \Log::info("Foto de perfil guardada en local (registro)", [
-                        'usuario_id' => $user->id,
-                        'nombre_archivo' => $nombreArchivo,
-                        'ruta_local' => $rutaLocal,
-                        'disco' => $disco
-                    ]);
-                }
-
-                
             } catch (\Exception $e) {
                 // Log del error pero continuar con el registro del usuario
                 Log::error('Error procesando imagen de usuario: ' . $e->getMessage());
