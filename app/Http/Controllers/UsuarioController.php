@@ -152,14 +152,14 @@ class UsuarioController extends Controller
         $firstName = strtolower($nameParts[0]);
 
         // Concatenar codigo pais y numero telefonico
-        $phoneNumber = $request->codigo_pais . $request->telefono;
+        $phoneNumber = ltrim($request->codigo_pais, '+') . $request->telefono;
 
         if ($user) {
             // El usuario ya existe, entonces actualizamos su información
             $user->name = $request->name;
             $user->codigo_pais = $request->codigo_pais;
             $user->telf = $request->telefono;
-            $user->email = $firstName . $phoneNumber . '@dmail.com';
+            $user->email = $firstName . '_' . $phoneNumber . '@delight.com';
             $user->profesion = $request->profesion;
             $user->nacimiento = $request->ano_nacimiento . '-' . $request->mes_nacimiento . '-' . $request->dia_nacimiento;
             // $user->nacimiento = $request->nacimiento;
@@ -177,7 +177,7 @@ class UsuarioController extends Controller
             $user = new User();
             $user->name = $request->name;
             // $user->email = $request->email;
-            $user->email = $firstName . $phoneNumber . '@dmail.com';
+            $user->email = $firstName . '_' . $phoneNumber . '@delight.com';
             $user->codigo_pais = $request->codigo_pais;
             $user->telf = $request->telefono;
             $user->profesion = $request->profesion;
@@ -497,15 +497,29 @@ class UsuarioController extends Controller
 
     public function enviarCodigoVerificacion(Request $request)
     {
-        // Simulación de solicitudes
-        // // if (session('otp_test_count', 0) < 3) {
-        // //     session(['otp_test_count' => session('otp_test_count', 0) + 1]);
-        // //     return response()->json([
-        // //         'errors' => ['general' => ['Servicio de mensajería temporalmente no disponible']],
-        // //         'codigo_error' => 500
-        // //     ], 500);
-        // // }
-        // // session()->forget('otp_test_count');
+        //// Simulación de solicitudes
+        // return response()->json(
+        //         [
+        //             'status' => 'error',
+        //             'errors' => ['general' => ['El sistema de verificación de teléfono no está disponible en este momento.']],
+        //             'codigo_error' => 500,
+        //         ],
+        //         500,
+        //     );
+        // return response()->json(
+        //             [
+        //                 'status' => 'error',
+        //                 'errors' => ['telefono' => ['El número de teléfono debe tener exactamente ' . ' $digitosPais' . ' dígitos.']],
+        //             ],
+        //             422,
+        //         );
+        //  return response()->json(
+        //             [
+        //                 'status' => 'error',
+        //                 'errors' => ['telefono' => ['Este número de teléfono ya está registrado y verificado.']],
+        //             ],
+        //             400,
+        //         );
 
         $numeroWhatsapp = NumeroWhatsapp::first();
         if ($numeroWhatsapp) {

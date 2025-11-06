@@ -3,9 +3,9 @@
     <x-cabecera-pagina titulo="Registrate" cabecera="appkit" />
     <div class="d-flex justify-content-center">
         {{-- <div class="card card-style signin-card bg-24" style="height: 650px;max-height: 920px; width: 400px;"> --}}
-        <div class="card card-style signin-card bg-24 py-4" style="min-height: 450px; width: 400px; ">
+        <div class="card card-style signin-card bg-24 py-4" style="min-height: 450px; width: 380px; ">
             <div class="">
-                <div class="px-4 mx-3">
+                <div class="px-4 mx-2">
                     <div class="d-flex flex-column">
                         <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}"
                             class="img mx-auto d-block" style="width:100px" alt="">
@@ -61,6 +61,7 @@
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
+                                
 
                                 <!-- <div class="d-flex justify-content-center">
                                     <button href="#" data-menu="menu-verificacion" id="verificar-numero"
@@ -612,7 +613,7 @@
         let currentStep = 0;
         let omitirValidacionWhatsapp = false;
         let otpRetryCount = 0;
-        const MAX_OTP_RETRIES = 3;
+        const MAX_OTP_RETRIES = 2;
 
         document.addEventListener('DOMContentLoaded', function() {
             const steps = document.querySelectorAll('.form-step');
@@ -834,14 +835,19 @@
                         habilitarBotonesValidando();
                     },
                     error: function(xhr, status, error) {
-                        // Incrementar contador de reintentos
-                        otpRetryCount++;
-                        console.log(`❌ Intento fallido ${otpRetryCount} de ${MAX_OTP_RETRIES}`);
-
                         var codigo = xhr.responseJSON?.codigo_error;
+                        var statusCode = xhr.status;
                         
-                        // Si alcanzamos el máximo de reintentos, omitir validación OTP
-                        if (otpRetryCount >= MAX_OTP_RETRIES) {
+                        // Solo incrementar contador para errores de sistema (no errores de validación)
+                        var esErrorDeSistema = (codigo == 401 || codigo == 500 || statusCode >= 500);
+                        
+                        if (esErrorDeSistema) {
+                            otpRetryCount++;
+                            console.log(`❌ Intento fallido ${otpRetryCount} de ${MAX_OTP_RETRIES}`);
+                        }
+                        
+                        // Si alcanzamos el máximo de reintentos DE SISTEMA, omitir validación OTP
+                        if (esErrorDeSistema && otpRetryCount >= MAX_OTP_RETRIES) {
                             console.log('⚠️ Máximo de reintentos alcanzado. Omitiendo validación OTP.');
                             
                             // Marcar teléfono como no verificado pero permitir continuar
@@ -856,26 +862,19 @@
                                 $('#snackbar-error').removeClass('show').addClass('hide');
                             }, 3000);
                             
-                            // TODO: Aquí debes avanzar al siguiente paso
-                            // Por ejemplo, si estás en un wizard de pasos:
-                            // steps[currentStep].classList.add('d-none');
-                            // currentStep++;
-                            // steps[currentStep].classList.remove('d-none');
                             $('#step-1').addClass('d-none');
                             $('#step-2').removeClass('d-none');
-
                             currentStep = 1;
                             omitirValidacionWhatsapp = true;
                             
-                            // O cerrar el modal y permitir continuar
                             $('#menu-verificacion').removeClass('menu-active');
                             $('.menu-hider').removeClass('menu-active');
                             
                             habilitarBotonesValidando();
                             return;
                         }
-
-                        // Lógica normal de error si no hemos alcanzado el máximo
+                        
+                        // Manejo de errores según el tipo
                         if (codigo == 401 || codigo == 500) {
                             $('#menu-verificacion').removeClass('menu-active');
                             $('.menu-hider').removeClass('menu-active');
@@ -891,6 +890,7 @@
                                 $('#snackbar-error').removeClass('show').addClass('hide');
                             }, 5000);
                         } else {
+                            // Errores de validación (422, 400, etc.) - NO mostrar contador
                             var errorMessage = 'Error al enviar el código de verificación.';
                             if (xhr.responseJSON && xhr.responseJSON.errors) {
                                 var errors = xhr.responseJSON.errors;
@@ -900,12 +900,14 @@
                                     errorMessage = errors.general[0];
                                 }
                             }
-                            errorMessage += ` (Intento ${otpRetryCount}/${MAX_OTP_RETRIES})`;
-                            alert(errorMessage);
+
+                            displayErrorMessages(errors);
+                            // NO agregar contador para errores de validación
+                            // // alert(errorMessage);
                         }
                         
                         habilitarBotonesValidando();
-                    },
+                    }
                 });
             }
 

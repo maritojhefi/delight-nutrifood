@@ -153,10 +153,10 @@
     font-size: 14px;
 }
 
-.card.login-card form input {
+/* .card.login-card form input {
     font-size: 14px !important;
     padding-left: 2.0rem !important;
-}
+} */
 
 .card.signin-card form input {
     font-size: 14px !important;
@@ -308,11 +308,11 @@ hover-blue:hover {
     background-color: #4ECDC4;
 }
 
-.password-toggle {
+/* .password-toggle {
     color: #6c757d;
     padding: 0.375rem 0.75rem;
     font-size: 0.875rem;
-}
+} */
 
 .password-toggle:hover {
     color: #4ECDC4;
