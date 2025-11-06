@@ -166,10 +166,10 @@
                                     cocina: '{{ $lista['COCINA'] }}',
                                     envio_icon: '{{ $lista['ENVIO_ICON'] }}'
                                 })" @endif>
-                                <td style="border-color:#211d1d !important">
+                                <td style="border-color:#211d1d !important"><strong>
                                     {!! $lista['ESTADO'] == 'permiso'
-                                        ? '<a href="javascript:void(0)" class="text-primary"><strong>PERMISO</strong> </a>'
-                                        : $loop->iteration !!}
+                                        ? '<a href="javascript:void(0)" class="text-primary">PERMISO </a>'
+                                        : $loop->iteration !!}</strong>
                                     @if (isset($lista['CLIENTE_INGRESADO']) && $lista['CLIENTE_INGRESADO'])
                                         <img src="{{ asset('images/welcome.gif') }}" alt="Cliente ingresado"
                                             style="width: 20px; height: 20px;">
