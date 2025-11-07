@@ -28,6 +28,7 @@ class UsuarioController extends Controller
             return redirect(route('errorLogin'));
         }
     }
+    // public function login
     public function verificarUsuario(Request $request)
     {
         $email = $request->input('email');
@@ -547,22 +548,53 @@ class UsuarioController extends Controller
                 );
             }
             // Verificar si el teléfono ya existe
-            $usuario = User::where('codigo_pais', $codigoPais)->where('telf', $telefono)->first();
-            if ($usuario && $usuario->verificado == true) {
-                return response()->json(
-                    [
-                        'status' => 'error',
-                        'errors' => ['telefono' => ['Este número de teléfono ya está registrado y verificado.']],
-                    ],
-                    400,
-                );
-            }
+            // $usuario = User::where('codigo_pais', $codigoPais)->where('telf', $telefono)->first();
+            // if ($usuario && $usuario->verificado == true) {
+            //     return response()->json(
+            //         [
+            //             'status' => 'error',
+            //             'errors' => ['telefono' => ['Este número de teléfono ya está registrado y verificado.']],
+            //         ],
+            //         400,
+            //     );
+            // }
             // Generar código de verificación
             $codigo = random_int(10000, 99999);
             // Enviar código por WhatsApp
             try {
+
+                $plantillaWhatsapp = '';
+
+                switch ($request->input('operacion')) {
+                    case 'verificar_telefono':
+                        $plantillaWhatsapp = 'delight_template_verificar_numero';
+                        break;
+                    case 'editar_usuario':
+                        $plantillaWhatsapp = 'delight_template_verificar_numero_editar';
+                        break;
+                    case 'ingreso_usuario':
+                        $usuario = User::where('codigo_pais', '+'.$codigoPais)->where('telf', $telefono)->exists();
+                        Log::debug("Usuario existe para ingreso con codigo pais $codigoPais y telefono $telefono ?", [$usuario]);
+                        if (!$usuario) {
+                            return response()->json(
+                                [
+                                    'status' => 'error',
+                                    'errors' => ['general' => ['No existe un usuario para el número telefónico solicitado.']],
+                                    'codigo_error' => 404,
+                                ],
+                                404,
+                            );
+                        }
+                        $plantillaWhatsapp = 'delight_template_verificar_numero_ingreso';
+                        break;
+                    default:
+                        $plantillaWhatsapp = 'delight_template_verificar_numero';
+                        break;
+                }
+
+
                 WhatsappHelper::setNumero($idRegistroNumeroWhatsapp)
-                    ->plantilla('delight_template_verificar_numero')
+                    ->plantilla($plantillaWhatsapp)
                     ->para($codigoPais . $telefono)
                     ->variables(['codigo' => $codigo])
                     ->enviar();
@@ -628,6 +660,7 @@ class UsuarioController extends Controller
         $numeroWhatsapp = NumeroWhatsapp::first();
 
         if (!$numeroWhatsapp) {
+            Log::debug("No hay número de WhatsApp configurado para enviar códigos de verificación.");
             return response()->json(
                 [
                     'status' => 'error',
@@ -725,6 +758,45 @@ class UsuarioController extends Controller
                 ],
                 200,
             );
+        } else {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'errors' => ['codigo' => ['El código ingresado no coincide. Intenta nuevamente.']],
+                ],
+                422,
+            );
+        }
+    }
+    public function IniciarSesionOTP(Request $request)
+    {
+        $codigoIngresado = $request->input('codigo');
+        $codigoGenerado = $request->input('codigo_generado');
+        $telefono_completo = $request->input('telefono_completo');
+        $user = User::whereRaw("CONCAT(codigo_pais, telf) = ?", [$telefono_completo])->first();
+
+        if (!$user) {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'errors' => ['telefono_completo' => ['No se encontró un usuario con ese número de teléfono.']],
+                ],
+                404,
+            );
+        }
+
+        $user_id = $user->id;
+
+        if ($codigoIngresado === $codigoGenerado) {
+            Auth::loginUsingId($user_id);
+            return response()->json(
+            [
+                'status' => 'success',
+                'message' => 'Código verificado y sesión iniciada correctamente.',
+                'redirect_url' => route('miperfil')
+            ],
+            200,
+        );
         } else {
             return response()->json(
                 [

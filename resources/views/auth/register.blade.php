@@ -681,12 +681,13 @@
             var data = {
                 telefono: $('#telefono').val(),
                 codigoPais: $('#country-code-selector').val(),
-                digitosPais: $('#digitos_pais').val()
+                digitosPais: $('#digitos_pais').val(),
+                operacion: 'editar_usuario'
             };
             
             $.ajax({
                 type: "post",
-                url: "{{ route('usuario.enviar-codigo-verificacion-editar') }}",
+                url: "{{ route('usuario.enviar-codigo-verificacion') }}",
                 data: data,
                 dataType: "json",
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
@@ -938,7 +939,8 @@
                 var data = {
                     telefono: telefono,
                     codigoPais: codigoPais,
-                    digitosPais: digitosPais
+                    digitosPais: digitosPais,
+                    operacion: 'verificar_telefono'
                 };
 
                 // Deshabilitar el botón durante la petición

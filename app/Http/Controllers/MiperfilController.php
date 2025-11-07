@@ -279,7 +279,11 @@ class MiperfilController extends Controller
             'telf' => 'required|size:8|unique:users,telf,' . $request->idUsuario,
             'latitud' => 'required|string|min:10',
             'longitud' => 'required|string|min:10',
-        ]);
+        ]
+        // // ,[
+        // //     'direccion.min' => 'La dirección debe tener al menos :min caracteres'
+        // // ]
+    );
         $usuario = User::find(auth()->user()->id);
 
         $usuario->fill($request->all());
