@@ -352,12 +352,26 @@
             style="">Continuar</a>
     </div>
 
-
-
-
-
-
-
+    <div id="menu-confirmacion-editar" class="menu menu-box-modal pb-3 rounded-m overflow-hidden" style="width: 90%; max-width: 320px">
+        <div class="menu-title p-3">
+            <div class="d-flex flex-row gap-4 align-items-center">
+                <i data-lucide="calendar-clock" class="lucide-icon" style="width: 2.5rem; height: 2.5rem;"></i>
+                    <h1 id="titulo-simple" class="font-20 p-0 m-0 line-height-m">Editar Usuario</h1>
+            </div>
+            <!-- <a href="#" class="close-menu"><i data-lucide="x-circle" class="lucide-icon"></i></a> -->
+        </div>
+        <div class="content mt-0 mb-3 d-flex flex-column h-100 gap-3">
+            <p id="texto-confirmacion-editar" class="mb-0 color-theme text-justify">
+                Ya existe un perfil delight registrado a este número, ¿deseas modificar su información?                
+            </p>
+            <div class="d-flex flex-row gap-1 justify-content-evenly mb-0">
+                <a href="#" class="close-menu btn btn-xs font-15 rounded-s text-uppercase bg-delight-red color-white font-900 line-height-s">Cancelar</a>
+                <button id="btnConfirmarEditar" href="#" class="btn btn-xs font-15 rounded-s validador-editar text-uppercase bg-highlight font-900 line-height-s">
+                    <span class="d-flex flex-row align-items-center gap-1">Confirmar</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <div id="menu-verificacion" class="menu menu-box-modal rounded-m"
         style="display: block; width: 90%; height: auto;">
@@ -394,6 +408,52 @@
                     <button type="button" id="verificar-codigo-btn"
                         class="btn btn-m btn-center-m button-s shadow-l rounded-s text-uppercase font-900 bg-mint-dark color-white">
                         Verificar Código
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="menu-verificacion-editar" class="menu menu-box-modal rounded-m"
+        style="display: block; width: 90%; height: auto;">
+        <div class="card card-style p-0 m-0 pb-3">
+            <div class="card-header p-0">
+                <div class="menu-title">
+                    <p class="color-highlight">Delight-Nutrifood</p>
+                    <h1 class="font-20">Verificación para Editar Usuario</h1>
+                    <a href="#" class="close-menu"><i class="fa fa-times-circle"></i></a>
+                </div>
+            </div>
+            <div class="content mb-3">
+                <p>
+                    Se envió un código de verificación a su WhatsApp. <br> Por favor, ingrese el código para habilitar la modificación de su perfil.
+                </p>
+                <div class="text-center mx-n3">
+                    <form action="" id="form-codigo-verificacion-editar">
+                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
+                            value="" placeholder="●">
+                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
+                            value="" placeholder="●">
+                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
+                            value="" placeholder="●">
+                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
+                            value="" placeholder="●">
+                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
+                            value="" placeholder="●">
+                    </form>
+                </div>
+                <p class="text-center my-3 font-11">
+                    ¿No ha recibido un código aún?
+                    <a href="#" id="reenviar-codigo">
+                        Reenviar código
+                    </a>
+                </p>
+                <div class="d-flex flex-row justify-content-evenly">
+                    <a class="btn btn-s font-15 shadow-l rounded-s text-uppercase font-900 bg-delight-red color-white" >Cancelar</a>
+                    <button type="button" id="verificar-codigo-btn-editar"
+                        class="btn btn-s font-15 shadow-l rounded-s validador-editar text-uppercase font-900 bg-mint-dark color-white">
+                        Verificar
                     </button>
                 </div>
             </div>
@@ -615,6 +675,66 @@
         let otpRetryCount = 0;
         const MAX_OTP_RETRIES = 2;
 
+
+
+        const validacionOTPEditar = () => {
+            var data = {
+                telefono: $('#telefono').val(),
+                codigoPais: $('#country-code-selector').val(),
+                digitosPais: $('#digitos_pais').val()
+            };
+            
+            $.ajax({
+                type: "post",
+                url: "{{ route('usuario.enviar-codigo-verificacion-editar') }}",
+                data: data,
+                dataType: "json",
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                success: manejarExitoVerificacion,
+                error: manejarErrorVerificacion
+            });
+        }
+
+        const manejarExitoVerificacion = (response) => {
+            if (response.status === 'success') {
+                codigoVerificacion = response.codigo_generado;
+                console.log('✅ Código enviado exitosamente');
+                habilitarValidandoEditar();
+                $('#menu-verificacion-editar').addClass('menu-active');
+                $('.menu-hider').addClass('menu-active');
+                ocultarConfirmacionEditar();
+            } else {
+                habilitarValidandoEditar();
+                console.log('❌ Error en la respuesta:', response);
+                alert('Error: ' + (response.errors.telefono ? response.errors.telefono[0] : 'Error desconocido'));
+            }
+            // habilitarBotonesValidando();
+        }
+
+        const manejarErrorVerificacion = (xhr, status, error) => {
+            console.error("Error al enviar código:", error);
+            habilitarValidandoEditar();
+            // Add user feedback here
+        }
+
+        const ocultarConfirmacionEditar = () => {
+            console.log("Se deberia haber ocultado el menu-confirmacion*editar");
+            $('#menu-confirmacion-editar').removeClass('menu-active');
+            // // $('.menu-hider').addClass('menu-active');
+        }
+
+        const deshabilitarValidandoEditar = () => {
+            const botones = $('.validador-editar');
+            botones.prop('disabled', true);
+            botones.text('Validando...');
+        }
+
+        const habilitarValidandoEditar = () => {
+            const botones = $('.validador-editar');
+            botones.prop('disabled', false);
+            botones.text('Confirmar');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const steps = document.querySelectorAll('.form-step');
             const nextBtns = document.querySelectorAll('.btn-next');
@@ -752,10 +872,17 @@
                             valid: true,
                             data: data
                         };
-                    } else if (data.status == 'otp-register-validation') {
+                    } else if (data.status == 'otp-register-validation' && data.user_exists == false) {
                         // Display del menu OTP para validar whatsapp
-                        console.log("respuesta otp-register-validation detextado");
+                        console.log("data obtenida:", data);
+                        console.log("Proceso para usuarios nuevos");
                         validacionOTPStep();
+                    } else if (data.status == 'otp-register-validation' && data.user_exists == true) {
+                        console.log("data obtenida:", data);
+                        console.log("Proceso para usuarios existentes");
+
+                        revelarConfirmacionEditar();
+                        habilitarBotonesValidando();
                     } else {
                         const errors = data.errors;
                         habilitarBotonesValidando();
@@ -774,6 +901,21 @@
                     };
                 }
             }
+
+            const revelarConfirmacionEditar = () => {
+                $('#menu-confirmacion-editar').addClass('menu-active');
+                $('.menu-hider').addClass('menu-active');
+
+                $('#btnConfirmarEditar').off('click').on('click', function(e) {
+                    console.log("Click en boton para enviar codigo verificacion editar");
+                    e.preventDefault();
+                    deshabilitarValidandoEditar();
+                    validacionOTPEditar();
+                });
+                // $('#').removeClass('d-none');
+                // $('#').addClass('d-block');
+            }
+
 
             const validacionOTPStep = function() {
                 var telefono = document.getElementById('telefono').value;
@@ -972,6 +1114,8 @@
                 nextBtns.prop('disabled', false);
                 nextBtns.text('Siguiente');
             }
+
+
 
 
 
@@ -1278,7 +1422,14 @@
 
             // Event listener para el botón de verificar código
             document.getElementById('verificar-codigo-btn').addEventListener('click', function() {
-                verificarCodigo();
+                verificarCodigo2(true);
+            });
+
+            // Event listener para el botón de verificar código al editar usuario
+            document.getElementById('verificar-codigo-btn-editar').addEventListener('click', function() {
+                deshabilitarValidandoEditar();
+                verificarCodigo2(false);
+                habilitarValidandoEditar();
             });
 
             // Event listener para el botón de reenviar código
@@ -1405,6 +1556,70 @@
             }
         }
 
+        const verificarCodigo2 = (nuevo) => {
+            // Obtener todos los inputs del formulario
+            const claseSolicitud = nuevo ? '#form-codigo-verificacion' : '#form-codigo-verificacion-editar'
+            const inputs = document.querySelectorAll(`${claseSolicitud} .otp`);
+            let codigoCompleto = '';
+
+            // Recorrer cada input y obtener su valor
+            inputs.forEach((input, index) => {
+                const valor = input.value.trim();
+
+                // Si el valor no está vacío
+                if (valor) {
+                    codigoCompleto += valor;
+                } else {
+                    console.log(`Input ${index + 1} está vacío`);
+                }
+            });
+
+            // Verificar si se completó el código
+            if (codigoCompleto.length === 5) {
+                // Enviar código al servidor para verificación
+                if (nuevo) {
+                    enviarCodigoVerificacion(codigoCompleto);
+                } else {
+                    enviarCodigoVerificacionEditar(codigoCompleto);
+                }
+                return codigoCompleto;
+            } else {
+                alert('Por favor completa todos los campos del código');
+                return null;
+            }
+        }
+
+        // // const verificarCodigoEditar = (boolean) => {
+        // //     // Obtener todos los inputs del formulario
+        // //     const claseSolicitud = boolean ? '#form-codigo-verificacion' : '#form-codigo-verificacion-editar'
+        // //     // // const inputs = document.querySelectorAll('#form-codigo-verificacion-editar .otp');
+        // //     const inputs = document.querySelectorAll(`${claseSolicitud} .otp`);
+        // //     let codigoCompleto = '';
+
+        // //     // Recorrer cada input y obtener su valor
+        // //     inputs.forEach((input, index) => {
+        // //         const valor = input.value.trim();
+
+        // //         // Si el valor no está vacío
+        // //         if (valor) {
+        // //             codigoCompleto += valor;
+        // //         } else {
+        // //             console.log(`Input ${index + 1} está vacío`);
+        // //         }
+        // //     });
+
+        // //     // Verificar si se completó el código
+        // //     if (codigoCompleto.length === 5) {
+        // //         // Enviar código al servidor para verificación
+        // //         // // enviarCodigoVerificacion(codigoCompleto);
+        // //         validacionOTPEditar(codigoCompleto);
+        // //         return codigoCompleto;
+        // //     } else {
+        // //         alert('Por favor completa todos los campos del código');
+        // //         return null;
+        // //     }
+        // // }
+
         const steps = document.querySelectorAll('.form-step');
 
         // Función para enviar código al servidor
@@ -1466,6 +1681,66 @@
                 }
             });
         }
+
+        const enviarCodigoVerificacionEditar = (codigo) => {
+            $.ajax({
+                type: "post",
+                url: "{{ route('usuario.verificar-codigo-otp') }}",
+                data: {
+                    codigo: codigo,
+                    codigo_generado: codigoVerificacion
+                },
+                dataType: "json",
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        // Código correcto
+                        $('#menu-verificacion-editar').removeClass('menu-active');
+                        $('.menu-hider').removeClass('menu-active');
+                        $('#codigo-correcto').addClass('menu-active');
+                        $('#verificar-numero-editar').addClass('d-none');
+                        $('#telefono_verificado').val(1);
+                        formData.set('telefono_verificado', 1);
+                        formData.delete('digitos_pais');
+                        console.log('✅ Teléfono verificado correctamente para la modificación del usuario');
+
+                        setTimeout(() => {
+                            $('#codigo-correcto').removeClass('menu-active');
+                        }, 2000);
+
+                        // PASAR AL SIGUIENTE PASO
+                        $('#step-1').addClass('d-none');
+                        $('#step-2').removeClass('d-none');
+
+                        currentStep = 1;
+                    } else {
+                        // Código incorrecto
+                        $('#menu-verificacion').removeClass('menu-active');
+                        $('.menu-hider').removeClass('menu-active');
+                        $('#codigo-incorrecto').addClass('menu-active');
+                        $('#verificar-numero').attr('disabled', true);
+                        $('#contador-cuenta-regresiva').removeClass('d-none');
+                        contadorCuentaRegresiva();
+
+                        setTimeout(() => {
+                            $('#codigo-incorrecto').removeClass('menu-active');
+                        }, 3000);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseJSON.errors.codigo[0]);
+                    $('#mensaje-toast-error').text(xhr.responseJSON.errors.codigo[0]);
+                    $('#toast-error').removeClass('show');
+                    $('#toast-error').addClass('show');
+                    setTimeout(() => {
+                        $('#toast-error').removeClass('show');
+                        $('#toast-error').addClass('hide');
+                    }, 2000);
+                }
+            });
+        };
 
 
         var contadorReintentoVerificacion = 30;

@@ -189,6 +189,9 @@ class WhatsappHelper
     {
         return [
             'delight_template_verificar_numero' => "Recibimos una solicitud para verificar tu numero de teléfono en tu cuenta en Delight. \n\nTu código es: {{codigo}}",
+            'delight_template_verificar_numero_editar' => "Recibimos una solicitud para modificar la información de tu cuenta en Delight Nutrifood. 
+                                                            \n\nTu código es: {{codigo}}
+                                                            \n\nSi no fuiste quien realizó la solicitud, por favor, ignora este mensaje.",
         ];
     }
 

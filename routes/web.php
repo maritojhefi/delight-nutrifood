@@ -288,6 +288,7 @@ Route::prefix('/usuario')
 
         Route::post('/verificar-numero', [UsuarioController::class, 'verificarNumero'])->name('verificar-numero');
         Route::post('/enviar-codigo-verificacion', [UsuarioController::class, 'enviarCodigoVerificacion'])->name('enviar-codigo-verificacion');
+        Route::post('/enviar-codigo-verificacion-editar', [UsuarioController::class, 'enviarCodigoVerificacion'])->name('enviar-codigo-verificacion-editar');
         Route::post('/verificar-codigo-otp', [UsuarioController::class, 'verificarCodigoOTP'])->name('verificar-codigo-otp');
 
         Route::get('/actualizado', function () {

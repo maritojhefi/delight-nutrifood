@@ -145,8 +145,11 @@ class UsuarioController extends Controller
             );
         }
         // Verificar si el usuario ya existe por su correo electrónico
-        $user = User::where('email', $request->email)->first();
+        // // $user = User::where('email', $request->email)->first();
 
+
+        // Verificar si el usuario ya existe por su número telefónico
+        $user = User::where('codigo_pais', $request->codigo_pais)->where('telf', $request->telefono)->first();
         // Obtener el primer nombre del usuario para generar su correo
         $nameParts = explode(' ', $request->name);
         $firstName = strtolower($nameParts[0]);
@@ -296,45 +299,51 @@ class UsuarioController extends Controller
             );
         }
 
-        $userExists = User::where('email', $request->email)->exists();
+        $userExists = User::where('codigo_pais', $request->codigo_pais)->where('telf', $request->telefono)->exists();
 
-        if ($userExists) {
-            $customErrors = [
-                'email' => ['Este correo electrónico ya está registrado.'],
-            ];
+        // if ($userExists) {
+        //     $customErrors = [
+        //         'email' => ['Este correo electrónico ya está registrado.'],
+        //     ];
 
-            return response()->json(
-                [
-                    'status' => 'error',
-                    'errors' => $customErrors,
-                ],
-                422,
-            );
-        }
+        //     return response()->json(
+        //         [
+        //             'status' => 'error',
+        //             'errors' => $customErrors,
+        //         ],
+        //         422,
+        //     );
+        // }
 
         if ($request->telefono_verificado == 0) {
             $telefonoExists = User::where('codigo_pais', $request->codigo_pais)->where('telf', $request->telefono)->exists();
 
             Log::debug("Existe ya un usuario con codigo pais $request->codigo_pais y numero $request->telefono ?", [$telefonoExists]);
 
-            if ($telefonoExists) {
-                $customErrors = [
-                    'telefono' => ['Este número de teléfono ya está registrado.'],
-                ];
+            // if ($telefonoExists) {
+            //     $customErrors = [
+            //         'telefono' => ['Este número de teléfono ya está registrado.'],
+            //     ];
 
-                return response()->json(
-                    [
-                        'status' => 'error',
-                        'errors' => $customErrors,
-                    ],
-                    422,
-                );
-            }
+            //     return response()->json(
+            //         [
+            //             'status' => 'error',
+            //             'errors' => $customErrors,
+            //         ],
+            //         422,
+            //     );
+
+            //     return response()->json([
+            //         'status' => 'otp-update-confirmarion',
+            //         'message' => 'Verificando vía whatsapp',
+            //         'user_exists' => $userExists,
+            //     ])
+            // }
 
             return response()->json([
                 'status' => 'otp-register-validation',
                 'message' => 'Verificando vía whatsapp',
-                'user_exists' => $userExists,
+                'user_exists' => $telefonoExists,
             ]);
         }
 
@@ -613,6 +622,94 @@ class UsuarioController extends Controller
                 500,
             );
         }
+    }
+
+    public function enviarCodigoVerificacionEditar(Request $request) {
+        $numeroWhatsapp = NumeroWhatsapp::first();
+
+        if (!$numeroWhatsapp) {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'errors' => ['general' => ['El sistema de verificación de teléfono no está disponible en este momento.']],
+                    'codigo_error' => 500,
+                ],
+                500,
+            );
+        }
+
+        $telefono = $request->input('telefono');
+        $codigoPais = $request->input('codigoPais');
+        $idRegistroNumeroWhatsapp = $numeroWhatsapp->id;
+
+        // Verificar si el teléfono ya existe
+        $usuario = User::where('codigo_pais', $codigoPais)->where('telf', $telefono)->first();
+        if (!$usuario) {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'errors' => ['telefono' => ['No existe un usuario para el número telefónico solicitado.']],
+                ],
+                400,
+            );
+        }
+
+         // Generar código de verificación
+        $codigo = random_int(10000, 99999);
+        // Enviar código por WhatsApp
+        try {
+            WhatsappHelper::setNumero($idRegistroNumeroWhatsapp)
+                ->plantilla('delight_template_verificar_numero_editar')
+                ->para($codigoPais . $telefono)
+                ->variables(['codigo' => $codigo])
+                ->enviar();
+
+            return response()->json(
+                [
+                    'codigo_generado' => $codigo,
+                    'status' => 'success',
+                    'message' => 'Código de verificación enviado exitosamente.',
+                ],
+                200,
+            );
+        } catch (\Exception $e) {
+            // dd($e->getMessage(), $e->getCode());
+            $codigoError = null;
+            // Buscar número dentro de (Código: X)
+            if (preg_match('/\(Código:\s*(\d+)\)/', $e->getMessage(), $coincidencias) > 0) {
+                $codigoError = $coincidencias[1];
+                // dd($codigoError);
+                if ($codigoError == "401") {
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'errors' => ['general' => ['En este momento no se puede enviar el código de verificación al telefono.']],
+                            'codigo_error' => $codigoError,
+                        ],
+                        401,
+                    );
+                } else {
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'errors' => ['general' => [$e->getMessage()]],
+                            'codigo_error' => $codigoError,
+                        ],
+                        500,
+                    );
+                }
+            } else {
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'errors' => ['general' => ['Error al enviar el código de verificación. Intenta nuevamente.']],
+                        'codigo_error' => $codigoError,
+                    ],
+                    500,
+                );
+            }
+        };
+
     }
 
     public function verificarCodigoOTP(Request $request)
