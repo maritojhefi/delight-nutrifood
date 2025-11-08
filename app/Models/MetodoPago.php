@@ -11,33 +11,27 @@ class MetodoPago extends Model
     use HasFactory;
     protected $table = 'metodos_pagos';
     protected $fillable = [
-        'nombre_metodo_pago','codigo','sucursal_id','descripcion','imagen','activo'
-       
+        'nombre_metodo_pago',
+        'codigo',
+        'sucursal_id',
+        'descripcion',
+        'imagen',
+        'activo'
+
     ];
-    
+
     // Constante para la ruta de imágenes de métodos de pago en S3
     const RUTA_IMAGEN = '/images/logo-bancos/';
-    
+
     protected $appends = ['pathImagen'];
 
-    public function getImagenAttribute($value){
+    public function getImagenAttribute($value)
+    {
         if (empty($value)) {
             return null;
         }
-        
-        // Usar el disco configurado para generar la URL correcta
-        $disk = GlobalHelper::discoArchivos();
-        if ($disk === 's3') {
-            // Para S3, usar la URL completa
-            $config = config('filesystems.disks.s3');
-            $bucket = $config['bucket'] ?? '';
-            $region = $config['region'] ?? 'us-east-1';
-            $baseUrl = "https://{$bucket}.s3.{$region}.amazonaws.com";
-            return $baseUrl . self::RUTA_IMAGEN . $value;
-        } else {
-            // Para local, usar asset()
-            return asset('images/logo-bancos/'.$value);
-        }
+
+        return asset('images/logo-bancos/' . $value);
     }
 
     /**
@@ -48,7 +42,7 @@ class MetodoPago extends Model
         if (empty($this->imagen)) {
             return null;
         }
-        
+
         // Usar el disco configurado para generar la URL correcta
         $disk = GlobalHelper::discoArchivos();
         if ($disk === 's3') {

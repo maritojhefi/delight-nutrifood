@@ -127,29 +127,6 @@ class ProductTable extends Component
                 // Guardar la imagen procesada (automáticamente usa el disco correcto según el ambiente)
                 $filename = $procesarImagen->guardar();
 
-                // Log de la ubicación donde se guardó la imagen
-                $disco = GlobalHelper::discoArchivos();
-                if ($disco === 's3') {
-                    $config = config('filesystems.disks.s3');
-                    $bucket = $config['bucket'] ?? '';
-                    $region = $config['region'] ?? 'us-east-1';
-                    $urlCompleta = "https://{$bucket}.s3.{$region}.amazonaws.com" . Producto::RUTA_IMAGENES . $filename;
-                    Log::info("Imagen de producto actualizada en S3", [
-                        'producto_id' => $this->productoEdit->id,
-                        'nombre_archivo' => $filename,
-                        'url_s3' => $urlCompleta,
-                        'disco' => $disco
-                    ]);
-                } else {
-                    $rutaLocal = public_path('imagenes/productos/' . $filename);
-                    Log::info("Imagen de producto actualizada en local", [
-                        'producto_id' => $this->productoEdit->id,
-                        'nombre_archivo' => $filename,
-                        'ruta_local' => $rutaLocal,
-                        'disco' => $disco
-                    ]);
-                }
-
                 $this->productoEdit->imagen = $filename;
             } catch (\Exception $e) {
                 $this->dispatchBrowserEvent('alert', [

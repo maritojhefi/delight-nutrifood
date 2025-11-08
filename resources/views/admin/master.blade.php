@@ -38,6 +38,9 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js"></script>
     {{-- <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script> --}}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
+    <!-- ResponsiveVoice Text-to-Speech API -->
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=Wwe5xBPl"></script>
 
     @livewireStyles
     @livewireScripts
@@ -210,19 +213,10 @@
     <!-- Required vendors -->
     <script src="{{ asset('vendor/global/global.min.js') }}"></script>
     <script src="{{ asset('vendor/chart.js/Chart.bundle.min.js') }}"></script>
-
-
-
     <script src="{{ asset('js/sweetalert.min.js') }}"></script>
     <!-- Chart piety plugin files -->
     <script src="{{ asset('vendor/peity/jquery.peity.min.js') }}"></script>
-
-    <!-- Apex Chart -->
-
-
-    <!-- Dashboard 1 -->
     <script src="{{ asset('js/dashboard/dashboard-1.js') }}"></script>
-
     <script src="{{ asset('js/custom.min.js') }}"></script>
     <script src="{{ asset('js/deznav-init.js') }}"></script>
     <script src="{{ asset('js/demo.js') }}"></script>
@@ -298,18 +292,9 @@
             }
         }) => {
             $('#' + id).modal('hide');
-            console.log(id);
         })
     </script>
-
     @stack('scripts')
-
-
-
-
-
-
-
     <script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.4/qz-tray.min.js"></script>
     <script>
         function cambiarMetodo(nombre, id, pivotId) {
@@ -378,6 +363,7 @@
             return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
         }
     </script>
+    @include('admin.partials.script-reproducir-texto')
 </body>
 
 </html>

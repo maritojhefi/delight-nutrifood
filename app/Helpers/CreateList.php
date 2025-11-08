@@ -67,14 +67,6 @@ class CreateList
                 $descuentoConvenioProducto = $convenioService->calcularDescuentoConvenio($producto, $cuenta->cliente, $item->cantidad);
                 $descuentoConvenio += $descuentoConvenioProducto;
 
-                // Debug temporal
-                Log::info('Calculando descuento convenio para producto: ' . $producto->id, [
-                    'producto_nombre' => $producto->nombre,
-                    'cliente_id' => $cuenta->cliente->id,
-                    'cliente_nombre' => $cuenta->cliente->name,
-                    'descuento_convenio_producto' => $descuentoConvenioProducto,
-                    'tiene_convenio' => $convenioService->tieneDescuentoConvenio($producto, $cuenta->cliente)
-                ]);
 
                 if ($descuentoConvenioProducto > 0) {
                     $convenio = $convenioService->obtenerConvenioActivo($cuenta->cliente);
