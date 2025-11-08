@@ -28,6 +28,7 @@ class UsuarioController extends Controller
             return redirect(route('errorLogin'));
         }
     }
+    // public function login
     public function verificarUsuario(Request $request)
     {
         $email = $request->input('email');
@@ -93,7 +94,6 @@ class UsuarioController extends Controller
             $request->all(),
             [
                 'name' => 'required|string|max:80',
-                'email' => 'required|email',
                 'codigo_pais' => 'required|string|max:20',
                 'telefono' => 'required|string',
                 'profesion' => 'required|string|max:40',
@@ -102,7 +102,7 @@ class UsuarioController extends Controller
                 'ano_nacimiento' => 'required|integer|min:1900|max:' . (date('Y') - 12),
                 'direccion' => 'required|string|max:100',
                 'direccion_trabajo' => 'nullable|string|max:100',
-                'password' => 'required|string|min:4|confirmed',
+                'password' => 'required|string|min:5|confirmed',
                 'hijos' => 'nullable|boolean',
                 'partner_id' => 'nullable|sometimes|exists:users,id',
                 'foto' => [
@@ -114,9 +114,6 @@ class UsuarioController extends Controller
             [
                 // Mensajes personalizados
                 'name.required' => 'Por favor, ingresa tu nombre.',
-                'email.required' => 'El correo electrónico es obligatorio.',
-                'email.email' => 'Por favor, ingresa un correo electrónico válido.',
-                'email.unique' => 'Este correo electrónico ya está registrado.',
                 'codigo_pais.required' => 'El codigo de pais es obligatorio',
                 'telefono.required' => 'El número de teléfono es obligatorio.',
                 'telefono.string' => 'Por favor, ingresa un número de teléfono válido.',
@@ -149,13 +146,24 @@ class UsuarioController extends Controller
             );
         }
         // Verificar si el usuario ya existe por su correo electrónico
-        $user = User::where('email', $request->email)->first();
+        // // $user = User::where('email', $request->email)->first();
+
+
+        // Verificar si el usuario ya existe por su número telefónico
+        $user = User::where('codigo_pais', $request->codigo_pais)->where('telf', $request->telefono)->first();
+        // Obtener el primer nombre del usuario para generar su correo
+        $nameParts = explode(' ', $request->name);
+        $firstName = strtolower($nameParts[0]);
+
+        // Concatenar codigo pais y numero telefonico
+        $phoneNumber = ltrim($request->codigo_pais, '+') . $request->telefono;
 
         if ($user) {
             // El usuario ya existe, entonces actualizamos su información
             $user->name = $request->name;
             $user->codigo_pais = $request->codigo_pais;
             $user->telf = $request->telefono;
+            $user->email = $firstName . '_' . $phoneNumber . '@delight.com';
             $user->profesion = $request->profesion;
             $user->nacimiento = $request->ano_nacimiento . '-' . $request->mes_nacimiento . '-' . $request->dia_nacimiento;
             // $user->nacimiento = $request->nacimiento;
@@ -172,7 +180,8 @@ class UsuarioController extends Controller
             // El usuario no existe, entonces creamos uno nuevo
             $user = new User();
             $user->name = $request->name;
-            $user->email = $request->email;
+            // $user->email = $request->email;
+            $user->email = $firstName . '_' . $phoneNumber . '@delight.com';
             $user->codigo_pais = $request->codigo_pais;
             $user->telf = $request->telefono;
             $user->profesion = $request->profesion;
@@ -237,7 +246,6 @@ class UsuarioController extends Controller
             $request->all(),
             [
                 'name' => 'required|string|max:80',
-                'email' => 'required|email',
                 'codigo_pais' => 'required|string|max:20',
                 'telefono' => 'required|' . $validacion,
                 'foto' => [
@@ -249,9 +257,6 @@ class UsuarioController extends Controller
             [
                 // Mensajes personalizados
                 'name.required' => 'Por favor, ingresa tu nombre.',
-                'email.required' => 'El correo electrónico es obligatorio.',
-                'email.email' => 'Por favor, ingresa un correo electrónico válido.',
-                'email.unique' => 'Este correo electrónico ya está registrado.',
                 'telefono.required' => 'El número de teléfono es obligatorio.',
                 'telefono.string' => 'Por favor, ingresa un número de teléfono válido.',
                 'foto.mimes' => 'El archivo debe ser una imagen en formato JPEG, PNG, JPG, HEIC o HEIF.',
@@ -270,38 +275,52 @@ class UsuarioController extends Controller
             );
         }
 
-        $userExists = User::where('email', $request->email)->exists();
+        $userExists = User::where('codigo_pais', $request->codigo_pais)->where('telf', $request->telefono)->exists();
 
-        if ($userExists) {
-            $customErrors = [
-                'email' => ['Este correo electrónico ya está registrado.'],
-            ];
+        // if ($userExists) {
+        //     $customErrors = [
+        //         'email' => ['Este correo electrónico ya está registrado.'],
+        //     ];
 
-            return response()->json(
-                [
-                    'status' => 'error',
-                    'errors' => $customErrors,
-                ],
-                422,
-            );
-        }
+        //     return response()->json(
+        //         [
+        //             'status' => 'error',
+        //             'errors' => $customErrors,
+        //         ],
+        //         422,
+        //     );
+        // }
 
         if ($request->telefono_verificado == 0) {
-            $telefonoExists = User::where('codigo_pais', $request->codigo_pais)->where('telf', $request->telefono)->where('verificado', 1)->exists();
+            $telefonoExists = User::where('codigo_pais', $request->codigo_pais)->where('telf', $request->telefono)->exists();
 
-            if ($telefonoExists) {
-                $customErrors = [
-                    'telefono' => ['Este número de teléfono ya está registrado.'],
-                ];
+            Log::debug("Existe ya un usuario con codigo pais $request->codigo_pais y numero $request->telefono ?", [$telefonoExists]);
 
-                return response()->json(
-                    [
-                        'status' => 'error',
-                        'errors' => $customErrors,
-                    ],
-                    422,
-                );
-            }
+            // if ($telefonoExists) {
+            //     $customErrors = [
+            //         'telefono' => ['Este número de teléfono ya está registrado.'],
+            //     ];
+
+            //     return response()->json(
+            //         [
+            //             'status' => 'error',
+            //             'errors' => $customErrors,
+            //         ],
+            //         422,
+            //     );
+
+            //     return response()->json([
+            //         'status' => 'otp-update-confirmarion',
+            //         'message' => 'Verificando vía whatsapp',
+            //         'user_exists' => $userExists,
+            //     ])
+            // }
+
+            return response()->json([
+                'status' => 'otp-register-validation',
+                'message' => 'Verificando vía whatsapp',
+                'user_exists' => $telefonoExists,
+            ]);
         }
 
         return response()->json([
@@ -463,6 +482,29 @@ class UsuarioController extends Controller
 
     public function enviarCodigoVerificacion(Request $request)
     {
+        //// Simulación de solicitudes
+        // return response()->json(
+        //         [
+        //             'status' => 'error',
+        //             'errors' => ['general' => ['El sistema de verificación de teléfono no está disponible en este momento.']],
+        //             'codigo_error' => 500,
+        //         ],
+        //         500,
+        //     );
+        // return response()->json(
+        //             [
+        //                 'status' => 'error',
+        //                 'errors' => ['telefono' => ['El número de teléfono debe tener exactamente ' . ' $digitosPais' . ' dígitos.']],
+        //             ],
+        //             422,
+        //         );
+        //  return response()->json(
+        //             [
+        //                 'status' => 'error',
+        //                 'errors' => ['telefono' => ['Este número de teléfono ya está registrado y verificado.']],
+        //             ],
+        //             400,
+        //         );
 
         $numeroWhatsapp = NumeroWhatsapp::first();
         if ($numeroWhatsapp) {
@@ -481,22 +523,53 @@ class UsuarioController extends Controller
                 );
             }
             // Verificar si el teléfono ya existe
-            $usuario = User::where('codigo_pais', $codigoPais)->where('telf', $telefono)->first();
-            if ($usuario && $usuario->verificado == true) {
-                return response()->json(
-                    [
-                        'status' => 'error',
-                        'errors' => ['telefono' => ['Este número de teléfono ya está registrado y verificado.']],
-                    ],
-                    400,
-                );
-            }
+            // $usuario = User::where('codigo_pais', $codigoPais)->where('telf', $telefono)->first();
+            // if ($usuario && $usuario->verificado == true) {
+            //     return response()->json(
+            //         [
+            //             'status' => 'error',
+            //             'errors' => ['telefono' => ['Este número de teléfono ya está registrado y verificado.']],
+            //         ],
+            //         400,
+            //     );
+            // }
             // Generar código de verificación
             $codigo = random_int(10000, 99999);
             // Enviar código por WhatsApp
             try {
+
+                $plantillaWhatsapp = '';
+
+                switch ($request->input('operacion')) {
+                    case 'verificar_telefono':
+                        $plantillaWhatsapp = 'delight_template_verificar_numero';
+                        break;
+                    case 'editar_usuario':
+                        $plantillaWhatsapp = 'delight_template_verificar_numero_editar';
+                        break;
+                    case 'ingreso_usuario':
+                        $usuario = User::where('codigo_pais', '+'.$codigoPais)->where('telf', $telefono)->exists();
+                        Log::debug("Usuario existe para ingreso con codigo pais $codigoPais y telefono $telefono ?", [$usuario]);
+                        if (!$usuario) {
+                            return response()->json(
+                                [
+                                    'status' => 'error',
+                                    'errors' => ['general' => ['No existe un usuario para el número telefónico solicitado.']],
+                                    'codigo_error' => 404,
+                                ],
+                                404,
+                            );
+                        }
+                        $plantillaWhatsapp = 'delight_template_verificar_numero_ingreso';
+                        break;
+                    default:
+                        $plantillaWhatsapp = 'delight_template_verificar_numero';
+                        break;
+                }
+
+
                 WhatsappHelper::setNumero($idRegistroNumeroWhatsapp)
-                    ->plantilla('delight_template_verificar_numero')
+                    ->plantilla($plantillaWhatsapp)
                     ->para($codigoPais . $telefono)
                     ->variables(['codigo' => $codigo])
                     ->enviar();
@@ -558,6 +631,95 @@ class UsuarioController extends Controller
         }
     }
 
+    public function enviarCodigoVerificacionEditar(Request $request) {
+        $numeroWhatsapp = NumeroWhatsapp::first();
+
+        if (!$numeroWhatsapp) {
+            Log::debug("No hay número de WhatsApp configurado para enviar códigos de verificación.");
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'errors' => ['general' => ['El sistema de verificación de teléfono no está disponible en este momento.']],
+                    'codigo_error' => 500,
+                ],
+                500,
+            );
+        }
+
+        $telefono = $request->input('telefono');
+        $codigoPais = $request->input('codigoPais');
+        $idRegistroNumeroWhatsapp = $numeroWhatsapp->id;
+
+        // Verificar si el teléfono ya existe
+        $usuario = User::where('codigo_pais', $codigoPais)->where('telf', $telefono)->first();
+        if (!$usuario) {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'errors' => ['telefono' => ['No existe un usuario para el número telefónico solicitado.']],
+                ],
+                400,
+            );
+        }
+
+         // Generar código de verificación
+        $codigo = random_int(10000, 99999);
+        // Enviar código por WhatsApp
+        try {
+            WhatsappHelper::setNumero($idRegistroNumeroWhatsapp)
+                ->plantilla('delight_template_verificar_numero_editar')
+                ->para($codigoPais . $telefono)
+                ->variables(['codigo' => $codigo])
+                ->enviar();
+
+            return response()->json(
+                [
+                    'codigo_generado' => $codigo,
+                    'status' => 'success',
+                    'message' => 'Código de verificación enviado exitosamente.',
+                ],
+                200,
+            );
+        } catch (\Exception $e) {
+            // dd($e->getMessage(), $e->getCode());
+            $codigoError = null;
+            // Buscar número dentro de (Código: X)
+            if (preg_match('/\(Código:\s*(\d+)\)/', $e->getMessage(), $coincidencias) > 0) {
+                $codigoError = $coincidencias[1];
+                // dd($codigoError);
+                if ($codigoError == "401") {
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'errors' => ['general' => ['En este momento no se puede enviar el código de verificación al telefono.']],
+                            'codigo_error' => $codigoError,
+                        ],
+                        401,
+                    );
+                } else {
+                    return response()->json(
+                        [
+                            'status' => 'error',
+                            'errors' => ['general' => [$e->getMessage()]],
+                            'codigo_error' => $codigoError,
+                        ],
+                        500,
+                    );
+                }
+            } else {
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'errors' => ['general' => ['Error al enviar el código de verificación. Intenta nuevamente.']],
+                        'codigo_error' => $codigoError,
+                    ],
+                    500,
+                );
+            }
+        };
+
+    }
+
     public function verificarCodigoOTP(Request $request)
     {
         $codigoIngresado = $request->input('codigo');
@@ -571,6 +733,45 @@ class UsuarioController extends Controller
                 ],
                 200,
             );
+        } else {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'errors' => ['codigo' => ['El código ingresado no coincide. Intenta nuevamente.']],
+                ],
+                422,
+            );
+        }
+    }
+    public function IniciarSesionOTP(Request $request)
+    {
+        $codigoIngresado = $request->input('codigo');
+        $codigoGenerado = $request->input('codigo_generado');
+        $telefono_completo = $request->input('telefono_completo');
+        $user = User::whereRaw("CONCAT(codigo_pais, telf) = ?", [$telefono_completo])->first();
+
+        if (!$user) {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'errors' => ['telefono_completo' => ['No se encontró un usuario con ese número de teléfono.']],
+                ],
+                404,
+            );
+        }
+
+        $user_id = $user->id;
+
+        if ($codigoIngresado === $codigoGenerado) {
+            Auth::loginUsingId($user_id);
+            return response()->json(
+            [
+                'status' => 'success',
+                'message' => 'Código verificado y sesión iniciada correctamente.',
+                'redirect_url' => route('miperfil')
+            ],
+            200,
+        );
         } else {
             return response()->json(
                 [

@@ -3,9 +3,9 @@
     <x-cabecera-pagina titulo="Registrate" cabecera="appkit" />
     <div class="d-flex justify-content-center">
         {{-- <div class="card card-style signin-card bg-24" style="height: 650px;max-height: 920px; width: 400px;"> --}}
-        <div class="card card-style signin-card bg-24 py-4" style="min-height: 450px; width: 400px; ">
+        <div class="card card-style signin-card bg-24 py-4" style="min-height: 450px; width: 380px; ">
             <div class="">
-                <div class="px-5">
+                <div class="px-4 mx-2">
                     <div class="d-flex flex-column">
                         <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}"
                             class="img mx-auto d-block" style="width:100px" alt="">
@@ -35,7 +35,7 @@
                                 @enderror
                             </div>
                             {{-- Correo Electrónico --}}
-                            <div class="d-flex flex-column">
+                            <!-- <div class="d-flex flex-column">
                                 <label for="email">Correo Electrónico</label>
                                 <div class="input-style d-flex flex-row">
                                     <i class="fa fa-at ms-2 input-icon mt-3 position-fixed"></i>
@@ -47,11 +47,11 @@
                                 @error('email')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
-                            </div>
+                            </div> -->
                             {{-- Telefono --}}
                             <div class="d-flex flex-column">
                                 <label for="telefono">Teléfono</label>
-                                <div class="input-style remove-mb d-flex flex-row justify-content-between ">
+                                <div class="input-style remove-mb d-flex flex-row justify-content-between gap-2">
                                     <x-countrycode-select></x-countrycode-select>
                                     <div class="d-flex flex-column w-99">
                                         <input type="number" class="no-padding text-center form-control rounded-sm"
@@ -61,15 +61,16 @@
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
+                                
 
-                                <div class="d-flex justify-content-center">
+                                <!-- <div class="d-flex justify-content-center">
                                     <button href="#" data-menu="menu-verificacion" id="verificar-numero"
                                         class="btn btn-xxs mb-3 rounded-s font-700 shadow-s bg-phone mt-2 d-none w-50">
                                         Verificar <i
                                             class="fab fa-whatsapp ms-1"></i><br>{{ isset($usuarioReferido) && $usuarioReferido != '' ? 'Gana Puntos' : '' }}
                                         <span id="contador-cuenta-regresiva" class="d-none ms-2">30</span></span>
                                     </button>
-                                </div>
+                                </div> -->
                             </div>
                             {{-- foto de perfil --}}
                             <div class="custom-major-file-container d-flex flex-row justify-content-center mt-3"
@@ -289,8 +290,9 @@
                                 <button type="button"
                                     class="btn btn-xs mb-3 rounded-xl text-uppercase font-900 shadow-s bg-red-dark btn-prev">Anterior</button>
                                 <button type="submit"
-                                    class="btn btn-xs mb-3 rounded-xl text-uppercase font-900 shadow-s bg-mint-dark btn-block">Registrar
-                                    Cuenta</button>
+                                    class="btn btn-xs mb-3 rounded-xl text-uppercase font-900 shadow-s bg-mint-dark btn-block">
+                                    Registrar
+                                </button>
                             </div>
 
 
@@ -350,20 +352,34 @@
             style="">Continuar</a>
     </div>
 
-
-
-
-
-
-
+    <div id="menu-confirmacion-editar" class="menu menu-box-modal pb-3 rounded-m overflow-hidden" style="width: 90%; max-width: 320px">
+        <div class="menu-title p-3">
+            <div class="d-flex flex-row gap-4 align-items-center">
+                <i data-lucide="calendar-clock" class="lucide-icon" style="width: 2.5rem; height: 2.5rem;"></i>
+                    <h1 id="titulo-simple" class="font-20 p-0 m-0 line-height-m">Editar Usuario</h1>
+            </div>
+            <!-- <a href="#" class="close-menu"><i data-lucide="x-circle" class="lucide-icon"></i></a> -->
+        </div>
+        <div class="content mt-0 mb-3 d-flex flex-column h-100 gap-3">
+            <p id="texto-confirmacion-editar" class="mb-0 color-theme text-justify">
+                Ya existe un perfil delight registrado a este número, ¿deseas modificar su información?                
+            </p>
+            <div class="d-flex flex-row gap-1 justify-content-evenly mb-0">
+                <a href="#" class="close-menu btn btn-xs font-15 rounded-s text-uppercase bg-delight-red color-white font-900 line-height-s">Cancelar</a>
+                <button id="btnConfirmarEditar" href="#" class="btn btn-xs font-15 rounded-s validador-editar text-uppercase bg-highlight font-900 line-height-s">
+                    <span class="d-flex flex-row align-items-center gap-1">Confirmar</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <div id="menu-verificacion" class="menu menu-box-modal rounded-m"
-        style="display: block; width: 350px; height: auto;">
+        style="display: block; width: 90%; height: auto;">
         <div class="card card-style p-0 m-0 pb-3">
             <div class="card-header p-0">
                 <div class="menu-title">
-                    <p class="color-highlight">Verificación</p>
-                    <h1>Verifica tu número </h1>
+                    <p class="color-highlight">Delight-Nutrifood</p>
+                    <h1 class="font-20">Verifica tu número </h1>
                     <a href="#" class="close-menu"><i class="fa fa-times-circle"></i></a>
                 </div>
             </div>
@@ -397,6 +413,64 @@
             </div>
         </div>
     </div>
+
+
+    <div id="menu-verificacion-editar" class="menu menu-box-modal rounded-m"
+        style="display: block; width: 90%; height: auto;">
+        <div class="card card-style p-0 m-0 pb-3">
+            <div class="card-header p-0">
+                <div class="menu-title">
+                    <p class="color-highlight">Delight-Nutrifood</p>
+                    <h1 class="font-20">Verificación para Editar Usuario</h1>
+                    <a href="#" class="close-menu"><i class="fa fa-times-circle"></i></a>
+                </div>
+            </div>
+            <div class="content mb-3">
+                <p>
+                    Se envió un código de verificación a su WhatsApp. <br> Por favor, ingrese el código para habilitar la modificación de su perfil.
+                </p>
+                <div class="text-center mx-n3">
+                    <form action="" id="form-codigo-verificacion-editar">
+                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
+                            value="" placeholder="●">
+                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
+                            value="" placeholder="●">
+                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
+                            value="" placeholder="●">
+                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
+                            value="" placeholder="●">
+                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
+                            value="" placeholder="●">
+                    </form>
+                </div>
+                <p class="text-center my-3 font-11">
+                    ¿No ha recibido un código aún?
+                    <a href="#" id="reenviar-codigo">
+                        Reenviar código
+                    </a>
+                </p>
+                <div class="d-flex flex-row justify-content-evenly">
+                    <a class="btn btn-s font-15 shadow-l rounded-s text-uppercase font-900 bg-delight-red color-white" >Cancelar</a>
+                    <button type="button" id="verificar-codigo-btn-editar"
+                        class="btn btn-s font-15 shadow-l rounded-s validador-editar text-uppercase font-900 bg-mint-dark color-white">
+                        Verificar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="d-flex justify-content-center">
+        <button href="#" data-menu="menu-verificacion" id="verificar-numero"
+            class="btn btn-xxs mb-3 rounded-s font-700 shadow-s bg-phone mt-2 d-none w-50">
+            Verificar <i
+                class="fab fa-whatsapp ms-1"></i><br>{{ isset($usuarioReferido) && $usuarioReferido != '' ? 'Gana Puntos' : '' }}
+            <span id="contador-cuenta-regresiva" class="d-none ms-2">30</span></span>
+        </button>
+    </div> -->
+
+
+
     <div id="codigo-incorrecto" class="menu menu-box-modal rounded-m"
         style="display: block; width: 220px; height: auto; padding: 1%;">
         <h1 class="text-center fa-5x mt-2 pt-3 pb-2"><i class="fa fa-times-circle color-red-dark"></i></h1>
@@ -422,6 +496,30 @@
         <p class="color-white mb-0 pb-3" id="mensaje-toast-error-snackbar" style="line-height: 18px;"></p>
     </div>
 @endpush
+
+@push('header')
+<style>
+    /* Target the main container created by Slim Select based on your original select's ID */
+    #country-code-selector + .ss-main .ss-single-selected,
+    #country-code-selector + .ss-main .ss-selected-text {
+        /* These properties prevent the text from breaking inside the element */
+        word-break: normal !important; 
+        overflow-wrap: normal !important;
+        white-space: nowrap !important; /* Forces text to stay on one line */
+    }
+
+    /* Selects the specific text container within the Slim Select element */
+    .ss-main .ss-single {
+        /* Prevents the text from wrapping to the next line */
+        white-space: nowrap !important; 
+        
+        /* Ensures words are not broken forcefully */
+        word-break: normal !important; 
+        overflow-wrap: normal !important;
+    }
+</style>
+@endpush
+
 @push('scripts')
     <!-- Revisar contraseña -->
     <script>
@@ -572,11 +670,76 @@
     </script>
     <script>
         var formData = new FormData();
+        let currentStep = 0;
+        let omitirValidacionWhatsapp = false;
+        let otpRetryCount = 0;
+        const MAX_OTP_RETRIES = 2;
+
+
+
+        const validacionOTPEditar = () => {
+            var data = {
+                telefono: $('#telefono').val(),
+                codigoPais: $('#country-code-selector').val(),
+                digitosPais: $('#digitos_pais').val(),
+                operacion: 'editar_usuario'
+            };
+            
+            $.ajax({
+                type: "post",
+                url: "{{ route('usuario.enviar-codigo-verificacion') }}",
+                data: data,
+                dataType: "json",
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                success: manejarExitoVerificacion,
+                error: manejarErrorVerificacion
+            });
+        }
+
+        const manejarExitoVerificacion = (response) => {
+            if (response.status === 'success') {
+                codigoVerificacion = response.codigo_generado;
+                console.log('✅ Código enviado exitosamente');
+                habilitarValidandoEditar();
+                $('#menu-verificacion-editar').addClass('menu-active');
+                $('.menu-hider').addClass('menu-active');
+                ocultarConfirmacionEditar();
+            } else {
+                habilitarValidandoEditar();
+                console.log('❌ Error en la respuesta:', response);
+                alert('Error: ' + (response.errors.telefono ? response.errors.telefono[0] : 'Error desconocido'));
+            }
+            // habilitarBotonesValidando();
+        }
+
+        const manejarErrorVerificacion = (xhr, status, error) => {
+            console.error("Error al enviar código:", error);
+            habilitarValidandoEditar();
+            // Add user feedback here
+        }
+
+        const ocultarConfirmacionEditar = () => {
+            console.log("Se deberia haber ocultado el menu-confirmacion*editar");
+            $('#menu-confirmacion-editar').removeClass('menu-active');
+            // // $('.menu-hider').addClass('menu-active');
+        }
+
+        const deshabilitarValidandoEditar = () => {
+            const botones = $('.validador-editar');
+            botones.prop('disabled', true);
+            botones.text('Validando...');
+        }
+
+        const habilitarValidandoEditar = () => {
+            const botones = $('.validador-editar');
+            botones.prop('disabled', false);
+            botones.text('Confirmar');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const steps = document.querySelectorAll('.form-step');
             const nextBtns = document.querySelectorAll('.btn-next');
             const prevBtns = document.querySelectorAll('.btn-prev');
-            let currentStep = 0;
             const selectedCountryCode = document.getElementById('country-code-selector');
 
             // ============= PREVENIR ENVIO DEL FORMULARIO POR TECLA ENTER =============
@@ -710,16 +873,29 @@
                             valid: true,
                             data: data
                         };
+                    } else if (data.status == 'otp-register-validation' && data.user_exists == false) {
+                        // Display del menu OTP para validar whatsapp
+                        console.log("data obtenida:", data);
+                        console.log("Proceso para usuarios nuevos");
+                        validacionOTPStep();
+                    } else if (data.status == 'otp-register-validation' && data.user_exists == true) {
+                        console.log("data obtenida:", data);
+                        console.log("Proceso para usuarios existentes");
+
+                        revelarConfirmacionEditar();
+                        habilitarBotonesValidando();
                     } else {
                         const errors = data.errors;
+                        habilitarBotonesValidando();
                         displayErrorMessages(errors);
                         return {
                             valid: false,
                             data: data
-                        };
+                        };  
                     }
                 } catch (error) {
                     console.error('Validation error:', error);
+                    habilitarBotonesValidando();
                     return {
                         valid: false,
                         error: 'Network error occurred'
@@ -727,53 +903,238 @@
                 }
             }
 
+            const revelarConfirmacionEditar = () => {
+                $('#menu-confirmacion-editar').addClass('menu-active');
+                $('.menu-hider').addClass('menu-active');
+
+                $('#btnConfirmarEditar').off('click').on('click', function(e) {
+                    console.log("Click en boton para enviar codigo verificacion editar");
+                    e.preventDefault();
+                    deshabilitarValidandoEditar();
+                    validacionOTPEditar();
+                });
+                // $('#').removeClass('d-none');
+                // $('#').addClass('d-block');
+            }
+
+
+            const validacionOTPStep = function() {
+                var telefono = document.getElementById('telefono').value;
+                var codigoPais = document.getElementById('country-code-selector').value;
+                var digitosPais = document.getElementById('digitos_pais').value;
+                var csrfToken = '{{ csrf_token() }}';
+
+                // Validar que todos los campos estén completos
+                if (!telefono || !codigoPais || !digitosPais) {
+                    alert('Por favor completa todos los campos antes de verificar.');
+                    return;
+                }
+
+                // Validar longitud del teléfono
+                if (telefono.length != digitosPais) {
+                    alert('El número de teléfono debe tener exactamente ' + digitosPais + ' dígitos.');
+                    return;
+                }
+
+                var data = {
+                    telefono: telefono,
+                    codigoPais: codigoPais,
+                    digitosPais: digitosPais,
+                    operacion: 'verificar_telefono'
+                };
+
+                // Deshabilitar el botón durante la petición
+                this.disabled = true;
+                this.textContent = 'Enviando...';
+
+                if (omitirValidacionWhatsapp) {
+                    $('#step-1').addClass('d-none');
+                    $('#step-2').removeClass('d-none');
+                    currentStep = 1;
+                    habilitarBotonesValidando();
+                    return;
+                }
+
+                $.ajax({
+                    type: "post",
+                    url: "{{ route('usuario.enviar-codigo-verificacion') }}",
+                    data: data,
+                    dataType: "json",
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            codigoVerificacion = response.codigo_generado;
+                            console.log('✅ Código enviado exitosamente');
+                            // Resetear contador en caso de éxito
+                            otpRetryCount = 0;
+                            // Mostrar modal de verificación
+                            $('#menu-verificacion').addClass('menu-active');
+                            $('.menu-hider').addClass('menu-active');
+                        } else {
+                            console.log('❌ Error en la respuesta:', response);
+                            alert('Error: ' + (response.errors.telefono ? response.errors.telefono[0] : 'Error desconocido'));
+                        }
+                        habilitarBotonesValidando();
+                    },
+                    error: function(xhr, status, error) {
+                        var codigo = xhr.responseJSON?.codigo_error;
+                        var statusCode = xhr.status;
+                        
+                        // Solo incrementar contador para errores de sistema (no errores de validación)
+                        var esErrorDeSistema = (codigo == 401 || codigo == 500 || statusCode >= 500);
+                        
+                        if (esErrorDeSistema) {
+                            otpRetryCount++;
+                            console.log(`❌ Intento fallido ${otpRetryCount} de ${MAX_OTP_RETRIES}`);
+                        }
+                        
+                        // Si alcanzamos el máximo de reintentos DE SISTEMA, omitir validación OTP
+                        if (esErrorDeSistema && otpRetryCount >= MAX_OTP_RETRIES) {
+                            console.log('⚠️ Máximo de reintentos alcanzado. Omitiendo validación OTP.');
+                            
+                            // Marcar teléfono como no verificado pero permitir continuar
+                            $('#telefono_verificado').val(0);
+                            
+                            // Mostrar mensaje al usuario
+                            $('#mensaje-toast-error-snackbar').text(
+                                'No pudimos verificar tu número. Continuarás sin verificación de teléfono.'
+                            );
+                            $('#snackbar-error').removeClass('hide').addClass('show');
+                            setTimeout(() => {
+                                $('#snackbar-error').removeClass('show').addClass('hide');
+                            }, 3000);
+                            
+                            $('#step-1').addClass('d-none');
+                            $('#step-2').removeClass('d-none');
+                            currentStep = 1;
+                            omitirValidacionWhatsapp = true;
+                            
+                            $('#menu-verificacion').removeClass('menu-active');
+                            $('.menu-hider').removeClass('menu-active');
+                            
+                            habilitarBotonesValidando();
+                            return;
+                        }
+                        
+                        // Manejo de errores según el tipo
+                        if (codigo == 401 || codigo == 500) {
+                            $('#menu-verificacion').removeClass('menu-active');
+                            $('.menu-hider').removeClass('menu-active');
+                            $('#verificar-numero').addClass('d-none');
+                            $('#telefono_verificado').val(0);
+                            
+                            var mensajeError = xhr.responseJSON?.errors?.general?.[0] || 'Error al enviar el código';
+                            mensajeError += ` (Intento ${otpRetryCount}/${MAX_OTP_RETRIES})`;
+                            
+                            $('#mensaje-toast-error-snackbar').text(mensajeError);
+                            $('#snackbar-error').removeClass('hide').addClass('show');
+                            setTimeout(() => {
+                                $('#snackbar-error').removeClass('show').addClass('hide');
+                            }, 5000);
+                        } else {
+                            // Errores de validación (422, 400, etc.) - NO mostrar contador
+                            var errorMessage = 'Error al enviar el código de verificación.';
+                            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                                var errors = xhr.responseJSON.errors;
+                                if (errors.telefono) {
+                                    errorMessage = errors.telefono[0];
+                                } else if (errors.general) {
+                                    errorMessage = errors.general[0];
+                                }
+                            }
+
+                            displayErrorMessages(errors);
+                            // NO agregar contador para errores de validación
+                            // // alert(errorMessage);
+                        }
+                        
+                        habilitarBotonesValidando();
+                    }
+                });
+            }
+
             // ============= MANEJO BOTONES - SIGUIENTE =============
             nextBtns.forEach(button => {
                 button.addEventListener('click', async () => {
+                    const originalText = button.textContent;
+
                     if (currentStep == 0) {
-                        console.log("cleaning very first step error messages");
                         clearFirstErrorMessages();
-                        console.log("They should've been cleared now");
                     } else {
                         clearErrorMessages();
                     }
 
-                    button.disabled = true;
-                    const originalText = button.textContent;
-                    button.textContent = 'Validando...';
+                    // button.disabled = true;
+                    // button.textContent = 'Validando...';
+                    // deshabilitarBotonValidando(button);
+                    deshabilitarBotonesValidando();
 
                     try {
                         const validationResult = await validateCurrentStep(currentStep);
                         // Si la validacion es valida se avanza al siguiente paso
-                        if (validationResult.valid) {
+                        if (validationResult?.valid) {
                             steps[currentStep].classList.add('d-none');
                             currentStep++;
                             steps[currentStep].classList.remove('d-none');
+                            habilitarBotonesValidando();
+                            // habilitarBoton(button,originalText);
                         }
                     } catch (error) {
                         console.error('Error:', error);
-                    } finally {
-                        // Reiniciar estado del boton siguiente
-                        button.disabled = false;
-                        button.textContent = originalText;
-                    }
+                        habilitarBotonesValidando();
+                        // habilitarBoton(button,originalText);
+                    } 
+                    // finally {
+                    //     // Reiniciar estado del boton siguiente
+                    //     habilitarBoton(button,originalText);
+                    // }
                 });
             });
+
+            const deshabilitarBotonValidando = (boton) => {
+                boton.disabled = true;
+                boton.textContent = 'Validando...';  // Sin paréntesis
+            }
+
+            const habilitarBoton = (boton, texto) => {
+                boton.disabled = false;
+                boton.textContent = texto;  // Sin paréntesis
+            }
+
+            const deshabilitarBotonesValidando = () => {
+                const nextBtns = $('.btn-next');
+                nextBtns.prop('disabled', true);
+                nextBtns.text('Validando...');
+            }
+
+            const habilitarBotonesValidando = () => {
+                const nextBtns = $('.btn-next');
+                nextBtns.prop('disabled', false);
+                nextBtns.text('Siguiente');
+            }
+
+
+
+
 
             // ============= MANEJO BOTONES - ANTERIOR =============
             prevBtns.forEach(button => {
                 button.addEventListener('click', () => {
-                    steps[currentStep].classList.add('d-none');
-                    currentStep--;
-                    steps[currentStep].classList.remove('d-none');
+                    // Only allow going back if currentStep is greater than 0
+                    if (currentStep > 0) { 
+                        steps[currentStep].classList.add('d-none');
+                        currentStep--;
+                        steps[currentStep].classList.remove('d-none');
+                    }
                 });
-            });
+            })
 
             // ============= MANEJO ENVIO FORMULARIO REGISTRO =============
             const form = document.getElementById('multiStepForm');
             form.addEventListener('submit', function(e) {
                 e.preventDefault(); // Evitar el envío tradicional
-                console.log(`Codigo seleccionado: ${selectedCountryCode.value}`);
 
                 const formData = new FormData(form);
                 const originalCountryCode = formData.get('codigo_pais');
@@ -806,7 +1167,7 @@
     <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/slim-select@2/dist/slimselect.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/google-libphonenumber/dist/libphonenumber.js"></script>s
+    <script src="https://cdn.jsdelivr.net/npm/google-libphonenumber/dist/libphonenumber.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const selectId = '{{ $id ?? 'country-code-selector' }}';
@@ -814,16 +1175,11 @@
             const selectElement = document.getElementById(selectId);
 
             let select = document.getElementById(selectId);
-            select.classList.remove('select2-hidden-accessible'); // limpia restos de select2
+            select.classList.remove('select2-hidden-accessible');
             select.style.display = '';
-
-            console.log(select, selectElement);
 
             if (selectElement) {
 
-                // muestra de nuevo el select si fue ocultado
-
-                // Inicializar SlimSelect
                 new SlimSelect({
                     select: '#' + selectId,
                     placeholder: 'Seleccione un país',
@@ -845,7 +1201,6 @@
             try {
                 const regiones = phoneUtil.getRegionCodesForCountryCode(codigo);
                 if (!regiones || regiones.length === 0) {
-                    console.log(`⚠ No se encontraron regiones para código ${codigo}`);
                     return;
                 }
                 regiones.forEach(region => {
@@ -857,10 +1212,9 @@
                         const numeroEjemplo = phoneUtil.getNationalSignificantNumber(ejemplo);
                         digitosPais = numeroEjemplo.length; // ✅ aquí lo asignas
                         document.getElementById('digitos_pais').value = digitosPais;
-                        console.log(`Código +${codigo} → Región: ${region}, Longitud: ${digitosPais}`);
+                        // console.log(`Código +${codigo} → Región: ${region}, Longitud: ${digitosPais}`);
                     }
                 });
-                // console.log("👉 Digitos del país: ", digitosPais);
             } catch (e) {
                 console.log("❌ Error: " + e.message);
             }
@@ -901,16 +1255,13 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     success: function(response) {
-                        console.log(response);
 
                         if (response.status === 'success') {
                             // Teléfono válido - mostrar botón de verificar
                             document.getElementById('verificar-numero').classList.remove('d-none');
-                            console.log("✅ Teléfono válido - se puede verificar");
                         } else {
                             // Teléfono inválido - ocultar botón y mostrar error
                             document.getElementById('verificar-numero').classList.add('d-none');
-                            console.log("❌ Teléfono inválido:", response.errors);
 
                             // Mostrar mensaje de error específico
                             var errorMessage = 'Error en el teléfono';
@@ -928,7 +1279,6 @@
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.log("❌ Error en validación:", xhr.responseJSON);
                         document.getElementById('verificar-numero').classList.add('d-none');
 
                         var errorMessage = 'Error al validar el teléfono';
@@ -951,102 +1301,102 @@
             }
 
             document.getElementById('country-code-selector').addEventListener('change', function() {
-                // console.log("✅ El usuario seleccionó un país", this.value);
                 detectar();
             });
             detectar();
 
 
-            document.getElementById('verificar-numero').addEventListener('click', function() {
-                var telefono = document.getElementById('telefono').value;
-                var codigoPais = document.getElementById('country-code-selector').value;
-                var digitosPais = document.getElementById('digitos_pais').value;
-                var csrfToken = '{{ csrf_token() }}';
 
-                // Validar que todos los campos estén completos
-                if (!telefono || !codigoPais || !digitosPais) {
-                    alert('Por favor completa todos los campos antes de verificar.');
-                    return;
-                }
+            // document.getElementById('verificar-numero').addEventListener('click', function() {
+            //     var telefono = document.getElementById('telefono').value;
+            //     var codigoPais = document.getElementById('country-code-selector').value;
+            //     var digitosPais = document.getElementById('digitos_pais').value;
+            //     var csrfToken = '{{ csrf_token() }}';
 
-                // Validar longitud del teléfono
-                if (telefono.length != digitosPais) {
-                    alert('El número de teléfono debe tener exactamente ' + digitosPais + ' dígitos.');
-                    return;
-                }
+            //     // Validar que todos los campos estén completos
+            //     if (!telefono || !codigoPais || !digitosPais) {
+            //         alert('Por favor completa todos los campos antes de verificar.');
+            //         return;
+            //     }
 
-                var data = {
-                    telefono: telefono,
-                    codigoPais: codigoPais,
-                    digitosPais: digitosPais
-                };
+            //     // Validar longitud del teléfono
+            //     if (telefono.length != digitosPais) {
+            //         alert('El número de teléfono debe tener exactamente ' + digitosPais + ' dígitos.');
+            //         return;
+            //     }
 
-                // Deshabilitar el botón durante la petición
-                this.disabled = true;
-                this.textContent = 'Enviando...';
+            //     var data = {
+            //         telefono: telefono,
+            //         codigoPais: codigoPais,
+            //         digitosPais: digitosPais
+            //     };
 
-                $.ajax({
-                    type: "post",
-                    url: "{{ route('usuario.enviar-codigo-verificacion') }}",
-                    data: data,
-                    dataType: "json",
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            codigoVerificacion = response.codigo_generado;
-                            console.log('✅ Código enviado exitosamente');
-                            // Mostrar modal de verificación
-                            $('#menu-verificacion').addClass('menu-active');
-                            $('.menu-hider').addClass('menu-active');
-                        } else {
-                            console.log('❌ Error en la respuesta:', response);
-                            alert('Error: ' + (response.errors.telefono ? response.errors
-                                .telefono[0] : 'Error desconocido'));
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        // console.log("❌ Error: ", xhr.responseJSON, 'skhfkhgkhkjhgkjhs');
-                        var codigo = xhr.responseJSON.codigo_error;
-                        // console.log("❌ Error: ", codigo);
-                        if (codigo == 401 || codigo == 500) {
-                            $('#menu-verificacion').removeClass('menu-active');
-                            $('.menu-hider').removeClass('menu-active');
-                            // $('#codigo-incorrecto').addClass('menu-active');
-                            $('#verificar-numero').addClass('d-none');
-                            $('#telefono_verificado').val(0);
-                            $('#telefono_verificado').val(0);
-                            // $('#digitos_pais').val('');
-                            $('#mensaje-toast-error-snackbar').text(xhr.responseJSON.errors
-                                .general[0]);
-                            $('#snackbar-error').removeClass('hide').addClass('show');
-                            setTimeout(() => {
-                                $('#snackbar-error').removeClass('show').addClass(
-                                    'hide');
-                            }, 5000);
+            //     // Deshabilitar el botón durante la petición
+            //     this.disabled = true;
+            //     this.textContent = 'Enviando...';
 
-                        } else {
-                            var errorMessage = 'Error al enviar el código de verificación.';
-                            if (xhr.responseJSON && xhr.responseJSON.errors) {
-                                var errors = xhr.responseJSON.errors;
-                                if (errors.telefono) {
-                                    errorMessage = errors.telefono[0];
-                                } else if (errors.general) {
-                                    errorMessage = errors.general[0];
-                                }
-                            }
-                            alert(errorMessage);
-                        }
-                    },
-                    complete: function() {
-                        // Rehabilitar el botón
-                        document.getElementById('verificar-numero').disabled = false;
-                        document.getElementById('verificar-numero').innerHTML =
-                            `Verificar <i class="fab fa-whatsapp ms-1"></i><br>{{ isset($usuarioReferido) && $usuarioReferido != '' ? 'Gana Puntos' : '' }} <span id="contador-cuenta-regresiva" class="d-none ms-2">30</span>`;
-                    }
-                });
-            });
+            //     $.ajax({
+            //         type: "post",
+            //         url: "{{ route('usuario.enviar-codigo-verificacion') }}",
+            //         data: data,
+            //         dataType: "json",
+            //         headers: {
+            //             'X-CSRF-TOKEN': csrfToken
+            //         },
+            //         success: function(response) {
+            //             if (response.status === 'success') {
+            //                 codigoVerificacion = response.codigo_generado;
+            //                 console.log('✅ Código enviado exitosamente');
+            //                 // Mostrar modal de verificación
+            //                 $('#menu-verificacion').addClass('menu-active');
+            //                 $('.menu-hider').addClass('menu-active');
+            //             } else {
+            //                 console.log('❌ Error en la respuesta:', response);
+            //                 alert('Error: ' + (response.errors.telefono ? response.errors
+            //                     .telefono[0] : 'Error desconocido'));
+            //             }
+            //         },
+            //         error: function(xhr, status, error) {
+            //             // console.log("❌ Error: ", xhr.responseJSON, 'skhfkhgkhkjhgkjhs');
+            //             var codigo = xhr.responseJSON.codigo_error;
+            //             // console.log("❌ Error: ", codigo);
+            //             if (codigo == 401 || codigo == 500) {
+            //                 $('#menu-verificacion').removeClass('menu-active');
+            //                 $('.menu-hider').removeClass('menu-active');
+            //                 // $('#codigo-incorrecto').addClass('menu-active');
+            //                 $('#verificar-numero').addClass('d-none');
+            //                 $('#telefono_verificado').val(0);
+            //                 $('#telefono_verificado').val(0);
+            //                 // $('#digitos_pais').val('');
+            //                 $('#mensaje-toast-error-snackbar').text(xhr.responseJSON.errors
+            //                     .general[0]);
+            //                 $('#snackbar-error').removeClass('hide').addClass('show');
+            //                 setTimeout(() => {
+            //                     $('#snackbar-error').removeClass('show').addClass(
+            //                         'hide');
+            //                 }, 5000);
+
+            //             } else {
+            //                 var errorMessage = 'Error al enviar el código de verificación.';
+            //                 if (xhr.responseJSON && xhr.responseJSON.errors) {
+            //                     var errors = xhr.responseJSON.errors;
+            //                     if (errors.telefono) {
+            //                         errorMessage = errors.telefono[0];
+            //                     } else if (errors.general) {
+            //                         errorMessage = errors.general[0];
+            //                     }
+            //                 }
+            //                 alert(errorMessage);
+            //             }
+            //         },
+            //         complete: function() {
+            //             // Rehabilitar el botón
+            //             document.getElementById('verificar-numero').disabled = false;
+            //             document.getElementById('verificar-numero').innerHTML =
+            //                 `Verificar <i class="fab fa-whatsapp ms-1"></i><br>{{ isset($usuarioReferido) && $usuarioReferido != '' ? 'Gana Puntos' : '' }} <span id="contador-cuenta-regresiva" class="d-none ms-2">30</span>`;
+            //         }
+            //     });
+            // });
 
 
 
@@ -1058,7 +1408,14 @@
 
             // Event listener para el botón de verificar código
             document.getElementById('verificar-codigo-btn').addEventListener('click', function() {
-                verificarCodigo();
+                verificarCodigo2(true);
+            });
+
+            // Event listener para el botón de verificar código al editar usuario
+            document.getElementById('verificar-codigo-btn-editar').addEventListener('click', function() {
+                deshabilitarValidandoEditar();
+                verificarCodigo2(false);
+                habilitarValidandoEditar();
             });
 
             // Event listener para el botón de reenviar código
@@ -1185,6 +1542,72 @@
             }
         }
 
+        const verificarCodigo2 = (nuevo) => {
+            // Obtener todos los inputs del formulario
+            const claseSolicitud = nuevo ? '#form-codigo-verificacion' : '#form-codigo-verificacion-editar'
+            const inputs = document.querySelectorAll(`${claseSolicitud} .otp`);
+            let codigoCompleto = '';
+
+            // Recorrer cada input y obtener su valor
+            inputs.forEach((input, index) => {
+                const valor = input.value.trim();
+
+                // Si el valor no está vacío
+                if (valor) {
+                    codigoCompleto += valor;
+                } else {
+                    console.log(`Input ${index + 1} está vacío`);
+                }
+            });
+
+            // Verificar si se completó el código
+            if (codigoCompleto.length === 5) {
+                // Enviar código al servidor para verificación
+                if (nuevo) {
+                    enviarCodigoVerificacion(codigoCompleto);
+                } else {
+                    enviarCodigoVerificacionEditar(codigoCompleto);
+                }
+                return codigoCompleto;
+            } else {
+                alert('Por favor completa todos los campos del código');
+                return null;
+            }
+        }
+
+        // // const verificarCodigoEditar = (boolean) => {
+        // //     // Obtener todos los inputs del formulario
+        // //     const claseSolicitud = boolean ? '#form-codigo-verificacion' : '#form-codigo-verificacion-editar'
+        // //     // // const inputs = document.querySelectorAll('#form-codigo-verificacion-editar .otp');
+        // //     const inputs = document.querySelectorAll(`${claseSolicitud} .otp`);
+        // //     let codigoCompleto = '';
+
+        // //     // Recorrer cada input y obtener su valor
+        // //     inputs.forEach((input, index) => {
+        // //         const valor = input.value.trim();
+
+        // //         // Si el valor no está vacío
+        // //         if (valor) {
+        // //             codigoCompleto += valor;
+        // //         } else {
+        // //             console.log(`Input ${index + 1} está vacío`);
+        // //         }
+        // //     });
+
+        // //     // Verificar si se completó el código
+        // //     if (codigoCompleto.length === 5) {
+        // //         // Enviar código al servidor para verificación
+        // //         // // enviarCodigoVerificacion(codigoCompleto);
+        // //         validacionOTPEditar(codigoCompleto);
+        // //         return codigoCompleto;
+        // //     } else {
+        // //         alert('Por favor completa todos los campos del código');
+        // //         return null;
+        // //     }
+        // // }
+
+        const steps = document.querySelectorAll('.form-step');
+
         // Función para enviar código al servidor
         function enviarCodigoVerificacion(codigo) {
             $.ajax({
@@ -1208,11 +1631,74 @@
                         $('#telefono_verificado').val(1);
                         formData.set('telefono_verificado', 1);
                         formData.delete('digitos_pais');
-                        console.log('✅ Teléfono verificado correctamente');
 
                         setTimeout(() => {
                             $('#codigo-correcto').removeClass('menu-active');
                         }, 2000);
+
+                        $('#step-1').addClass('d-none');
+                        $('#step-2').removeClass('d-none');
+
+                        currentStep = 1;
+                    } else {
+                        // Código incorrecto
+                        $('#menu-verificacion').removeClass('menu-active');
+                        $('.menu-hider').removeClass('menu-active');
+                        $('#codigo-incorrecto').addClass('menu-active');
+                        $('#verificar-numero').attr('disabled', true);
+                        $('#contador-cuenta-regresiva').removeClass('d-none');
+                        contadorCuentaRegresiva();
+
+                        setTimeout(() => {
+                            $('#codigo-incorrecto').removeClass('menu-active');
+                        }, 3000);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#mensaje-toast-error').text(xhr.responseJSON.errors.codigo[0]);
+                    $('#toast-error').removeClass('show');
+                    $('#toast-error').addClass('show');
+                    setTimeout(() => {
+                        $('#toast-error').removeClass('show');
+                        $('#toast-error').addClass('hide');
+                    }, 2000);
+                }
+            });
+        }
+
+        const enviarCodigoVerificacionEditar = (codigo) => {
+            $.ajax({
+                type: "post",
+                url: "{{ route('usuario.verificar-codigo-otp') }}",
+                data: {
+                    codigo: codigo,
+                    codigo_generado: codigoVerificacion
+                },
+                dataType: "json",
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        // Código correcto
+                        $('#menu-verificacion-editar').removeClass('menu-active');
+                        $('.menu-hider').removeClass('menu-active');
+                        $('#codigo-correcto').addClass('menu-active');
+                        $('#verificar-numero-editar').addClass('d-none');
+                        $('#telefono_verificado').val(1);
+                        formData.set('telefono_verificado', 1);
+                        formData.delete('digitos_pais');
+                        console.log('✅ Teléfono verificado correctamente para la modificación del usuario');
+
+                        setTimeout(() => {
+                            $('#codigo-correcto').removeClass('menu-active');
+                        }, 2000);
+
+                        // PASAR AL SIGUIENTE PASO
+                        $('#step-1').addClass('d-none');
+                        $('#step-2').removeClass('d-none');
+
+                        currentStep = 1;
                     } else {
                         // Código incorrecto
                         $('#menu-verificacion').removeClass('menu-active');
@@ -1238,7 +1724,7 @@
                     }, 2000);
                 }
             });
-        }
+        };
 
 
         var contadorReintentoVerificacion = 30;

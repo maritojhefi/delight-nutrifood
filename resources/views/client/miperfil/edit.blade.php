@@ -50,6 +50,17 @@
 
                         <br>
                         <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                            <input type="text" class="form-control"
+                                placeholder="Nombre" name="name"
+                                value="{{ old('name', $usuario->name) }}">
+                            <label for="" class="color-highlight font-400 font-13">Nombre</label>
+
+                            @error('profesion')
+                                <i class="fa fa-times  invalid color-red-dark"></i>
+                                <p class="text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
                             <input type="email" class="form-control" placeholder="" name="email"
                                 value="{{ old('email', $usuario->email) }}">
                             <label for="form1" class="color-highlight font-400 font-13">Email</label>
@@ -59,12 +70,66 @@
                                 <p class="text-danger">{{ $message }}</p>
                             @enderror
                         </div>
+                        <div class="d-flex flex-column mb-4">
+                            <label for="nacimiento" class="ms-2 color-highlight font-400 font-13">Fecha de nacimiento</label>
+                                <div class="input-style has-borders  remove-mb rounded-sm validate-field d-flex flex-row gap-2">
+                                    
+                                {{-- Campo Día --}}
+                                <input type="number" class="text-center form-control"
+                                    placeholder="Día" name="dia_nacimiento" required
+                                    value="{{ old('dia_nacimiento', explode('-', $usuario->nacimiento)[2]) }}"
+                                >
 
+                                {{-- Campo Mes (Select) --}}
+                                <select class="text-center form-control" name="mes_nacimiento"
+                                    required>
+                                    <option value="" disabled selected>Mes</option>
+                                    @php
+                                        $selectedMonth = explode('-', $usuario->nacimiento)[1];
+                                    @endphp
+                                    <option value="1" @if(old('mes_nacimiento', $selectedMonth) == '01' || old('mes_nacimiento', $selectedMonth) == '1') selected @endif>Enero</option>
+                                    <option value="2" @if(old('mes_nacimiento', $selectedMonth) == '02' || old('mes_nacimiento', $selectedMonth) == '2') selected @endif>Febrero</option>
+                                    <option value="3" @if(old('mes_nacimiento', $selectedMonth) == '03' || old('mes_nacimiento', $selectedMonth) == '3') selected @endif>Marzo</option>
+                                    <option value="4" @if(old('mes_nacimiento', $selectedMonth) == '04' || old('mes_nacimiento', $selectedMonth) == '4') selected @endif>Abril</option>
+                                    <option value="5" @if(old('mes_nacimiento', $selectedMonth) == '05' || old('mes_nacimiento', $selectedMonth) == '5') selected @endif>Mayo</option>
+                                    <option value="6" @if(old('mes_nacimiento', $selectedMonth) == '06' || old('mes_nacimiento', $selectedMonth) == '6') selected @endif>Junio</option>
+                                    <option value="7" @if(old('mes_nacimiento', $selectedMonth) == '07' || old('mes_nacimiento', $selectedMonth) == '7') selected @endif>Julio</option>
+                                    <option value="8" @if(old('mes_nacimiento', $selectedMonth) == '08' || old('mes_nacimiento', $selectedMonth) == '8') selected @endif>Agosto</option>
+                                    <option value="9" @if(old('mes_nacimiento', $selectedMonth) == '09' || old('mes_nacimiento', $selectedMonth) == '9') selected @endif>Septiembre</option>
+                                    <option value="10" @if(old('mes_nacimiento', $selectedMonth) == '10') selected @endif>Octubre</option>
+                                    <option value="11" @if(old('mes_nacimiento', $selectedMonth) == '11') selected @endif>Noviembre</option>
+                                    <option value="12" @if(old('mes_nacimiento', $selectedMonth) == '12') selected @endif>Diciembre</option>
+                                </select>
+
+                                {{-- Campo Año --}}
+                                <input type="number" class="text-center form-control" placeholder="Año"
+                                    name="ano_nacimiento" required
+                                    value="{{ old('ano_nacimiento', explode('-', $usuario->nacimiento)[0]) }}">
+                            </div>
+
+                            {{-- Bloque de Error Condicional Único --}}
+                            @if ($errors->hasAny(['dia_nacimiento', 'mes_nacimiento', 'ano_nacimiento']))
+                                <p class="text-danger mt-1">
+                                    Por favor, ingresa una fecha valida (debes ser mayor de 12 años).
+                                </p>
+                            @endif
+                                                    </div>
+                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                            <input type="text" class="form-control"
+                                placeholder="Ejm: Abogado" name="profesion"
+                                value="{{ old('profesion', $usuario->profesion) }}">
+                            <label for="" class="color-highlight font-400 font-13">Profesion</label>
+
+                            @error('profesion')
+                                <i class="fa fa-times  invalid color-red-dark"></i>
+                                <p class="text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
                         <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
                             <input type="text" class="form-control"
                                 placeholder="Ejm: Tomatitas Av. Principal #134 Porton guindo" name="direccion"
                                 value="{{ old('direccion', $usuario->direccion) }}">
-                            <label for="" class="color-highlight font-400 font-13">Direccion</label>
+                            <label for="" class="color-highlight font-400 font-13">Dirección</label>
 
                             @error('direccion')
                                 <i class="fa fa-times  invalid color-red-dark"></i>
@@ -72,6 +137,17 @@
                             @enderror
                         </div>
                         <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                            <input type="text" class="form-control" maxlength="50"
+                                placeholder="Ejm: Tomatitas Av. Principal #134 Porton guindo" name="direccion_trabajo"
+                                value="{{ old('direccion_trabajo', $usuario->direccion_trabajo) }}">
+                            <label for="" class="color-highlight font-400 font-13">Dirección de trabajo (opcional)</label>
+
+                            @error('direccion_trabajo')
+                                <i class="fa fa-times  invalid color-red-dark"></i>
+                                <p class="text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        {{-- <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
                             <input type="number" class="form-control" placeholder="" name="telf"
                                 value="{{ old('telf', $usuario->telf) }}">
                             <label for="" class="color-highlight font-400 font-13">Telefono</label>
@@ -80,13 +156,32 @@
                                 <i class="fa fa-times  invalid color-red-dark"></i>
                                 <p class="text-danger">{{ $message }}</p>
                             @enderror
+                        </div> --}}
+                        <div class="d-flex flex-row align-content-center mb-4">
+                            
+                            <label for="hijos" class="mx-2 color-highlight font-400 font-13">
+                                ¿Tiene hijos?:
+                            </label>
+                            
+                            <input 
+                                class="form-check-input" 
+                                type="checkbox" 
+                                name="hijos" 
+                                id="hijos"
+                                value="1" 
+                                
+                                @if (old('hijos', $usuario->hijos)) checked @endif
+                            >
+                            
                         </div>
-                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
-                            <input type="password" class="form-control" placeholder="" name="password">
-                            <label for="" class="color-highlight font-400 font-13">Nueva contraseña</label>
-
+                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4 position-relative">
+                            <input type="password" class="form-control password-input-toggle" placeholder="" name="password" id="new-password">
+                            <label for="new-password" class="color-highlight font-400 font-13">Nueva contraseña</label>
+                            
+                            <i class="fa fa-lock position-absolute end-0 me-3 top-50 translate-middle-y fa-eye" id="toggleIconNew"></i>
+                            
                             @error('password')
-                                <i class="fa fa-times  invalid color-red-dark"></i>
+                                <i class="fa fa-times invalid color-red-dark"></i>
                                 <p class="text-danger">{{ $message }}</p>
                             @enderror
                         </div>
@@ -102,10 +197,10 @@
                         Perfil</button>
                 </form>
             </div>
-            <div class="card card-style mb-2 map-full" data-card-height="cover-card" style="height: 573px;">
+            {{-- <div class="card card-style mb-2 map-full" data-card-height="cover-card" style="height: 573px;">
                 <h3 class="m-3 text-center"> Ubique su domicilio detalladamente</h3>
                 <div id="map" style="width:100%;height:600px;"></div>
-            </div>
+            </div> --}}
             <div class="card card-style">
                 <div class="content mb-0">
                     <h4>Foto de perfil</h4>
@@ -201,6 +296,29 @@
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC059fhEiwhAxE0iFJ2mDLac1HPtOWLY4Y" async defer></script>
     @endpush
     @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const passwordInput = document.getElementById('new-password');
+                const toggleIcon = document.getElementById('toggleIconNew');
+
+                if (passwordInput && toggleIcon) {
+                    toggleIcon.addEventListener('click', function() {
+                        if (passwordInput.type === 'password') {
+                            passwordInput.type = 'text';
+                            
+                            toggleIcon.classList.remove('fa-lock');
+                            toggleIcon.classList.add('fa-lock-open');
+                            
+                        } else {
+                            passwordInput.type = 'password';
+                            
+                            toggleIcon.classList.remove('fa-lock-open');
+                            toggleIcon.classList.add('fa-lock');
+                        }
+                    });
+                }
+            });
+        </script>
         <script>
             window.onload = function() {
 

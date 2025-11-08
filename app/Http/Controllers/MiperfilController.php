@@ -10,6 +10,7 @@ use App\Helpers\CreateList;
 use App\Models\PerfilPunto;
 use App\Models\SwitchPlane;
 use App\Models\Subcategoria;
+use Hash;
 use Illuminate\Http\Request;
 use App\Helpers\GlobalHelper;
 use App\Helpers\ProcesarImagen;
@@ -270,21 +271,84 @@ class MiperfilController extends Controller
 
     public function guardarPerfilFaltante(Request $request)
     {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:80',
+            'email' => 'required|email|unique:users,email,' . auth()->id(),
+            'dia_nacimiento' => 'required|numeric|between:1,31',
+            'mes_nacimiento' => 'required|numeric|between:1,12',
+            'ano_nacimiento' => 'required|numeric|min:1900|max:' . (date('Y') - 12),
+            'profesion' => 'required|string|max:40',
+            'direccion' => 'required|string|max:100|min:15',
+            'direccion_trabajo' => 'nullable|string|max:100|min:15',
+            'password' => 'nullable|string|min:5',
+            'hijos' => 'nullable|boolean',
+            'latitud' => 'nullable|numeric',
+            'longitud' => 'nullable|numeric',
+            'telf' => 'nullable|digits:8|unique:users,telf,' . auth()->id(),
+        ], [
+            // --- Mensajes personalizados ---
+            'name.required' => 'Por favor, ingresa tu nombre.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'Por favor ingresa un correo electrónico válido.',
+            'email.unique' => 'Este correo ya está en uso.',
 
-        $request->validate([
-            'email' => 'required|email|unique:users,email,' . $request->idUsuario,
-            'direccion' => 'required|min:15',
-            'password' => 'required|string|min:5',
-            'telf' => 'required|size:8|unique:users,telf,' . $request->idUsuario,
-            'latitud' => 'required|string|min:10',
-            'longitud' => 'required|string|min:10',
+            'dia_nacimiento.required' => 'Por favor, ingresa una fecha de nacimiento válida.',
+            'dia_nacimiento.numeric' => 'Por favor, ingresa una fecha de nacimiento válida.',
+            'dia_nacimiento.between' => 'Por favor, ingresa una fecha de nacimiento válida.',
+
+            'mes_nacimiento.required' => 'Por favor, ingresa una fecha de nacimiento válida.',
+            'mes_nacimiento.numeric' => 'Por favor, ingresa una fecha de nacimiento válida.',
+            'mes_nacimiento.between' => 'Por favor, ingresa una fecha de nacimiento válida.',
+
+            'ano_nacimiento.required' => 'Por favor, ingresa una fecha de nacimiento válida.',
+            'ano_nacimiento.numeric' => 'Por favor, ingresa una fecha de nacimiento válida.',
+            'ano_nacimiento.min' => 'Por favor, ingresa una fecha de nacimiento válida.',
+            'ano_nacimiento.max' => 'Por favor, ingresa una fecha de nacimiento válida.',
+
+            'profesion.required' => 'El campo profesión es obligatorio.',
+            'profesion.max' => 'La profesión no puede exceder los 40 caracteres.',
+
+            'direccion.required' => 'La dirección es obligatoria.',
+            'direccion.min' => 'La dirección debe tener al menos 15 caracteres.',
+            'direccion.max' => 'La dirección no puede exceder los 100 caracteres.',
+
+            'direccion_trabajo.min' => 'La dirección de trabajo debe tener al menos 15 caracteres.',
+            'direccion_trabajo.max' => 'La dirección de trabajo no puede exceder los 100 caracteres.',
+
+            'password.min' => 'La contraseña debe tener al menos 5 caracteres.',
+
+            'telf.digits' => 'El teléfono debe tener exactamente 8 dígitos.',
+            'telf.unique' => 'Este número de teléfono ya está registrado.',
         ]);
-        $usuario = User::find(auth()->user()->id);
 
-        $usuario->fill($request->all());
+        $validatedData['nacimiento'] = sprintf(
+            '%04d-%02d-%02d',
+            $validatedData['ano_nacimiento'],
+            $validatedData['mes_nacimiento'],
+            $validatedData['dia_nacimiento']
+        );
+
+        unset($validatedData['dia_nacimiento'], $validatedData['mes_nacimiento'], $validatedData['ano_nacimiento']);
+
+        // --- Actualización del usuario ---
+        $usuario = User::findOrFail(auth()->id());
+
+        // 🔑 Lógica CLAVE: Asignar directamente el valor (el Mutator en el Modelo lo hashea)
+        if (!empty($validatedData['password'])) {
+            // Asignamos el valor en texto plano. El modelo se encarga de hashearlo.
+            $usuario->password = $validatedData['password']; 
+            
+            // Removemos el campo del array para que fill() no lo intente asignar dos veces
+            unset($validatedData['password']); 
+        }
+
+        $usuario->fill($validatedData);
+        $usuario->hijos = $request->has('hijos') ? 1 : 0;
         $usuario->save();
-        return back()->with('success', 'Gracias! Ya tienes tu perfil completo y actualizado');
+
+        return back()->with('success', 'Gracias! Tu perfil ha sido actualizado correctamente.');
     }
+
     public function subirFoto(Request $request)
     {
         $request->validate([

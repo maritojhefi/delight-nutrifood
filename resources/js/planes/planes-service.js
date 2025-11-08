@@ -4,6 +4,7 @@ import cachedAxios from "../config/axios/axios-instance";
 export const permisoPedido = async(idPlaneUser) => {
     const response = await axios.get(`/miperfil/permiso/${idPlaneUser}/2`);
     return response;
+    return response;
 }
 
 // export const obtenerCalendarioPlan = async(idPlan, idUser) => {
