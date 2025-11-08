@@ -102,7 +102,7 @@ class UsuarioController extends Controller
                 'ano_nacimiento' => 'required|integer|min:1900|max:' . (date('Y') - 12),
                 'direccion' => 'required|string|max:100',
                 'direccion_trabajo' => 'nullable|string|max:100',
-                'password' => 'required|string|min:4|confirmed',
+                'password' => 'required|string|min:5|confirmed',
                 'hijos' => 'nullable|boolean',
                 'partner_id' => 'nullable|sometimes|exists:users,id',
                 'foto' => [
