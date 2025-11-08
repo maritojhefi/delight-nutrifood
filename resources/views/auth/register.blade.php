@@ -1061,9 +1061,7 @@
                     const originalText = button.textContent;
 
                     if (currentStep == 0) {
-                        console.log("cleaning very first step error messages");
                         clearFirstErrorMessages();
-                        console.log("They should've been cleared now");
                     } else {
                         clearErrorMessages();
                     }
@@ -1125,7 +1123,6 @@
             prevBtns.forEach(button => {
                 button.addEventListener('click', () => {
                     // Only allow going back if currentStep is greater than 0
-                    console.log("valor actual currentStep:", currentStep);
                     if (currentStep > 0) { 
                         steps[currentStep].classList.add('d-none');
                         currentStep--;
@@ -1138,7 +1135,6 @@
             const form = document.getElementById('multiStepForm');
             form.addEventListener('submit', function(e) {
                 e.preventDefault(); // Evitar el envío tradicional
-                console.log(`Codigo seleccionado: ${selectedCountryCode.value}`);
 
                 const formData = new FormData(form);
                 const originalCountryCode = formData.get('codigo_pais');
@@ -1179,16 +1175,11 @@
             const selectElement = document.getElementById(selectId);
 
             let select = document.getElementById(selectId);
-            select.classList.remove('select2-hidden-accessible'); // limpia restos de select2
+            select.classList.remove('select2-hidden-accessible');
             select.style.display = '';
-
-            console.log(select, selectElement);
 
             if (selectElement) {
 
-                // muestra de nuevo el select si fue ocultado
-
-                // Inicializar SlimSelect
                 new SlimSelect({
                     select: '#' + selectId,
                     placeholder: 'Seleccione un país',
@@ -1210,7 +1201,6 @@
             try {
                 const regiones = phoneUtil.getRegionCodesForCountryCode(codigo);
                 if (!regiones || regiones.length === 0) {
-                    console.log(`⚠ No se encontraron regiones para código ${codigo}`);
                     return;
                 }
                 regiones.forEach(region => {
@@ -1222,10 +1212,9 @@
                         const numeroEjemplo = phoneUtil.getNationalSignificantNumber(ejemplo);
                         digitosPais = numeroEjemplo.length; // ✅ aquí lo asignas
                         document.getElementById('digitos_pais').value = digitosPais;
-                        console.log(`Código +${codigo} → Región: ${region}, Longitud: ${digitosPais}`);
+                        // console.log(`Código +${codigo} → Región: ${region}, Longitud: ${digitosPais}`);
                     }
                 });
-                // console.log("👉 Digitos del país: ", digitosPais);
             } catch (e) {
                 console.log("❌ Error: " + e.message);
             }
@@ -1266,16 +1255,13 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     success: function(response) {
-                        console.log(response);
 
                         if (response.status === 'success') {
                             // Teléfono válido - mostrar botón de verificar
                             document.getElementById('verificar-numero').classList.remove('d-none');
-                            console.log("✅ Teléfono válido - se puede verificar");
                         } else {
                             // Teléfono inválido - ocultar botón y mostrar error
                             document.getElementById('verificar-numero').classList.add('d-none');
-                            console.log("❌ Teléfono inválido:", response.errors);
 
                             // Mostrar mensaje de error específico
                             var errorMessage = 'Error en el teléfono';
@@ -1293,7 +1279,6 @@
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.log("❌ Error en validación:", xhr.responseJSON);
                         document.getElementById('verificar-numero').classList.add('d-none');
 
                         var errorMessage = 'Error al validar el teléfono';
@@ -1316,7 +1301,6 @@
             }
 
             document.getElementById('country-code-selector').addEventListener('change', function() {
-                // console.log("✅ El usuario seleccionó un país", this.value);
                 detectar();
             });
             detectar();
@@ -1647,7 +1631,6 @@
                         $('#telefono_verificado').val(1);
                         formData.set('telefono_verificado', 1);
                         formData.delete('digitos_pais');
-                        console.log('✅ Teléfono verificado correctamente');
 
                         setTimeout(() => {
                             $('#codigo-correcto').removeClass('menu-active');
@@ -1672,7 +1655,6 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.log(xhr.responseJSON.errors.codigo[0]);
                     $('#mensaje-toast-error').text(xhr.responseJSON.errors.codigo[0]);
                     $('#toast-error').removeClass('show');
                     $('#toast-error').addClass('show');

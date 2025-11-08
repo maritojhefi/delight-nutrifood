@@ -193,8 +193,7 @@
 
 var digitosPais = null;
 var codigoVerificacion = null;
-var slimSelectIngreso = null; // Store SlimSelect instance
-// // let telefonoCompleto = '';
+var slimSelectIngreso = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     // ============= MAIN LOGIN FORM COUNTRY SELECTOR =============
@@ -218,13 +217,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============= FORGOT PASSWORD MODAL COUNTRY SELECTOR =============
     const modalSelectId = 'country-code-selector-ingreso';
     const modalSelect = document.getElementById(modalSelectId);
-    console.log('modalSelect encontrado:', modalSelect);
 
     if (modalSelect) {
         modalSelect.classList.remove('select2-hidden-accessible');
         modalSelect.style.display = '';
 
-        // Initialize SlimSelect and store the instance
         slimSelectIngreso = new SlimSelect({
             select: '#' + modalSelectId,
             placeholder: 'Seleccione un país',
@@ -234,28 +231,22 @@ document.addEventListener('DOMContentLoaded', function() {
             showSearch: true
         });
         
-        // Set initial value (Bolivia by default)
         setTimeout(() => {
-            // Force set the value if not already set
             if (!modalSelect.value || modalSelect.value === '') {
                 modalSelect.value = '591'; // Bolivia default
-                // ❌ REMOVE: slimSelectIngreso.set('591');
                 
-                // ✅ Trigger change event so SlimSelect updates its display
                 const event = new Event('change', { bubbles: true });
                 modalSelect.dispatchEvent(event);
             }
-            detectar(); // Initialize on page load
+            detectar();
         }, 150);
         
-        // Event listener for changes
         modalSelect.addEventListener('change', function() {
-            console.log("✅ País seleccionado (ingreso):", this.value);
+            // // console.log("✅ País seleccionado (ingreso):", this.value);
             detectar();
         });
     }
 
-    // ============= PASSWORD TOGGLE =============
     const passwordInput = document.getElementById('password-input');
     const toggleButton = document.querySelector('.password-toggle');
     const toggleIcon = document.getElementById('toggleIcon');
@@ -275,19 +266,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// ============= DETECTION FUNCTION =============
 function detectar() {
     const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
     const selector = document.getElementById("country-code-selector-ingreso");
     
     if (!selector) {
-        console.log("❌ Selector no encontrado");
+        // console.log("❌ Selector no encontrado");
         return;
     }
     
     let codigoValue = selector.value;
     
-    // If still empty, try getting from SlimSelect instance
     if ((!codigoValue || codigoValue === '') && slimSelectIngreso) {
         const selectedData = slimSelectIngreso.selected();
         if (selectedData) {
@@ -295,7 +284,6 @@ function detectar() {
         }
     }
     
-    // Last resort: get from selected option
     if (!codigoValue || codigoValue === '') {
         const selectedOption = selector.options[selector.selectedIndex];
         if (selectedOption) {
@@ -305,7 +293,7 @@ function detectar() {
     
     const codigo = parseInt(codigoValue);
     
-    console.log("🔍 Buscando dígitos para el código de país:", codigo);
+    // console.log("🔍 Buscando dígitos para el código de país:", codigo);
     
     if (!codigo || isNaN(codigo)) {
         console.log(`⚠️ Código de país inválido: ${codigoValue}`);
@@ -333,36 +321,32 @@ function detectar() {
                     digitosPaisInput.value = digitosPais;
                 }
                 
-                console.log(`✅ Código +${codigo} → Región: ${region}, Longitud: ${digitosPais}`);
+                // // console.log(`✅ Código +${codigo} → Región: ${region}, Longitud: ${digitosPais}`);
 
             }
         });
-        console.log("👉 Dígitos del país:", digitosPais);
+        // console.log("👉 Dígitos del país:", digitosPais);
     } catch (e) {
-        console.log("❌ Error:", e.message);
+        console.error("❌ Error:", e.message);
     }
 }
 
-// ============= JQUERY HANDLERS =============
 $(document).ready(function() {
     $('#verificar-codigo-btn-ingreso').on('click', function() {
         verificarCodigoIngreso(true);
     });
 
     $('#btnNumeroIngreso').on('click', function(e) {
-        console.log("Click en botón para enviar código verificación ingreso");
+        // console.log("Click en botón para enviar código verificación ingreso");
         e.preventDefault();
         validacionOTPIngreso();
     });
 });
 
-// ============= VALIDATION FUNCTION =============
 const validacionOTPIngreso = () => {
-    // Get values directly from elements
     const telefono = $('#telefono-ingreso').val();
     const selector = document.getElementById('country-code-selector-ingreso');
     
-    // Get country code - try multiple methods
     let codigoPais = '';
     if (selector) {
         codigoPais = selector.value;
@@ -375,17 +359,15 @@ const validacionOTPIngreso = () => {
         }
     }
     
-    // Get digitos_pais from hidden input
     const digitosPaisValue = $('#digitos_pais').val();
     
-    console.log("📞 Datos a enviar:", {
-        telefono: telefono,
-        codigoPais: codigoPais,
-        digitosPais: digitosPaisValue,
-        operacion: 'ingreso_usuario'
-    });
+    // console.log("📞 Datos a enviar:", {
+    //     telefono: telefono,
+    //     codigoPais: codigoPais,
+    //     digitosPais: digitosPaisValue,
+    //     operacion: 'ingreso_usuario'
+    // });
     
-    // Validate before sending
     if (!telefono || !codigoPais || !digitosPaisValue) {
         alert('Por favor complete todos los campos y seleccione un país');
         return;
@@ -417,18 +399,16 @@ const validacionOTPIngreso = () => {
 const manejarExitoEnvioIngreso = (response) => {
     if (response.status === 'success') {
         codigoVerificacion = response.codigo_generado;
-        console.log('✅ Código enviado exitosamente');
         $('#menu-verificacion-ingreso').addClass('menu-active');
         $('.menu-hider').addClass('menu-active');
             // // habilitarBotonEnviarCodigo(); 
     } else {
-        console.log('❌ Error en la respuesta:', response);
+        console.error('❌ Error en la respuesta:', response);
         alert('Error: ' + (response.errors.telefono ? response.errors.telefono[0] : 'Error desconocido'));
     }
 }
 
 const manejarErrorEnvioIngreso = (xhr, status, error) => {
-    // // habilitarBotonEnviarCodigo(); 
 
     if (xhr.responseJSON && xhr.responseJSON.errors) {
         const errors = xhr.responseJSON.errors;
@@ -469,7 +449,7 @@ const verificarCodigoIngreso = () => {
         if (valor) {
             codigoCompleto += valor;
         } else {
-            console.log(`Input ${index + 1} está vacío`);
+            // console.log(`Input ${index + 1} está vacío`);
         }
     });
 
@@ -485,10 +465,8 @@ const verificarCodigoIngreso = () => {
 const enviarCodigoVerificacionIngreso = (codigo) => {
     const telefono = $('#telefono-ingreso').val();
     const selector = document.getElementById('country-code-selector-ingreso');
-    // Get country code - try multiple methods
     let codigoPais = selector.value;
     const telefono_completo = `+${codigoPais}${telefono}`;
-    console.log("Telefono completo validacion final: ", telefono_completo);
 
 
     deshabilitarBotonValidarCodigo();
@@ -500,7 +478,6 @@ const enviarCodigoVerificacionIngreso = (codigo) => {
             codigo: codigo,
             codigo_generado: codigoVerificacion,
             telefono_completo: telefono_completo
-            // // telefono_completo: $('#') $('#telefono-ingreso').val()
         },
         dataType: "json",
         headers: {
@@ -512,15 +489,12 @@ const enviarCodigoVerificacionIngreso = (codigo) => {
                 $('.menu-hider').removeClass('menu-active');
                 $('#codigo-correcto').addClass('menu-active');
                 $('#verificar-numero-ingreso').addClass('d-none');
-                console.log('✅ Teléfono verificado correctamente para el ingreso del usuario');
 
                 setTimeout(() => {
                     $('#codigo-correcto').removeClass('menu-active');
                 }, 2000);
 
-                console.log('Iniciando sesión...');
-                // TODO: Implement actual login logic here
-                window.location.href = response.redirect_url; // Perform the redirect
+                window.location.href = response.redirect_url;
 
             } else {
                 $('#menu-verificacion').removeClass('menu-active');
