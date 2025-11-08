@@ -246,7 +246,7 @@ class MiperfilController extends Controller
     public function editardia($idpivot)
     {
         $dia = DB::table('plane_user')->where('id', $idpivot)->first();
-        
+
         if ($dia->estado == "pendiente") {
             DB::table('plane_user')
                 ->where('id', $idpivot)
@@ -258,7 +258,6 @@ class MiperfilController extends Controller
             ]) . '?pedido=' . $idpivot;
 
             return redirect($url);
-            
         } else {
             return back()->with('error', 'Este dia ya no se encuentra disponible!');
         }
@@ -378,28 +377,6 @@ class MiperfilController extends Controller
             $user->foto = $nombreArchivo;
             $user->save();
 
-            // Log de la ubicación donde se guardó la imagen
-            $disco = GlobalHelper::discoArchivos();
-            if ($disco === 's3') {
-                $config = config('filesystems.disks.s3');
-                $bucket = $config['bucket'] ?? '';
-                $region = $config['region'] ?? 'us-east-1';
-                $urlCompleta = "https://{$bucket}.s3.{$region}.amazonaws.com" . User::RUTA_FOTO . $nombreArchivo;
-                Log::info("Foto de perfil guardada en S3", [
-                    'usuario_id' => $user->id,
-                    'nombre_archivo' => $nombreArchivo,
-                    'url_s3' => $urlCompleta,
-                    'disco' => $disco
-                ]);
-            } else {
-                $rutaLocal = public_path('imagenes/perfil/' . $nombreArchivo);
-                Log::info("Foto de perfil guardada en local", [
-                    'usuario_id' => $user->id,
-                    'nombre_archivo' => $nombreArchivo,
-                    'ruta_local' => $rutaLocal,
-                    'disco' => $disco
-                ]);
-            }
 
             return back()->with('actualizado', 'Se actualizó tu foto de perfil!');
         } catch (\Exception $e) {

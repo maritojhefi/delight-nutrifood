@@ -27,39 +27,16 @@ class TiendaComponent extends Component
     public function submit()
     {
         $this->validate();
-        
+
         try {
             // Usar el helper ProcesarImagen para procesar y guardar la imagen
             $procesarImagen = ProcesarImagen::crear($this->foto)
                 ->carpeta(GaleriaFotos::RUTA_FOTO) // Carpeta donde se guardará
                 ->dimensiones(720, null) // Redimensionar a máximo 720px de ancho
                 ->formato($this->foto->getClientOriginalExtension()); // Mantener formato original
-            
+
             // Guardar la imagen procesada (automáticamente usa el disco correcto según el ambiente)
             $filename = $procesarImagen->guardar();
-            
-            // Log de la ubicación donde se guardó la imagen
-            $disco = GlobalHelper::discoArchivos();
-            if ($disco === 's3') {
-                $config = config('filesystems.disks.s3');
-                $bucket = $config['bucket'] ?? '';
-                $region = $config['region'] ?? 'us-east-1';
-                $urlCompleta = "https://{$bucket}.s3.{$region}.amazonaws.com" . GaleriaFotos::RUTA_FOTO . $filename;
-                Log::info("Imagen de galería guardada en S3", [
-                    'titulo' => $this->titulo,
-                    'nombre_archivo' => $filename,
-                    'url_s3' => $urlCompleta,
-                    'disco' => $disco
-                ]);
-            } else {
-                $rutaLocal = public_path('imagenes/galeria/' . $filename);
-                Log::info("Imagen de galería guardada en local", [
-                    'titulo' => $this->titulo,
-                    'nombre_archivo' => $filename,
-                    'ruta_local' => $rutaLocal,
-                    'disco' => $disco
-                ]);
-            }
 
             GaleriaFotos::create([
                 'titulo' => $this->titulo,
@@ -72,7 +49,6 @@ class TiendaComponent extends Component
                 'message' => "Se agrego una nueva foto a la galeria!"
             ]);
             $this->reset();
-            
         } catch (\Exception $e) {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'error',
@@ -88,12 +64,12 @@ class TiendaComponent extends Component
             if ($foto->foto) {
                 $rutaArchivo = GaleriaFotos::RUTA_FOTO . $foto->foto; // Construir ruta correcta
                 $disco = GlobalHelper::discoArchivos();
-                
+
                 if (Storage::disk($disco)->exists($rutaArchivo)) {
                     Storage::disk($disco)->delete($rutaArchivo);
                 }
             }
-            
+
             // Eliminar foto de la galería
             $foto->delete();
 

@@ -19,9 +19,12 @@ class RefreshListaPensionadosEvent implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct()
+    public $mensaje;
+    public $estadoMensaje;
+    public function __construct($mensaje, $estadoMensaje = 'success')
     {
-        //
+        $this->mensaje = $mensaje;
+        $this->estadoMensaje = $estadoMensaje;
     }
 
     /**

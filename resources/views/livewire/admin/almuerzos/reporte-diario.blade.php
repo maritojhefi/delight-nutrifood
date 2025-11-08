@@ -61,17 +61,18 @@
                             <tr class="{{ $lista['ESTADO'] == 'finalizado' ? 'table-success' : '' }}{{ $lista['ESTADO'] == 'permiso' ? 'table-warning' : '' }}"
                                 style="padding:5px">
                                 <td style="padding:5px">
+                                    <span class="d-flex justify-content-center">
                                     @if (isset($lista['CLIENTE_INGRESADO']) && $lista['CLIENTE_INGRESADO'])
-                                        <i class="fa fa-user fa-beat text-success ml-2" style="font-size: 18px;"
-                                            title="Cliente ingresado"></i>
+                                        <img src="{{ asset('images/welcome.gif') }}" alt="Cliente ingresado" style="width: 20px; height: 20px;">
                                     @endif
                                     {{ $loop->iteration }}
+                                    </span>
                                 </td>
 
                                 <td style="padding:5px">
                                     <div class="d-flex align-items-center">
                                         <a href="javascript:void(0)"
-                                            onclick="verAlertOpciones('{{ $lista['USER_ID'] }}', '{{ $lista['PLAN_ID'] }}', '{{ $lista['ID'] }}')">
+                                            onclick="verAlertOpciones('{{ $lista['USER_ID'] }}', '{{ $lista['PLAN_ID'] }}', '{{ $lista['ID'] }}', '{{ $lista['CLIENTE_INGRESADO'] }}')">
                                             <strong>{{ Str::limit($lista['NOMBRE'], 35) }}</strong>
                                         </a>
 
@@ -252,17 +253,26 @@
 
 @push('scripts')
     <script>
-        function verAlertOpciones(userId, planId, itemId) {
+        function verAlertOpciones(userId, planId, itemId, estadoIngresado) {
+            if (estadoIngresado == true) {
+                var botonTexto = 'Desmarcar como ingresado'
+                var botonIcono = 'warning'
+                var botonColor = '#ff9800' // naranja
+            } else {
+                var botonTexto = 'Marcar como ingresado'
+                var botonIcono = 'check'
+                var botonColor = '#28a745'
+            }
             Swal.fire({
                 title: '¿Qué deseas hacer?',
                 html: '<p style="font-size: 14px;">Selecciona una opción para este cliente</p>',
                 icon: 'question',
                 showCancelButton: true,
                 showDenyButton: true,
-                confirmButtonText: '<i class="fa fa-check"></i> Marcar como ingresado',
+                confirmButtonText: '<i class="fa fa-'+botonIcono+'"></i> ' + botonTexto,
                 denyButtonText: '<i class="fa fa-clipboard"></i> Ver planes',
                 cancelButtonText: 'Cancelar',
-                confirmButtonColor: '#28a745',
+                confirmButtonColor: botonColor,
                 denyButtonColor: '#007bff',
                 cancelButtonColor: '#6c757d',
                 customClass: {
@@ -273,7 +283,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Marcar como ingresado
-                    Livewire.emit('marcarComoIngresado', itemId);
+                    Livewire.emit('marcarComoIngresado', itemId, estadoIngresado);
                 } else if (result.isDenied) {
                     // Redirigir a la URL de planes del usuario
                     window.location.href = `/admin/usuarios/detalleplan/${userId}/${planId}`;

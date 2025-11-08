@@ -835,7 +835,7 @@ class VentasIndex extends Component
                         if (is_array($adic)) {
                             // Cada $adic es como {"Omelett de verduras":"0.00"}
                             foreach ($adic as $nombre => $precio) {
-                                $nombresAdicionales[] = $nombre;
+                                $nombresAdicionales[] = $nombre . ($precio > 0 ? ' (' . $precio . ' Bs)' : '');
                             }
                         }
                     }
@@ -845,7 +845,7 @@ class VentasIndex extends Component
                     'indice' => $indice,
                     'adicionales' => $nombresAdicionales,
                     'agregado_at' => $agregadoAt,
-                    'estado' => $estado
+                    'estado' => $estado,
                 ];
             }
         }

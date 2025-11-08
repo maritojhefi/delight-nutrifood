@@ -7,11 +7,12 @@ use App\Models\User;
 use App\Models\Plane;
 use Livewire\Component;
 use App\Models\Almuerzo;
-use App\Exports\UsersPlanesExport;
 use App\Helpers\GlobalHelper;
+use App\Exports\UsersPlanesExport;
 use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Events\RefreshListaPensionadosEvent;
 
 class ReporteDiario extends Component
 {
@@ -203,22 +204,26 @@ class ReporteDiario extends Component
             ->section('content');
     }
 
-    public function marcarComoIngresado($itemId)
+    public function marcarComoIngresado($itemId, $estadoIngresado)
     {
         try {
             // Actualizar el registro en plane_user
             $actualizado = DB::table('plane_user')
                 ->where('id', $itemId)
-
-                ->update(['cliente_ingresado' => true, 'cliente_ingresado_at' => Carbon::now()]);
+                ->update(['cliente_ingresado' => !$estadoIngresado, 'cliente_ingresado_at' => !$estadoIngresado ? Carbon::now() : null]);
 
             if ($actualizado) {
+                $registro = DB::table('plane_user')->where('id', $itemId)->first();
+                $usuario = User::find($registro->user_id);
+                if (!$estadoIngresado) {
+                    event(new RefreshListaPensionadosEvent('Cliente ' . $usuario->name . ' ha ingresado', 'success'));
+                } else {
+                    event(new RefreshListaPensionadosEvent('ATENCION: Se desmarcó a ' . $usuario->name, 'warning'));
+                }
                 // Despachar evento para actualizar la lista en tiempo real
-                event(new \App\Events\RefreshListaPensionadosEvent());
-
                 $this->dispatchBrowserEvent('alert', [
                     'type' => 'success',
-                    'message' => 'Cliente marcado como ingresado correctamente'
+                    'message' => $estadoIngresado ? 'Cliente desmarcado como ingresado correctamente' : 'Cliente marcado como ingresado correctamente'
                 ]);
             } else {
                 $this->dispatchBrowserEvent('alert', [

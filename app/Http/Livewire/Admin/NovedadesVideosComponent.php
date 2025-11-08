@@ -20,8 +20,8 @@ class NovedadesVideosComponent extends Component
     public $search;
     public function delete(Novedade $noticia)
     {
-        
-        
+
+
         try {
             Storage::disk('public_path')->delete($noticia->foto);
         } catch (\Throwable $th) {
@@ -40,44 +40,20 @@ class NovedadesVideosComponent extends Component
             'contenido' => 'required',
             'foto' => 'required|mimes:jpeg,bmp,png,gif|max:5120'
         ]);
-        
+
         try {
             // Usar el helper ProcesarImagen para procesar y guardar la imagen
             $procesarImagen = ProcesarImagen::crear($this->foto)
                 ->carpeta(Novedade::RUTA_FOTO) // Carpeta donde se guardará
                 ->dimensiones(480, null) // Redimensionar a máximo 480px de ancho
                 ->formato($this->foto->getClientOriginalExtension()); // Mantener formato original
-            
+
             // Guardar la imagen procesada (automáticamente usa el disco correcto según el ambiente)
             $filename = $procesarImagen->guardar();
-            
-            // Log de la ubicación donde se guardó la imagen
-            $disco = GlobalHelper::discoArchivos();
-            if ($disco === 's3') {
-                $config = config('filesystems.disks.s3');
-                $bucket = $config['bucket'] ?? '';
-                $region = $config['region'] ?? 'us-east-1';
-                $urlCompleta = "https://{$bucket}.s3.{$region}.amazonaws.com" . Novedade::RUTA_FOTO . $filename;
-                Log::info("Imagen de noticia guardada en S3", [
-                    'titulo' => $array['titulo'],
-                    'nombre_archivo' => $filename,
-                    'url_s3' => $urlCompleta,
-                    'disco' => $disco
-                ]);
-            } else {
-                $rutaLocal = public_path('imagenes/noticias/' . $filename);
-                Log::info("Imagen de noticia guardada en local", [
-                    'titulo' => $array['titulo'],
-                    'nombre_archivo' => $filename,
-                    'ruta_local' => $rutaLocal,
-                    'disco' => $disco
-                ]);
-            }
-            
+
             $noticia = Novedade::create($array);
             $noticia->foto = $filename;
             $noticia->save();
-            
         } catch (\Exception $e) {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'error',

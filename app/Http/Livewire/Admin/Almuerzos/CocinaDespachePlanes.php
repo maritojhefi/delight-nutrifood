@@ -20,14 +20,62 @@ class CocinaDespachePlanes extends Component
     public $fechaSeleccionada, $cambioFecha = false;
     public $search;
     public $estadoBuscador = "NOMBRE", $estadoColor = "success";
+    public $planSeleccionado = null;
+    public $planesSeleccionados = [];
+    public $filtroInicializado = false; // Bandera para controlar la auto-selección inicial
     public $dieta_cant, $ejecutivo_cant, $carbohidrato_1_cant, $carbohidrato_2_cant, $carbohidrato_3_cant, $vegetariano_cant, $sopa_cant;
     protected $listeners = [
         'echo:pensionados,RefreshListaPensionadosEvent' => 'actualizarListaPensionados'
     ];
-    public function actualizarListaPensionados()
-    {
 
-        $this->render();
+    // Método que se ejecuta cuando se actualiza planSeleccionado
+    public function updatedPlanSeleccionado($value)
+    {
+        // Si se selecciona un plan válido, agregarlo al array
+        if ($value !== '' && $value !== null && is_numeric($value)) {
+            // Verificar que el plan no esté ya en el array
+            if (!in_array($value, $this->planesSeleccionados)) {
+                $this->planesSeleccionados[] = $value;
+            }
+            // Resetear el select a la opción por defecto
+            $this->planSeleccionado = '';
+            // Marcar que el usuario ha interactuado manualmente con los filtros
+            $this->filtroInicializado = true;
+        }
+    }
+
+    // Método para remover un plan del filtro
+    public function removerPlan($planId)
+    {
+        $this->planesSeleccionados = array_values(array_filter($this->planesSeleccionados, function ($id) use ($planId) {
+            return $id != $planId;
+        }));
+        // Marcar que el usuario ha interactuado manualmente con los filtros
+        $this->filtroInicializado = true;
+    }
+
+    // Método para limpiar todos los filtros de planes
+    public function limpiarFiltrosPlanes()
+    {
+        $this->planesSeleccionados = [];
+        // Marcar que el usuario ha interactuado manualmente con los filtros
+        $this->filtroInicializado = true;
+    }
+    public function actualizarListaPensionados($data)
+    {
+        $mensaje = $data['mensaje'];
+        $estadoMensaje = $data['estadoMensaje'];
+        $this->dispatchBrowserEvent('toastAlert', [
+            'type' => $estadoMensaje,
+            'message' => $mensaje
+        ]);
+        $this->dispatchBrowserEvent('reproducirTexto', [
+            'texto' => $mensaje,
+            'voz' => 'Spanish Latin American Female',
+            'opciones' => [
+                'rate' => 1.2,
+            ]
+        ]);
     }
     public function cambiarCantidad($variable, $cantidad)
     {
@@ -225,15 +273,29 @@ class CocinaDespachePlanes extends Component
     public function cambioDeFecha()
     {
         $this->cambioFecha = true;
+        // Resetear los planes seleccionados cuando cambia la fecha
+        $this->planSeleccionado = null;
+        $this->planesSeleccionados = [];
+        // Permitir que se auto-seleccione nuevamente para la nueva fecha
+        $this->filtroInicializado = false;
     }
 
     public function confirmarDespacho($id)
     {
         //dd($id);
-        DB::table('plane_user')->where('id', $id)->update(['cocina' => Plane::COCINADESPACHADO]);
-        $this->dispatchBrowserEvent('alert', [
+        DB::table('plane_user')->where('id', $id)->update(['cocina' => Plane::COCINADESPACHADO, 'despachado_at' => Carbon::now()]);
+        $this->dispatchBrowserEvent('toastAlert', [
             'type' => 'success',
-            'message' => "Se despacho este plan!"
+            'message' => "Se despachó este plan!"
+        ]);
+        $this->dispatchBrowserEvent('reproducirTexto', [
+            'texto' => "Se despachó este plan",
+            'voz' => 'Spanish Latin American Female',
+            'opciones' => [
+                'rate' => 1.2,
+                'pitch' => 1,
+                'volume' => 1
+            ]
         ]);
     }
     public function despacharSopa($id)
@@ -243,10 +305,19 @@ class CocinaDespachePlanes extends Component
         if ($registro->cocina == Plane::COCINASOLOSEGUNDO) {
             $this->confirmarDespacho($id);
         } else {
-            DB::table('plane_user')->where('id', $id)->update(['cocina' => Plane::COCINASOLOSOPA]);
-            $this->dispatchBrowserEvent('alert', [
+            DB::table('plane_user')->where('id', $id)->update(['cocina' => Plane::COCINASOLOSOPA, 'sopa_despachada_at' => Carbon::now()]);
+            $this->dispatchBrowserEvent('toastAlert', [
                 'type' => 'success',
-                'message' => "Se despacho la sopa de este plan"
+                'message' => "Se despachó la sopa de este plan"
+            ]);
+            $this->dispatchBrowserEvent('reproducirTexto', [
+                'texto' => "Se despachó la sopa de este plan",
+                'voz' => 'Spanish Latin American Female',
+                'opciones' => [
+                    'rate' => 1.2,
+                    'pitch' => 1,
+                    'volume' => 1
+                ]
             ]);
         }
     }
@@ -257,20 +328,38 @@ class CocinaDespachePlanes extends Component
         if ($registro->cocina == Plane::COCINASOLOSOPA || $detalle->SOPA == '') {
             $this->confirmarDespacho($id);
         } else {
-            DB::table('plane_user')->where('id', $id)->update(['cocina' => Plane::COCINASOLOSEGUNDO]);
-            $this->dispatchBrowserEvent('alert', [
+            DB::table('plane_user')->where('id', $id)->update(['cocina' => Plane::COCINASOLOSEGUNDO, 'segundo_despachado_at' => Carbon::now()]);
+            $this->dispatchBrowserEvent('toastAlert', [
                 'type' => 'success',
-                'message' => "Se despacho el segundo de este plan"
+                'message' => "Se despachó el segundo de este plan"
+            ]);
+            $this->dispatchBrowserEvent('reproducirTexto', [
+                'texto' => "Se despachó el segundo de este plan",
+                'voz' => 'Spanish Latin American Female',
+                'opciones' => [
+                    'rate' => 1.2,
+                    'pitch' => 1,
+                    'volume' => 1
+                ]
             ]);
         }
     }
     public function restablecerPlan($id)
     {
 
-        DB::table('plane_user')->where('id', $id)->update(['cocina' => Plane::COCINAESPERA]);
-        $this->dispatchBrowserEvent('alert', [
+        DB::table('plane_user')->where('id', $id)->update(['cocina' => Plane::COCINAESPERA, 'despachado_at' => null, 'sopa_despachada_at' => null, 'segundo_despachado_at' => null]);
+        $this->dispatchBrowserEvent('toastAlert', [
             'type' => 'success',
             'message' => "Se restablecio el plan, ahora se encuentra en espera"
+        ]);
+        $this->dispatchBrowserEvent('reproducirTexto', [
+            'texto' => "Se restableció el plan, se encuentra nuevamente en espera",
+            'voz' => 'Spanish Latin American Female',
+            'opciones' => [
+                'rate' => 1.2,
+                'pitch' => 1,
+                'volume' => 1
+            ]
         ]);
     }
     public function restarColecciones(Collection $collectionA, Collection $collectionB): Collection
@@ -292,9 +381,10 @@ class CocinaDespachePlanes extends Component
             $this->fechaSeleccionada = Carbon::now()->format('Y-m-d');
         }
 
-        $pens = DB::table('plane_user')->select('plane_user.*', 'users.name', 'planes.editable', 'planes.nombre')
+        $pens = DB::table('plane_user')->select('plane_user.*', 'users.name', 'planes.editable', 'planes.nombre', 'planes.id as plane_id', 'horarios.hora_inicio', 'horarios.hora_fin')
             ->leftjoin('users', 'users.id', 'plane_user.user_id')
             ->leftjoin('planes', 'planes.id', 'plane_user.plane_id')
+            ->leftjoin('horarios', 'horarios.id', 'planes.horario_id')
             ->whereDate('plane_user.start', $this->fechaSeleccionada)
             ->where('plane_user.title', '!=', 'feriado')
             //->where('plane_user.detalle','!=',null)
@@ -302,6 +392,67 @@ class CocinaDespachePlanes extends Component
             ->get();            //dd($pens);
         // Suponiendo que estas funciones ya existen
         $coleccion = GlobalHelper::armarColeccionReporteDiarioVista($pens, $this->fechaSeleccionada);
+
+        // Crear colección de planes únicos con sus horarios directamente desde $pens
+        $planesColeccion = collect();
+        $planesIdsUnicos = $pens->pluck('plane_id')->unique()->filter();
+        foreach ($planesIdsUnicos as $planeId) {
+            $plan = $pens->firstWhere('plane_id', $planeId);
+            if ($plan && $plan->nombre) {
+                $planesColeccion->push((object)[
+                    'id' => $plan->plane_id,
+                    'nombre' => $plan->nombre,
+                    'hora_inicio' => $plan->hora_inicio,
+                    'hora_fin' => $plan->hora_fin,
+                ]);
+            }
+        }
+
+        // // Seleccionar automáticamente el plan según la hora actual solo en la primera carga
+        // // Solo si el usuario no ha interactuado manualmente con los filtros
+        // if (!$this->filtroInicializado && $this->planSeleccionado === null && empty($this->planesSeleccionados)) {
+        //     $horaActual = Carbon::now()->format('H:i:s');
+        //     $planEncontrado = false;
+
+        //     foreach ($planesColeccion as $plan) {
+        //         if ($plan->hora_inicio && $plan->hora_fin) {
+        //             try {
+        //                 $horaInicio = Carbon::parse($plan->hora_inicio)->format('H:i:s');
+        //                 $horaFin = Carbon::parse($plan->hora_fin)->format('H:i:s');
+        //                 // Verificar si la hora actual está dentro del rango
+        //                 if ($horaActual >= $horaInicio && $horaActual <= $horaFin) {
+        //                     // Agregar el plan encontrado al array de planes seleccionados
+        //                     $this->planesSeleccionados[] = $plan->id;
+        //                     $planEncontrado = true;
+        //                     break;
+        //                 }
+        //             } catch (\Exception $e) {
+        //                 // Si hay error al parsear las horas, continuar con el siguiente plan
+        //                 continue;
+        //             }
+        //         }
+        //     }
+        //     // Si no se encontró ningún plan activo, seleccionar el primero
+        //     if (!$planEncontrado && $planesColeccion->count() > 0) {
+        //         $this->planesSeleccionados[] = $planesColeccion->first()->id;
+        //     }
+        // }
+
+        // Limpiar planes seleccionados que ya no existen en la colección actual
+        if (!empty($this->planesSeleccionados)) {
+            $planesExistentes = $planesColeccion->pluck('id')->toArray();
+            $this->planesSeleccionados = array_values(array_filter($this->planesSeleccionados, function ($planId) use ($planesExistentes) {
+                return in_array($planId, $planesExistentes);
+            }));
+        }
+
+        // Filtrar colección por planes seleccionados
+        // Si hay planes en el array, filtrar por esos planes
+        if (!empty($this->planesSeleccionados)) {
+            $coleccion = $coleccion->filter(function ($item) {
+                return isset($item['PLAN_ID']) && in_array($item['PLAN_ID'], $this->planesSeleccionados);
+            })->values();
+        }
 
         // Ordenar dando prioridad a los clientes ingresados (true primero)
         $coleccion = $coleccion->sortByDesc(function ($item) {
@@ -383,9 +534,8 @@ class CocinaDespachePlanes extends Component
                     break;
             }
         }
-        //dd($coleccion);
 
-        return view('livewire.admin.almuerzos.cocina-despache-planes', compact('usuarios', 'coleccion', 'totalEspera', 'totalDespachado'))
+        return view('livewire.admin.almuerzos.cocina-despache-planes', compact('usuarios', 'coleccion', 'totalEspera', 'totalDespachado', 'planesColeccion'))
             ->extends('admin.master')
             ->section('content');
     }
