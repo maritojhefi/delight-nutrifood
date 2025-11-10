@@ -226,12 +226,6 @@
                             Guardar Perfil
                         </button>
                     </div>
-
-                    <!-- <button type="submit"
-                        class="btn btn-margins bg-highlight rounded-sm shadow-xl btn-m text-uppercase font-900">
-                        Guardar Perfil
-                    </button> -->
-                    
                 </form>
             </div>
             {{-- <div class="card card-style mb-2 map-full" data-card-height="cover-card" style="height: 573px;">

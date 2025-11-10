@@ -55,7 +55,9 @@
     @stack('header')
 </head>
 
-<body id="margen" class="theme-light">
+
+<body id="margen"
+    class="{{ isset(auth()->user()->color_page) ? auth()->user()->color_page : 'theme-light' }} margen">
     <div id="preloader">
         <div class="spinner-border color-highlight" role="status"></div>
     </div>
