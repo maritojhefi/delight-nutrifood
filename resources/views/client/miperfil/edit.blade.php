@@ -1,6 +1,6 @@
 @extends('client.masterSinFooter')
 @section('content')
-    <x-cabecera-pagina titulo="Completa tu perfil" cabecera="appkit" />
+    <x-cabecera-pagina titulo="Editar Perfil" cabecera="appkit" />
 
 
     @if (!session('success'))
@@ -17,19 +17,19 @@
 
         <div class="card card-style">
             <div class="content">
-                <div class="d-flex">
+                <div class="d-flex flex-row align-items-center gap-3 justify-content-evenly">
                     <div>
                         @if ($usuario->foto)
-                            <img src="{{ $usuario->pathFoto }}" width="50" class="me-3 bg-highlight rounded-xl">
+                            <img src="{{ $usuario->pathFoto }}" width="55" class="bg-highlight rounded-xl">
                         @else
-                            <img src="{{ asset('user.png') }}" width="50" class="me-3 bg-highlight rounded-xl">
+                            <img src="{{ asset('user.png') }}" width="55" class="bg-highlight rounded-xl">
                         @endif
                     </div>
                     <div>
                         <h1 class="mb-0 pt-1">{{ auth()->user()->name }}</h1>
-                        <p class="color-highlight font-11 mt-n2 mb-3">Informacion cifrada, no revelaremos esto con nadie</p>
                     </div>
                 </div>
+                <p class="color-highlight font-11 mt-n1 mb-0">Información cifrada, no revelaremos esto con nadie</p>
                 <p>
                     Completa tu perfil, asi estaras listo para todas las funciones que se vienen pronto!
                 </p>
@@ -39,41 +39,48 @@
 
             <div class="card card-style">
                 <form action="{{ route('guardarPerfilFaltante') }}" method="post">
-
-                    <div class="content mb-0">
-                        <h3 class="font-600">Informacion de tu perfil</h3>
-                        <p>
-                            Por favor llena con el maximo detalle los siguientes campos.
+                    <div class="content">
+                        <h3 class="font-600">Información de tu perfil</h3>
+                        <p class="mb-0">
+                            Por favor llena con el máximo detalle los siguientes campos.
                         </p>
 
                         @csrf
 
                         <br>
-                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
+                            <i data-lucide="user" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control"
                                 placeholder="Nombre" name="name"
+                                id="name_input"
                                 value="{{ old('name', $usuario->name) }}">
-                            <label for="" class="color-highlight font-400 font-13">Nombre</label>
-
-                            @error('profesion')
-                                <i class="fa fa-times  invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
+                            <label for="name_input" class="color-highlight bg-theme font-400 font-13"
+                                style="transition: none;">Nombre</label>
                         </div>
+                        @error('name')
+                            <p class="text-danger line-height-s mx-2 mt-n2">
+                                <i class="fa fa-times invalid color-red-dark  me-2"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
                         <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
+                            <!-- <i class="fa fa-envelope"></i> -->
+                            <i data-lucide="mail" class="lucide-icon lucide-input"></i>
                             <input type="email" class="form-control" placeholder="" name="email"
                                 value="{{ old('email', $usuario->email) }}">
-                            <label for="form1" class="color-highlight font-400 font-13">Email</label>
-
-                            @error('email')
-                                <i class="fa fa-times  invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
+                            <label for="name_input" class="color-highlight bg-theme font-400 font-13"
+                                style="transition: none;">Email</label>                        
                         </div>
-                        <div class="d-flex flex-column mb-4">
-                            <label for="nacimiento" class="ms-2 color-highlight font-400 font-13">Fecha de nacimiento</label>
-                                <div class="input-style has-borders  remove-mb rounded-sm validate-field d-flex flex-row gap-2">
-                                    
+                        @error('email')
+                            <p class="text-danger line-height-s mx-2 mt-n2">
+                                <i class="fa fa-times invalid color-red-dark  me-2"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
+                        <div class="d-flex flex-column mb-3 mt-n1">
+                            <label for="nacimiento" class="ms-2 mb-n2 d-inline-block px-1 line-height-xs color-highlight bg-theme font-400 font-13"
+                                style="z-index: 10;width:fit-content">Fecha de nacimiento</label>
+                            <div class="input-style has-borders  remove-mb rounded-sm validate-field d-flex flex-row gap-2">
                                 {{-- Campo Día --}}
                                 <input type="number" class="text-center form-control"
                                     placeholder="Día" name="dia_nacimiento" required
@@ -109,44 +116,54 @@
 
                             {{-- Bloque de Error Condicional Único --}}
                             @if ($errors->hasAny(['dia_nacimiento', 'mes_nacimiento', 'ano_nacimiento']))
-                                <p class="text-danger mt-1">
+                                <p class="text-danger line-height-s mx-2 mt-2">
+                                    <i class="fa fa-times invalid color-red-dark  me-2"></i>
                                     Por favor, ingresa una fecha valida (debes ser mayor de 12 años).
                                 </p>
                             @endif
-                                                    </div>
-                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                        </div>
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
+                            <i data-lucide="briefcase-business" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control"
                                 placeholder="Ejm: Abogado" name="profesion"
                                 value="{{ old('profesion', $usuario->profesion) }}">
-                            <label for="" class="color-highlight font-400 font-13">Profesion</label>
-
-                            @error('profesion')
-                                <i class="fa fa-times  invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
+                            <label for="name_input" class="color-highlight bg-theme font-400 font-13"
+                                style="transition: none;">Profesión</label>
                         </div>
-                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                        @error('profesion')
+                            <p class="text-danger line-height-s mx-2 mt-n2">
+                                <i class="fa fa-times invalid color-red-dark  me-2"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
+                            <i data-lucide="map-pin-house" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control"
                                 placeholder="Ejm: Tomatitas Av. Principal #134 Porton guindo" name="direccion"
                                 value="{{ old('direccion', $usuario->direccion) }}">
-                            <label for="" class="color-highlight font-400 font-13">Dirección</label>
-
-                            @error('direccion')
-                                <i class="fa fa-times  invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
+                            <label for="name_input" class="color-highlight bg-theme font-400 font-13"
+                                style="transition: none;">Dirección</label>
                         </div>
-                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                        @error('direccion')
+                            <p class="text-danger line-height-s mx-2 mt-n2">
+                                <i class="fa fa-times invalid color-red-dark  me-2"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
+                            <i data-lucide="map-pin-pen" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control" maxlength="50"
                                 placeholder="Ejm: Tomatitas Av. Principal #134 Porton guindo" name="direccion_trabajo"
                                 value="{{ old('direccion_trabajo', $usuario->direccion_trabajo) }}">
-                            <label for="" class="color-highlight font-400 font-13">Dirección de trabajo (opcional)</label>
-
-                            @error('direccion_trabajo')
-                                <i class="fa fa-times  invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
+                            <label for="name_input" class="color-highlight bg-theme font-400 font-13"
+                                style="transition: none;">Dirección de trabajo</label>
                         </div>
+                        @error('direccion_trabajo')
+                            <p class="text-danger line-height-s mx-2 mt-n2">
+                                <i class="fa fa-times invalid color-red-dark  me-2"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
                         {{-- <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
                             <input type="number" class="form-control" placeholder="" name="telf"
                                 value="{{ old('telf', $usuario->telf) }}">
@@ -157,14 +174,14 @@
                                 <p class="text-danger">{{ $message }}</p>
                             @enderror
                         </div> --}}
-                        <div class="d-flex flex-row align-content-center mb-4">
-                            
+                        <div class="d-flex flex-row align-items-center mb-4">
+                            <i data-lucide="users" class="lucide-icon ms-2" style="width: 1.2rem; height: 1.2rem;"></i>
                             <label for="hijos" class="mx-2 color-highlight font-400 font-13">
                                 ¿Tiene hijos?:
                             </label>
                             
                             <input 
-                                class="form-check-input" 
+                                class="form-check-input m-0" 
                                 type="checkbox" 
                                 name="hijos" 
                                 id="hijos"
@@ -174,27 +191,39 @@
                             >
                             
                         </div>
-                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4 position-relative">
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4 position-relative">
+                            <i data-lucide="key-round" class="lucide-icon lucide-input"></i>
                             <input type="password" class="form-control password-input-toggle" placeholder="" name="password" id="new-password">
-                            <label for="new-password" class="color-highlight font-400 font-13">Nueva contraseña</label>
-                            
-                            <i class="fa fa-lock position-absolute end-0 me-3 top-50 translate-middle-y fa-eye" id="toggleIconNew"></i>
-                            
-                            @error('password')
-                                <i class="fa fa-times invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
+                            <label for="name_input" class="color-highlight bg-theme font-400 font-13"
+                                style="transition: none;">Nueva Contraseña</label>
+                            <button type="button"
+                                    class="p-0 m-0 position-absolute end-0 me-3 top-50 translate-middle-y password-toggle-btn"
+                                    id="togglePasswordBtn" aria-label="Mostrar/Ocultar contraseña">
+                                <i data-lucide="lock" id="toggleIconNew" class="lucide-icon" style="width: 1.1rem; height: 1.1rem;"></i>
+                            </button>
                         </div>
+                        @error('password')
+                            <p class="text-danger line-height-s mx-2 mt-n2">
+                                <i class="fa fa-times invalid color-red-dark  me-2"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
 
 
                         <input type="hidden" value="{{ $usuario->id }}" name="idUsuario">
                         <input type="hidden" id="latitud" name="latitud">
                         <input type="hidden" id="longitud" name="longitud">
+                        <button type="submit"
+                            class="btn w-100 bg-highlight rounded-sm shadow-xl btn-m text-uppercase font-900">
+                            Guardar Perfil
+                        </button>
                     </div>
 
-                    <button type="submit"
-                        class="btn btn-full btn-margins bg-highlight mt-3 rounded-sm shadow-xl btn-m text-uppercase font-900 btn-block">Guardar
-                        Perfil</button>
+                    <!-- <button type="submit"
+                        class="btn btn-margins bg-highlight rounded-sm shadow-xl btn-m text-uppercase font-900">
+                        Guardar Perfil
+                    </button> -->
+                    
                 </form>
             </div>
             {{-- <div class="card card-style mb-2 map-full" data-card-height="cover-card" style="height: 573px;">
@@ -205,7 +234,7 @@
                 <div class="content mb-0">
                     <h4>Foto de perfil</h4>
                     <p>
-                        Personaliza tu perfil, nos ayudara a conocerte mejor!
+                        Personaliza tu perfil, nos ayudará a conocerte mejor!
                     </p>
                     <form action="{{ route('subirfoto.perfil') }}" method="POST" enctype="multipart/form-data">
                         @csrf
@@ -297,26 +326,21 @@
     @endpush
     @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const passwordInput = document.getElementById('new-password');
-                const toggleIcon = document.getElementById('toggleIconNew');
+            $(document).ready(function() {
+                const passwordInput = $('#new-password');
+                const toggleBtn = $('#togglePasswordBtn');
 
-                if (passwordInput && toggleIcon) {
-                    toggleIcon.addEventListener('click', function() {
-                        if (passwordInput.type === 'password') {
-                            passwordInput.type = 'text';
-                            
-                            toggleIcon.classList.remove('fa-lock');
-                            toggleIcon.classList.add('fa-lock-open');
-                            
-                        } else {
-                            passwordInput.type = 'password';
-                            
-                            toggleIcon.classList.remove('fa-lock-open');
-                            toggleIcon.classList.add('fa-lock');
-                        }
-                    });
-                }
+                toggleBtn.on('click', function() {
+                    const isPassword = passwordInput.attr('type') === 'password';
+
+                    passwordInput.attr('type', isPassword ? 'text' : 'password');
+
+                    const toggleIcon = $('#toggleIconNew');
+                    
+                    toggleIcon.attr('data-lucide', isPassword ? 'lock-open' : 'lock');
+
+                    reinitializeLucideIcons();
+                });
             });
         </script>
         <script>

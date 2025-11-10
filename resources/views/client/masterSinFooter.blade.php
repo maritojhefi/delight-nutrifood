@@ -66,7 +66,7 @@
             <a href="#" data-menu="menu-main" class="header-icon header-icon-4 "><i class="fas fa-bars"></i></a>
         </div> --}}
         <x-appkit-header/>
-        <div class="page-content">
+        <div id="contenido-cliente" class="page-content">
             @yield('content')
         </div>
 
