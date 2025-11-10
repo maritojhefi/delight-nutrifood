@@ -1,4 +1,4 @@
-<x-card-col tamano="3">
+<x-card-col tamano="12">
     <div class="mb-2">
         <center class="card-intro-title p-2 " style="font-size:15px">Ventas Pendientes</center>
         <div class="p-2" style="max-height: 450px; overflow-y: auto;">

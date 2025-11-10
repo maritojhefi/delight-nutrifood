@@ -12,6 +12,7 @@ use App\Exports\UsersPlanesExport;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Events\RefreshListaPensionadosEvent;
 
 class CocinaDespachePlanes extends Component
 {
@@ -362,6 +363,44 @@ class CocinaDespachePlanes extends Component
             ]
         ]);
     }
+
+    public function marcarComoIngresado($itemId)
+    {
+        try {
+            // Actualizar el registro en plane_user
+            $actualizado = DB::table('plane_user')
+                ->where('id', $itemId)
+                ->update(['cliente_ingresado' => true, 'cliente_ingresado_at' => Carbon::now()]);
+
+            if ($actualizado) {
+                $registro = DB::table('plane_user')->where('id', $itemId)->first();
+                $usuario = User::find($registro->user_id);
+
+                event(new RefreshListaPensionadosEvent('Cliente ' . $usuario->name . ' ha ingresado', 'success'));
+
+                // Despachar evento para actualizar la lista en tiempo real
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'success',
+                    'message' => 'Cliente marcado como ingresado correctamente'
+                ]);
+
+                // Despachar evento para que el modal se abra después de marcar ingreso
+                $this->dispatchBrowserEvent('clienteMarcadoYAbrirModal', [
+                    'itemId' => $itemId
+                ]);
+            } else {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'warning',
+                    'message' => 'No se encontró el registro para actualizar'
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Error al marcar como ingresado: ' . $e->getMessage()
+            ]);
+        }
+    }
     public function restarColecciones(Collection $collectionA, Collection $collectionB): Collection
     {
         $result = $collectionA->mapWithKeys(function ($value, $key) use ($collectionB) {
@@ -454,9 +493,11 @@ class CocinaDespachePlanes extends Component
             })->values();
         }
 
-        // Ordenar dando prioridad a los clientes ingresados (true primero)
-        $coleccion = $coleccion->sortByDesc(function ($item) {
-            return $item['CLIENTE_INGRESADO_AT'] ?? false;
+        // Ordenar dando prioridad a los clientes ingresados (los que ingresaron primero van primero)
+        $coleccion = $coleccion->sortBy(function ($item) {
+            // Si tiene CLIENTE_INGRESADO_AT, usar esa fecha para ordenar ascendentemente
+            // Si no tiene, usar una fecha muy futura para que vaya al final
+            return $item['CLIENTE_INGRESADO_AT'] ?? '9999-12-31 23:59:59';
         })->values();
 
         $coleccionEspera = $coleccion->whereIn('COCINA', ['espera', 'solo-sopa', 'solo-segundo']);

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEgresosTable extends Migration
+class CreateRegistroStockCajasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateEgresosTable extends Migration
      */
     public function up()
     {
-        Schema::create('egresos', function (Blueprint $table) {
+        Schema::create('registro_stock_cajas', function (Blueprint $table) {
             $table->id();
-            $table->string('detalle');
-            $table->integer('caja_id')->unsigned()->nullable();
+            $table->foreignId('caja_id')->constrained('cajas');
+            $table->text('detalle');
+            $table->foreignId('usuario_id')->constrained('users');
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ class CreateEgresosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('egresos');
+        Schema::dropIfExists('registro_stock_cajas');
     }
 }

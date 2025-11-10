@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Carbon\Carbon;
 use App\Models\Caja;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class AperturaDiariaCaja extends Command
 {
@@ -39,23 +40,19 @@ class AperturaDiariaCaja extends Command
      */
     public function handle()
     {
-        $ultimaCaja = Caja::where('sucursale_id',1)->whereDate('created_at',Carbon::today())->first();
-        if(!$ultimaCaja)
-        {
+        $ultimaCaja = Caja::where('sucursale_id', 1)->whereDate('created_at', Carbon::today())->first();
+        if (!$ultimaCaja) {
+            DB::table('cajas')->update(['estado' => 'cerrado']);
             Caja::create([
-                'sucursale_id'=>1,
-                'entrada'=>0,
-                'estado'=>'abierto'
+                'sucursale_id' => 1,
+                'entrada' => 0,
+                'estado' => 'abierto'
             ]);
-            $this->info('Se hizo apertura de la caja en sucursal 1 con entrada de 0 bs -- '.date('d-m-Y h:i:s'));
-        }
-        else
-        {
-            $ultimaCaja->estado="abierto";
+            $this->info('Se hizo apertura de la caja en sucursal 1 con entrada de 0 bs -- ' . date('d-m-Y h:i:s'));
+        } else {
+            $ultimaCaja->estado = "abierto";
             $ultimaCaja->save();
-            $this->info('Ya existe la caja abierta! -- '.date('d-m-Y h:i:s'));
+            $this->info('Ya existe la caja abierta! -- ' . date('d-m-Y h:i:s'));
         }
-        
-        
     }
 }

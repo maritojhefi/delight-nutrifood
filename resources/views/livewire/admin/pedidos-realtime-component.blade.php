@@ -1,91 +1,101 @@
 <div class="col-12">
     @if ($ventas->count() == 0)
-        <div class="alert alert-secondary solid alert-rounded p-1"><strong>Nada por aqui!</strong> Esperando nuevos
-            pedidos... <i class="fa fa-spinner fa-spin"></i>
+        <div class="alert alert-secondary solid alert-rounded p-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+            <strong style="color: white;">🍽️ Nada por aquí!</strong> 
+            <span style="color: white;">Esperando nuevos pedidos...</span> 
+            <i class="fa fa-spinner fa-spin" style="color: white;"></i>
         </div>
     @endif
     @if ($listado == 'infinito')
-        <div class="row flex-nowrap overflow-auto" style="overflow-x: auto; overflow-y: hidden;">
+        <div class="row flex-nowrap overflow-auto pb-2" style="overflow-x: auto; overflow-y: hidden; gap: 10px;">
         @else
             <div class="row">
     @endif
     @foreach ($ventas as $item)
         @if ($listado == 'infinito')
-            <div class="col-sm-3 col-3" style="flex: 0 0 auto; min-width: 280px;">
+            <div class="col-auto" style="flex: 0 0 auto; min-width: clamp(260px, 90vw, 300px);">
             @else
-                <div class="col-sm-6 col-6">
+                <div class="col-12 col-sm-6 col-lg-4 mb-3">
         @endif
-        <div class="card active_users bordeado" id="pedido-{{ $item->id }}">
-            <div class="card-header bg-primary p-1 m-0 ">
-                <h4 class="card-title text-white letra14 text-white">para {{ $item->tipo_entrega }}
-                    @switch($item->tipo_entrega)
-                        @case('mesa')
-                            <i class="fa fa-table"></i> {{ $item->mesa->numero }}
-                        @break
-
-                        @case('delivery')
-                            <i class="fa fa-truck"></i>
-                        @break
-
-                        @case('recoger')
-                            <i class="fa fa-bolt"></i>
-                        @break
-
-                        @default
-                            <i class="fa fa-bolt"></i>
-                        @break
-                    @endswitch
-                </h4>
-                <strong
-                    class="text-white letra12">{{ $item->cliente ? Str::words($item->cliente->name, 2, '') : 'N/A' }}</strong>
+        <div class="card active_users pedido-card" id="pedido-{{ $item->id }}" 
+             style="border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s; border: none; overflow: hidden;">
+            <div class="card-header p-2 m-0" 
+                 style="background: linear-gradient(135deg, 
+                    {{ $item->tipo_entrega == 'mesa' ? '#667eea 0%, #764ba2 100%' : 
+                       ($item->tipo_entrega == 'delivery' ? '#f093fb 0%, #f5576c 100%' : 
+                       '#4facfe 0%, #00f2fe 100%') }}); 
+                    border: none;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="flex-grow-1">
+                        <h5 class="text-white mb-0" style="font-size: clamp(12px, 3vw, 14px); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                            @switch($item->tipo_entrega)
+                                @case('mesa')
+                                    <i class="fa fa-table"></i> Mesa {{ $item->mesa->numero }}
+                                @break
+                                @case('delivery')
+                                    <i class="fa fa-truck"></i> Delivery
+                                @break
+                                @case('recoger')
+                                    <i class="fa fa-shopping-bag"></i> Para llevar
+                                @break
+                                @default
+                                    <i class="fa fa-utensils"></i> {{ ucfirst($item->tipo_entrega) }}
+                                @break
+                            @endswitch
+                        </h5>
+                        <small class="text-white" style="font-size: clamp(10px, 2.5vw, 12px); opacity: 0.95; font-weight: 600;">
+                            {{ $item->cliente ? Str::words($item->cliente->name, 3, '') : 'Cliente sin nombre' }}
+                        </small>
+                    </div>
+                </div>
             </div>
-            <div class="card-body p-2 m-0 letra12">
+            <div class="card-body p-2" style="background: #f8f9fa;">
                 <div class="list-group-flush">
-                    <center class="letra10"><small class="text-muted">Creado
-                            {{ GlobalHelper::timeago($item->created_at) }}</small></center>
+                    <div class="text-center mb-2">
+                        <small class="text-muted" style="font-size: clamp(9px, 2vw, 10px);">
+                            <i class="fa fa-clock"></i> {{ GlobalHelper::timeago($item->created_at) }}
+                        </small>
+                    </div>
                     @if ($item->reservado_at)
-                        <center class="letra12">
-                            <i class="fa fa-clock-o"></i>
+                        <div class="alert alert-info py-1 px-2 mb-2" style="font-size: clamp(10px, 2.5vw, 12px); border-radius: 8px; background: #e3f2fd; border: 1px solid #90caf9;">
+                            <i class="fa fa-calendar-alt"></i>
                             <span id="timer-{{ $item->id }}" data-reserva="{{ $item->reservado_at }}"
-                                class="timer-reserva">
+                                class="timer-reserva fw-bold">
                                 Calculando...
                             </span>
-                        </center>
+                        </div>
                     @endif
                     @foreach ($item->productos as $prod)
-                        <div wire:click="verDetalleItem({{ $prod->pivot->id }})" style="cursor: pointer;"
-                            class="list-group-item bg-transparent d-flex justify-content-between px-0 py-1">
-                            <div class="flex-grow-1">
+                        <div wire:click="verDetalleItem({{ $prod->pivot->id }})" 
+                            class="producto-item list-group-item bg-white d-flex justify-content-between align-items-start px-2 py-2 mb-2" 
+                            style="cursor: pointer; border-radius: 8px; border: 1px solid #e0e0e0; transition: all 0.2s;">
+                            <div class="flex-grow-1" style="min-width: 0;">
                                 @if ($prod->pivot->estado_actual == 'despachado')
-                                    <a href="#">
-                                        <del class="mb-0">{{ Str::limit($prod->nombre, 30) }}</del>
-                                    </a>
+                                    <div class="mb-0" style="font-size: clamp(11px, 2.8vw, 13px); font-weight: 600; color: #666;">
+                                        <del>{{ Str::limit($prod->nombre, 25) }}</del>
+                                    </div>
                                 @else
-                                    <a href="#">
-                                        <p class="mb-0">{{ Str::limit($prod->nombre, 30) }}</p>
-                                    </a>
+                                    <div class="mb-0" style="font-size: clamp(11px, 2.8vw, 13px); font-weight: 600; color: #333;">
+                                        {{ Str::limit($prod->nombre, 25) }}
+                                    </div>
                                 @endif
 
-
                                 {{-- Indicadores de estado --}}
-                                <div class="d-flex gap-1 mt-1">
+                                <div class="d-flex flex-wrap gap-1 mt-1" style="gap: 4px;">
                                     @if ($prod->contadores_estados['pendiente'] > 0)
-                                        <span class="badge badge-xxs light badge-danger"
-                                            style="font-size: 15px !important; padding: 2px 4px;"
+                                        <span class="badge-estado badge-danger-estado"
                                             title="{{ $prod->contadores_estados['pendiente'] }} item(s) pendiente(s)">
                                             ⏳ {{ $prod->contadores_estados['pendiente'] }}
                                         </span>
                                     @endif
                                     @if ($prod->contadores_estados['preparacion'] > 0)
-                                        <span class="badge badge-xxs light badge-warning"
-                                            style="font-size: 15px !important; padding: 2px 4px;"
+                                        <span class="badge-estado badge-warning-estado"
                                             title="{{ $prod->contadores_estados['preparacion'] }} item(s) en preparación">
                                             🔥 {{ $prod->contadores_estados['preparacion'] }}
                                         </span>
                                     @endif
                                     @if ($prod->contadores_estados['despachado'] > 0)
-                                        <span class="badge badge-xxs light badge-success"
-                                            style="font-size: 15px !important; padding: 2px 4px;"
+                                        <span class="badge-estado badge-success-estado"
                                             title="{{ $prod->contadores_estados['despachado'] }} item(s) listo(s)">
                                             ✅ {{ $prod->contadores_estados['despachado'] }}
                                         </span>
@@ -93,15 +103,18 @@
                                 </div>
                             </div>
 
-                            <p class="mb-0 align-self-start letra14"><strong>Total:
-                                    {{ $prod->pivot->cantidad }}</strong></p>
+                            <div class="ms-2" style="font-size: clamp(11px, 2.8vw, 13px); font-weight: 700; color: #667eea; white-space: nowrap;">
+                                x{{ $prod->pivot->cantidad }}
+                            </div>
                         </div>
                     @endforeach
                 </div>
             </div>
-            <div class="alert solid p-1 mx-2 d-none ps-3" style="line-height: 15px"
-                id="alert-pedido-{{ $item->id }}"><strong><i class="fa fa-spinner fa-spin"></i> </strong> <span
-                    class="letra12" id="alert-pedido-text-{{ $item->id }}">Pedido actualizado.</span></div>
+            <div class="alert solid p-1 mx-2 mb-2 d-none" style="line-height: 15px; border-radius: 8px; font-size: 11px;"
+                id="alert-pedido-{{ $item->id }}">
+                <strong><i class="fa fa-spinner fa-spin"></i></strong> 
+                <span id="alert-pedido-text-{{ $item->id }}">Pedido actualizado.</span>
+            </div>
         </div>
 </div>
 @endforeach
@@ -109,49 +122,165 @@
 
 @push('scripts')
     <style>
+        /* Animaciones de pulso para notificaciones */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(32, 201, 151, 0.7);
+            }
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 0 0 10px rgba(32, 201, 151, 0);
+            }
+        }
+        .swal2-content{
+            padding: 0 !important;
+            margin: 0 !important;
+        }
         .onda-success {
-            border-style: solid;
-            border-color: #20c996b3;
-            border-width: 5px;
-            border-radius: 15px;
+            border: 3px solid #20c997;
+            border-radius: 12px;
             animation: pulse 1.5s infinite;
-
         }
 
         .onda-warning {
-            border-style: solid;
-            border-color: #fe8630b3;
-            border-width: 5px;
-            border-radius: 15px;
+            border: 3px solid #fe8630;
+            border-radius: 12px;
             animation: pulse 1.5s infinite;
         }
 
         .onda-info {
-            border-style: solid;
-            border-color: #3a82efb3;
-            border-width: 5px;
-            border-radius: 15px;
+            border: 3px solid #3a82ef;
+            border-radius: 12px;
             animation: pulse 1.5s infinite;
         }
 
         .onda-danger {
-            border-style: solid;
-            border-color: #f72b50b3;
-            border-width: 5px;
-            border-radius: 15px;
+            border: 3px solid #f72b50;
+            border-radius: 12px;
             animation: pulse 1.5s infinite;
         }
 
-        /* Estilos para indicadores de estado */
-        .gap-1 {
-            gap: 4px;
+        /* Estilos para las tarjetas de pedidos */
+        .pedido-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
         }
 
-        .badge-xxs {
-            font-size: 9px !important;
-            padding: 2px 5px !important;
-            border-radius: 3px;
-            font-weight: 600;
+        .producto-item:hover {
+            background: #f0f0f0 !important;
+            transform: translateX(4px);
+            border-color: #667eea !important;
+        }
+
+        /* Badges de estado personalizados */
+        .badge-estado {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: clamp(9px, 2.2vw, 11px);
+            font-weight: 700;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .badge-danger-estado {
+            background: linear-gradient(135deg, #f72b50 0%, #dc3545 100%);
+            color: white;
+            box-shadow: 0 2px 4px rgba(247, 43, 80, 0.3);
+        }
+
+        .badge-warning-estado {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: #333;
+            box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+        }
+
+        .badge-success-estado {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+        }
+
+        /* Responsive para móvil */
+        @media (max-width: 768px) {
+            .pedido-card {
+                margin-bottom: 12px;
+            }
+            
+            .producto-item {
+                padding: 8px !important;
+            }
+        }
+
+        /* Scrollbar personalizado para listado horizontal */
+        .overflow-auto::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .overflow-auto::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .overflow-auto::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        .overflow-auto::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        /* Scrollbar para modal de detalles */
+        .detalle-items-modal ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .detalle-items-modal ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .detalle-items-modal ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        .detalle-items-modal ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        /* Estilos adicionales para el modal */
+        .detalle-items-popup {
+            border-radius: 16px !important;
+        }
+
+        /* Animación de entrada para items */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .detalle-items-modal .card {
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        /* Mejora en botones del modal */
+        .detalle-items-modal .btn {
+            transition: all 0.2s ease;
+        }
+
+        .detalle-items-modal .btn:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
     </style>
     <script>
@@ -290,10 +419,10 @@
             // Generar HTML para cada item
             let itemsHTML = '';
             items.forEach((item, index) => {
-                const estadoClass = {
-                    'pendiente': 'badge-danger',
-                    'preparacion': 'badge-warning',
-                    'despachado': 'badge-success'
+                const estadoColors = {
+                    'pendiente': { bg: '#dc3545', light: '#f8d7da', text: '#721c24' },
+                    'preparacion': { bg: '#ffc107', light: '#fff3cd', text: '#856404' },
+                    'despachado': { bg: '#28a745', light: '#d4edda', text: '#155724' }
                 };
 
                 const estadoIcon = {
@@ -301,6 +430,8 @@
                     'preparacion': '🔥',
                     'despachado': '✅'
                 };
+
+                const currentColor = estadoColors[item.estado];
 
                 // Calcular tiempo transcurrido
                 let tiempoHTML = '';
@@ -320,100 +451,110 @@
                         tiempoTranscurrido = 'Recién agregado';
                     }
 
-                    // Formatear hora
                     const horaFormateada = agregado.toLocaleTimeString('es-BO', {
                         hour: '2-digit',
                         minute: '2-digit'
                     });
 
                     tiempoHTML = `
-                            <div class="d-flex justify-content-between text-muted" style="font-size: 11px;">
-                                <span>📅 ${horaFormateada}</span>
-                                <span class="fw-bold ${diffMins > 30 ? 'text-danger' : ''}">${tiempoTranscurrido}</span>
-                            </div>
-                        `;
+                        <div class="d-flex justify-content-between text-muted mb-2" style="font-size: clamp(9px, 2.5vw, 11px); background: #f8f9fa; padding: 6px 10px; border-radius: 6px;">
+                            <span>📅 ${horaFormateada}</span>
+                            <span class="fw-bold ${diffMins > 30 ? 'text-danger' : 'text-success'}">${tiempoTranscurrido}</span>
+                        </div>
+                    `;
                 }
 
                 // Lista de adicionales
                 let adicionalesHTML = '';
                 if (item.adicionales && item.adicionales.length > 0) {
-                    adicionalesHTML = '<ul class="mb-2" style="font-size: 12px; padding-left: 20px;">';
+                    adicionalesHTML = `<div style="background: #f8f9fa; padding: 8px 12px; border-radius: 6px; margin-bottom: 10px;">
+                        <strong style="font-size: clamp(10px, 2.5vw, 12px); color: #495057; display: block; margin-bottom: 6px;">📋 Adicionales:</strong>
+                        <ul class="mb-0" style="font-size: clamp(10px, 2.5vw, 12px); padding-left: 20px; margin: 0;">`;
                     item.adicionales.forEach(adicional => {
-                        adicionalesHTML += `<li class="text-black">${adicional}</li>`;
+                        adicionalesHTML += `<li class="text-dark fw-bold letra14" style="margin-bottom: 3px;">${adicional}</li>`;
                     });
-                    adicionalesHTML += '</ul>';
+                    adicionalesHTML += '</ul></div>';
                 } else {
-                    adicionalesHTML = '<p class="text-muted mb-2" style="font-size: 12px;">Sin adicionales</p>';
+                    adicionalesHTML = '<div style="background: #f8f9fa; padding: 8px 12px; border-radius: 6px; margin-bottom: 10px; font-size: clamp(10px, 2.5vw, 12px); color: #6c757d; text-align: center;">Sin adicionales</div>';
                 }
 
-                // Botones de estado
+                // Botones de estado - responsive
                 const botonesEstado = `
-                        <div class="btn-group btn-group-sm w-100 mt-2" role="group">
+                    <div class="d-grid gap-2 mt-2">
+                        <div class="btn-group btn-group-sm" role="group" style="display: flex; flex-wrap: wrap; gap: 4px;">
                             <button type="button" 
                                     class="btn ${item.estado === 'pendiente' ? 'btn-danger' : 'btn-outline-danger'}" 
                                     onclick="cambiarEstadoItem(${producto_venta_id}, ${item.indice}, 'pendiente')"
+                                    style="flex: 1; min-width: 90px; font-size: clamp(9px, 2.2vw, 11px); padding: 6px 8px; border-radius: 6px;"
                                     ${item.estado === 'pendiente' ? 'disabled' : ''}>
                                 ⏳ Pendiente
                             </button>
                             <button type="button" 
                                     class="btn ${item.estado === 'preparacion' ? 'btn-warning' : 'btn-outline-warning'}" 
                                     onclick="cambiarEstadoItem(${producto_venta_id}, ${item.indice}, 'preparacion')"
+                                    style="flex: 1; min-width: 90px; font-size: clamp(9px, 2.2vw, 11px); padding: 6px 8px; border-radius: 6px;"
                                     ${item.estado === 'preparacion' ? 'disabled' : ''}>
                                 🔥 Preparación
                             </button>
                             <button type="button" 
                                     class="btn ${item.estado === 'despachado' ? 'btn-success' : 'btn-outline-success'}" 
                                     onclick="cambiarEstadoItem(${producto_venta_id}, ${item.indice}, 'despachado')"
+                                    style="flex: 1; min-width: 90px; font-size: clamp(9px, 2.2vw, 11px); padding: 6px 8px; border-radius: 6px;"
                                     ${item.estado === 'despachado' ? 'disabled' : ''}>
                                 ✅ Listo
                             </button>
                         </div>
-                    `;
+                    </div>
+                `;
 
                 itemsHTML += `
-                        <div class="card mb-3" style="border-left: 4px solid ${item.estado === 'pendiente' ? '#dc3545' : item.estado === 'preparacion' ? '#ffc107' : '#28a745'};">
-                            <div class="card-body p-3">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h6 class="mb-0">Item ${item.indice}</h6>
-                                    <span class="badge ${estadoClass[item.estado]}">${estadoIcon[item.estado]} ${item.estado.toUpperCase()}</span>
-                                </div>
-                                ${tiempoHTML}
-                                <hr class="my-2">
-                                <strong style="font-size: 13px; color: black;">Adicionales:</strong>
-                                ${adicionalesHTML}
-                                ${botonesEstado}
+                    <div class="card mb-3" style="border: none; border-left: 4px solid ${currentColor.bg}; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-radius: 10px; overflow: hidden;">
+                        <div class="card-body" style="padding: clamp(10px, 3vw, 16px);">
+                            <div class="d-flex justify-content-between align-items-center mb-2" style="flex-wrap: wrap; gap: 8px;">
+                                <h6 class="mb-0" style="font-size: clamp(12px, 3vw, 15px); font-weight: 700; color: #333;">Item ${item.indice}</h6>
+                                <span style="background: ${currentColor.bg}; color: white; padding: 4px 10px; border-radius: 8px; font-size: clamp(9px, 2.2vw, 11px); font-weight: 700; white-space: nowrap;">
+                                    ${estadoIcon[item.estado]} ${item.estado.toUpperCase()}
+                                </span>
                             </div>
+                            ${tiempoHTML}
+                            ${adicionalesHTML}
+                            ${botonesEstado}
                         </div>
-                    `;
+                    </div>
+                `;
             });
 
             // Agregar observación si existe
             let observacionHTML = '';
             if (observacion && observacion.trim() !== '') {
                 observacionHTML = `
-                    <div class="alert alert-warning mb-3" style="background-color: #fff3cd;">
-                        <strong style="color: #856404;">📝 Observación:</strong>
-                        <p class="mb-0 mt-1" style="color: #856404;">${observacion}</p>
+                    <div class="alert mb-3" style="background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%); border: 2px solid #ffc107; border-radius: 10px; padding: clamp(10px, 3vw, 16px);">
+                        <strong style="color: #856404; font-size: clamp(11px, 2.8vw, 13px); display: block; margin-bottom: 6px;">📝 Observación del cliente:</strong>
+                        <p class="mb-0" style="color: #856404; font-size: clamp(10px, 2.5vw, 12px); line-height: 1.4;">${observacion}</p>
                     </div>
                 `;
             }
 
             Swal.fire({
-                title: `${producto_nombre}`,
+                title: `<div style="font-size: clamp(14px, 4vw, 18px); font-weight: 700; color: white; line-height: 1.2;">${producto_nombre}</div>`,
                 html: `
-                        <div class="text-start">
-                            <div class="alert alert-info mb-3">
-                                <strong>Total de items:</strong> ${cantidad_total}
-                            </div>
-                            ${observacionHTML}
+                    <div class="text-start" style="padding: 0;">
+                        <div class="alert alert-info mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 10px; padding: clamp(8px, 2.5vw, 12px); text-align: center;">
+                            <strong style="color: white; font-size: clamp(11px, 2.8vw, 14px);">🍽️ Total de items: ${cantidad_total}</strong>
+                        </div>
+                        ${observacionHTML}
+                        <div style="max-height: 60vh; overflow-y: auto; padding-right: 4px;">
                             ${itemsHTML}
                         </div>
-                    `,
-                width: '600px',
+                    </div>
+                `,
+                width: 'clamp(300px, 95vw, 600px)',
+                padding: 'clamp(12px, 3vw, 20px)',
                 showCloseButton: true,
                 showConfirmButton: false,
                 customClass: {
-                    container: 'detalle-items-modal'
+                    container: 'detalle-items-modal',
+                    popup: 'detalle-items-popup'
                 }
             });
         }
@@ -437,40 +578,55 @@
 
         // Función para actualizar visualmente un item sin recargar el modal
         function actualizarEstadoItemEnModal(indice, nuevoEstado) {
+            // Colores por estado
+            const estadoColors = {
+                'pendiente': { bg: '#dc3545', light: '#f8d7da', text: '#721c24' },
+                'preparacion': { bg: '#ffc107', light: '#fff3cd', text: '#856404' },
+                'despachado': { bg: '#28a745', light: '#d4edda', text: '#155724' }
+            };
+
+            const estadoIcon = {
+                'pendiente': '⏳',
+                'preparacion': '🔥',
+                'despachado': '✅'
+            };
+
+            const currentColor = estadoColors[nuevoEstado];
+
             // Encontrar la card del item
             const cards = document.querySelectorAll('.detalle-items-modal .card');
             cards.forEach(card => {
                 const titulo = card.querySelector('h6');
-                if (titulo && titulo.textContent === `Item ${indice}`) {
-                    // Actualizar badge de estado
-                    const badge = card.querySelector('.badge');
-                    const estadoClass = {
-                        'pendiente': 'badge-danger',
-                        'preparacion': 'badge-warning',
-                        'despachado': 'badge-success'
-                    };
-                    const estadoIcon = {
-                        'pendiente': '⏳',
-                        'preparacion': '🔥',
-                        'despachado': '✅'
-                    };
+                if (titulo && titulo.textContent.trim() === `Item ${indice}`) {
+                    
+                    // 1. Actualizar el borde izquierdo de la card
+                    card.style.borderLeftColor = currentColor.bg;
 
-                    badge.className = `badge ${estadoClass[nuevoEstado]}`;
-                    badge.textContent = `${estadoIcon[nuevoEstado]} ${nuevoEstado.toUpperCase()}`;
+                    // 2. Actualizar el badge de estado (el span con el ícono)
+                    const cardBody = card.querySelector('.card-body');
+                    const headerDiv = cardBody.querySelector('.d-flex');
+                    const badge = headerDiv.querySelector('span[style*="background"]');
+                    
+                    if (badge) {
+                        badge.style.background = currentColor.bg;
+                        badge.textContent = `${estadoIcon[nuevoEstado]} ${nuevoEstado.toUpperCase()}`;
+                    }
 
-                    // Actualizar color del borde izquierdo
-                    const borderColor = nuevoEstado === 'pendiente' ? '#dc3545' :
-                        nuevoEstado === 'preparacion' ? '#ffc107' : '#28a745';
-                    card.style.borderLeftColor = borderColor;
-
-                    // Actualizar botones
+                    // 3. Actualizar los botones
                     const btnGroup = card.querySelector('.btn-group');
                     const buttons = btnGroup.querySelectorAll('button');
 
                     buttons.forEach(btn => {
                         const btnText = btn.textContent.trim();
 
-                        // Pendiente
+                        // Resetear estilos inline para que las clases Bootstrap funcionen
+                        btn.style.flex = '1';
+                        btn.style.minWidth = '90px';
+                        btn.style.fontSize = 'clamp(9px, 2.2vw, 11px)';
+                        btn.style.padding = '6px 8px';
+                        btn.style.borderRadius = '6px';
+
+                        // Actualizar clases según el estado
                         if (btnText.includes('Pendiente')) {
                             if (nuevoEstado === 'pendiente') {
                                 btn.className = 'btn btn-danger';
@@ -480,7 +636,6 @@
                                 btn.disabled = false;
                             }
                         }
-                        // Preparación
                         else if (btnText.includes('Preparación')) {
                             if (nuevoEstado === 'preparacion') {
                                 btn.className = 'btn btn-warning';
@@ -490,7 +645,6 @@
                                 btn.disabled = false;
                             }
                         }
-                        // Listo
                         else if (btnText.includes('Listo')) {
                             if (nuevoEstado === 'despachado') {
                                 btn.className = 'btn btn-success';
@@ -501,6 +655,13 @@
                             }
                         }
                     });
+
+                    // 4. Añadir una animación visual de feedback
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        card.style.transform = 'scale(1)';
+                    }, 300);
                 }
             });
         }
