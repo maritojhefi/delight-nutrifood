@@ -51,6 +51,7 @@
         }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="{{ asset('js/app.js') }}" defer></script>
     @stack('header')
 </head>
 
@@ -77,8 +78,8 @@
             data-menu-effect="menu-over">
             @include('client.partials.menu-colors')
         </div>
-        <div id="menu-main" class="menu menu-box-right menu-box-detached rounded-m" data-menu-width="260"
-            data-menu-active="nav-pages" data-menu-effect="menu-over">
+        <div id="menu-main" class="menu menu-box-left menu-box-detached rounded-0 d-flex flex-column"
+            data-menu-width="260" data-menu-active="nav-pages" data-menu-effect="menu-over" style="z-index: 2000;">
             @include('client.partials.menu-sidebar')
         </div>
     </div>

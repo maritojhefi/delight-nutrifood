@@ -146,8 +146,7 @@ Route::get('perfil/editar', [App\Http\Controllers\MiperfilController::class, 're
     ->name('llenarDatosPerfil');
 Route::post('perfil/guardarPerfilFaltante', [
     App\Http\Controllers\MiperfilController::class,
-    'guardar
-PerfilFaltante',
+    'guardarPerfilFaltante',
 ])
     ->middleware('auth')
     ->name('guardarPerfilFaltante');
@@ -289,6 +288,7 @@ Route::prefix('/usuario')
         Route::post('/verificar-numero', [UsuarioController::class, 'verificarNumero'])->name('verificar-numero');
         Route::post('/enviar-codigo-verificacion', [UsuarioController::class, 'enviarCodigoVerificacion'])->name('enviar-codigo-verificacion');
         Route::post('/verificar-codigo-otp', [UsuarioController::class, 'verificarCodigoOTP'])->name('verificar-codigo-otp');
+        Route::post('/iniciar-sesion-otp', [UsuarioController::class, 'IniciarSesionOTP'])->name('iniciar-sesion-otp');
 
         Route::get('/actualizado', function () {
             return view('auth.registrado');

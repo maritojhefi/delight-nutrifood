@@ -34,6 +34,7 @@
                 selectable: true,
                 //eventContent: { html: '<i>some html</i>' },
                 // Cada evento es una construccion de url para mostrar plan
+                // Cada evento es una construccion de url para mostrar plan
                 events: "{{ $path }}/miperfil/mostrar/" + {{ $plan->id }} + "/" +
                     {{ $usuario->id }},
 
@@ -44,6 +45,7 @@
 
                 eventClick: function(info) {
                     var evento = info.event;
+                    // Al hacer click en un evento, se realiza la solicitud a la url
                     // Al hacer click en un evento, se realiza la solicitud a la url
                     axios.get('{{ $path }}/miperfil/editar/' + info.event.id).
                     then(
@@ -59,6 +61,7 @@
                                 toastID = new bootstrap.Toast(toastID);
                                 toastID.show();
                             }
+                            else if (respuesta.data.estado == "pendiente" && respuesta.data
                             else if (respuesta.data.estado == "pendiente" && respuesta.data
                                 .title !=
                                 "feriado") {
@@ -86,6 +89,7 @@
 
 
             });
+            console.log("Info calendario a renderizar: ", calendar);
             console.log("Info calendario a renderizar: ", calendar);
             calendar.render();
             window.onload = function() {

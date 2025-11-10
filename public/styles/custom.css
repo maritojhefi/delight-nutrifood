@@ -153,10 +153,10 @@
     font-size: 14px;
 }
 
-.card.login-card form input {
+/* .card.login-card form input {
     font-size: 14px !important;
     padding-left: 2.0rem !important;
-}
+} */
 
 .card.signin-card form input {
     font-size: 14px !important;
@@ -308,11 +308,11 @@ hover-blue:hover {
     background-color: #4ECDC4;
 }
 
-.password-toggle {
+/* .password-toggle {
     color: #6c757d;
     padding: 0.375rem 0.75rem;
     font-size: 0.875rem;
-}
+} */
 
 .password-toggle:hover {
     color: #4ECDC4;
@@ -1232,6 +1232,24 @@ hover-blue:hover {
 
 .tag-info-popover:popover-open {
     position: absolute;
+}
+
+/* Targets the browser-specific icon in password fields */
+#password-input::-ms-reveal,
+#password-input::-ms-clear {
+    display: none !important;
+}
+
+/* For Chrome/Safari/Edge, use the more common approach
+   to generally hide default styles and autofill background */
+#password-input {
+    /* Prevents the eye icon in some specific browser versions/setups */
+    -webkit-text-security: none;
+    
+    /* Hides the default clear button/reveal button added by some browsers */
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
 }
 
 /*
