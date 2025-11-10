@@ -80,16 +80,17 @@
                         <div class="d-flex flex-column mb-3 mt-n1">
                             <label for="nacimiento" class="ms-2 mb-n2 d-inline-block px-1 line-height-xs color-highlight bg-theme font-400 font-13"
                                 style="z-index: 10;width:fit-content">Fecha de nacimiento</label>
-                            <div class="input-style has-borders  remove-mb rounded-sm validate-field d-flex flex-row gap-2">
+                            <div class="input-style has-borders remove-mb rounded-sm validate-field d-flex flex-row gap-2">
                                 {{-- Campo Día --}}
                                 <input type="number" class="text-center form-control"
                                     placeholder="Día" name="dia_nacimiento" required
+                                    min="1" max="31"
                                     value="{{ old('dia_nacimiento', explode('-', $usuario->nacimiento)[2]) }}"
+                                    oninput="if(this.value > 31) this.value = 31; if(this.value < 1) this.value = 1;"
                                 >
 
                                 {{-- Campo Mes (Select) --}}
-                                <select class="text-center form-control" name="mes_nacimiento"
-                                    required>
+                                <select class="text-center form-control" name="mes_nacimiento" required>
                                     <option value="" disabled selected>Mes</option>
                                     @php
                                         $selectedMonth = explode('-', $usuario->nacimiento)[1];
@@ -109,15 +110,22 @@
                                 </select>
 
                                 {{-- Campo Año --}}
+                                @php
+                                    $minAge = 0; // Edad mínima requerida
+                                    $maxYear = date('Y') - $minAge;
+                                @endphp
                                 <input type="number" class="text-center form-control" placeholder="Año"
                                     name="ano_nacimiento" required
-                                    value="{{ old('ano_nacimiento', explode('-', $usuario->nacimiento)[0]) }}">
+                                    max="{{ $maxYear }}"
+                                    value="{{ old('ano_nacimiento', explode('-', $usuario->nacimiento)[0]) }}"
+                                    oninput="const maxYear = {{ $maxYear }}; if(this.value > maxYear) this.value = maxYear; if(this.value.length > 4) this.value = this.value.slice(0, 4);"
+                                >
                             </div>
 
                             {{-- Bloque de Error Condicional Único --}}
                             @if ($errors->hasAny(['dia_nacimiento', 'mes_nacimiento', 'ano_nacimiento']))
                                 <p class="text-danger line-height-s mx-2 mt-2">
-                                    <i class="fa fa-times invalid color-red-dark  me-2"></i>
+                                    <i class="fa fa-times invalid color-red-dark me-2"></i>
                                     Por favor, ingresa una fecha valida (debes ser mayor de 12 años).
                                 </p>
                             @endif
