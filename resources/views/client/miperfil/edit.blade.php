@@ -408,6 +408,53 @@
             class="btn btn-m btn-full m-3 rounded-xl text-uppercase font-900 shadow-s bg-green-dark">Ir a mi perfil</a>
     @endif
 
+    @push('modals')
+    <div id="menu-verificacion-cambionumero" class="menu menu-box-modal rounded-m"
+    style="display: block; width: 90%; height: auto;">
+        <div class="card card-style p-0 m-0 pb-3">
+            <div class="card-header p-0">
+                <div class="menu-title">
+                    <p class="color-highlight">Delight-Nutrifood</p>
+                    <h1 class="font-20">Verificación para cambiar número telefónico</h1>
+                    <a href="#" class="close-menu"><i class="fa fa-times-circle"></i></a>
+                </div>
+            </div>
+            <div class="content mb-3">
+                <p>
+                    Por favor, ingrese el código enviado a su WhatsApp para cambiar su número telefónico registrado
+                </p>
+                <div class="text-center mx-n3">
+                    <form action="" id="form-codigo-verificacion-cambionumero">
+                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
+                            value="" placeholder="●">
+                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
+                            value="" placeholder="●">
+                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
+                            value="" placeholder="●">
+                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
+                            value="" placeholder="●">
+                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
+                            value="" placeholder="●">
+                    </form>
+                </div>
+                <p class="text-center my-3 font-11">
+                    ¿No ha recibido un código aún?
+                    <a href="#" id="reenviar-codigo">
+                        Reenviar código
+                    </a>
+                </p>
+                <div class="d-flex flex-row justify-content-evenly">
+                    <a href="#" class="close-menu btn btn-s font-15 shadow-l rounded-s text-uppercase font-900 bg-delight-red color-white" >Cancelar</a>
+                    <button type="button" id="verificar-codigo-btn-cambionumero"
+                        class="btn btn-s font-15 shadow-l rounded-s validador-ingresar text-uppercase font-900 bg-mint-dark color-white">
+                        Verificar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endpush
+
     @push('header')
         <!-- ESTILOS SLIM-SELECT -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slim-select@2/dist/slimselect.min.css" />
@@ -482,6 +529,7 @@
             let digitosPais = null;
             let validacionEnProgreso = false;
             let timeoutValidacion = null;
+            let codigoVerificacion = null;
 
             // ============= ELEMENTOS DEL DOM =============
             const selectorPaisId = 'selector-codigo_pais-perfil';
@@ -640,7 +688,91 @@
                 }
             };
 
+            // ============= ENVÍO DE CÓDIGO CON AXIOS =============
+            
+            const envioOTPCambioNumero = async() => {
+                // Realizar el envío del código
+                const telefono = $(inputTelefono).val();
+                const codigoPais = selectorPais.val();
+
+                $('#reenviar-codigo').off('click').on('click', function(e) {
+                    e.preventDefault();
+                    envioOTPCambioNumero();
+                });
+
+                $('#verificar-codigo-btn-cambionumero').on('click', function() {
+                    verificarCodigoIngreso();
+                });
+
+                try {
+                    const response = await axios.post('{{ route("usuario.enviar-codigo-verificacion") }}', {
+                        telefono: telefono,
+                        codigoPais: codigoPais,
+                        digitosPais: digitosPais,
+                        operacion: 'cambio_telefono_perfil'
+                    }, {
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    });
+                    if (response.data.status == "success") {
+                        codigoVerificacion = response.codigo_generado;
+                        mostrarModalOTP();
+                        // Revelar menu OTP cambio numero
+                    }
+                } catch (error) {
+                    console.error("Ocurrió un error al enviar el otp para cambiar numero telefonico: ", error);
+                }
+            }
+
+            const validarOTPCambioNumero = (codigo) => {
+                const claseSolicitud = '#form-codigo-verificacion-ingreso'
+                const inputs = document.querySelectorAll(`${claseSolicitud} .otp`);
+                let codigoCompleto = '';
+                const telefono = $(inputTelefono).val();
+                const codigoPais = selectorPais.val();
+
+                inputs.forEach((input, index) => {
+                    const valor = input.value.trim();
+                    if (valor) {
+                        codigoCompleto += valor;
+                    } else {
+                        // console.log(`Input ${index + 1} está vacío`);
+                    }
+                });
+
+                if (codigoCompleto.length === 5) {
+                    // enviarCodigoVerificacionIngreso(codigoCompleto);
+                    // return codigoCompleto;   
+
+                    const response = await axios.post('{{ route("usuario.cambiar-numero-otp") }}', {
+                        // Front-end property names use camelCase:
+                        codigo: codigo, // User input code
+                        codigoGenerado: codigoVerificacion, // Generated verification code
+                        nuevoTelefonoNacional: telefono,
+                        nuevoCodigoPais: codigoPais,
+                        userId: {{ $usuario->id }}
+                    }, {
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    });
+
+                } else {
+                    alert('Por favor completa todos los campos del código');
+                    return null;
+                }
+            }
+
+            
+
             // ============= UTILIDADES =============
+            btnSubmit.on('click', function(e) {
+                console.log("Click en botón para enviar código verificación ingreso");
+                e.preventDefault();
+                envioOTPCambioNumero();
+            });
+
             const extraerMensajeError = (errors) => {
                 if (errors.telefono) return errors.telefono[0];
                 if (errors.general) return errors.general[0];
@@ -656,6 +788,18 @@
                 btnSubmit.prop('disabled', true).addClass('d-none');
                 inputTelefono.removeClass('is-valid is-invalid');
             };
+
+            const mostrarModalOTP = () => {
+                console.log("Revelando modal otp cambiar numero cliente");
+                $('.menu-hider').addClass('menu-active');
+                $('#menu-verificacion-cambionumero').addClass('menu-active');
+            }
+
+            const ocultarModalOTP = () => {
+                console.log("Ocultando modal otp cambiar numero cliente");
+                $('#menu-verificacion-cambionumero').removeClass('menu-active');
+                $('.menu-hider').removeClass('menu-active');
+            }
 
             const mostrarError = (mensaje) => {
                 inputTelefono.addClass('is-invalid');
@@ -677,6 +821,18 @@
             // ============= INICIALIZACIÓN =============
             detectarDigitosPais();
         });
+
+        const mostrarModalOTP = () => {
+            console.log("Revelando modal otp cambiar numero cliente");
+            $('.menu-hider').addClass('menu-active');
+            $('#menu-verificacion-cambionumero').addClass('menu-active');
+        }
+
+        const ocultarModalOTP = () => {
+            console.log("Ocultando modal otp cambiar numero cliente");
+            $('#menu-verificacion-cambionumero').removeClass('menu-active');
+            $('.menu-hider').removeClass('menu-active');
+        }
         </script>
         <script>
             $(document).ready(function() {
