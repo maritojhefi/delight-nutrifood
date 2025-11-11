@@ -36,40 +36,98 @@
             </div>
         </div>
 
-        <card class="card card-style">
+        <card class="card card-style py-2">
             <div class="card-header bg-theme border-0">
-                <h2 class="mb-0">Cambiar Número telefónico</h2>
-                <!-- <small class="mb-0">Descripción de la importancia en el cambio del número telefónico</small> -->
+                <h2 class="mb-0">Cambiar Nro Telefónico</h2>
+                <!-- <small class="text-muted">Ingrese su nuevo número para recibir código de verificación</small> -->
             </div>
-            <div class="card-body">
-                <div class="d-flex flex-row gap-1 justify-content-evenly align-items-center">
-                    <div class="d-flex flex-column position-relative">
-                        <label for="selector-codigo_pais-perfil"
-                            class="position-absolute d-inline-block font-13 color-highlight line-height-xs bg-theme ms-2 px-1" 
-                            style="z-index: 10; width: fit-content; top: -7px"
-                        >Código país</label>
-                        <x-countrycode-select id="selector-codigo_pais-perfil" />
+            
+            <form id="form-cambiar-telefono" method="POST" action="{{ route('usuario.verificar-numero') }}">
+                @csrf
+                @method('PUT')
+                
+                <div class="card-body">
+                    <div class="d-flex flex-row gap-2 justify-content-evenly align-items-center">
+                        <!-- Selector de Código de País -->
+                        <div class="d-flex flex-column position-relative" style="min-width: 35%;">
+                            <label for="selector-codigo_pais-perfil"
+                                class="position-absolute d-inline-block font-13 color-highlight line-height-xs bg-theme ms-2 px-1" 
+                                style="z-index: 10; width: fit-content; top: -7px">
+                                Código país
+                            </label>
+                            <x-countrycode-select id="selector-codigo_pais-perfil" name="codigo_pais" />
+                        </div>
+
+                        <!-- Input de Teléfono -->
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field remove-mb" 
+                            style="min-width: 59%;">
+                            <i data-lucide="smartphone" class="lucide-icon lucide-input"></i>
+                            <input type="tel" 
+                                class="form-control text-center font-14"
+                                placeholder="Ingrese su número" 
+                                name="telefono_nacional"
+                                id="telefono_nacional"
+                                inputmode="numeric"
+                                pattern="[0-9]*"
+                                autocomplete="tel-national"
+                                style="height: 40px;"
+                                value="{{ old('telefono_nacional', $usuario->telf) }}"
+                                required>
+                            <label for="telefono_nacional" 
+                                class="color-highlight bg-theme font-400 font-13"
+                                style="transition: none;">
+                                Teléfono
+                            </label>
+                            
+                            <!-- Feedback de validación -->
+                            <!-- <div class="valid-feedback">
+                                <i class="fa fa-check me-1"></i> 
+                                Número válido
+                            </div>
+                            <div class="invalid-feedback">
+                                Número inválido para el país seleccionado
+                            </div> -->
+                        </div>
                     </div>
-                    <div class="input-style has-borders has-icon input-style-always-active validate-field remove-mb" style="min-width: 59%;">
-                        <i data-lucide="smartphone" class="lucide-icon lucide-input"></i>
-                        <input type="number" class="form-control text-center font-14"
-                            placeholder="" name="telf" style="height: 40px;"
-                            id="telefono_nacional"
-                            value="{{ old('telf', $usuario->telf) }}">
-                        <label for="telefono_nacional" class="color-highlight bg-theme font-400 font-13"
-                            style="transition: none;">Teléfono</label>
+
+                    <!-- Mensajes de Error de Laravel -->
+                    @error('telefono_nacional')
+                        <p class="text-danger line-height-s mx-2 mt-2 mb-0">
+                            <i class="fa fa-times invalid color-red-dark me-2"></i>
+                            {{ $message }}
+                        </p>
+                    @enderror
+                    
+                    @error('codigo_pais')
+                        <p class="text-danger line-height-s mx-2 mt-2 mb-0">
+                            <i class="fa fa-times invalid color-red-dark me-2"></i>
+                            {{ $message }}
+                        </p>
+                    @enderror
+
+                    <!-- Campo oculto para dígitos esperados (útil para backend) -->
+                    <input type="hidden" name="digitos_esperados" id="digitos_esperados">
+                </div>
+
+                <!-- Footer con botón de submit -->
+                <div class="card-footer bg-theme border-0 pt-0">
+                    <button type="submit" 
+                            id="btn-guardar-telefono"
+                            class="btn w-100 btn-m bg-highlight rounded-s d-flex flex-row align-items-center justify-content-center gap-1 text-uppercase font-900 shadow-s d-none"
+                            disabled>
+                        <i data-lucide="message-circle-more" class="lucide-icon me-2"></i>
+                        Verificar Número
+                    </button>
+                    
+                    <!-- Indicador de carga (opcional) -->
+                    <div id="loading-validacion" class="d-none text-center py-2">
+                        <div class="spinner-border spinner-border-sm text-highlight me-2" role="status">
+                            <span class="visually-hidden">Validando...</span>
+                        </div>
+                        <small class="text-muted">Validando número...</small>
                     </div>
                 </div>
-                @error('telf')
-                    <p class="text-danger line-height-s mx-2 mt-n2">
-                        <i class="fa fa-times invalid color-red-dark  me-2"></i>
-                        {{ $message }}
-                    </p>
-                @enderror
-            </div>
-            <!-- <div class="card-footer">
-                <p>Footer del card</p>
-            </div> -->
+            </form>
         </card>
 
         <div id="todoBien">
@@ -419,32 +477,205 @@
         <!-- SCRIPT LIBPHONENUMBER -->
         <script src="https://cdn.jsdelivr.net/npm/google-libphonenumber/dist/libphonenumber.js"></script>
         <script>
-            $(document).ready(function() {
-            // ============= LOGICA PARA EL SELECTOR DE CODIGO DE PAÍS =============
+        $(document).ready(function() {
+            // ============= ESTADO DE LA APLICACIÓN =============
+            let digitosPais = null;
+            let validacionEnProgreso = false;
+            let timeoutValidacion = null;
+
+            // ============= ELEMENTOS DEL DOM =============
             const selectorPaisId = 'selector-codigo_pais-perfil';
             const selectorPais = $('#' + selectorPaisId);
+            const inputTelefono = $('#telefono_nacional');
+            const btnSubmit = $('#btn-guardar-telefono'); // ID del botón submit
 
+            // ============= INICIALIZAR SLIMSELECT =============
             if (selectorPais.length) {
-                // 1. Remove the select2-hidden-accessible class
-                // selectorPais.removeClass('select2-hidden-accessible');
-
-                // 2. Make sure the select element is visible
                 selectorPais.css('display', '');
 
-                // 3. Initialize SlimSelect
                 new SlimSelect({
                     select: '#' + selectorPaisId,
-                    
                     settings: {
                         placeholder: 'Seleccione un país',
                         searchPlaceholder: 'Buscar país...',
                         searchText: 'Sin resultados',
                         allowDeselect: false,
                         showSearch: true,
-                        // The 'title' property isn't a standard SlimSelect setting; remove it if empty or unused.
+                    }
+                });
+
+                // Establecer el codigo_pais del usuario como valor por defecto
+                setTimeout(() => {
+                    const rawElement = selectorPais.get(0);
+                    if (!rawElement.value || rawElement.value === '') {
+                        rawElement.value = '{{ ltrim($usuario->codigo_pais, '+') }}';
+                        // rawElement.value = '591';
+                        rawElement.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                }, 150);
+
+                // Event listener para cambios en el selector
+                selectorPais.get(0).addEventListener('change', function() {
+                    detectarDigitosPais();
+                    // Limpiar validación previa cuando cambia el país
+                    inputTelefono.val('');
+                    ocultarBotonSubmit();
+                    // Cancelar validaciones pendientes
+                    if (timeoutValidacion) {
+                        clearTimeout(timeoutValidacion);
                     }
                 });
             }
+
+            // ============= DETECTAR DÍGITOS DEL PAÍS =============
+            const detectarDigitosPais = () => {
+                const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
+                const codigo = parseInt(selectorPais.val());
+
+                console.log('Detectando dígitos para código:', codigo);
+
+                try {
+                    const regiones = phoneUtil.getRegionCodesForCountryCode(codigo);
+                    
+                    if (!regiones || regiones.length === 0) {
+                        console.warn('No se encontraron regiones para el código:', codigo);
+                        return;
+                    }
+
+                    // Buscar ejemplo de número móvil
+                    for (const region of regiones) {
+                        const ejemplo = phoneUtil.getExampleNumberForType(
+                            region,
+                            libphonenumber.PhoneNumberType.MOBILE
+                        );
+                        
+                        if (ejemplo) {
+                            const numeroEjemplo = phoneUtil.getNationalSignificantNumber(ejemplo);
+                            digitosPais = numeroEjemplo.length;
+                            
+                            console.log(`Código +${codigo} → Región: ${region}, Longitud esperada: ${digitosPais}`);
+                            
+                            // Actualizar placeholder del input
+                            inputTelefono.attr('placeholder', `Ej: ${numeroEjemplo}`);
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error al detectar dígitos:', e.message);
+                    mostrarError('Error al configurar validación de país');
+                }
+            };
+
+            // ============= VALIDACIÓN EN TIEMPO REAL CON DEBOUNCE =============
+            inputTelefono.on('input', function() {
+                const valorActual = $(this).val();
+                const longitudActual = valorActual.length;
+
+                console.log(`Caracteres: ${longitudActual}/${digitosPais}`);
+
+                // Limpiar timeout anterior
+                if (timeoutValidacion) {
+                    clearTimeout(timeoutValidacion);
+                }
+
+                // Validar solo cuando se alcanza la longitud esperada
+                if (digitosPais && longitudActual === digitosPais) {
+                    // Debounce de 500ms antes de validar
+                    timeoutValidacion = setTimeout(() => {
+                        validarTelefonoRemoto(valorActual);
+                    }, 500);
+                } else {
+                    ocultarBotonSubmit();
+                }
+
+                // Prevenir entrada de más dígitos de los permitidos
+                if (digitosPais && longitudActual > digitosPais) {
+                    $(this).val(valorActual.substring(0, digitosPais));
+                }
+            });
+
+            // ============= VALIDACIÓN REMOTA CON AXIOS =============
+            const validarTelefonoRemoto = async (telefono) => {
+                // Prevenir validaciones simultáneas
+                if (validacionEnProgreso) return;
+                validacionEnProgreso = true;
+
+                const codigoPais = selectorPais.val();
+
+                try {
+                    const response = await axios.post('{{ route("usuario.verificar-numero") }}', {
+                        telefono: telefono,
+                        codigoPais: codigoPais,
+                        digitosPais: digitosPais
+                    }, {
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    });
+
+                    if (response.data.status === 'success') {
+                        console.log('✅ Teléfono válido');
+                        mostrarBotonSubmit();
+                        mostrarExito('Número válido');
+                    } else {
+                        ocultarBotonSubmit();
+                        const errorMsg = extraerMensajeError(response.data.errors);
+                        mostrarError(errorMsg);
+                    }
+
+                } catch (error) {
+                    console.error('Error en validación:', error);
+                    ocultarBotonSubmit();
+                    
+                    let errorMsg = 'Error al validar el teléfono';
+                    if (error.response?.data?.errors) {
+                        errorMsg = extraerMensajeError(error.response.data.errors);
+                    } else if (error.response?.data?.message) {
+                        errorMsg = error.response.data.message;
+                    }
+                    
+                    mostrarError(errorMsg);
+                } finally {
+                    validacionEnProgreso = false;
+                }
+            };
+
+            // ============= UTILIDADES =============
+            const extraerMensajeError = (errors) => {
+                if (errors.telefono) return errors.telefono[0];
+                if (errors.general) return errors.general[0];
+                return 'Error de validación';
+            };
+
+            const mostrarBotonSubmit = () => {
+                btnSubmit.prop('disabled', false).removeClass('d-none');
+                inputTelefono.removeClass('is-invalid').addClass('is-valid');
+            };
+
+            const ocultarBotonSubmit = () => {
+                btnSubmit.prop('disabled', true).addClass('d-none');
+                inputTelefono.removeClass('is-valid is-invalid');
+            };
+
+            const mostrarError = (mensaje) => {
+                inputTelefono.addClass('is-invalid');
+                $('#mensaje-toast-error').text(mensaje);
+                $('#toast-error').removeClass('hide').addClass('show');
+                setTimeout(() => {
+                    $('#toast-error').removeClass('show').addClass('hide');
+                }, 3000);
+            };
+
+            const mostrarExito = (mensaje) => {
+                $('#mensaje-toast-success').text(mensaje);
+                $('#toast-success').removeClass('hide').addClass('show');
+                setTimeout(() => {
+                    $('#toast-success').removeClass('show').addClass('hide');
+                }, 1500);
+            };
+
+            // ============= INICIALIZACIÓN =============
+            detectarDigitosPais();
         });
         </script>
         <script>
