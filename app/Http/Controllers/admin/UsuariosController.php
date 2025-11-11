@@ -403,17 +403,20 @@ class UsuariosController extends Controller
         $cantidad = $request->cantidad;
         $planId = $request->planId;
         $user_id = $request->usuarioId;
-        $horaFinalización = GlobalHelper::getValorAtributoSetting('hora_finalizacion_planes');
+        
         $fechaSeleccionada = Carbon::parse($fecha)->startOfDay();
-        $fechaLimite = Carbon::today()->setTimeFromTimeString($horaFinalización);
         $fechaHoy = Carbon::now();
+        
+        $horaFinalización = GlobalHelper::getValorAtributoSetting('hora_finalizacion_planes');
+        $fechaLimite = Carbon::today()->setTimeFromTimeString($horaFinalización);
 
-        // No permitir fechas pasadas
-        if ($fechaSeleccionada->lessThan($fechaHoy->startOfDay())) {
+        // Use copy() to avoid modifying $fechaHoy
+        if ($fechaSeleccionada->lessThan($fechaHoy->copy()->startOfDay())) {
             return response()->json([
                 'error' => 'No se pueden asignar permisos en fechas pasadas.'
             ], 400);
         }
+
         if ($fechaSeleccionada->isSameDay($fechaHoy) && $fechaHoy->greaterThanOrEqualTo($fechaLimite)) {
             return response()->json([
                 'error' => "No se puede solicitar permiso para pedidos del día después de las {$horaFinalización}."
@@ -513,11 +516,12 @@ class UsuariosController extends Controller
 
         if ($fechaSeleccionada->isSameDay($fechaHoy) && $fechaHoy->greaterThanOrEqualTo($fechaLimite)) {
             return response()->json([
-                'error' => "Ya no se pueden deshacer permisos después de las {$horaFinalización}."
+                'error' => "No se puede deshacer permisos después de las {$horaFinalización}."
             ], 400);
         }
 
-        if ($fechaSeleccionada->lessThan($fechaHoy->startOfDay())) {
+        // Use copy() to avoid modifying $fechaHoy
+        if ($fechaSeleccionada->lessThan($fechaHoy->copy()->startOfDay())) {
             return response()->json([
                 'error' => 'No se pueden deshacer permisos de días anteriores.'
             ], 400);
