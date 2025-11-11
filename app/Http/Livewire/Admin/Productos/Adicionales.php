@@ -12,7 +12,7 @@ class Adicionales extends Component
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
     public $nombre, $precio, $adicional, $cantidad = 0;
-
+    public $search;
 
     protected $rules = [
         'nombre' => 'required|unique:adicionales,nombre',
@@ -51,7 +51,7 @@ class Adicionales extends Component
             'type' => 'success',
             'message' => "Adicional actualizado!!"
         ]);
-        $this->reset('nombre','precio','cantidad');
+        $this->reset('nombre', 'precio', 'cantidad');
     }
     public function updated($propertyName)
     {
@@ -98,7 +98,7 @@ class Adicionales extends Component
     }
     public function render()
     {
-        $adicionales = Adicionale::paginate(5);
+        $adicionales = Adicionale::where('nombre', 'LIKE', '%' . $this->search . '%')->orderBy('nombre', 'asc')->paginate(5);
         $subcategorias = Subcategoria::all();
         return view('livewire.admin.productos.adicionales', compact('adicionales', 'subcategorias'))
             ->extends('admin.master')

@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-6 m-0 pe-1">
         <div onclick="showSweetAlertVentasHoy()" style="cursor: pointer;" class="alert alert-primary solid row fade show p-1 align-items-center mx-auto">
-            <strong class="letra12">Ingresos/Ventas hoy</strong>
+            <strong class="letra12 text-center">Ventas hoy</strong>
             <strong class="text-center">
                 {{ $cajaActiva->ventas->sum('total_pagado') }} Bs <i class="fa fa-info-circle"></i>
             </strong>
@@ -9,7 +9,7 @@
     </div>
     <div class="col-6 m-0 ps-1">
         <div onclick="showSweetAlertGastosHoy()" style="cursor: pointer;" class="alert alert-info solid row  fade show p-1 align-items-center mx-auto">
-            <strong class="letra12">Egresos/Gastos hoy</strong>
+            <strong class="letra12 text-center">Gastos hoy</strong>
             <strong class="text-center">
                 {{ $cajaActiva->egresos->sum('monto') }} Bs <i class="fa fa-info-circle"></i>
             </strong>

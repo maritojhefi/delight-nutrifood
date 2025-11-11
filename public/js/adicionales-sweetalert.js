@@ -55,10 +55,16 @@ function crearHTMLModal(producto, grupos) {
                             <p class="producto-precio mb-0">Bs. ${producto.precio.toFixed(
                                 2
                             )}</p>
+                          
                         </div>
                     </div>
                     
                     <div class="cantidad-control">
+                      <strong class="producto-cantidad mb-0 text-white">Existencias: ${
+                          producto.cantidad
+                              ? producto.cantidad + " disp."
+                              : "Ilimitado"
+                      } </strong>
                         <label class="cantidad-label">Cantidad</label>
                         <div class="cantidad-buttons">
                             <button type="button" class="btn-cantidad btn-menos" id="btn-disminuir">
@@ -66,7 +72,9 @@ function crearHTMLModal(producto, grupos) {
                                     <line x1="5" y1="12" x2="19" y2="12"></line>
                                 </svg>
                             </button>
-                            <input type="number" class="cantidad-input" id="cantidad" value="1" min="1" readonly>
+                            <input type="number" class="cantidad-input" id="cantidad" value="1" min="1" max="${
+                                producto.cantidad
+                            }" readonly>
                             <button type="button" class="btn-cantidad btn-mas" id="btn-aumentar">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                                     <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -222,8 +230,22 @@ function inicializarEventosModal() {
 
     document.getElementById("btn-aumentar").addEventListener("click", () => {
         const cantidad = document.getElementById("cantidad");
-        cantidad.value = parseInt(cantidad.value) + 1;
-        actualizarPrecios();
+        const valorActual = parseInt(cantidad.value);
+        const valorMaximo = parseInt(cantidad.max);
+
+        // Verificar si hay un máximo establecido y no excederlo
+        if (!valorMaximo || valorActual < valorMaximo) {
+            cantidad.value = valorActual + 1;
+            actualizarPrecios();
+        } else {
+            // Mostrar mensaje cuando se alcanza el máximo
+            Swal.showValidationMessage(
+                `Cantidad máxima disponible: ${valorMaximo}`
+            );
+            setTimeout(() => {
+                Swal.resetValidationMessage();
+            }, 2000);
+        }
     });
 
     document

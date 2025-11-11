@@ -326,37 +326,37 @@
         // Función para mostrar el plan de cocina en SweetAlert
         function mostrarPlanCocina(planData) {
             // Verificar si el cliente NO está ingresado
-            if (!planData.cliente_ingresado) {
-                // Mostrar confirmación para marcar ingreso primero
-                Swal.fire({
-                    icon: 'question',
-                    title: '¡Cliente no ha ingresado!',
-                    html: `
-                        <div style="text-align: center;">
-                            <p style="font-size: 16px; margin-bottom: 10px;">
-                                <strong>${planData.nombre}</strong> aún no ha sido marcado como ingresado.
-                            </p>
-                            <p style="font-size: 14px; color: #6b7280;">
-                                ¿Desea marcar su ingreso ahora?
-                            </p>
-                        </div>
-                    `,
-                    showCancelButton: true,
-                    confirmButtonText: '<i class="fa fa-check"></i> Sí, marcar ingreso',
-                    cancelButtonText: '<i class="fa fa-times"></i> Cancelar',
-                    confirmButtonColor: '#10b981',
-                    cancelButtonColor: '#6b7280',
-                    customClass: {
-                        popup: 'animate__animated animate__pulse',
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Llamar al método Livewire para marcar como ingresado
-                        @this.call('marcarComoIngresado', planData.id);
-                    }
-                });
-                return; // No continuar mostrando el modal de detalle
-            }
+            // if (!planData.cliente_ingresado) {
+            //     // Mostrar confirmación para marcar ingreso primero
+            //     Swal.fire({
+            //         icon: 'question',
+            //         title: '¡Cliente no ha ingresado!',
+            //         html: `
+            //             <div style="text-align: center;">
+            //                 <p style="font-size: 16px; margin-bottom: 10px;">
+            //                     <strong>${planData.nombre}</strong> aún no ha sido marcado como ingresado.
+            //                 </p>
+            //                 <p style="font-size: 14px; color: #6b7280;">
+            //                     ¿Desea marcar su ingreso ahora?
+            //                 </p>
+            //             </div>
+            //         `,
+            //         showCancelButton: true,
+            //         confirmButtonText: '<i class="fa fa-check"></i> Sí, marcar ingreso',
+            //         cancelButtonText: '<i class="fa fa-times"></i> Cancelar',
+            //         confirmButtonColor: '#10b981',
+            //         cancelButtonColor: '#6b7280',
+            //         customClass: {
+            //             popup: 'animate__animated animate__pulse',
+            //         }
+            //     }).then((result) => {
+            //         if (result.isConfirmed) {
+            //             // Llamar al método Livewire para marcar como ingresado
+            //             @this.call('marcarComoIngresado', planData.id);
+            //         }
+            //     });
+            //     return; // No continuar mostrando el modal de detalle
+            // }
 
             // Si el cliente ya está ingresado, continuar normalmente
             const tieneSopa = planData.sopa !== '';

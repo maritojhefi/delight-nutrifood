@@ -1053,6 +1053,7 @@ class VentasIndex extends Component
                 'nombre' => $producto->nombre,
                 'precio' => $producto->precioReal(),
                 'imagen' => $producto->pathAttachment(),
+                'cantidad' => $producto->contable ? $producto->stockTotal() : null,
             ],
             'grupos' => $grupos
         ]);
