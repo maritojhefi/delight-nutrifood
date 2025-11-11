@@ -43,9 +43,10 @@
             </div>
             <div class="card-body">
                 <div class="d-flex flex-row gap-1 justify-content-evenly align-items-center">
-                    <div class="d-flex flex-column">
+                    <div class="d-flex flex-column position-relative">
                         <label for="selector-codigo_pais-perfil"
-                            class="d-inline-block font-13 color-highlight line-height-xs bg-theme  ms-2 mb-n2 px-1" style="z-index: 10;width:fit-content"
+                            class="position-absolute d-inline-block font-13 color-highlight line-height-xs bg-theme ms-2 px-1" 
+                            style="z-index: 10; width: fit-content; top: -7px"
                         >Código país</label>
                         <x-countrycode-select id="selector-codigo_pais-perfil" />
                     </div>
@@ -293,7 +294,6 @@
 
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
@@ -364,26 +364,52 @@
 
             /* Target the div holding the selected value text */
             .ss-main .ss-single {
-                /* 1. Prevent the text from wrapping to a new line */
                 white-space: nowrap; 
-                
-                /* 2. Hide any content that overflows the container's width */
                 overflow: hidden; 
-                
-                /* 3. Display an ellipsis (...) for truncated text */
                 text-overflow: ellipsis; 
-                
-                /* 4. Ensure the element respects its container's width limits */
                 max-width: 100%; 
+            }
+
+            .theme-dark .ss-single {
+                color: white;
+            }
+
+            .theme-dark .ss-option {
+                color: white !important;
+            }
+
+            .theme-dark .ss-option.ss-selected {
+                background-color: #7db1b1 !important;
+                border-radius: 0.4rem;
+            }
+
+            .theme-dark .ss-search input {
+                background-color:  #0f1117 !important;
+                border-radius: 0.4rem;
+                /* background-color:  #1f2937 !important; */
+            }
+
+            .theme-dark .ss-content {
+                background-color:  #0f1117 !important;
+                /* background-color:  #1f2937 !important; */
             }
 
             /* Optional: Ensure the outer wrapper respects any width constraints */
             .ss-main {
+                height: 40px;
+                box-shadow: none !important;
+                border-color: #00000014;
+                transition: none;
                 /* If you want a fixed min-width for the selector, define it here */
                 /* Example: min-width: 100px; */
                 /* Ensure no wrapping within the main container */
                 overflow: hidden; 
             }
+
+            .theme-dark .ss-main {
+                border-color: #ffffff14 !important;
+            }
+
         </style>
         <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC059fhEiwhAxE0iFJ2mDLac1HPtOWLY4Y" async defer></script> -->
     @endpush
@@ -439,7 +465,7 @@
                 });
             });
         </script>
-        <script>
+        <!-- <script>
             window.onload = function() {
 
                 var toastActualizado = document.getElementById('toast-3');
@@ -502,6 +528,6 @@
                         alert("El dispositivo no pudo recuperar la posición actual");
                 }
             };
-        </script>
+        </script> -->
     @endpush
 @endsection
