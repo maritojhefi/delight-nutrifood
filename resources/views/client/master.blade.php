@@ -162,11 +162,11 @@
     <div id="toast-cart-item-limit" class="snackbar-toast bg-yellow-dark color-white fade hide" data-autohide="true"
         style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Limite alcanzado!</div>
 
-    <div id="toast-success" class="snackbar-toast bg-green-dark color-white fade hide" data-autohide="true"
+    <div id="toast-success" class="snackbar-toast bg-green-dark color-white fade hide line-height-l py-2" data-autohide="true"
     style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Mensaje de exito</div>
-    <div id="toast-warning" class="snackbar-toast bg-yellow-dark color-white fade hide" data-autohide="true"
+    <div id="toast-warning" class="snackbar-toast bg-yellow-dark color-white fade hide line-height-l py-2" data-autohide="true"
         style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Mensaje de advertencia</div>
-    <div id="toast-error" class="snackbar-toast bg-red-dark color-white fade hide" data-autohide="true"
+    <div id="toast-error" class="snackbar-toast bg-red-dark color-white fade hide line-height-l py-2" data-autohide="true"
         style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Mensaje de error</div>
     @include('client.partials.modalredes')
 
