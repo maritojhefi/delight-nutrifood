@@ -35,6 +35,42 @@
                 </p>
             </div>
         </div>
+
+        <card class="card card-style">
+            <div class="card-header bg-theme border-0">
+                <h2 class="mb-0">Cambiar Número telefónico</h2>
+                <!-- <small class="mb-0">Descripción de la importancia en el cambio del número telefónico</small> -->
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-row gap-1 justify-content-evenly align-items-center">
+                    <div class="d-flex flex-column">
+                        <label for="selector-codigo_pais-perfil"
+                            class="d-inline-block font-13 color-highlight line-height-xs bg-theme  ms-2 mb-n2 px-1" style="z-index: 10;width:fit-content"
+                        >Código país</label>
+                        <x-countrycode-select id="selector-codigo_pais-perfil" />
+                    </div>
+                    <div class="input-style has-borders has-icon input-style-always-active validate-field remove-mb" style="min-width: 59%;">
+                        <i data-lucide="smartphone" class="lucide-icon lucide-input"></i>
+                        <input type="number" class="form-control text-center font-14"
+                            placeholder="" name="telf" style="height: 40px;"
+                            id="telefono_nacional"
+                            value="{{ old('telf', $usuario->telf) }}">
+                        <label for="telefono_nacional" class="color-highlight bg-theme font-400 font-13"
+                            style="transition: none;">Teléfono</label>
+                    </div>
+                </div>
+                @error('telf')
+                    <p class="text-danger line-height-s mx-2 mt-n2">
+                        <i class="fa fa-times invalid color-red-dark  me-2"></i>
+                        {{ $message }}
+                    </p>
+                @enderror
+            </div>
+            <!-- <div class="card-footer">
+                <p>Footer del card</p>
+            </div> -->
+        </card>
+
         <div id="todoBien">
 
             <div class="card card-style">
@@ -315,6 +351,8 @@
     @endif
 
     @push('header')
+        <!-- ESTILOS SLIM-SELECT -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slim-select@2/dist/slimselect.min.css" />
         <style>
             .displayNone {
                 display: none
@@ -323,10 +361,66 @@
             .dislayFull {
                 display: contents
             }
+
+            /* Target the div holding the selected value text */
+            .ss-main .ss-single {
+                /* 1. Prevent the text from wrapping to a new line */
+                white-space: nowrap; 
+                
+                /* 2. Hide any content that overflows the container's width */
+                overflow: hidden; 
+                
+                /* 3. Display an ellipsis (...) for truncated text */
+                text-overflow: ellipsis; 
+                
+                /* 4. Ensure the element respects its container's width limits */
+                max-width: 100%; 
+            }
+
+            /* Optional: Ensure the outer wrapper respects any width constraints */
+            .ss-main {
+                /* If you want a fixed min-width for the selector, define it here */
+                /* Example: min-width: 100px; */
+                /* Ensure no wrapping within the main container */
+                overflow: hidden; 
+            }
         </style>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC059fhEiwhAxE0iFJ2mDLac1HPtOWLY4Y" async defer></script>
+        <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC059fhEiwhAxE0iFJ2mDLac1HPtOWLY4Y" async defer></script> -->
     @endpush
     @push('scripts')
+        <!-- SCRIPT SLIMSELECT -->
+        <script src="https://cdn.jsdelivr.net/npm/slim-select@2/dist/slimselect.min.js"></script>
+        <!-- SCRIPT LIBPHONENUMBER -->
+        <script src="https://cdn.jsdelivr.net/npm/google-libphonenumber/dist/libphonenumber.js"></script>
+        <script>
+            $(document).ready(function() {
+            // ============= LOGICA PARA EL SELECTOR DE CODIGO DE PAÍS =============
+            const selectorPaisId = 'selector-codigo_pais-perfil';
+            const selectorPais = $('#' + selectorPaisId);
+
+            if (selectorPais.length) {
+                // 1. Remove the select2-hidden-accessible class
+                // selectorPais.removeClass('select2-hidden-accessible');
+
+                // 2. Make sure the select element is visible
+                selectorPais.css('display', '');
+
+                // 3. Initialize SlimSelect
+                new SlimSelect({
+                    select: '#' + selectorPaisId,
+                    
+                    settings: {
+                        placeholder: 'Seleccione un país',
+                        searchPlaceholder: 'Buscar país...',
+                        searchText: 'Sin resultados',
+                        allowDeselect: false,
+                        showSearch: true,
+                        // The 'title' property isn't a standard SlimSelect setting; remove it if empty or unused.
+                    }
+                });
+            }
+        });
+        </script>
         <script>
             $(document).ready(function() {
                 const passwordInput = $('#new-password');

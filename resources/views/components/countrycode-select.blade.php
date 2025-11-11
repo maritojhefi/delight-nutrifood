@@ -1,9 +1,7 @@
-<div {{ $attributes }} class="d-flex align-items-center justify-content-center">
-    <select id="{{ $id ?? 'country-code-selector' }}" name="codigo_pais"
-        class="form-control form-control-sm rounded-sm w-auto 
-{{-- font-13 px-1 w-full bg-white rounded-sm d-flex align-items-center justify-content-center --}}
-">
-<option data-countryCode="AD" value="376">AD (+376)</option>
+<!-- <div {{ $attributes }} class="d-flex align-items-center justify-content-center"> -->
+    <select {{ $attributes }} id="{{ $id ?? 'country-code-selector' }}" name="codigo_pais"
+        class="form-control form-control-sm rounded-sm w-auto">
+        <option data-countryCode="AD" value="376">AD (+376)</option>
         <option data-countryCode="AE" value="971">AE (+971)</option>
         <option data-countryCode="AF" value="93">AF (+93)</option>
         <option data-countryCode="AG" value="1268">AG (+1268)</option>
@@ -250,4 +248,3 @@
         <option data-countryCode="ZM" value="260">ZM (+260)</option>
         <option data-countryCode="ZW" value="263">ZW (+263)</option>
     </select>
-</div>
