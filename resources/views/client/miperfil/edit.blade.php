@@ -409,62 +409,9 @@
     @endif
 
     @push('modals')
-    <div id="menu-verificacion-cambionumero" class="menu menu-box-modal rounded-m"
-    style="display: block; width: 90%; height: auto;">
-        <div class="card card-style p-0 m-0 pb-3">
-            <div class="card-header p-0">
-                <div class="menu-title">
-                    <p class="color-highlight">Delight-Nutrifood</p>
-                    <h1 class="font-20">Verificación para cambiar número telefónico</h1>
-                    <a href="#" class="close-menu"><i class="fa fa-times-circle"></i></a>
-                </div>
-            </div>
-            <div class="content mb-3">
-                <p>
-                    Por favor, ingrese el código enviado a su WhatsApp para cambiar su número telefónico registrado
-                </p>
-                <div class="text-center mx-n3">
-                    <form action="" id="form-codigo-verificacion-cambionumero">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                    </form>
-                </div>
-                <p class="text-center my-3 font-11">
-                    ¿No ha recibido un código aún?
-                    <a href="#" id="reenviar-codigo">
-                        Reenviar código
-                    </a>
-                </p>
-                <div class="d-flex flex-row justify-content-evenly">
-                    <a href="#" class="close-menu btn btn-s font-15 shadow-l rounded-s text-uppercase font-900 bg-delight-red color-white" >Cancelar</a>
-                    <button type="button" id="verificar-codigo-btn-cambionumero"
-                        class="btn btn-s font-15 shadow-l rounded-s validador-ingresar text-uppercase font-900 bg-mint-dark color-white">
-                        Verificar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div id="codigo-incorrecto" class="menu menu-box-modal rounded-m"
-        style="display: block; width: 220px; height: auto; padding: 1%;">
-        <h1 class="text-center fa-5x mt-2 pt-3 pb-2"><i class="fa fa-times-circle color-red-dark"></i></h1>
-        <h2 class="text-center">Código incorrecto, intenta de nuevo dentro de 30 segundos</h2>
-    </div>
+    <x-modal-otp-whatsapp funcionalidad="cambionumero" />
 
-    <div id="codigo-correcto" class="menu menu-box-modal rounded-m"
-        style="display: block; width: 220px; height: auto; padding: 1%;">
-        <h1 class="text-center fa-5x mt-2 pt-3 pb-2"><i class="fa fa-check-circle color-mint-dark"></i></h1>
-        <h2 class="text-center">Teléfono verificado correctamente</h2>
-    </div>
     @endpush
 
     @push('header')

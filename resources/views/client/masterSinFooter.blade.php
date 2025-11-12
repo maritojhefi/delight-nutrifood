@@ -120,6 +120,58 @@
 
         });
     </script>
+    <script>
+        const hacerMenuHiderIntocable = () => {
+            $('.menu-hider').css('pointer-events', 'none');
+            // console.log("TRIGGERED: Menu hider is now untocable.");
+        };
+
+        const hacerMenuHiderTocable = () => {
+            $('.menu-hider').css('pointer-events', '');
+            // console.log("TRIGGERED: Menu hider is now tocable.");
+        };
+
+        const observarCambiosMenuActive = (elemento) => {
+            const elementoObjetivo = elemento[0];
+            
+            const callback = (mutationsList, observer) => {
+                for (const mutation of mutationsList) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        const elm = $(mutation.target);
+
+                        const tieneMenuActive = elm.hasClass('menu-active');
+                        
+                        // The element is guaranteed to have 'hider-intocable' because of the selector
+                        const tieneHiderIntocable = true; 
+
+                        if (tieneMenuActive && tieneHiderIntocable) {
+                            // Condition met: Element gains 'menu-active'
+                            hacerMenuHiderIntocable();
+                        } else if (!tieneMenuActive && tieneHiderIntocable) {
+                            // Condition met: Element loses 'menu-active'
+                            hacerMenuHiderTocable();
+                        }
+                    }
+                }
+            };
+
+            // 3. Create and configure the observer
+            const observer = new MutationObserver(callback);
+            const config = { attributes: true }; // Only watch for attribute changes
+
+            // 4. Start observing
+            observer.observe(elementoObjetivo, config);
+            console.log(`Watching element: ${elementoObjetivo.tagName}.${elemento.attr('class')}`);
+        };
+
+
+        // 5. Use jQuery to select ALL target elements and apply the watcher function to each
+        $(document).ready(function() {
+            $('.hider-intocable').each(function() {
+                observarCambiosMenuActive($(this));
+            });
+        });
+    </script>
 
     @stack('scripts')
 </body>
