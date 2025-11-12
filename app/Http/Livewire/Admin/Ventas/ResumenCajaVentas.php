@@ -154,7 +154,48 @@ class ResumenCajaVentas extends Component
 
     public function abrirControlStock()
     {
-        $this->dispatchBrowserEvent('mostrarControlStock');
+        // Obtener productos del último registro de stock
+        $productosPreCargados = $this->obtenerProductosUltimoRegistro();
+
+        $this->dispatchBrowserEvent('mostrarControlStock', [
+            'productosPreCargados' => $productosPreCargados
+        ]);
+    }
+
+    private function obtenerProductosUltimoRegistro()
+    {
+        // Obtener el último registro de stock de cualquier caja
+        $ultimoRegistro = RegistroStockCaja::with('productos')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$ultimoRegistro) {
+            return [];
+        }
+
+        // Obtener los productos con su stock actual
+        $productosPreCargados = [];
+
+        foreach ($ultimoRegistro->productos as $producto) {
+            // Verificar que el producto siga activo y tenga stock
+            if ($producto->estado !== 'activo') {
+                continue;
+            }
+
+            $stockActual = $producto->stockTotal();
+
+            // Solo incluir productos con stock disponible
+            if ($stockActual > 0) {
+                $productosPreCargados[] = [
+                    'id' => $producto->id,
+                    'nombre' => $producto->nombre,
+                    'stock_actual' => $stockActual,
+                    'vendidos_caja' => $this->obtenerCantidadVendidaEnCaja($producto->id),
+                ];
+            }
+        }
+
+        return $productosPreCargados;
     }
 
     public function buscarProducto($termino)

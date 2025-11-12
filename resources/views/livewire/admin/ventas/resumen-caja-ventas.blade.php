@@ -477,6 +477,27 @@
         }
 
         window.addEventListener('mostrarControlStock', event => {
+            // Obtener productos pre-cargados del evento
+            let productosPreCargados = event.detail.productosPreCargados || [];
+            
+            // Limpiar productos seleccionados previos
+            productosSeleccionados = [];
+            
+            // Cargar productos del último registro automáticamente
+            if (productosPreCargados.length > 0) {
+                productosPreCargados.forEach(producto => {
+                    productosSeleccionados.push({
+                        id: producto.id,
+                        nombre: producto.nombre,
+                        stock_actual: producto.stock_actual,
+                        vendidos_caja: producto.vendidos_caja,
+                        nuevo_stock: producto.stock_actual,
+                        detalle: '',
+                        reajustando: false
+                    });
+                });
+            }
+            
             let htmlContent = `
                 <div style="text-align: left; background: white; padding: 20px; border-radius: 10px;">
                     <!-- Título -->
@@ -502,6 +523,7 @@
                     <div style="margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
                         <h5 style="color: #495057; margin: 0 0 15px 0; font-size: 16px; font-weight: 600;">
                             <i class="fa fa-list-alt" style="color: #11998e;"></i> Productos Seleccionados
+                            ${productosPreCargados.length > 0 ? '<span style="color: #11998e; font-size: 12px; font-weight: normal;"> (Cargados del último registro)</span>' : ''}
                         </h5>
                         <div id="tabla_productos_stock" style="max-height: 400px; overflow-y: auto; border-radius: 6px;">
                             <p style="text-align: center; color: #6c757d; padding: 40px;">
@@ -540,6 +562,10 @@
                     popup: 'swal-popup-stock'
                 },
                 didOpen: () => {
+                    // Si hay productos pre-cargados, actualizar la tabla inmediatamente
+                    if (productosSeleccionados.length > 0) {
+                        actualizarTablaProductosStock();
+                    }
                     document.getElementById('buscador_producto').focus();
                 }
             });

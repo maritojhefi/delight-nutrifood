@@ -1300,15 +1300,23 @@ class VentasIndex extends Component
         }
         // dd($this->cuenta->ventaHistorial);
 
+        // Procesar adicionales para cada producto en la lista
+        $listaCuentaConAdicionales = collect($this->listacuenta)->map(function ($item) {
+            $adicionales = CreateList::procesarAdicionalesProducto($item['pivot_id']);
+            $item['adicionales_desglosados'] = $adicionales;
+            return $item;
+        })->toArray();
+
         $data = [
             'cuenta' => $this->cuenta->ventaHistorial,
             // Aquí puedes pasar las variables necesarias para la vista Blade
             'nombreCliente' => !$this->checkClientePersonalizado ? (isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : 'Anonimo') : $this->clienteRecibo,
-            'listaCuenta' => $this->listacuenta,
+            'listaCuenta' => $listaCuentaConAdicionales,
             'subtotal' => $this->cuenta->total + $this->descuentoProductos,
             'descuentoProductos' => $this->descuentoProductos,
             'otrosDescuentos' => $this->cuenta->descuento,
             'valorSaldo' => $this->cuenta->ventaHistorial->saldo_monto,
+            'totalAdicionales' => $this->totalAdicionales,
             'metodo' => isset($metodosPagosRecibo) ? $metodosPagosRecibo : null,
             'observacion' => isset($this->observacionRecibo) ? $this->observacionRecibo : null,
             'fecha' => isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'),
@@ -1327,7 +1335,15 @@ class VentasIndex extends Component
         } else {
             $metodosPagosRecibo = null;
         }
-        $recibo = CustomPrint::imprimirReciboVenta(!$this->checkClientePersonalizado ? (isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null) : $this->clienteRecibo, $this->listacuenta, $this->cuenta->total + $this->descuentoProductos, $this->cuenta->ventaHistorial->saldo_monto, $this->descuentoProductos, $this->cuenta->descuento, isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'), isset($this->observacionRecibo) ? $this->observacionRecibo : null, $metodosPagosRecibo, $this->cuenta->ventaHistorial);
+
+        // Procesar adicionales para cada producto en la lista
+        $listaCuentaConAdicionales = collect($this->listacuenta)->map(function ($item) {
+            $adicionales = CreateList::procesarAdicionalesProducto($item['pivot_id']);
+            $item['adicionales_desglosados'] = $adicionales;
+            return $item;
+        })->toArray();
+
+        $recibo = CustomPrint::imprimirReciboVenta(!$this->checkClientePersonalizado ? (isset($this->cuenta->cliente->name) ? Str::limit($this->cuenta->cliente->name, '20', '') : null) : $this->clienteRecibo, $listaCuentaConAdicionales, $this->cuenta->total + $this->descuentoProductos, $this->cuenta->ventaHistorial->saldo_monto, $this->descuentoProductos, $this->cuenta->descuento, isset($this->fechaRecibo) ? $this->fechaRecibo : date('d-m-Y H:i:s'), isset($this->observacionRecibo) ? $this->observacionRecibo : null, $metodosPagosRecibo, $this->cuenta->ventaHistorial, $this->totalAdicionales);
         $respuesta = CustomPrint::imprimir($recibo, $this->cuenta->sucursale->id_impresora);
         if ($this->cuenta->sucursale->id_impresora) {
             if ($respuesta == true) {
