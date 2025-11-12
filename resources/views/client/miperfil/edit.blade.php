@@ -71,7 +71,7 @@
                                 pattern="[0-9]*"
                                 autocomplete="tel-national"
                                 style="height: 40px;"
-                                value="{{ old('telefono-nacional', $usuario->telf) }}"
+                                value="{{ old('telefono-nacional', 68708570) }}"
                                 required>
                             <label for="telefono-nacional" 
                                 class="color-highlight bg-theme font-400 font-13"
@@ -666,6 +666,7 @@
                 const codigoPais = elementos.selectorPais.val();
 
                 try {
+                    deshabilitarBotonEnviarOTP();
                     const respuesta = await axios.post('{{ route("usuario.enviar-codigo-verificacion") }}', {
                         telefono,
                         codigoPais,
@@ -683,6 +684,8 @@
                 } catch (error) {
                     console.error("Error al enviar el código de verificación:", error);
                 }
+
+                habilitarBotonEnviarOTP();
             };
 
             const configurarEventosOTP = () => {
@@ -717,6 +720,7 @@
                 const codigoPais = elementos.selectorPais.val();
 
                 try {
+                    deshabilitarBotonVerifiacionOTP();
                     const respuesta = await axios.post('{{ route("usuario.cambiar-numero-otp") }}', {
                         codigo: codigoCompleto,
                         codigoGenerado: estado.codigoVerificacion,
@@ -739,6 +743,7 @@
                 } catch (error) {
                     console.error("Error al validar el OTP:", error);
                 }
+                habilitarBotonVerifiacionOTP();
             };
 
             // ============= UTILIDADES DE INTERFAZ =============
@@ -761,6 +766,16 @@
                 elementos.modalOTP.removeClass('menu-active');
                 elementos.ocultadorMenu.removeClass('menu-active');
             };
+
+            const deshabilitarBotonEnviarOTP = () => {
+                $('#btn-guardar-telefono').attr('disabled', true);
+                $('#btn-guardar-telefono').text('Enviando...');
+            }
+
+            const habilitarBotonEnviarOTP = () => {
+                $('#btn-guardar-telefono').attr('disabled', false);
+                $('#btn-guardar-telefono').text('Verificar Número');
+            }
 
             const mostrarError = (mensaje) => {
                 elementos.inputTelefono.addClass('is-invalid');
