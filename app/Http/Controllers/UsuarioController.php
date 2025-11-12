@@ -813,7 +813,7 @@ class UsuarioController extends Controller
 
         if ($codigoIngresado == $codigoGenerado) {
             // Actualizar el número telefónico del usuario
-            $user->codigo_pais = $nuevoCodigoPais;
+            $user->codigo_pais = '+' . $nuevoCodigoPais;
             $user->telf = $nuevoTelefonoNacional;
             $user->save();
             return response()->json(
