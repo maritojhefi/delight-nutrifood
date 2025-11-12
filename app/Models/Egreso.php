@@ -9,7 +9,18 @@ class Egreso extends Model
 {
     use HasFactory;
     protected $fillable = [
-      
-       'caja_id','detalle','monto'
+
+        'caja_id',
+        'detalle',
+        'monto',
+        'metodo_pago_id'
     ];
+    public function metodoPago()
+    {
+        return $this->belongsTo(MetodoPago::class);
+    }
+    public function caja()
+    {
+        return $this->belongsTo(Caja::class);
+    }
 }

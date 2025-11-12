@@ -24,6 +24,10 @@ class Caja extends Model
     {
         return $this->belongsTo(Sucursale::class);
     }
+    public function egresos()
+    {
+        return $this->hasMany(Egreso::class);
+    }
     public function ventas()
     {
         if ($this->atendidoPor != null) {
@@ -80,7 +84,7 @@ class Caja extends Model
     {
         $ventas = $this->ingresosPorMetodoPagoDeVentas();
         $saldos = $this->ingresosPorMetodoPagoDeSaldos();
-        
+
         $sumado = $ventas; //array que se trabajara para acumular
         foreach ($saldos as $key => $value) {
             if (isset($sumado[$key])) {
@@ -243,15 +247,15 @@ class Caja extends Model
         $totalIngresoAbsoluto = $this->totalIngresoAbsoluto();
         $totalIngresoPOS = $this->ingresoVentasPOS();
         $totalSaldosPagados = $this->totalSaldosPagadosSinVenta();
-        
+
         // Obtener totales del gráfico de categorías
         $categorias = $this->arrayVentasPorCategoria($cajeroId);
         $totalGraficoCategorias = array_sum(array_column($categorias, 'suma_total'));
-        
+
         // Obtener totales del gráfico de productos
         $productos = $this->arrayProductosVendidos($cajeroId);
         $totalGraficoProductos = array_sum(array_column($productos, 'suma_total'));
-        
+
         return [
             'totalIngresoAbsoluto' => $totalIngresoAbsoluto,
             'totalIngresoPOS' => $totalIngresoPOS,

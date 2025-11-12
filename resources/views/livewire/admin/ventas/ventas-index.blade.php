@@ -1,5 +1,9 @@
 <div class="row m-0 p-0">
-    @include('livewire.admin.ventas.includes-pos.card-ventas-pendientes')
+    <div class="col-12 col-md-3">
+        @livewire('admin.ventas.resumen-caja-ventas')
+        @include('livewire.admin.ventas.includes-pos.card-ventas-pendientes')
+    </div>
+    
     @isset($cuenta)
         @include('livewire.admin.ventas.includes-pos.card-detalle-cuenta')
 

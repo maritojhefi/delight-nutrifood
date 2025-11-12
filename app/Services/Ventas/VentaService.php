@@ -10,6 +10,7 @@ use App\Models\MetodoPago;
 use App\Models\Historial_venta;
 use App\Events\CocinaPedidoEvent;
 use Illuminate\Support\Facades\DB;
+use App\Events\ActualizarDatosCajaEvent;
 use App\Services\Ventas\DTOs\VentaResponse;
 use App\Services\Ventas\Exceptions\VentaException;
 use App\Services\Ventas\Contracts\SaldoServiceInterface;
@@ -71,10 +72,6 @@ class VentaService implements VentaServiceInterface
                 // Determinar saldo resultante
                 $saldoResultante = $this->calculadoraService->calcularSaldoResultante($totalAcumulado, $subtotalConDescuento);
 
-                // Actualizar caja
-                DB::table('cajas')
-                    ->where('id', $cajaActiva->id)
-                    ->increment('acumulado', $calculos->subtotal - $venta->descuento - $venta->saldo - $calculos->descuentoProductos);
 
                 // Crear historial de venta
                 $historialVenta = Historial_venta::create([
@@ -99,13 +96,11 @@ class VentaService implements VentaServiceInterface
                     'saldo_monto' => $saldoResultante['montoSaldo'],
                     'a_favor_cliente' => $saldoResultante['saldoAFavorCliente'],
                 ]);
-
-                // Actualizar puntos del cliente
-                // if ($venta->cliente_id) {
-                //     DB::table('users')
-                //         ->where('id', $venta->cliente_id)
-                //         ->increment('puntos', $calculos->puntos);
-                // }
+                // Actualizar caja
+                DB::table('cajas')
+                    ->where('id', $cajaActiva->id)
+                    ->increment('acumulado', $totalAcumulado);
+                event(new ActualizarDatosCajaEvent($cajaActiva->id, 'Se cobró una venta de ' . $totalAcumulado . ' Bs', 'success'));
 
                 // Crear saldo si es necesario
                 if ($saldoResultante['montoSaldo'] > 0) {

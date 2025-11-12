@@ -32,7 +32,7 @@ class CustomPrint
             return false;
         }
     }
-    public static function imprimirReciboVenta(string $nombreCliente = null, $listaCuenta, $subtotal, $valorSaldo = 0, $descuentoProductos = 0, $otrosDescuentos = 0, $fecha = null, $observacion = null, $metodo = null, $historialVenta = null)
+    public static function imprimirReciboVenta(string $nombreCliente = null, $listaCuenta, $subtotal, $valorSaldo = 0, $descuentoProductos = 0, $otrosDescuentos = 0, $fecha = null, $observacion = null, $metodo = null, $historialVenta = null, $totalAdicionales = 0)
     {
         // dd($historialVenta);
         $nombre_impresora = 'POS-582';
@@ -43,8 +43,8 @@ class CustomPrint
         // Encabezado
         $printer->setJustification(Printer::JUSTIFY_CENTER);
         $printer->setTextSize(1, 2);
-        $img = EscposImage::load(public_path(GlobalHelper::getValorAtributoSetting('logo')));
-
+        $img = EscposImage::load(public_path(GlobalHelper::getValorAtributoSetting('logo_small')));
+        // dd($img);
         // MEJORA: Verificar si la imagen existe antes de intentar cargarla
         try {
             $printer->bitImageColumnFormat($img);
@@ -63,7 +63,7 @@ class CustomPrint
         $printer->feed(); // MEJORA: feed() sin parámetro es suficiente
 
         // MEJORA: Combinar líneas de contacto para ahorrar espacio
-        $textoContacto = GlobalHelper::limpiarTextoParaPOS('Contacto: '.GlobalHelper::getValorAtributoSetting('telefono'));
+        $textoContacto = GlobalHelper::limpiarTextoParaPOS('Contacto: ' . GlobalHelper::getValorAtributoSetting('telefono'));
         $printer->text(str: $textoContacto . "\n");
 
         $textoDireccion = GlobalHelper::limpiarTextoParaPOS(GlobalHelper::getValorAtributoSetting('direccion'));
@@ -104,6 +104,27 @@ class CustomPrint
 
                 $printer->text($lineaCompleta . "\n");
             }
+
+            // Mostrar adicionales desglosados si existen
+            if (isset($list['adicionales_desglosados']) && is_array($list['adicionales_desglosados']) && count($list['adicionales_desglosados']) > 0) {
+                foreach ($list['adicionales_desglosados'] as $adicional) {
+                    $nombreAdicional = GlobalHelper::limpiarTextoParaPOS($adicional['nombre']);
+                    $precioFormateado = sprintf('(Bs %.2f)', $adicional['precio_unitario']);
+
+                    // Construir texto del adicional sin truncar
+                    $textoAdicional = sprintf(
+                        '  +x%d %s %s',
+                        $adicional['cantidad'],
+                        $nombreAdicional,
+                        $precioFormateado
+                    );
+
+                    $printer->text($textoAdicional . "\n");
+                }
+            }
+
+            // Agregar separación entre productos
+            $printer->feed();
         }
         $printer->setJustification(Printer::JUSTIFY_RIGHT);
         $printer->text("--------\n");
@@ -111,30 +132,42 @@ class CustomPrint
         // Totales
         $printer->setTextSize(1, 1);
         $printer->text(sprintf('Subtotal: %.2f Bs' . "\n", floatval($subtotal)));
+        if ($totalAdicionales != 0 && $totalAdicionales > 0) {
+            $printer->text(sprintf('Total adicionales: +%.2f Bs' . "\n", floatval($totalAdicionales)));
+        }
         if ($descuentoProductos != 0) {
-            $printer->text(sprintf('Desc. productos: %.2f Bs' . "\n", floatval($descuentoProductos)));
+            $printer->text(sprintf('Desc. productos: -%.2f Bs' . "\n", floatval($descuentoProductos)));
         }
         if ($otrosDescuentos != 0) {
-            $printer->text(sprintf('Otros descuentos: %.2f Bs' . "\n", floatval($otrosDescuentos)));
+            $printer->text(sprintf('Otros descuentos: -%.2f Bs' . "\n", floatval($otrosDescuentos)));
         }
+
+        // Calcular total a pagar
         if (!isset($historialVenta)) {
-            $totalPagado = $subtotal - $otrosDescuentos - $descuentoProductos;
+            $totalAPagar = $subtotal + $totalAdicionales - $otrosDescuentos - $descuentoProductos;
+            $totalPagado = $totalAPagar;
             if ($valorSaldo != null && $valorSaldo != 0) {
                 $printer->feed();
-                $printer->text(sprintf('Saldo agregado: %.2f Bs' . "\n", floatval($valorSaldo)));
+                $printer->text(sprintf('Saldo agregado: -%.2f Bs' . "\n", floatval($valorSaldo)));
                 $totalPagado -= $valorSaldo;
                 $printer->feed();
             }
         } else {
+            $totalAPagar = $subtotal + $totalAdicionales - $otrosDescuentos - $descuentoProductos;
             $totalPagado = $historialVenta->total_pagado;
             if ($valorSaldo != null && $valorSaldo != 0) {
                 $printer->feed();
                 $texto_saldo = $historialVenta->a_favor_cliente ? 'A favor cliente' : 'Deuda Generada';
-                $printer->text(sprintf($texto_saldo . ': %.2f Bs' . "\n", floatval($valorSaldo)));
+                $signo = $historialVenta->a_favor_cliente ? '-' : '+';
+                $printer->text(sprintf($texto_saldo . ': %s%.2f Bs' . "\n", $signo, floatval($valorSaldo)));
                 $printer->feed();
             }
         }
 
+        // MEJORA: Mostrar Total a pagar
+        $printer->setTextSize(1, 1);
+        $printer->text(sprintf('TOTAL A PAGAR: Bs %.2f' . "\n", $totalAPagar));
+        $printer->feed();
 
         // MEJORA: Resaltar el total pagado
         $printer->setTextSize(1, 2);
@@ -248,9 +281,9 @@ class CustomPrint
             $printer->setTextSize(1, 1);
             $printer->text(GlobalHelper::getValorAtributoSetting('nombre_empresa') . "\n");
             $printer->feed(1);
-            $printer->text("'".strtoupper(GlobalHelper::getValorAtributoSetting('slogan'))."!'" . "\n");
+            $printer->text("'" . strtoupper(GlobalHelper::getValorAtributoSetting('slogan')) . "!'" . "\n");
             $printer->feed(1);
-            $printer->text('Contacto : '.GlobalHelper::getValorAtributoSetting('telefono') . "\n" . GlobalHelper::getValorAtributoSetting('direccion').' ' . "\n");
+            $printer->text('Contacto : ' . GlobalHelper::getValorAtributoSetting('telefono') . "\n" . GlobalHelper::getValorAtributoSetting('direccion') . ' ' . "\n");
             if (isset($nombreCliente)) {
                 $printer->text('Cliente: ' . $nombreCliente . "\n");
             }

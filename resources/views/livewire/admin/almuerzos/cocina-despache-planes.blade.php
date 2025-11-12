@@ -164,7 +164,8 @@
                                     envio: '{{ addslashes($lista['ENVIO']) }}',
                                     empaque: '{{ addslashes($lista['EMPAQUE']) }}',
                                     cocina: '{{ $lista['COCINA'] }}',
-                                    envio_icon: '{{ $lista['ENVIO_ICON'] }}'
+                                    envio_icon: '{{ $lista['ENVIO_ICON'] }}',
+                                    cliente_ingresado: {{ $lista['CLIENTE_INGRESADO'] ? 'true' : 'false' }}
                                 })" @endif>
                                 <td style="border-color:#211d1d !important"><strong>
                                     {!! $lista['ESTADO'] == 'permiso'
@@ -324,40 +325,74 @@
     <script>
         // Función para mostrar el plan de cocina en SweetAlert
         function mostrarPlanCocina(planData) {
+            // Verificar si el cliente NO está ingresado
+            // if (!planData.cliente_ingresado) {
+            //     // Mostrar confirmación para marcar ingreso primero
+            //     Swal.fire({
+            //         icon: 'question',
+            //         title: '¡Cliente no ha ingresado!',
+            //         html: `
+            //             <div style="text-align: center;">
+            //                 <p style="font-size: 16px; margin-bottom: 10px;">
+            //                     <strong>${planData.nombre}</strong> aún no ha sido marcado como ingresado.
+            //                 </p>
+            //                 <p style="font-size: 14px; color: #6b7280;">
+            //                     ¿Desea marcar su ingreso ahora?
+            //                 </p>
+            //             </div>
+            //         `,
+            //         showCancelButton: true,
+            //         confirmButtonText: '<i class="fa fa-check"></i> Sí, marcar ingreso',
+            //         cancelButtonText: '<i class="fa fa-times"></i> Cancelar',
+            //         confirmButtonColor: '#10b981',
+            //         cancelButtonColor: '#6b7280',
+            //         customClass: {
+            //             popup: 'animate__animated animate__pulse',
+            //         }
+            //     }).then((result) => {
+            //         if (result.isConfirmed) {
+            //             // Llamar al método Livewire para marcar como ingresado
+            //             @this.call('marcarComoIngresado', planData.id);
+            //         }
+            //     });
+            //     return; // No continuar mostrando el modal de detalle
+            // }
+
+            // Si el cliente ya está ingresado, continuar normalmente
             const tieneSopa = planData.sopa !== '';
             const tienePlato = planData.plato !== '';
             const puedeDespacharSopa = tieneSopa && (planData.cocina === 'espera' || planData.cocina === 'solo-segundo');
             const puedeDespacharPlato = tienePlato && (planData.cocina === 'espera' || planData.cocina === 'solo-sopa');
 
             Swal.fire({
-                title: `<div>
-                            <h3 style="color: white; margin: 0; font-weight: 700;" class="mb-0">Plan de ${planData.nombre}</h3>
-                            <h2 style="color: white; margin: 0; font-weight: 700;" class="mb-0">${planData.plan}</h2>
+                title: `<div style="padding: 0; margin: 0; line-height: 1.1;">
+                            <h3 style="color: white; margin: 0 0 2px 0; font-weight: 700; font-size: clamp(13px, 3.5vw, 18px);">Plan de ${planData.nombre}</h3>
+                            <h2 style="color: white; margin: 0; font-weight: 700; font-size: clamp(15px, 4.5vw, 22px);">${planData.plan}</h2>
                         </div>`,
                 html: `
-                    <div style="display: grid; gap: 20px; padding: 10px;">
+                    <div style="display: grid; gap: clamp(6px, 1.5vw, 12px); padding: 0;">
                        
                         <!-- Grid de Platillos -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: clamp(6px, 1.5vw, 12px);">
                             <!-- Tarjeta de Sopa -->
-                            <div style="background: white; border: 3px solid ${tieneSopa ? '#10b981' : '#ef4444'}; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s;">
+                            <div style="background: white; border: 2px solid ${tieneSopa ? '#10b981' : '#ef4444'}; border-radius: clamp(8px, 1.5vw, 12px); padding: clamp(8px, 2vw, 16px); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                                 <div style="text-align: center;">
-                                    <i class="fa fa-bowl-food" style="font-size: 32px; color: ${tieneSopa ? '#10b981' : '#ef4444'}; margin-bottom: 10px;"></i>
-                                    <div style="font-size: 13px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px;">Sopa</div>
-                                    <div style="font-size: 18px; font-weight: 700; color: ${tieneSopa ? '#1f2937' : '#ef4444'}; min-height: 50px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                                    <i class="fa fa-bowl-food" style="font-size: clamp(18px, 4.5vw, 28px); color: ${tieneSopa ? '#10b981' : '#ef4444'}; margin-bottom: clamp(4px, 1vw, 8px);"></i>
+                                    <div style="font-size: clamp(8px, 2vw, 11px); color: #6b7280; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-bottom: 4px;">Sopa</div>
+                                    <div style="font-size: clamp(11px, 3vw, 15px); font-weight: 700; color: ${tieneSopa ? '#1f2937' : '#ef4444'}; min-height: clamp(28px, 7vw, 45px); display: flex; align-items: center; justify-content: center; margin-bottom: clamp(6px, 1.5vw, 12px); line-height: 1.1; padding: 0 2px;">
                                         ${tieneSopa ? planData.sopa : 'SIN SOPA'}
                                     </div>
                                     ${tieneSopa ? `
                                                 ${puedeDespacharSopa ? `
                                             <button onclick="despacharItemSopa(${planData.id})" 
-                                                    style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);"
-                                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)'"
-                                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.4)'">
+                                                    style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: clamp(7px, 2vw, 10px); border-radius: 7px; font-weight: 700; font-size: clamp(9px, 2.2vw, 13px); cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);"
+                                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 10px rgba(102, 126, 234, 0.6)'"
+                                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(102, 126, 234, 0.4)'">
                                                 Despachar Sopa ?
                                             </button>
                                         ` : `
-                                            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 14px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);">
-                                                <i class="fa fa-check-circle fs-22"></i> Despachado
+                                            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: clamp(7px, 2vw, 10px); border-radius: 7px; font-weight: 700; font-size: clamp(9px, 2.2vw, 13px); box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);">
+                                                <i class="fa fa-check-circle"></i> Despachado
                                             </div>
                                         `}
                                             ` : ''}
@@ -365,24 +400,24 @@
                             </div>
 
                             <!-- Tarjeta de Segundo -->
-                            <div style="background: white; border: 3px solid ${tienePlato ? '#f59e0b' : '#ef4444'}; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s;">
+                            <div style="background: white; border: 2px solid ${tienePlato ? '#f59e0b' : '#ef4444'}; border-radius: clamp(8px, 1.5vw, 12px); padding: clamp(8px, 2vw, 16px); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                                 <div style="text-align: center;">
-                                    <i class="fa fa-drumstick-bite" style="font-size: 32px; color: ${tienePlato ? '#f59e0b' : '#ef4444'}; margin-bottom: 10px;"></i>
-                                    <div style="font-size: 13px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px;">Segundo</div>
-                                    <div style="font-size: 18px; font-weight: 700; color: ${tienePlato ? '#1f2937' : '#ef4444'}; min-height: 50px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                                    <i class="fa fa-drumstick-bite" style="font-size: clamp(18px, 4.5vw, 28px); color: ${tienePlato ? '#f59e0b' : '#ef4444'}; margin-bottom: clamp(4px, 1vw, 8px);"></i>
+                                    <div style="font-size: clamp(8px, 2vw, 11px); color: #6b7280; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-bottom: 4px;">Segundo</div>
+                                    <div style="font-size: clamp(11px, 3vw, 15px); font-weight: 700; color: ${tienePlato ? '#1f2937' : '#ef4444'}; min-height: clamp(28px, 7vw, 45px); display: flex; align-items: center; justify-content: center; margin-bottom: clamp(6px, 1.5vw, 12px); line-height: 1.1; padding: 0 2px;">
                                         ${tienePlato ? planData.plato : 'SIN PLATO'}
                                     </div>
                                     ${tienePlato ? `
                                                 ${puedeDespacharPlato ? `
                                             <button onclick="despacharItemSegundo(${planData.id})" 
-                                                    style="width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);"
-                                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(245, 158, 11, 0.6)'"
-                                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(245, 158, 11, 0.4)'">
+                                                    style="width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; padding: clamp(7px, 2vw, 10px); border-radius: 7px; font-weight: 700; font-size: clamp(9px, 2.2vw, 13px); cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);"
+                                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 10px rgba(245, 158, 11, 0.6)'"
+                                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(245, 158, 11, 0.4)'">
                                                 Despachar Segundo ?
                                             </button>
                                         ` : `
-                                            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 14px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);">
-                                                <i class="fa fa-check-circle fs-22"></i> Despachado
+                                            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: clamp(7px, 2vw, 10px); border-radius: 7px; font-weight: 700; font-size: clamp(9px, 2.2vw, 13px); box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);">
+                                                <i class="fa fa-check-circle"></i> Despachado
                                             </div>
                                         `}
                                             ` : ''}
@@ -390,27 +425,28 @@
                             </div>
                         </div>
 
-                        <!-- Grid de Información Adicional -->
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px;">
-                            <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(168, 237, 234, 0.3);">
-                                <i class="flaticon-033-feather text-black" ></i>
-                                <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; color: black;">Carbohidrato</div>
-                                <div style="font-size: 14px; color: black; font-weight: 700; margin-top: 5px;">${planData.carbohidrato || 'SIN CARBO'}</div>
+                        <!-- Grid de Información Adicional - 2 columnas en móvil -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(clamp(85px, 24vw, 145px), 1fr)); gap: clamp(5px, 1.5vw, 10px); margin-top: 0;">
+                            <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: clamp(6px, 2vw, 12px); border-radius: 8px; text-align: center; box-shadow: 0 2px 6px rgba(168, 237, 234, 0.3);">
+                                <i class="flaticon-033-feather text-black" style="font-size: clamp(14px, 3.5vw, 22px);"></i>
+                                <div style="font-size: clamp(7px, 1.8vw, 10px); text-transform: uppercase; letter-spacing: 0.2px; font-weight: 600; color: black; margin-top: 2px;">Carbohidrato</div>
+                                <div style="font-size: clamp(9px, 2.2vw, 12px); color: black; font-weight: 700; margin-top: 2px; line-height: 1.1;">${planData.carbohidrato || 'SIN CARBO'}</div>
                             </div>
-                            <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(168, 237, 234, 0.3);">
-                                <i class="${planData.envio_icon} text-black" ></i>
-                                <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; color: black;">Envío</div>
-                                <div style="font-size: 13px; color: black; font-weight: 700; margin-top: 5px;">${planData.envio.replace(/^[a-z]\.- /, '')}</div>
+                            <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: clamp(6px, 2vw, 12px); border-radius: 8px; text-align: center; box-shadow: 0 2px 6px rgba(168, 237, 234, 0.3);">
+                                <i class="${planData.envio_icon} text-black" style="font-size: clamp(14px, 3.5vw, 22px);"></i>
+                                <div style="font-size: clamp(7px, 1.8vw, 10px); text-transform: uppercase; letter-spacing: 0.2px; font-weight: 600; color: black; margin-top: 2px;">Envío</div>
+                                <div style="font-size: clamp(8px, 2vw, 11px); color: black; font-weight: 700; margin-top: 2px; line-height: 1.1;">${planData.envio.replace(/^[a-z]\.- /, '')}</div>
                             </div>
-                            <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(168, 237, 234, 0.3);">
-                                <i class="flaticon-381-gift text-black" ></i>
-                                <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; color: black;">Empaque</div>
-                                <div style="font-size: 14px; color: black; font-weight: 700; margin-top: 5px;">${planData.empaque}</div>
+                            <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: clamp(6px, 2vw, 12px); border-radius: 8px; text-align: center; box-shadow: 0 2px 6px rgba(168, 237, 234, 0.3);">
+                                <i class="flaticon-381-gift text-black" style="font-size: clamp(14px, 3.5vw, 22px);"></i>
+                                <div style="font-size: clamp(7px, 1.8vw, 10px); text-transform: uppercase; letter-spacing: 0.2px; font-weight: 600; color: black; margin-top: 2px;">Empaque</div>
+                                <div style="font-size: clamp(9px, 2.2vw, 12px); color: black; font-weight: 700; margin-top: 2px; line-height: 1.1;">${planData.empaque}</div>
                             </div>
                         </div>
                     </div>
                 `,
-                width: '700px',
+                width: 'clamp(300px, 96vw, 700px)',
+                padding: 'clamp(12px, 3vw, 20px)',
                 showCancelButton: true,
                 showDenyButton: true,
                 confirmButtonText: '<i class="fa fa-check-double"></i> Despachar Todo',
@@ -730,6 +766,42 @@
                     </div>
                 `;
                 }
+            });
+
+            // Listener para abrir el modal después de marcar ingreso
+            window.addEventListener('clienteMarcadoYAbrirModal', event => {
+                const itemId = event.detail.itemId;
+                
+                // Esperar un momento para que Livewire actualice la data
+                setTimeout(() => {
+                    // Buscar el registro actualizado en la tabla
+                    const filas = document.querySelectorAll('tbody tr[onclick*="mostrarPlanCocina"]');
+                    filas.forEach(fila => {
+                        const onclickAttr = fila.getAttribute('onclick');
+                        if (onclickAttr && onclickAttr.includes(`id: ${itemId}`)) {
+                            // Extraer los datos del onclick
+                            try {
+                                const match = onclickAttr.match(/mostrarPlanCocina\(({[\s\S]*?})\)/);
+                                if (match) {
+                                    const planDataStr = match[1]
+                                        .replace(/(\w+):/g, '"$1":') // Agregar comillas a las keys
+                                        .replace(/'/g, '"'); // Reemplazar comillas simples por dobles
+                                    
+                                    const planData = JSON.parse(planDataStr);
+                                    // Forzar cliente_ingresado a true ya que acabamos de marcarlo
+                                    planData.cliente_ingresado = true;
+                                    
+                                    // Abrir el modal con los datos actualizados
+                                    mostrarPlanCocina(planData);
+                                }
+                            } catch (e) {
+                                console.error('Error al parsear datos del plan:', e);
+                                // Si hay error, simplemente recargar la página para mostrar datos actualizados
+                                Livewire.emit('refresh');
+                            }
+                        }
+                    });
+                }, 500);
             });
         });
 

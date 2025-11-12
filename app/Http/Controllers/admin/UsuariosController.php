@@ -399,21 +399,36 @@ class UsuariosController extends Controller
 
     public function permisoVarios(Request $request)
     {
-        $fecha = $request->fecha; // string
+        $fecha = $request->fecha;
         $cantidad = $request->cantidad;
         $planId = $request->planId;
         $user_id = $request->usuarioId;
-
+        
         $fechaSeleccionada = Carbon::parse($fecha)->startOfDay();
         $fechaHoy = Carbon::now();
-        // $horaActual = $fechaHoy->hour;
+        
+        $horaFinalización = GlobalHelper::getValorAtributoSetting('hora_finalizacion_planes');
+        $fechaLimite = Carbon::today()->setTimeFromTimeString($horaFinalización);
 
-        // No permitir fechas pasadas
-        if ($fechaSeleccionada->lessThan($fechaHoy->startOfDay())) {
+        // Use copy() to avoid modifying $fechaHoy
+        if ($fechaSeleccionada->lessThan($fechaHoy->copy()->startOfDay())) {
             return response()->json([
                 'error' => 'No se pueden asignar permisos en fechas pasadas.'
             ], 400);
         }
+
+        if ($fechaSeleccionada->isSameDay($fechaHoy) && $fechaHoy->greaterThanOrEqualTo($fechaLimite)) {
+            return response()->json([
+                'error' => "No se puede solicitar permiso para pedidos del día después de las {$horaFinalización}."
+            ], 400);
+        }
+
+        // // Log::debug('Se buscarán permisos disponibles.', [
+        // //     'fecha' => $fechaSeleccionada,
+        // //     'usuario' => $user_id,
+        // //     'plan' => $planId,
+        // //     'limite' => $cantidad
+        // // ]);
 
         // Obtener los eventos "pendientes" permisibles
         $eventosPermisibles = DB::table('plane_user')
@@ -423,6 +438,10 @@ class UsuariosController extends Controller
             ->where('plane_id', $planId)
             ->limit($cantidad)
             ->get();
+
+        // // Log::debug('Resultado de la búsqueda.', [
+        // //     'cantidad_eventos' => count($eventosPermisibles)
+        // // ]);
 
         if ($eventosPermisibles->isEmpty()) {
             return response()->json(['error' => 'Pedido(s) no habilitado(s) para permiso'], 404);
@@ -497,15 +516,24 @@ class UsuariosController extends Controller
 
         if ($fechaSeleccionada->isSameDay($fechaHoy) && $fechaHoy->greaterThanOrEqualTo($fechaLimite)) {
             return response()->json([
-                'error' => "Ya no se pueden deshacer permisos después de las {$horaFinalización}."
+                'error' => "No se puede deshacer permisos después de las {$horaFinalización}."
             ], 400);
         }
 
-        if ($fechaSeleccionada->lessThan($fechaHoy->startOfDay())) {
+        // Use copy() to avoid modifying $fechaHoy
+        if ($fechaSeleccionada->lessThan($fechaHoy->copy()->startOfDay())) {
             return response()->json([
                 'error' => 'No se pueden deshacer permisos de días anteriores.'
             ], 400);
         }
+
+        // // Log::debug('Se buscarán permisos disponibles.', [
+        // //     'fecha' => $fechaSeleccionada,
+        // //     'usuario' => $user_id,
+        // //     'plan' => $planId,
+        // //     'limite' => $cantidad
+        // // ]);
+
 
         // Obtener permisos de la fecha solicitada
         $permisosRemovibles = DB::table('plane_user')
@@ -516,6 +544,10 @@ class UsuariosController extends Controller
             ->orderBy('start', 'ASC')
             ->limit($cantidad)
             ->get();
+
+        // // Log::debug('Resultado de la búsqueda.', [
+        // //     'cantidad_permisos_removibles' => count($permisosRemovibles)
+        // // ]);
 
         if ($permisosRemovibles->isEmpty()) {
             return response()->json(['error' => 'No hay permisos que puedan deshacerse'], 404);
@@ -529,7 +561,7 @@ class UsuariosController extends Controller
         do {
             // Obtener los últimos N días candidatos
             $candidatos = DB::table('plane_user')
-                ->where('user_id', auth()->id())
+                ->where('user_id', $user_id)
                 ->where('plane_id', $planId)
                 ->whereNotIn('estado', [Plane::ESTADOFINALIZADO, Plane::ESTADOFERIADO])
                 ->orderBy('start', 'DESC')
@@ -566,7 +598,7 @@ class UsuariosController extends Controller
 
         // Ahora eliminar la cantidad total calculada
         $pendientesAEliminar = DB::table('plane_user')
-            ->where('user_id', auth()->id())
+            ->where('user_id', $user_id)
             ->where('plane_id', $planId)
             ->whereNotIn('estado', [Plane::ESTADOFINALIZADO, Plane::ESTADOFERIADO])
             ->orderBy('start', 'DESC')

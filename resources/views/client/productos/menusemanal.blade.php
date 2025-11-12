@@ -1234,33 +1234,36 @@
                     <div data-card-height="90"
                         class="card card-style bg-25 mb-0 rounded-s m-3 {{ App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia ? 'gradient-border' : '' }}"
                         style="height: 90px;background-image:url({{ asset(GlobalHelper::getValorAtributoSetting('mi_perfil_deligth')) }}">
-                        @if (App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
-                            <div class="card-top"><i class="fa fa-check color-yellow-dark fa-3x float-end me-3 mt-3"></i>
-                            </div>
-                        @endif
+                       
 
                         <div class="card-center">
                             <button class="btn accordion-btn collapsed" data-bs-toggle="collapse"
                                 data-bs-target="#collapse{{ $almuerzo->id }}" aria-expanded="false">
                                 <h4 class="text-center color-white text-uppercase">{{ $almuerzo->dia }}</h4>
+                                @if (App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                <p class="text-center color-white opacity-70 mb-0 mt-n2 fs-20">Menú disponible para hoy!</p>
+                                @else
                                 <p class="text-center color-white opacity-70 mb-0 mt-n2">Descubre el menu para este dia</p>
+                                @endif
+                                
                             </button>
                         </div>
                         <div class="card-overlay rounded-s bg-black opacity-70"></div>
                     </div>
-                    <div id="collapse{{ $almuerzo->id }}" class="collapse" data-bs-parent="#accordion-3"
+                    <div id="collapse{{ $almuerzo->id }}" class="collapse {{ App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia ? 'show' : '' }}" data-bs-parent="#accordion-3"
                         style="">
                         <div class="content">
-                            <h4 class="mb-n1">{{ $almuerzo->dia }}</h4>
-                            <div class="divider mb-3"></div>
-                            <div class="row mb-0">
-                                <div class="col-5">
+                            <div class="row mb-0 justify-content-center align-items-center text-center">
+                                <div class="col-5 text-center">
                                     <p class="color-theme font-700">Sopa</p>
                                 </div>
                                 <div class="col-7">
-                                    @if (App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                    @if (App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia && $almuerzo->sopa_estado && $almuerzo->sopa_cant > 0)
                                         <p class="font-400">{{ $almuerzo->sopa }} <i
                                                 class="fa fa-check-circle color-green-dark me-2"></i></p>
+                                    @elseif(App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
+                                        <del class="font-400">{{ $almuerzo->sopa }}</del> <i
+                                            class="fa fa-times-circle color-red-dark me-2"></i>
                                     @else
                                         <p class="font-400">{{ $almuerzo->sopa }} </p>
                                     @endif

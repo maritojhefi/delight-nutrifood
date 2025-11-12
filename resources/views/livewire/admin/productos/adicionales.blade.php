@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-xl-8 col-lg-12 col-xxl-5 col-sm-12">
+    <div class="col-xl-4 col-lg-4 col-xxl-4 col-sm-12">
         <div class="row">
             <div class="card bordeado">
                 <div class="card-header">
@@ -22,11 +22,15 @@
 
         </div>
     </div>
-    <div class="col-xl-4 col-lg-12 col-xxl-7 col-sm-12 ">
+    <div class="col-xl-8 col-lg-8 col-xxl-8 col-sm-12 ">
         <div class="card overflow-hidden bordeado">
             <div class="card p-0 m-0">
                 <div class="card-header ">
                     <h4 class="card-title">Listado de adicionales</h4>
+                    <div class="input-group search-area d-xl-inline-flex bordeado">
+						<button class="input-group-text"><i class="flaticon-381-search-2 text-primary"></i></button>
+						<input type="text" class="form-control" wire:model.debounce.750ms="search" placeholder="Buscar adicional...">
+					</div>
                 </div>
                 <div class="card-body py-1">
                     <div class="table-responsive">

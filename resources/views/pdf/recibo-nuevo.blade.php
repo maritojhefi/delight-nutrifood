@@ -187,7 +187,27 @@
                                 <td><small>Bs {{ $list['precio'] }}</small></td>
                                 <th><small>Bs {{ $list['precio'] * $list['cantidad'] }}</small></th>
                             </tr>
-                            <br>
+                            @if (isset($list['adicionales_desglosados']) && count($list['adicionales_desglosados']) > 0)
+                                @foreach ($list['adicionales_desglosados'] as $adicional)
+                                    <tr>
+                                        <td></td>
+                                        <td style="text-align: left;">
+                                            <small style="padding-left: 10px; color: #666; font-style: italic;">
+                                                + x{{ $adicional['cantidad'] }} {{ $adicional['nombre'] }} (Bs {{ number_format($adicional['precio_unitario'], 2) }})
+                                            </small>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                @endforeach
+                                <tr style="height: 8px;">
+                                    <td colspan="4"></td>
+                                </tr>
+                            @else
+                                <tr style="height: 5px;">
+                                    <td colspan="4"></td>
+                                </tr>
+                            @endif
                         @endforeach
 
                     </tbody>
@@ -201,13 +221,22 @@
                             <td>Bs {{ number_format($subtotal, 2) }}</td>
                         </tr>
                         <br>
+                        @if (isset($totalAdicionales) && $totalAdicionales != 0 && $totalAdicionales > 0)
+                            <tr>
+                                <td></td>
+                                <td><small>Total adicionales</small></td>
+
+                                <td></td>
+                                <td><small>+Bs {{ number_format($totalAdicionales, 2) }}</small></td>
+                            </tr>
+                        @endif
                         @if ($descuentoProductos != 0)
                             <tr>
                                 <td></td>
                                 <td><small>Descuento por productos</small> </td>
 
                                 <td></td>
-                                <td><small>Bs {{ number_format($descuentoProductos, 2) }}</small></td>
+                                <td><small>-Bs {{ number_format($descuentoProductos, 2) }}</small></td>
                             </tr>
                         @endif
 
@@ -217,21 +246,32 @@
                                 <td><small>Otros descuentos</small></td>
 
                                 <td></td>
-                                <td><small>Bs {{ number_format($otrosDescuentos, 2) }}</small></td>
+                                <td><small>-Bs {{ number_format($otrosDescuentos, 2) }}</small></td>
                             </tr>
                         @endif
+                        @php
+                            $totalAPagar = $subtotal + (isset($totalAdicionales) ? $totalAdicionales : 0) - $descuentoProductos - $otrosDescuentos;
+                        @endphp
                         @if ($valorSaldo != null && $valorSaldo != 0)
                             <tr>
                                 <td></td>
                                 <td>{{ $cuenta->a_favor_cliente ? 'A favor cliente' : 'Deuda Generada' }}</td>
 
                                 <td></td>
-                                <td>Bs {{ number_format($valorSaldo, 2) }}</td>
+                                <td>{{ $cuenta->a_favor_cliente ? '-' : '+' }}Bs {{ number_format($valorSaldo, 2) }}</td>
                             </tr>
                             <br>
                             <tr>
                                 <td></td>
-                                <td><strong> TOTAL PAGADO</strong></td>
+                                <td><strong>TOTAL A PAGAR</strong></td>
+
+                                <td></td>
+                                <td><strong>Bs {{ number_format($totalAPagar, 2) }}</strong></td>
+                            </tr>
+                            <br>
+                            <tr>
+                                <td></td>
+                                <td><strong>TOTAL PAGADO</strong></td>
 
                                 <td></td>
                                 <td><strong>Bs
@@ -242,7 +282,15 @@
                             <br>
                             <tr>
                                 <td></td>
-                                <td><strong> TOTAL PAGADO</strong></td>
+                                <td><strong>TOTAL A PAGAR</strong></td>
+
+                                <td></td>
+                                <td><strong>Bs {{ number_format($totalAPagar, 2) }}</strong></td>
+                            </tr>
+                            <br>
+                            <tr>
+                                <td></td>
+                                <td><strong>TOTAL PAGADO</strong></td>
 
                                 <td></td>
                                 <td><strong> Bs
@@ -257,12 +305,12 @@
                 <hr>
                 <br>
                 @if (isset($metodo) && $metodo != '')
-                    Metodos de pago:
+                    <strong>Métodos de pago:</strong>
                     @foreach ($metodo as $item)
-                        <p>- {{ $item->nombre_metodo_pago }}</p>
+                        <p>- {{ $item->nombre_metodo_pago }}: <strong>Bs {{ number_format($item->pivot->monto, 2) }}</strong></p>
                     @endforeach
                 @else
-                    Metodos de pago:
+                    <strong>Métodos de pago:</strong>
                     <p>- Efectivo</p>
                 @endif
                 @if (isset($observacion))

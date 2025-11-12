@@ -18,7 +18,7 @@ use App\Events\RefreshMenuHeaderEvent;
 
 class GlobalHelper
 {
-    public static function timeago($date)
+    public static function timeago($date, $parametro = null)
     {
         $timestamp = strtotime($date);
 
@@ -37,12 +37,60 @@ class GlobalHelper
         $isFuture = $currentTime < $timestamp;
         $diff = abs($currentTime - $timestamp);
 
-        // Calcular el tiempo transcurrido o faltante
+        // Si se especifica un parámetro de unidad, calcular específicamente en esa unidad
+        if ($parametro !== null) {
+            $unidades = [
+                'segundo' => 0,
+                'minuto' => 1,
+                'hora' => 2,
+                'dia' => 3,
+                'día' => 3,
+                'mes' => 4,
+                'año' => 5,
+                'ano' => 5
+            ];
+
+            $parametroLower = strtolower($parametro);
+
+            if (isset($unidades[$parametroLower])) {
+                $i = $unidades[$parametroLower];
+                $diffCalculated = $diff;
+
+                // Calcular la diferencia en la unidad específica
+                for ($j = 0; $j < $i; $j++) {
+                    $diffCalculated = $diffCalculated / $length[$j];
+                }
+
+                $diffCalculated = round($diffCalculated);
+
+                // Si es día y la diferencia es 0, devolver "Hoy"
+                if ($i == 3 && $diffCalculated == 0) {
+                    return "Hoy";
+                }
+
+                $unit = $diffCalculated != 1 ? $strTimePlural[$i] : $strTimeSingular[$i];
+
+                // Construir el mensaje
+                if ($isFuture) {
+                    return "Faltan $diffCalculated $unit";
+                } else {
+                    return "Hace $diffCalculated $unit";
+                }
+            }
+        }
+
+        // Calcular el tiempo transcurrido o faltante automáticamente
         for ($i = 0; $diff >= $length[$i] && $i < count($length) - 1; $i++) {
             $diff = $diff / $length[$i];
         }
 
         $diff = round($diff);
+
+        // Si es día y la diferencia es 0, devolver "Hoy"
+        if ($i == 3 && $diff == 0) {
+            return "Hoy";
+        }
+
         $unit = $diff > 1 ? $strTimePlural[$i] : $strTimeSingular[$i];
 
         // Construir el mensaje

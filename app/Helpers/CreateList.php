@@ -224,4 +224,68 @@ class CreateList
         }
         return $coleccion;
     }
+
+    /**
+     * Procesa y agrupa los adicionales de un producto desde la tabla producto_venta
+     * @param int $pivotId - ID de la tabla producto_venta
+     * @return array - Array con adicionales agrupados [['nombre' => '', 'cantidad' => 0, 'precio_unitario' => 0, 'precio_total' => 0]]
+     */
+    static function procesarAdicionalesProducto($pivotId)
+    {
+        $registro = DB::table('producto_venta')->where('id', $pivotId)->first();
+
+        if (!$registro || !$registro->adicionales) {
+            return [];
+        }
+
+        $adicionales = json_decode($registro->adicionales, true);
+
+        if (!$adicionales || !is_array($adicionales)) {
+            return [];
+        }
+
+        // Array para contar adicionales: ['Queso extra' => ['count' => 2, 'precio' => 3.00]]
+        $adicionalesAgrupados = [];
+
+        foreach ($adicionales as $itemData) {
+            if (!isset($itemData)) {
+                continue;
+            }
+
+            // Verificar si es formato nuevo (con 'adicionales') o formato antiguo
+            $adicionalesArray = $itemData['adicionales'] ?? $itemData;
+
+            foreach ($adicionalesArray as $lista) {
+                if (is_array($lista)) {
+                    foreach ($lista as $nombre => $precio) {
+                        $precioFloat = (float)$precio;
+
+                        // Solo procesar adicionales con precio > 0
+                        if ($precioFloat > 0) {
+                            if (!isset($adicionalesAgrupados[$nombre])) {
+                                $adicionalesAgrupados[$nombre] = [
+                                    'count' => 0,
+                                    'precio' => $precioFloat
+                                ];
+                            }
+                            $adicionalesAgrupados[$nombre]['count']++;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Convertir a formato de salida
+        $resultado = [];
+        foreach ($adicionalesAgrupados as $nombre => $data) {
+            $resultado[] = [
+                'nombre' => $nombre,
+                'cantidad' => $data['count'],
+                'precio_unitario' => $data['precio'],
+                'precio_total' => $data['count'] * $data['precio']
+            ];
+        }
+
+        return $resultado;
+    }
 }
