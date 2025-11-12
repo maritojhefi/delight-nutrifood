@@ -38,7 +38,7 @@
             <div class="d-flex flex-row justify-content-evenly w-100">
                 <a href="#" class="close-menu btn btn-s font-15 shadow-l rounded-s text-uppercase font-900 bg-delight-red color-white" >Cancelar</a>
                 <button type="button" id="verificar-codigo-btn-{{ $funcionalidad }}"
-                    class="btn-verificar-otp btn btn-s font-15 shadow-l rounded-s validador-ingresar text-uppercase font-900 bg-mint-dark color-white">
+                    class="btn-verificar-otp btn btn-s font-15 shadow-l rounded-s validador-ingresar text-uppercase font-900 bg-highlight color-white">
                     Verificar
                 </button>
             </div>
