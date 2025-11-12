@@ -78,15 +78,6 @@
                                 style="transition: none;">
                                 Teléfono
                             </label>
-                            
-                            <!-- Feedback de validación -->
-                            <!-- <div class="valid-feedback">
-                                <i class="fa fa-check me-1"></i> 
-                                Número válido
-                            </div>
-                            <div class="invalid-feedback">
-                                Número inválido para el país seleccionado
-                            </div> -->
                         </div>
                     </div>
 
@@ -115,7 +106,7 @@
                             id="btn-guardar-telefono"
                             class="btn w-100 btn-m bg-highlight rounded-s d-flex flex-row align-items-center justify-content-center gap-1 text-uppercase font-900 shadow-s d-none"
                             disabled>
-                        <i data-lucide="message-circle-more" class="lucide-icon me-2"></i>
+                        <!-- <i data-lucide="message-circle-more" class="lucide-icon" style="width: 1rem; height: 1rem;"></i> -->
                         Verificar Número
                     </button>
                     
@@ -562,7 +553,7 @@
                 const valorActual = $(this).val();
                 const longitud = valorActual.length;
 
-                console.log(`Caracteres: ${longitud}/${estado.digitosEsperados}`);
+                // // console.log(`Caracteres: ${longitud}/${estado.digitosEsperados}`);
 
                 // Limpiar validación previa
                 if (estado.temporizadorValidacion) {
@@ -576,11 +567,6 @@
                     }, 500);
                 } else {
                     ocultarBotonGuardar();
-                }
-
-                // Evitar que se exceda la longitud máxima
-                if (estado.digitosEsperados && longitud > estado.digitosEsperados) {
-                    $(this).val(valorActual.substring(0, estado.digitosEsperados));
                 }
             };
 
@@ -602,6 +588,9 @@
                     
                     if (!regiones || regiones.length === 0) {
                         console.warn('No se encontraron regiones para el código:', codigoPais);
+                        // Asegurar que no hay límite si no hay datos
+                        elementos.inputTelefono.removeAttr('maxlength');
+                        estado.digitosEsperados = null;
                         return;
                     }
 
@@ -615,6 +604,9 @@
                             const numeroEjemplo = phoneUtil.getNationalSignificantNumber(ejemplo);
                             estado.digitosEsperados = numeroEjemplo.length;
                             
+                            // === APLICAR EL FIX AQUÍ: Establecer el atributo maxlength ===
+                            elementos.inputTelefono.attr('maxlength', estado.digitosEsperados);
+
                             console.log(`Código +${codigoPais} → Región: ${region}, Dígitos esperados: ${estado.digitosEsperados}`);
                             return;
                         }
