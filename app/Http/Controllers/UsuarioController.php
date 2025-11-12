@@ -793,13 +793,13 @@ class UsuarioController extends Controller
     }
 
     public function cambiarNumeroOTP(Request $request) {
-        // Read the camelCase inputs sent from the JavaScript front-end
         $codigoIngresado = $request->input('codigo');
-        $codigoGenerado = $request->input('codigoGenerado'); // Changed from 'codigo_generado'
-        $nuevoTelefonoNacional = $request->input('nuevoTelefonoNacional'); // Changed from 'nuevo_telefono_nacional'
-        $nuevoCodigoPais = $request->input('nuevoCodigoPais'); // Changed from 'nuevo_codigo_pais'
+        $codigoGenerado = $request->input('codigoGenerado');
+        $nuevoTelefonoNacional = $request->input('nuevoTelefonoNacional');
+        $nuevoCodigoPais = $request->input('nuevoCodigoPais');
         $userId = $request->input('userId');
-        // $user = User::whereRaw("CONCAT(codigo_pais, telf) = ?", [$telefono_completo])->first();
+
+        $user = User::where('id', $userId)->first();
 
         if (!$user) {
             return response()->json(
@@ -811,11 +811,11 @@ class UsuarioController extends Controller
             );
         }
 
-        $user_id = $user->id;
-
-        if ($codigoIngresado === $codigoGenerado) {
+        if ($codigoIngresado == $codigoGenerado) {
             // Actualizar el número telefónico del usuario
-            $user->telf = 
+            $user->codigo_pais = $nuevoCodigoPais;
+            $user->telf = $nuevoTelefonoNacional;
+            $user->save();
             return response()->json(
             [
                 'status' => 'success',

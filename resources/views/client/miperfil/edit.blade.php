@@ -65,15 +65,15 @@
                             <input type="tel" 
                                 class="form-control text-center font-14"
                                 placeholder="Ingrese su número" 
-                                name="telefono_nacional"
-                                id="telefono_nacional"
+                                name="telefono-nacional"
+                                id="telefono-nacional"
                                 inputmode="numeric"
                                 pattern="[0-9]*"
                                 autocomplete="tel-national"
                                 style="height: 40px;"
-                                value="{{ old('telefono_nacional', $usuario->telf) }}"
+                                value="{{ old('telefono-nacional', $usuario->telf) }}"
                                 required>
-                            <label for="telefono_nacional" 
+                            <label for="telefono-nacional" 
                                 class="color-highlight bg-theme font-400 font-13"
                                 style="transition: none;">
                                 Teléfono
@@ -91,7 +91,7 @@
                     </div>
 
                     <!-- Mensajes de Error de Laravel -->
-                    @error('telefono_nacional')
+                    @error('telefono-nacional')
                         <p class="text-danger line-height-s mx-2 mt-2 mb-0">
                             <i class="fa fa-times invalid color-red-dark me-2"></i>
                             {{ $message }}
@@ -453,6 +453,18 @@
             </div>
         </div>
     </div>
+
+    <div id="codigo-incorrecto" class="menu menu-box-modal rounded-m"
+        style="display: block; width: 220px; height: auto; padding: 1%;">
+        <h1 class="text-center fa-5x mt-2 pt-3 pb-2"><i class="fa fa-times-circle color-red-dark"></i></h1>
+        <h2 class="text-center">Código incorrecto, intenta de nuevo dentro de 30 segundos</h2>
+    </div>
+
+    <div id="codigo-correcto" class="menu menu-box-modal rounded-m"
+        style="display: block; width: 220px; height: auto; padding: 1%;">
+        <h1 class="text-center fa-5x mt-2 pt-3 pb-2"><i class="fa fa-check-circle color-mint-dark"></i></h1>
+        <h2 class="text-center">Teléfono verificado correctamente</h2>
+    </div>
     @endpush
 
     @push('header')
@@ -526,23 +538,38 @@
         <script>
         $(document).ready(function() {
             // ============= ESTADO DE LA APLICACIÓN =============
-            let digitosPais = null;
-            let validacionEnProgreso = false;
-            let timeoutValidacion = null;
-            let codigoVerificacion = null;
+            const estado = {
+                digitosEsperados: null,
+                validacionEnCurso: false,
+                temporizadorValidacion: null,
+                codigoVerificacion: null
+            };
 
             // ============= ELEMENTOS DEL DOM =============
-            const selectorPaisId = 'selector-codigo_pais-perfil';
-            const selectorPais = $('#' + selectorPaisId);
-            const inputTelefono = $('#telefono_nacional');
-            const btnSubmit = $('#btn-guardar-telefono'); // ID del botón submit
+            const elementos = {
+                selectorPais: $('#selector-codigo_pais-perfil'),
+                inputTelefono: $('#telefono-nacional'),
+                botonGuardar: $('#btn-guardar-telefono'),
+                modalOTP: $('#menu-verificacion-cambionumero'),
+                ocultadorMenu: $('.menu-hider'),
+                modalExito: $('#codigo-correcto')
+            };
 
-            // ============= INICIALIZAR SLIMSELECT =============
-            if (selectorPais.length) {
-                selectorPais.css('display', '');
+            // ============= INICIALIZACIÓN =============
+            const iniciarOTPContrasena = () => {
+                inicializarSelectorPais();
+                configurarEventos();
+                detectarDigitosPais();
+            };
+
+            // ============= INICIALIZACIÓN DE SLIMSELECT =============
+            const inicializarSelectorPais = () => {
+                if (!elementos.selectorPais.length) return;
+
+                elementos.selectorPais.css('display', '');
 
                 new SlimSelect({
-                    select: '#' + selectorPaisId,
+                    select: '#selector-codigo_pais-perfil',
                     settings: {
                         placeholder: 'Seleccione un país',
                         searchPlaceholder: 'Buscar país...',
@@ -552,45 +579,85 @@
                     }
                 });
 
-                // Establecer el codigo_pais del usuario como valor por defecto
+                // Establecer el código de país del usuario como predeterminado
                 setTimeout(() => {
-                    const rawElement = selectorPais.get(0);
-                    if (!rawElement.value || rawElement.value === '') {
-                        rawElement.value = '{{ ltrim($usuario->codigo_pais, '+') }}';
-                        // rawElement.value = '591';
-                        rawElement.dispatchEvent(new Event('change', { bubbles: true }));
+                    const elementoSelect = elementos.selectorPais.get(0);
+                    if (!elementoSelect.value || elementoSelect.value === '') {
+                        elementoSelect.value = '{{ ltrim($usuario->codigo_pais, '+') }}';
+                        elementoSelect.dispatchEvent(new Event('change', { bubbles: true }));
                     }
                 }, 150);
+            };
 
-                // Event listener para cambios en el selector
-                selectorPais.get(0).addEventListener('change', function() {
-                    detectarDigitosPais();
-                    // Limpiar validación previa cuando cambia el país
-                    inputTelefono.val('');
-                    ocultarBotonSubmit();
-                    // Cancelar validaciones pendientes
-                    if (timeoutValidacion) {
-                        clearTimeout(timeoutValidacion);
-                    }
-                });
-            }
+            // ============= CONFIGURACIÓN DE EVENTOS =============
+            const configurarEventos = () => {
+                // Cambio de país
+                elementos.selectorPais.get(0).addEventListener('change', manejarCambioPais);
 
-            // ============= DETECTAR DÍGITOS DEL PAÍS =============
+                // Entrada de teléfono (con espera)
+                elementos.inputTelefono.on('input', manejarEntradaTelefono);
+
+                // Click en botón guardar
+                elementos.botonGuardar.on('click', manejarClickGuardar);
+            };
+
+            const manejarCambioPais = () => {
+                detectarDigitosPais();
+                elementos.inputTelefono.val('');
+                ocultarBotonGuardar();
+                
+                if (estado.temporizadorValidacion) {
+                    clearTimeout(estado.temporizadorValidacion);
+                }
+            };
+
+            const manejarEntradaTelefono = function() {
+                const valorActual = $(this).val();
+                const longitud = valorActual.length;
+
+                console.log(`Caracteres: ${longitud}/${estado.digitosEsperados}`);
+
+                // Limpiar validación previa
+                if (estado.temporizadorValidacion) {
+                    clearTimeout(estado.temporizadorValidacion);
+                }
+
+                // Validar cuando se alcance la longitud esperada
+                if (estado.digitosEsperados && longitud === estado.digitosEsperados) {
+                    estado.temporizadorValidacion = setTimeout(() => {
+                        validarTelefonoRemoto(valorActual);
+                    }, 500);
+                } else {
+                    ocultarBotonGuardar();
+                }
+
+                // Evitar que se exceda la longitud máxima
+                if (estado.digitosEsperados && longitud > estado.digitosEsperados) {
+                    $(this).val(valorActual.substring(0, estado.digitosEsperados));
+                }
+            };
+
+            const manejarClickGuardar = (e) => {
+                e.preventDefault();
+                console.log("Botón guardar clickeado - enviando código de verificación");
+                enviarOTPParaCambioNumero();
+            };
+
+            // ============= DETECCIÓN DE PAÍS =============
             const detectarDigitosPais = () => {
                 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
-                const codigo = parseInt(selectorPais.val());
+                const codigoPais = parseInt(elementos.selectorPais.val());
 
-                console.log('Detectando dígitos para código:', codigo);
+                console.log('Detectando dígitos para el código:', codigoPais);
 
                 try {
-                    const regiones = phoneUtil.getRegionCodesForCountryCode(codigo);
+                    const regiones = phoneUtil.getRegionCodesForCountryCode(codigoPais);
                     
                     if (!regiones || regiones.length === 0) {
-                        console.warn('No se encontraron regiones para el código:', codigo);
+                        console.warn('No se encontraron regiones para el código:', codigoPais);
                         return;
                     }
 
-                    // Buscar ejemplo de número móvil
                     for (const region of regiones) {
                         const ejemplo = phoneUtil.getExampleNumberForType(
                             region,
@@ -599,210 +666,165 @@
                         
                         if (ejemplo) {
                             const numeroEjemplo = phoneUtil.getNationalSignificantNumber(ejemplo);
-                            digitosPais = numeroEjemplo.length;
+                            estado.digitosEsperados = numeroEjemplo.length;
                             
-                            console.log(`Código +${codigo} → Región: ${region}, Longitud esperada: ${digitosPais}`);
-                            
-                            // Actualizar placeholder del input
-                            inputTelefono.attr('placeholder', `Ej: ${numeroEjemplo}`);
+                            console.log(`Código +${codigoPais} → Región: ${region}, Dígitos esperados: ${estado.digitosEsperados}`);
                             return;
                         }
                     }
                 } catch (e) {
                     console.error('Error al detectar dígitos:', e.message);
-                    mostrarError('Error al configurar validación de país');
+                    mostrarError('Error al configurar la validación del país');
                 }
             };
 
-            // ============= VALIDACIÓN EN TIEMPO REAL CON DEBOUNCE =============
-            inputTelefono.on('input', function() {
-                const valorActual = $(this).val();
-                const longitudActual = valorActual.length;
-
-                console.log(`Caracteres: ${longitudActual}/${digitosPais}`);
-
-                // Limpiar timeout anterior
-                if (timeoutValidacion) {
-                    clearTimeout(timeoutValidacion);
-                }
-
-                // Validar solo cuando se alcanza la longitud esperada
-                if (digitosPais && longitudActual === digitosPais) {
-                    // Debounce de 500ms antes de validar
-                    timeoutValidacion = setTimeout(() => {
-                        validarTelefonoRemoto(valorActual);
-                    }, 500);
-                } else {
-                    ocultarBotonSubmit();
-                }
-
-                // Prevenir entrada de más dígitos de los permitidos
-                if (digitosPais && longitudActual > digitosPais) {
-                    $(this).val(valorActual.substring(0, digitosPais));
-                }
-            });
-
-            // ============= VALIDACIÓN REMOTA CON AXIOS =============
+            // ============= VALIDACIÓN REMOTA =============
             const validarTelefonoRemoto = async (telefono) => {
-                // Prevenir validaciones simultáneas
-                if (validacionEnProgreso) return;
-                validacionEnProgreso = true;
+                if (estado.validacionEnCurso) return;
+                estado.validacionEnCurso = true;
 
-                const codigoPais = selectorPais.val();
+                const codigoPais = elementos.selectorPais.val();
 
                 try {
-                    const response = await axios.post('{{ route("usuario.verificar-numero") }}', {
-                        telefono: telefono,
-                        codigoPais: codigoPais,
-                        digitosPais: digitosPais
+                    const respuesta = await axios.post('{{ route("usuario.verificar-numero") }}', {
+                        telefono,
+                        codigoPais,
+                        digitosPais: estado.digitosEsperados
                     }, {
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
                     });
 
-                    if (response.data.status === 'success') {
-                        console.log('✅ Teléfono válido');
-                        mostrarBotonSubmit();
+                    if (respuesta.data.status === 'success') {
+                        console.log('✅ Número válido');
+                        mostrarBotonGuardar();
                         mostrarExito('Número válido');
                     } else {
-                        ocultarBotonSubmit();
-                        const errorMsg = extraerMensajeError(response.data.errors);
-                        mostrarError(errorMsg);
+                        ocultarBotonGuardar();
+                        const mensajeError = obtenerMensajeError(respuesta.data.errors);
+                        mostrarError(mensajeError);
                     }
 
                 } catch (error) {
-                    console.error('Error en validación:', error);
-                    ocultarBotonSubmit();
-                    
-                    let errorMsg = 'Error al validar el teléfono';
+                    console.error('Error en la validación:', error);
+                    ocultarBotonGuardar();
+
+                    let mensaje = 'Error al validar el teléfono';
                     if (error.response?.data?.errors) {
-                        errorMsg = extraerMensajeError(error.response.data.errors);
+                        mensaje = obtenerMensajeError(error.response.data.errors);
                     } else if (error.response?.data?.message) {
-                        errorMsg = error.response.data.message;
+                        mensaje = error.response.data.message;
                     }
                     
-                    mostrarError(errorMsg);
+                    mostrarError(mensaje);
                 } finally {
-                    validacionEnProgreso = false;
+                    estado.validacionEnCurso = false;
                 }
             };
 
-            // ============= ENVÍO DE CÓDIGO CON AXIOS =============
-            
-            const envioOTPCambioNumero = async() => {
-                // Realizar el envío del código
-                const telefono = $(inputTelefono).val();
-                const codigoPais = selectorPais.val();
-
-                $('#reenviar-codigo').off('click').on('click', function(e) {
-                    e.preventDefault();
-                    envioOTPCambioNumero();
-                });
-
-                $('#verificar-codigo-btn-cambionumero').on('click', function() {
-                    verificarCodigoIngreso();
-                });
+            // ============= GESTIÓN DEL OTP =============
+            const enviarOTPParaCambioNumero = async () => {
+                const telefono = elementos.inputTelefono.val();
+                const codigoPais = elementos.selectorPais.val();
 
                 try {
-                    const response = await axios.post('{{ route("usuario.enviar-codigo-verificacion") }}', {
-                        telefono: telefono,
-                        codigoPais: codigoPais,
-                        digitosPais: digitosPais,
+                    const respuesta = await axios.post('{{ route("usuario.enviar-codigo-verificacion") }}', {
+                        telefono,
+                        codigoPais,
+                        digitosPais: estado.digitosEsperados,
                         operacion: 'cambio_telefono_perfil'
                     }, {
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
                     });
-                    if (response.data.status == "success") {
-                        codigoVerificacion = response.codigo_generado;
+
+                    if (respuesta.data.status === "success") {
+                        estado.codigoVerificacion = respuesta.data.codigo_generado;
+                        configurarEventosOTP();
                         mostrarModalOTP();
-                        // Revelar menu OTP cambio numero
                     }
                 } catch (error) {
-                    console.error("Ocurrió un error al enviar el otp para cambiar numero telefonico: ", error);
+                    console.error("Error al enviar el código de verificación:", error);
                 }
-            }
+            };
 
-            const validarOTPCambioNumero = (codigo) => {
-                const claseSolicitud = '#form-codigo-verificacion-ingreso'
-                const inputs = document.querySelectorAll(`${claseSolicitud} .otp`);
-                let codigoCompleto = '';
-                const telefono = $(inputTelefono).val();
-                const codigoPais = selectorPais.val();
-
-                inputs.forEach((input, index) => {
-                    const valor = input.value.trim();
-                    if (valor) {
-                        codigoCompleto += valor;
-                    } else {
-                        // console.log(`Input ${index + 1} está vacío`);
-                    }
+            const configurarEventosOTP = () => {
+                // Botón de verificación
+                $('#verificar-codigo-btn-cambionumero').off('click').on('click', () => {
+                    validarOTPParaCambioNumero();
                 });
 
-                if (codigoCompleto.length === 5) {
-                    // enviarCodigoVerificacionIngreso(codigoCompleto);
-                    // return codigoCompleto;   
+                // Botón de reenvío
+                $('#reenviar-codigo').off('click').on('click', (e) => {
+                    e.preventDefault();
+                    enviarOTPParaCambioNumero();
+                });
+            };
 
-                    const response = await axios.post('{{ route("usuario.cambiar-numero-otp") }}', {
-                        // Front-end property names use camelCase:
-                        codigo: codigo, // User input code
-                        codigoGenerado: codigoVerificacion, // Generated verification code
+            const validarOTPParaCambioNumero = async () => {
+                const formulario = '#form-codigo-verificacion-cambionumero';
+                const inputs = document.querySelectorAll(`${formulario} .otp`);
+                let codigoCompleto = '';
+
+                inputs.forEach(input => {
+                    const valor = input.value.trim();
+                    if (valor) codigoCompleto += valor;
+                });
+
+                if (codigoCompleto.length !== 5) {
+                    alert('Por favor complete todos los campos del código');
+                    return;
+                }
+
+                const telefono = elementos.inputTelefono.val();
+                const codigoPais = elementos.selectorPais.val();
+
+                try {
+                    const respuesta = await axios.post('{{ route("usuario.cambiar-numero-otp") }}', {
+                        codigo: codigoCompleto,
+                        codigoGenerado: estado.codigoVerificacion,
                         nuevoTelefonoNacional: telefono,
                         nuevoCodigoPais: codigoPais,
                         userId: {{ $usuario->id }}
                     }, {
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
                     });
 
-                } else {
-                    alert('Por favor completa todos los campos del código');
-                    return null;
+                    if (respuesta.data.status === "success") {
+                        ocultarModalOTP();
+                        elementos.modalExito.addClass('menu-active');
+                        
+                        setTimeout(() => {
+                            elementos.modalExito.removeClass('menu-active');
+                            window.location.reload();
+                        }, 2000);
+                    }
+                } catch (error) {
+                    console.error("Error al validar el OTP:", error);
                 }
-            }
-
-            
-
-            // ============= UTILIDADES =============
-            btnSubmit.on('click', function(e) {
-                console.log("Click en botón para enviar código verificación ingreso");
-                e.preventDefault();
-                envioOTPCambioNumero();
-            });
-
-            const extraerMensajeError = (errors) => {
-                if (errors.telefono) return errors.telefono[0];
-                if (errors.general) return errors.general[0];
-                return 'Error de validación';
             };
 
-            const mostrarBotonSubmit = () => {
-                btnSubmit.prop('disabled', false).removeClass('d-none');
-                inputTelefono.removeClass('is-invalid').addClass('is-valid');
+            // ============= UTILIDADES DE INTERFAZ =============
+            const mostrarBotonGuardar = () => {
+                elementos.botonGuardar.prop('disabled', false).removeClass('d-none');
+                elementos.inputTelefono.removeClass('is-invalid').addClass('is-valid');
             };
 
-            const ocultarBotonSubmit = () => {
-                btnSubmit.prop('disabled', true).addClass('d-none');
-                inputTelefono.removeClass('is-valid is-invalid');
+            const ocultarBotonGuardar = () => {
+                elementos.botonGuardar.prop('disabled', true).addClass('d-none');
+                elementos.inputTelefono.removeClass('is-valid is-invalid');
             };
 
             const mostrarModalOTP = () => {
-                console.log("Revelando modal otp cambiar numero cliente");
-                $('.menu-hider').addClass('menu-active');
-                $('#menu-verificacion-cambionumero').addClass('menu-active');
-            }
+                elementos.ocultadorMenu.addClass('menu-active');
+                elementos.modalOTP.addClass('menu-active');
+            };
 
             const ocultarModalOTP = () => {
-                console.log("Ocultando modal otp cambiar numero cliente");
-                $('#menu-verificacion-cambionumero').removeClass('menu-active');
-                $('.menu-hider').removeClass('menu-active');
-            }
+                elementos.modalOTP.removeClass('menu-active');
+                elementos.ocultadorMenu.removeClass('menu-active');
+            };
 
             const mostrarError = (mensaje) => {
-                inputTelefono.addClass('is-invalid');
+                elementos.inputTelefono.addClass('is-invalid');
                 $('#mensaje-toast-error').text(mensaje);
                 $('#toast-error').removeClass('hide').addClass('show');
                 setTimeout(() => {
@@ -818,21 +840,15 @@
                 }, 1500);
             };
 
-            // ============= INICIALIZACIÓN =============
-            detectarDigitosPais();
+            const obtenerMensajeError = (errores) => {
+                if (errores.telefono) return errores.telefono[0];
+                if (errores.general) return errores.general[0];
+                return 'Error de validación';
+            };
+
+            // ============= INICIO DE LA APLICACIÓN =============
+            iniciarOTPContrasena();
         });
-
-        const mostrarModalOTP = () => {
-            console.log("Revelando modal otp cambiar numero cliente");
-            $('.menu-hider').addClass('menu-active');
-            $('#menu-verificacion-cambionumero').addClass('menu-active');
-        }
-
-        const ocultarModalOTP = () => {
-            console.log("Ocultando modal otp cambiar numero cliente");
-            $('#menu-verificacion-cambionumero').removeClass('menu-active');
-            $('.menu-hider').removeClass('menu-active');
-        }
         </script>
         <script>
             $(document).ready(function() {
