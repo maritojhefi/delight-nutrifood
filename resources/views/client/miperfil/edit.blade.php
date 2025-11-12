@@ -42,7 +42,7 @@
                 <!-- <small class="text-muted">Ingrese su nuevo número para recibir código de verificación</small> -->
             </div>
             
-            <form id="form-cambiar-telefono" method="POST" action="{{ route('usuario.verificar-numero') }}">
+            <form id="form-cambiar-telefono">
                 @csrf
                 @method('PUT')
                 
@@ -71,7 +71,7 @@
                                 pattern="[0-9]*"
                                 autocomplete="tel-national"
                                 style="height: 40px;"
-                                value="{{ old('telefono-nacional', 68708570) }}"
+                                value="{{ old('telefono-nacional', $usuario->telf) }}"
                                 required>
                             <label for="telefono-nacional" 
                                 class="color-highlight bg-theme font-400 font-13"
@@ -80,22 +80,6 @@
                             </label>
                         </div>
                     </div>
-
-                    <!-- Mensajes de Error de Laravel -->
-                    @error('telefono-nacional')
-                        <p class="text-danger line-height-s mx-2 mt-2 mb-0">
-                            <i class="fa fa-times invalid color-red-dark me-2"></i>
-                            {{ $message }}
-                        </p>
-                    @enderror
-                    
-                    @error('codigo_pais')
-                        <p class="text-danger line-height-s mx-2 mt-2 mb-0">
-                            <i class="fa fa-times invalid color-red-dark me-2"></i>
-                            {{ $message }}
-                        </p>
-                    @enderror
-
                     <!-- Campo oculto para dígitos esperados (útil para backend) -->
                     <input type="hidden" name="digitos_esperados" id="digitos_esperados">
                 </div>
@@ -488,6 +472,7 @@
                 selectorPais: $('#selector-codigo_pais-perfil'),
                 inputTelefono: $('#telefono-nacional'),
                 botonGuardar: $('#btn-guardar-telefono'),
+                formularioCambiarNumero: $('#form-cambiar-telefono'),
                 modalOTP: $('#menu-verificacion-cambionumero'),
                 ocultadorMenu: $('.menu-hider'),
                 modalExito: $('#codigo-correcto')
@@ -536,7 +521,10 @@
                 elementos.inputTelefono.on('input', manejarEntradaTelefono);
 
                 // Click en botón guardar
-                elementos.botonGuardar.on('click', manejarClickGuardar);
+                elementos.formularioCambiarNumero.on('submit', function (e) {
+                    e.preventDefault(); 
+                    enviarOTPParaCambioNumero();
+                });
             };
 
             const manejarCambioPais = () => {
@@ -572,7 +560,6 @@
 
             const manejarClickGuardar = (e) => {
                 e.preventDefault();
-                console.log("Botón guardar clickeado - enviando código de verificación");
                 enviarOTPParaCambioNumero();
             };
 
@@ -580,8 +567,6 @@
             const detectarDigitosPais = () => {
                 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
                 const codigoPais = parseInt(elementos.selectorPais.val());
-
-                console.log('Detectando dígitos para el código:', codigoPais);
 
                 try {
                     const regiones = phoneUtil.getRegionCodesForCountryCode(codigoPais);
@@ -603,11 +588,10 @@
                         if (ejemplo) {
                             const numeroEjemplo = phoneUtil.getNationalSignificantNumber(ejemplo);
                             estado.digitosEsperados = numeroEjemplo.length;
-                            
-                            // === APLICAR EL FIX AQUÍ: Establecer el atributo maxlength ===
+
                             elementos.inputTelefono.attr('maxlength', estado.digitosEsperados);
 
-                            console.log(`Código +${codigoPais} → Región: ${region}, Dígitos esperados: ${estado.digitosEsperados}`);
+                            // // console.log(`Código +${codigoPais} → Región: ${region}, Dígitos esperados: ${estado.digitosEsperados}`);
                             return;
                         }
                     }
@@ -634,7 +618,6 @@
                     });
 
                     if (respuesta.data.status === 'success') {
-                        console.log('✅ Número válido');
                         mostrarBotonGuardar();
                         mostrarExito('Número válido');
                     } else {
@@ -771,7 +754,7 @@
                             mensajeError = errors[primeraClave][0];
                         }
                     } 
-                    // Mostrar mensaje en snackbar
+
                     $('#mensaje-toast-error-snackbar').text(mensajeError);
                     $('#snackbar-error').addClass('show');
 

@@ -1,7 +1,7 @@
 <div id="menu-verificacion-{{ $funcionalidad }}" data-menu-width="320" class="menu menu-box-modal hider-intocable rounded-m"
     style="height: auto;">
         <div class="card card-style p-0 m-0 pb-3">
-        <div class="card-header bg-white border-0 p-0">
+        <div class="card-header bg-white border-0 p-0 bg-dtheme-dkblue">
             <div class="menu-title d-flex flex-column px-2">
                 <!-- <p class="ps-1 color-highlight d-inline-block" style="width: fit-content">{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}</p> -->
                 <h1 class="px-0 align-self-center font-20 line-height-m">Ingresar código de verificación</h1>
