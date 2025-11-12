@@ -38,7 +38,7 @@
 
         <card class="card card-style py-2">
             <div class="card-header bg-theme border-0">
-                <h2 class="mb-0">Cambiar Nro Telefónico</h2>
+                <h2 class="mb-0">Número de Contacto</h2>
                 <!-- <small class="text-muted">Ingrese su nuevo número para recibir código de verificación</small> -->
             </div>
             
