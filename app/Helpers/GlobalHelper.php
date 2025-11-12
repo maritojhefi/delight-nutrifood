@@ -62,6 +62,12 @@ class GlobalHelper
                 }
 
                 $diffCalculated = round($diffCalculated);
+
+                // Si es día y la diferencia es 0, devolver "Hoy"
+                if ($i == 3 && $diffCalculated == 0) {
+                    return "Hoy";
+                }
+
                 $unit = $diffCalculated != 1 ? $strTimePlural[$i] : $strTimeSingular[$i];
 
                 // Construir el mensaje
@@ -79,6 +85,12 @@ class GlobalHelper
         }
 
         $diff = round($diff);
+
+        // Si es día y la diferencia es 0, devolver "Hoy"
+        if ($i == 3 && $diff == 0) {
+            return "Hoy";
+        }
+
         $unit = $diff > 1 ? $strTimePlural[$i] : $strTimeSingular[$i];
 
         // Construir el mensaje
