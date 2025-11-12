@@ -77,7 +77,7 @@ class PlanesPorExpirar extends Component
                 if ($item->where('pivot.estado', 'finalizado')->count() != 0) {
                     $ultimaFecha = $item->sortBy('pivot.start')->last();
                     $ultimo = date_format(date_create($ultimaFecha->pivot->start), 'd-M');
-                    $cantidadRestante = $item->where('pivot.start', '>', date('Y-m-d'))->where('pivot.estado', 'pendiente')->count();
+                    $cantidadRestante = $item->where('pivot.start', '>=', date('Y-m-d'))->where('pivot.estado', Plane::ESTADOPENDIENTE)->count();
                     $coleccion->push([
                         'nombre' => $cliente->name,
                         'plan' => $nombre,
