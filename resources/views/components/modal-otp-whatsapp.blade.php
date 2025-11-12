@@ -58,6 +58,12 @@
     <h1 class="text-center fa-5x mt-2 pt-3 pb-2"><i class="fa fa-check-circle color-mint-dark"></i></h1>
     <h2 class="text-center">Teléfono verificado correctamente</h2>
 </div>
+
+<div id="snackbar-error" class="snackbar-toast color-white bg-red-dark mb-4 fade hide-ad"
+    style="bottom: 1% !important; z-index: 101">
+    <h1 class="color-white font-20 pt-3 mb-0">Error</h1>
+    <p class="color-white mb-0 pb-3" id="mensaje-toast-error-snackbar" style="line-height: 18px;"></p>
+</div>
 @endpush
 
 @push('scripts')

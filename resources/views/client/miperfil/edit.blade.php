@@ -682,7 +682,25 @@
                         mostrarModalOTP();
                     }
                 } catch (error) {
-                    console.error("Error al enviar el código de verificación:", error);
+                    let mensajeError = 'Error inesperado, por favor intenta más tarde.';
+
+                    if (error.response && error.response.data && error.response.data.errors) {
+                        const errors = error.response.data.errors;
+                        const primeraClave = Object.keys(errors)[0];
+                        
+                        if (primeraClave && Array.isArray(errors[primeraClave]) && errors[primeraClave].length > 0) {
+                            mensajeError = errors[primeraClave][0];
+                        }
+                    }
+                    // Mostrar mensaje en snackbar
+                    $('#mensaje-toast-error-snackbar').text(mensajeError);
+                    $('#snackbar-error').addClass('show');
+
+                    setTimeout(() => {
+                        $('#snackbar-error').removeClass('show');
+                    }, 3000);
+
+                    console.error("Error al enviar el código de verificacion OTP:", error);
                 }
 
                 habilitarBotonEnviarOTP();
@@ -721,6 +739,7 @@
 
                 try {
                     deshabilitarBotonVerifiacionOTP();
+
                     const respuesta = await axios.post('{{ route("usuario.cambiar-numero-otp") }}', {
                         codigo: codigoCompleto,
                         codigoGenerado: estado.codigoVerificacion,
@@ -740,7 +759,26 @@
                             window.location.reload();
                         }, 2000);
                     }
+
                 } catch (error) {
+                    let mensajeError = 'Error inesperado, por favor intenta más tarde.';
+
+                    if (error.response && error.response.data && error.response.data.errors) {
+                        const errors = error.response.data.errors;
+                        const primeraClave = Object.keys(errors)[0];
+                        
+                        if (primeraClave && Array.isArray(errors[primeraClave]) && errors[primeraClave].length > 0) {
+                            mensajeError = errors[primeraClave][0];
+                        }
+                    } 
+                    // Mostrar mensaje en snackbar
+                    $('#mensaje-toast-error-snackbar').text(mensajeError);
+                    $('#snackbar-error').addClass('show');
+
+                    setTimeout(() => {
+                        $('#snackbar-error').removeClass('show');
+                    }, 3000);
+
                     console.error("Error al validar el OTP:", error);
                 }
                 habilitarBotonVerifiacionOTP();
