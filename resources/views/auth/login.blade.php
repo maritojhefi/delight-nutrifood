@@ -11,7 +11,7 @@
                     </div>
                     <form action="{{ route('login') }}" method="post" class="d-flex flex-column justify-content-center gap-1">
                         @csrf
-                        <label for="form1a">Número de Teléfono</label>
+                        <label for="telefono-ingreso">Número de Teléfono</label>
                     
 
                         <div class="d-flex flex-row gap-2">
@@ -19,9 +19,8 @@
                             <div class="input-with-icon-container mb-0 validate-field d-flex flex-grow-1">
                                 <i class="fa fa-phone position-absolute ms-2 align-self-center"></i>
 
-                                <input class="ps-3 text-center form-control rounded-sm" id="form1a" name="telf" type="number" value="{{ old('telf') }}">
+                                <input class="ps-3 text-center form-control rounded-sm" id="telefono-ingreso" name="telf" type="tel" value="{{ old('telf') }}">
                             </div>
-                            
                         </div>
                         
 
@@ -59,7 +58,7 @@
                             </button>
                         </div>
                     </form>
-                    <button data-menu="menu-forgot">
+                    <button id="btn-forgot" data-menu="menu-forgot">
                         He olvidado mi contraseña
                     </button>
                 </div>
@@ -79,7 +78,7 @@
 
 
 @push('modals')
-    <div id="menu-forgot" class="menu menu-box-modal rounded-m mx-1" style="display: block; width: 20rem; height: 12rem;">
+    <div id="menu-forgot" class="menu menu-box-modal rounded-m" style="display: block; width: 20rem; height: 12rem;">
         <div class="menu-title">
             <p class="color-highlight">Delight-Nutrifood</p>
             <h1 class="font-24">Ingresar a mi cuenta</h1>
@@ -92,7 +91,7 @@
                 <input type="hidden" name="digitos_pais" id="digitos_pais" value="">
                 <div class="input-with-icon-container mb-0 validate-field d-flex flex-grow-1">
                     <i class="fa fa-phone position-absolute ms-2 align-self-center"></i>
-                    <input type="number" class="form-control validate-name rounded-sm text-center" id="telefono-ingreso" placeholder="Número de WhatsApp">
+                    <input type="tel" class="form-control validate-name rounded-sm text-center" id="telefono-ingreso-otp" placeholder="Número de WhatsApp">
                 </div>
             </div>
             <button id="btnNumeroIngreso" type="button" class="btn btn-full btn-m shadow-l validador-ingresar align-self-center rounded-s bg-highlight font-600 mt-4">
@@ -101,7 +100,9 @@
         </div>
     </div>
 
-    <div id="menu-verificacion-ingreso" class="menu menu-box-modal rounded-m"
+    <x-modal-otp-whatsapp funcionalidad="ingreso" />
+
+    <!-- <div id="menu-verificacion-ingreso" class="menu menu-box-modal rounded-m"
     style="display: block; width: 90%; height: auto;">
         <div class="card card-style p-0 m-0 pb-3">
             <div class="card-header p-0">
@@ -144,7 +145,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <div id="toast-error" class="toast toast-tiny toast-top bg-red-dark fade hide" data-bs-delay="1000"
         data-bs-autohide="true" style="width: max-content; z-index: 1000; text-align: center; line-height: 19px;">
@@ -341,10 +342,16 @@ $(document).ready(function() {
         e.preventDefault();
         validacionOTPIngreso();
     });
+
+    // Actualizar valor por defecto al hacer click en contrasena olvidada
+    $('#btn-forgot').on('click', function() {
+        console.log('alterando valores')
+        $('#telefono-ingreso-otp').val( $('#telefono-ingreso').val() );    
+    });
 });
 
 const validacionOTPIngreso = () => {
-    const telefono = $('#telefono-ingreso').val();
+    const telefono = $('#telefono-ingreso-otp').val();
     const selector = document.getElementById('country-code-selector-ingreso');
     
     let codigoPais = '';
@@ -463,7 +470,7 @@ const verificarCodigoIngreso = () => {
 };
 
 const enviarCodigoVerificacionIngreso = (codigo) => {
-    const telefono = $('#telefono-ingreso').val();
+    const telefono = $('#telefono-ingreso-otp').val();
     const selector = document.getElementById('country-code-selector-ingreso');
     let codigoPais = selector.value;
     const telefono_completo = `+${codigoPais}${telefono}`;
