@@ -188,7 +188,7 @@ class WhatsappHelper
     public function plantillas()
     {
         return [
-            'delight_template_verificar_numero' => "Recibimos una solicitud para verificar tu numero de teléfono en tu cuenta en Delight. \n\nTu código es: {{codigo}}",
+            'delight_template_verificar_numero' => "Su código de verificación es: {{codigo}}",
             'delight_template_verificar_numero_editar' => "Su código de verificación es: {{codigo}}",
             'delight_template_verificar_numero_ingreso' => "Su código de verificación para iniciar sesión es: {{codigo}}",
 
