@@ -1,75 +1,58 @@
 @extends('client.masterSinFooter')
 @section('content')
-    <x-cabecera-pagina titulo="Inicia Sesion" cabecera="appkit" />
+    <x-cabecera-pagina titulo="Iniciar Sesión" cabecera="appkit" />
     <div class="d-flex justify-content-center">
-        <div class="card card-style login-card bg-24" style="height: 550px; width: 380px;">
-            <div class="card-center mt-n3">
-                <div class="px-4 mx-2">
-                    <div class="d-flex flex-column mb-3">
-                        <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}" class="img mx-auto d-block" style="width:100px" alt="">
-                        <h3 class="mt-2 font-26 text-center ">¡Bienvenido a {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!</h3>
+        <div class="card card-style login-card bg-24 d-flex align-items-center justify-content-center" style="height: 550px; width: 380px;">
+            <div class="d-flex flex-column align-items-center justify-content-center gap-2 px-4 mx-2">
+                <div class="d-flex flex-column mb-3">
+                    <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}" class="img mx-auto d-block" style="width:100px" alt="">
+                    <h3 class="mt-2 font-26 text-center ">¡Bienvenido a {{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}!</h3>
+                </div>
+                <form action="{{ route('login') }}" method="post" class="d-flex flex-column justify-content-center gap-1">
+                    @csrf
+                    <label for="telefono-ingreso">Número de Teléfono</label>
+                
+
+                    <div class="d-flex flex-row gap-2">
+                        <x-countrycode-select></x-countrycode-select>
+                        <div class="input-with-icon-container mb-0 validate-field d-flex flex-grow-1">
+                            <i class="fa fa-phone position-absolute ms-2 align-self-center"></i>
+
+                            <input class="ps-3 text-center form-control rounded-sm" id="telefono-ingreso" name="telf" type="tel" value="{{ old('telf') }}">
+                        </div>
                     </div>
-                    <form action="{{ route('login') }}" method="post" class="d-flex flex-column justify-content-center gap-1">
-                        @csrf
-                        <label for="telefono-ingreso">Número de Teléfono</label>
                     
 
-                        <div class="d-flex flex-row gap-2">
-                            <x-countrycode-select></x-countrycode-select>
-                            <div class="input-with-icon-container mb-0 validate-field d-flex flex-grow-1">
-                                <i class="fa fa-phone position-absolute ms-2 align-self-center"></i>
-
-                                <input class="ps-3 text-center form-control rounded-sm" id="telefono-ingreso" name="telf" type="tel" value="{{ old('telf') }}">
-                            </div>
-                        </div>
-                        
-
-                        @error('telf')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                        
-                        <label for="password-input">Contraseña</label>
-                        <!-- <div class="input-style no-borders has-icon validate-field d-flex flex-row align-content-center position-relative"> -->
-                        <!-- <div class="input-with-icon-container mb-0 validate-field d-flex flex-grow-1">
-                            <i class="fa fa-key position-absolute ms-2 align-self-center"></i>
-                            <input class="ps-4 form-control rounded-sm validate-password font-13" id="password-input" type="password" name="password">
-                            <i class="fa fa-lock password-toggle position-absolute align-self-center" id="toggleIcon"></i>
-
-                        </div> -->
-                        <!-- <div class="input-with-icon-container justify-content-between flex-row mb-0 validate-field d-flex">
-                            <i class="fa fa-key position-absolute ms-2 align-self-center"></i>
-
-                            <input class="ps-4 form-control rounded-sm validate-password font-13" id="password-input" type="password" name="password">
-
-                            <i class="fa fa-lock password-toggle position-absolute align-self-center" id="toggleIcon"></i>
-                        </div> -->
-                        <div class="input-with-icon-container position-relative mb-0 validate-field">
-                            <i class="fa fa-key position-absolute start-0 ms-2 top-50 translate-middle-y"></i>
-                            <input class="px-4 text-center form-control rounded-sm validate-password font-13" id="password-input" type="text" name="password">
-                            <i class="fa password-toggle position-absolute end-0 me-2 top-50 translate-middle-y fa-lock-open" id="toggleIcon"></i>
-                        </div>
-                        @error('password')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                        
-                        <div class="d-flex justify-content-center">
-                            <button type="submit" class="btn btn-m mt-2 mb-4 bg-mint-dark rounded-sm text-uppercase font-900 loader" style="width: 160px;">
-                                Iniciar Sesion
-                            </button>
-                        </div>
-                    </form>
-                    <button id="btn-forgot" data-menu="menu-forgot">
-                        He olvidado mi contraseña
-                    </button>
-                </div>
-            </div>
-            <div class="card-bottom">
-                <div class="row">
-                    <div class="text-end pe-5">
-                        <a href="{{ route('register') }}" class="opacity-50 font-15 text-decoration-none">
-                            Aún sin cuenta? <strong>Registrate aqui</strong>
-                        </a>
+                    @error('telf')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                    
+                    <label for="password-input">Contraseña</label>
+                    <div class="input-with-icon-container position-relative mb-0 validate-field">
+                        <i class="fa fa-key position-absolute start-0 ms-2 top-50 translate-middle-y"></i>
+                        <input class="px-4 text-center form-control rounded-sm validate-password font-13" id="password-input" type="password" name="password">
+                        <i class="fa password-toggle position-absolute end-0 me-2 top-50 translate-middle-y fa-lock" id="toggleIcon"></i>
                     </div>
+                    @error('password')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                    
+                    <button type="submit" class="btn btn-m mt-2 mb-2 bg-mint-dark rounded-sm text-uppercase align-self-center font-900 loader w-100">
+                        Iniciar Sesión
+                    </button>
+                </form>
+                <button id="btn-forgot" class="align-self-center"
+                    data-menu="menu-forgot">
+                    <span class="text-decoration-underline mb-0">
+                        He olvidado mi contraseña
+                    </span>
+                </button>
+                <div class="opacity-80 mt-3 font-13 text-decoration-none color-theme d-flex flex-row justify-content-evenly align-items-center w-100">
+                    <span class="color*theme mb-0">
+                        ¿Aún sin cuenta?
+                    </span> 
+                    <a href="{{ route('register') }}" class="btn btn-xs rounded-sm bg-delight-red">
+                        Regístrate aquí</a>
                 </div>
             </div>
         </div>
@@ -80,7 +63,7 @@
 @push('modals')
     <div id="menu-forgot" class="menu menu-box-modal rounded-m" style="display: block; width: 20rem; height: 12rem;">
         <div class="menu-title">
-            <p class="color-highlight">Delight-Nutrifood</p>
+            <p class="color-highlight">{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}</p>
             <h1 class="font-24">Ingresar a mi cuenta</h1>
             <a href="#" class="close-menu"><i class="fa fa-times-circle"></i></a>
         </div>
@@ -94,92 +77,27 @@
                     <input type="tel" class="form-control validate-name rounded-sm text-center" id="telefono-ingreso-otp" placeholder="Número de WhatsApp">
                 </div>
             </div>
-            <button id="btnNumeroIngreso" type="button" class="btn btn-full btn-m shadow-l validador-ingresar align-self-center rounded-s bg-highlight font-600 mt-4">
+            <button id="btnNumeroIngreso" type="button" class="btn btn-full btn-m shadow-l validador-ingresar align-self-center rounded-s bg-highlight font-600 mt-3">
                 Enviar código de ingreso
             </button>
         </div>
     </div>
 
     <x-modal-otp-whatsapp funcionalidad="ingreso" />
-
-    <!-- <div id="menu-verificacion-ingreso" class="menu menu-box-modal rounded-m"
-    style="display: block; width: 90%; height: auto;">
-        <div class="card card-style p-0 m-0 pb-3">
-            <div class="card-header p-0">
-                <div class="menu-title">
-                    <p class="color-highlight">Delight-Nutrifood</p>
-                    <h1 class="font-20">Verificación para iniciar sesión</h1>
-                    <a href="#" class="close-menu"><i class="fa fa-times-circle"></i></a>
-                </div>
-            </div>
-            <div class="content mb-3">
-                <p>
-                    Se envió un código de verificación a su WhatsApp. <br> Por favor, ingrese el código para iniciar sesión
-                </p>
-                <div class="text-center mx-n3">
-                    <form action="" id="form-codigo-verificacion-ingreso">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                    </form>
-                </div>
-                <p class="text-center my-3 font-11">
-                    ¿No ha recibido un código aún?
-                    <a href="#" id="reenviar-codigo">
-                        Reenviar código
-                    </a>
-                </p>
-                <div class="d-flex flex-row justify-content-evenly">
-                    <a href="#" class="close-menu btn btn-s font-15 shadow-l rounded-s text-uppercase font-900 bg-delight-red color-white" >Cancelar</a>
-                    <button type="button" id="verificar-codigo-btn-ingreso"
-                        class="btn btn-s font-15 shadow-l rounded-s validador-ingresar text-uppercase font-900 bg-mint-dark color-white">
-                        Verificar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
-    <div id="toast-error" class="toast toast-tiny toast-top bg-red-dark fade hide" data-bs-delay="1000"
-        data-bs-autohide="true" style="width: max-content; z-index: 1000; text-align: center; line-height: 19px;">
-        <i class="fa fa-times-circle me-2"></i>
-        <span id="mensaje-toast-error">
-        </span>
-    </div>
-
-    <div id="snackbar-error" class="snackbar-toast color-white bg-red-dark mb-4 fade hide-ad"
-        style="bottom: 1% !important;">
-        <h1 class="color-white font-20 pt-3 mb-0">Error</h1>
-        <p class="color-white mb-0 pb-3" id="mensaje-toast-error-snackbar" style="line-height: 18px;"></p>
-    </div>
-
 @endpush
 
 @push('header')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slim-select@2/dist/slimselect.min.css" />
 <style>
-    /* Target the main container created by Slim Select based on your original select's ID */
     #country-code-selector + .ss-main .ss-single-selected,
     #country-code-selector + .ss-main .ss-selected-text {
-        /* These properties prevent the text from breaking inside the element */
         word-break: normal !important; 
         overflow-wrap: normal !important;
-        white-space: nowrap !important; /* Forces text to stay on one line */
+        white-space: nowrap !important;
     }
 
-    /* Selects the specific text container within the Slim Select element */
     .ss-main .ss-single {
-        /* Prevents the text from wrapping to the next line */
         white-space: nowrap !important; 
-        
-        /* Ensures words are not broken forcefully */
         word-break: normal !important; 
         overflow-wrap: normal !important;
     }
@@ -345,7 +263,6 @@ $(document).ready(function() {
 
     // Actualizar valor por defecto al hacer click en contrasena olvidada
     $('#btn-forgot').on('click', function() {
-        console.log('alterando valores')
         $('#telefono-ingreso-otp').val( $('#telefono-ingreso').val() );    
     });
 });
@@ -476,7 +393,8 @@ const enviarCodigoVerificacionIngreso = (codigo) => {
     const telefono_completo = `+${codigoPais}${telefono}`;
 
 
-    deshabilitarBotonValidarCodigo();
+    // deshabilitarBotonValidarCodigo();
+    deshabilitarBotonVerifiacionOTP();
     
     $.ajax({
         type: "post",
@@ -523,23 +441,11 @@ const enviarCodigoVerificacionIngreso = (codigo) => {
         },
         complete: function() {
             // // habilitarBoton('#verificar-codigo-btn-ingreso');
-            habilitarBotonValidarCodigo();
+            // // habilitarBotonValidarCodigo();
+            habilitarBotonVerifiacionOTP();
         }
     });
 };
-
-// const deshabilitarBoton = (selector) => {
-//     const $boton = $(selector);
-    
-//     console.log("Deshabilitando botón:", $boton);
-//     // Guardar texto original
-//     if (!$boton.data('original-text')) {
-//         $boton.data('original-text', $boton.text().trim());
-//     }
-    
-//     $boton.prop('disabled', true);
-//     $boton.text('Validando...');
-// };
 
 const deshabilitarBotonEnviarCodigo = () => {
     const boton = $('#btnNumeroIngreso');

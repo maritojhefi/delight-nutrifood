@@ -192,9 +192,7 @@ class WhatsappHelper
             'delight_template_verificar_numero_editar' => "Recibimos una solicitud para modificar la información de tu cuenta en Delight Nutrifood. 
                                                             \n\nTu código es: {{codigo}}
                                                             \n\nSi no fuiste quien realizó la solicitud, por favor, ignora este mensaje.",
-            'delight_template_verificar_numero_ingreso' => "Olvidaste tu contrasena? utiliza este código para ingresar en tu cuenta Delight Nutrifood.
-                                                            \n\nTu código es: {{codigo}}
-                                                            \n\nSi no fuiste quien realizó la solicitud, por favor, ignora este mensaje.",
+            'delight_template_verificar_numero_ingreso' => "Su código de verificación para iniciar sesión es: {{codigo}}",
 
         ];
     }
