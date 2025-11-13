@@ -125,12 +125,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         new SlimSelect({
             select: '#' + mainSelectId,
-            placeholder: 'Seleccione un país',
-            allowDeselect: false,
-            searchPlaceholder: 'Buscar país...',
-            searchText: 'Sin resultados',
-            showSearch: true
+            settings: {
+                placeholder: 'Seleccione un país',
+                searchPlaceholder: 'Buscar país...',
+                searchText: 'Sin resultados',
+                allowDeselect: false,
+                showSearch: true,
+            }
         });
+
+        // ACTIVAR detección para login form
+        mainSelect.addEventListener('change', function() {
+            detectarYAplicarMaxLength('country-code-selector', 'telefono-ingreso');
+        });
+        
+        // Aplicar al cargar la página
+        setTimeout(() => {
+            detectarYAplicarMaxLength('country-code-selector', 'telefono-ingreso');
+        }, 150);
     }
 
     // ============= FORGOT PASSWORD MODAL COUNTRY SELECTOR =============
@@ -138,16 +150,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const modalSelect = document.getElementById(modalSelectId);
 
     if (modalSelect) {
-        modalSelect.classList.remove('select2-hidden-accessible');
         modalSelect.style.display = '';
 
         slimSelectIngreso = new SlimSelect({
             select: '#' + modalSelectId,
-            placeholder: 'Seleccione un país',
-            allowDeselect: false,
-            searchPlaceholder: 'Buscar país...',
-            searchText: 'Sin resultados',
-            showSearch: true
+            settings: {
+                placeholder: 'Seleccione un país',
+                searchPlaceholder: 'Buscar país...',
+                searchText: 'Sin resultados',
+                allowDeselect: false,
+                showSearch: true,
+            }
         });
         
         setTimeout(() => {
@@ -157,12 +170,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const event = new Event('change', { bubbles: true });
                 modalSelect.dispatchEvent(event);
             }
-            detectar();
+            detectar(); // Usar función legacy
         }, 150);
         
         modalSelect.addEventListener('change', function() {
-            // // console.log("✅ País seleccionado (ingreso):", this.value);
-            detectar();
+            detectar(); // Usar función legacy
         });
     }
 
@@ -185,18 +197,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function detectar() {
+// ============= FUNCIÓN GENÉRICA PARA DETECTAR Y APLICAR MAXLENGTH =============
+function detectarYAplicarMaxLength(selectorId, inputId) {
     const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
-    const selector = document.getElementById("country-code-selector-ingreso");
+    const selector = document.getElementById(selectorId);
+    const input = document.getElementById(inputId);
     
-    if (!selector) {
-        // console.log("❌ Selector no encontrado");
+    if (!selector || !input) {
+        console.warn(`❌ Selector o input no encontrado: ${selectorId}, ${inputId}`);
         return;
     }
     
     let codigoValue = selector.value;
     
-    if ((!codigoValue || codigoValue === '') && slimSelectIngreso) {
+    if ((!codigoValue || codigoValue === '') && slimSelectIngreso && selectorId === 'country-code-selector-ingreso') {
         const selectedData = slimSelectIngreso.selected();
         if (selectedData) {
             codigoValue = selectedData;
@@ -212,42 +226,50 @@ function detectar() {
     
     const codigo = parseInt(codigoValue);
     
-    // console.log("🔍 Buscando dígitos para el código de país:", codigo);
-    
     if (!codigo || isNaN(codigo)) {
-        console.log(`⚠️ Código de país inválido: ${codigoValue}`);
+        console.warn(`⚠️ Código de país inválido: ${codigoValue}`);
         return;
     }
     
     try {
         const regiones = phoneUtil.getRegionCodesForCountryCode(codigo);
         if (!regiones || regiones.length === 0) {
-            console.log(`⚠️ No se encontraron regiones para código ${codigo}`);
+            console.warn(`⚠️ No se encontraron regiones para código ${codigo}`);
             return;
         }
         
-        regiones.forEach(region => {
+        for (const region of regiones) {
             const ejemplo = phoneUtil.getExampleNumberForType(
                 region,
                 libphonenumber.PhoneNumberType.MOBILE
             );
+            
             if (ejemplo) {
                 const numeroEjemplo = phoneUtil.getNationalSignificantNumber(ejemplo);
-                digitosPais = numeroEjemplo.length;
+                const digitosEsperados = numeroEjemplo.length;
                 
-                const digitosPaisInput = document.getElementById('digitos_pais');
-                if (digitosPaisInput) {
-                    digitosPaisInput.value = digitosPais;
+                input.setAttribute('maxlength', digitosEsperados);
+                
+                if (selectorId === 'country-code-selector-ingreso') {
+                    const digitosPaisInput = document.getElementById('digitos_pais');
+                    if (digitosPaisInput) {
+                        digitosPaisInput.value = digitosEsperados;
+                    }
+                    digitosPais = digitosEsperados;
                 }
                 
-                // // console.log(`✅ Código +${codigo} → Región: ${region}, Longitud: ${digitosPais}`);
-
+                // // console.log(`${inputId}: Código +${codigo} → Región: ${region}, MaxLength: ${digitosEsperados}`);
+                return;
             }
-        });
-        // console.log("👉 Dígitos del país:", digitosPais);
+        }
     } catch (e) {
-        console.error("❌ Error:", e.message);
+        console.error(`❌ Error detectando dígitos para ${inputId}:`, e.message);
     }
+}
+
+// ============= FUNCIÓN LEGACY (mantener por compatibilidad) =============
+function detectar() {
+    detectarYAplicarMaxLength('country-code-selector-ingreso', 'telefono-ingreso-otp');
 }
 
 $(document).ready(function() {
@@ -285,7 +307,7 @@ const validacionOTPIngreso = () => {
     
     const digitosPaisValue = $('#digitos_pais').val();
     
-    // console.log("📞 Datos a enviar:", {
+    // console.log("Datos a enviar:", {
     //     telefono: telefono,
     //     codigoPais: codigoPais,
     //     digitosPais: digitosPaisValue,
@@ -432,7 +454,7 @@ const enviarCodigoVerificacionIngreso = (codigo) => {
             }
         },
         error: function(xhr, status, error) {
-            console.log(xhr.responseJSON?.errors?.codigo?.[0] || 'Error desconocido');
+            // // console.log(xhr.responseJSON?.errors?.codigo?.[0] || 'Error desconocido');
             $('#mensaje-toast-error').text(xhr.responseJSON?.errors?.codigo?.[0] || 'Error al verificar código');
             $('#toast-error').addClass('show');
             setTimeout(() => {

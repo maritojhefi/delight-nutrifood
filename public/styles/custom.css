@@ -1252,6 +1252,32 @@ hover-blue:hover {
     -webkit-appearance: none;
 }
 
+
+.theme-dark .ss-single {
+    color: white;
+}
+
+.theme-dark .ss-option {
+    color: white !important;
+}
+
+.ss-option.ss-selected {
+    border-radius: 0.4rem;
+    background-color: #7db1b1 !important;
+}
+
+.ss-search input {
+    border-radius: 0.4rem;
+}
+.theme-dark .ss-search input {
+    background-color:  #0f1117 !important;
+}
+
+.theme-dark .ss-content {
+    background-color:  #0f1117 !important;
+    /* background-color:  #1f2937 !important; */
+}
+
 /*
 .product-quantity-controls {
     display: flex;

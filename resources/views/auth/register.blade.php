@@ -34,43 +34,20 @@
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
-                            {{-- Correo Electrónico --}}
-                            <!-- <div class="d-flex flex-column">
-                                <label for="email">Correo Electrónico</label>
-                                <div class="input-style d-flex flex-row">
-                                    <i class="fa fa-at ms-2 input-icon mt-3 position-fixed"></i>
-                                    <div class="d-flex flex-column w-100">
-                                        <input type="text" class="form-control rounded-sm" id="email" name="email"
-                                            value="{{ old('email') }}">
-                                    </div>
-                                </div>
-                                @error('email')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div> -->
                             {{-- Telefono --}}
                             <div class="d-flex flex-column">
                                 <label for="telefono">Teléfono</label>
-                                <div class="input-style remove-mb d-flex flex-row justify-content-between gap-2">
+                                <div class="input-style has-icon remove-mb d-flex flex-row justify-content-between gap-3">
                                     <x-countrycode-select></x-countrycode-select>
-                                    <div class="d-flex flex-column w-99">
-                                        <input type="number" class="no-padding text-center form-control rounded-sm"
+                                    <div class="d-flex flex-column w-100">
+                                        <i class="fa fa-phone input-icon ms-2"></i>
+                                        <input type="tel" class="no-padding text-center form-control rounded-sm"
                                             id="telefono" name="telefono" value="{{ old('telefono') }}">
                                     </div>
                                     @error('telefono')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
-                                
-
-                                <!-- <div class="d-flex justify-content-center">
-                                    <button href="#" data-menu="menu-verificacion" id="verificar-numero"
-                                        class="btn btn-xxs mb-3 rounded-s font-700 shadow-s bg-phone mt-2 d-none w-50">
-                                        Verificar <i
-                                            class="fab fa-whatsapp ms-1"></i><br>{{ isset($usuarioReferido) && $usuarioReferido != '' ? 'Gana Puntos' : '' }}
-                                        <span id="contador-cuenta-regresiva" class="d-none ms-2">30</span></span>
-                                    </button>
-                                </div> -->
                             </div>
                             {{-- foto de perfil --}}
                             <div class="custom-major-file-container d-flex flex-row justify-content-center mt-3"
@@ -175,9 +152,6 @@
                                     </select>
                                     <input type="number" class="form-control rounded-sm" placeholder="Año"
                                         name="ano_nacimiento" required>
-                                    {{-- <div class="d-flex flex-column w-100">
-                                    <input type="date" class="form-control rounded-sm" id="nacimiento" name="nacimiento">
-                                </div> --}}
                                 </div>
                             </div>
 
@@ -512,24 +486,12 @@
         overflow-wrap: normal !important;
     }
 
-    .ss-option.ss-selected {
-        border-radius: 0.4rem;
-        background-color: #7db1b1 !important;
-    }
-
-    .ss-search input {
-        border-radius: 0.4rem;
-    }
-
     .ss-main {
         height: 45px;
         box-shadow: none !important;
         border-color: #00000014;
         border: 0px !important;
         transition: none;
-        /* If you want a fixed min-width for the selector, define it here */
-        /* Example: min-width: 100px; */
-        /* Ensure no wrapping within the main container */
         overflow: hidden; 
     }
 </style>
@@ -614,7 +576,7 @@
                     if (file.type === 'image/heic' || file.name.toLowerCase().endsWith('.heic')) {
                         convertingOverlay.classList.add('show');
 
-                        console.log('HEIC file detected, converting...');
+                        // // console.log('HEIC file detected, converting...');
 
                         const convertedBlob = await heic2any({
                             blob: file,
@@ -633,7 +595,7 @@
                         dataTransfer.items.add(processedFile);
                         event.target.files = dataTransfer.files;
 
-                        console.log('HEIC conversion completed');
+                        // // console.log('HEIC conversion completed');
                         convertingOverlay.classList.remove('show');
                     }
 
@@ -714,14 +676,13 @@
         const manejarExitoVerificacion = (response) => {
             if (response.status === 'success') {
                 codigoVerificacion = response.codigo_generado;
-                console.log('✅ Código enviado exitosamente');
                 habilitarValidandoEditar();
                 $('#menu-verificacion-editar').addClass('menu-active');
                 $('.menu-hider').addClass('menu-active');
                 ocultarConfirmacionEditar();
             } else {
                 habilitarValidandoEditar();
-                console.log('❌ Error en la respuesta:', response);
+                console.warn('Error en la respuesta:', response);
                 alert('Error: ' + (response.errors.telefono ? response.errors.telefono[0] : 'Error desconocido'));
             }
             // habilitarBotonesValidando();
@@ -734,7 +695,6 @@
         }
 
         const ocultarConfirmacionEditar = () => {
-            console.log("Se deberia haber ocultado el menu-confirmacion*editar");
             $('#menu-confirmacion-editar').removeClass('menu-active');
             // // $('.menu-hider').addClass('menu-active');
         }
@@ -792,9 +752,6 @@
                 clearErrorMessages();
 
                 let nacimientoErrorAdded = false;
-
-                console.log(errors);
-
                 for (const [field, messages] of Object.entries(errors)) {
                     const inputField = document.querySelector(`[name="${field}"]`);
 
@@ -819,7 +776,6 @@
                     if (field == 'telefono') {
                         inputField.parentElement.parentElement.parentElement.appendChild(errorDiv);
                     } else {
-                        console.log(inputField);
                         inputField.parentElement.appendChild(errorDiv);
                     }
                 }
@@ -828,8 +784,6 @@
             async function validateCurrentStep(stepNumber) {
                 const currentFormStep = steps[stepNumber];
                 formData.append('formStep', stepNumber);
-
-                console.log(`Iniciada validacion del paso ${stepNumber}`);
 
                 if (stepNumber === 0) {
                     const nameInput = currentFormStep.querySelector('[name="name"]');
@@ -870,7 +824,7 @@
                     if (direccionInput) formData.append('direccion', direccionInput.value);
                 }
 
-                console.log(`FormData actual:`, ...formData);
+                // // console.log(`FormData actual:`, ...formData);
 
                 try {
                     const response = await fetch('{{ route('usuario.validar-paso') }}', {
@@ -890,12 +844,12 @@
                         };
                     } else if (data.status == 'otp-register-validation' && data.user_exists == false) {
                         // Display del menu OTP para validar whatsapp
-                        console.log("data obtenida:", data);
-                        console.log("Proceso para usuarios nuevos");
+                        // // console.log("data obtenida:", data);
+                        // // console.log("Proceso para usuarios nuevos");
                         validacionOTPStep();
                     } else if (data.status == 'otp-register-validation' && data.user_exists == true) {
-                        console.log("data obtenida:", data);
-                        console.log("Proceso para usuarios existentes");
+                        // // console.log("data obtenida:", data);
+                        // // console.log("Proceso para usuarios existentes");
 
                         revelarConfirmacionEditar();
                         habilitarBotonesValidando();
@@ -923,7 +877,6 @@
                 $('.menu-hider').addClass('menu-active');
 
                 $('#btnConfirmarEditar').off('click').on('click', function(e) {
-                    console.log("Click en boton para enviar codigo verificacion editar");
                     e.preventDefault();
                     deshabilitarValidandoEditar();
                     validacionOTPEditar();
@@ -981,14 +934,13 @@
                     success: function(response) {
                         if (response.status === 'success') {
                             codigoVerificacion = response.codigo_generado;
-                            console.log('✅ Código enviado exitosamente');
                             // Resetear contador en caso de éxito
                             otpRetryCount = 0;
                             // Mostrar modal de verificación
                             $('#menu-verificacion').addClass('menu-active');
                             $('.menu-hider').addClass('menu-active');
                         } else {
-                            console.log('❌ Error en la respuesta:', response);
+                            // // console.log(' Error en la respuesta:', response);
                             alert('Error: ' + (response.errors.telefono ? response.errors.telefono[0] : 'Error desconocido'));
                         }
                         habilitarBotonesValidando();
@@ -1002,12 +954,11 @@
                         
                         if (esErrorDeSistema) {
                             otpRetryCount++;
-                            console.log(`❌ Intento fallido ${otpRetryCount} de ${MAX_OTP_RETRIES}`);
                         }
                         
                         // Si alcanzamos el máximo de reintentos DE SISTEMA, omitir validación OTP
                         if (esErrorDeSistema && otpRetryCount >= MAX_OTP_RETRIES) {
-                            console.log('⚠️ Máximo de reintentos alcanzado. Omitiendo validación OTP.');
+                            console.log('Máximo de reintentos alcanzado. Omitiendo validación OTP.');
                             
                             // Marcar teléfono como no verificado pero permitir continuar
                             $('#telefono_verificado').val(0);
@@ -1197,11 +1148,13 @@
 
                 new SlimSelect({
                     select: '#' + selectId,
-                    placeholder: 'Seleccione un país',
-                    allowDeselect: false,
-                    searchPlaceholder: 'Buscar país...',
-                    searchText: 'Sin resultados',
-                    showSearch: true
+                    settings: {
+                        placeholder: 'Seleccione un país',
+                        searchPlaceholder: 'Buscar país...',
+                        searchText: 'Sin resultados',
+                        allowDeselect: false,
+                        showSearch: true,
+                    }
                 });
             }
         });
@@ -1225,15 +1178,23 @@
                     );
                     if (ejemplo) {
                         const numeroEjemplo = phoneUtil.getNationalSignificantNumber(ejemplo);
-                        digitosPais = numeroEjemplo.length; // ✅ aquí lo asignas
+                        digitosPais = numeroEjemplo.length;
                         document.getElementById('digitos_pais').value = digitosPais;
-                        // console.log(`Código +${codigo} → Región: ${region}, Longitud: ${digitosPais}`);
+
+                        const inputElement = document.getElementById('telefono');
+                        if (inputElement) {
+                            inputElement.setAttribute('maxlength', digitosPais);
+                            // // console.log('MaxLength ahora:', inputElement.getAttribute('maxlength'));
+                        }
+                        // // console.log(`Código +${codigo} → Región: ${region}, Longitud: ${digitosPais}`);
                     }
                 });
             } catch (e) {
-                console.log("❌ Error: " + e.message);
+                console.error("Error: " + e.message);
             }
         }
+
+        
 
         var codigoVerificacion = null;
 
@@ -1246,7 +1207,7 @@
                     validarTelefonoEnTiempoReal(this.value);
                 } else {
                     document.getElementById('verificar-numero').classList.add('d-none');
-                    console.log("Caracteres actuales:", this.value.length, "Esperados:", digitosPais);
+                    // // console.log("Caracteres actuales:", this.value.length, "Esperados:", digitosPais);
                 }
             });
 
@@ -1319,102 +1280,6 @@
                 detectar();
             });
             detectar();
-
-
-
-            // document.getElementById('verificar-numero').addEventListener('click', function() {
-            //     var telefono = document.getElementById('telefono').value;
-            //     var codigoPais = document.getElementById('country-code-selector').value;
-            //     var digitosPais = document.getElementById('digitos_pais').value;
-            //     var csrfToken = '{{ csrf_token() }}';
-
-            //     // Validar que todos los campos estén completos
-            //     if (!telefono || !codigoPais || !digitosPais) {
-            //         alert('Por favor completa todos los campos antes de verificar.');
-            //         return;
-            //     }
-
-            //     // Validar longitud del teléfono
-            //     if (telefono.length != digitosPais) {
-            //         alert('El número de teléfono debe tener exactamente ' + digitosPais + ' dígitos.');
-            //         return;
-            //     }
-
-            //     var data = {
-            //         telefono: telefono,
-            //         codigoPais: codigoPais,
-            //         digitosPais: digitosPais
-            //     };
-
-            //     // Deshabilitar el botón durante la petición
-            //     this.disabled = true;
-            //     this.textContent = 'Enviando...';
-
-            //     $.ajax({
-            //         type: "post",
-            //         url: "{{ route('usuario.enviar-codigo-verificacion') }}",
-            //         data: data,
-            //         dataType: "json",
-            //         headers: {
-            //             'X-CSRF-TOKEN': csrfToken
-            //         },
-            //         success: function(response) {
-            //             if (response.status === 'success') {
-            //                 codigoVerificacion = response.codigo_generado;
-            //                 console.log('✅ Código enviado exitosamente');
-            //                 // Mostrar modal de verificación
-            //                 $('#menu-verificacion').addClass('menu-active');
-            //                 $('.menu-hider').addClass('menu-active');
-            //             } else {
-            //                 console.log('❌ Error en la respuesta:', response);
-            //                 alert('Error: ' + (response.errors.telefono ? response.errors
-            //                     .telefono[0] : 'Error desconocido'));
-            //             }
-            //         },
-            //         error: function(xhr, status, error) {
-            //             // console.log("❌ Error: ", xhr.responseJSON, 'skhfkhgkhkjhgkjhs');
-            //             var codigo = xhr.responseJSON.codigo_error;
-            //             // console.log("❌ Error: ", codigo);
-            //             if (codigo == 401 || codigo == 500) {
-            //                 $('#menu-verificacion').removeClass('menu-active');
-            //                 $('.menu-hider').removeClass('menu-active');
-            //                 // $('#codigo-incorrecto').addClass('menu-active');
-            //                 $('#verificar-numero').addClass('d-none');
-            //                 $('#telefono_verificado').val(0);
-            //                 $('#telefono_verificado').val(0);
-            //                 // $('#digitos_pais').val('');
-            //                 $('#mensaje-toast-error-snackbar').text(xhr.responseJSON.errors
-            //                     .general[0]);
-            //                 $('#snackbar-error').removeClass('hide').addClass('show');
-            //                 setTimeout(() => {
-            //                     $('#snackbar-error').removeClass('show').addClass(
-            //                         'hide');
-            //                 }, 5000);
-
-            //             } else {
-            //                 var errorMessage = 'Error al enviar el código de verificación.';
-            //                 if (xhr.responseJSON && xhr.responseJSON.errors) {
-            //                     var errors = xhr.responseJSON.errors;
-            //                     if (errors.telefono) {
-            //                         errorMessage = errors.telefono[0];
-            //                     } else if (errors.general) {
-            //                         errorMessage = errors.general[0];
-            //                     }
-            //                 }
-            //                 alert(errorMessage);
-            //             }
-            //         },
-            //         complete: function() {
-            //             // Rehabilitar el botón
-            //             document.getElementById('verificar-numero').disabled = false;
-            //             document.getElementById('verificar-numero').innerHTML =
-            //                 `Verificar <i class="fab fa-whatsapp ms-1"></i><br>{{ isset($usuarioReferido) && $usuarioReferido != '' ? 'Gana Puntos' : '' }} <span id="contador-cuenta-regresiva" class="d-none ms-2">30</span>`;
-            //         }
-            //     });
-            // });
-
-
-
         });
 
         // Configurar inputs cuando el DOM esté listo
@@ -1542,7 +1407,7 @@
                 if (valor) {
                     codigoCompleto += valor;
                 } else {
-                    console.log(`Input ${index + 1} está vacío`);
+                    // // console.log(`Input ${index + 1} está vacío`);
                 }
             });
 
@@ -1571,7 +1436,7 @@
                 if (valor) {
                     codigoCompleto += valor;
                 } else {
-                    console.log(`Input ${index + 1} está vacío`);
+                    // console.log(`Input ${index + 1} está vacío`);
                 }
             });
 
@@ -1589,37 +1454,6 @@
                 return null;
             }
         }
-
-        // // const verificarCodigoEditar = (boolean) => {
-        // //     // Obtener todos los inputs del formulario
-        // //     const claseSolicitud = boolean ? '#form-codigo-verificacion' : '#form-codigo-verificacion-editar'
-        // //     // // const inputs = document.querySelectorAll('#form-codigo-verificacion-editar .otp');
-        // //     const inputs = document.querySelectorAll(`${claseSolicitud} .otp`);
-        // //     let codigoCompleto = '';
-
-        // //     // Recorrer cada input y obtener su valor
-        // //     inputs.forEach((input, index) => {
-        // //         const valor = input.value.trim();
-
-        // //         // Si el valor no está vacío
-        // //         if (valor) {
-        // //             codigoCompleto += valor;
-        // //         } else {
-        // //             console.log(`Input ${index + 1} está vacío`);
-        // //         }
-        // //     });
-
-        // //     // Verificar si se completó el código
-        // //     if (codigoCompleto.length === 5) {
-        // //         // Enviar código al servidor para verificación
-        // //         // // enviarCodigoVerificacion(codigoCompleto);
-        // //         validacionOTPEditar(codigoCompleto);
-        // //         return codigoCompleto;
-        // //     } else {
-        // //         alert('Por favor completa todos los campos del código');
-        // //         return null;
-        // //     }
-        // // }
 
         const steps = document.querySelectorAll('.form-step');
 
@@ -1703,7 +1537,6 @@
                         $('#telefono_verificado').val(1);
                         formData.set('telefono_verificado', 1);
                         formData.delete('digitos_pais');
-                        console.log('✅ Teléfono verificado correctamente para la modificación del usuario');
 
                         setTimeout(() => {
                             $('#codigo-correcto').removeClass('menu-active');
@@ -1729,7 +1562,7 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.log(xhr.responseJSON.errors.codigo[0]);
+                    // // console.log(xhr.responseJSON.errors.codigo[0]);
                     $('#mensaje-toast-error').text(xhr.responseJSON.errors.codigo[0]);
                     $('#toast-error').removeClass('show');
                     $('#toast-error').addClass('show');
