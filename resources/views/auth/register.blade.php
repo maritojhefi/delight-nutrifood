@@ -39,7 +39,7 @@
                                 <label for="telefono">Teléfono</label>
                                 <div class="input-style has-icon remove-mb d-flex flex-row justify-content-between gap-3">
                                     <x-countrycode-select></x-countrycode-select>
-                                    <div class="d-flex flex-column w-100">
+                                    <div class="d-flex flex-column" style="width: 90%;">
                                         <i class="fa fa-phone input-icon ms-2"></i>
                                         <input type="tel" class="no-padding text-center form-control rounded-sm"
                                             id="telefono" name="telefono" value="{{ old('telefono') }}">
@@ -347,92 +347,8 @@
         </div>
     </div>
 
-    <div id="menu-verificacion" class="menu menu-box-modal rounded-m"
-        style="display: block; width: 90%; height: auto;">
-        <div class="card card-style p-0 m-0 pb-3">
-            <div class="card-header p-0">
-                <div class="menu-title">
-                    <p class="color-highlight">Delight-Nutrifood</p>
-                    <h1 class="font-20">Verifica tu número </h1>
-                    <a href="#" class="close-menu"><i class="fa fa-times-circle"></i></a>
-                </div>
-            </div>
-            <div class="content mb-3">
-                <p>
-                    Ingresa el código de verificación que te enviamos a tu numero de teléfono por whatsapp.
-                </p>
-                <div class="text-center mx-n3">
-                    <form action="" id="form-codigo-verificacion">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                    </form>
-                </div>
-                <p class="text-center my-4 font-11">No te llego ningun codigo aún? <a href="#"
-                        id="reenviar-codigo">Reenviar Codigo</a>
-                </p>
-                <div class="text-center">
-                    <button type="button" id="verificar-codigo-btn"
-                        class="btn btn-m btn-center-m button-s shadow-l rounded-s text-uppercase font-900 bg-mint-dark color-white">
-                        Verificar Código
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div id="menu-verificacion-editar" class="menu menu-box-modal rounded-m"
-        style="display: block; width: 90%; height: auto;">
-        <div class="card card-style p-0 m-0 pb-3">
-            <div class="card-header p-0">
-                <div class="menu-title">
-                    <p class="color-highlight">Delight-Nutrifood</p>
-                    <h1 class="font-20">Verificación para Editar Usuario</h1>
-                    <a href="#" class="close-menu"><i class="fa fa-times-circle"></i></a>
-                </div>
-            </div>
-            <div class="content mb-3">
-                <p>
-                    Se envió un código de verificación a su WhatsApp. <br> Por favor, ingrese el código para habilitar la modificación de su perfil.
-                </p>
-                <div class="text-center mx-n3">
-                    <form action="" id="form-codigo-verificacion-editar">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                        <input class="otp mx-1 rounded-sm text-center font-20 font-900" type="tel" maxlength="1"
-                            value="" placeholder="●">
-                    </form>
-                </div>
-                <p class="text-center my-3 font-11">
-                    ¿No ha recibido un código aún?
-                    <a href="#" id="reenviar-codigo">
-                        Reenviar código
-                    </a>
-                </p>
-                <div class="d-flex flex-row justify-content-evenly">
-                    <a class="btn btn-s font-15 shadow-l rounded-s text-uppercase font-900 bg-delight-red color-white" >Cancelar</a>
-                    <button type="button" id="verificar-codigo-btn-editar"
-                        class="btn btn-s font-15 shadow-l rounded-s validador-editar text-uppercase font-900 bg-mint-dark color-white">
-                        Verificar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <x-modal-otp-whatsapp funcionalidad="registro" />
+    <x-modal-otp-whatsapp funcionalidad="editar" />
 
     <!-- <div class="d-flex justify-content-center">
         <button href="#" data-menu="menu-verificacion" id="verificar-numero"
@@ -442,8 +358,6 @@
             <span id="contador-cuenta-regresiva" class="d-none ms-2">30</span></span>
         </button>
     </div> -->
-
-
 
     <div id="codigo-incorrecto" class="menu menu-box-modal rounded-m"
         style="display: block; width: 220px; height: auto; padding: 1%;">
@@ -937,7 +851,7 @@
                             // Resetear contador en caso de éxito
                             otpRetryCount = 0;
                             // Mostrar modal de verificación
-                            $('#menu-verificacion').addClass('menu-active');
+                            $('#menu-verificacion-registro').addClass('menu-active');
                             $('.menu-hider').addClass('menu-active');
                         } else {
                             // // console.log(' Error en la respuesta:', response);
@@ -977,7 +891,7 @@
                             currentStep = 1;
                             omitirValidacionWhatsapp = true;
                             
-                            $('#menu-verificacion').removeClass('menu-active');
+                            $('#menu-verificacion-registro').removeClass('menu-active');
                             $('.menu-hider').removeClass('menu-active');
                             
                             habilitarBotonesValidando();
@@ -986,7 +900,7 @@
                         
                         // Manejo de errores según el tipo
                         if (codigo == 401 || codigo == 500) {
-                            $('#menu-verificacion').removeClass('menu-active');
+                            $('#menu-verificacion-registro').removeClass('menu-active');
                             $('.menu-hider').removeClass('menu-active');
                             $('#verificar-numero').addClass('d-none');
                             $('#telefono_verificado').val(0);
@@ -1284,10 +1198,10 @@
 
         // Configurar inputs cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
-            configurarInputsOTP();
+            // configurarInputsOTPEditar();
 
             // Event listener para el botón de verificar código
-            document.getElementById('verificar-codigo-btn').addEventListener('click', function() {
+            document.getElementById('verificar-codigo-btn-registro').addEventListener('click', function() {
                 verificarCodigo2(true);
             });
 
@@ -1311,7 +1225,7 @@
                 iniciarContadorReenvio();
 
                 // Cerrar modal actual
-                $('#menu-verificacion').removeClass('menu-active');
+                $('#menu-verificacion-registro').removeClass('menu-active');
                 $('.menu-hider').removeClass('menu-active');
 
                 // Reenviar código (repetir el proceso de verificación)
@@ -1332,71 +1246,71 @@
         });
 
         // Configurar inputs para un solo carácter
-        function configurarInputsOTP() {
-            const inputs = document.querySelectorAll('#form-codigo-verificacion .otp');
+        // function configurarInputsOTPEditar() {
+        //     const inputs = document.querySelectorAll('#form-codigo-verificacion-editar .otp');
 
-            inputs.forEach((input, index) => {
-                // Solo permitir números
-                input.addEventListener('input', function(e) {
-                    // Remover cualquier carácter que no sea número
-                    let valor = e.target.value.replace(/[^0-9]/g, '');
+        //     inputs.forEach((input, index) => {
+        //         // Solo permitir números
+        //         input.addEventListener('input', function(e) {
+        //             // Remover cualquier carácter que no sea número
+        //             let valor = e.target.value.replace(/[^0-9]/g, '');
 
-                    // Limitar a un solo carácter
-                    if (valor.length > 1) {
-                        valor = valor.slice(0, 1);
-                    }
+        //             // Limitar a un solo carácter
+        //             if (valor.length > 1) {
+        //                 valor = valor.slice(0, 1);
+        //             }
 
-                    e.target.value = valor;
+        //             e.target.value = valor;
 
-                    // Si se ingresó un valor y no es el último input, avanzar al siguiente
-                    if (valor && index < inputs.length - 1) {
-                        inputs[index + 1].focus();
-                    }
+        //             // Si se ingresó un valor y no es el último input, avanzar al siguiente
+        //             if (valor && index < inputs.length - 1) {
+        //                 inputs[index + 1].focus();
+        //             }
 
-                    // NO verificar automáticamente - solo cuando se presione el botón
-                });
+        //             // NO verificar automáticamente - solo cuando se presione el botón
+        //         });
 
-                // Manejar tecla backspace
-                input.addEventListener('keydown', function(e) {
-                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                        inputs[index - 1].focus();
-                    }
-                });
+        //         // Manejar tecla backspace
+        //         input.addEventListener('keydown', function(e) {
+        //             if (e.key === 'Backspace' && !e.target.value && index > 0) {
+        //                 inputs[index - 1].focus();
+        //             }
+        //         });
 
-                // Manejar teclas de navegación
-                input.addEventListener('keydown', function(e) {
-                    if (e.key === 'ArrowLeft' && index > 0) {
-                        inputs[index - 1].focus();
-                    } else if (e.key === 'ArrowRight' && index < inputs.length - 1) {
-                        inputs[index + 1].focus();
-                    }
-                });
+        //         // Manejar teclas de navegación
+        //         input.addEventListener('keydown', function(e) {
+        //             if (e.key === 'ArrowLeft' && index > 0) {
+        //                 inputs[index - 1].focus();
+        //             } else if (e.key === 'ArrowRight' && index < inputs.length - 1) {
+        //                 inputs[index + 1].focus();
+        //             }
+        //         });
 
-                // Prevenir pegar múltiples caracteres
-                input.addEventListener('paste', function(e) {
-                    e.preventDefault();
-                    const texto = (e.clipboardData || window.clipboardData).getData('text');
-                    const numeros = texto.replace(/[^0-9]/g, '');
+        //         // Prevenir pegar múltiples caracteres
+        //         input.addEventListener('paste', function(e) {
+        //             e.preventDefault();
+        //             const texto = (e.clipboardData || window.clipboardData).getData('text');
+        //             const numeros = texto.replace(/[^0-9]/g, '');
 
-                    if (numeros.length > 0) {
-                        e.target.value = numeros[0];
+        //             if (numeros.length > 0) {
+        //                 e.target.value = numeros[0];
 
-                        // Si hay más números, distribuirlos en los siguientes inputs
-                        for (let i = 1; i < numeros.length && (index + i) < inputs.length; i++) {
-                            inputs[index + i].value = numeros[i];
-                        }
+        //                 // Si hay más números, distribuirlos en los siguientes inputs
+        //                 for (let i = 1; i < numeros.length && (index + i) < inputs.length; i++) {
+        //                     inputs[index + i].value = numeros[i];
+        //                 }
 
-                        // Enfocar el último input con valor
-                        const ultimoIndex = Math.min(index + numeros.length - 1, inputs.length - 1);
-                        inputs[ultimoIndex].focus();
-                    }
-                });
-            });
-        }
+        //                 // Enfocar el último input con valor
+        //                 const ultimoIndex = Math.min(index + numeros.length - 1, inputs.length - 1);
+        //                 inputs[ultimoIndex].focus();
+        //             }
+        //         });
+        //     });
+        // }
 
         function verificarCodigo() {
             // Obtener todos los inputs del formulario
-            const inputs = document.querySelectorAll('#form-codigo-verificacion .otp');
+            const inputs = document.querySelectorAll('#form-codigo-verificacion-registro .otp');
             let codigoCompleto = '';
 
             // Recorrer cada input y obtener su valor
@@ -1424,7 +1338,7 @@
 
         const verificarCodigo2 = (nuevo) => {
             // Obtener todos los inputs del formulario
-            const claseSolicitud = nuevo ? '#form-codigo-verificacion' : '#form-codigo-verificacion-editar'
+            const claseSolicitud = nuevo ? '#form-codigo-verificacion-registro' : '#form-codigo-verificacion-editar'
             const inputs = document.querySelectorAll(`${claseSolicitud} .otp`);
             let codigoCompleto = '';
 
@@ -1473,7 +1387,7 @@
                 success: function(response) {
                     if (response.status === 'success') {
                         // Código correcto
-                        $('#menu-verificacion').removeClass('menu-active');
+                        $('#menu-verificacion-registro').removeClass('menu-active');
                         $('.menu-hider').removeClass('menu-active');
                         $('#codigo-correcto').addClass('menu-active');
                         $('#verificar-numero').addClass('d-none');
@@ -1491,7 +1405,7 @@
                         currentStep = 1;
                     } else {
                         // Código incorrecto
-                        $('#menu-verificacion').removeClass('menu-active');
+                        $('#menu-verificacion-registro').removeClass('menu-active');
                         $('.menu-hider').removeClass('menu-active');
                         $('#codigo-incorrecto').addClass('menu-active');
                         $('#verificar-numero').attr('disabled', true);
@@ -1549,7 +1463,7 @@
                         currentStep = 1;
                     } else {
                         // Código incorrecto
-                        $('#menu-verificacion').removeClass('menu-active');
+                        $('#menu-verificacion-registro').removeClass('menu-active');
                         $('.menu-hider').removeClass('menu-active');
                         $('#codigo-incorrecto').addClass('menu-active');
                         $('#verificar-numero').attr('disabled', true);

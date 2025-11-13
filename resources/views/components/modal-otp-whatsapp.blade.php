@@ -3,7 +3,6 @@
         <div class="card card-style p-0 m-0 pb-3">
         <div class="card-header bg-white border-0 p-0 bg-dtheme-dkblue">
             <div class="menu-title d-flex flex-column px-2">
-                <!-- <p class="ps-1 color-highlight d-inline-block" style="width: fit-content">{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}</p> -->
                 <h1 class="px-0 align-self-center font-20 line-height-m">Ingresar código de verificación</h1>
             </div>
         </div>
@@ -25,10 +24,6 @@
                         value="" placeholder="●">
                 </form>
             </div>
-            <!-- <div class="d-flex flex-row">
-                <button id="untouchabler" class="btn btn-m color-theme">UNTOUCH</button>
-                <button id="touchabler" class="btn btn-m color-theme">TOUCH</button>
-            </div> -->
             <p class="text-center font-11 mb-0">
                 ¿No ha recibido un código aún?
                 <a href="#" id="reenviar-codigo">
@@ -66,13 +61,12 @@
 </div>
 @endpush
 
+@once
+
 @push('scripts')
 <script>
 $(document).ready(function() {
     configurarInputsOTP();
-    // $('.menu-hider').addClass('menu-active');
-    // $('#untouchabler').on('click', hacerMenuHiderIntocable);
-    // $('#touchabler').on('click', hacerMenuHiderTocable);
 });
 
 const configurarInputsOTP = () => {
@@ -143,3 +137,4 @@ const habilitarBotonVerifiacionOTP = () => {
 
 </script>
 @endpush
+@endonce
