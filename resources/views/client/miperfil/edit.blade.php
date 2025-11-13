@@ -417,15 +417,16 @@
                 color: white !important;
             }
 
-            .theme-dark .ss-option.ss-selected {
-                background-color: #7db1b1 !important;
+            .ss-option.ss-selected {
                 border-radius: 0.4rem;
+                background-color: #7db1b1 !important;
             }
 
+            .ss-search input {
+                border-radius: 0.4rem;
+            }
             .theme-dark .ss-search input {
                 background-color:  #0f1117 !important;
-                border-radius: 0.4rem;
-                /* background-color:  #1f2937 !important; */
             }
 
             .theme-dark .ss-content {
