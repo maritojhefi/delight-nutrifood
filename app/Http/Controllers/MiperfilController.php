@@ -305,7 +305,7 @@ class MiperfilController extends Controller
             'ano_nacimiento.min' => 'Por favor, ingresa una fecha de nacimiento válida.',
             'ano_nacimiento.max' => 'Por favor, ingresa una fecha de nacimiento válida.',
 
-            'profesion.required' => 'El campo profesión es obligatorio.',
+            'profesion.required' => 'La profesión es obligatoria.',
             'profesion.max' => 'La profesión no puede exceder los 40 caracteres.',
 
             'direccion.required' => 'La dirección es obligatoria.',

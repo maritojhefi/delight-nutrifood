@@ -55,7 +55,9 @@
     @stack('header')
 </head>
 
-<body id="margen" class="theme-light">
+
+<body id="margen"
+    class="{{ isset(auth()->user()->color_page) ? auth()->user()->color_page : 'theme-light' }} margen">
     <div id="preloader">
         <div class="spinner-border color-highlight" role="status"></div>
     </div>
@@ -66,7 +68,7 @@
             <a href="#" data-menu="menu-main" class="header-icon header-icon-4 "><i class="fas fa-bars"></i></a>
         </div> --}}
         <x-appkit-header/>
-        <div class="page-content">
+        <div id="contenido-cliente" class="page-content">
             @yield('content')
         </div>
 
@@ -116,6 +118,58 @@
                 }, 3000)
             });
 
+        });
+    </script>
+    <script>
+        const hacerMenuHiderIntocable = () => {
+            $('.menu-hider').css('pointer-events', 'none');
+            // console.log("TRIGGERED: Menu hider is now untocable.");
+        };
+
+        const hacerMenuHiderTocable = () => {
+            $('.menu-hider').css('pointer-events', '');
+            // console.log("TRIGGERED: Menu hider is now tocable.");
+        };
+
+        const observarCambiosMenuActive = (elemento) => {
+            const elementoObjetivo = elemento[0];
+            
+            const callback = (mutationsList, observer) => {
+                for (const mutation of mutationsList) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        const elm = $(mutation.target);
+
+                        const tieneMenuActive = elm.hasClass('menu-active');
+                        
+                        // The element is guaranteed to have 'hider-intocable' because of the selector
+                        const tieneHiderIntocable = true; 
+
+                        if (tieneMenuActive && tieneHiderIntocable) {
+                            // Condition met: Element gains 'menu-active'
+                            hacerMenuHiderIntocable();
+                        } else if (!tieneMenuActive && tieneHiderIntocable) {
+                            // Condition met: Element loses 'menu-active'
+                            hacerMenuHiderTocable();
+                        }
+                    }
+                }
+            };
+
+            // 3. Create and configure the observer
+            const observer = new MutationObserver(callback);
+            const config = { attributes: true }; // Only watch for attribute changes
+
+            // 4. Start observing
+            observer.observe(elementoObjetivo, config);
+            console.log(`Watching element: ${elementoObjetivo.tagName}.${elemento.attr('class')}`);
+        };
+
+
+        // 5. Use jQuery to select ALL target elements and apply the watcher function to each
+        $(document).ready(function() {
+            $('.hider-intocable').each(function() {
+                observarCambiosMenuActive($(this));
+            });
         });
     </script>
 

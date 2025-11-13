@@ -547,6 +547,15 @@ class UsuarioController extends Controller
                     case 'editar_usuario':
                         $plantillaWhatsapp = 'delight_template_verificar_numero_editar';
                         break;
+                    case 'cambio_telefono_perfil':
+                        Log::debug("Envío de otp para actualizacipon del teléfono en perfil cliente", [
+                            "telefono" => $telefono,
+                            "codigo_pais" => $codigoPais,
+                            "digitosPais" => $digitosPais,
+                            "codigo_a_enviarse" => $codigo
+                        ]);
+                        $plantillaWhatsapp = 'delight_template_verificar_numero_editar';
+                        break;
                     case 'ingreso_usuario':
                         $usuario = User::where('codigo_pais', '+'.$codigoPais)->where('telf', $telefono)->exists();
                         Log::debug("Usuario existe para ingreso con codigo pais $codigoPais y telefono $telefono ?", [$usuario]);
@@ -764,6 +773,49 @@ class UsuarioController extends Controller
 
         if ($codigoIngresado === $codigoGenerado) {
             Auth::loginUsingId($user_id);
+            return response()->json(
+            [
+                'status' => 'success',
+                'message' => 'Código verificado y sesión iniciada correctamente.',
+                'redirect_url' => route('miperfil')
+            ],
+            200,
+        );
+        } else {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'errors' => ['codigo' => ['El código ingresado no coincide. Intenta nuevamente.']],
+                ],
+                422,
+            );
+        }
+    }
+
+    public function cambiarNumeroOTP(Request $request) {
+        $codigoIngresado = $request->input('codigo');
+        $codigoGenerado = $request->input('codigoGenerado');
+        $nuevoTelefonoNacional = $request->input('nuevoTelefonoNacional');
+        $nuevoCodigoPais = $request->input('nuevoCodigoPais');
+        $userId = $request->input('userId');
+
+        $user = User::where('id', $userId)->first();
+
+        if (!$user) {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'errors' => ['telefono_completo' => ['No se encontró un usuario con ese número de teléfono.']],
+                ],
+                404,
+            );
+        }
+
+        if ($codigoIngresado == $codigoGenerado) {
+            // Actualizar el número telefónico del usuario
+            $user->codigo_pais = '+' . $nuevoCodigoPais;
+            $user->telf = $nuevoTelefonoNacional;
+            $user->save();
             return response()->json(
             [
                 'status' => 'success',
