@@ -499,23 +499,38 @@
 
 @push('header')
 <style>
-    /* Target the main container created by Slim Select based on your original select's ID */
     #country-code-selector + .ss-main .ss-single-selected,
     #country-code-selector + .ss-main .ss-selected-text {
-        /* These properties prevent the text from breaking inside the element */
         word-break: normal !important; 
         overflow-wrap: normal !important;
-        white-space: nowrap !important; /* Forces text to stay on one line */
+        white-space: nowrap !important;
     }
 
-    /* Selects the specific text container within the Slim Select element */
     .ss-main .ss-single {
-        /* Prevents the text from wrapping to the next line */
         white-space: nowrap !important; 
-        
-        /* Ensures words are not broken forcefully */
         word-break: normal !important; 
         overflow-wrap: normal !important;
+    }
+
+    .ss-option.ss-selected {
+        border-radius: 0.4rem;
+        background-color: #7db1b1 !important;
+    }
+
+    .ss-search input {
+        border-radius: 0.4rem;
+    }
+
+    .ss-main {
+        height: 45px;
+        box-shadow: none !important;
+        border-color: #00000014;
+        border: 0px !important;
+        transition: none;
+        /* If you want a fixed min-width for the selector, define it here */
+        /* Example: min-width: 100px; */
+        /* Ensure no wrapping within the main container */
+        overflow: hidden; 
     }
 </style>
 @endpush
