@@ -1,6 +1,6 @@
 @extends('client.masterSinFooter')
 @section('content')
-    <x-cabecera-pagina titulo="Completa tu perfil" cabecera="appkit" />
+    <x-cabecera-pagina titulo="Editar Perfil" cabecera="appkit" />
 
 
     @if (!session('success'))
@@ -17,72 +17,150 @@
 
         <div class="card card-style">
             <div class="content">
-                <div class="d-flex">
+                <div class="d-flex flex-row align-items-center gap-3 justify-content-evenly">
                     <div>
                         @if ($usuario->foto)
-                            <img src="{{ $usuario->pathFoto }}" width="50" class="me-3 bg-highlight rounded-xl">
+                            <img src="{{ $usuario->pathFoto }}" width="55" class="bg-highlight rounded-xl">
                         @else
-                            <img src="{{ asset('user.png') }}" width="50" class="me-3 bg-highlight rounded-xl">
+                            <img src="{{ asset('user.png') }}" width="55" class="bg-highlight rounded-xl">
                         @endif
                     </div>
                     <div>
                         <h1 class="mb-0 pt-1">{{ auth()->user()->name }}</h1>
-                        <p class="color-highlight font-11 mt-n2 mb-3">Informacion cifrada, no revelaremos esto con nadie</p>
                     </div>
                 </div>
+                <p class="color-highlight font-11 mt-n1 mb-0">Información cifrada, no revelaremos esto con nadie</p>
                 <p>
                     Completa tu perfil, asi estaras listo para todas las funciones que se vienen pronto!
                 </p>
             </div>
         </div>
+
+        <card class="card card-style py-2">
+            <div class="card-header bg-theme border-0">
+                <h2 class="mb-0">Número de Contacto</h2>
+                <!-- <small class="text-muted">Ingrese su nuevo número para recibir código de verificación</small> -->
+            </div>
+            
+            <form id="form-cambiar-telefono">
+                @csrf
+                @method('PUT')
+                
+                <div class="card-body">
+                    <div class="d-flex flex-row gap-2 justify-content-evenly align-items-center">
+                        <!-- Selector de Código de País -->
+                        <div class="d-flex flex-column position-relative" style="min-width: 35%;">
+                            <label for="selector-codigo_pais-perfil"
+                                class="position-absolute d-inline-block font-13 color-highlight line-height-xs bg-theme ms-2 px-1" 
+                                style="z-index: 10; width: fit-content; top: -7px">
+                                Código país
+                            </label>
+                            <x-countrycode-select id="selector-codigo_pais-perfil" name="codigo_pais" />
+                        </div>
+
+                        <!-- Input de Teléfono -->
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field remove-mb" 
+                            style="min-width: 59%;">
+                            <i data-lucide="smartphone" class="lucide-icon lucide-input"></i>
+                            <input type="tel" 
+                                class="form-control text-center font-14"
+                                placeholder="Ingrese su número" 
+                                name="telefono-nacional"
+                                id="telefono-nacional"
+                                inputmode="numeric"
+                                pattern="[0-9]*"
+                                autocomplete="tel-national"
+                                style="height: 40px;"
+                                value="{{ old('telefono-nacional', $usuario->telf) }}"
+                                required>
+                            <label for="telefono-nacional" 
+                                class="color-highlight bg-theme font-400 font-13"
+                                style="transition: none;">
+                                Teléfono
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Campo oculto para dígitos esperados (útil para backend) -->
+                    <input type="hidden" name="digitos_esperados" id="digitos_esperados">
+                </div>
+
+                <!-- Footer con botón de submit -->
+                <div class="card-footer bg-theme border-0 pt-0">
+                    <button type="submit" 
+                            id="btn-guardar-telefono"
+                            class="btn w-100 btn-m bg-highlight rounded-s d-flex flex-row align-items-center justify-content-center gap-1 text-uppercase font-900 shadow-s d-none"
+                            disabled>
+                        <!-- <i data-lucide="message-circle-more" class="lucide-icon" style="width: 1rem; height: 1rem;"></i> -->
+                        Verificar Número
+                    </button>
+                    
+                    <!-- Indicador de carga (opcional) -->
+                    <div id="loading-validacion" class="d-none text-center py-2">
+                        <div class="spinner-border spinner-border-sm text-highlight me-2" role="status">
+                            <span class="visually-hidden">Validando...</span>
+                        </div>
+                        <small class="text-muted">Validando número...</small>
+                    </div>
+                </div>
+            </form>
+        </card>
+
         <div id="todoBien">
 
             <div class="card card-style">
                 <form action="{{ route('guardarPerfilFaltante') }}" method="post">
-
-                    <div class="content mb-0">
-                        <h3 class="font-600">Informacion de tu perfil</h3>
-                        <p>
-                            Por favor llena con el maximo detalle los siguientes campos.
+                    <div class="content">
+                        <h3 class="font-600">Información de tu perfil</h3>
+                        <p class="mb-0">
+                            Por favor llena con el máximo detalle los siguientes campos.
                         </p>
 
                         @csrf
 
                         <br>
-                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
+                            <i data-lucide="user" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control"
                                 placeholder="Nombre" name="name"
+                                id="name_input"
                                 value="{{ old('name', $usuario->name) }}">
-                            <label for="" class="color-highlight font-400 font-13">Nombre</label>
-
-                            @error('profesion')
-                                <i class="fa fa-times  invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
+                            <label for="name_input" class="color-highlight bg-theme font-400 font-13"
+                                style="transition: none;">Nombre</label>
                         </div>
+                        @error('name')
+                            <p class="text-danger line-height-s mx-2 mt-n2">
+                                <i class="fa fa-times invalid color-red-dark  me-2"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
                         <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
+                            <!-- <i class="fa fa-envelope"></i> -->
+                            <i data-lucide="mail" class="lucide-icon lucide-input"></i>
                             <input type="email" class="form-control" placeholder="" name="email"
                                 value="{{ old('email', $usuario->email) }}">
-                            <label for="form1" class="color-highlight font-400 font-13">Email</label>
-
-                            @error('email')
-                                <i class="fa fa-times  invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
+                            <label for="name_input" class="color-highlight bg-theme font-400 font-13"
+                                style="transition: none;">Email</label>                        
                         </div>
-                        <div class="d-flex flex-column mb-4">
-                            <label for="nacimiento" class="ms-2 color-highlight font-400 font-13">Fecha de nacimiento</label>
-                                <div class="input-style has-borders  remove-mb rounded-sm validate-field d-flex flex-row gap-2">
-                                    
+                        @error('email')
+                            <p class="text-danger line-height-s mx-2 mt-n2">
+                                <i class="fa fa-times invalid color-red-dark  me-2"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
+                        <div class="d-flex flex-column mb-3 mt-n1">
+                            <label for="nacimiento" class="ms-2 mb-n2 d-inline-block px-1 line-height-xs color-highlight bg-theme font-400 font-13"
+                                style="z-index: 10;width:fit-content">Fecha de nacimiento</label>
+                            <div class="input-style has-borders remove-mb rounded-sm validate-field d-flex flex-row gap-2">
                                 {{-- Campo Día --}}
                                 <input type="number" class="text-center form-control"
                                     placeholder="Día" name="dia_nacimiento" required
+                                    min="1" max="31"
                                     value="{{ old('dia_nacimiento', explode('-', $usuario->nacimiento)[2]) }}"
+                                    oninput="if(this.value > 31) this.value = 31; if(this.value < 1) this.value = 1;"
                                 >
 
                                 {{-- Campo Mes (Select) --}}
-                                <select class="text-center form-control" name="mes_nacimiento"
-                                    required>
+                                <select class="text-center form-control" name="mes_nacimiento" required>
                                     <option value="" disabled selected>Mes</option>
                                     @php
                                         $selectedMonth = explode('-', $usuario->nacimiento)[1];
@@ -102,51 +180,68 @@
                                 </select>
 
                                 {{-- Campo Año --}}
+                                @php
+                                    $minAge = 0; // Edad mínima requerida
+                                    $maxYear = date('Y') - $minAge;
+                                @endphp
                                 <input type="number" class="text-center form-control" placeholder="Año"
                                     name="ano_nacimiento" required
-                                    value="{{ old('ano_nacimiento', explode('-', $usuario->nacimiento)[0]) }}">
+                                    max="{{ $maxYear }}"
+                                    value="{{ old('ano_nacimiento', explode('-', $usuario->nacimiento)[0]) }}"
+                                    oninput="const maxYear = {{ $maxYear }}; if(this.value > maxYear) this.value = maxYear; if(this.value.length > 4) this.value = this.value.slice(0, 4);"
+                                >
                             </div>
 
                             {{-- Bloque de Error Condicional Único --}}
                             @if ($errors->hasAny(['dia_nacimiento', 'mes_nacimiento', 'ano_nacimiento']))
-                                <p class="text-danger mt-1">
+                                <p class="text-danger line-height-s mx-2 mt-2">
+                                    <i class="fa fa-times invalid color-red-dark me-2"></i>
                                     Por favor, ingresa una fecha valida (debes ser mayor de 12 años).
                                 </p>
                             @endif
-                                                    </div>
-                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                        </div>
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
+                            <i data-lucide="briefcase-business" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control"
                                 placeholder="Ejm: Abogado" name="profesion"
                                 value="{{ old('profesion', $usuario->profesion) }}">
-                            <label for="" class="color-highlight font-400 font-13">Profesion</label>
-
-                            @error('profesion')
-                                <i class="fa fa-times  invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
+                            <label for="name_input" class="color-highlight bg-theme font-400 font-13"
+                                style="transition: none;">Profesión</label>
                         </div>
-                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                        @error('profesion')
+                            <p class="text-danger line-height-s mx-2 mt-n2">
+                                <i class="fa fa-times invalid color-red-dark  me-2"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
+                            <i data-lucide="map-pin-house" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control"
                                 placeholder="Ejm: Tomatitas Av. Principal #134 Porton guindo" name="direccion"
                                 value="{{ old('direccion', $usuario->direccion) }}">
-                            <label for="" class="color-highlight font-400 font-13">Dirección</label>
-
-                            @error('direccion')
-                                <i class="fa fa-times  invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
+                            <label for="name_input" class="color-highlight bg-theme font-400 font-13"
+                                style="transition: none;">Dirección</label>
                         </div>
-                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
+                        @error('direccion')
+                            <p class="text-danger line-height-s mx-2 mt-n2">
+                                <i class="fa fa-times invalid color-red-dark  me-2"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
+                            <i data-lucide="map-pin-pen" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control" maxlength="50"
                                 placeholder="Ejm: Tomatitas Av. Principal #134 Porton guindo" name="direccion_trabajo"
                                 value="{{ old('direccion_trabajo', $usuario->direccion_trabajo) }}">
-                            <label for="" class="color-highlight font-400 font-13">Dirección de trabajo (opcional)</label>
-
-                            @error('direccion_trabajo')
-                                <i class="fa fa-times  invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
+                            <label for="name_input" class="color-highlight bg-theme font-400 font-13"
+                                style="transition: none;">Dirección de trabajo</label>
                         </div>
+                        @error('direccion_trabajo')
+                            <p class="text-danger line-height-s mx-2 mt-n2">
+                                <i class="fa fa-times invalid color-red-dark  me-2"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
                         {{-- <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
                             <input type="number" class="form-control" placeholder="" name="telf"
                                 value="{{ old('telf', $usuario->telf) }}">
@@ -157,14 +252,14 @@
                                 <p class="text-danger">{{ $message }}</p>
                             @enderror
                         </div> --}}
-                        <div class="d-flex flex-row align-content-center mb-4">
-                            
+                        <div class="d-flex flex-row align-items-center mb-4">
+                            <i data-lucide="users" class="lucide-icon ms-2" style="width: 1.2rem; height: 1.2rem;"></i>
                             <label for="hijos" class="mx-2 color-highlight font-400 font-13">
                                 ¿Tiene hijos?:
                             </label>
                             
                             <input 
-                                class="form-check-input" 
+                                class="form-check-input m-0" 
                                 type="checkbox" 
                                 name="hijos" 
                                 id="hijos"
@@ -174,27 +269,33 @@
                             >
                             
                         </div>
-                        <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4 position-relative">
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4 position-relative">
+                            <i data-lucide="key-round" class="lucide-icon lucide-input"></i>
                             <input type="password" class="form-control password-input-toggle" placeholder="" name="password" id="new-password">
-                            <label for="new-password" class="color-highlight font-400 font-13">Nueva contraseña</label>
-                            
-                            <i class="fa fa-lock position-absolute end-0 me-3 top-50 translate-middle-y fa-eye" id="toggleIconNew"></i>
-                            
-                            @error('password')
-                                <i class="fa fa-times invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
+                            <label for="name_input" class="color-highlight bg-theme font-400 font-13"
+                                style="transition: none;">Nueva Contraseña</label>
+                            <button type="button"
+                                    class="p-0 m-0 position-absolute end-0 me-3 top-50 translate-middle-y password-toggle-btn"
+                                    id="togglePasswordBtn" aria-label="Mostrar/Ocultar contraseña">
+                                <i data-lucide="lock" id="toggleIconNew" class="lucide-icon" style="width: 1.1rem; height: 1.1rem;"></i>
+                            </button>
                         </div>
+                        @error('password')
+                            <p class="text-danger line-height-s mx-2 mt-n2">
+                                <i class="fa fa-times invalid color-red-dark  me-2"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
 
 
                         <input type="hidden" value="{{ $usuario->id }}" name="idUsuario">
                         <input type="hidden" id="latitud" name="latitud">
                         <input type="hidden" id="longitud" name="longitud">
+                        <button type="submit"
+                            class="btn w-100 bg-highlight rounded-sm shadow-xl btn-m text-uppercase font-900">
+                            Guardar Perfil
+                        </button>
                     </div>
-
-                    <button type="submit"
-                        class="btn btn-full btn-margins bg-highlight mt-3 rounded-sm shadow-xl btn-m text-uppercase font-900 btn-block">Guardar
-                        Perfil</button>
                 </form>
             </div>
             {{-- <div class="card card-style mb-2 map-full" data-card-height="cover-card" style="height: 573px;">
@@ -205,7 +306,7 @@
                 <div class="content mb-0">
                     <h4>Foto de perfil</h4>
                     <p>
-                        Personaliza tu perfil, nos ayudara a conocerte mejor!
+                        Personaliza tu perfil, nos ayudará a conocerte mejor!
                     </p>
                     <form action="{{ route('subirfoto.perfil') }}" method="POST" enctype="multipart/form-data">
                         @csrf
@@ -226,7 +327,6 @@
 
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
@@ -283,7 +383,15 @@
             class="btn btn-m btn-full m-3 rounded-xl text-uppercase font-900 shadow-s bg-green-dark">Ir a mi perfil</a>
     @endif
 
+    @push('modals')
+
+    <x-modal-otp-whatsapp funcionalidad="cambionumero" />
+
+    @endpush
+
     @push('header')
+        <!-- ESTILOS SLIM-SELECT -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slim-select@2/dist/slimselect.min.css" />
         <style>
             .displayNone {
                 display: none
@@ -292,34 +400,451 @@
             .dislayFull {
                 display: contents
             }
+
+            /* Target the div holding the selected value text */
+            .ss-main .ss-single {
+                white-space: nowrap; 
+                overflow: hidden; 
+                text-overflow: ellipsis; 
+                max-width: 100%; 
+            }
+
+            .theme-dark .ss-single {
+                color: white;
+            }
+
+            .theme-dark .ss-option {
+                color: white !important;
+            }
+
+            .ss-option.ss-selected {
+                border-radius: 0.4rem;
+                background-color: #7db1b1 !important;
+            }
+
+            .ss-search input {
+                border-radius: 0.4rem;
+            }
+            .theme-dark .ss-search input {
+                background-color:  #0f1117 !important;
+            }
+
+            .theme-dark .ss-content {
+                background-color:  #0f1117 !important;
+                /* background-color:  #1f2937 !important; */
+            }
+
+            /* Optional: Ensure the outer wrapper respects any width constraints */
+            .ss-main {
+                height: 40px;
+                box-shadow: none !important;
+                border-color: #00000014;
+                transition: none;
+                /* If you want a fixed min-width for the selector, define it here */
+                /* Example: min-width: 100px; */
+                /* Ensure no wrapping within the main container */
+                overflow: hidden; 
+            }
+
+            .theme-dark .ss-main {
+                border-color: #ffffff14 !important;
+            }
+
         </style>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC059fhEiwhAxE0iFJ2mDLac1HPtOWLY4Y" async defer></script>
+        <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC059fhEiwhAxE0iFJ2mDLac1HPtOWLY4Y" async defer></script> -->
     @endpush
     @push('scripts')
+        <!-- SCRIPT SLIMSELECT -->
+        <script src="https://cdn.jsdelivr.net/npm/slim-select@2/dist/slimselect.min.js"></script>
+        <!-- SCRIPT LIBPHONENUMBER -->
+        <script src="https://cdn.jsdelivr.net/npm/google-libphonenumber/dist/libphonenumber.js"></script>
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const passwordInput = document.getElementById('new-password');
-                const toggleIcon = document.getElementById('toggleIconNew');
+        $(document).ready(function() {
+            // ============= ESTADO DE LA APLICACIÓN =============
+            const estado = {
+                digitosEsperados: null,
+                validacionEnCurso: false,
+                temporizadorValidacion: null,
+                codigoVerificacion: null
+            };
 
-                if (passwordInput && toggleIcon) {
-                    toggleIcon.addEventListener('click', function() {
-                        if (passwordInput.type === 'password') {
-                            passwordInput.type = 'text';
-                            
-                            toggleIcon.classList.remove('fa-lock');
-                            toggleIcon.classList.add('fa-lock-open');
-                            
-                        } else {
-                            passwordInput.type = 'password';
-                            
-                            toggleIcon.classList.remove('fa-lock-open');
-                            toggleIcon.classList.add('fa-lock');
-                        }
-                    });
+            // ============= ELEMENTOS DEL DOM =============
+            const elementos = {
+                selectorPais: $('#selector-codigo_pais-perfil'),
+                inputTelefono: $('#telefono-nacional'),
+                botonGuardar: $('#btn-guardar-telefono'),
+                formularioCambiarNumero: $('#form-cambiar-telefono'),
+                modalOTP: $('#menu-verificacion-cambionumero'),
+                ocultadorMenu: $('.menu-hider'),
+                modalExito: $('#codigo-correcto')
+            };
+
+            // ============= INICIALIZACIÓN =============
+            const iniciarOTPContrasena = () => {
+                inicializarSelectorPais();
+                configurarEventos();
+                detectarDigitosPais();
+            };
+
+            // ============= INICIALIZACIÓN DE SLIMSELECT =============
+            const inicializarSelectorPais = () => {
+                if (!elementos.selectorPais.length) return;
+
+                elementos.selectorPais.css('display', '');
+
+                new SlimSelect({
+                    select: '#selector-codigo_pais-perfil',
+                    settings: {
+                        placeholder: 'Seleccione un país',
+                        searchPlaceholder: 'Buscar país...',
+                        searchText: 'Sin resultados',
+                        allowDeselect: false,
+                        showSearch: true,
+                    }
+                });
+
+                // Establecer el código de país del usuario como predeterminado
+                setTimeout(() => {
+                    const elementoSelect = elementos.selectorPais.get(0);
+                    if (!elementoSelect.value || elementoSelect.value === '') {
+                        elementoSelect.value = '{{ ltrim($usuario->codigo_pais, '+') }}';
+                        elementoSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                }, 150);
+            };
+
+            // ============= CONFIGURACIÓN DE EVENTOS =============
+            const configurarEventos = () => {
+                // Cambio de país
+                elementos.selectorPais.get(0).addEventListener('change', manejarCambioPais);
+
+                // Entrada de teléfono (con espera)
+                elementos.inputTelefono.on('input', manejarEntradaTelefono);
+
+                // Click en botón guardar
+                elementos.formularioCambiarNumero.on('submit', function (e) {
+                    e.preventDefault(); 
+                    enviarOTPParaCambioNumero();
+                });
+            };
+
+            const manejarCambioPais = () => {
+                detectarDigitosPais();
+                elementos.inputTelefono.val('');
+                ocultarBotonGuardar();
+                
+                if (estado.temporizadorValidacion) {
+                    clearTimeout(estado.temporizadorValidacion);
                 }
-            });
+            };
+
+            const manejarEntradaTelefono = function() {
+                const valorActual = $(this).val();
+                const longitud = valorActual.length;
+
+                // // console.log(`Caracteres: ${longitud}/${estado.digitosEsperados}`);
+
+                // Limpiar validación previa
+                if (estado.temporizadorValidacion) {
+                    clearTimeout(estado.temporizadorValidacion);
+                }
+
+                // Validar cuando se alcance la longitud esperada
+                if (estado.digitosEsperados && longitud === estado.digitosEsperados) {
+                    estado.temporizadorValidacion = setTimeout(() => {
+                        validarTelefonoRemoto(valorActual);
+                    }, 500);
+                } else {
+                    ocultarBotonGuardar();
+                }
+            };
+
+            const manejarClickGuardar = (e) => {
+                e.preventDefault();
+                enviarOTPParaCambioNumero();
+            };
+
+            // ============= DETECCIÓN DE PAÍS =============
+            const detectarDigitosPais = () => {
+                const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
+                const codigoPais = parseInt(elementos.selectorPais.val());
+
+                try {
+                    const regiones = phoneUtil.getRegionCodesForCountryCode(codigoPais);
+                    
+                    if (!regiones || regiones.length === 0) {
+                        console.warn('No se encontraron regiones para el código:', codigoPais);
+                        // Asegurar que no hay límite si no hay datos
+                        elementos.inputTelefono.removeAttr('maxlength');
+                        estado.digitosEsperados = null;
+                        return;
+                    }
+
+                    for (const region of regiones) {
+                        const ejemplo = phoneUtil.getExampleNumberForType(
+                            region,
+                            libphonenumber.PhoneNumberType.MOBILE
+                        );
+                        
+                        if (ejemplo) {
+                            const numeroEjemplo = phoneUtil.getNationalSignificantNumber(ejemplo);
+                            estado.digitosEsperados = numeroEjemplo.length;
+
+                            elementos.inputTelefono.attr('maxlength', estado.digitosEsperados);
+
+                            // // console.log(`Código +${codigoPais} → Región: ${region}, Dígitos esperados: ${estado.digitosEsperados}`);
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error al detectar dígitos:', e.message);
+                    mostrarError('Error al configurar la validación del país');
+                }
+            };
+
+            // ============= VALIDACIÓN REMOTA =============
+            const validarTelefonoRemoto = async (telefono) => {
+                if (estado.validacionEnCurso) return;
+                estado.validacionEnCurso = true;
+
+                const codigoPais = elementos.selectorPais.val();
+
+                try {
+                    const respuesta = await axios.post('{{ route("usuario.verificar-numero") }}', {
+                        telefono,
+                        codigoPais,
+                        digitosPais: estado.digitosEsperados
+                    }, {
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                    });
+
+                    if (respuesta.data.status === 'success') {
+                        mostrarBotonGuardar();
+                        mostrarExito('Número válido');
+                    } else {
+                        ocultarBotonGuardar();
+                        const mensajeError = obtenerMensajeError(respuesta.data.errors);
+                        mostrarError(mensajeError);
+                    }
+
+                } catch (error) {
+                    console.error('Error en la validación:', error);
+                    ocultarBotonGuardar();
+
+                    let mensaje = 'Error al validar el teléfono';
+                    if (error.response?.data?.errors) {
+                        mensaje = obtenerMensajeError(error.response.data.errors);
+                    } else if (error.response?.data?.message) {
+                        mensaje = error.response.data.message;
+                    }
+                    
+                    mostrarError(mensaje);
+                } finally {
+                    estado.validacionEnCurso = false;
+                }
+            };
+
+            // ============= GESTIÓN DEL OTP =============
+            const enviarOTPParaCambioNumero = async () => {
+                const telefono = elementos.inputTelefono.val();
+                const codigoPais = elementos.selectorPais.val();
+
+                try {
+                    deshabilitarBotonEnviarOTP();
+                    const respuesta = await axios.post('{{ route("usuario.enviar-codigo-verificacion") }}', {
+                        telefono,
+                        codigoPais,
+                        digitosPais: estado.digitosEsperados,
+                        operacion: 'cambio_telefono_perfil'
+                    }, {
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                    });
+
+                    if (respuesta.data.status === "success") {
+                        estado.codigoVerificacion = respuesta.data.codigo_generado;
+                        configurarEventosOTP();
+                        mostrarModalOTP();
+                    }
+                } catch (error) {
+                    let mensajeError = 'Error inesperado, por favor intenta más tarde.';
+
+                    if (error.response && error.response.data && error.response.data.errors) {
+                        const errors = error.response.data.errors;
+                        const primeraClave = Object.keys(errors)[0];
+                        
+                        if (primeraClave && Array.isArray(errors[primeraClave]) && errors[primeraClave].length > 0) {
+                            mensajeError = errors[primeraClave][0];
+                        }
+                    }
+                    // Mostrar mensaje en snackbar
+                    $('#mensaje-toast-error-snackbar').text(mensajeError);
+                    $('#snackbar-error').addClass('show');
+
+                    setTimeout(() => {
+                        $('#snackbar-error').removeClass('show');
+                    }, 3000);
+
+                    console.error("Error al enviar el código de verificacion OTP:", error);
+                }
+
+                habilitarBotonEnviarOTP();
+            };
+
+            const configurarEventosOTP = () => {
+                // Botón de verificación
+                $('#verificar-codigo-btn-cambionumero').off('click').on('click', () => {
+                    validarOTPParaCambioNumero();
+                });
+
+                // Botón de reenvío
+                $('#reenviar-codigo').off('click').on('click', (e) => {
+                    e.preventDefault();
+                    enviarOTPParaCambioNumero();
+                });
+            };
+
+            const validarOTPParaCambioNumero = async () => {
+                const formulario = '#form-codigo-verificacion-cambionumero';
+                const inputs = document.querySelectorAll(`${formulario} .otp`);
+                let codigoCompleto = '';
+
+                inputs.forEach(input => {
+                    const valor = input.value.trim();
+                    if (valor) codigoCompleto += valor;
+                });
+
+                if (codigoCompleto.length !== 5) {
+                    alert('Por favor complete todos los campos del código');
+                    return;
+                }
+
+                const telefono = elementos.inputTelefono.val();
+                const codigoPais = elementos.selectorPais.val();
+
+                try {
+                    deshabilitarBotonVerifiacionOTP();
+
+                    const respuesta = await axios.post('{{ route("usuario.cambiar-numero-otp") }}', {
+                        codigo: codigoCompleto,
+                        codigoGenerado: estado.codigoVerificacion,
+                        nuevoTelefonoNacional: telefono,
+                        nuevoCodigoPais: codigoPais,
+                        userId: {{ $usuario->id }}
+                    }, {
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                    });
+
+                    if (respuesta.data.status === "success") {
+                        ocultarModalOTP();
+                        elementos.modalExito.addClass('menu-active');
+                        
+                        setTimeout(() => {
+                            elementos.modalExito.removeClass('menu-active');
+                            window.location.reload();
+                        }, 2000);
+                    }
+
+                } catch (error) {
+                    let mensajeError = 'Error inesperado, por favor intenta más tarde.';
+
+                    if (error.response && error.response.data && error.response.data.errors) {
+                        const errors = error.response.data.errors;
+                        const primeraClave = Object.keys(errors)[0];
+                        
+                        if (primeraClave && Array.isArray(errors[primeraClave]) && errors[primeraClave].length > 0) {
+                            mensajeError = errors[primeraClave][0];
+                        }
+                    } 
+
+                    $('#mensaje-toast-error-snackbar').text(mensajeError);
+                    $('#snackbar-error').addClass('show');
+
+                    setTimeout(() => {
+                        $('#snackbar-error').removeClass('show');
+                    }, 3000);
+
+                    console.error("Error al validar el OTP:", error);
+                }
+                habilitarBotonVerifiacionOTP();
+            };
+
+            // ============= UTILIDADES DE INTERFAZ =============
+            const mostrarBotonGuardar = () => {
+                elementos.botonGuardar.prop('disabled', false).removeClass('d-none');
+                elementos.inputTelefono.removeClass('is-invalid').addClass('is-valid');
+            };
+
+            const ocultarBotonGuardar = () => {
+                elementos.botonGuardar.prop('disabled', true).addClass('d-none');
+                elementos.inputTelefono.removeClass('is-valid is-invalid');
+            };
+
+            const mostrarModalOTP = () => {
+                elementos.ocultadorMenu.addClass('menu-active');
+                elementos.modalOTP.addClass('menu-active');
+            };
+
+            const ocultarModalOTP = () => {
+                elementos.modalOTP.removeClass('menu-active');
+                elementos.ocultadorMenu.removeClass('menu-active');
+            };
+
+            const deshabilitarBotonEnviarOTP = () => {
+                $('#btn-guardar-telefono').attr('disabled', true);
+                $('#btn-guardar-telefono').text('Enviando...');
+            }
+
+            const habilitarBotonEnviarOTP = () => {
+                $('#btn-guardar-telefono').attr('disabled', false);
+                $('#btn-guardar-telefono').text('Verificar Número');
+            }
+
+            const mostrarError = (mensaje) => {
+                elementos.inputTelefono.addClass('is-invalid');
+                $('#mensaje-toast-error').text(mensaje);
+                $('#toast-error').removeClass('hide').addClass('show');
+                setTimeout(() => {
+                    $('#toast-error').removeClass('show').addClass('hide');
+                }, 3000);
+            };
+
+            const mostrarExito = (mensaje) => {
+                $('#mensaje-toast-success').text(mensaje);
+                $('#toast-success').removeClass('hide').addClass('show');
+                setTimeout(() => {
+                    $('#toast-success').removeClass('show').addClass('hide');
+                }, 1500);
+            };
+
+            const obtenerMensajeError = (errores) => {
+                if (errores.telefono) return errores.telefono[0];
+                if (errores.general) return errores.general[0];
+                return 'Error de validación';
+            };
+
+            // ============= INICIO DE LA APLICACIÓN =============
+            iniciarOTPContrasena();
+        });
         </script>
         <script>
+            $(document).ready(function() {
+                const passwordInput = $('#new-password');
+                const toggleBtn = $('#togglePasswordBtn');
+
+                toggleBtn.on('click', function() {
+                    const isPassword = passwordInput.attr('type') === 'password';
+
+                    passwordInput.attr('type', isPassword ? 'text' : 'password');
+
+                    const toggleIcon = $('#toggleIconNew');
+                    
+                    toggleIcon.attr('data-lucide', isPassword ? 'lock-open' : 'lock');
+
+                    reinitializeLucideIcons();
+                });
+            });
+        </script>
+        <!-- <script>
             window.onload = function() {
 
                 var toastActualizado = document.getElementById('toast-3');
@@ -382,6 +907,6 @@
                         alert("El dispositivo no pudo recuperar la posición actual");
                 }
             };
-        </script>
+        </script> -->
     @endpush
 @endsection

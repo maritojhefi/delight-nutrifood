@@ -1205,6 +1205,8 @@ hover-blue:hover {
     line-height: 1.4;
 }
 
+
+
 /* .tags-container {
     anchor-name: --tag-popover-anchor;
 } */
@@ -1250,6 +1252,33 @@ hover-blue:hover {
     appearance: none;
     -moz-appearance: none;
     -webkit-appearance: none;
+}
+
+.lucide-icon.lucide-input {
+    position: absolute;
+    left: 10px; /* Adjust left position to fit inside the input */
+    top: 50%; /* Vertically center the icon */
+    transform: translateY(-50%); /* Ensures perfect vertical centering */
+    color: #888; /* Adjust the color to match Font Awesome icon color */
+    pointer-events: none; /* Ensure the icon doesn't block user interaction with input */
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+/* Ocultar Control por defecto de visibilidad para contraseñas */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-caps-lock-indicator {
+    display: none;
+}
+
+/* Most important - hides the eye icon in Chrome/Edge/Safari */
+input[type="password"]::-webkit-textfield-decoration-container {
+    display: none;
 }
 
 

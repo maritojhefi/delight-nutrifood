@@ -289,6 +289,7 @@ Route::prefix('/usuario')
         Route::post('/enviar-codigo-verificacion', [UsuarioController::class, 'enviarCodigoVerificacion'])->name('enviar-codigo-verificacion');
         Route::post('/verificar-codigo-otp', [UsuarioController::class, 'verificarCodigoOTP'])->name('verificar-codigo-otp');
         Route::post('/iniciar-sesion-otp', [UsuarioController::class, 'IniciarSesionOTP'])->name('iniciar-sesion-otp');
+        Route::post('/actualizar-telefono-otp', [UsuarioController::class, 'cambiarNumeroOTP'])->name('cambiar-numero-otp');
 
         Route::get('/actualizado', function () {
             return view('auth.registrado');
