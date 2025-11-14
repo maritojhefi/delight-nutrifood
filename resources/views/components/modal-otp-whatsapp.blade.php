@@ -41,6 +41,9 @@
     </div>
 </div>
 
+
+@once
+
 @push('modals')
 <div id="codigo-incorrecto" class="menu menu-box-modal rounded-m"
     style="display: block; width: 220px; height: auto; padding: 1%;">
@@ -61,7 +64,6 @@
 </div>
 @endpush
 
-@once
 
 @push('scripts')
 <script>
