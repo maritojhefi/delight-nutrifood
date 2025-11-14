@@ -77,7 +77,7 @@
     @case(4)
         <div class="row mb-0">
             <div class="col-6 pe-0">
-                <a class="card mx-0 mb-3 card-style default-link hover-grow-s" data-card-height="410" data-gallery="gallery-b" href="{{$similares[0]->url_detalle}}" style="background-image: url({{asset($similares[0]->imagen)}}); height: 410px;">
+                <a class="card mx-0 mb-3 card-style default-link hover-grow-s" data-card-height="270" data-gallery="gallery-b" href="{{$similares[0]->url_detalle}}" style="background-image: url({{asset($similares[0]->imagen)}}); height: 410px;">
                     <div class="card-bottom mb-1">
                         <h3 class="color-white text-center  mx-1">{{ Str::limit($similares[0]->nombre(),30)  }}</h3>
                         
@@ -96,58 +96,15 @@
                 <a class="card mx-0 mb-2 card-style default-link hover-grow-s" data-card-height="130" data-gallery="gallery-b" href="{{$similares[2]->url_detalle}}" style="background-image: url({{asset($similares[2]->imagen)}}); height: 130px;">
                     <div class="card-bottom mb-1">
                         <h3 class="color-white text-center  mx-1">{{ Str::limit($similares[2]->nombre(),30)  }}</h3>
-                        
-                    </div>
-                    <div class="card-overlay bg-gradient opacity-70"></div>
-                </a>
-                <a class="card mx-0 mb-2 card-style default-link hover-grow-s" data-card-height="130" data-gallery="gallery-b" href="{{$similares[3]->url_detalle}}" style="background-image: url({{asset($similares[3]->imagen)}}); height: 130px;">
-                    <div class="card-bottom mb-1">
-                        <h3 class="color-white text-center  mx-1">{{ Str::limit($similares[3]->nombre(),30)  }}</h3>
                         
                     </div>
                     <div class="card-overlay bg-gradient opacity-70"></div>
                 </a>
             </div>
-        </div>
-    @break
-    @case(5)
-        <div class="row mb-0">
-            <div class="col-6 pe-0">
-                <a class="card mx-0 mb-3 card-style default-link hover-grow-s" data-card-height="410" data-gallery="gallery-b" href="{{$similares[0]->url_detalle}}" style="background-image: url({{asset($similares[0]->imagen)}}); height: 410px;">
-                    <div class="card-bottom mb-1">
-                        <h3 class="color-white text-center  mx-1">{{ Str::limit($similares[0]->nombre(),30)  }}</h3>
-                        
-                    </div>
-                    <div class="card-overlay bg-gradient opacity-70"></div>
-                </a>
-            </div>    
-            <div class="col-6">
-                <a class="card mx-0 mb-2 card-style default-link hover-grow-s" data-card-height="130" data-gallery="gallery-b" href="{{$similares[1]->url_detalle}}" style="background-image: url({{asset($similares[1]->imagen)}}); height: 130px;">
-                    <div class="card-bottom mb-1">
-                        <h3 class="color-white text-center  mx-1">{{ Str::limit($similares[1]->nombre(),30)  }}</h3>
-                        
-                    </div>
-                    <div class="card-overlay bg-gradient opacity-70"></div>
-                </a>
-                <a class="card mx-0 mb-2 card-style default-link hover-grow-s" data-card-height="130" data-gallery="gallery-b" href="{{$similares[2]->url_detalle}}" style="background-image: url({{asset($similares[2]->imagen)}}); height: 130px;">
-                    <div class="card-bottom mb-1">
-                        <h3 class="color-white text-center  mx-1">{{ Str::limit($similares[2]->nombre(),30)  }}</h3>
-                        
-                    </div>
-                    <div class="card-overlay bg-gradient opacity-70"></div>
-                </a>
-                <a class="card mx-0 mb-2 card-style default-link hover-grow-s" data-card-height="130" data-gallery="gallery-b" href="{{$similares[3]->url_detalle}}" style="background-image: url({{asset($similares[3]->imagen)}}); height: 130px;">
+            <div class="col-12">
+                <a class="card mx-0 mb-2 card-style default-link hover-grow-s" data-card-height="150" data-gallery="gallery-b" href="{{$similares[3]->url_detalle}}" style="background-image: url({{asset($similares[3]->imagen)}}); height: 150px;">
                     <div class="card-bottom mb-1">
                         <h3 class="color-white text-center  mx-1">{{ Str::limit($similares[3]->nombre(),30)  }}</h3>
-                        
-                    </div>
-                    <div class="card-overlay bg-gradient opacity-70"></div>
-                </a>
-            </div>   
-            <div class="col-12">
-                <a class="card mx-0 mb-2 card-style default-link hover-grow-s" data-card-height="150" data-gallery="gallery-b" href="{{$similares[4]->url_detalle}}" style="background-image: url({{asset($similares[4]->imagen)}}); height: 150px;">
-                    <div class="card-bottom mb-1">
-                        <h3 class="color-white text-center  mx-1">{{ Str::limit($similares[4]->nombre(),30)  }}</h3>
                         
                     </div>
                     <div class="card-overlay bg-gradient opacity-70"></div>

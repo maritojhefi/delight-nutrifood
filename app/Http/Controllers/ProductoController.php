@@ -73,7 +73,7 @@ class ProductoController extends Controller
             // Omitir el producto actual entre los similares
             ->reject(fn($p) => $p->id == $id)
             ->shuffle()
-            ->take(5)
+            ->take(4)
             ->map(function ($p) {
                 $p->imagen = $p->pathAttachment();
                 $p->url_detalle = route('delight.detalleproducto', $p->id);
@@ -95,7 +95,7 @@ class ProductoController extends Controller
             // Omitir el producto actual entre los similares
             ->reject(fn($p) => $p->id == $id)
             ->shuffle()
-            ->take(5)
+            ->take(4)
             ->map(function ($p) {
                 $p->imagen = $p->pathAttachment();
                 $p->url_detalle = route('delight.detalleproducto', $p->id);
