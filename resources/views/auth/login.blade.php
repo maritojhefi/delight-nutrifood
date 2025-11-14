@@ -375,6 +375,7 @@ const manejarErrorEnvioIngreso = (xhr, status, error) => {
         setTimeout(() => {
             $('#snackbar-error').removeClass('show');
         }, 3000); 
+        
     } else {
         console.error("Error de conexión o respuesta no esperada:", error);
         $('#mensaje-toast-error-snackbar').text('Error de conexión con el servidor. Intenta de nuevo.');
@@ -454,12 +455,25 @@ const enviarCodigoVerificacionIngreso = (codigo) => {
             }
         },
         error: function(xhr, status, error) {
-            // // console.log(xhr.responseJSON?.errors?.codigo?.[0] || 'Error desconocido');
-            $('#mensaje-toast-error').text(xhr.responseJSON?.errors?.codigo?.[0] || 'Error al verificar código');
-            $('#toast-error').addClass('show');
+            let mensajeError = 'Ha ocurrido un error. Por favor, intenta nuevamente.';
+            
+            // Intentar obtener el mensaje del servidor
+            if (xhr.responseJSON?.errors) {
+                // Priorizar errores específicos (codigo, general, etc.)
+                if (xhr.responseJSON.errors.codigo?.[0]) {
+                    mensajeError = xhr.responseJSON.errors.codigo[0];
+                } else if (xhr.responseJSON.errors.general?.[0]) {
+                    mensajeError = xhr.responseJSON.errors.general[0];
+                } else if (xhr.responseJSON.errors.telefono?.[0]) {
+                    mensajeError = xhr.responseJSON.errors.telefono[0];
+                }
+            }
+            
+            $('#mensaje-toast-error-snackbar').text(mensajeError);
+            $('#snackbar-error').addClass('show');
             setTimeout(() => {
-                $('#toast-error').removeClass('show');
-            }, 2000);
+                $('#snackbar-error').removeClass('show');
+            }, 3000);
         },
         complete: function() {
             // // habilitarBoton('#verificar-codigo-btn-ingreso');
