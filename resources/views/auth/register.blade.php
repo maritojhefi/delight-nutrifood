@@ -358,31 +358,6 @@
             <span id="contador-cuenta-regresiva" class="d-none ms-2">30</span></span>
         </button>
     </div> -->
-
-    <div id="codigo-incorrecto" class="menu menu-box-modal rounded-m"
-        style="display: block; width: 220px; height: auto; padding: 1%;">
-        <h1 class="text-center fa-5x mt-2 pt-3 pb-2"><i class="fa fa-times-circle color-red-dark"></i></h1>
-        <h2 class="text-center">Código incorrecto, intenta de nuevo dentro de 30 segundos</h2>
-    </div>
-
-    <div id="codigo-correcto" class="menu menu-box-modal rounded-m"
-        style="display: block; width: 220px; height: auto; padding: 1%;">
-        <h1 class="text-center fa-5x mt-2 pt-3 pb-2"><i class="fa fa-check-circle color-mint-dark"></i></h1>
-        <h2 class="text-center">Teléfono verificado correctamente</h2>
-    </div>
-
-    <div id="toast-error" class="toast toast-tiny toast-top bg-red-dark fade hide" data-bs-delay="1000"
-        data-bs-autohide="true" style="width: max-content; z-index: 1000; text-align: center; line-height: 19px;">
-        <i class="fa fa-times-circle me-2"></i>
-        <span id="mensaje-toast-error">
-        </span>
-    </div>
-
-    <div id="snackbar-error" class="snackbar-toast color-white bg-red-dark mb-4 fade hide-ad"
-        style="bottom: 1% !important;">
-        <h1 class="color-white font-20 pt-3 mb-0">Error</h1>
-        <p class="color-white mb-0 pb-3" id="mensaje-toast-error-snackbar" style="line-height: 18px;"></p>
-    </div>
 @endpush
 
 @push('header')
@@ -603,9 +578,26 @@
         }
 
         const manejarErrorVerificacion = (xhr, status, error) => {
-            console.error("Error al enviar código:", error);
+            let mensajeError = 'Ha ocurrido un error. Por favor, intenta nuevamente.';
+            
+            // Intentar obtener el mensaje del servidor
+            if (xhr.responseJSON?.errors) {
+                // Priorizar errores específicos (codigo, general, etc.)
+                if (xhr.responseJSON.errors.codigo?.[0]) {
+                    mensajeError = xhr.responseJSON.errors.codigo[0];
+                } else if (xhr.responseJSON.errors.general?.[0]) {
+                    mensajeError = xhr.responseJSON.errors.general[0];
+                } else if (xhr.responseJSON.errors.telefono?.[0]) {
+                    mensajeError = xhr.responseJSON.errors.telefono[0];
+                }
+            }
+            
+            $('#mensaje-toast-error-snackbar').text(mensajeError);
+            $('#snackbar-error').addClass('show');
             habilitarValidandoEditar();
-            // Add user feedback here
+            setTimeout(() => {
+                $('#snackbar-error').removeClass('show');
+            }, 3000);
         }
 
         const ocultarConfirmacionEditar = () => {
@@ -899,13 +891,15 @@
                         }
                         
                         // Manejo de errores según el tipo
-                        if (codigo == 401 || codigo == 500) {
+                        if (esErrorDeSistema) {
                             $('#menu-verificacion-registro').removeClass('menu-active');
                             $('.menu-hider').removeClass('menu-active');
                             $('#verificar-numero').addClass('d-none');
                             $('#telefono_verificado').val(0);
                             
-                            var mensajeError = xhr.responseJSON?.errors?.general?.[0] || 'Error al enviar el código';
+                            // Obtener mensaje genérico del servidor o usar fallback
+                            var mensajeError = xhr.responseJSON?.errors?.general?.[0] || 
+                                            'Ha ocurrido un error al enviar el código. Por favor, intenta nuevamente.';
                             mensajeError += ` (Intento ${otpRetryCount}/${MAX_OTP_RETRIES})`;
                             
                             $('#mensaje-toast-error-snackbar').text(mensajeError);
@@ -914,20 +908,27 @@
                                 $('#snackbar-error').removeClass('show').addClass('hide');
                             }, 5000);
                         } else {
-                            // Errores de validación (422, 400, etc.) - NO mostrar contador
+                            // Errores de validación (422, 400, etc.) - NO incrementar contador ni mostrar intentos
                             var errorMessage = 'Error al enviar el código de verificación.';
-                            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            
+                            if (xhr.responseJSON?.errors) {
                                 var errors = xhr.responseJSON.errors;
-                                if (errors.telefono) {
+                                // Priorizar telefono > general
+                                if (errors.telefono?.[0]) {
                                     errorMessage = errors.telefono[0];
-                                } else if (errors.general) {
+                                } else if (errors.general?.[0]) {
                                     errorMessage = errors.general[0];
                                 }
+                                
+                                displayErrorMessages(errors);
                             }
-
-                            displayErrorMessages(errors);
-                            // NO agregar contador para errores de validación
-                            // // alert(errorMessage);
+                            
+                            // Mostrar mensaje sin contador (es error de validación, no de sistema)
+                            $('#mensaje-toast-error-snackbar').text(errorMessage);
+                            $('#snackbar-error').removeClass('hide').addClass('show');
+                            setTimeout(() => {
+                                $('#snackbar-error').removeClass('show').addClass('hide');
+                            }, 3000);
                         }
                         
                         habilitarBotonesValidando();
@@ -1161,10 +1162,10 @@
                                 errorMessage = response.errors.general[0];
                             }
 
-                            $('#mensaje-toast-error').text(errorMessage);
-                            $('#toast-error').removeClass('hide').addClass('show');
+                            $('#mensaje-toast-error-snackbar').text(errorMessage);
+                            $('#snackbar-error').removeClass('hide').addClass('show');
                             setTimeout(() => {
-                                $('#toast-error').removeClass('show').addClass('hide');
+                                $('#snackbar-error').removeClass('show').addClass('hide');
                             }, 3000);
                         }
                     },
@@ -1181,10 +1182,10 @@
                             }
                         }
 
-                        $('#mensaje-toast-error').text(errorMessage);
-                        $('#toast-error').removeClass('hide').addClass('show');
+                        $('#mensaje-toast-error-snackbar').text(errorMessage);
+                        $('#snackbar-error').removeClass('hide').addClass('show');
                         setTimeout(() => {
-                            $('#toast-error').removeClass('show').addClass('hide');
+                            $('#snackbar-error').removeClass('show').addClass('hide');
                         }, 3000);
                     }
                 });
@@ -1418,12 +1419,12 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    $('#mensaje-toast-error').text(xhr.responseJSON.errors.codigo[0]);
-                    $('#toast-error').removeClass('show');
-                    $('#toast-error').addClass('show');
+                    $('#mensaje-toast-error-snackbar').text(xhr.responseJSON.errors.codigo[0]);
+                    // $('#toast-error').removeClass('show');
+                    $('#snackbar-error').addClass('show');
                     setTimeout(() => {
-                        $('#toast-error').removeClass('show');
-                        $('#toast-error').addClass('hide');
+                        $('#snackbar-error').removeClass('show');
+                        $('#snackbar-error').addClass('hide');
                     }, 2000);
                 }
             });
@@ -1477,12 +1478,12 @@
                 },
                 error: function(xhr, status, error) {
                     // // console.log(xhr.responseJSON.errors.codigo[0]);
-                    $('#mensaje-toast-error').text(xhr.responseJSON.errors.codigo[0]);
-                    $('#toast-error').removeClass('show');
-                    $('#toast-error').addClass('show');
+                    $('#mensaje-toast-error-snackbar').text(xhr.responseJSON.errors.codigo[0]);
+                    // $('#snackbar-error').removeClass('show');
+                    $('#snackbar-error').addClass('show');
                     setTimeout(() => {
-                        $('#toast-error').removeClass('show');
-                        $('#toast-error').addClass('hide');
+                        $('#snackbar-error').removeClass('show');
+                        $('#snackbar-error').addClass('hide');
                     }, 2000);
                 }
             });
