@@ -280,7 +280,7 @@ class MiperfilController extends Controller
             'profesion' => 'required|string|max:40',
             'direccion' => 'required|string|max:100|min:15',
             'direccion_trabajo' => 'nullable|string|max:100|min:15',
-            'password' => 'nullable|string|min:5',
+            'password' => 'nullable|string|min:4',
             'hijos' => 'nullable|boolean',
             'latitud' => 'nullable|numeric',
             'longitud' => 'nullable|numeric',
@@ -315,7 +315,7 @@ class MiperfilController extends Controller
             'direccion_trabajo.min' => 'La dirección de trabajo debe tener al menos 15 caracteres.',
             'direccion_trabajo.max' => 'La dirección de trabajo no puede exceder los 100 caracteres.',
 
-            'password.min' => 'La contraseña debe tener al menos 5 caracteres.',
+            'password.min' => 'La contraseña debe tener al menos 4 caracteres.',
 
             'telf.digits' => 'El teléfono debe tener exactamente 8 dígitos.',
             'telf.unique' => 'Este número de teléfono ya está registrado.',

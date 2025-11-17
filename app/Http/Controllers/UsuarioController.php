@@ -102,7 +102,7 @@ class UsuarioController extends Controller
                 'ano_nacimiento' => 'required|integer|min:1900|max:' . (date('Y') - 12),
                 'direccion' => 'required|string|max:100',
                 'direccion_trabajo' => 'nullable|string|max:100',
-                'password' => 'required|string|min:5|confirmed',
+                'password' => 'required|string|min:4|confirmed',
                 'hijos' => 'nullable|boolean',
                 'partner_id' => 'nullable|sometimes|exists:users,id',
                 'foto' => [
@@ -482,30 +482,6 @@ class UsuarioController extends Controller
 
     public function enviarCodigoVerificacion(Request $request)
     {
-        //// Simulación de solicitudes
-        // return response()->json(
-        //         [
-        //             'status' => 'error',
-        //             'errors' => ['general' => ['El sistema de verificación de teléfono no está disponible en este momento.']],
-        //             'codigo_error' => 500,
-        //         ],
-        //         500,
-        //     );
-        // return response()->json(
-        //             [
-        //                 'status' => 'error',
-        //                 'errors' => ['telefono' => ['El número de teléfono debe tener exactamente ' . ' $digitosPais' . ' dígitos.']],
-        //             ],
-        //             422,
-        //         );
-        //  return response()->json(
-        //             [
-        //                 'status' => 'error',
-        //                 'errors' => ['telefono' => ['Este número de teléfono ya está registrado y verificado.']],
-        //             ],
-        //             400,
-        //         );
-
         $numeroWhatsapp = NumeroWhatsapp::first();
         if ($numeroWhatsapp) {
             $idRegistroNumeroWhatsapp = $numeroWhatsapp->id;
@@ -522,17 +498,6 @@ class UsuarioController extends Controller
                     422,
                 );
             }
-            // Verificar si el teléfono ya existe
-            // $usuario = User::where('codigo_pais', $codigoPais)->where('telf', $telefono)->first();
-            // if ($usuario && $usuario->verificado == true) {
-            //     return response()->json(
-            //         [
-            //             'status' => 'error',
-            //             'errors' => ['telefono' => ['Este número de teléfono ya está registrado y verificado.']],
-            //         ],
-            //         400,
-            //     );
-            // }
             // Generar código de verificación
             $codigo = random_int(10000, 99999);
             // Enviar código por WhatsApp
@@ -592,41 +557,38 @@ class UsuarioController extends Controller
                     200,
                 );
             } catch (\Exception $e) {
-                // dd($e->getMessage(), $e->getCode());
+                // Intentar extraer código de error del mensaje si existe el patrón
                 $codigoError = null;
-                // Buscar número dentro de (Código: X)
-                if (preg_match('/\(Código:\s*(\d+)\)/', $e->getMessage(), $coincidencias) > 0) {
-                    $codigoError = $coincidencias[1];
-                    // dd($codigoError);
-                    if ($codigoError == "401") {
-                        return response()->json(
-                            [
-                                'status' => 'error',
-                                'errors' => ['general' => ['En este momento no se puede enviar el código de verificación al telefono.']],
-                                'codigo_error' => $codigoError,
-                            ],
-                            401,
-                        );
-                    } else {
-                        return response()->json(
-                            [
-                                'status' => 'error',
-                                'errors' => ['general' => [$e->getMessage()]],
-                                'codigo_error' => $codigoError,
-                            ],
-                            500,
-                        );
-                    }
+                if (preg_match('/\(Código:\s*(\d+)\)/', $e->getMessage(), $coincidencias)) {
+                    $codigoError = (int)$coincidencias[1];
                 } else {
-                    return response()->json(
-                        [
-                            'status' => 'error',
-                            'errors' => ['general' => ['Error al enviar el código de verificación. Intenta nuevamente.']],
-                            'codigo_error' => $codigoError,
-                        ],
-                        500,
-                    );
+                    // Si no se encuentra el patrón, usar el código de la excepción
+                    $codigoError = $e->getCode() ?: 500;
                 }
+                
+                Log::error('Error en enviarCodigoVerificacion', [
+                    'mensaje' => $e->getMessage(),
+                    'codigo' => $codigoError,
+                    'telefono' => $telefono ?? null,
+                    'operacion' => $request->input('operacion'),
+                ]);
+                
+                // Determinar mensaje de error según el código
+                if ($codigoError == 401) {
+                    $mensajeUsuario = 'No se pudo autenticar con el servicio de mensajería. Intenta más tarde.';
+                } else {
+                    // Mensaje genérico para todos los demás errores
+                    $mensajeUsuario = 'Ocurrió un error al enviar el código de verificación. Por favor, intenta nuevamente.';
+                }
+                
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'errors' => ['general' => [$mensajeUsuario]],
+                        'codigo_error' => $codigoError,
+                    ],
+                    $codigoError == 401 ? 401 : 500,
+                );
             }
         } else {
             return response()->json(
