@@ -6,7 +6,9 @@
 
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1, user-scalable=0 viewport-fit=cover" />
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    @if(config('app.env') !== 'local')
+        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    @endif
 
     <title>{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}</title>
 
