@@ -107,11 +107,11 @@
         {{-- <button id="menu-prueba-btn" class="btn bg-highlight">Prueba modal condijcional</button> --}}
 
         {{-- SLIDER HORARIOS --}}
-        <div class="splide topic-slider slider-no-arrows slider-no-dots pb-2 splide--loop splide--ltr splide--draggable" id="topic-slider-1" style="visibility: visible;">
-            <div class="splide__track" id="topic-slider-1-track" style="padding-left: 15px; padding-right: 40px;">
-                <div class="splide__list" id="topic-slider-1-list" style="transform: translateX(-866.592px);">
+        <div class="splide topic-slider slider-no-arrows slider-no-dots pb-2 splide--loop splide--ltr splide--draggable" id="horarios-slider" style="visibility: visible;">
+            <div class="splide__track" id="horarios-slider-track" style="padding-left: 15px; padding-right: 40px;">
+                <div class="splide__list" id="horarios-slider-list" style="transform: translateX(-866.592px);">
                     @foreach ($horarios as $horario)
-                        <div class="splide__slide" id="topic-slider-1-{{trim($horario->nombre)}}" style="width: 108.333px;">
+                        <div class="splide__slide" id="horarios-slider-{{trim($horario->nombre)}}" style="width: 108.333px;">
                             <h1 class="font-16 d-block"><button class="time-btn opacity-50" data-time="{{ trim($horario->nombre) }}">{{ ucfirst(Str::lower(trim($horario->nombre))) }}</button></h1>
                         </div>
                     @endforeach
@@ -248,7 +248,7 @@
         }
 
         // Inicializacion de slider para horarios
-        new Splide('#topic-slider-1', {
+        new Splide('#horarios-slider', {
             type: 'loop',
             perPage: 3,
             arrows: false,
