@@ -198,6 +198,7 @@ const montarSliderInicio = (slider) => {
             pauseOnFocus: false,
             autoplay: true,
             interval: 5000,
+            live: false,
         });
 
         splide.on('mounted', () => {

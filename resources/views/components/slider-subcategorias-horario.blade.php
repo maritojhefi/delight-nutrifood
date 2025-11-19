@@ -120,6 +120,7 @@
                 arrows: false,
                 pagination: false,
                 fixedWidth: '6rem',
+                live:false,
             });
 
             horariosSlider.on('mounted', () => {
@@ -161,6 +162,7 @@
                 pagination: false,
                 fixedWidth: '14rem',
                 direction: 'rtl',
+                live:false,
                 autoScroll: {
                     speed: 0.2,
                     pauseOnHover: false,

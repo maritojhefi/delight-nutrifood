@@ -101,6 +101,7 @@
                 pauseOnHover: false,
                 pauseOnFocus: false,
                 direction: direction,
+                live:false,
                 autoScroll: {
                     speed: 0.5,
                     pauseOnHover: false,
