@@ -23,11 +23,11 @@
      data-orientation="{{$orientation}}"
      data-slider-ready="false"
      style="opacity: 0; transition: opacity 0.3s ease; visibility: visible;">
-    <div class="splide__track" style=" max-height: 250px;">
+    <div class="splide__track">
         <ul class="splide__list">
             @foreach ($productos as $producto)
             <li class="splide__slide">
-                <a href="{{route('detalleproducto',$producto->id)}}" class="card rounded-md card-style">
+                <a href="{{route('detalleproducto',$producto->id)}}" class="card rounded-md card-style mb-0">
                     <img src="{{ $producto->pathAttachment() }}" 
                         style="max-height: 100px; width: 100%; object-fit: cover;">
                     <div class="position-absolute position-absolute end-0 p-2 bg-theme bg-dtheme-blue rounded-md color-theme" style="border-radius: 0 0 0 0.375rem;">
@@ -105,6 +105,7 @@
                     speed: 0.5,
                     pauseOnHover: false,
                     pauseOnFocus: false,
+                    autoStart: false,
                 },
             });
 
@@ -121,6 +122,17 @@
 
             // Montar con AutoScroll
             splide.mount({ AutoScroll });
+
+            splide.Components.AutoScroll.play();
+
+            splide.on('moved', () => {
+                splide.Components.AutoScroll.play();
+            });
+
+            splide.on('dragged', () => {
+                splide.Components.AutoScroll.play();
+            })
+
             
             // Almacenar instancia
             slider.splide = splide;
