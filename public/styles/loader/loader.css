@@ -1,0 +1,135 @@
+/* Loader Styles - Bootstrap compatible, no Tailwind needed */
+
+#full-page-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+/* Backdrop */
+.loader-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 9998;
+    opacity: 0;
+    transition: opacity 600ms ease-in-out;
+}
+
+.loader-backdrop.visible {
+    opacity: 1;
+}
+
+/* Loader Container */
+.loader-container {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 600ms ease-in-out, transform 600ms ease-in-out;
+}
+
+.loader-container.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Loader Content */
+.loader-content {
+    position: relative;
+    width: 128px;
+    height: 128px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Animated Logo */
+.loader-logo {
+    width: 128px;
+    height: 128px;
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
+    animation: pulse-scale 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-scale {
+    0%, 100% { 
+        transform: scale(1); 
+    }
+    50% { 
+        transform: scale(1.15); 
+    }
+}
+
+/* Pulsing Glow Effect */
+.loader-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: linear-gradient(to right, rgba(248, 113, 113, 0.2), rgba(45, 212, 191, 0.2));
+    filter: blur(40px);
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        opacity: 1; 
+    }
+    50% { 
+        opacity: 0.5; 
+    }
+}
+
+/* Loading Text */
+.loader-text-container {
+    position: absolute;
+    bottom: 5rem;
+    text-align: center;
+}
+
+.loader-text {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+}
+
+/* Animated Dots */
+.loader-dots {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: center;
+}
+
+.loader-dot {
+    width: 6px;
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    animation: bounce 1s ease-in-out infinite;
+}
+
+.loader-dot.delay-1 {
+    animation-delay: 0.1s;
+}
+
+.loader-dot.delay-2 {
+    animation-delay: 0.2s;
+}
+
+@keyframes bounce {
+    0%, 100% { 
+        transform: translateY(0); 
+    }
+    50% { 
+        transform: translateY(-8px); 
+    }
+}

@@ -1,15 +1,26 @@
 import axios from 'axios';
+import { loaderAxios } from '../config/axios/axios-instance.js';
 
 // FUNCIONES CON LLAMADO A ENDPOINTS DEL BACKEND - PRODUCTO
 export const getProductosCategoria = async (categoriaId) => {
     try {
-        const response = await axios.get(`/productos/categorizados/${categoriaId}`);
+        const response = await loaderAxios.get(`/productos/categorizados/${categoriaId}`);
         return response.data;
     } catch (error) {
         console.error(`Error al solicitar productos con subcategoria_id ${categoriaId}`, error);
         return [];
     }
 };
+
+// export const getProductosCategoria = async (categoriaId) => {
+//     try {
+//         const response = await axios.get(`/productos/categorizados/${categoriaId}`);
+//         return response.data;
+//     } catch (error) {
+//         console.error(`Error al solicitar productos con subcategoria_id ${categoriaId}`, error);
+//         return [];
+//     }
+// };
 
 export const checkProductStock = async (productId) => {
     try {

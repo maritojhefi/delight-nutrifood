@@ -14,6 +14,7 @@
 
     <link rel="stylesheet" type="text/css" href="{{ asset('styles/bootstrap.css') }}?v=1.0.0">
     <link rel="stylesheet" type="text/css" href="{{ asset('styles/custom.css') }}?v=1.0.0">
+    <link rel="stylesheet" href="{{ asset('styles/loader/loader.css') }}?v=1.0.0">
     <link
         href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900|Roboto:300,300i,400,400i,500,500i,700,700i,900,900i&amp;display=swap"
         rel="stylesheet">
