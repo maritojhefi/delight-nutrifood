@@ -4,7 +4,7 @@
         <div class="splide__list" id="single-slider-1-list">
             {{-- ITEMS EN DESCUENTO --}}
             <div class="splide__slide mx-3 is-active is-visible" id="single-slider-1-slide02" style="width: 320px;">
-                <div data-bs-target="#saleProductsModal" data-bs-toggle="modal"  data-card-height="300" class="card mb-0 shadow-xl rounded-m" style="background-image: url({{asset('imagenes/delight/picking_image.jpg')}});background-size: cover; background-position: center;">
+                <div data-bs-target="#saleProductsModal" data-bs-toggle="modal"  data-card-height="300" class="card mb-0 shadow-xl rounded-m" style="background-image: url({{asset('imagenes/delight/picking_image.webp')}});background-size: cover; background-position: center;">
                     <div class="card-center mt-n4 d-flex flex-column align-items-center">
                         <i class="fa fa-bolt fa-7x color-white"></i>
                     </div>
@@ -18,7 +18,7 @@
 
             {{-- ITEM STARK --}}
             <div class="splide__slide mx-3 is-active is-visible" id="single-slider-1-slide01" style="width: 320px;">
-                <div data-bs-target="#starkSuplementsModal" data-bs-toggle="modal"  data-card-height="300" class="card mb-0 shadow-xl rounded-m" style="background-image: url({{asset('imagenes/delight/protein_shake.jpg')}});background-size: cover; background-position: center;">
+                <div data-bs-target="#starkSuplementsModal" data-bs-toggle="modal"  data-card-height="300" class="card mb-0 shadow-xl rounded-m" style="background-image: url({{asset('imagenes/delight/protein_shake.webp')}});background-size: cover; background-position: center;">
                     <div class="card-center mt-n4 d-flex flex-column align-items-center">
                         <i class="fa fa-heart fa-7x text-white"></i>
                     </div>
