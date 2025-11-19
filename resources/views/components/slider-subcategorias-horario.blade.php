@@ -164,6 +164,7 @@
                     speed: 0.2,
                     pauseOnHover: false,
                     pauseOnFocus: false,
+                    autoStart: false,
                 },
                 breakpoints: {
                     640: {
@@ -179,6 +180,16 @@
             });
 
             categorizadosSlider.mount({ AutoScroll });
+
+            categorizadosSlider.Components.AutoScroll.play();
+
+            categorizadosSlider.on('moved', () => {
+                categorizadosSlider.Components.AutoScroll.play();
+            });
+
+            categorizadosSlider.on('dragged', () => {
+                categorizadosSlider.Components.AutoScroll.play();
+            })
 
         } catch (error) {
             console.error('Error al montar slider de subcategorias:', error);
