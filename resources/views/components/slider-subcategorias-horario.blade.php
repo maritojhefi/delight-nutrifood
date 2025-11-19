@@ -4,7 +4,7 @@
 ])
 
 {{-- SLIDER HORARIOS --}}
-<div class="splide horarios-slider-custom my-3" 
+<div class="splide horarios-slider-custom my-4" 
     id="horarios-slider"
     data-slider-ready="false"
     style="opacity: 0; transition: opacity 0.3s ease; visibility: visible;">
@@ -12,11 +12,11 @@
         <ul class="splide__list" id="horarios-slider-list">
             @foreach ($horarios as $horario)
                 <li class="splide__slide d-flex flex-row align-items-center justify-content-center" id="horarios-slider-{{trim($horario->nombre)}}">
-                    <h1 class="font-16 d-block pb-0 m-0">
+                    <h2 class="font-20 d-block pb-0 m-0">
                         <button class="time-btn opacity-50" data-time="{{ trim($horario->nombre) }}">
                             {{ ucfirst(Str::lower(trim($horario->nombre))) }}
                         </button>
-                    </h1>
+                    </h2>
                 </li>
             @endforeach
         </ul>
@@ -116,9 +116,10 @@
             horariosSlider = new Splide(sliderElement, {
                 type: 'loop',
                 perPage: 3,
+                gap: '1rem',
                 arrows: false,
                 pagination: false,
-                fixedWidth: '7rem',
+                fixedWidth: '6rem',
             });
 
             horariosSlider.on('mounted', () => {
