@@ -51,15 +51,22 @@
 
     {{-- CONTENIDO DE LA PAGINA --}}
     <div class="content mb-0">
+
         {{-- SLIDER INICIO LINEADELIGHT --}}
-        <div class="my-4 splide single-slider slider-has-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-1" style="visibility: visible">
-            <div class="splide__track" id="single-slider-1-track">
-                <div class="splide__list" id="single-slider-1-list">
-                    {{-- LISTADO DE ELEMENTOS A RENDERIZARSE --}}
-                    
+        <div class="splide single-slider-custom slider-inicio" 
+            id="slider-inicio-lineadelight" 
+            data-slider-ready="false"
+            style="opacity: 0; transition: opacity 0.3s ease; visibility: visible;">
+            <div class="splide__track">
+                <ul class="splide__list w-100">
                     {{-- ITEM POPULARES --}}
-                    <div class="splide__slide mx-2 is-active is-visible" id="single-slider-populares" style="width: 320px;">
-                        <a href='#' data-bs-toggle="modal" data-bs-target="#popularProductsModal" data-subcategoria-id="000" data-subcategoria-nombre="Nuestros productos mas populares!" data-card-height="200" class="card mb-0 shadow-l rounded-m" style=" background-color: #FF5A5A;">
+                    <li class="splide__slide">
+                        <a href='#' data-bs-toggle="modal" data-bs-target="#popularProductsModal" 
+                        data-subcategoria-id="000" 
+                        data-subcategoria-nombre="Nuestros productos mas populares!" 
+                        data-card-height="200" 
+                        class="card mb-0 shadow-l rounded-m" 
+                        style="background-color: #FF5A5A;">
                             <div class="card-center mt-n4 d-flex flex-column align-items-center">
                                 <i class="fa fa-apple-alt fa-7x text-white"></i>
                             </div>
@@ -69,11 +76,14 @@
                             </div>
                             <div class="card-overlay dark-mode-tint"></div>
                         </a>
-                    </div>
+                    </li>
 
                     {{-- ITEM PLANES Y PAQUETES --}}
-                    <div class="splide__slide mx-2 is-active is-visible" id="single-slider-planes" style="width: 320px;">
-                        <a href="{{ route('categoria.planes') }}" data-card-height="200" class="card mb-0 shadow-l rounded-m" style="background-color: #4ECDC4;">
+                    <li class="splide__slide">
+                        <a href="{{ route('categoria.planes') }}" 
+                        data-card-height="200" 
+                        class="card mb-0 shadow-l rounded-m" 
+                        style="background-color: #4ECDC4;">
                             <div class="card-center mt-n4 d-flex flex-column align-items-center">
                                 <i class="fa fa-calendar fa-7x text-white"></i>
                             </div>
@@ -83,12 +93,17 @@
                             </div>
                             <div class="card-overlay dark-mode-tint"></div>
                         </a>
-                    </div>
+                    </li>
 
                     {{-- TAGS --}}
                     @foreach ($tags as $tag)
-                    <div class="splide__slide mx-2 is-active is-visible" id="single-slider-{{$tag->nombre}}" style="width: 320px;">
-                        <div data-card-height="200" data-tag-id="{{$tag->id}}" data-tag-nombre="{{$tag->nombre}}"  class="productos-tag-trigger card mb-0 shadow-l rounded-m" style="background-image: url({{asset('imagenes/delight/mesa_tags.jpg')}});">
+                    <li class="splide__slide">
+                        <div 
+                            data-card-height="200" 
+                            data-tag-id="{{$tag->id}}" 
+                            data-tag-nombre="{{$tag->nombre}}"  
+                            class="productos-tag-trigger card mb-0 shadow-l rounded-m" 
+                            style="background-image: url({{asset('imagenes/delight/mesa_tags.webp')}});">
                             <div class="card-center mt-n4 d-flex flex-column align-items-center">
                                 <i data-lucide="{{$tag->icono}}" class="lucide-icon text-white" style="width: 5rem; height: 5rem;"></i>
                             </div>
@@ -98,9 +113,9 @@
                             </div>
                             <div class="card-overlay dark-mode-tint light-mode-tint"></div>
                         </div>
-                    </div>
+                    </li>
                     @endforeach
-                </div>
+                </ul>
             </div>
         </div>
                 
@@ -160,6 +175,86 @@
 @endsection
 
 @push('scripts')
+<!-- SCRIPT CONTROL SLIDER INICIO -->
+<script type="module">
+import Splide from 'https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.esm.min.js';
+
+const montarSliderInicio = (slider) => {
+    // Revisar si ya está montado
+    if (slider.dataset.sliderReady === 'true') {
+        console.log('Slider already mounted:', slider.id);
+        return;
+    }
+
+    try {
+        const splide = new Splide(slider, {
+            type: 'loop',
+            fixedHeight: '200px',
+            perPage: 1,
+            gap: '1rem',
+            arrows: true,
+            pagination: false,
+            pauseOnHover: true,
+            pauseOnFocus: false,
+            autoplay: true,
+            interval: 5000,
+        });
+
+        splide.on('mounted', () => {
+            slider.style.opacity = '1';
+            slider.dataset.sliderReady = 'true';
+            console.log('Slider mounted successfully:', slider.id);
+        });
+
+        splide.on('destroy', () => {
+            console.log('Slider destroyed:', slider.id);
+            slider.dataset.sliderReady = 'false';
+        });
+
+        // Montar el slider
+        splide.mount();
+
+        // Almacenar instancia
+        slider.splide = splide;
+
+    } catch (error) {
+        console.error('Error mounting slider:', slider.id, error);
+    }
+}
+
+function initSliderInicio() {
+    const slider = document.querySelector('.slider-inicio');
+    
+    if (!slider) {
+        console.log('Slider inicio no encontrado');
+        return;
+    }
+
+    console.log('Inicializando slider inicio');
+
+    // Lazy loading usando IntersectionObserver
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && entry.target.dataset.sliderReady !== 'true') {
+                console.log('Slider entering viewport:', entry.target.id);
+                montarSliderInicio(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '50px'
+    });
+
+    observer.observe(slider);
+}
+
+// Esperar al DOM y dar tiempo al template para inicializar
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        initSliderInicio();
+    }, 200);
+});
+</script>
 {{-- SCRIPT CONTROL DEL MODAL PRODUCTOS CATEGORIZADOS [LINEA-DELGIHT] --}}
 <script>
     // LISTAR PRODUCTOS POR TAG [LINEA-DELIGHT]
