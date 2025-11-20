@@ -177,23 +177,6 @@
 @endsection
 
 @push('scripts')
-<!-- TESTING LOADER FUNCTION -->
-<script>
-    $(document).ready(function() {
-        $('#loader-test').on('click', async function() {
-            const cart = carritoStorage.obtenerCarrito();
-            console.log("Carrito:", cart);
-            // const response = await CarritoService.getCartProductsInfo({
-            //     sucursaleId: 1,
-            //     items: cart.items,
-            // });
-            const response = await CarritoService.obtenerInfoItemCarrito(cart.items[0]);
-
-            console.log("Respuesta obtenida loaderAxios:", response);
-        });
-    });
-
-</script>
 <!-- SCRIPT CONTROL SLIDER INICIO -->
 <script type="module">
 import Splide from 'https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.esm.min.js';

@@ -144,6 +144,17 @@
     animation-delay: 0.2s;
 }
 
+/* Example CSS for the hiding class */
+.preloader-hide {
+    /* Fade out animation */
+    opacity: 0 !important;
+    transition: opacity 0.3s ease-in-out; 
+    
+    /* Ensure it doesn't block clicks once faded */
+    visibility: hidden !important; 
+    pointer-events: none !important;
+}
+
 @keyframes bounce {
     0%,
     100% {
@@ -153,3 +164,4 @@
         transform: translateY(-8px);
     }
 }
+

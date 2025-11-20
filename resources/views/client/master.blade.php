@@ -121,8 +121,60 @@
 
 <body id="margen"
     class="{{ isset(auth()->user()->color_page) ? auth()->user()->color_page : 'theme-light' }} margen">
-    <div id="preloader">
-        <div class="spinner-border color-highlight" role="status"></div>
+    <div id="preloader" style="background: none;">
+        <!-- <div class="spinner-border color-highlight" role="status"></div> -->
+        <!-- Backdrop -->
+        <div id="loader-backdrop visible" class="loader-backdrop" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 9998;
+            opacity: 1;
+            transition: opacity 600ms ease-in-out;
+        "></div>
+
+        <!-- Loader Container -->
+        <div id="loader-container visible" class="loader-container" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 1;
+            transform: scale(0.95);
+            transition: opacity 600ms ease-in-out, transform 600ms ease-in-out;
+        ">
+            <div class="loader-content">
+                <!-- Animated logo -->
+                <img
+                    src="{{ GlobalHelper::getValorAtributoSetting('logo_small')}}"
+                    alt="Loading"
+                    class="loader-logo"
+                />
+
+                <!-- Pulsing glow effect -->
+                <div class="loader-glow"></div>
+            </div>
+
+            <!-- Loading text -->
+            <div class="loader-text-container">
+                <p class="loader-text">Cargando</p>
+                <div class="loader-dots">
+                    <span class="loader-dot"></span>
+                    <span class="loader-dot delay-1"></span>
+                    <span class="loader-dot delay-2"></span>
+                </div>
+            </div>
+        </div>
     </div>
     <div id="page">
         {{-- <div class="header header-fixed header-auto-show header-logo-app">
@@ -197,6 +249,54 @@
     @stack('modals')
     <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}?v=1.0.0"></script>
     <script type="text/javascript" src="{{ asset('scripts/custom.js') }}?v=1.0.0"></script>
+    <script>
+        window.AppConfig = {
+            logoSmallUrl: "{{ GlobalHelper::getValorAtributoSetting('logo_small') }}",
+        };
+    </script>
+
+<script>
+    $(document).ready(function() {
+        let splideInstances = [];
+
+        $(document).on('click', 'a[href]', function(e) {
+            const preloader = $('#preloader');
+
+            if (href && href !== '#' && !href.startsWith('#') ) {
+                preloader.removeClass('preloader-hide');
+            }
+        });
+
+        $(window).on('load', async function() {
+            const images = document.querySelectorAll('img');
+            const imagePromises = Array.from(images).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => {
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                });
+            });
+
+            await Promise.all(imagePromises);
+
+            console.log("Type of Splide:", typeof Splide);
+            if (typeof Splide !== 'undefined') {
+                await new Promise(resolve => setTimeout(resolve, 150));
+                
+                const splideElements = document.querySelectorAll('.splide');
+                console.log("splideElements found:", splideElements.length);
+                if (splideElements.length > 0) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+            }
+
+            // Delay extra
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            $('#preloader').addClass('preloader-hide');
+        });
+    });
+</script>
     <script>
         function myFunction() {
             var element = document.body;

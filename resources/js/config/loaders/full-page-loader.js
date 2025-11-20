@@ -1,5 +1,6 @@
 // config/loader/full-page-loader.js
 import loaderManager from "./loader-manager.js";
+const LOGO_SMALL_URL = window.AppConfig.logoSmallUrl;
 
 class FullPageLoader {
     constructor() {
@@ -44,7 +45,7 @@ class FullPageLoader {
                 <div class="loader-content">
                     <!-- Animated logo -->
                     <img
-                        src="/imagenes/delight/optimal-logo.png"
+                        src="${LOGO_SMALL_URL}"
                         alt="Loading"
                         class="loader-logo"
                     />
