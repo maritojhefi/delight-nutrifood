@@ -156,7 +156,7 @@
             <div class="loader-content">
                 <!-- Animated logo -->
                 <img
-                    src="{{ GlobalHelper::getValorAtributoSetting('logo_small')}}"
+                    src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}"
                     alt="Loading"
                     class="loader-logo"
                 />
@@ -251,7 +251,7 @@
     <script type="text/javascript" src="{{ asset('scripts/custom.js') }}?v=1.0.0"></script>
     <script>
         window.AppConfig = {
-            logoSmallUrl: "{{ GlobalHelper::getValorAtributoSetting('logo_small') }}",
+            logoSmallUrl: "{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}",
         };
     </script>
 
@@ -259,10 +259,11 @@
     $(document).ready(function() {
         let splideInstances = [];
 
-        $(document).on('click', 'a[href]', function(e) {
+         $(document).on('click', 'a[href]', function(e) {
             const preloader = $('#preloader');
+            const href = $(this).attr('href');
 
-            if (href && href !== '#' && !href.startsWith('#') ) {
+            if (href && href !== '#' && !href.startsWith('#')) {
                 preloader.removeClass('preloader-hide');
             }
         });
