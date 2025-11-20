@@ -1,9 +1,10 @@
 // var urlBase = "{{ GlobalHelper::getValorAtributoSetting('url_web')}}"
 import axios from 'axios';
+import { loaderAxios } from '../config/axios/axios-instance';
 
 export const getCartProductsInfo = async ({ sucursaleId, items }) => {
   try {
-    const response = await axios.post(`/carrito/mi-carrito`, {
+    const response = await loaderAxios.post(`/carrito/mi-carrito`, {
       sucursale_id: sucursaleId, // Enviar un valor numerico
       items: Array.isArray(items) ? items : [] // Asegura que items sea un array
     }
@@ -25,7 +26,7 @@ export const getCartProductsInfo = async ({ sucursaleId, items }) => {
 
 export const obtenerInfoItemCarrito = async (itemCarrito, sucursaleID) => {
     try {
-        const response = await axios.post(`/carrito/validar-item`, {
+        const response = await loaderAxios.post(`/carrito/validar-item`, {
           sucursale_id: sucursaleID,
           id: itemCarrito.id,
           cantidad: itemCarrito.cantidad,

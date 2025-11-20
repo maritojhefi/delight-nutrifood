@@ -7,7 +7,7 @@ class LoaderManager {
     }
     
     setIsLoading(loading) {
-        console.log("LoaderManager was set as loading");
+        console.log("LoaderManager was set as loading with", loading);
         this.isLoading = loading;
         // Notify all listeners
         this.listeners.forEach(callback => callback(this.isLoading));
