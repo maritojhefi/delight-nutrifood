@@ -837,6 +837,7 @@
                     headers: {
                         'X-CSRF-TOKEN': csrfToken
                     },
+                    global: false, 
                     success: function(response) {
                         if (response.status === 'success') {
                             codigoVerificacion = response.codigo_generado;
@@ -1145,6 +1146,7 @@
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
+                    global:false,
                     success: function(response) {
 
                         if (response.status === 'success') {

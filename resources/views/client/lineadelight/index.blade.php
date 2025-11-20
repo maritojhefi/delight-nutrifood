@@ -168,8 +168,6 @@
         </div>
     </div>
 
-    <button id="loader-test" class="btn btn-xl bg-highlight" >TEST LOADER FUNCTION</button>
-
     <x-menu-adicionales-producto :isUpdate="false"/>
     <x-modal-listado-productos />
     <!-- MODAL ACCIONES PRODUCTO INDIVIDUAL -->

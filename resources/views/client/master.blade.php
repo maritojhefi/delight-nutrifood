@@ -83,7 +83,41 @@
 
     @laravelPWA
 
+    <!-- CONFIGURACION AJAX JQUERY -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(document).ajaxStart(function() { 
+                console.log("AJAX Start detectado - mostrando loader.");
+                LoaderManager.setIsLoading(true);
+            });
+            
+            $(document).ajaxStop(function() { 
+                console.log("AJAX Stop detectado - ocultando loader.");
+                LoaderManager.setIsLoading(false);
+            });
+
+            $(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
+                console.log("AJAX Error detectado - ocultando loader.");
+                LoaderManager.setIsLoading(false);
+            });
+        });
+    </script>
+    <!-- <script>
+        $(document).ready(function() {
+            console.log("Attaching AJAX handlers...");
+            
+            $(document).ajaxStart(function() { 
+                console.log("✓ AJAX Start triggered");
+            });
+            
+            $(document).ajaxStop(function() { 
+                console.log("✓ AJAX Stop triggered");
+            });
+            
+            console.log("AJAX handlers attached!");
+        });
+    </script> -->
     <style>
         /* Extra small devices (phones, 600px and down) */
         @media only screen and (max-width: 600px) {}
@@ -254,50 +288,49 @@
             logoSmallUrl: "{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}",
         };
     </script>
+    <script>
+        $(document).ready(function() {
+            let splideInstances = [];
 
-<script>
-    $(document).ready(function() {
-        let splideInstances = [];
+            $(document).on('click', 'a[href]', function(e) {
+                const preloader = $('#preloader');
+                const href = $(this).attr('href');
 
-         $(document).on('click', 'a[href]', function(e) {
-            const preloader = $('#preloader');
-            const href = $(this).attr('href');
-
-            if (href && href !== '#' && !href.startsWith('#')) {
-                preloader.removeClass('preloader-hide');
-            }
-        });
-
-        $(window).on('load', async function() {
-            const images = document.querySelectorAll('img');
-            const imagePromises = Array.from(images).map(img => {
-                if (img.complete) return Promise.resolve();
-                return new Promise(resolve => {
-                    img.onload = resolve;
-                    img.onerror = resolve;
-                });
+                if (href && href !== '#' && !href.startsWith('#')) {
+                    preloader.removeClass('preloader-hide');
+                }
             });
 
-            await Promise.all(imagePromises);
+            $(window).on('load', async function() {
+                const images = document.querySelectorAll('img');
+                const imagePromises = Array.from(images).map(img => {
+                    if (img.complete) return Promise.resolve();
+                    return new Promise(resolve => {
+                        img.onload = resolve;
+                        img.onerror = resolve;
+                    });
+                });
 
-            console.log("Type of Splide:", typeof Splide);
-            if (typeof Splide !== 'undefined') {
-                await new Promise(resolve => setTimeout(resolve, 150));
-                
-                const splideElements = document.querySelectorAll('.splide');
-                console.log("splideElements found:", splideElements.length);
-                if (splideElements.length > 0) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
+                await Promise.all(imagePromises);
+
+                console.log("Type of Splide:", typeof Splide);
+                if (typeof Splide !== 'undefined') {
+                    await new Promise(resolve => setTimeout(resolve, 150));
+                    
+                    const splideElements = document.querySelectorAll('.splide');
+                    console.log("splideElements found:", splideElements.length);
+                    if (splideElements.length > 0) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
                 }
-            }
 
-            // Delay extra
-            await new Promise(resolve => setTimeout(resolve, 200));
-            
-            $('#preloader').addClass('preloader-hide');
+                // Delay extra
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                $('#preloader').addClass('preloader-hide');
+            });
         });
-    });
-</script>
+    </script>
     <script>
         function myFunction() {
             var element = document.body;
