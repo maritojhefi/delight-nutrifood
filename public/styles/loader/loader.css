@@ -1,8 +1,10 @@
 /* Loader Styles - Bootstrap compatible, no Tailwind needed */
-
 #full-page-loader {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     z-index: 9999;
     pointer-events: none;
 }
@@ -10,7 +12,10 @@
 /* Backdrop */
 .loader-backdrop {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     background-color: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
@@ -26,14 +31,19 @@
 /* Loader Container */
 .loader-container {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 9999;
     opacity: 0;
     transform: scale(0.95);
-    transition: opacity 600ms ease-in-out, transform 600ms ease-in-out;
+    transition:
+        opacity 600ms ease-in-out,
+        transform 600ms ease-in-out;
 }
 
 .loader-container.visible {
@@ -54,36 +64,44 @@
 /* Animated Logo */
 .loader-logo {
     width: 128px;
-    height: 128px;
     filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
     animation: pulse-scale 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes pulse-scale {
-    0%, 100% { 
-        transform: scale(1); 
+    0%,
+    100% {
+        transform: scale(1);
     }
-    50% { 
-        transform: scale(1.15); 
+    50% {
+        transform: scale(1.15);
     }
 }
 
 /* Pulsing Glow Effect */
 .loader-glow {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
-    background: linear-gradient(to right, rgba(248, 113, 113, 0.2), rgba(45, 212, 191, 0.2));
+    background: linear-gradient(
+        to right,
+        rgba(248, 113, 113, 0.2),
+        rgba(45, 212, 191, 0.2)
+    );
     filter: blur(40px);
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes pulse {
-    0%, 100% { 
-        opacity: 1; 
+    0%,
+    100% {
+        opacity: 1;
     }
-    50% { 
-        opacity: 0.5; 
+    50% {
+        opacity: 0.5;
     }
 }
 
@@ -92,6 +110,7 @@
     position: absolute;
     bottom: 5rem;
     text-align: center;
+    width: 100%;
 }
 
 .loader-text {
@@ -126,10 +145,11 @@
 }
 
 @keyframes bounce {
-    0%, 100% { 
-        transform: translateY(0); 
+    0%,
+    100% {
+        transform: translateY(0);
     }
-    50% { 
-        transform: translateY(-8px); 
+    50% {
+        transform: translateY(-8px);
     }
 }
