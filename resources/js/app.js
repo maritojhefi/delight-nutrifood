@@ -6,6 +6,7 @@ import './carrito/carrito-store';
 import './ventas/venta-service'
 import './saldo/saldo-service'
 import './planes/planes-service'
+import './carrito/carrito-service'
 
 // Import and initialize the loader system
 import loaderManager from './config/loaders/loader-manager.js';
