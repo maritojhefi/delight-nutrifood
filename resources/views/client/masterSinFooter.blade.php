@@ -171,6 +171,7 @@
         $(document).ready(function() {
             let splideInstances = [];
 
+            // Mostrar prelaoder en enlaces normales
             $(document).on('click', 'a[href]', function(e) {
                 const preloader = $('#preloader');
                 const href = $(this).attr('href');
@@ -180,7 +181,8 @@
                 }
             });
 
-            $(window).on('load', async function() {
+            // Ocultar preloader cuando todo este cargado
+            async function hidePreloader() {
                 const images = document.querySelectorAll('img');
                 const imagePromises = Array.from(images).map(img => {
                     if (img.complete) return Promise.resolve();
@@ -201,10 +203,21 @@
                     }
                 }
 
-                // Delay extra
                 await new Promise(resolve => setTimeout(resolve, 200));
                 
                 $('#preloader').addClass('preloader-hide');
+            }
+
+            // Manejar carga inicial
+            $(window).on('load', hidePreloader);
+
+            // Manejar navegacion atras/adelante
+            window.addEventListener('pageshow', function(event) {
+                // event.persisted es true cuando la pagina es restaurada desde bfcache
+                if (event.persisted) {
+                    // La pagina fue restaurada desde cache, ocultar loader inmediatamente
+                    $('#preloader').addClass('preloader-hide');
+                }
             });
         });
     </script>
