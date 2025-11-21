@@ -27,7 +27,7 @@
         <ul class="splide__list">
             @foreach ($productos as $producto)
             <li class="splide__slide">
-                <a href="{{route('detalleproducto',$producto->id)}}" class="card rounded-md card-style mb-0">
+                <!-- <a href="{{route('detalleproducto',$producto->id)}}" class="card rounded-md card-style mb-0">
                     <img src="{{ $producto->pathAttachment() }}" 
                         style="max-height: 100px; width: 100%; object-fit: cover;">
                     <div class="position-absolute position-absolute end-0 p-2 bg-theme bg-dtheme-blue rounded-md color-theme" style="border-radius: 0 0 0 0.375rem;">
@@ -42,7 +42,8 @@
                             {{Str::limit($producto->nombre(), 35)}}
                         </h5>
                     </div>
-                </a>
+                </a> -->
+                <x-card-producto-individual :producto="$producto" />
             </li>
             @endforeach
         </ul>
