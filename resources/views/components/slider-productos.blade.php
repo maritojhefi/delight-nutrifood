@@ -78,7 +78,6 @@
     const montarSlider = (slider) => {
         // Revisar si montamos el slider
         if (slider.dataset.sliderReady === 'true') {
-            console.log('Slider already mounted:', slider.id);
             return;
         }
 
@@ -113,11 +112,9 @@
             splide.on('mounted', () => {
                 slider.style.opacity = '1';
                 slider.dataset.sliderReady = 'true';
-                console.log('Slider mounted successfully:', slider.id);
             });
 
             splide.on('destroy', () => {
-                console.log('Slider destroyed:', slider.id);
                 slider.dataset.sliderReady = 'false';
             });
 
@@ -145,13 +142,11 @@
 
     function initSlidersProductos() {
         const sliders = document.querySelectorAll('.slider-productos');
-        console.log('Sliders de Productos:', sliders.length);
 
         // Lazy loading usando IntersectionObserver
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting && entry.target.dataset.sliderReady !== 'true') {
-                    console.log('Slider entering viewport:', entry.target.id);
                     montarSlider(entry.target);
                     // Continua observando en caso de ser destruido y necesite remontado
                 }

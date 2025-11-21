@@ -108,7 +108,6 @@
     // MONTAR SLIDER HORARIOS
     const montarSliderHorarios = (sliderElement) => {
         if (sliderElement.dataset.sliderReady === 'true') {
-            console.log('Slider de horarios ya montado');
             return;
         }
 
@@ -126,7 +125,6 @@
             horariosSlider.on('mounted', () => {
                 sliderElement.style.opacity = '1';
                 sliderElement.dataset.sliderReady = 'true';
-                console.log('Slider de horarios montado con éxito');
                 
                 // Cargar items por defecto
                 actualizarSliderHorario(defaultTime);
@@ -150,7 +148,6 @@
     // MONTAR SLIDER CATEGORIZADOS
     const montarSliderCategorizados = (sliderElement) => {
         if (sliderElement.dataset.sliderReady === 'true') {
-            console.log('Slider de subcategorias ya montado');
             return;
         }
 
@@ -179,7 +176,6 @@
             categorizadosSlider.on('mounted', () => {
                 sliderElement.style.opacity = '1';
                 sliderElement.dataset.sliderReady = 'true';
-                console.log('Slider de subcategorias montado con éxito');
             });
 
             categorizadosSlider.mount({ AutoScroll });

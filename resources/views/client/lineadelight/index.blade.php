@@ -182,7 +182,6 @@ import Splide from 'https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/
 const montarSliderInicio = (slider) => {
     // Revisar si ya está montado
     if (slider.dataset.sliderReady === 'true') {
-        console.log('Slider already mounted:', slider.id);
         return;
     }
 
@@ -204,11 +203,9 @@ const montarSliderInicio = (slider) => {
         splide.on('mounted', () => {
             slider.style.opacity = '1';
             slider.dataset.sliderReady = 'true';
-            console.log('Slider mounted successfully:', slider.id);
         });
 
         splide.on('destroy', () => {
-            console.log('Slider destroyed:', slider.id);
             slider.dataset.sliderReady = 'false';
         });
 
@@ -227,17 +224,13 @@ function initSliderInicio() {
     const slider = document.querySelector('.slider-inicio');
     
     if (!slider) {
-        console.log('Slider inicio no encontrado');
         return;
     }
-
-    console.log('Inicializando slider inicio');
 
     // Lazy loading usando IntersectionObserver
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting && entry.target.dataset.sliderReady !== 'true') {
-                console.log('Slider entering viewport:', entry.target.id);
                 montarSliderInicio(entry.target);
             }
         });
