@@ -51,15 +51,22 @@
 
     {{-- CONTENIDO DE LA PAGINA --}}
     <div class="content mb-0">
+
         {{-- SLIDER INICIO LINEADELIGHT --}}
-        <div class="my-4 splide single-slider slider-has-arrows slider-no-dots splide--loop splide--ltr splide--draggable is-active" id="single-slider-1" style="visibility: visible">
-            <div class="splide__track" id="single-slider-1-track">
-                <div class="splide__list" id="single-slider-1-list">
-                    {{-- LISTADO DE ELEMENTOS A RENDERIZARSE --}}
-                    
+        <div class="splide single-slider-custom slider-inicio" 
+            id="slider-inicio-lineadelight" 
+            data-slider-ready="false"
+            style="opacity: 0; transition: opacity 0.3s ease; visibility: visible;">
+            <div class="splide__track">
+                <ul class="splide__list w-100">
                     {{-- ITEM POPULARES --}}
-                    <div class="splide__slide mx-2 is-active is-visible" id="single-slider-populares" style="width: 320px;">
-                        <a href='#' data-bs-toggle="modal" data-bs-target="#popularProductsModal" data-subcategoria-id="000" data-subcategoria-nombre="Nuestros productos mas populares!" data-card-height="200" class="card mb-0 shadow-l rounded-m" style=" background-color: #FF5A5A;">
+                    <li class="splide__slide">
+                        <a href='#' data-bs-toggle="modal" data-bs-target="#popularProductsModal" 
+                        data-subcategoria-id="000" 
+                        data-subcategoria-nombre="Nuestros productos mas populares!" 
+                        data-card-height="200" 
+                        class="card mb-0 shadow-l rounded-m" 
+                        style="background-color: #FF5A5A;">
                             <div class="card-center mt-n4 d-flex flex-column align-items-center">
                                 <i class="fa fa-apple-alt fa-7x text-white"></i>
                             </div>
@@ -69,11 +76,14 @@
                             </div>
                             <div class="card-overlay dark-mode-tint"></div>
                         </a>
-                    </div>
+                    </li>
 
                     {{-- ITEM PLANES Y PAQUETES --}}
-                    <div class="splide__slide mx-2 is-active is-visible" id="single-slider-planes" style="width: 320px;">
-                        <a href="{{ route('categoria.planes') }}" data-card-height="200" class="card mb-0 shadow-l rounded-m" style="background-color: #4ECDC4;">
+                    <li class="splide__slide">
+                        <a href="{{ route('categoria.planes') }}" 
+                        data-card-height="200" 
+                        class="card mb-0 shadow-l rounded-m" 
+                        style="background-color: #4ECDC4;">
                             <div class="card-center mt-n4 d-flex flex-column align-items-center">
                                 <i class="fa fa-calendar fa-7x text-white"></i>
                             </div>
@@ -83,12 +93,17 @@
                             </div>
                             <div class="card-overlay dark-mode-tint"></div>
                         </a>
-                    </div>
+                    </li>
 
                     {{-- TAGS --}}
                     @foreach ($tags as $tag)
-                    <div class="splide__slide mx-2 is-active is-visible" id="single-slider-{{$tag->nombre}}" style="width: 320px;">
-                        <div data-card-height="200" data-tag-id="{{$tag->id}}" data-tag-nombre="{{$tag->nombre}}"  class="productos-tag-trigger card mb-0 shadow-l rounded-m" style="background-image: url({{asset('imagenes/delight/mesa_tags.jpg')}});">
+                    <li class="splide__slide">
+                        <div 
+                            data-card-height="200" 
+                            data-tag-id="{{$tag->id}}" 
+                            data-tag-nombre="{{$tag->nombre}}"  
+                            class="productos-tag-trigger card mb-0 shadow-l rounded-m" 
+                            style="background-image: url({{asset('imagenes/delight/mesa_tags.webp')}});">
                             <div class="card-center mt-n4 d-flex flex-column align-items-center">
                                 <i data-lucide="{{$tag->icono}}" class="lucide-icon text-white" style="width: 5rem; height: 5rem;"></i>
                             </div>
@@ -98,29 +113,14 @@
                             </div>
                             <div class="card-overlay dark-mode-tint light-mode-tint"></div>
                         </div>
-                    </div>
+                    </li>
                     @endforeach
-                </div>
+                </ul>
             </div>
         </div>
-        
-        {{-- <button id="menu-prueba-btn" class="btn bg-highlight">Prueba modal condijcional</button> --}}
-
-        {{-- SLIDER HORARIOS --}}
-        <div class="splide topic-slider slider-no-arrows slider-no-dots pb-2 splide--loop splide--ltr splide--draggable" id="topic-slider-1" style="visibility: visible;">
-            <div class="splide__track" id="topic-slider-1-track" style="padding-left: 15px; padding-right: 40px;">
-                <div class="splide__list" id="topic-slider-1-list" style="transform: translateX(-866.592px);">
-                    @foreach ($horarios as $horario)
-                        <div class="splide__slide" id="topic-slider-1-{{trim($horario->nombre)}}" style="width: 108.333px;">
-                            <h1 class="font-16 d-block"><button class="time-btn opacity-50" data-time="{{ trim($horario->nombre) }}">{{ ucfirst(Str::lower(trim($horario->nombre))) }}</button></h1>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-
+                
         {{-- SLIDER SUBCATEGORIAS --}}
-        <x-slider-doble-subcategorias/>
+        <x-slider-subcategorias-horario :horarios="$horarios" :horariosData="$horariosData" />
 
         {{-- SLIDER PRODUCTOS MAS VENDIDOS --}}
         <div id="best-selling-container" class="my-4">
@@ -175,182 +175,89 @@
 @endsection
 
 @push('scripts')
-{{-- SCRIPT CONTROL DE SLIDER DE HORARIOS --}}
-<script>
-    const subcategoriasPorHorario = @json($horariosData);
-    const horarios = @json($horarios);
+<!-- SCRIPT CONTROL SLIDER INICIO -->
+<script type="module">
+import Splide from 'https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.esm.min.js';
 
-    document.addEventListener('DOMContentLoaded', function () {
-        // Determinacion del horario actual basado en la hora del dia
-        const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        const currentTimeInMinutes = currentHour * 60 + currentMinute;
-        
-        let defaultTime = '';
+const montarSliderInicio = (slider) => {
+    // Revisar si ya está montado
+    if (slider.dataset.sliderReady === 'true') {
+        console.log('Slider already mounted:', slider.id);
+        return;
+    }
 
-        // Iterar sobre los horarios para encontrar el rango que incluye la hora actual
-        for (const horario of horarios) {
-            const startTime = horario.hora_inicio.split(':');
-            const endTime = horario.hora_fin.split(':');
-            
-            const startMinutes = parseInt(startTime[0]) * 60 + parseInt(startTime[1]);
-            const endMinutes = parseInt(endTime[0]) * 60 + parseInt(endTime[1]);
-            
-            // Manejar casos donde el horario cruze la medianoche (ejm: 19:00 - 03:59)
-            if (startMinutes > endMinutes) {
-                // El rango cruza la medianoche
-                if (currentTimeInMinutes >= startMinutes || currentTimeInMinutes <= endMinutes) {
-                    defaultTime = horario.nombre;
-                    break;
-                }
-            } else {
-                // Rango normal dentro del mismo dia
-                if (currentTimeInMinutes >= startMinutes && currentTimeInMinutes <= endMinutes) {
-                    defaultTime = horario.nombre;
-                    break;
-                }
-            }
-        }
-
-         // Si no se encontro un horario actual, buscar el siguiente mas cercano
-        if (!defaultTime) {
-            let siguienteHorario = null;
-            let minTimeDiff = Infinity;
-
-            for (const horario of horarios) {
-                const startTime = horario.hora_inicio.split(':');
-                const startMinutes = parseInt(startTime[0]) * 60 + parseInt(startTime[1]);
-                
-                let timeDiff;
-                
-                // Calcular diferencia de tiempo considerando el cambio de dia
-                if (startMinutes >= currentTimeInMinutes) {
-                    // El horario es hoy (mas tarde)
-                    timeDiff = startMinutes - currentTimeInMinutes;
-                } else {
-                    // El horario es mañana (agregar 24 horas)
-                    timeDiff = (24 * 60) - currentTimeInMinutes + startMinutes;
-                }
-                
-                if (timeDiff < minTimeDiff) {
-                    minTimeDiff = timeDiff;
-                    siguienteHorario = horario;
-                }
-            }
-
-            if (siguienteHorario) {
-                defaultTime = siguienteHorario.nombre;
-            } else {
-                // Fallback: usar el primer horario disponible
-                defaultTime = horarios[0]?.nombre || '';
-            }
-        }
-
-        // Inicializacion de slider para horarios
-        new Splide('#topic-slider-1', {
+    try {
+        const splide = new Splide(slider, {
             type: 'loop',
-            perPage: 3,
-            arrows: false,
-        }).mount();
-
-        // Inicializacion del slider para categorias
-        const doubleSlider = new Splide('#double-slider-1', {
-            type: 'loop',
-            perPage: 2,
-            arrows: false,
+            fixedHeight: '200px',
+            perPage: 1,
+            gap: '1rem',
+            arrows: true,
+            pagination: false,
+            pauseOnHover: true,
+            pauseOnFocus: false,
             autoplay: true,
-            interval: 3000,
+            interval: 5000,
+            live: false,
         });
 
-        // Items/Categorias por defecto a renderizarse
-        const defaultItems = subcategoriasPorHorario[defaultTime] || [];
-        actualizarSliderHorario(defaultItems);
-        doubleSlider.mount();
+        splide.on('mounted', () => {
+            slider.style.opacity = '1';
+            slider.dataset.sliderReady = 'true';
+            console.log('Slider mounted successfully:', slider.id);
+        });
 
-        // Determinacion del boton activo
-        const buttons = document.querySelectorAll('.time-btn');
-        buttons.forEach(btn => {
-            if (btn.getAttribute('data-time') === defaultTime) {
-                btn.classList.add('is-active');
-                btn.classList.remove('opacity-50');
-            } else {
-                btn.classList.add('opacity-50');
+        splide.on('destroy', () => {
+            console.log('Slider destroyed:', slider.id);
+            slider.dataset.sliderReady = 'false';
+        });
+
+        // Montar el slider
+        splide.mount();
+
+        // Almacenar instancia
+        slider.splide = splide;
+
+    } catch (error) {
+        console.error('Error mounting slider:', slider.id, error);
+    }
+}
+
+function initSliderInicio() {
+    const slider = document.querySelector('.slider-inicio');
+    
+    if (!slider) {
+        console.log('Slider inicio no encontrado');
+        return;
+    }
+
+    console.log('Inicializando slider inicio');
+
+    // Lazy loading usando IntersectionObserver
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && entry.target.dataset.sliderReady !== 'true') {
+                console.log('Slider entering viewport:', entry.target.id);
+                montarSliderInicio(entry.target);
             }
         });
-
-        function actualizarSliderHorario(items) {
-            const list = document.getElementById('double-slider-1-list');
-
-            // Actualizar contenido del slider
-            list.innerHTML = '';
-
-            // Verificar que items existe y no esta vacio
-            if (items && items.length > 0) {
-                items.forEach(item => {
-                    const formattedName = item.nombre.charAt(0).toUpperCase() + item.nombre.slice(1).toLowerCase();
-
-                    list.innerHTML += `
-                        <div class="splide__slide hover-grow-s" style="width: 12rem;">
-                            <div class="productos-subcategoria-trigger card mx-3 mb-0 card-style bg-20"
-                                data-subcategoria-id="${item.id}"
-                                data-subcategoria-nombre="${item.nombre}"
-                                style="height: 14rem; background-image: url('${item.foto}');">
-                                <div class="card-bottom">
-                                    <h3 class="color-white font-18 font-600 mb-3 mx-3">${formattedName}</h3>
-                                </div>
-                                <div class="card-overlay bg-gradient"></div>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
-            // Refrescar el slider para mostrar los nuevos items
-            doubleSlider.refresh();
-
-            // Reiniciar el indice del slider al primer elemento
-            doubleSlider.go(0);
-        }
-
-        // Control seleccion del horario
-        buttons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const hora = btn.getAttribute('data-time');
-                const items = subcategoriasPorHorario[hora] || [];
-
-                // Remover clase activa de todos los botones
-                buttons.forEach(b => {
-                    b.classList.add('opacity-50');
-                    b.classList.remove('is-active');
-                });
-
-                // Acivar el boton clickeado
-                btn.classList.remove('opacity-50');
-                btn.classList.add('is-active');
-
-                // Actualizar el contenido del slider
-                actualizarSliderHorario(items);
-            });
-        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '50px'
     });
+
+    observer.observe(slider);
+}
+
+// Esperar al DOM y dar tiempo al template para inicializar
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        initSliderInicio();
+    }, 200);
+});
 </script>
 {{-- SCRIPT CONTROL DEL MODAL PRODUCTOS CATEGORIZADOS [LINEA-DELGIHT] --}}
 <script>
-    // LISTAR PRODUCTOS POR SUBCATEGORIAS [LINEA-DELIGHT]
-    $(document).on('click', '.productos-subcategoria-trigger', async function(e) {
-        e.preventDefault();
-        
-        const subcategoriaId = $(this).data('subcategoria-id');
-        const subcategoriaNombre = $(this).data('subcategoria-nombre');
-        
-        try {
-            const productosSubcategoria = await ProductoService.getProductosCategoria(subcategoriaId);
-            abrirDialogListado(productosSubcategoria.data, subcategoriaNombre);
-        } catch (error) {
-            console.error('Error cargando los productos de la subcategoria:', error);
-        }
-    });
     // LISTAR PRODUCTOS POR TAG [LINEA-DELIGHT]
     $(document).on('click', '.productos-tag-trigger', async function(e) {
         e.preventDefault();

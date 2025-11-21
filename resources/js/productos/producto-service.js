@@ -1,15 +1,26 @@
 import axios from 'axios';
+import { loaderAxios } from '../config/axios/axios-instance.js';
 
 // FUNCIONES CON LLAMADO A ENDPOINTS DEL BACKEND - PRODUCTO
 export const getProductosCategoria = async (categoriaId) => {
     try {
-        const response = await axios.get(`/productos/categorizados/${categoriaId}`);
+        const response = await loaderAxios.get(`/productos/categorizados/${categoriaId}`);
         return response.data;
     } catch (error) {
         console.error(`Error al solicitar productos con subcategoria_id ${categoriaId}`, error);
         return [];
     }
 };
+
+// export const getProductosCategoria = async (categoriaId) => {
+//     try {
+//         const response = await axios.get(`/productos/categorizados/${categoriaId}`);
+//         return response.data;
+//     } catch (error) {
+//         console.error(`Error al solicitar productos con subcategoria_id ${categoriaId}`, error);
+//         return [];
+//     }
+// };
 
 export const checkProductStock = async (productId) => {
     try {
@@ -61,7 +72,7 @@ export const getProduct = async (productId) => {
 // Obtener productos pertenecientes a un tag determinado
 export const getProductosTag = async (tagId) => {
     try {
-        const response = await axios.get(`/productos/tag/${tagId}`);
+        const response = await loaderAxios.get(`/productos/tag/${tagId}`);
         return response.data;
     } catch (error) {
         console.log(error);
@@ -71,7 +82,8 @@ export const getProductosTag = async (tagId) => {
 
 export const getProductoDetalle = async (productoId) => {
     try {
-        const response = await axios.get(`/productos/${productoId}/detallado`);
+        // Considerar si usar loaderAxios o axios simple
+        const response = await loaderAxios.get(`/productos/${productoId}/detallado`);
         return response.data;
     } catch (error) {
         console.error(error);
@@ -80,7 +92,7 @@ export const getProductoDetalle = async (productoId) => {
 }
 
 export const getSearchedProducts = async (type,query) => {
-    const response = await axios.get(`/productos/buscar/${type}/${encodeURIComponent(query)}`);
+    const response = await loaderAxios.get(`/productos/buscar/${type}/${encodeURIComponent(query)}`);
     return response.data;
 }
 
