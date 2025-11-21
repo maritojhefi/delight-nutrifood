@@ -11,9 +11,9 @@
     @endif
     <title>{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}</title>
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('styles/bootstrap.css') }}?v=1.0.0">
-    <link rel="stylesheet" type="text/css" href="{{ asset('styles/custom.css') }}?v=1.0.0">
-    <link rel="stylesheet" href="{{ asset('styles/loader/loader.css') }}?v=1.0.0">
+    <link rel="stylesheet" type="text/css" href="{{ asset('styles/bootstrap.css') }}?v=1.0.1">
+    <link rel="stylesheet" type="text/css" href="{{ asset('styles/custom.css') }}?v=1.0.1">
+    <link rel="stylesheet" href="{{ asset('styles/loader/loader.css') }}?v=1.0.1">
     <link
         href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900|Roboto:300,300i,400,400i,500,500i,700,700i,900,900i&amp;display=swap"
         rel="stylesheet">
@@ -51,7 +51,7 @@
             }
         }
     </style>
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/app.js') }}?v=1.0.1" defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
         $(document).ready(function() {

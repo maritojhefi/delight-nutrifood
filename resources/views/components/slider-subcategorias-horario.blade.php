@@ -284,18 +284,32 @@
         }
     });
 
+    //  Flag solicitud productos subcategoria
+    let isLoadingSubcategoria = false;
+
     // Click en subcategorías (usando jQuery para ProductoService)
     $(document).on('click', '.productos-subcategoria-trigger', async function(e) {
         e.preventDefault();
         
+        // Prevent duplicate requests
+        if (isLoadingSubcategoria) {
+            return;
+        }
+    
         const subcategoriaId = $(this).data('subcategoria-id');
         const subcategoriaNombre = $(this).data('subcategoria-nombre');
-        
+    
         try {
+            isLoadingSubcategoria = true;
             const productosSubcategoria = await ProductoService.getProductosCategoria(subcategoriaId);
             abrirDialogListado(productosSubcategoria.data, subcategoriaNombre);
         } catch (error) {
             console.error('Error cargando los productos de la subcategoria:', error);
+        } finally {
+            // Liberar tras 1 segundo
+            setTimeout(() => {
+                isLoadingSubcategoria = false;
+            }, 1000);
         }
     });
 
