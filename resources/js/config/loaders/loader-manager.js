@@ -9,13 +9,13 @@ class LoaderManager {
     setIsLoading(loading) {
         console.log("LoaderManager was set as loading with", loading);
         this.isLoading = loading;
-        // Notify all listeners
+        // Notificar a los listeners
         this.listeners.forEach(callback => callback(this.isLoading));
     }
     
     subscribe(callback) {
         this.listeners.push(callback);
-        // Return unsubscribe function
+        // Retornar
         return () => {
             this.listeners = this.listeners.filter(cb => cb !== callback);
         };
@@ -26,10 +26,8 @@ class LoaderManager {
     }
 }
 
-// Create singleton instance
 const loaderManager = new LoaderManager();
 
-// Also attach to window for global access (useful for debugging)
 window.LoaderManager = loaderManager;
 
 export default loaderManager;

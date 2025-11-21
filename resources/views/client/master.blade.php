@@ -88,36 +88,21 @@
     <script>
         $(document).ready(function() {
             $(document).ajaxStart(function() { 
-                console.log("AJAX Start detectado - mostrando loader.");
+                // // console.log("AJAX Start detectado - mostrando loader.");
                 LoaderManager.setIsLoading(true);
             });
             
             $(document).ajaxStop(function() { 
-                console.log("AJAX Stop detectado - ocultando loader.");
+                // // console.log("AJAX Stop detectado - ocultando loader.");
                 LoaderManager.setIsLoading(false);
             });
 
             $(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
-                console.log("AJAX Error detectado - ocultando loader.");
+                // // console.log("AJAX Error detectado - ocultando loader.");
                 LoaderManager.setIsLoading(false);
             });
         });
     </script>
-    <!-- <script>
-        $(document).ready(function() {
-            console.log("Attaching AJAX handlers...");
-            
-            $(document).ajaxStart(function() { 
-                console.log("✓ AJAX Start triggered");
-            });
-            
-            $(document).ajaxStop(function() { 
-                console.log("✓ AJAX Stop triggered");
-            });
-            
-            console.log("AJAX handlers attached!");
-        });
-    </script> -->
     <style>
         /* Extra small devices (phones, 600px and down) */
         @media only screen and (max-width: 600px) {}
@@ -289,6 +274,7 @@
         };
     </script>
     <script>
+        // CONTROL PRELOADER EN REDIRECCIONES
         $(document).ready(function() {
             let splideInstances = [];
 
@@ -313,12 +299,10 @@
 
                 await Promise.all(imagePromises);
 
-                console.log("Type of Splide:", typeof Splide);
                 if (typeof Splide !== 'undefined') {
                     await new Promise(resolve => setTimeout(resolve, 150));
                     
                     const splideElements = document.querySelectorAll('.splide');
-                    console.log("splideElements found:", splideElements.length);
                     if (splideElements.length > 0) {
                         await new Promise(resolve => setTimeout(resolve, 100));
                     }
@@ -361,7 +345,6 @@
                     // API Moderna de portapapeles
                     await navigator.clipboard.writeText(rutaValue);
 
-                    console.log("Copiado exitoso:", rutaValue);
 
                     // Revelar toast de existir
                     const toastEl = document.getElementById('shared');
@@ -380,7 +363,6 @@
                     try {
                         const successful = document.execCommand('copy');
                         if (!successful) throw new Error('Copy failed');
-                        console.log("Copia mediante fallback exitosa");
                     } finally {
                         document.body.removeChild(tempInput);
                     }

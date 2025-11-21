@@ -56,17 +56,17 @@
     <script>
         $(document).ready(function() {
             $(document).ajaxStart(function() { 
-                console.log("AJAX Start detectado - mostrando loader.");
+                // // console.log("AJAX Start detectado - mostrando loader.");
                 LoaderManager.setIsLoading(true);
             });
             
             $(document).ajaxStop(function() { 
-                console.log("AJAX Stop detectado - ocultando loader.");
+                // // console.log("AJAX Stop detectado - ocultando loader.");
                 LoaderManager.setIsLoading(false);
             });
 
             $(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
-                console.log("AJAX Error detectado - ocultando loader.");
+                // // console.log("AJAX Error detectado - ocultando loader.");
                 LoaderManager.setIsLoading(false);
             });
         });
@@ -167,6 +167,7 @@
         };
     </script>
     <script>
+        // CONTROL PRELOADER EN REDIRECCIONES
         $(document).ready(function() {
             let splideInstances = [];
 
@@ -191,12 +192,10 @@
 
                 await Promise.all(imagePromises);
 
-                console.log("Type of Splide:", typeof Splide);
                 if (typeof Splide !== 'undefined') {
                     await new Promise(resolve => setTimeout(resolve, 150));
                     
                     const splideElements = document.querySelectorAll('.splide');
-                    console.log("splideElements found:", splideElements.length);
                     if (splideElements.length > 0) {
                         await new Promise(resolve => setTimeout(resolve, 100));
                     }
@@ -243,12 +242,10 @@
     <script>
         const hacerMenuHiderIntocable = () => {
             $('.menu-hider').css('pointer-events', 'none');
-            // console.log("TRIGGERED: Menu hider is now untocable.");
         };
 
         const hacerMenuHiderTocable = () => {
             $('.menu-hider').css('pointer-events', '');
-            // console.log("TRIGGERED: Menu hider is now tocable.");
         };
 
         const observarCambiosMenuActive = (elemento) => {
@@ -281,7 +278,6 @@
 
             // 4. Start observing
             observer.observe(elementoObjetivo, config);
-            console.log(`Watching element: ${elementoObjetivo.tagName}.${elemento.attr('class')}`);
         };
 
 

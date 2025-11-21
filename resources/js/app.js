@@ -7,12 +7,10 @@ import './ventas/venta-service'
 import './saldo/saldo-service'
 import './planes/planes-service'
 import './carrito/carrito-service'
-
-// Import and initialize the loader system
 import loaderManager from './config/loaders/loader-manager.js';
 import fullPageLoader from './config/loaders/full-page-loader.js';
 
-// Initialize the loader when DOM is ready
+// Inicializar el Full Page Loader cuando el DOM esté listo
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         fullPageLoader.init();

@@ -70,7 +70,7 @@ class FullPageLoader {
     init() {
         if (this.initialized) return;
 
-        // Subscribe to loader state changes
+        // Suscribir a cambios de estado del loader
         loaderManager.subscribe((isLoading) => {
             if (isLoading) {
                 this.show();
@@ -83,7 +83,7 @@ class FullPageLoader {
     }
 
     show() {
-        // Remove existing loader if any
+        // Retirar loader existente de estar presente
         if (this.loaderElement) {
             this.loaderElement.remove();
         }
@@ -91,7 +91,7 @@ class FullPageLoader {
         clearTimeout(this.fadeOutTimer);
         this.isVisible = true;
 
-        // Create fresh loader element
+        // Crear un elemento loader nuevo
         const container = document.createElement("div");
         container.id = "full-page-loader";
         container.style.cssText = `
@@ -105,17 +105,17 @@ class FullPageLoader {
         `;
         container.innerHTML = this.createLoaderHTML();
 
-        // Append to body
+        // Incrustar al final del body
         document.body.appendChild(container);
         this.loaderElement = container;
 
         const backdrop = container.querySelector("#loader-backdrop");
         const loaderContainer = container.querySelector("#loader-container");
 
-        // Force reflow
+        // Forzar reflow para reiniciar animaciones
         container.offsetHeight;
 
-        // Animate in with requestAnimationFrame
+        // Animar entrada con doble requestAnimationFrame
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 if (backdrop) backdrop.style.opacity = "1";
@@ -133,14 +133,14 @@ class FullPageLoader {
         const backdrop = this.loaderElement.querySelector("#loader-backdrop");
         const container = this.loaderElement.querySelector("#loader-container");
 
-        // Fade out
+        // Desvanecer el loader
         if (backdrop) backdrop.style.opacity = "0";
         if (container) {
             container.style.opacity = "0";
             container.style.transform = "scale(0.95)";
         }
 
-        // Remove from DOM after animation
+        // Retirar del DOM al finalizar la animación
         this.fadeOutTimer = setTimeout(() => {
             if (this.loaderElement) {
                 this.loaderElement.remove();
@@ -151,7 +151,6 @@ class FullPageLoader {
     }
 }
 
-// Create singleton instance
 const fullPageLoader = new FullPageLoader();
 
 export default fullPageLoader;
