@@ -1,11 +1,17 @@
 <div class="modal fade" id="listadoProductosModal" tabindex="-1" aria-labelledby="listadoProductosModalLabel" style="z-index: 1051">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
         <div class="modal-content">
-            <div class="modal-header mt-2 border-0 gap-4 d-flex align-items-center">
-                <h4 id="titulo-listado-productos" class="mb-0 align-self-center text-uppercase">Todos los productos de esta categoria!</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header mt-2 border-0 gap-4 d-flex justify-content-between align-items-center">
+                <div></div>
+                <h4 id="titulo-listado-productos" class="mb-0 align-self-center font-900 text-uppercase">Todos los productos de esta categoria!</h4>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div id="contenedor-listado-productos">
+            <div class="d-flex flex-row align-content-center justify-content-center">
+                <p class="badge badge-lg font-14 bg-highlight mb-0 d-inline-block">
+                    <span id="cantidad-disponibles-listado">N</span> Productos disponibles
+                </p>
+            </div>
+            <div id="contenedor-listado-productos"> 
                 <ul id="listado-productos" class="px-3 pt-3">
                 </ul>
             </div>
@@ -38,8 +44,10 @@
             console.log("Titulo a usarse: ", titulo);
             const elementoTitulo = document.getElementById('titulo-listado-productos');
             const listaPrincipal = document.getElementById(`listado-productos`);
+            const cantidadElementos = document.getElementById('cantidad-disponibles-listado');
             console.log("Elm titulo: ", elementoTitulo);
             elementoTitulo.textContent = titulo;
+            cantidadElementos.textContent = listado.length;
             console.log("El titulo deberia haber cambiado");
             listaPrincipal.innerHTML = renderizarListadoProductos(listado);
             reinitializeLucideIcons();
@@ -55,8 +63,8 @@
                                     <img src="${producto.imagen}"
                                     style="background-color: white;min-width: 130px">
                                 </a>
-                                <div class="d-flex flex-column w-100 flex-grow-1 justify-content-between py-3 me-2">
-                                    <h4 class="me-1 font-18" style="max-height: 3rem;overflow: hidden">${producto.nombre}</h4>
+                                <div class="d-flex flex-column w-100 justify-content-center flex-grow-1 me-2">
+                                    <h4 class="me-1 font-20" style="overflow: hidden">${producto.nombre}</h4>
                                     ${renderizarFilaTags(producto)}
                                     <div class="d-flex flex-row align-items-center justify-content-between">
                                         ${renderizarPrecio(producto)}
@@ -78,10 +86,10 @@
         const renderizarFilaTags = (productoTag) => {
             if (productoTag.tags && productoTag.tags.length > 0) {
                 return `
-                    <div class="tags-container d-flex flex-row align-items-center justify-content-start gap-2">
+                    <div class="tags-container d-flex flex-row align-items-center justify-content-start gap-1 my-2">
                     ${productoTag.tags.map(tag => `
                         <button popovertarget="poppytag-${productoTag.id}-${tag.id}" popoveraction="toggle" style="anchor-name: --tag-btn-${productoTag.id}-${tag.id};">
-                            <i data-lucide="${tag.icono}" class="lucide-icon" style="width:1.5rem;height:1.5rem;"></i>
+                            <span class="badge badge-xs bg-highlight color-white">${tag.nombre}</span>
                         </button>
                         <div popover
                             id="poppytag-${productoTag.id}-${tag.id}"
@@ -140,13 +148,13 @@
             if (tieneDescuento) {
                 return `
                     <div class="d-flex flex-column m-0 justify-content-center w-100">
-                        <p class="font-10 m-0"><del>Bs. ${productoPrecio.precio_original}</del></p>
-                        <p class="font-17 font-weight-bolder color-highlight mb-0">Bs. ${productoPrecio.precio}</p>
+                        <p class="font-13 m-0"><del>Bs. ${productoPrecio.precio_original}</del></p>
+                        <p class="font-23 font-700 color-theme mb-0">Bs. ${productoPrecio.precio}</p>
                     </div>
                 `;
             }
             
-            return `<p class="font-17 font-weight-bolder color-highlight mb-0">Bs. ${productoPrecio.precio}</p>`;
+            return `<p class="font-23 font-700 color-theme mb-0">Bs. ${productoPrecio.precio}</p>`;
         }
     });
 </script>
