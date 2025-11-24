@@ -7,8 +7,8 @@
         @if (session('actualizado'))
             <div class="alert me-3 ms-3 rounded-s bg-green-dark " role="alert">
                 <span class="alert-icon"><i class="fa fa-check font-18"></i></span>
-                <h4 class="text-uppercase color-white">Hecho!</h4>
-                <strong class="alert-icon-text">Se actualizo correctamente su foto de perfil.</strong>
+                <h4 class="text-uppercase color-white mb-1">¡Hecho!</h4>
+                <strong class="alert-icon-text">Se actualizo correctamente tu foto de perfil.</strong>
 
                 <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert"
                     aria-label="Close">×</button>
@@ -17,12 +17,12 @@
 
         <div class="card card-style">
             <div class="content">
-                <div class="d-flex flex-row align-items-center gap-3 justify-content-evenly">
+                <div class="d-flex flex-row align-items-center gap-3 justify-content-evenly mb-3">
                     <div>
                         @if ($usuario->foto)
-                            <img src="{{ $usuario->pathFoto }}" width="55" class="bg-highlight rounded-xl">
+                            <img src="{{ $usuario->pathFoto }}" width="55" height="55" class="bg-highlight rounded-xl">
                         @else
-                            <img src="{{ asset('user.png') }}" width="55" class="bg-highlight rounded-xl">
+                            <img src="{{ asset('user.png') }}" width="55" height="55" class="bg-highlight rounded-xl">
                         @endif
                     </div>
                     <div>
@@ -31,7 +31,7 @@
                 </div>
                 <p class="color-highlight font-11 mt-n1 mb-0">Información cifrada, no revelaremos esto con nadie</p>
                 <p>
-                    Completa tu perfil, asi estaras listo para todas las funciones que se vienen pronto!
+                    Completa tu perfil, ¡Así estaras listo para todas las funciones que se vienen pronto!
                 </p>
             </div>
         </div>
@@ -260,16 +260,6 @@
                                 {{ $message }}
                             </p>
                         @enderror
-                        {{-- <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
-                            <input type="number" class="form-control" placeholder="" name="telf"
-                                value="{{ old('telf', $usuario->telf) }}">
-                            <label for="" class="color-highlight font-400 font-13">Telefono</label>
-
-                            @error('telf')
-                                <i class="fa fa-times  invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
-                        </div> --}}
                         <div class="d-flex flex-row align-items-center mb-4">
                             <i data-lucide="users" class="lucide-icon ms-2" style="width: 1.2rem; height: 1.2rem;"></i>
                             <label for="hijos" class="mx-2 color-highlight font-400 font-13">
@@ -321,28 +311,46 @@
                 <div id="map" style="width:100%;height:600px;"></div>
             </div> --}}
             <div class="card card-style">
-                <div class="content mb-0">
+                <div class="content">
                     <h4>Foto de perfil</h4>
-                    <p>
-                        Personaliza tu perfil, nos ayudará a conocerte mejor!
+                    <p class="mb-0 line-height-s">
+                        @if ($usuario->foto)
+                            {{ 'Puedes actualizar tu foto si así lo deseas.' }}
+                        @else
+                            {{ 'Subir una foto tuya nos ayudará a conocerte mejor.' }}
+                        @endif
                     </p>
-                    <form action="{{ route('subirfoto.perfil') }}" method="POST" enctype="multipart/form-data">
+                    <!-- FORMULARIO INTEGRADO CON CONTROL DE FOTO -->
+                    <form action="{{ route('subirfoto.perfil') }}" method="POST" enctype="multipart/form-data" id="photoUploadForm">
                         @csrf
-                        <div class="file-data pb-5">
-                            <input type="file" id="file-upload" class="upload-file bg-highlight shadow-s rounded-s "
-                                accept="image/*" name="foto">
-                            <p class="upload-file-text color-white">Subir Foto</p>
+                        
+                        <div class="custom-major-file-container d-flex flex-row justify-content-center mt-3" id="major-file-container">
+                            <div class="custom-file-upload-container">
+                                <div class="file-upload-area" id="uploadArea">
+                                    <div class="upload-text">
+                                        <strong>Subir Foto</strong><br>
+                                        <small>JPEG, PNG, HEIC</small>
+                                    </div>
+                                    <img class="preview-image" id="previewImage" style="display: none;">
+                                    <div class="converting-overlay" id="convertingOverlay">
+                                        Convirtiendo...
+                                    </div>
+                                </div>
+                                <input type="file" id="fileInput" class="hidden-input" accept="image/*" name="foto">
+                                <div class="error-message" id="errorMessage"></div>
+                            </div>
+                            <button class="remove-button" id="removeButton" type="button" style="display: none;">×</button>
                         </div>
+
                         @error('foto')
-                            <p class="text-danger">{{ $message }}</p>
+                            <p class="text-danger text-center mt-2">{{ $message }}</p>
                         @enderror
-                        <div class="list-group list-custom-large upload-file-data disabled">
-                            <img id="image-data" src="images/empty.png" class="img-fluid"
-                                style="width:100%; display:block; height:300px">
 
-                            <button type="submit"
-                                class="btn btn-3d btn-m btn-full mb-3 mt-3 rounded-xl text-uppercase font-900 shadow-s  border-blue-dark bg-blue-light">Guardar</button>
-
+                        <!-- Botón de confirmación que aparece cuando hay imagen -->
+                        <div class="text-center mt-3" id="submitButtonContainer" style="display: none;">
+                            <button type="submit" class="btn btn-m w-100 bg-highlight rounded-sm shadow-xl text-uppercase font-900">
+                                Guardar Foto
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -863,6 +871,142 @@
 
                     reinitializeLucideIcons();
                 });
+            });
+        </script>
+        <!-- CONTROL ACTUALIZACIÓN DE FOTO -->
+        <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+        <!-- SCRIPT DE CONTROL -->
+        <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/heic'];
+
+                const form = document.getElementById('photoUploadForm');
+                const majorContainer = document.getElementById('major-file-container');
+                const uploadArea = document.getElementById('uploadArea');
+                const fileInput = document.getElementById('fileInput');
+                const previewImage = document.getElementById('previewImage');
+                const removeButton = document.getElementById('removeButton');
+                const errorMessage = document.getElementById('errorMessage');
+                const convertingOverlay = document.getElementById('convertingOverlay');
+                const uploadText = uploadArea.querySelector('.upload-text');
+                const submitButtonContainer = document.getElementById('submitButtonContainer');
+
+                // Click en el área de upload
+                uploadArea.addEventListener('click', function(e) {
+                    // Prevenir click si ya hay imagen
+                    if (!uploadArea.classList.contains('has-image')) {
+                        fileInput.click();
+                    }
+                });
+
+                // Manejo de selección del archivo
+                fileInput.addEventListener('change', async function(event) {
+                    const file = event.target.files[0];
+
+                    if (!file) {
+                        resetUpload();
+                        return;
+                    }
+
+                    // Limpiar mensajes de error previos
+                    errorMessage.textContent = '';
+
+                    // Validar tipo de archivo
+                    if (!allowedTypes.includes(file.type) && !file.name.toLowerCase().endsWith('.heic')) {
+                        showError('Debe subir una imagen en formato válido (JPEG, PNG, o HEIC)');
+                        resetUpload();
+                        return;
+                    }
+
+                    try {
+                        let processedFile = file;
+
+                        // Convertir HEIC de ser necesario
+                        if (file.type === 'image/heic' || file.name.toLowerCase().endsWith('.heic')) {
+                            convertingOverlay.classList.add('show');
+
+                            const convertedBlob = await heic2any({
+                                blob: file,
+                                toType: "image/jpeg",
+                                quality: 0.8
+                            });
+
+                            processedFile = new File(
+                                [convertedBlob],
+                                file.name.replace(/\.heic$/i, '.jpg'),
+                                { type: 'image/jpeg' }
+                            );
+
+                            // Actualizar el input con el archivo convertido
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(processedFile);
+                            fileInput.files = dataTransfer.files;
+
+                            convertingOverlay.classList.remove('show');
+                        }
+
+                        // Mostrar preview
+                        showPreview(processedFile);
+
+                    } catch (error) {
+                        console.error('Error processing image:', error);
+                        showError('Error al procesar la imagen. Por favor, intenta nuevamente.');
+                        resetUpload();
+                        convertingOverlay.classList.remove('show');
+                    }
+                });
+
+                // Botón de remover
+                removeButton.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    resetUpload();
+                });
+
+                // Validación antes de enviar el formulario
+                form.addEventListener('submit', function(e) {
+                    if (!fileInput.files || fileInput.files.length === 0) {
+                        e.preventDefault();
+                        showError('Por favor, selecciona una imagen antes de guardar');
+                        return false;
+                    }
+                });
+
+                function showPreview(file) {
+                    const previewUrl = URL.createObjectURL(file);
+                    previewImage.src = previewUrl;
+                    previewImage.style.display = 'block';
+                    uploadText.style.display = 'none';
+                    uploadArea.classList.add('has-image');
+                    majorContainer.classList.add('has-image');
+                    
+                    // Mostrar botón de remover y botón de guardar
+                    removeButton.style.display = 'block';
+                    submitButtonContainer.style.display = 'block';
+
+                    previewImage.onload = function() {
+                        URL.revokeObjectURL(previewUrl);
+                    };
+                }
+
+                function resetUpload() {
+                    fileInput.value = '';
+                    previewImage.style.display = 'none';
+                    previewImage.src = '';
+                    uploadText.style.display = 'block';
+                    uploadArea.classList.remove('has-image');
+                    majorContainer.classList.remove('has-image');
+                    errorMessage.textContent = '';
+                    convertingOverlay.classList.remove('show');
+                    
+                    // Ocultar botón de remover y botón de guardar
+                    removeButton.style.display = 'none';
+                    submitButtonContainer.style.display = 'none';
+                }
+
+                function showError(message) {
+                    errorMessage.textContent = message;
+                }
             });
         </script>
         <!-- <script>
