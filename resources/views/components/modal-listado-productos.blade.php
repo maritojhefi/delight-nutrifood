@@ -63,9 +63,11 @@
                                     <img src="${producto.imagen}"
                                     style="background-color: white;min-width: 130px">
                                 </a>
-                                <div class="d-flex flex-column w-100 justify-content-center flex-grow-1 me-2">
-                                    <h4 class="me-1 font-20" style="overflow: hidden">${producto.nombre}</h4>
-                                    ${renderizarFilaTags(producto)}
+                                <div class="d-flex flex-column w-100 justify-content-evenly flex-grow-1 me-2" style="min-width: 0;">
+                                    <h4 class="me-1 font-20 mb-0" style="overflow: hidden">${producto.nombre}</h4>
+                                    <div class="tags-container d-flex flex-row align-items-center justify-content-start gap-1 my-n2" style="flex-wrap: wrap;">
+                                        ${renderizarFilaTags(producto)}
+                                    </div>
                                     <div class="d-flex flex-row align-items-center justify-content-between">
                                         ${renderizarPrecio(producto)}
                                         <div class="d-flex flex-row gap-1">
@@ -83,23 +85,47 @@
             `
         }
 
+        // // VERSION APPKIT RENDERIZADO DE LISTADOS MINI
+        // const renderizarListadoProductos = (listado) => {
+        //     return `
+        //         ${listado.map(producto => `
+        //             <li style="list-style-type: none">
+        //                 <div class="d-flex flex-row align-items-center justify-content-between gap-2 mb-4">
+        //                     <div class="">
+        //                         <img src="${producto.imagen}" class="rounded-m" style="width: 5rem;height:5rem;object-fit:cover;">
+        //                     </div>
+        //                     <div class="d-flex flex-column align-self-stretch justify-content-evenly" style="min-width: 0; flex: 1;">
+        //                         <h2 class="font-15 line-height-s">${producto.nombre}</h2>
+        //                         <div class="tags-container d-flex flex-row align-items-center justify-content-start gap-1" style="flex-wrap: wrap;">
+        //                             ${renderizarFilaTagsMini(producto)}
+        //                         </div>
+        //                     </div>
+        //                     <div class="d-flex flex-column gap-2 text-center text-nowrap w-100" style="max-width: 3.6rem;">
+        //                         <h2 class="font-18 mb-0 line-height-xs">Bs. ${producto.precio}</h2>
+        //                         ${renderizarAccionesMini(producto)}
+        //                     </div>
+        //                 </div>
+        //             </li>
+        //         `).join('')}
+        //     `
+        // }
+
+        // 57.45
+
         const renderizarFilaTags = (productoTag) => {
             if (productoTag.tags && productoTag.tags.length > 0) {
-                return `
-                    <div class="tags-container d-flex flex-row align-items-center justify-content-start gap-1 my-2">
-                    ${productoTag.tags.map(tag => `
-                        <button popovertarget="poppytag-${productoTag.id}-${tag.id}" popoveraction="toggle" style="anchor-name: --tag-btn-${productoTag.id}-${tag.id};">
-                            <span class="badge badge-xs bg-highlight color-white">${tag.nombre}</span>
-                        </button>
-                        <div popover
-                            id="poppytag-${productoTag.id}-${tag.id}"
-                            class="tag-info-popover bg-white bg-dtheme-blue p-2 rounded-2 shadow-lg border"
-                            style="position-anchor: --tag-btn-${productoTag.id}-${tag.id}; max-width:250px;">
-                            <p class="color-theme">${tag.nombre}</p>
-                        </div>
-                    `).join('')}
-                    </div>
-                `;
+                return productoTag.tags.map(tag => `
+                    <span class="badge badge-xs gradient-blue color-white">${tag.nombre}</span>
+                `).join('');
+            }
+            return '';
+        }
+
+        const renderizarFilaTagsMini = (productoTag) => {
+            if (productoTag.tags && productoTag.tags.length > 0) {
+                return productoTag.tags.map(tag => `
+                    <span class="badge badge-xs gradient-blue color-white">${tag.nombre}</span>
+                `).join('');
             }
             return '';
         }
@@ -129,6 +155,30 @@
                     </div>
                 </button>
             `;
+        }
+
+        const renderizarAccionesMini = (producto) => {
+            if (!producto.tiene_stock) {
+                return `
+                    <button class="w-100 rounded-s shadow-l bg-gray-dark font-10" disabled>
+                        <i class="fa fa-ban line-height-xs"></i>
+                    </button>
+                `; 
+            }
+            return `
+                <button
+                    class="${ producto.tiene_adicionales ? "menu-adicionales-btn":"agregar-unidad"} add-disabler w-100 rounded-s shadow-l bg-highlight font-10"
+                    data-producto-id="${producto.id}"
+                    data-producto-nombre="${producto.nombre}"
+                >
+                    <i class="fa fa-shopping-cart line-height-xs"></i>
+                </button>
+            `;
+
+            // // Botón copiar link mini
+            // <button class="w-100 rounded-s shadow-l bg-delight-red font-10 copiarLink">
+            //     <i class="fa fa-link line-height-xs"></i>
+            // </button>
         }
 
         const renderizarBotonAgotado = () => {
