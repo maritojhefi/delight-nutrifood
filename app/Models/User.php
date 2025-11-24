@@ -80,7 +80,7 @@ class User extends Authenticatable
     public function getPathFotoAttribute()
     {
         if (empty($this->foto)) {
-            return null;
+            return asset('user.png');
         }
 
         // Usar el disco configurado para generar la URL correcta
@@ -204,7 +204,9 @@ class User extends Authenticatable
     }
     public function perfilesPuntos()
     {
-        return $this->belongsToMany(PerfilPunto::class, 'perfiles_puntos_users', 'user_id', 'perfil_punto_id')->withTimestamps();
+        return $this->belongsToMany(PerfilPunto::class, 'perfiles_puntos_users', 'user_id', 'perfil_punto_id')
+            ->withPivot('codigo')
+            ->withTimestamps();
     }
     public function ventaActiva()
     {

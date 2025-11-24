@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use App\Models\User;
-use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Auth\RegistersUsers;
 
 class RegisterController extends Controller
 {
@@ -81,21 +82,20 @@ class RegisterController extends Controller
         $usuarioReferido = null;
         $parametros = null;
         $parametroReferido = null;
-
         if (request()->query()) {
             // Tiene parámetros
             $parametros = request()->query(); // array con todos los parámetros
             $ref = $parametros['ref'] ?? null;
-
-            if ($ref) {
-                // Extraer el número después de los ceros
-                $parametroReferido = $this->extraerNumeroReferencia($ref);
+            $dbRegistro = DB::table('perfiles_puntos_users')->where('codigo', $ref)->first();
+            if ($dbRegistro) {
+                $usuarioReferido = User::find($dbRegistro->user_id);
+                return view('auth.register', compact('usuarioReferido'));
+            } else {
+                return view('auth.register');
             }
+        } else {
+            return view('auth.register');
         }
-
-        $usuarioReferido = User::find($parametroReferido);
-
-        return view('auth.register', compact('usuarioReferido')); // tu blade personalizado
     }
 
     /**
