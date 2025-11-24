@@ -179,7 +179,6 @@
 
 @endsection
 @push('scripts')
-<script src="{{ asset('js/carrito-service/carrito-service.js') }}"></script>
 <!-- REVELAR LISTADO DE ADICIONALES-PRODUCTOS -->
 <!-- CARRITO -->
 <script>

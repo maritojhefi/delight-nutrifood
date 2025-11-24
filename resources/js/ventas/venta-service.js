@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { loaderAxios } from '../config/axios/axios-instance.js';
 
 export const generarVentaQR = async () => {
     try {
@@ -12,7 +13,7 @@ export const generarVentaQR = async () => {
 
 export const generarProductosVenta_Carrito = async (carrito) => {
     try {
-        const response = await axios.post('/ventas/sincronizar', {
+        const response = await loaderAxios.post('/ventas/sincronizar', {
             carrito: carrito,
         });
         return response.data;
@@ -24,7 +25,7 @@ export const generarProductosVenta_Carrito = async (carrito) => {
 
 export const agregarProductoVenta = async (productoID, cantidad, IDsAdicionales = []) => {
     try {
-        const response = await axios.post('/ventas/producto', {
+        const response = await loaderAxios.post('/ventas/producto', {
             producto_id: productoID,
             adicionales_ids: IDsAdicionales,
             cantidad: cantidad
@@ -38,24 +39,24 @@ export const agregarProductoVenta = async (productoID, cantidad, IDsAdicionales 
 
 
 export const disminuirProductoVenta = async(producto_venta_ID) => {
-    const response = await axios.patch(`/ventas/producto/disminuir-orden`, {
+    const response = await loaderAxios.patch(`/ventas/producto/disminuir-orden`, {
         producto_venta_id: producto_venta_ID,
     });
     return response.data;
 }
 
 export const productosVenta = async() => {
-    const response = await axios.get('/ventas/productos');
+    const response = await loaderAxios.get('/ventas/productos');
     return response.data;
 }
 
 export const productoVenta = async(producto_venta_ID) => {
-    const response = await axios.get(`/ventas/productos/${producto_venta_ID}`);
+    const response = await loaderAxios.get(`/ventas/productos/${producto_venta_ID}`);
     return response.data;
 }
 
 export const actualizarObservacionPorID = async (pivotID,texto) => {
-    const response = await axios.post(`/ventas/producto/observacion`, {
+    const response = await loaderAxios.post(`/ventas/producto/observacion`, {
         texto: texto,
         pivot_id: pivotID,
     })
@@ -63,7 +64,7 @@ export const actualizarObservacionPorID = async (pivotID,texto) => {
 }
 
 export const eliminarOrdenIndex = async (pivotID, index) => {
-    const response = await axios.patch(`/ventas/producto/eliminar-orden`, {
+    const response = await loaderAxios.patch(`/ventas/producto/eliminar-orden`, {
         // data: {
         pivot_id: pivotID,
         target_index: index
@@ -78,7 +79,7 @@ export const ordenVentaIndex = async(producto_venta_id, indice) => {
 }
 
 export const actualizarOrdenVentaIndex = async(producto_id, indice, adicionalesIds, sucursale_id) => {
-    const response = await axios.patch(`/ventas/productos/actualizar-orden`, {
+    const response = await loaderAxios.patch(`/ventas/productos/actualizar-orden`, {
         producto_id: producto_id,
         // producto_venta_id: productoVentaId,
         indice: indice,
@@ -89,7 +90,7 @@ export const actualizarOrdenVentaIndex = async(producto_id, indice, adicionalesI
 }
 
 export const eliminarPedidoCompleto = async (pivotID) => {
-    const response = await axios.delete(`/ventas/producto/${pivotID}`);
+    const response = await loaderAxios.delete(`/ventas/producto/${pivotID}`);
     return response;
 }
 

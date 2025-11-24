@@ -1215,14 +1215,17 @@
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
+                    beforeSend: function() {
+                        console.log("Before send - verificar-numero");
+                    },
                     success: function(response) {
 
                         if (response.status === 'success') {
                             // Teléfono válido - mostrar botón de verificar
-                            document.getElementById('verificar-numero').classList.remove('d-none');
+                            $('#verificar-numero').removeClass('d-none');   
                         } else {
                             // Teléfono inválido - ocultar botón y mostrar error
-                            document.getElementById('verificar-numero').classList.add('d-none');
+                            $('#verificar-numero').addClass('d-none');
 
                             // Mostrar mensaje de error específico
                             var errorMessage = 'Error en el teléfono';
@@ -1257,6 +1260,9 @@
                         setTimeout(() => {
                             $('#snackbar-error').removeClass('show').addClass('hide');
                         }, 3000);
+                    },
+                    complete: function() {
+                        console.log("Complete fired - verificar-numero");
                     }
                 });
             }
