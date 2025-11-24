@@ -47,6 +47,9 @@
                 @method('PUT')
                 
                 <div class="card-body">
+                    @if (!$usuario->verificado)
+                        <p class="mx-1 mt-n3 mb-3 line-height-s">Tu WhatsApp no ha sido verificado, hazlo a continuación:</p>
+                    @endif
                     <div class="d-flex flex-row gap-2 justify-content-evenly align-items-center">
                         <!-- Selector de Código de País -->
                         <div class="d-flex flex-column position-relative" style="min-width: 35%;">
@@ -105,6 +108,21 @@
             </form>
         </card>
 
+        <!-- @if (true)
+            <div class="card card-style bg-light-warning m-0 shadow-xs">
+                <p class="mb-0">Para completar tu perfil, debes completar los siguientes campos:</p>
+                <ul class="mb-0">
+                    @foreach ([1,2,3] as $dato)
+                        <li>Campos: {{ $dato }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @else
+            <p class="mb-0">
+                Por favor llena con el máximo detalle los siguientes campos.
+            </p>
+        @endif -->
+
         <div id="todoBien">
 
             <div class="card card-style">
@@ -155,7 +173,7 @@
                                 <input type="number" class="text-center form-control"
                                     placeholder="Día" name="dia_nacimiento" required
                                     min="1" max="31"
-                                    value="{{ old('dia_nacimiento', explode('-', $usuario->nacimiento)[2]) }}"
+                                    value="{{ old('dia_nacimiento', $usuario->nacimiento ? explode('-', $usuario->nacimiento)[2] : '') }}"
                                     oninput="if(this.value > 31) this.value = 31; if(this.value < 1) this.value = 1;"
                                 >
 
@@ -163,7 +181,7 @@
                                 <select class="text-center form-control" name="mes_nacimiento" required>
                                     <option value="" disabled selected>Mes</option>
                                     @php
-                                        $selectedMonth = explode('-', $usuario->nacimiento)[1];
+                                        $selectedMonth = $usuario->nacimiento ? explode('-', $usuario->nacimiento)[1] : 1;
                                     @endphp
                                     <option value="1" @if(old('mes_nacimiento', $selectedMonth) == '01' || old('mes_nacimiento', $selectedMonth) == '1') selected @endif>Enero</option>
                                     <option value="2" @if(old('mes_nacimiento', $selectedMonth) == '02' || old('mes_nacimiento', $selectedMonth) == '2') selected @endif>Febrero</option>
@@ -187,7 +205,7 @@
                                 <input type="number" class="text-center form-control" placeholder="Año"
                                     name="ano_nacimiento" required
                                     max="{{ $maxYear }}"
-                                    value="{{ old('ano_nacimiento', explode('-', $usuario->nacimiento)[0]) }}"
+                                    value="{{ old('ano_nacimiento', $usuario->nacimiento ? explode('-', $usuario->nacimiento)[0] : '') }}"
                                     oninput="const maxYear = {{ $maxYear }}; if(this.value > maxYear) this.value = maxYear; if(this.value.length > 4) this.value = this.value.slice(0, 4);"
                                 >
                             </div>
@@ -484,6 +502,9 @@
                 inicializarSelectorPais();
                 configurarEventos();
                 detectarDigitosPais();
+                if ({{ !$usuario->verificado }}) {
+                    mostrarBotonGuardar();
+                }
             };
 
             // ============= INICIALIZACIÓN DE SLIMSELECT =============
