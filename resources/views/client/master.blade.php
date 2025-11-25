@@ -248,22 +248,9 @@
         style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Link copiado!</div>
     @auth
         @php
-            $perfil = auth()->user();
-            $array = [
-                'nacimiento' => isset($perfil->nacimiento) ? $perfil->nacimiento : null,
-                // 'direccion' => isset($perfil->direccion) ? $perfil->direccion : null,
-                // 'foto' => isset($perfil->foto) ? $perfil->foto : null,
-                // 'latitud' => isset($perfil->latitud) ? $perfil->latitud : null,
-            ];
-            $datos = [];
-            foreach ($array as $llave => $valor) {
-                if (!isset($valor)) {
-                    $datos[$llave] = $valor;
-                }
-            }
-
+            $estaCompleto = auth()->user()->tienePerfilCompleto();
         @endphp
-        <x-perfil-incompleto-component :datos="$datos" />
+        <x-perfil-incompleto-component :estaCompleto="$estaCompleto" />
     @endauth
     @stack('modals')
     <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}?v=1.0.0"></script>

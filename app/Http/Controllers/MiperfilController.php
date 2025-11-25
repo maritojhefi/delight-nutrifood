@@ -277,7 +277,7 @@ class MiperfilController extends Controller
             'dia_nacimiento' => 'required|numeric|between:1,31',
             'mes_nacimiento' => 'required|numeric|between:1,12',
             'ano_nacimiento' => 'required|numeric|min:1900|max:' . (date('Y') - 12),
-            'profesion' => 'required|string|max:40',
+            'profesion' => 'nullable|string|max:40',
             'direccion' => 'required|string|max:100|min:15',
             'direccion_trabajo' => 'nullable|string|max:100|min:15',
             'password' => 'nullable|string|min:4',
@@ -305,7 +305,6 @@ class MiperfilController extends Controller
             'ano_nacimiento.min' => 'Por favor, ingresa una fecha de nacimiento válida.',
             'ano_nacimiento.max' => 'Por favor, ingresa una fecha de nacimiento válida.',
 
-            'profesion.required' => 'La profesión es obligatoria.',
             'profesion.max' => 'La profesión no puede exceder los 40 caracteres.',
 
             'direccion.required' => 'La dirección es obligatoria.',
@@ -345,6 +344,8 @@ class MiperfilController extends Controller
         $usuario->fill($validatedData);
         $usuario->hijos = $request->has('hijos') ? 1 : 0;
         $usuario->save();
+
+        // return back();
 
         return back()->with('success', 'Gracias! Tu perfil ha sido actualizado correctamente.');
     }

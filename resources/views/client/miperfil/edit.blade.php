@@ -3,12 +3,21 @@
     <x-cabecera-pagina titulo="Editar Perfil" cabecera="appkit" />
 
 
-    @if (!session('success'))
         @if (session('actualizado'))
             <div class="alert me-3 ms-3 rounded-s bg-green-dark " role="alert">
                 <span class="alert-icon"><i class="fa fa-check font-18"></i></span>
                 <h4 class="text-uppercase color-white mb-1">¡Hecho!</h4>
-                <strong class="alert-icon-text">Se actualizo correctamente tu foto de perfil.</strong>
+                <strong class="alert-icon-text">Foto actualizada.</strong>
+
+                <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert"
+                    aria-label="Close">×</button>
+            </div>
+        @endif
+        @if (session('success'))
+            <div class="alert me-3 ms-3 rounded-s bg-green-dark " role="alert">
+                <span class="alert-icon"><i class="fa fa-check font-18"></i></span>
+                <h4 class="text-uppercase color-white mb-1">¡Hecho!</h4>
+                <strong class="alert-icon-text">Perfil Actualizado</strong>
 
                 <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert"
                     aria-label="Close">×</button>
@@ -17,22 +26,25 @@
 
         <div class="card card-style">
             <div class="content">
-                <div class="d-flex flex-row align-items-center gap-3 justify-content-evenly mb-3">
+                <div class="d-flex flex-row align-items-center gap-3 justify-content-evenly">
                     <div>
                         @if ($usuario->foto)
-                            <img src="{{ $usuario->pathFoto }}" width="55" height="55" class="bg-highlight rounded-xl">
+                            <img src="{{ $usuario->pathFoto }}" width="70" height="70" class="bg-highlight rounded-xl">
                         @else
-                            <img src="{{ asset('user.png') }}" width="55" height="55" class="bg-highlight rounded-xl">
+                            <img src="{{ asset('user.png') }}" width="70" height="70" class="bg-highlight rounded-xl">
                         @endif
                     </div>
                     <div>
                         <h1 class="mb-0 pt-1">{{ auth()->user()->name }}</h1>
                     </div>
                 </div>
-                <p class="color-highlight font-11 mt-n1 mb-0">Información cifrada, no revelaremos esto con nadie</p>
-                <p>
-                    Completa tu perfil, ¡Así estaras listo para todas las funciones que se vienen pronto!
-                </p>
+                <!-- <p class="color-highlight font-11 mt-n1 mb-0">Información cifrada, no revelaremos esto con nadie</p> -->
+                @if (!$usuario->tienePerfilCompleto())
+                    <p class="color-highlight font-500 mt-3">
+                        Actualiza los campos resaltados para completar tu perfil.
+                    </p>
+                @endif
+                
             </div>
         </div>
 
@@ -221,7 +233,7 @@
                         <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
                             <i data-lucide="briefcase-business" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control"
-                                placeholder="Ejm: Abogado" name="profesion"
+                                placeholder="" name="profesion"
                                 value="{{ old('profesion', $usuario->profesion) }}">
                             <label for="name_input" class="color-highlight bg-theme font-400 font-13"
                                 style="transition: none;">Profesión</label>
@@ -235,7 +247,7 @@
                         <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4 @if(empty($usuario->direccion)) highlight-incomplete @endif">
                             <i data-lucide="map-pin-house" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control"
-                                placeholder="Ejm: Tomatitas Av. Principal #134 Porton guindo" name="direccion"
+                                placeholder="" name="direccion"
                                 value="{{ old('direccion', $usuario->direccion) }}">
                             <label for="name_input" class="color-highlight bg-theme font-400 font-13"
                                 style="transition: none;">Dirección</label>
@@ -249,7 +261,7 @@
                         <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
                             <i data-lucide="map-pin-pen" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control" maxlength="50"
-                                placeholder="Ejm: Tomatitas Av. Principal #134 Porton guindo" name="direccion_trabajo"
+                                placeholder="" name="direccion_trabajo"
                                 value="{{ old('direccion_trabajo', $usuario->direccion_trabajo) }}">
                             <label for="name_input" class="color-highlight bg-theme font-400 font-13"
                                 style="transition: none;">Dirección de trabajo</label>
@@ -386,28 +398,6 @@
             data-bs-autohide="true">
             <i class="fa fa-times me-3"></i>Active su GPS
         </div>
-    @else
-        <div data-card-height="200" class="card card-style preload-img entered loaded"
-            data-src="{{ asset(GlobalHelper::getValorAtributoSetting('logo')) }}"
-            style="height: 200px; background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('inicio_disfruta')) }});"
-            data-ll-status="loaded">
-            <div class="card-top pt-4 ms-3 me-3">
-                <h2 class="color-white font-600">Completaste tu perfil!</h2>
-                <p class="mt-n2 color-white">Ya podemos usar todas las funciones contigo! Pronto las descubriras</p>
-            </div>
-            <div class="card-bottom ms-3 me-3 mb-4">
-                <div class="progress" style="height:26px;">
-                    <div class="progress-bar border-0 bg-white color-black text-start ps-2" role="progressbar"
-                        style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
-                        Completado al 100%
-                    </div>
-                </div>
-            </div>
-            <div class="card-overlay bg-dark opacity-70"></div>
-        </div>
-        <a href="{{ route('miperfil') }}"
-            class="btn btn-m btn-full m-3 rounded-xl text-uppercase font-900 shadow-s bg-green-dark">Ir a mi perfil</a>
-    @endif
 
     @push('modals')
 
@@ -790,7 +780,7 @@
 
                     if (respuesta.data.status === "success") {
                         ocultarModalOTP();
-                        elementos.modalExito.addClass('menu-active
+                        elementos.modalExito.addClass('menu-active');
                         elementos.cardControlNumero.removeClass('highlight-incomplete-card');
 
                         setTimeout(() => {

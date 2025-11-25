@@ -1,4 +1,4 @@
-@if (!empty($datos))
+@if (!$estaCompleto)
     @push('modals')
         <div class="scroll-toast d-flex flex-row gap-2 shadow-xxl rounded-sm w-100 py-2 ps-2 pe-2 bg-theme bg-dtheme-blue"
             style="max-width: 95%">

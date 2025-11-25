@@ -11,6 +11,7 @@ use App\Models\Traslado;
 use App\Models\Asistencia;
 use App\Helpers\GlobalHelper;
 use App\Models\Historial_venta;
+use AWS\CRT\Log;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
@@ -213,5 +214,9 @@ class User extends Authenticatable
     public function convenios()
     {
         return $this->belongsToMany(Convenio::class, 'convenio_user', 'user_id', 'convenio_id')->withTimestamps();
+    }
+    public function tienePerfilCompleto()
+    {
+        return $this->direccion && $this->name && $this->telf && $this->verificado && $this->nacimiento;
     }
 }
