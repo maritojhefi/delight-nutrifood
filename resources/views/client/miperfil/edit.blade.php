@@ -138,7 +138,7 @@
         <div id="todoBien">
 
             <div class="card card-style">
-                <form action="{{ route('guardarPerfilFaltante') }}" method="post">
+                <form action="{{ route('guardarPerfilFaltante') }}" method="post" id="profileEditForm">
                     <div class="content">
                         <h3 class="font-600">Información de tu perfil</h3>
                         <p class="mb-0">
@@ -1025,6 +1025,46 @@
                 }
             });
         </script>
+        <!-- SCRIPT VISUALIZACION DE LOADER EN SUBMITS SSR -->
+        <script>
+            $(document).ready(function() {
+                const formFoto = $('#photoUploadForm');
+                const formPerfil = $('#profileEditForm');
+
+                function handleFormSSRSubmit(form) {
+                    
+                    if (form.length === 0 || typeof LoaderManager === 'undefined') {
+                        console.error('No se encontraron los formularios o el gestor del loader.');
+                        return;
+                    }
+
+                    form.on('submit', function(event) {
+                        event.preventDefault();
+
+                        // Activar el loader
+                        LoaderManager.setIsLoading(true);
+
+                        // Deshabilitar el botón de submit para evitar múltiples envíos
+                        const botonSubmit = form.find('button[type="submit"]');
+                        
+                        if (botonSubmit.length) {
+                            botonSubmit
+                                .prop('disabled', true)
+                                .text('Enviando...');
+                        }
+
+                        // Esperar un breve momento (50ms) antes de enviar el formulario
+                        setTimeout(function() {
+                            form[0].submit(); 
+                        }, 50); 
+                    });
+                }
+
+                // Usar el handler en ambos formularios (editar perfil y subir foto)
+                handleFormSSRSubmit(formFoto);
+                handleFormSSRSubmit(formPerfil);
+            });
+            </script>
         <!-- <script>
             window.onload = function() {
 
