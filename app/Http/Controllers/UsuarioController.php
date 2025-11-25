@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\RegistroPunto;
 use App\Models\NumeroWhatsapp;
 use App\Helpers\WhatsappHelper;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -74,7 +75,6 @@ class UsuarioController extends Controller
 
     public function registrarUsuario(Request $request)
     {
-
         // dd($request->all());
         $imagenJpg = null;
         // 1. Conversión HEIC antes de validar
@@ -147,7 +147,6 @@ class UsuarioController extends Controller
         }
         // Verificar si el usuario ya existe por su correo electrónico
         // // $user = User::where('email', $request->email)->first();
-
 
         // Verificar si el usuario ya existe por su número telefónico
         $user = User::where('codigo_pais', $request->codigo_pais)->where('telf', $request->telefono)->first();
@@ -454,7 +453,6 @@ class UsuarioController extends Controller
             ->where('telf', $telefono)
             ->get();
 
-
         if ($usuarios->count() > 0) {
             foreach ($usuarios as $usuario) {
                 if ($usuario->verificado == true) {
@@ -468,7 +466,6 @@ class UsuarioController extends Controller
                 }
             }
         }
-
 
         // Si llegamos aquí, el teléfono es válido para verificación
         return response()->json(
@@ -502,7 +499,6 @@ class UsuarioController extends Controller
             $codigo = random_int(10000, 99999);
             // Enviar código por WhatsApp
             try {
-
                 $plantillaWhatsapp = '';
 
                 switch ($request->input('operacion')) {
@@ -513,16 +509,18 @@ class UsuarioController extends Controller
                         $plantillaWhatsapp = 'delight_template_verificar_numero_editar';
                         break;
                     case 'cambio_telefono_perfil':
-                        Log::debug("Envío de otp para actualizacipon del teléfono en perfil cliente", [
-                            "telefono" => $telefono,
-                            "codigo_pais" => $codigoPais,
-                            "digitosPais" => $digitosPais,
-                            "codigo_a_enviarse" => $codigo
+                        Log::debug('Envío de otp para actualizacipon del teléfono en perfil cliente', [
+                            'telefono' => $telefono,
+                            'codigo_pais' => $codigoPais,
+                            'digitosPais' => $digitosPais,
+                            'codigo_a_enviarse' => $codigo,
                         ]);
                         $plantillaWhatsapp = 'delight_template_verificar_numero_editar';
                         break;
                     case 'ingreso_usuario':
-                        $usuario = User::where('codigo_pais', '+'.$codigoPais)->where('telf', $telefono)->exists();
+                        $usuario = User::where('codigo_pais', '+' . $codigoPais)
+                            ->where('telf', $telefono)
+                            ->exists();
                         Log::debug("Usuario existe para ingreso con codigo pais $codigoPais y telefono $telefono ?", [$usuario]);
                         if (!$usuario) {
                             return response()->json(
@@ -540,7 +538,6 @@ class UsuarioController extends Controller
                         $plantillaWhatsapp = 'delight_template_verificar_numero';
                         break;
                 }
-
 
                 WhatsappHelper::setNumero($idRegistroNumeroWhatsapp)
                     ->plantilla($plantillaWhatsapp)
@@ -560,19 +557,19 @@ class UsuarioController extends Controller
                 // Intentar extraer código de error del mensaje si existe el patrón
                 $codigoError = null;
                 if (preg_match('/\(Código:\s*(\d+)\)/', $e->getMessage(), $coincidencias)) {
-                    $codigoError = (int)$coincidencias[1];
+                    $codigoError = (int) $coincidencias[1];
                 } else {
                     // Si no se encuentra el patrón, usar el código de la excepción
                     $codigoError = $e->getCode() ?: 500;
                 }
-                
+
                 Log::error('Error en enviarCodigoVerificacion', [
                     'mensaje' => $e->getMessage(),
                     'codigo' => $codigoError,
                     'telefono' => $telefono ?? null,
                     'operacion' => $request->input('operacion'),
                 ]);
-                
+
                 // Determinar mensaje de error según el código
                 if ($codigoError == 401) {
                     $mensajeUsuario = 'No se pudo autenticar con el servicio de mensajería. Intenta más tarde.';
@@ -580,7 +577,7 @@ class UsuarioController extends Controller
                     // Mensaje genérico para todos los demás errores
                     $mensajeUsuario = 'Ocurrió un error al enviar el código de verificación. Por favor, intenta nuevamente.';
                 }
-                
+
                 return response()->json(
                     [
                         'status' => 'error',
@@ -602,11 +599,12 @@ class UsuarioController extends Controller
         }
     }
 
-    public function enviarCodigoVerificacionEditar(Request $request) {
+    public function enviarCodigoVerificacionEditar(Request $request)
+    {
         $numeroWhatsapp = NumeroWhatsapp::first();
 
         if (!$numeroWhatsapp) {
-            Log::debug("No hay número de WhatsApp configurado para enviar códigos de verificación.");
+            Log::debug('No hay número de WhatsApp configurado para enviar códigos de verificación.');
             return response()->json(
                 [
                     'status' => 'error',
@@ -633,7 +631,7 @@ class UsuarioController extends Controller
             );
         }
 
-         // Generar código de verificación
+        // Generar código de verificación
         $codigo = random_int(10000, 99999);
         // Enviar código por WhatsApp
         try {
@@ -658,7 +656,7 @@ class UsuarioController extends Controller
             if (preg_match('/\(Código:\s*(\d+)\)/', $e->getMessage(), $coincidencias) > 0) {
                 $codigoError = $coincidencias[1];
                 // dd($codigoError);
-                if ($codigoError == "401") {
+                if ($codigoError == '401') {
                     return response()->json(
                         [
                             'status' => 'error',
@@ -687,8 +685,7 @@ class UsuarioController extends Controller
                     500,
                 );
             }
-        };
-
+        }
     }
 
     public function verificarCodigoOTP(Request $request)
@@ -719,7 +716,7 @@ class UsuarioController extends Controller
         $codigoIngresado = $request->input('codigo');
         $codigoGenerado = $request->input('codigo_generado');
         $telefono_completo = $request->input('telefono_completo');
-        $user = User::whereRaw("CONCAT(codigo_pais, telf) = ?", [$telefono_completo])->first();
+        $user = User::whereRaw('CONCAT(codigo_pais, telf) = ?', [$telefono_completo])->first();
 
         if (!$user) {
             return response()->json(
@@ -740,13 +737,13 @@ class UsuarioController extends Controller
             }
             Auth::loginUsingId($user_id);
             return response()->json(
-            [
-                'status' => 'success',
-                'message' => 'Código verificado y sesión iniciada correctamente.',
-                'redirect_url' => route('miperfil')
-            ],
-            200,
-        );
+                [
+                    'status' => 'success',
+                    'message' => 'Código verificado y sesión iniciada correctamente.',
+                    'redirect_url' => route('miperfil'),
+                ],
+                200,
+            );
         } else {
             return response()->json(
                 [
@@ -758,7 +755,8 @@ class UsuarioController extends Controller
         }
     }
 
-    public function cambiarNumeroOTP(Request $request) {
+    public function cambiarNumeroOTP(Request $request)
+    {
         $codigoIngresado = $request->input('codigo');
         $codigoGenerado = $request->input('codigoGenerado');
         $nuevoTelefonoNacional = $request->input('nuevoTelefonoNacional');
@@ -787,13 +785,13 @@ class UsuarioController extends Controller
             $user->telf = $nuevoTelefonoNacional;
             $user->save();
             return response()->json(
-            [
-                'status' => 'success',
-                'message' => 'Código verificado y sesión iniciada correctamente.',
-                'redirect_url' => route('miperfil')
-            ],
-            200,
-        );
+                [
+                    'status' => 'success',
+                    'message' => 'Código verificado y sesión iniciada correctamente.',
+                    'redirect_url' => route('miperfil'),
+                ],
+                200,
+            );
         } else {
             return response()->json(
                 [
@@ -801,6 +799,52 @@ class UsuarioController extends Controller
                     'errors' => ['codigo' => ['El código ingresado no coincide. Intenta nuevamente.']],
                 ],
                 422,
+            );
+        }
+    }
+
+    public function verificarCodigoReferido(Request $request)
+    {
+        $codigo = $request->input('codigo');
+        $user = DB::table('perfiles_puntos_users')->where('codigo', $codigo)->first();
+
+        if ($user) {
+            // Usar select() antes de find() para obtener solo los campos necesarios
+            // Incluimos 'foto' porque el accessor pathFoto lo necesita
+            $usuarioReferido = User::select('id', 'name', 'foto')
+                ->find($user->user_id);
+            
+            if ($usuarioReferido) {
+                // El accessor pathFoto se calculará automáticamente al acceder a la propiedad
+                return response()->json(
+                    [
+                        'status' => 'success',
+                        'message' => 'Código de referido encontrado correctamente.',
+                        'partner_id' => $usuarioReferido->id,
+                        'user' => [
+                            'id' => $usuarioReferido->id,
+                            'name' => $usuarioReferido->name,
+                            'pathFoto' => $usuarioReferido->pathFoto,
+                        ],
+                    ],
+                    200
+                );
+            } else {
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'errors' => ['codigo' => ['El usuario asociado al código no existe.']],
+                    ],
+                    404
+                );
+            }
+        } else {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'errors' => ['codigo' => ['No se encontró un usuario con ese código de referido.']],
+                ],
+                404
             );
         }
     }

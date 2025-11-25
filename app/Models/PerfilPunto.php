@@ -22,6 +22,8 @@ class PerfilPunto extends Model
     }
     public function usuarios()
     {
-        return $this->belongsToMany(User::class, 'perfiles_puntos_users', 'perfil_punto_id', 'user_id')->withTimestamps();
+        return $this->belongsToMany(User::class, 'perfiles_puntos_users', 'perfil_punto_id', 'user_id')
+            ->withPivot('codigo')
+            ->withTimestamps();
     }
 }
