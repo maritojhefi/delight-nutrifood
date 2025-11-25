@@ -6,6 +6,8 @@ use App\Models\User;
 use Livewire\Component;
 use App\Models\PerfilPunto;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PuntosPerfilesComponent extends Component
 {
@@ -186,17 +188,143 @@ class PuntosPerfilesComponent extends Component
         $this->usuariosAsignados = $usuariosAsignadosQuery->get();
     }
 
+    // Método para limpiar y normalizar el nombre (eliminar espacios, acentos, caracteres especiales, números)
+    private function limpiarNombre($nombre)
+    {
+        // Eliminar espacios en blanco
+        $nombre = str_replace(' ', '', $nombre);
+        
+        // Convertir a mayúsculas
+        $nombre = Str::upper($nombre);
+        
+        // Reemplazar acentos y caracteres especiales
+        $acentos = [
+            'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U', 'Ü' => 'U',
+            'á' => 'A', 'é' => 'E', 'í' => 'I', 'ó' => 'O', 'ú' => 'U', 'ü' => 'U',
+            'Ñ' => 'N', 'ñ' => 'N',
+        ];
+        $nombre = strtr($nombre, $acentos);
+        
+        // Eliminar caracteres que no sean letras (números, símbolos, etc.)
+        $nombre = preg_replace('/[^A-Z]/', '', $nombre);
+        
+        return $nombre;
+    }
+
+    // Método para generar código único basado en el nombre del usuario
+    private function generarCodigoUnico($nombreUsuario)
+    {
+        // Limpiar el nombre: eliminar espacios, acentos, caracteres especiales y números
+        $nombreLimpio = $this->limpiarNombre($nombreUsuario);
+        
+        // Tomar los primeros 4 caracteres como prefijo base
+        // Si el nombre tiene menos de 4 caracteres, rellenar con el primer carácter repetido
+        $prefijoBase = Str::substr($nombreLimpio, 0, 4);
+        if (Str::length($prefijoBase) < 4 && Str::length($nombreLimpio) > 0) {
+            // Rellenar con el primer carácter hasta llegar a 4
+            $primerCaracter = Str::substr($prefijoBase, 0, 1);
+            while (Str::length($prefijoBase) < 4) {
+                $prefijoBase .= $primerCaracter;
+            }
+        }
+        
+        // Buscar todos los códigos existentes que empiecen con cualquier variación del prefijo
+        // (desde 4 letras hasta 0 letras, ya que el prefijo se acorta cuando el número crece)
+        $codigosExistentes = DB::table('perfiles_puntos_users')
+            ->where(function($query) use ($prefijoBase) {
+                // Buscar códigos que empiecen con variaciones del prefijo (4, 3, 2, 1, 0 letras)
+                for ($i = 4; $i >= 0; $i--) {
+                    $prefijoVariacion = Str::substr($prefijoBase, 0, $i);
+                    if ($i === 4) {
+                        $query->where('codigo', 'like', $prefijoVariacion . '%');
+                    } else {
+                        $query->orWhere('codigo', 'like', $prefijoVariacion . '%');
+                    }
+                }
+            })
+            ->pluck('codigo')
+            ->toArray();
+        
+        $numeroMaximo = 0;
+        
+        // Extraer el número más alto de los códigos existentes
+        // Validar que el código pertenezca realmente a este prefijo
+        foreach ($codigosExistentes as $codigoExistente) {
+            // El código siempre tiene 5 caracteres: PREFIJO + NÚMERO
+            // Validar que tenga exactamente 5 caracteres
+            if (Str::length($codigoExistente) !== 5) {
+                continue;
+            }
+            
+            // Extraer el prefijo y el número del código existente
+            // El prefijo son las letras al inicio, el número son los dígitos al final
+            preg_match('/^([A-Z]*)(\d+)$/', $codigoExistente, $matches);
+            
+            if (!empty($matches[1]) && !empty($matches[2])) {
+                $prefijoExistente = $matches[1];
+                $numero = (int)$matches[2];
+                
+                // Validar que el prefijo existente sea una variación válida del prefijo base
+                // Debe ser exactamente el prefijo base o una variación quitando del final
+                $esVariacionValida = false;
+                for ($i = 4; $i >= 0; $i--) {
+                    $prefijoVariacion = Str::substr($prefijoBase, 0, $i);
+                    if ($prefijoExistente === $prefijoVariacion) {
+                        $esVariacionValida = true;
+                        break;
+                    }
+                }
+                
+                // Solo considerar el número si el prefijo es una variación válida
+                if ($esVariacionValida && $numero > $numeroMaximo) {
+                    $numeroMaximo = $numero;
+                }
+            }
+        }
+        
+        // Generar el siguiente número consecutivo
+        $siguienteNumero = $numeroMaximo + 1;
+        
+        // Calcular cuántos dígitos tiene el número
+        $digitosNumero = Str::length((string)$siguienteNumero);
+        
+        // Calcular cuántas letras del prefijo necesitamos
+        // Total siempre es 5: letras + números = 5
+        $letrasNecesarias = 5 - $digitosNumero;
+        
+        // Asegurar que no necesitemos más letras de las disponibles (máximo 4)
+        if ($letrasNecesarias > 4) {
+            $letrasNecesarias = 4;
+        }
+        
+        // Si necesitamos más letras de las que tenemos, usar todas las disponibles
+        if ($letrasNecesarias < 0) {
+            $letrasNecesarias = 0;
+        }
+        
+        // Tomar solo las letras necesarias del prefijo base (desde el inicio)
+        // Esto es lo que hace que se "quite al revés": RODR -> ROD -> RO -> R
+        $prefijoFinal = Str::substr($prefijoBase, 0, $letrasNecesarias);
+        
+        // Construir el código final: PREFIJO (letras) + NÚMERO (siempre 5 caracteres total)
+        $codigo = $prefijoFinal . $siguienteNumero;
+        
+        // Asegurar que el código tenga exactamente 5 caracteres
+        $codigo = Str::substr($codigo, 0, 5);
+        
+        return $codigo;
+    }
+
     // Método para agregar usuario al perfil
     public function agregarUsuarioAlPerfil($userId)
     {
         $user = User::findOrFail($userId);
-        $this->perfilSeleccionado->usuarios()->attach($userId);
-
+        $codigo = $this->generarCodigoUnico($user->name);
+        $this->perfilSeleccionado->usuarios()->attach($userId, ['codigo' => $codigo]);
         $this->cargarUsuarios();
-
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
-            'message' => "Usuario {$user->name} agregado al perfil exitosamente.",
+            'message' => "Usuario {$user->name} agregado al perfil exitosamente. Código: {$codigo}",
         ]);
     }
 
