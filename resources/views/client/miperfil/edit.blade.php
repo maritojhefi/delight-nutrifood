@@ -36,16 +36,16 @@
             </div>
         </div>
 
-        <card class="card card-style py-2">
+        <card id="card-control-numero" class="card card-style py-2 @if(!$usuario->verificado) highlight-incomplete-card @endif">
             <div class="card-header bg-theme border-0">
                 <h2 class="mb-0">Número de Contacto</h2>
                 <!-- <small class="text-muted">Ingrese su nuevo número para recibir código de verificación</small> -->
             </div>
-            
+
             <form id="form-cambiar-telefono">
                 @csrf
                 @method('PUT')
-                
+
                 <div class="card-body">
                     @if (!$usuario->verificado)
                         <p class="mx-1 mt-n3 mb-3 line-height-s">Tu WhatsApp no ha sido verificado, hazlo a continuación:</p>
@@ -54,7 +54,7 @@
                         <!-- Selector de Código de País -->
                         <div class="d-flex flex-column position-relative" style="min-width: 35%;">
                             <label for="selector-codigo_pais-perfil"
-                                class="position-absolute d-inline-block font-13 color-highlight line-height-xs bg-theme ms-2 px-1" 
+                                class="position-absolute d-inline-block font-13 color-highlight line-height-xs bg-theme ms-2 px-1"
                                 style="z-index: 10; width: fit-content; top: -7px">
                                 Código país
                             </label>
@@ -62,12 +62,12 @@
                         </div>
 
                         <!-- Input de Teléfono -->
-                        <div class="input-style has-borders has-icon input-style-always-active validate-field remove-mb" 
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field remove-mb"
                             style="min-width: 59%;">
                             <i data-lucide="smartphone" class="lucide-icon lucide-input"></i>
-                            <input type="tel" 
+                            <input type="tel"
                                 class="form-control text-center font-14"
-                                placeholder="Ingrese su número" 
+                                placeholder="Ingrese su número"
                                 name="telefono-nacional"
                                 id="telefono-nacional"
                                 inputmode="numeric"
@@ -76,7 +76,7 @@
                                 style="height: 40px;"
                                 value="{{ old('telefono-nacional', $usuario->telf) }}"
                                 required>
-                            <label for="telefono-nacional" 
+                            <label for="telefono-nacional"
                                 class="color-highlight bg-theme font-400 font-13"
                                 style="transition: none;">
                                 Teléfono
@@ -89,14 +89,14 @@
 
                 <!-- Footer con botón de submit -->
                 <div class="card-footer bg-theme border-0 pt-0">
-                    <button type="submit" 
+                    <button type="submit"
                             id="btn-guardar-telefono"
                             class="btn w-100 btn-m bg-highlight rounded-s d-flex flex-row align-items-center justify-content-center gap-1 text-uppercase font-900 shadow-s d-none"
                             disabled>
                         <!-- <i data-lucide="message-circle-more" class="lucide-icon" style="width: 1rem; height: 1rem;"></i> -->
                         Verificar Número
                     </button>
-                    
+
                     <!-- Indicador de carga (opcional) -->
                     <div id="loading-validacion" class="d-none text-center py-2">
                         <div class="spinner-border spinner-border-sm text-highlight me-2" role="status">
@@ -136,7 +136,7 @@
                         @csrf
 
                         <br>
-                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4 @if(empty($usuario->name)) highlight-incomplete @endif">
                             <i data-lucide="user" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control"
                                 placeholder="Nombre" name="name"
@@ -157,7 +157,7 @@
                             <input type="email" class="form-control" placeholder="" name="email"
                                 value="{{ old('email', $usuario->email) }}">
                             <label for="name_input" class="color-highlight bg-theme font-400 font-13"
-                                style="transition: none;">Email</label>                        
+                                style="transition: none;">Email</label>
                         </div>
                         @error('email')
                             <p class="text-danger line-height-s mx-2 mt-n2">
@@ -165,7 +165,7 @@
                                 {{ $message }}
                             </p>
                         @enderror
-                        <div class="d-flex flex-column mb-3 mt-n1">
+                        <div class="d-flex flex-column mb-3 mt-n1 @if(empty($usuario->nacimiento)) highlight-incomplete-wrapper @endif">
                             <label for="nacimiento" class="ms-2 mb-n2 d-inline-block px-1 line-height-xs color-highlight bg-theme font-400 font-13"
                                 style="z-index: 10;width:fit-content">Fecha de nacimiento</label>
                             <div class="input-style has-borders remove-mb rounded-sm validate-field d-flex flex-row gap-2">
@@ -232,7 +232,7 @@
                                 {{ $message }}
                             </p>
                         @enderror
-                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4 @if(empty($usuario->direccion)) highlight-incomplete @endif">
                             <i data-lucide="map-pin-house" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control"
                                 placeholder="Ejm: Tomatitas Av. Principal #134 Porton guindo" name="direccion"
@@ -265,17 +265,17 @@
                             <label for="hijos" class="mx-2 color-highlight font-400 font-13">
                                 ¿Tiene hijos?:
                             </label>
-                            
-                            <input 
-                                class="form-check-input m-0" 
-                                type="checkbox" 
-                                name="hijos" 
+
+                            <input
+                                class="form-check-input m-0"
+                                type="checkbox"
+                                name="hijos"
                                 id="hijos"
-                                value="1" 
-                                
+                                value="1"
+
                                 @if (old('hijos', $usuario->hijos)) checked @endif
                             >
-                            
+
                         </div>
                         <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4 position-relative">
                             <i data-lucide="key-round" class="lucide-icon lucide-input"></i>
@@ -323,7 +323,7 @@
                     <!-- FORMULARIO INTEGRADO CON CONTROL DE FOTO -->
                     <form action="{{ route('subirfoto.perfil') }}" method="POST" enctype="multipart/form-data" id="photoUploadForm">
                         @csrf
-                        
+
                         <div class="custom-major-file-container d-flex flex-row justify-content-center mt-3" id="major-file-container">
                             <div class="custom-file-upload-container">
                                 <div class="file-upload-area" id="uploadArea">
@@ -427,12 +427,36 @@
                 display: contents
             }
 
+            /* Resaltado de campos necesarios para completar el perfil */
+            .highlight-incomplete {
+                border: 2px solid #01f9c6 !important;
+                border-radius: 0.7rem;
+                box-shadow: 0 0 0 3px rgba(102, 204, 204, 0.5);
+            }
+
+            .highlight-incomplete-card {
+                border: 2px solid #01f9c6 !important;
+                box-shadow: 0 0 0 3px rgba(102, 204, 204, 0.5);
+            }
+
+            .highlight-incomplete input,
+            .highlight-incomplete select {
+                border-color: #01f9c6 !important;
+            }
+
+            .highlight-incomplete-wrapper {
+                padding: 0.5rem;
+                border: 2px solid #01f9c6;
+                border-radius: 0.5rem;
+                box-shadow: 0 0 0 3px rgba(102, 204, 204, 0.5);
+            }
+
             /* Target the div holding the selected value text */
             .ss-main .ss-single {
-                white-space: nowrap; 
-                overflow: hidden; 
-                text-overflow: ellipsis; 
-                max-width: 100%; 
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
             }
 
             .theme-dark .ss-single {
@@ -469,7 +493,7 @@
                 /* If you want a fixed min-width for the selector, define it here */
                 /* Example: min-width: 100px; */
                 /* Ensure no wrapping within the main container */
-                overflow: hidden; 
+                overflow: hidden;
             }
 
             .theme-dark .ss-main {
@@ -502,7 +526,8 @@
                 formularioCambiarNumero: $('#form-cambiar-telefono'),
                 modalOTP: $('#menu-verificacion-cambionumero'),
                 ocultadorMenu: $('.menu-hider'),
-                modalExito: $('#codigo-correcto')
+                modalExito: $('#codigo-correcto'),
+                cardControlNumero: $('#card-control-numero')
             };
 
             // ============= INICIALIZACIÓN =============
@@ -552,7 +577,7 @@
 
                 // Click en botón guardar
                 elementos.formularioCambiarNumero.on('submit', function (e) {
-                    e.preventDefault(); 
+                    e.preventDefault();
                     enviarOTPParaCambioNumero();
                 });
             };
@@ -561,7 +586,7 @@
                 detectarDigitosPais();
                 elementos.inputTelefono.val('');
                 ocultarBotonGuardar();
-                
+
                 if (estado.temporizadorValidacion) {
                     clearTimeout(estado.temporizadorValidacion);
                 }
@@ -600,7 +625,7 @@
 
                 try {
                     const regiones = phoneUtil.getRegionCodesForCountryCode(codigoPais);
-                    
+
                     if (!regiones || regiones.length === 0) {
                         console.warn('No se encontraron regiones para el código:', codigoPais);
                         // Asegurar que no hay límite si no hay datos
@@ -614,7 +639,7 @@
                             region,
                             libphonenumber.PhoneNumberType.MOBILE
                         );
-                        
+
                         if (ejemplo) {
                             const numeroEjemplo = phoneUtil.getNationalSignificantNumber(ejemplo);
                             estado.digitosEsperados = numeroEjemplo.length;
@@ -666,7 +691,7 @@
                     } else if (error.response?.data?.message) {
                         mensaje = error.response.data.message;
                     }
-                    
+
                     mostrarError(mensaje);
                 } finally {
                     estado.validacionEnCurso = false;
@@ -700,7 +725,7 @@
                     if (error.response && error.response.data && error.response.data.errors) {
                         const errors = error.response.data.errors;
                         const primeraClave = Object.keys(errors)[0];
-                        
+
                         if (primeraClave && Array.isArray(errors[primeraClave]) && errors[primeraClave].length > 0) {
                             mensajeError = errors[primeraClave][0];
                         }
@@ -765,8 +790,9 @@
 
                     if (respuesta.data.status === "success") {
                         ocultarModalOTP();
-                        elementos.modalExito.addClass('menu-active');
-                        
+                        elementos.modalExito.addClass('menu-active
+                        elementos.cardControlNumero.removeClass('highlight-incomplete-card');
+
                         setTimeout(() => {
                             elementos.modalExito.removeClass('menu-active');
                             window.location.reload();
@@ -779,11 +805,11 @@
                     if (error.response && error.response.data && error.response.data.errors) {
                         const errors = error.response.data.errors;
                         const primeraClave = Object.keys(errors)[0];
-                        
+
                         if (primeraClave && Array.isArray(errors[primeraClave]) && errors[primeraClave].length > 0) {
                             mensajeError = errors[primeraClave][0];
                         }
-                    } 
+                    }
 
                     $('#mensaje-toast-error-snackbar').text(mensajeError);
                     $('#snackbar-error').addClass('show');
@@ -866,7 +892,7 @@
                     passwordInput.attr('type', isPassword ? 'text' : 'password');
 
                     const toggleIcon = $('#toggleIconNew');
-                    
+
                     toggleIcon.attr('data-lucide', isPassword ? 'lock-open' : 'lock');
 
                     reinitializeLucideIcons();
@@ -979,7 +1005,7 @@
                     uploadText.style.display = 'none';
                     uploadArea.classList.add('has-image');
                     majorContainer.classList.add('has-image');
-                    
+
                     // Mostrar botón de remover y botón de guardar
                     removeButton.style.display = 'block';
                     submitButtonContainer.style.display = 'block';
@@ -998,7 +1024,7 @@
                     majorContainer.classList.remove('has-image');
                     errorMessage.textContent = '';
                     convertingOverlay.classList.remove('show');
-                    
+
                     // Ocultar botón de remover y botón de guardar
                     removeButton.style.display = 'none';
                     submitButtonContainer.style.display = 'none';
