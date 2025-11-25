@@ -7,14 +7,21 @@ use Illuminate\View\Component;
 class PerfilIncompletoComponent extends Component
 {
     /**
-     * Create a new component instance.
+     * Booleano indicando si el perfil está completo.
      *
+     * @var bool
+     */
+    public $estaCompleto;
+
+    /**
+     * Nueva instancia del componente.
+     *
+     * @param bool $estaCompleto
      * @return void
      */
-    public $datos;
-    public function __construct($datos)
+    public function __construct(bool $estaCompleto = false) 
     {
-        $this->datos=$datos;
+        $this->estaCompleto = $estaCompleto;
     }
 
     /**

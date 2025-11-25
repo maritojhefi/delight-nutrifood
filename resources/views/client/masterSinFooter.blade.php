@@ -11,7 +11,7 @@
     @endif
     <title>{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}</title>
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('styles/bootstrap.css') }}?v=1.0.1">
+    <link rel="stylesheet" type="text/css" href="{{ asset('styles/bootstrap.css') }}?v=1.0.2">
     <link rel="stylesheet" type="text/css" href="{{ asset('styles/custom.css') }}?v=1.0.1">
     <link rel="stylesheet" href="{{ asset('styles/loader/loader.css') }}?v=1.0.1">
     <link

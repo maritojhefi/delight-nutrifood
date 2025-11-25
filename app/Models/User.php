@@ -11,6 +11,7 @@ use App\Models\Traslado;
 use App\Models\Asistencia;
 use App\Helpers\GlobalHelper;
 use App\Models\Historial_venta;
+use AWS\CRT\Log;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -233,5 +234,9 @@ class User extends Authenticatable
         return $this->belongsToMany(PerfilPunto::class, 'perfiles_puntos_users', 'user_id', 'perfil_punto_id')
             ->withPivot('codigo')
             ->withTimestamps();
+    }
+    public function tienePerfilCompleto()
+    {
+        return $this->direccion && $this->name && $this->telf && $this->verificado && $this->nacimiento;
     }
 }

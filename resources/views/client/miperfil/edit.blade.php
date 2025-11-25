@@ -3,12 +3,21 @@
     <x-cabecera-pagina titulo="Editar Perfil" cabecera="appkit" />
 
 
-    @if (!session('success'))
         @if (session('actualizado'))
             <div class="alert me-3 ms-3 rounded-s bg-green-dark " role="alert">
                 <span class="alert-icon"><i class="fa fa-check font-18"></i></span>
-                <h4 class="text-uppercase color-white">Hecho!</h4>
-                <strong class="alert-icon-text">Se actualizo correctamente su foto de perfil.</strong>
+                <h4 class="text-uppercase color-white mb-1">¡Hecho!</h4>
+                <strong class="alert-icon-text">Foto actualizada.</strong>
+
+                <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert"
+                    aria-label="Close">×</button>
+            </div>
+        @endif
+        @if (session('success'))
+            <div class="alert me-3 ms-3 rounded-s bg-green-dark " role="alert">
+                <span class="alert-icon"><i class="fa fa-check font-18"></i></span>
+                <h4 class="text-uppercase color-white mb-1">¡Hecho!</h4>
+                <strong class="alert-icon-text">Perfil Actualizado</strong>
 
                 <button type="button" class="close color-white opacity-60 font-16" data-bs-dismiss="alert"
                     aria-label="Close">×</button>
@@ -20,38 +29,44 @@
                 <div class="d-flex flex-row align-items-center gap-3 justify-content-evenly">
                     <div>
                         @if ($usuario->foto)
-                            <img src="{{ $usuario->pathFoto }}" width="55" class="bg-highlight rounded-xl">
+                            <img src="{{ $usuario->pathFoto }}" width="70" height="70" class="bg-highlight rounded-xl">
                         @else
-                            <img src="{{ asset('user.png') }}" width="55" class="bg-highlight rounded-xl">
+                            <img src="{{ asset('user.png') }}" width="70" height="70" class="bg-highlight rounded-xl">
                         @endif
                     </div>
                     <div>
                         <h1 class="mb-0 pt-1">{{ auth()->user()->name }}</h1>
                     </div>
                 </div>
-                <p class="color-highlight font-11 mt-n1 mb-0">Información cifrada, no revelaremos esto con nadie</p>
-                <p>
-                    Completa tu perfil, asi estaras listo para todas las funciones que se vienen pronto!
-                </p>
+                <!-- <p class="color-highlight font-11 mt-n1 mb-0">Información cifrada, no revelaremos esto con nadie</p> -->
+                @if (!$usuario->tienePerfilCompleto())
+                    <p class="color-highlight font-500 mt-3">
+                        Actualiza los campos resaltados para completar tu perfil.
+                    </p>
+                @endif
+                
             </div>
         </div>
 
-        <card class="card card-style py-2">
+        <card id="card-control-numero" class="card card-style py-2 @if(!$usuario->verificado) highlight-incomplete-card @endif">
             <div class="card-header bg-theme border-0">
                 <h2 class="mb-0">Número de Contacto</h2>
                 <!-- <small class="text-muted">Ingrese su nuevo número para recibir código de verificación</small> -->
             </div>
-            
+
             <form id="form-cambiar-telefono">
                 @csrf
                 @method('PUT')
-                
+
                 <div class="card-body">
+                    @if (!$usuario->verificado)
+                        <p class="mx-1 mt-n3 mb-3 line-height-s">Tu WhatsApp no ha sido verificado, hazlo a continuación:</p>
+                    @endif
                     <div class="d-flex flex-row gap-2 justify-content-evenly align-items-center">
                         <!-- Selector de Código de País -->
                         <div class="d-flex flex-column position-relative" style="min-width: 35%;">
                             <label for="selector-codigo_pais-perfil"
-                                class="position-absolute d-inline-block font-13 color-highlight line-height-xs bg-theme ms-2 px-1" 
+                                class="position-absolute d-inline-block font-13 color-highlight line-height-xs bg-theme ms-2 px-1"
                                 style="z-index: 10; width: fit-content; top: -7px">
                                 Código país
                             </label>
@@ -59,12 +74,12 @@
                         </div>
 
                         <!-- Input de Teléfono -->
-                        <div class="input-style has-borders has-icon input-style-always-active validate-field remove-mb" 
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field remove-mb"
                             style="min-width: 59%;">
                             <i data-lucide="smartphone" class="lucide-icon lucide-input"></i>
-                            <input type="tel" 
+                            <input type="tel"
                                 class="form-control text-center font-14"
-                                placeholder="Ingrese su número" 
+                                placeholder="Ingrese su número"
                                 name="telefono-nacional"
                                 id="telefono-nacional"
                                 inputmode="numeric"
@@ -73,7 +88,7 @@
                                 style="height: 40px;"
                                 value="{{ old('telefono-nacional', $usuario->telf) }}"
                                 required>
-                            <label for="telefono-nacional" 
+                            <label for="telefono-nacional"
                                 class="color-highlight bg-theme font-400 font-13"
                                 style="transition: none;">
                                 Teléfono
@@ -86,14 +101,14 @@
 
                 <!-- Footer con botón de submit -->
                 <div class="card-footer bg-theme border-0 pt-0">
-                    <button type="submit" 
+                    <button type="submit"
                             id="btn-guardar-telefono"
                             class="btn w-100 btn-m bg-highlight rounded-s d-flex flex-row align-items-center justify-content-center gap-1 text-uppercase font-900 shadow-s d-none"
                             disabled>
                         <!-- <i data-lucide="message-circle-more" class="lucide-icon" style="width: 1rem; height: 1rem;"></i> -->
                         Verificar Número
                     </button>
-                    
+
                     <!-- Indicador de carga (opcional) -->
                     <div id="loading-validacion" class="d-none text-center py-2">
                         <div class="spinner-border spinner-border-sm text-highlight me-2" role="status">
@@ -105,10 +120,25 @@
             </form>
         </card>
 
+        <!-- @if (true)
+            <div class="card card-style bg-light-warning m-0 shadow-xs">
+                <p class="mb-0">Para completar tu perfil, debes completar los siguientes campos:</p>
+                <ul class="mb-0">
+                    @foreach ([1,2,3] as $dato)
+                        <li>Campos: {{ $dato }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @else
+            <p class="mb-0">
+                Por favor llena con el máximo detalle los siguientes campos.
+            </p>
+        @endif -->
+
         <div id="todoBien">
 
             <div class="card card-style">
-                <form action="{{ route('guardarPerfilFaltante') }}" method="post">
+                <form action="{{ route('guardarPerfilFaltante') }}" method="post" id="profileEditForm">
                     <div class="content">
                         <h3 class="font-600">Información de tu perfil</h3>
                         <p class="mb-0">
@@ -118,7 +148,7 @@
                         @csrf
 
                         <br>
-                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4 @if(empty($usuario->name)) highlight-incomplete @endif">
                             <i data-lucide="user" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control"
                                 placeholder="Nombre" name="name"
@@ -139,7 +169,7 @@
                             <input type="email" class="form-control" placeholder="" name="email"
                                 value="{{ old('email', $usuario->email) }}">
                             <label for="name_input" class="color-highlight bg-theme font-400 font-13"
-                                style="transition: none;">Email</label>                        
+                                style="transition: none;">Email</label>
                         </div>
                         @error('email')
                             <p class="text-danger line-height-s mx-2 mt-n2">
@@ -147,7 +177,7 @@
                                 {{ $message }}
                             </p>
                         @enderror
-                        <div class="d-flex flex-column mb-3 mt-n1">
+                        <div class="d-flex flex-column mb-3 mt-n1 @if(empty($usuario->nacimiento)) highlight-incomplete-wrapper @endif">
                             <label for="nacimiento" class="ms-2 mb-n2 d-inline-block px-1 line-height-xs color-highlight bg-theme font-400 font-13"
                                 style="z-index: 10;width:fit-content">Fecha de nacimiento</label>
                             <div class="input-style has-borders remove-mb rounded-sm validate-field d-flex flex-row gap-2">
@@ -155,7 +185,7 @@
                                 <input type="number" class="text-center form-control"
                                     placeholder="Día" name="dia_nacimiento" required
                                     min="1" max="31"
-                                    value="{{ old('dia_nacimiento', explode('-', $usuario->nacimiento)[2]) }}"
+                                    value="{{ old('dia_nacimiento', $usuario->nacimiento ? explode('-', $usuario->nacimiento)[2] : '') }}"
                                     oninput="if(this.value > 31) this.value = 31; if(this.value < 1) this.value = 1;"
                                 >
 
@@ -163,7 +193,7 @@
                                 <select class="text-center form-control" name="mes_nacimiento" required>
                                     <option value="" disabled selected>Mes</option>
                                     @php
-                                        $selectedMonth = explode('-', $usuario->nacimiento)[1];
+                                        $selectedMonth = $usuario->nacimiento ? explode('-', $usuario->nacimiento)[1] : 1;
                                     @endphp
                                     <option value="1" @if(old('mes_nacimiento', $selectedMonth) == '01' || old('mes_nacimiento', $selectedMonth) == '1') selected @endif>Enero</option>
                                     <option value="2" @if(old('mes_nacimiento', $selectedMonth) == '02' || old('mes_nacimiento', $selectedMonth) == '2') selected @endif>Febrero</option>
@@ -187,7 +217,7 @@
                                 <input type="number" class="text-center form-control" placeholder="Año"
                                     name="ano_nacimiento" required
                                     max="{{ $maxYear }}"
-                                    value="{{ old('ano_nacimiento', explode('-', $usuario->nacimiento)[0]) }}"
+                                    value="{{ old('ano_nacimiento', $usuario->nacimiento ? explode('-', $usuario->nacimiento)[0] : '') }}"
                                     oninput="const maxYear = {{ $maxYear }}; if(this.value > maxYear) this.value = maxYear; if(this.value.length > 4) this.value = this.value.slice(0, 4);"
                                 >
                             </div>
@@ -203,7 +233,7 @@
                         <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
                             <i data-lucide="briefcase-business" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control"
-                                placeholder="Ejm: Abogado" name="profesion"
+                                placeholder="" name="profesion"
                                 value="{{ old('profesion', $usuario->profesion) }}">
                             <label for="name_input" class="color-highlight bg-theme font-400 font-13"
                                 style="transition: none;">Profesión</label>
@@ -214,10 +244,10 @@
                                 {{ $message }}
                             </p>
                         @enderror
-                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
+                        <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4 @if(empty($usuario->direccion)) highlight-incomplete @endif">
                             <i data-lucide="map-pin-house" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control"
-                                placeholder="Ejm: Tomatitas Av. Principal #134 Porton guindo" name="direccion"
+                                placeholder="" name="direccion"
                                 value="{{ old('direccion', $usuario->direccion) }}">
                             <label for="name_input" class="color-highlight bg-theme font-400 font-13"
                                 style="transition: none;">Dirección</label>
@@ -231,7 +261,7 @@
                         <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4">
                             <i data-lucide="map-pin-pen" class="lucide-icon lucide-input"></i>
                             <input type="text" class="form-control" maxlength="50"
-                                placeholder="Ejm: Tomatitas Av. Principal #134 Porton guindo" name="direccion_trabajo"
+                                placeholder="" name="direccion_trabajo"
                                 value="{{ old('direccion_trabajo', $usuario->direccion_trabajo) }}">
                             <label for="name_input" class="color-highlight bg-theme font-400 font-13"
                                 style="transition: none;">Dirección de trabajo</label>
@@ -242,32 +272,22 @@
                                 {{ $message }}
                             </p>
                         @enderror
-                        {{-- <div class="input-style has-borders hnoas-icon input-style-always-active validate-field mb-4">
-                            <input type="number" class="form-control" placeholder="" name="telf"
-                                value="{{ old('telf', $usuario->telf) }}">
-                            <label for="" class="color-highlight font-400 font-13">Telefono</label>
-
-                            @error('telf')
-                                <i class="fa fa-times  invalid color-red-dark"></i>
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
-                        </div> --}}
                         <div class="d-flex flex-row align-items-center mb-4">
                             <i data-lucide="users" class="lucide-icon ms-2" style="width: 1.2rem; height: 1.2rem;"></i>
                             <label for="hijos" class="mx-2 color-highlight font-400 font-13">
                                 ¿Tiene hijos?:
                             </label>
-                            
-                            <input 
-                                class="form-check-input m-0" 
-                                type="checkbox" 
-                                name="hijos" 
+
+                            <input
+                                class="form-check-input m-0"
+                                type="checkbox"
+                                name="hijos"
                                 id="hijos"
-                                value="1" 
-                                
+                                value="1"
+
                                 @if (old('hijos', $usuario->hijos)) checked @endif
                             >
-                            
+
                         </div>
                         <div class="input-style has-borders has-icon input-style-always-active validate-field mb-4 position-relative">
                             <i data-lucide="key-round" class="lucide-icon lucide-input"></i>
@@ -303,28 +323,46 @@
                 <div id="map" style="width:100%;height:600px;"></div>
             </div> --}}
             <div class="card card-style">
-                <div class="content mb-0">
+                <div class="content">
                     <h4>Foto de perfil</h4>
-                    <p>
-                        Personaliza tu perfil, nos ayudará a conocerte mejor!
+                    <p class="mb-0 line-height-s">
+                        @if ($usuario->foto)
+                            {{ 'Puedes actualizar tu foto si así lo deseas.' }}
+                        @else
+                            {{ 'Subir una foto tuya nos ayudará a conocerte mejor.' }}
+                        @endif
                     </p>
-                    <form action="{{ route('subirfoto.perfil') }}" method="POST" enctype="multipart/form-data">
+                    <!-- FORMULARIO INTEGRADO CON CONTROL DE FOTO -->
+                    <form action="{{ route('subirfoto.perfil') }}" method="POST" enctype="multipart/form-data" id="photoUploadForm">
                         @csrf
-                        <div class="file-data pb-5">
-                            <input type="file" id="file-upload" class="upload-file bg-highlight shadow-s rounded-s "
-                                accept="image/*" name="foto">
-                            <p class="upload-file-text color-white">Subir Foto</p>
+
+                        <div class="custom-major-file-container d-flex flex-row justify-content-center mt-3" id="major-file-container">
+                            <div class="custom-file-upload-container">
+                                <div class="file-upload-area" id="uploadArea">
+                                    <div class="upload-text">
+                                        <strong>Subir Foto</strong><br>
+                                        <small>JPEG, PNG, HEIC</small>
+                                    </div>
+                                    <img class="preview-image" id="previewImage" style="display: none;">
+                                    <div class="converting-overlay" id="convertingOverlay">
+                                        Convirtiendo...
+                                    </div>
+                                </div>
+                                <input type="file" id="fileInput" class="hidden-input" accept="image/*" name="foto">
+                                <div class="error-message" id="errorMessage"></div>
+                            </div>
+                            <button class="remove-button" id="removeButton" type="button" style="display: none;">×</button>
                         </div>
+
                         @error('foto')
-                            <p class="text-danger">{{ $message }}</p>
+                            <p class="text-danger text-center mt-2">{{ $message }}</p>
                         @enderror
-                        <div class="list-group list-custom-large upload-file-data disabled">
-                            <img id="image-data" src="images/empty.png" class="img-fluid"
-                                style="width:100%; display:block; height:300px">
 
-                            <button type="submit"
-                                class="btn btn-3d btn-m btn-full mb-3 mt-3 rounded-xl text-uppercase font-900 shadow-s  border-blue-dark bg-blue-light">Guardar</button>
-
+                        <!-- Botón de confirmación que aparece cuando hay imagen -->
+                        <div class="text-center mt-3" id="submitButtonContainer" style="display: none;">
+                            <button type="submit" class="btn btn-m w-100 bg-highlight rounded-sm shadow-xl text-uppercase font-900">
+                                Guardar Foto
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -360,28 +398,6 @@
             data-bs-autohide="true">
             <i class="fa fa-times me-3"></i>Active su GPS
         </div>
-    @else
-        <div data-card-height="200" class="card card-style preload-img entered loaded"
-            data-src="{{ asset(GlobalHelper::getValorAtributoSetting('logo')) }}"
-            style="height: 200px; background-image: url({{ asset(GlobalHelper::getValorAtributoSetting('inicio_disfruta')) }});"
-            data-ll-status="loaded">
-            <div class="card-top pt-4 ms-3 me-3">
-                <h2 class="color-white font-600">Completaste tu perfil!</h2>
-                <p class="mt-n2 color-white">Ya podemos usar todas las funciones contigo! Pronto las descubriras</p>
-            </div>
-            <div class="card-bottom ms-3 me-3 mb-4">
-                <div class="progress" style="height:26px;">
-                    <div class="progress-bar border-0 bg-white color-black text-start ps-2" role="progressbar"
-                        style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
-                        Completado al 100%
-                    </div>
-                </div>
-            </div>
-            <div class="card-overlay bg-dark opacity-70"></div>
-        </div>
-        <a href="{{ route('miperfil') }}"
-            class="btn btn-m btn-full m-3 rounded-xl text-uppercase font-900 shadow-s bg-green-dark">Ir a mi perfil</a>
-    @endif
 
     @push('modals')
 
@@ -401,12 +417,36 @@
                 display: contents
             }
 
+            /* Resaltado de campos necesarios para completar el perfil */
+            .highlight-incomplete {
+                border: 2px solid #01f9c6 !important;
+                border-radius: 0.7rem;
+                box-shadow: 0 0 0 3px rgba(102, 204, 204, 0.5);
+            }
+
+            .highlight-incomplete-card {
+                border: 2px solid #01f9c6 !important;
+                box-shadow: 0 0 0 3px rgba(102, 204, 204, 0.5);
+            }
+
+            .highlight-incomplete input,
+            .highlight-incomplete select {
+                border-color: #01f9c6 !important;
+            }
+
+            .highlight-incomplete-wrapper {
+                padding: 0.5rem;
+                border: 2px solid #01f9c6;
+                border-radius: 0.5rem;
+                box-shadow: 0 0 0 3px rgba(102, 204, 204, 0.5);
+            }
+
             /* Target the div holding the selected value text */
             .ss-main .ss-single {
-                white-space: nowrap; 
-                overflow: hidden; 
-                text-overflow: ellipsis; 
-                max-width: 100%; 
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
             }
 
             .theme-dark .ss-single {
@@ -443,7 +483,7 @@
                 /* If you want a fixed min-width for the selector, define it here */
                 /* Example: min-width: 100px; */
                 /* Ensure no wrapping within the main container */
-                overflow: hidden; 
+                overflow: hidden;
             }
 
             .theme-dark .ss-main {
@@ -476,7 +516,8 @@
                 formularioCambiarNumero: $('#form-cambiar-telefono'),
                 modalOTP: $('#menu-verificacion-cambionumero'),
                 ocultadorMenu: $('.menu-hider'),
-                modalExito: $('#codigo-correcto')
+                modalExito: $('#codigo-correcto'),
+                cardControlNumero: $('#card-control-numero')
             };
 
             // ============= INICIALIZACIÓN =============
@@ -484,6 +525,9 @@
                 inicializarSelectorPais();
                 configurarEventos();
                 detectarDigitosPais();
+                if ({{ !$usuario->verificado }}) {
+                    mostrarBotonGuardar();
+                }
             };
 
             // ============= INICIALIZACIÓN DE SLIMSELECT =============
@@ -523,7 +567,7 @@
 
                 // Click en botón guardar
                 elementos.formularioCambiarNumero.on('submit', function (e) {
-                    e.preventDefault(); 
+                    e.preventDefault();
                     enviarOTPParaCambioNumero();
                 });
             };
@@ -532,7 +576,7 @@
                 detectarDigitosPais();
                 elementos.inputTelefono.val('');
                 ocultarBotonGuardar();
-                
+
                 if (estado.temporizadorValidacion) {
                     clearTimeout(estado.temporizadorValidacion);
                 }
@@ -571,7 +615,7 @@
 
                 try {
                     const regiones = phoneUtil.getRegionCodesForCountryCode(codigoPais);
-                    
+
                     if (!regiones || regiones.length === 0) {
                         console.warn('No se encontraron regiones para el código:', codigoPais);
                         // Asegurar que no hay límite si no hay datos
@@ -585,7 +629,7 @@
                             region,
                             libphonenumber.PhoneNumberType.MOBILE
                         );
-                        
+
                         if (ejemplo) {
                             const numeroEjemplo = phoneUtil.getNationalSignificantNumber(ejemplo);
                             estado.digitosEsperados = numeroEjemplo.length;
@@ -637,7 +681,7 @@
                     } else if (error.response?.data?.message) {
                         mensaje = error.response.data.message;
                     }
-                    
+
                     mostrarError(mensaje);
                 } finally {
                     estado.validacionEnCurso = false;
@@ -671,7 +715,7 @@
                     if (error.response && error.response.data && error.response.data.errors) {
                         const errors = error.response.data.errors;
                         const primeraClave = Object.keys(errors)[0];
-                        
+
                         if (primeraClave && Array.isArray(errors[primeraClave]) && errors[primeraClave].length > 0) {
                             mensajeError = errors[primeraClave][0];
                         }
@@ -737,7 +781,8 @@
                     if (respuesta.data.status === "success") {
                         ocultarModalOTP();
                         elementos.modalExito.addClass('menu-active');
-                        
+                        elementos.cardControlNumero.removeClass('highlight-incomplete-card');
+
                         setTimeout(() => {
                             elementos.modalExito.removeClass('menu-active');
                             window.location.reload();
@@ -750,11 +795,11 @@
                     if (error.response && error.response.data && error.response.data.errors) {
                         const errors = error.response.data.errors;
                         const primeraClave = Object.keys(errors)[0];
-                        
+
                         if (primeraClave && Array.isArray(errors[primeraClave]) && errors[primeraClave].length > 0) {
                             mensajeError = errors[primeraClave][0];
                         }
-                    } 
+                    }
 
                     $('#mensaje-toast-error-snackbar').text(mensajeError);
                     $('#snackbar-error').addClass('show');
@@ -837,13 +882,189 @@
                     passwordInput.attr('type', isPassword ? 'text' : 'password');
 
                     const toggleIcon = $('#toggleIconNew');
-                    
+
                     toggleIcon.attr('data-lucide', isPassword ? 'lock-open' : 'lock');
 
                     reinitializeLucideIcons();
                 });
             });
         </script>
+        <!-- CONTROL ACTUALIZACIÓN DE FOTO -->
+        <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+        <!-- SCRIPT DE CONTROL -->
+        <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/heic'];
+
+                const form = document.getElementById('photoUploadForm');
+                const majorContainer = document.getElementById('major-file-container');
+                const uploadArea = document.getElementById('uploadArea');
+                const fileInput = document.getElementById('fileInput');
+                const previewImage = document.getElementById('previewImage');
+                const removeButton = document.getElementById('removeButton');
+                const errorMessage = document.getElementById('errorMessage');
+                const convertingOverlay = document.getElementById('convertingOverlay');
+                const uploadText = uploadArea.querySelector('.upload-text');
+                const submitButtonContainer = document.getElementById('submitButtonContainer');
+
+                // Click en el área de upload
+                uploadArea.addEventListener('click', function(e) {
+                    // Prevenir click si ya hay imagen
+                    if (!uploadArea.classList.contains('has-image')) {
+                        fileInput.click();
+                    }
+                });
+
+                // Manejo de selección del archivo
+                fileInput.addEventListener('change', async function(event) {
+                    const file = event.target.files[0];
+
+                    if (!file) {
+                        resetUpload();
+                        return;
+                    }
+
+                    // Limpiar mensajes de error previos
+                    errorMessage.textContent = '';
+
+                    // Validar tipo de archivo
+                    if (!allowedTypes.includes(file.type) && !file.name.toLowerCase().endsWith('.heic')) {
+                        showError('Debe subir una imagen en formato válido (JPEG, PNG, o HEIC)');
+                        resetUpload();
+                        return;
+                    }
+
+                    try {
+                        let processedFile = file;
+
+                        // Convertir HEIC de ser necesario
+                        if (file.type === 'image/heic' || file.name.toLowerCase().endsWith('.heic')) {
+                            convertingOverlay.classList.add('show');
+
+                            const convertedBlob = await heic2any({
+                                blob: file,
+                                toType: "image/jpeg",
+                                quality: 0.8
+                            });
+
+                            processedFile = new File(
+                                [convertedBlob],
+                                file.name.replace(/\.heic$/i, '.jpg'),
+                                { type: 'image/jpeg' }
+                            );
+
+                            // Actualizar el input con el archivo convertido
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(processedFile);
+                            fileInput.files = dataTransfer.files;
+
+                            convertingOverlay.classList.remove('show');
+                        }
+
+                        // Mostrar preview
+                        showPreview(processedFile);
+
+                    } catch (error) {
+                        console.error('Error processing image:', error);
+                        showError('Error al procesar la imagen. Por favor, intenta nuevamente.');
+                        resetUpload();
+                        convertingOverlay.classList.remove('show');
+                    }
+                });
+
+                // Botón de remover
+                removeButton.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    resetUpload();
+                });
+
+                // Validación antes de enviar el formulario
+                form.addEventListener('submit', function(e) {
+                    if (!fileInput.files || fileInput.files.length === 0) {
+                        e.preventDefault();
+                        showError('Por favor, selecciona una imagen antes de guardar');
+                        return false;
+                    }
+                });
+
+                function showPreview(file) {
+                    const previewUrl = URL.createObjectURL(file);
+                    previewImage.src = previewUrl;
+                    previewImage.style.display = 'block';
+                    uploadText.style.display = 'none';
+                    uploadArea.classList.add('has-image');
+                    majorContainer.classList.add('has-image');
+
+                    // Mostrar botón de remover y botón de guardar
+                    removeButton.style.display = 'block';
+                    submitButtonContainer.style.display = 'block';
+
+                    previewImage.onload = function() {
+                        URL.revokeObjectURL(previewUrl);
+                    };
+                }
+
+                function resetUpload() {
+                    fileInput.value = '';
+                    previewImage.style.display = 'none';
+                    previewImage.src = '';
+                    uploadText.style.display = 'block';
+                    uploadArea.classList.remove('has-image');
+                    majorContainer.classList.remove('has-image');
+                    errorMessage.textContent = '';
+                    convertingOverlay.classList.remove('show');
+
+                    // Ocultar botón de remover y botón de guardar
+                    removeButton.style.display = 'none';
+                    submitButtonContainer.style.display = 'none';
+                }
+
+                function showError(message) {
+                    errorMessage.textContent = message;
+                }
+            });
+        </script>
+        <!-- SCRIPT VISUALIZACION DE LOADER EN SUBMITS SSR -->
+        <script>
+            $(document).ready(function() {
+                const formFoto = $('#photoUploadForm');
+                const formPerfil = $('#profileEditForm');
+
+                function handleFormSSRSubmit(form) {
+                    
+                    if (form.length === 0 || typeof LoaderManager === 'undefined') {
+                        console.error('No se encontraron los formularios o el gestor del loader.');
+                        return;
+                    }
+
+                    form.on('submit', function(event) {
+                        event.preventDefault();
+
+                        // Activar el loader
+                        LoaderManager.setIsLoading(true);
+
+                        // Deshabilitar el botón de submit para evitar múltiples envíos
+                        const botonSubmit = form.find('button[type="submit"]');
+                        
+                        if (botonSubmit.length) {
+                            botonSubmit
+                                .prop('disabled', true)
+                                .text('Enviando...');
+                        }
+
+                        // Esperar un breve momento (50ms) antes de enviar el formulario
+                        setTimeout(function() {
+                            form[0].submit(); 
+                        }, 50); 
+                    });
+                }
+
+                // Usar el handler en ambos formularios (editar perfil y subir foto)
+                handleFormSSRSubmit(formFoto);
+                handleFormSSRSubmit(formPerfil);
+            });
+            </script>
         <!-- <script>
             window.onload = function() {
 

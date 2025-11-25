@@ -731,6 +731,10 @@ class UsuarioController extends Controller
         $user_id = $user->id;
 
         if ($codigoIngresado === $codigoGenerado) {
+            if (!$user->verificado) {
+                $user->verificado = true;
+                $user->save();
+            }
             Auth::loginUsingId($user_id);
             return response()->json(
                 [
@@ -773,6 +777,10 @@ class UsuarioController extends Controller
 
         if ($codigoIngresado == $codigoGenerado) {
             // Actualizar el número telefónico del usuario
+            if (!$user->verificado) {
+                $user->verificado = true;
+                $user->save();
+            }
             $user->codigo_pais = '+' . $nuevoCodigoPais;
             $user->telf = $nuevoTelefonoNacional;
             $user->save();
