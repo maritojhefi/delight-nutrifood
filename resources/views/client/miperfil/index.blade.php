@@ -96,7 +96,7 @@
                 </div>
             </a>
 
-            @if ($usuario->perfilesPuntos->count() > 0)
+            @if ($usuario->esPartner())
                 <a href="#" class="col-12" onclick="copiarEnlacePatrocinador('{{ $usuario->id }}')">
                     <div class="card card-style mb-3">
                         <div class="d-flex py-3 my-1">

@@ -12,6 +12,7 @@ use App\Models\Asistencia;
 use App\Helpers\GlobalHelper;
 use App\Models\Historial_venta;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -215,5 +216,22 @@ class User extends Authenticatable
     public function convenios()
     {
         return $this->belongsToMany(Convenio::class, 'convenio_user', 'user_id', 'convenio_id')->withTimestamps();
+    }
+
+    public function esPartner()
+    {
+        $esPartner = false;
+        $registroPartner = DB::table('perfiles_puntos_users')->where('user_id', $this->id)->first();
+        if ($registroPartner) {
+            $esPartner = true;
+        }
+        return $esPartner;
+    }
+
+    public function partner()
+    {
+        return $this->belongsToMany(PerfilPunto::class, 'perfiles_puntos_users', 'user_id', 'perfil_punto_id')
+            ->withPivot('codigo')
+            ->withTimestamps();
     }
 }

@@ -1793,7 +1793,7 @@
 
 
 
-
+        @if(auth()->user()->esPartner())
         <div class="card card-style round-medium shadow-huge top-30"
             style="height: 125px;background-image:url('{{ asset('imagenes/delight/mi-perfil-inicio.jpg') }}')">
             <div class="card-top mt-4 ms-3">
@@ -1815,7 +1815,7 @@
             </div>
             <div class="card-overlay bg-black opacity-70"></div>
         </div>
-
+        @endif
 
 
         @if (auth()->user()->perfilesPuntos->count() > 0)
@@ -1826,7 +1826,7 @@
 
                     <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="512.000000pt" height="512.000000pt"
                         viewBox="0 0 512.000000 512.000000" preserveAspectRatio="xMidYMid meet"
-                        style="width: 100px; height: auto;" class="fa shake-svg">
+                        style="width: 100px; height: auto;" class="">
 
                         <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" id="icono-cookie"
                             fill="currentColor" stroke="none">

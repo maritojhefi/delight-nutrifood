@@ -336,10 +336,10 @@ class MiperfilController extends Controller
         // 🔑 Lógica CLAVE: Asignar directamente el valor (el Mutator en el Modelo lo hashea)
         if (!empty($validatedData['password'])) {
             // Asignamos el valor en texto plano. El modelo se encarga de hashearlo.
-            $usuario->password = $validatedData['password']; 
-            
+            $usuario->password = $validatedData['password'];
+
             // Removemos el campo del array para que fill() no lo intente asignar dos veces
-            unset($validatedData['password']); 
+            unset($validatedData['password']);
         }
 
         $usuario->fill($validatedData);
@@ -390,7 +390,10 @@ class MiperfilController extends Controller
     {
         $usuario = User::find($id);
         $ruta = URL::to('/register?ref=');
-        $ruta = $ruta . sprintf(PerfilPunto::CODIGO_PATROCINADOR . "%06d", $usuario->id);
+        $ruta = $ruta . $usuario->partner()->first()->pivot->codigo;
+
+        // dd($usuario->partner()->first()->pivot->codigo);
+        // dd($ruta);
         return response()->json([
             'status' => 'success',
             'message' => 'Enlace de patrocinador copiado correctamente',

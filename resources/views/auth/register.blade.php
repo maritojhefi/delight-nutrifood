@@ -107,7 +107,7 @@
                                             <div
                                                 class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center d-flex flex-column align-items-center justify-content-center">
                                                 <div class="text-center mb-2 mx-n3">
-                                                    <form id="form-codigo-referido" class="form-otp-referido d-inline-flex">
+                                                    <div id="form-codigo-referido" class="form-otp-referido d-inline-flex">
                                                         <input
                                                             class="otp-referido mx-1 rounded-sm text-center font-20 font-900"
                                                             style="padding-left: 0px !important;" type="text"
@@ -128,7 +128,7 @@
                                                             class="otp-referido mx-1 rounded-sm text-center font-20 font-900"
                                                             style="padding-left: 0px !important;" type="text"
                                                             maxlength="1" value="" placeholder="●">
-                                                    </form>
+                                                    </div>
                                                 </div>
                                                 <div
                                                     class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center d-flex align-items-center justify-content-center">
@@ -204,7 +204,7 @@
                                         <option value="11">Noviembre</option>
                                         <option value="12">Diciembre</option>
                                     </select>
-                                    <input type="number" class="form-control rounded-sm text-center" placeholder="Año"
+                                    <input type="number" class="form-control rounded-sm" placeholder="Año"
                                         name="ano_nacimiento" required>
                                 </div>
                             </div>
