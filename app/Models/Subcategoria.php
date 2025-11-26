@@ -99,6 +99,12 @@ class Subcategoria extends Model
             }
         }
     }
+    public function productosPublicos()
+    {
+        return $this->hasMany(Producto::class, 'subcategoria_id')
+            ->where('publico_tienda', true)
+            ->where('estado', 'activo');
+    }
     public function scopeTieneProductosDisponibles($query)
     {
         // Obtener solo tags con productos disponibles y visibles al cliente

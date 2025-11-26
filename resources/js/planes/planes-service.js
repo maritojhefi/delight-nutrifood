@@ -1,5 +1,5 @@
 import axios from "axios";
-import cachedAxios from "../config/axios/axios-instance";
+import cachedAxios, { loaderAxios } from "../config/axios/axios-instance";
 
 export const permisoPedido = async(idPlaneUser) => {
     const response = await axios.get(`/miperfil/permiso/${idPlaneUser}/2`);
@@ -18,7 +18,7 @@ export const permisoPedido = async(idPlaneUser) => {
 // }
 
 export const obtenerCalendarioPlan = async(idPlan, idUser) => {
-    const response = await axios.get(`/miperfil/calendario-plan/${idPlan}/${idUser}`);
+    const response = await loaderAxios.get(`/miperfil/calendario-plan/${idPlan}/${idUser}`);
     return response; 
 }
 

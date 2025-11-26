@@ -44,7 +44,13 @@
                             @endswitch
                         </h5>
                         <small class="text-white" style="font-size: clamp(10px, 2.5vw, 12px); opacity: 0.95; font-weight: 600;">
-                            {{ $item->cliente ? Str::words($item->cliente->name, 3, '') : 'Cliente sin nombre' }}
+                            @if($item->cliente && $item->cliente->name)
+                                {{ Str::words($item->cliente->name, 3, '') }}
+                            @elseif($item->usuario_manual)
+                                {{ Str::words($item->usuario_manual, 3, '') }}
+                            @else
+                                Cliente sin nombre
+                            @endif
                         </small>
                     </div>
                 </div>

@@ -163,9 +163,6 @@
 
     <div id="menu-historial-finalizados" class="menu menu-box-modal overflow rounded-m" style="width: 90%; max-width: 320px">
         <div class="menu-title flex-align-center">
-            <!-- <a href="#" class="back-menu-pedidos-dia">
-                <i data-lucide="chevron-left" class="lucide-icon"></i>
-            </a> -->
             <p class="color-highlight line-height-xs" style="width: 85%;">{{ $plan->nombre }}</p>
             <h1 id="fecha-historial-permisos" class="font-20 mt-1 mb-0 fecha-seleccionada">Fecha del día</h1>
             <a href="#" class="close-menu"><i class="fa fa-times-circle"></i></a>
@@ -574,7 +571,6 @@
             // Asignar funcionalidad al boton de confirmación
             if (esPendiente) {
                 tituloSimple.text("Solicitar Permiso");
-                // textoSimple.text(`¿Deseas pedir permiso para la fecha ${dia} de ${infoMes.nombre}  de ${infoMes.anio}?`);
                 textoSimple.html(`¿Deseas pedir permiso para la fecha <strong>${dia} de ${infoMes.nombre}  de ${infoMes.anio}</strong>?`);
                 $('#btnConfirmarSimple').off('click').on('click', async function(e) {
                     e.preventDefault();

@@ -308,11 +308,11 @@ hover-blue:hover {
     background-color: #4ECDC4;
 }
 
-/* .password-toggle {
+.password-toggle {
     color: #6c757d;
     padding: 0.375rem 0.75rem;
     font-size: 0.875rem;
-} */
+}
 
 .password-toggle:hover {
     color: #4ECDC4;
@@ -1205,6 +1205,8 @@ hover-blue:hover {
     line-height: 1.4;
 }
 
+
+
 /* .tags-container {
     anchor-name: --tag-popover-anchor;
 } */
@@ -1251,6 +1253,75 @@ hover-blue:hover {
     -moz-appearance: none;
     -webkit-appearance: none;
 }
+
+.lucide-icon.lucide-input {
+    position: absolute;
+    left: 10px; /* Adjust left position to fit inside the input */
+    top: 50%; /* Vertically center the icon */
+    transform: translateY(-50%); /* Ensures perfect vertical centering */
+    color: #888; /* Adjust the color to match Font Awesome icon color */
+    pointer-events: none; /* Ensure the icon doesn't block user interaction with input */
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+/* Ocultar Control por defecto de visibilidad para contraseñas */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-caps-lock-indicator {
+    display: none;
+}
+
+/* Most important - hides the eye icon in Chrome/Edge/Safari */
+input[type="password"]::-webkit-textfield-decoration-container {
+    display: none;
+}
+
+
+.theme-dark .ss-single {
+    color: white;
+}
+
+.theme-dark .ss-option {
+    color: white !important;
+}
+
+.ss-option.ss-selected {
+    border-radius: 0.4rem;
+    background-color: #7db1b1 !important;
+}
+
+.ss-search input {
+    border-radius: 0.4rem;
+}
+.theme-dark .ss-search input {
+    background-color:  #0f1117 !important;
+}
+
+.theme-dark .ss-content {
+    background-color:  #0f1117 !important;
+    /* background-color:  #1f2937 !important; */
+}
+
+.scroll-toast {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%); /* start hidden below */
+    bottom: 85px;
+    z-index: 93;
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.scroll-toast.visible {
+    transform: translateX(-50%) translateY(0); /* slide up into place */
+    opacity: 1;
+}
+
 
 /*
 .product-quantity-controls {

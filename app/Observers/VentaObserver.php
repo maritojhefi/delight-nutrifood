@@ -26,8 +26,8 @@ class VentaObserver
      */
     public function updated(Venta $venta)
     {
-        if ($venta->isDirty('cliente_id') || $venta->isDirty('tipo_entrega') || $venta->isDirty('mesa_id')) {
-            if ($venta->isDirty('cliente_id')) {
+        if ($venta->isDirty('cliente_id') || $venta->isDirty('tipo_entrega') || $venta->isDirty('mesa_id') || $venta->isDirty('usuario_manual')) {
+            if ($venta->isDirty('cliente_id') || $venta->isDirty('usuario_manual')) {
                 event(new CocinaPedidoEvent('El cliente ha sido cambiado', $venta->id, auth()->user()->id, 'cocina', 'info'));
                 event(new CocinaPedidoEvent('El cliente ha sido cambiado', $venta->id, auth()->user()->id, 'nutribar', 'info'));
             }

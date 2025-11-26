@@ -25,12 +25,6 @@ class LineaDelightController extends Controller
             return $producto;
         });
 
-        $subcategorias = Subcategoria::has('productos')
-            ->whereIn('categoria_id', [2,3])
-            ->orderBy('subcategorias.nombre')
-            ->get();
-
-
         $masVendidos = $productos->sortByDesc('cantidad_vendida')
             ->take(10);
 
@@ -53,9 +47,13 @@ class LineaDelightController extends Controller
 
         foreach ($horarios as $horario) {
             $horariosDataArray[$horario->nombre] = GlobalHelper::processSubcategoriaFoto(
-                Subcategoria::whereHas('horarios', function($query) use ($horario) {
-                    $query->where('nombre', $horario->nombre);
-                })->get()
+                Subcategoria::tieneProductosDisponibles()
+                    ->whereHas('horarios', function($query) use ($horario) {
+                        $query->where('nombre', $horario->nombre);
+                    })
+                    ->whereIn('categoria_id', [2, 3])
+                    ->orderBy('nombre')
+                    ->get()
             );
         }
 
@@ -63,7 +61,7 @@ class LineaDelightController extends Controller
 
         $horariosData = (object) $horariosDataArray;
 
-        return view('client.lineadelight.index', compact('subcategorias', 'masVendidos','masRecientes','enDescuento', 'conMasPuntos', 'productos', 'horarios','horariosData', 'tags'));
+        return view('client.lineadelight.index', compact( 'masVendidos','masRecientes','enDescuento', 'conMasPuntos', 'productos', 'horarios','horariosData', 'tags'));
     }
     public function categoriaPlanes()
     {

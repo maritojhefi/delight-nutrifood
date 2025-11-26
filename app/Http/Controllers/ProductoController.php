@@ -19,37 +19,6 @@ use Exception;
 
 class ProductoController extends Controller
 {
-    public function lineadelightsubcategoria($id)
-    {
-        $subcategoria = Subcategoria::find($id);
-
-        return view('client.productos.delight-subcategoria', compact('subcategoria'));
-    }
-    public function lineadelightproducto($id)
-    {
-        $producto = Producto::publicoTienda()->findOrFail($id);
-        $stockDisponible = $producto->contable ? $producto->stockTotal() > 0 : true;
-
-        // Procesar la imagen del producto y su url
-        $producto->imagen = $producto->pathAttachment();
-        $producto->url_detalle = route('delight.detalleproducto', $producto->id);
-        $adicionales = $producto->subcategoria->adicionales;
-
-        // Obtener productos similares excluyendo el producto ya obtenido
-        $similares = $producto->subcategoria->productos
-            // Omitir el producto actual entre los similares
-            ->reject(fn($p) => $p->id == $id || $p->estado != 'activo')
-            ->shuffle()
-            ->take(5)
-            ->map(function ($p) {
-                $p->imagen = 
-                $p->pathAttachment();
-                $p->url_detalle = route('delight.detalleproducto', $p->id);
-                return $p;
-            });
-
-        return view('client.productos.delight-producto', compact('producto', 'stockDisponible', 'similares', 'adicionales'));
-    }
     public function detallesubcategoria($id)
     {
         $subcategoria = Subcategoria::find($id);
@@ -93,32 +62,53 @@ class ProductoController extends Controller
     }
     public function detalleproducto($id)
     {
-        try {
         $producto = Producto::publicoTienda()->findOrFail($id);
         $stockDisponible = $producto->contable ? $producto->stockTotal() > 0 : true;
         // Procesar la imagen del producto y su url
         $producto->imagen = $producto->pathAttachment();
         $producto->url_detalle = route('delight.detalleproducto', $producto->id);
         $adicionales = $producto->subcategoria->adicionales;
-
         // Obtener productos similares excluyendo el producto ya obtenido
-        $similares = $producto->subcategoria->productos
+        $similares = $producto->subcategoria->productosPublicos
             // Omitir el producto actual entre los similares
-            ->reject(fn($p) => $p->id == $id || $p->estado != 'activo')
+            ->reject(fn($p) => $p->id == $id)
             ->shuffle()
-            ->take(5)
+            ->take(4)
             ->map(function ($p) {
-                $p->imagen = 
-                $p->pathAttachment();
+                $p->imagen = $p->pathAttachment();
                 $p->url_detalle = route('delight.detalleproducto', $p->id);
                 return $p;
             });
 
         return view('client.productos.delight-producto', compact('producto', 'stockDisponible', 'similares', 'adicionales'));
-        } catch (\Throwable $th) {
-            Log::error("Error al renderizar pagina: ", [$th]);
-        }
-        
+    }
+    public function lineadelightproducto($id)
+    {
+        $producto = Producto::publicoTienda()->findOrFail($id);
+        $stockDisponible = $producto->contable ? $producto->stockTotal() > 0 : true;
+        // Procesar la imagen del producto y su url
+        $producto->imagen = $producto->pathAttachment();
+        $producto->url_detalle = route('delight.detalleproducto', $producto->id);
+        $adicionales = $producto->subcategoria->adicionales;
+        // Obtener productos similares excluyendo el producto ya obtenido
+        $similares = $producto->subcategoria->productosPublicos
+            // Omitir el producto actual entre los similares
+            ->reject(fn($p) => $p->id == $id)
+            ->shuffle()
+            ->take(4)
+            ->map(function ($p) {
+                $p->imagen = $p->pathAttachment();
+                $p->url_detalle = route('delight.detalleproducto', $p->id);
+                return $p;
+            });
+
+        return view('client.productos.delight-producto', compact('producto', 'stockDisponible', 'similares', 'adicionales'));
+    }
+    public function lineadelightsubcategoria($id)
+    {
+        $subcategoria = Subcategoria::find($id);
+
+        return view('client.productos.delight-subcategoria', compact('subcategoria'));
     }
     public function menusemanal()
     {

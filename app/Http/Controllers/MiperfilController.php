@@ -277,10 +277,10 @@ class MiperfilController extends Controller
             'dia_nacimiento' => 'required|numeric|between:1,31',
             'mes_nacimiento' => 'required|numeric|between:1,12',
             'ano_nacimiento' => 'required|numeric|min:1900|max:' . (date('Y') - 12),
-            'profesion' => 'required|string|max:40',
+            'profesion' => 'nullable|string|max:40',
             'direccion' => 'required|string|max:100|min:15',
             'direccion_trabajo' => 'nullable|string|max:100|min:15',
-            'password' => 'nullable|string|min:5',
+            'password' => 'nullable|string|min:4',
             'hijos' => 'nullable|boolean',
             'latitud' => 'nullable|numeric',
             'longitud' => 'nullable|numeric',
@@ -305,7 +305,6 @@ class MiperfilController extends Controller
             'ano_nacimiento.min' => 'Por favor, ingresa una fecha de nacimiento válida.',
             'ano_nacimiento.max' => 'Por favor, ingresa una fecha de nacimiento válida.',
 
-            'profesion.required' => 'El campo profesión es obligatorio.',
             'profesion.max' => 'La profesión no puede exceder los 40 caracteres.',
 
             'direccion.required' => 'La dirección es obligatoria.',
@@ -315,7 +314,7 @@ class MiperfilController extends Controller
             'direccion_trabajo.min' => 'La dirección de trabajo debe tener al menos 15 caracteres.',
             'direccion_trabajo.max' => 'La dirección de trabajo no puede exceder los 100 caracteres.',
 
-            'password.min' => 'La contraseña debe tener al menos 5 caracteres.',
+            'password.min' => 'La contraseña debe tener al menos 4 caracteres.',
 
             'telf.digits' => 'El teléfono debe tener exactamente 8 dígitos.',
             'telf.unique' => 'Este número de teléfono ya está registrado.',
@@ -336,15 +335,17 @@ class MiperfilController extends Controller
         // 🔑 Lógica CLAVE: Asignar directamente el valor (el Mutator en el Modelo lo hashea)
         if (!empty($validatedData['password'])) {
             // Asignamos el valor en texto plano. El modelo se encarga de hashearlo.
-            $usuario->password = $validatedData['password']; 
-            
+            $usuario->password = $validatedData['password'];
+
             // Removemos el campo del array para que fill() no lo intente asignar dos veces
-            unset($validatedData['password']); 
+            unset($validatedData['password']);
         }
 
         $usuario->fill($validatedData);
         $usuario->hijos = $request->has('hijos') ? 1 : 0;
         $usuario->save();
+
+        // return back();
 
         return back()->with('success', 'Gracias! Tu perfil ha sido actualizado correctamente.');
     }
@@ -390,7 +391,10 @@ class MiperfilController extends Controller
     {
         $usuario = User::find($id);
         $ruta = URL::to('/register?ref=');
-        $ruta = $ruta . sprintf(PerfilPunto::CODIGO_PATROCINADOR . "%06d", $usuario->id);
+        $ruta = $ruta . $usuario->partner()->first()->pivot->codigo;
+
+        // dd($usuario->partner()->first()->pivot->codigo);
+        // dd($ruta);
         return response()->json([
             'status' => 'success',
             'message' => 'Enlace de patrocinador copiado correctamente',

@@ -6,12 +6,15 @@
 
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1, user-scalable=0 viewport-fit=cover" />
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    @if(config('app.env') !== 'local')
+        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    @endif
 
     <title>{{ GlobalHelper::getValorAtributoSetting('nombre_sistema') }}</title>
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('styles/bootstrap.css') }}?v=1.0.0">
-    <link rel="stylesheet" type="text/css" href="{{ asset('styles/custom.css') }}?v=1.0.0">
+    <link rel="stylesheet" type="text/css" href="{{ asset('styles/bootstrap.css') }}?v=1.0.2">
+    <link rel="stylesheet" type="text/css" href="{{ asset('styles/custom.css') }}?v=1.0.1">
+    <link rel="stylesheet" href="{{ asset('styles/loader/loader.css') }}?v=1.0.1">
     <link
         href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900|Roboto:300,300i,400,400i,500,500i,700,700i,900,900i&amp;display=swap"
         rel="stylesheet">
@@ -29,7 +32,7 @@
             };
         </script>
     @endenv
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/app.js') }}?v=1.0.1" defer></script>
     <style>
         .bordeado {
             border-style: dotted;
@@ -80,7 +83,26 @@
 
     @laravelPWA
 
+    <!-- CONFIGURACION AJAX JQUERY -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(document).ajaxStart(function() { 
+                // // console.log("AJAX Start detectado - mostrando loader.");
+                LoaderManager.setIsLoading(true);
+            });
+            
+            $(document).ajaxStop(function() { 
+                // // console.log("AJAX Stop detectado - ocultando loader.");
+                LoaderManager.setIsLoading(false);
+            });
+
+            $(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
+                // // console.log("AJAX Error detectado - ocultando loader.");
+                LoaderManager.setIsLoading(false);
+            });
+        });
+    </script>
     <style>
         /* Extra small devices (phones, 600px and down) */
         @media only screen and (max-width: 600px) {}
@@ -118,8 +140,60 @@
 
 <body id="margen"
     class="{{ isset(auth()->user()->color_page) ? auth()->user()->color_page : 'theme-light' }} margen">
-    <div id="preloader">
-        <div class="spinner-border color-highlight" role="status"></div>
+    <div id="preloader" style="background: none;">
+        <!-- <div class="spinner-border color-highlight" role="status"></div> -->
+        <!-- Backdrop -->
+        <div id="loader-backdrop visible" class="loader-backdrop" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 9998;
+            opacity: 1;
+            transition: opacity 600ms ease-in-out;
+        "></div>
+
+        <!-- Loader Container -->
+        <div id="loader-container visible" class="loader-container" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 1;
+            transform: scale(0.95);
+            transition: opacity 600ms ease-in-out, transform 600ms ease-in-out;
+        ">
+            <div class="loader-content">
+                <!-- Animated logo -->
+                <img
+                    src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}"
+                    alt="Loading"
+                    class="loader-logo"
+                />
+
+                <!-- Pulsing glow effect -->
+                <div class="loader-glow"></div>
+            </div>
+
+            <!-- Loading text -->
+            <div class="loader-text-container">
+                <p class="loader-text">Cargando</p>
+                <div class="loader-dots">
+                    <span class="loader-dot"></span>
+                    <span class="loader-dot delay-1"></span>
+                    <span class="loader-dot delay-2"></span>
+                </div>
+            </div>
+        </div>
     </div>
     <div id="page">
         {{-- <div class="header header-fixed header-auto-show header-logo-app">
@@ -162,11 +236,11 @@
     <div id="toast-cart-item-limit" class="snackbar-toast bg-yellow-dark color-white fade hide" data-autohide="true"
         style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Limite alcanzado!</div>
 
-    <div id="toast-success" class="snackbar-toast bg-green-dark color-white fade hide" data-autohide="true"
+    <div id="toast-success" class="snackbar-toast bg-green-dark color-white fade hide line-height-l py-2" data-autohide="true"
     style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Mensaje de exito</div>
-    <div id="toast-warning" class="snackbar-toast bg-yellow-dark color-white fade hide" data-autohide="true"
+    <div id="toast-warning" class="snackbar-toast bg-yellow-dark color-white fade hide line-height-l py-2" data-autohide="true"
         style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Mensaje de advertencia</div>
-    <div id="toast-error" class="snackbar-toast bg-red-dark color-white fade hide" data-autohide="true"
+    <div id="toast-error" class="snackbar-toast bg-red-dark color-white fade hide line-height-l py-2" data-autohide="true"
         style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Mensaje de error</div>
     @include('client.partials.modalredes')
 
@@ -174,26 +248,73 @@
         style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Link copiado!</div>
     @auth
         @php
-            $perfil = auth()->user();
-            $array = [
-                'nacimiento' => isset($perfil->nacimiento) ? $perfil->nacimiento : null,
-                // 'direccion' => isset($perfil->direccion) ? $perfil->direccion : null,
-                // 'foto' => isset($perfil->foto) ? $perfil->foto : null,
-                // 'latitud' => isset($perfil->latitud) ? $perfil->latitud : null,
-            ];
-            $datos = [];
-            foreach ($array as $llave => $valor) {
-                if (!isset($valor)) {
-                    $datos[$llave] = $valor;
-                }
-            }
-
+            $estaCompleto = auth()->user()->tienePerfilCompleto();
         @endphp
-        <x-perfil-incompleto-component :datos="$datos" />
+        <x-perfil-incompleto-component :estaCompleto="$estaCompleto" />
     @endauth
     @stack('modals')
     <script type="text/javascript" src="{{ asset('scripts/bootstrap.min.js') }}?v=1.0.0"></script>
     <script type="text/javascript" src="{{ asset('scripts/custom.js') }}?v=1.0.0"></script>
+    <script>
+        window.AppConfig = {
+            logoSmallUrl: "{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}",
+        };
+    </script>
+    <script>
+        // CONTROL PRELOADER EN REDIRECCIONES
+        $(document).ready(function() {
+            let splideInstances = [];
+
+            // Mostrar prelaoder en enlaces normales
+            $(document).on('click', 'a[href]', function(e) {
+                const preloader = $('#preloader');
+                const href = $(this).attr('href');
+
+                if (href && href !== '#' && !href.startsWith('#')) {
+                    preloader.removeClass('preloader-hide');
+                }
+            });
+
+            // Ocultar preloader cuando todo este cargado
+            async function hidePreloader() {
+                const images = document.querySelectorAll('img');
+                const imagePromises = Array.from(images).map(img => {
+                    if (img.complete) return Promise.resolve();
+                    return new Promise(resolve => {
+                        img.onload = resolve;
+                        img.onerror = resolve;
+                    });
+                });
+
+                await Promise.all(imagePromises);
+
+                if (typeof Splide !== 'undefined') {
+                    await new Promise(resolve => setTimeout(resolve, 150));
+                    
+                    const splideElements = document.querySelectorAll('.splide');
+                    if (splideElements.length > 0) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                $('#preloader').addClass('preloader-hide');
+            }
+
+            // Manejar carga inicial
+            $(window).on('load', hidePreloader);
+
+            // Manejar navegacion atras/adelante
+            window.addEventListener('pageshow', function(event) {
+                // event.persisted es true cuando la pagina es restaurada desde bfcache
+                if (event.persisted) {
+                    // La pagina fue restaurada desde cache, ocultar loader inmediatamente
+                    $('#preloader').addClass('preloader-hide');
+                }
+            });
+        });
+    </script>
     <script>
         function myFunction() {
             var element = document.body;
@@ -224,7 +345,6 @@
                     // API Moderna de portapapeles
                     await navigator.clipboard.writeText(rutaValue);
 
-                    console.log("Copiado exitoso:", rutaValue);
 
                     // Revelar toast de existir
                     const toastEl = document.getElementById('shared');
@@ -243,7 +363,6 @@
                     try {
                         const successful = document.execCommand('copy');
                         if (!successful) throw new Error('Copy failed');
-                        console.log("Copia mediante fallback exitosa");
                     } finally {
                         document.body.removeChild(tempInput);
                     }
