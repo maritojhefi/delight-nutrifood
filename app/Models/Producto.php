@@ -30,6 +30,7 @@ class Producto extends Model
         'puntos',
         'medicion',
         'contable',
+        'estado',
         'observacion',
         'prioridad',
         'stock_actual',

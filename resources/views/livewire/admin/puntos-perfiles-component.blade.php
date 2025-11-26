@@ -33,9 +33,7 @@
 
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-header mt-0 mb-0 pb-2 pt-2">
-                    <h4 class="card-title">Perfiles de Puntos - {{ $perfiles->total() }} perfiles</h4>
-                </div>
+             
                 <div class="card-body p-3">
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped table-responsive-md m-0 p-0 letra12">
@@ -79,10 +77,10 @@
                                                         wire:click="editarPerfil({{ $perfil->id }})" title="Editar">
                                                         <i class="fa fa-pencil"></i>
                                                     </button>
-                                                    <button type="button" class="btn btn-danger shadow btn-xs sharp"
+                                                    {{-- <button type="button" class="btn btn-danger shadow btn-xs sharp"
                                                         onclick="eliminarPerfil({{ $perfil->id }})" title="Eliminar">
                                                         <i class="fa fa-trash"></i>
-                                                    </button>
+                                                    </button> --}}
                                                     <button type="button" class="btn btn-info shadow btn-xs sharp ms-1"
                                                         wire:click="agregarUsuarios({{ $perfil->id }})"
                                                         title="Agregar Usuarios">
@@ -103,11 +101,7 @@
                     @if ($perfiles->isNotEmpty())
                         <div class="row d-flex justify-content-between align-items-center flex-wrap mt-3 px-3"
                             style="justify-content: center !important;">
-                            <div class="col-12 mb-2 mb-md-0 text-center d-flex justify-content-center">
-                                <small class="text-muted">
-                                    Mostrando {{ $perfiles->count() }} de {{ $perfiles->total() }} registros
-                                </small>
-                            </div>
+                           
                             <div class="col-12 d-flex justify-content-center">
                                 {{ $perfiles->links() }}
                             </div>
@@ -222,20 +216,25 @@
                                             @forelse($usuariosDisponibles as $usuario)
                                                 <div class="list-group-item d-flex justify-content-between align-items-center"
                                                     style="padding: 2% !important;">
-                                                    <div>
+                                                    <div class="flex-grow-1">
                                                         <h6 class="mb-1">{{ $usuario->name }} | <small
                                                                 class="text-info">
                                                                 <i
                                                                     class="fa fa-phone me-1"></i>{{ $usuario->telf ?? 'Sin teléfono' }}
                                                             </small></h6>
-
+                                                        @if($usuario->perfilesPuntos->isNotEmpty())
+                                                            <small class="text-warning">
+                                                                <i class="fa fa-exclamation-triangle me-1"></i>
+                                                                Actualmente en: {{ $usuario->perfilesPuntos->first()->nombre }}
+                                                            </small>
+                                                        @endif
                                                     </div>
-                                                    <button type="button" class="btn btn-success btn-sm btn-xxs"
+                                                    <button type="button" class="btn btn-success btn-sm btn-xxs ms-2"
                                                         wire:click="agregarUsuarioAlPerfil({{ $usuario->id }})"
                                                         wire:loading.attr="disabled"
                                                         wire:target="agregarUsuarioAlPerfil"
-                                                        title="Agregar al perfil">
-                                                        <i class="fa fa-plus"></i>
+                                                        title="{{ $usuario->perfilesPuntos->isNotEmpty() ? 'Reasignar al perfil' : 'Agregar al perfil' }}">
+                                                        <i class="fa fa-{{ $usuario->perfilesPuntos->isNotEmpty() ? 'exchange' : 'plus' }}"></i>
                                                     </button>
                                                 </div>
                                             @empty
@@ -245,6 +244,13 @@
                                                 </div>
                                             @endforelse
                                         </div>
+                                        
+                                        <!-- Paginación usuarios disponibles -->
+                                        @if($usuariosDisponibles->hasPages())
+                                            <div class="mt-2">
+                                                {{ $usuariosDisponibles->links() }}
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -278,15 +284,14 @@
                                             @forelse($usuariosAsignados as $usuario)
                                                 <div class="list-group-item d-flex justify-content-between align-items-center"
                                                     style="padding: 2% !important;">
-                                                    <div>
+                                                    <div class="flex-grow-1">
                                                         <h6 class="mb-1">{{ $usuario->name }} | <small
                                                                 class="text-info">
                                                                 <i
                                                                     class="fa fa-phone me-1"></i>{{ $usuario->telf ?? 'Sin teléfono' }}
-                                                                </small< /h6>
-                                                                >
+                                                            </small></h6>
                                                     </div>
-                                                    <button type="button" class="btn btn-danger btn-xxs"
+                                                    <button type="button" class="btn btn-danger btn-xxs ms-2"
                                                         wire:click="quitarUsuarioDelPerfil({{ $usuario->id }})"
                                                         wire:loading.attr="disabled"
                                                         wire:target="quitarUsuarioDelPerfil"
@@ -301,6 +306,13 @@
                                                 </div>
                                             @endforelse
                                         </div>
+                                        
+                                        <!-- Paginación usuarios asignados -->
+                                        @if($usuariosAsignados->hasPages())
+                                            <div class="mt-2">
+                                                {{ $usuariosAsignados->links() }}
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

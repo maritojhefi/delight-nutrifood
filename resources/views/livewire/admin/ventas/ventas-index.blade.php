@@ -13,7 +13,7 @@
 
 </div>
 @push('css')
-    <script src="{{ asset('js/adicionales-sweetalert.js') }}?v=1"></script>
+    <script src="{{ asset('js/adicionales-sweetalert.js') }}?v=2"></script>
     <style>
         /* Ancho del scrollbar */
         ::-webkit-scrollbar {

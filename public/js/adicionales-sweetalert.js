@@ -20,7 +20,7 @@ function mostrarSweetAlertAdicionales(producto, grupos) {
         title: "Personaliza tu orden",
         html: html,
         width: "95%",
-        maxWidth: "700px",
+        maxWidth: "1200px",
         showCancelButton: true,
         confirmButtonText: "AGREGAR PEDIDO",
         cancelButtonText: "Cancelar",
@@ -44,43 +44,88 @@ function crearHTMLModal(producto, grupos) {
             <!-- Cabecera con información del producto -->
             <div class="producto-header mb-3">
                 <div class="producto-info-wrapper">
-                    <div class="producto-detalle">
-                        <img src="${producto.imagen}" alt="${
+                    <!-- Parte izquierda: Producto y cantidad -->
+                    <div class="producto-left-section">
+                        <div class="producto-detalle">
+                            <img src="${producto.imagen}" alt="${
         producto.nombre
     }" class="producto-imagen">
-                        <div class="producto-texto">
-                            <h6 class="producto-nombre mb-1">${
-                                producto.nombre
-                            }</h6>
-                            <p class="producto-precio mb-0">Bs. ${producto.precio.toFixed(
-                                2
-                            )}</p>
-                          
+                            <div class="producto-texto">
+                                <h6 class="producto-nombre mb-1">${
+                                    producto.nombre
+                                }</h6>
+                                <p class="producto-precio mb-0">Bs. ${producto.precio.toFixed(
+                                    2
+                                )}</p>
+                                <strong class="producto-cantidad mb-0">Existencias: ${
+                                    producto.cantidad
+                                        ? producto.cantidad + " disp."
+                                        : "Ilimitado"
+                                } </strong>
+                            </div>
+                        </div>
+                        
+                        <div class="cantidad-control">
+                            <label class="cantidad-label">Cantidad</label>
+                            <div class="cantidad-buttons">
+                                <button type="button" class="btn-cantidad btn-menos" id="btn-disminuir">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                </button>
+                                <input type="number" class="cantidad-input" id="cantidad" value="1" min="1" max="${
+                                    producto.cantidad
+                                }" readonly>
+                                <button type="button" class="btn-cantidad btn-mas" id="btn-aumentar">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="cantidad-control">
-                      <strong class="producto-cantidad mb-0 text-white">Existencias: ${
-                          producto.cantidad
-                              ? producto.cantidad + " disp."
-                              : "Ilimitado"
-                      } </strong>
-                        <label class="cantidad-label">Cantidad</label>
-                        <div class="cantidad-buttons">
-                            <button type="button" class="btn-cantidad btn-menos" id="btn-disminuir">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <!-- Parte media: Observaciones -->
+                    <div class="producto-middle-section">
+                        <div class="observaciones-card">
+                            <label class="observaciones-label">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                                 </svg>
-                            </button>
-                            <input type="number" class="cantidad-input" id="cantidad" value="1" min="1" max="${
-                                producto.cantidad
-                            }" readonly>
-                            <button type="button" class="btn-cantidad btn-mas" id="btn-aumentar">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                Observaciones (opcional)
+                            </label>
+                            <textarea class="observaciones-textarea" id="observacion-producto" placeholder="Ej: Sin cebolla, poco sal, etc." rows="3"></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Parte derecha: Resumen -->
+                    <div class="producto-right-section">
+                        <div class="resumen-card">
+                            <div class="resumen-header">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                                    <path d="M3 9h18M9 21V9"></path>
                                 </svg>
-                            </button>
+                                <span>Resumen</span>
+                            </div>
+                            <div class="resumen-linea">
+                                <span>Costo Unitario:</span>
+                                <span id="precio-producto">Bs. ${producto.precio.toFixed(
+                                    2
+                                )}</span>
+                            </div>
+                            <div class="resumen-linea">
+                                <span>Adicionales:</span>
+                                <span id="precio-adicionales">Bs. 0.00</span>
+                            </div>
+                            <div class="resumen-divider"></div>
+                            <div class="resumen-total">
+                                <span>Total:</span>
+                                <span id="precio-total">Bs. ${producto.precio.toFixed(
+                                    2
+                                )}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -171,46 +216,6 @@ function crearHTMLModal(producto, grupos) {
     });
 
     html += `
-            </div>
-            
-            <!-- Resumen y observaciones -->
-            <div class="footer-section">
-                <div class="resumen-card">
-                    <div class="resumen-header">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                            <path d="M3 9h18M9 21V9"></path>
-                        </svg>
-                        <span>Resumen</span>
-                    </div>
-                    <div class="resumen-linea">
-                        <span>Costo Unitario:</span>
-                        <span id="precio-producto">Bs. ${producto.precio.toFixed(
-                            2
-                        )}</span>
-                    </div>
-                    <div class="resumen-linea">
-                        <span>Adicionales:</span>
-                        <span id="precio-adicionales">Bs. 0.00</span>
-                    </div>
-                    <div class="resumen-divider"></div>
-                    <div class="resumen-total">
-                        <span>Total:</span>
-                        <span id="precio-total">Bs. ${producto.precio.toFixed(
-                            2
-                        )}</span>
-                    </div>
-                </div>
-                
-                <div class="observaciones-card">
-                    <label class="observaciones-label">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                        Observaciones (opcional)
-                    </label>
-                    <textarea class="observaciones-textarea" id="observacion-producto" placeholder="Ej: Sin cebolla, poco sal, etc." rows="2"></textarea>
-                </div>
             </div>
         </div>
     `;
@@ -398,6 +403,15 @@ style.textContent = `
     /* ===== CONFIGURACIÓN GENERAL ===== */
     .swal-compacto {
         font-size: 0.875rem !important;
+        max-width: 1200px !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+    
+    .swal-compacto .swal2-popup {
+        max-width: 1200px !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
     }
     
     .swal-compacto .swal2-title {
@@ -405,6 +419,8 @@ style.textContent = `
         margin-bottom: 1rem !important;
         font-weight: 700;
         color: #2c3e50;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
     }
     
     .swal-compacto .swal2-html-container {
@@ -412,6 +428,23 @@ style.textContent = `
         padding: 0 !important;
         overflow-y: auto;
         max-height: 70vh;
+    }
+    
+    /* ===== MENSAJES DE VALIDACIÓN ===== */
+    .swal-compacto .swal2-validation-message {
+        margin: 0.75rem 0 !important;
+        padding: 0.75rem 1rem !important;
+        font-size: 0.85rem !important;
+        text-align: center !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        line-height: 1.4 !important;
+    }
+    
+    .swal-compacto .swal2-validation-message::before {
+        margin-right: 0.5rem !important;
     }
     
     .modal-adicionales {
@@ -429,15 +462,32 @@ style.textContent = `
     .modal-adicionales .producto-info-wrapper {
         display: flex;
         justify-content: space-between;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+    
+    .modal-adicionales .producto-left-section {
+        display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 1.5rem;
+        flex: 0 0 auto;
+    }
+    
+    .modal-adicionales .producto-middle-section {
+        flex: 1;
+        min-width: 200px;
+        max-width: 300px;
+    }
+    
+    .modal-adicionales .producto-right-section {
+        flex-shrink: 0;
+        min-width: 250px;
     }
     
     .modal-adicionales .producto-detalle {
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        flex: 1;
     }
     
     .modal-adicionales .producto-imagen {
@@ -466,6 +516,16 @@ style.textContent = `
         font-weight: 600;
         margin: 0;
         opacity: 0.95;
+    }
+    
+    .modal-adicionales .producto-cantidad {
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin: 0;
+        opacity: 0.9;
+        display: block;
+        margin-top: 0.25rem;
+        color: white;
     }
     
     /* ===== CONTROL DE CANTIDAD ===== */
@@ -546,7 +606,7 @@ style.textContent = `
     /* ===== CONTENEDOR DE ADICIONALES ===== */
     .modal-adicionales .adicionales-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(4, 1fr);
         gap: 1rem;
         margin: 1rem 0;
     }
@@ -744,10 +804,11 @@ style.textContent = `
     
     /* ===== TARJETA DE RESUMEN ===== */
     .modal-adicionales .resumen-card {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border: 2px solid #20c996;
+        background: white;
+        border: 2px solid rgba(255, 255, 255, 0.8);
         border-radius: 10px;
         padding: 0.875rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
     
     .modal-adicionales .resumen-header {
@@ -792,10 +853,14 @@ style.textContent = `
     
     /* ===== TARJETA DE OBSERVACIONES ===== */
     .modal-adicionales .observaciones-card {
-        background: #f8f9fa;
-        border: 2px solid #dee2e6;
+        background: white;
+        border: 2px solid rgba(255, 255, 255, 0.8);
         border-radius: 10px;
         padding: 0.875rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
     
     .modal-adicionales .observaciones-label {
@@ -811,7 +876,7 @@ style.textContent = `
     }
     
     .modal-adicionales .observaciones-label svg {
-        color: #6c757d;
+        color: #20c996;
     }
     
     .modal-adicionales .observaciones-textarea {
@@ -823,6 +888,9 @@ style.textContent = `
         resize: none;
         transition: all 0.2s ease;
         font-family: inherit;
+        background: white;
+        color: #2c3e50;
+        flex: 1;
     }
     
     .modal-adicionales .observaciones-textarea:focus {
@@ -836,6 +904,12 @@ style.textContent = `
     }
     
     /* ===== BOTONES DEL MODAL ===== */
+    .swal-compacto .swal2-actions {
+        justify-content: flex-end !important;
+        gap: 0.75rem !important;
+        margin-top: 0 !important;
+    }
+    
     .swal-btn-confirmar {
         font-weight: 700 !important;
         padding: 0.75rem 2rem !important;
@@ -845,6 +919,7 @@ style.textContent = `
         letter-spacing: 0.5px;
         box-shadow: 0 4px 12px rgba(32, 201, 150, 0.3) !important;
         transition: all 0.2s ease !important;
+        order: 2 !important;
     }
     
     .swal-btn-confirmar:hover {
@@ -858,6 +933,7 @@ style.textContent = `
         border-radius: 8px !important;
         font-size: 0.9rem !important;
         transition: all 0.2s ease !important;
+        order: 1 !important;
     }
     
     .swal-btn-cancelar:hover {
@@ -869,14 +945,14 @@ style.textContent = `
     /* Desktop grande */
     @media (min-width: 1200px) {
         .modal-adicionales .adicionales-container {
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
         }
     }
     
     /* Desktop */
     @media (min-width: 992px) and (max-width: 1199px) {
         .modal-adicionales .adicionales-container {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
         }
     }
     
@@ -891,6 +967,10 @@ style.textContent = `
             grid-template-columns: repeat(2, 1fr);
             gap: 0.75rem;
         }
+        
+        .modal-adicionales .producto-middle-section {
+            max-width: 100%;
+        }
     }
     
     @media (max-width: 768px) {
@@ -899,9 +979,19 @@ style.textContent = `
             gap: 0.75rem;
         }
         
-        .modal-adicionales .footer-section {
-            grid-template-columns: 1fr;
-            gap: 0.75rem;
+        .modal-adicionales .producto-info-wrapper {
+            flex-direction: column;
+        }
+        
+        .modal-adicionales .producto-middle-section {
+            order: 3;
+            width: 100%;
+            max-width: 100%;
+        }
+        
+        .swal-compacto .swal2-actions {
+            justify-content: center !important;
+            width: 100% !important;
         }
     }
     
@@ -911,9 +1001,33 @@ style.textContent = `
             font-size: 1.1rem !important;
         }
         
+        .swal-compacto .swal2-validation-message {
+            font-size: 0.8rem !important;
+            padding: 0.6rem 0.75rem !important;
+            margin: 0.5rem 0 !important;
+        }
+        
         .modal-adicionales .producto-info-wrapper {
             flex-direction: column;
-            gap: 0.75rem;
+            gap: 1rem;
+        }
+        
+        .modal-adicionales .producto-left-section {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+            width: 100%;
+        }
+        
+        .modal-adicionales .producto-middle-section {
+            width: 100%;
+            max-width: 100%;
+            margin: 0.5rem 0;
+        }
+        
+        .modal-adicionales .producto-right-section {
+            width: 100%;
+            min-width: auto;
         }
         
         .modal-adicionales .producto-detalle {
@@ -924,6 +1038,7 @@ style.textContent = `
             width: 100%;
             flex-direction: row;
             justify-content: space-between;
+            align-items: center;
         }
         
         .modal-adicionales .producto-header {
@@ -953,10 +1068,14 @@ style.textContent = `
             padding: 0.75rem;
         }
         
-        .modal-adicionales .footer-section {
-            grid-template-columns: 1fr;
-            gap: 0.75rem;
-            margin-top: 1rem;
+        .swal-compacto .swal2-actions {
+            flex-direction: column !important;
+            width: 100% !important;
+        }
+        
+        .swal-btn-confirmar,
+        .swal-btn-cancelar {
+            width: 100% !important;
         }
         
         .modal-adicionales .btn-cantidad {
@@ -992,6 +1111,11 @@ style.textContent = `
         .modal-adicionales .cantidad-input {
             width: 40px;
             font-size: 1rem;
+        }
+        
+        .swal-compacto .swal2-validation-message {
+            font-size: 0.75rem !important;
+            padding: 0.5rem 0.6rem !important;
         }
     }
     

@@ -6,6 +6,7 @@ use App\Models\User;
 use Livewire\Component;
 use App\Models\PerfilPunto;
 use Livewire\WithPagination;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PuntosPerfilesComponent extends Component
 {
@@ -25,8 +26,8 @@ class PuntosPerfilesComponent extends Component
     public $perfilSeleccionado = null;
     public $searchUsuariosDisponibles = '';
     public $searchUsuariosAsignados = '';
-    public $usuariosDisponibles = [];
-    public $usuariosAsignados = [];
+    public $perPageDisponibles = 30;
+    public $perPageAsignados = 30;
 
     protected $listeners = ['eliminar-perfil' => 'eliminarPerfil'];
 
@@ -54,9 +55,15 @@ class PuntosPerfilesComponent extends Component
     {
         $perfiles = PerfilPunto::when($this->search, function ($query) {
             $query->where('nombre', 'like', '%' . $this->search . '%');
-        })->paginate(10);
+        })->simplePaginate(30);
 
-        return view('livewire.admin.puntos-perfiles-component', compact('perfiles'))->extends('admin.master')->section('content');
+        // Siempre pasar las propiedades computadas a la vista
+        // Los métodos computados ya manejan el caso cuando no hay perfil seleccionado
+        return view('livewire.admin.puntos-perfiles-component', [
+            'perfiles' => $perfiles,
+            'usuariosDisponibles' => $this->usuariosDisponibles,
+            'usuariosAsignados' => $this->usuariosAsignados,
+        ])->extends('admin.master')->section('content');
     }
 
     // Método para crear nuevo perfil
@@ -147,19 +154,26 @@ class PuntosPerfilesComponent extends Component
         $this->emit('abrirModalUsuarios');
     }
 
-    // Método para cargar usuarios disponibles y asignados
-    public function cargarUsuarios()
+    // Métodos computados para obtener usuarios disponibles y asignados
+    public function getUsuariosDisponiblesProperty()
     {
         if (!$this->perfilSeleccionado) {
-            return;
+            return new LengthAwarePaginator([], 0, $this->perPageDisponibles, 1, [
+                'path' => request()->url(),
+                'pageName' => 'page_disponibles',
+            ]);
         }
 
         // Usuarios con role_id = 4 (disponibles)
-        $usuariosDisponiblesQuery = User::where('role_id', 4)->select('id', 'name', 'email', 'telf');
+        // Incluimos TODOS los usuarios: sin perfil y con otros perfiles (para poder reasignarlos)
+        $usuariosDisponiblesQuery = User::select('id', 'name', 'email', 'telf')
+            ->with('perfilesPuntos');
 
         if ($this->searchUsuariosDisponibles) {
             $usuariosDisponiblesQuery->where(function ($query) {
-                $query->where('name', 'like', '%' . $this->searchUsuariosDisponibles . '%')->orWhere('email', 'like', '%' . $this->searchUsuariosDisponibles . '%');
+                $query->where('name', 'like', '%' . $this->searchUsuariosDisponibles . '%')
+                    ->orWhere('email', 'like', '%' . $this->searchUsuariosDisponibles . '%')
+                    ->orWhere('telf', 'like', '%' . $this->searchUsuariosDisponibles . '%');
             });
         }
 
@@ -169,34 +183,62 @@ class PuntosPerfilesComponent extends Component
             $usuariosDisponiblesQuery->whereNotIn('id', $usuariosAsignadosIds);
         }
 
-        //excluir usuarios que ya tienen algun perfil registrado en la tabla intermedia 'perfiles_puntos_users'
-        $usuariosDisponiblesQuery->whereDoesntHave('perfilesPuntos');
+        // Paginación para usuarios disponibles
+        return $usuariosDisponiblesQuery->simplePaginate($this->perPageDisponibles, ['*'], 'page_disponibles');
+    }
 
-        $this->usuariosDisponibles = $usuariosDisponiblesQuery->get();
+    public function getUsuariosAsignadosProperty()
+    {
+        if (!$this->perfilSeleccionado) {
+            return new LengthAwarePaginator([], 0, $this->perPageAsignados, 1, [
+                'path' => request()->url(),
+                'pageName' => 'page_asignados',
+            ]);
+        }
 
         // Usuarios ya asignados al perfil
-        $usuariosAsignadosQuery = $this->perfilSeleccionado->usuarios();
+        $usuariosAsignadosQuery = $this->perfilSeleccionado->usuarios()
+            ->select('users.id', 'users.name', 'users.email', 'users.telf');
 
         if ($this->searchUsuariosAsignados) {
             $usuariosAsignadosQuery->where(function ($query) {
-                $query->where('name', 'like', '%' . $this->searchUsuariosAsignados . '%')->orWhere('email', 'like', '%' . $this->searchUsuariosAsignados . '%');
+                $query->where('users.name', 'like', '%' . $this->searchUsuariosAsignados . '%')
+                    ->orWhere('users.email', 'like', '%' . $this->searchUsuariosAsignados . '%')
+                    ->orWhere('users.telf', 'like', '%' . $this->searchUsuariosAsignados . '%');
             });
         }
 
-        $this->usuariosAsignados = $usuariosAsignadosQuery->get();
+        // Paginación para usuarios asignados
+        return $usuariosAsignadosQuery->simplePaginate($this->perPageAsignados, ['*'], 'page_asignados');
+    }
+
+    // Método para cargar usuarios (mantenido para compatibilidad, pero ahora usa los getters)
+    public function cargarUsuarios()
+    {
+        // Los datos se cargan automáticamente a través de los métodos computados
+        // Este método se mantiene para cuando se necesite forzar una recarga
     }
 
     // Método para agregar usuario al perfil
     public function agregarUsuarioAlPerfil($userId)
     {
         $user = User::findOrFail($userId);
-        $this->perfilSeleccionado->usuarios()->attach($userId);
 
-        $this->cargarUsuarios();
+        // Verificar si el usuario ya tenía otro perfil asignado
+        $teniaOtroPerfil = $user->perfilesPuntos()
+            ->where('perfil_punto_id', '!=', $this->perfilSeleccionado->id)
+            ->exists();
+
+        // Usar sync para que el usuario solo tenga este perfil (elimina cualquier otro perfil previo)
+        $user->perfilesPuntos()->sync([$this->perfilSeleccionado->id]);
+
+        $mensaje = $teniaOtroPerfil
+            ? "Usuario {$user->name} reasignado al perfil exitosamente."
+            : "Usuario {$user->name} agregado al perfil exitosamente.";
 
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
-            'message' => "Usuario {$user->name} agregado al perfil exitosamente.",
+            'message' => $mensaje,
         ]);
     }
 
@@ -205,8 +247,6 @@ class PuntosPerfilesComponent extends Component
     {
         $user = User::findOrFail($userId);
         $this->perfilSeleccionado->usuarios()->detach($userId);
-
-        $this->cargarUsuarios();
 
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
@@ -221,18 +261,18 @@ class PuntosPerfilesComponent extends Component
         $this->perfilSeleccionado = null;
         $this->searchUsuariosDisponibles = '';
         $this->searchUsuariosAsignados = '';
-        $this->usuariosDisponibles = [];
-        $this->usuariosAsignados = [];
+        $this->resetPage('page_disponibles');
+        $this->resetPage('page_asignados');
     }
 
     // Métodos para actualizar búsquedas
     public function updatedSearchUsuariosDisponibles()
     {
-        $this->cargarUsuarios();
+        $this->resetPage('page_disponibles');
     }
 
     public function updatedSearchUsuariosAsignados()
     {
-        $this->cargarUsuarios();
+        $this->resetPage('page_asignados');
     }
 }

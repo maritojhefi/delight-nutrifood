@@ -14,7 +14,9 @@ class PerfilPunto extends Model
     protected $fillable = [
         'nombre',
         'porcentaje',
-        'bono'
+        'bono',
+        'default',
+        'bloqueado'
     ];
     public function setNombreAttribute($value)
     {

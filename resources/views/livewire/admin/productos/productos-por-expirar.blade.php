@@ -20,17 +20,19 @@
                         @if ($productosSinStock->isNotEmpty())
                             <strong class="text-muted">Resultados de productos sin stock: </strong><br>
                             @foreach ($productosSinStock as $prodSinstock)
-                                <span style="cursor: pointer;" onclick="opcionesProducto({
+                                <span style="cursor: pointer;text-decoration: underline !important;" onclick="opcionesProducto({
                                 id: {{ $prodSinstock->id }},
                                 nombre: '{{ $prodSinstock->nombre }}',
                                 precio: '{{ $prodSinstock->precio }} Bs',
                                 stockTotal: '0',
-                                estado: '{{ $prodSinstock->estado ? 'Activo' : 'Inactivo' }}',
+                                estado: '{{ $prodSinstock->estado === 'activo' ? 'Activo' : 'Inactivo' }}',
+                                estadoReal: '{{ $prodSinstock->estado }}',
                                 contable: '{{ $prodSinstock->contable ? 'Sí' : 'No' }}',
+                                contableReal: {{ $prodSinstock->contable ? 'true' : 'false' }},
                                 productoVinculado: '{{ $prodSinstock->productoVinculadoStock ? $prodSinstock->productoVinculadoStock->nombre : 'Ninguno' }}',
                                 medicion: '{{ $prodSinstock->medicion }}'
                             })"
-                                    class="badge badge-sm  badge-primary">{{ $prodSinstock->nombre }} <i class="fa fa-info-circle"></i></span>
+                                    class="badge badge-outline-dark">{{ $prodSinstock->nombre }} <i class="fa fa-info-circle"></i></span>
                             @endforeach
                         @endif
 
@@ -64,13 +66,15 @@
                                 nombre: '{{ $item->nombre }}',
                                 precio: '{{ $item->precio }} Bs',
                                 stockTotal: '{{ $item->stockTotal() }}',
-                                estado: '{{ $item->estado ? 'Activo' : 'Inactivo' }}',
+                                estado: '{{ $item->estado === 'activo' ? 'Activo' : 'Inactivo' }}',
+                                estadoReal: '{{ $item->estado }}',
                                 contable: '{{ $item->contable ? 'Sí' : 'No' }}',
+                                contableReal: {{ $item->contable ? 'true' : 'false' }},
                                 productoVinculado: '{{ $item->productoVinculadoStock ? $item->productoVinculadoStock->nombre : 'Ninguno' }}',
                                 medicion: '{{ $item->medicion }}'
                             })"
                                 class="text-truncate d-inline-block"
-                                ><span class="badge badge-primary">{{ $item->nombre }} <i
+                                ><span class="" style="text-decoration: underline !important;">{{ $item->nombre }} <i
                                     class="fa fa-info-circle"></i></span></a>
                                         </h6>
                                         <div class="d-flex flex-wrap">
@@ -286,6 +290,10 @@
             // Almacenar la información del producto para uso posterior
             productoActual = producto;
             
+            // Determinar si el producto está activo (usar estadoReal si está disponible)
+            const estaActivo = (producto.estadoReal || producto.estado) === 'activo' || producto.estado === 'Activo';
+            const esContable = producto.contableReal !== undefined ? producto.contableReal : (producto.contable === 'Sí');
+            
             Swal.fire({
                 title: 'Información del Producto',
                 html: `
@@ -300,23 +308,26 @@
                         </div>
                         <div class="row" style="margin-bottom: 4px;">
                             <div class="col-4" style="color: white;"><strong>Stock:</strong></div>
-                            <div class="col-8" style="color: white; font-weight: 500;">${producto.stockTotal} ${producto.medicion}(s)</div>
+                            <div class="col-8" style="color: white; font-weight: 500;" id="stock-total">${producto.stockTotal} ${producto.medicion}(s)</div>
                         </div>
                         <div class="row" style="margin-bottom: 4px;">
                             <div class="col-4" style="color: white;"><strong>Estado:</strong></div>
                             <div class="col-8">
-                                <span class="badge badge-sm ${producto.estado === 'Activo' ? 'badge-success' : 'badge-danger'}">${producto.estado}</span>
+                                <span class="badge badge-sm ${estaActivo ? 'badge-success' : 'badge-danger'}" id="estado-badge">${producto.estado}</span>
+                                <i id="cambiarEstadoBtn" class="flaticon-075-reload text-danger ms-2" style="cursor: pointer; font-size: 14px;" title="Cambiar estado"></i>
                             </div>
                         </div>
                         <div class="row" style="margin-bottom: 4px;">
                             <div class="col-4" style="color: white;"><strong>Contable:</strong></div>
                             <div class="col-8">
-                                <span class="badge badge-sm ${producto.contable === 'Sí' ? 'badge-info' : 'badge-secondary'}">${producto.contable}</span>
+                                <span class="badge badge-sm ${esContable ? 'badge-info' : 'badge-secondary'}" id="contable-badge">${producto.contable}</span>
+                                <i id="cambiarContableBtn" class="flaticon-075-reload ms-2" style="cursor: ${estaActivo ? 'pointer' : 'not-allowed'}; font-size: 14px; color: ${estaActivo ? '#dc3545' : '#6c757d'}; opacity: ${estaActivo ? '1' : '0.5'};" title="Cambiar contable" ${!estaActivo ? 'onclick="return false;"' : ''}></i>
+                                ${!estaActivo ? '<small class="text-warning d-block mt-1" style="font-size: 10px;">Activar producto primero</small>' : ''}
                             </div>
                         </div>
                         <div class="row" style="margin-bottom: 8px;">
                             <div class="col-4" style="color: white;"><strong>Stock Vinculado:</strong></div>
-                            <div class="col-8" style="color: ${producto.productoVinculado === 'Ninguno' ? '#dc3545' : 'white'}; font-weight: 500;">
+                            <div class="col-8" id="stock-vinculado" style="color: ${producto.productoVinculado === 'Ninguno' ? '#dc3545' : 'white'}; font-weight: 500;">
                                 ${producto.productoVinculado}
                                 ${producto.productoVinculado !== 'Ninguno' ? '<i class="fa fa-trash text-danger ms-2" style="cursor: pointer;" onclick="eliminarVinculoStock(' + producto.id + ')"></i>' : ''}
                             </div>
@@ -330,7 +341,7 @@
                 icon: 'question',
                 showCancelButton: false,
                 showDenyButton: true,
-                confirmButtonColor: '#28a745',
+                confirmButtonColor: (estaActivo && esContable) ? '#28a745' : '#6c757d',
                 denyButtonColor: '#17a2b8',
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: '<i class="fa fa-plus"></i> Agregar Stock',
@@ -339,15 +350,82 @@
                 buttonsStyling: true,
                 customClass: {
                     actions: 'my-actions',
-                    confirmButton: 'btn btn-success',
+                    confirmButton: (estaActivo && esContable) ? 'btn btn-success' : 'btn btn-secondary',
                     denyButton: 'btn btn-info',
                     cancelButton: 'btn btn-secondary'
                 },
-                footer: '<button id="editarProductoBtn" class="btn btn-warning" style="margin-right: 10px;"><i class="fa fa-edit"></i> Editar Producto</button>'
+                footer: '<button id="editarProductoBtn" class="btn btn-warning" style="margin-right: 10px;"><i class="fa fa-edit"></i> Editar Producto</button>',
+                didOpen: () => {
+                    // Event listener para cambiar estado
+                    const cambiarEstadoBtn = document.getElementById('cambiarEstadoBtn');
+                    if (cambiarEstadoBtn) {
+                        cambiarEstadoBtn.addEventListener('click', function() {
+                            // Cambiar directamente sin confirmación
+                            Livewire.emit('cambiarEstado', producto.id);
+                        });
+                    }
+                    
+                    // Event listener para cambiar contable
+                    const cambiarContableBtn = document.getElementById('cambiarContableBtn');
+                    if (cambiarContableBtn) {
+                        cambiarContableBtn.addEventListener('click', function() {
+                            // Verificar estado actual antes de cambiar
+                            const estadoActual = (productoActual.estadoReal || productoActual.estado) === 'activo' || productoActual.estado === 'Activo';
+                            if (estadoActual) {
+                                Livewire.emit('cambiarContable', producto.id);
+                            }
+                        });
+                    }
+                    
+                    // Interceptar el clic del botón confirm para validar antes de cerrar
+                    setTimeout(() => {
+                        const confirmButton = document.querySelector('.swal2-confirm');
+                        if (confirmButton) {
+                            // Remover el listener por defecto y agregar uno personalizado
+                            const nuevoConfirmBtn = confirmButton.cloneNode(true);
+                            confirmButton.parentNode.replaceChild(nuevoConfirmBtn, confirmButton);
+                            
+                            nuevoConfirmBtn.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                
+                                // Verificar el estado actual desde productoActual (puede haber cambiado)
+                                const estadoActual = (productoActual.estadoReal || productoActual.estado) === 'activo' || productoActual.estado === 'Activo';
+                                const esContableActual = productoActual.contableReal !== undefined ? productoActual.contableReal : (productoActual.contable === 'Sí');
+                                
+                                if (!estadoActual) {
+                                    window.dispatchEvent(new CustomEvent('toastAlert', {
+                                        detail: {
+                                            type: 'error',
+                                            message: 'No se puede agregar stock a un producto inactivo. Primero active el producto.',
+                                            title: 'Error'
+                                        }
+                                    }));
+                                    return false;
+                                }
+                                
+                                if (!esContableActual) {
+                                    window.dispatchEvent(new CustomEvent('toastAlert', {
+                                        detail: {
+                                            type: 'error',
+                                            message: 'No se puede agregar stock a un producto que no es contable. Primero active el contable del producto.',
+                                            title: 'Error'
+                                        }
+                                    }));
+                                    return false;
+                                }
+                                
+                                // Si pasa las validaciones, cerrar el modal y abrir el de agregar stock
+                                Swal.close();
+                                agregarStock(producto.id, producto.medicion, producto.nombre);
+                            });
+                        }
+                    }, 100);
+                }
             }).then((result) => {
-                if (result.isConfirmed) {
-                    agregarStock(producto.id, producto.medicion, producto.nombre);
-                } else if (result.isDenied) {
+                // Este bloque solo se ejecutará si el botón confirm no fue interceptado
+                // o si se hizo clic en otro botón
+                if (result.isDenied) {
                     vincularStock(producto.id, producto.nombre, producto.medicion);
                 }
             });
@@ -363,6 +441,125 @@
                 }
             }, 100);
         }
+        
+        // Escuchar eventos de actualización de stock
+        window.addEventListener('stockActualizado', function(event) {
+            const data = event.detail;
+            if (productoActual && productoActual.id === data.productoId) {
+                productoActual.stockTotal = data.stockTotal;
+                // Actualizar el stock en el modal
+                const stockElement = document.getElementById('stock-total');
+                if (stockElement) {
+                    stockElement.textContent = data.stockTotal + ' ' + productoActual.medicion + '(s)';
+                }
+            }
+        });
+        
+        // Escuchar eventos de eliminación de vínculo
+        window.addEventListener('vinculoEliminado', function(event) {
+            const data = event.detail;
+            if (productoActual && productoActual.id === data.productoId) {
+                productoActual.productoVinculado = 'Ninguno';
+                // Actualizar el vínculo en el modal
+                const vinculoElement = document.getElementById('stock-vinculado');
+                if (vinculoElement) {
+                    vinculoElement.innerHTML = 'Ninguno';
+                    vinculoElement.style.color = '#dc3545';
+                }
+            }
+        });
+        
+        // Escuchar eventos de actualización de vínculo
+        window.addEventListener('vinculoActualizado', function(event) {
+            const data = event.detail;
+            if (productoActual && productoActual.id === data.productoId) {
+                productoActual.productoVinculado = data.productoVinculado;
+                // Actualizar el vínculo en el modal
+                const vinculoElement = document.getElementById('stock-vinculado');
+                if (vinculoElement) {
+                    vinculoElement.innerHTML = data.productoVinculado + ' <i class="fa fa-trash text-danger ms-2" style="cursor: pointer;" onclick="eliminarVinculoStock(' + data.productoId + ')"></i>';
+                    vinculoElement.style.color = 'white';
+                }
+            }
+        });
+        
+        // Escuchar eventos de actualización del producto
+        window.addEventListener('productoActualizado', function(event) {
+            const data = event.detail;
+            if (productoActual && productoActual.id === data.productoId) {
+                // Actualizar la información del producto en memoria
+                if (data.estado !== undefined) {
+                    productoActual.estado = data.estado;
+                    productoActual.estadoReal = data.estadoReal;
+                }
+                if (data.contable !== undefined) {
+                    productoActual.contable = data.contable;
+                    productoActual.contableReal = data.contableReal;
+                }
+                
+                // Actualizar el modal sin cerrarlo
+                const estaActivo = (productoActual.estadoReal || productoActual.estado) === 'activo' || productoActual.estado === 'Activo';
+                const esContable = productoActual.contableReal !== undefined ? productoActual.contableReal : (productoActual.contable === 'Sí');
+                
+                // Actualizar badges
+                const estadoBadge = document.getElementById('estado-badge');
+                const contableBadge = document.getElementById('contable-badge');
+                const cambiarContableBtn = document.getElementById('cambiarContableBtn');
+                
+                if (estadoBadge) {
+                    estadoBadge.textContent = productoActual.estado;
+                    estadoBadge.className = 'badge badge-sm ' + (estaActivo ? 'badge-success' : 'badge-danger');
+                }
+                
+                if (contableBadge) {
+                    contableBadge.textContent = productoActual.contable;
+                    contableBadge.className = 'badge badge-sm ' + (esContable ? 'badge-info' : 'badge-secondary');
+                }
+                
+                // Actualizar el botón de contable y el botón de agregar stock
+                if (cambiarContableBtn) {
+                    if (estaActivo) {
+                        cambiarContableBtn.style.cursor = 'pointer';
+                        cambiarContableBtn.style.color = '#dc3545';
+                        cambiarContableBtn.style.opacity = '1';
+                        cambiarContableBtn.removeAttribute('onclick');
+                        // Remover el mensaje de advertencia si existe
+                        const warningMsg = cambiarContableBtn.parentElement.querySelector('small.text-warning');
+                        if (warningMsg) {
+                            warningMsg.remove();
+                        }
+                    } else {
+                        cambiarContableBtn.style.cursor = 'not-allowed';
+                        cambiarContableBtn.style.color = '#6c757d';
+                        cambiarContableBtn.style.opacity = '0.5';
+                        cambiarContableBtn.setAttribute('onclick', 'return false;');
+                        // Agregar mensaje de advertencia si no existe
+                        if (!cambiarContableBtn.parentElement.querySelector('small.text-warning')) {
+                            const warningMsg = document.createElement('small');
+                            warningMsg.className = 'text-warning d-block mt-1';
+                            warningMsg.style.fontSize = '10px';
+                            warningMsg.textContent = 'Activar producto primero';
+                            cambiarContableBtn.parentElement.appendChild(warningMsg);
+                        }
+                    }
+                }
+                
+                // Actualizar el botón de agregar stock
+                const confirmButton = document.querySelector('.swal2-confirm');
+                if (confirmButton) {
+                    // El botón debe estar activo solo si el producto está activo Y es contable
+                    if (estaActivo && esContable) {
+                        confirmButton.className = 'btn btn-success';
+                        confirmButton.style.backgroundColor = '#28a745';
+                        confirmButton.disabled = false;
+                    } else {
+                        confirmButton.className = 'btn btn-secondary';
+                        confirmButton.style.backgroundColor = '#6c757d';
+                        confirmButton.disabled = false; // No deshabilitar, solo cambiar estilo
+                    }
+                }
+            }
+        });
         function eliminarVinculoStock(productoId) {
             Livewire.emit('eliminarVinculoStock', productoId);
         }

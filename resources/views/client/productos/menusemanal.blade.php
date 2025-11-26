@@ -1278,8 +1278,8 @@
                                         $almuerzo->ejecutivo_estado &&
                                             $almuerzo->ejecutivo_cant > 0 &&
                                             App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
-                                        <p class="font-400">{{ $almuerzo->ejecutivo }} <i
-                                                class="fa fa-check-circle color-green-dark me-2"></i></p>
+                                        <p class="font-400" style="line-height: 1.2;">{{ $almuerzo->ejecutivo }} <i class="fa fa-check-circle color-green-dark me-2"></i> 
+                                            {!! $almuerzo->ejecutivo_tiene_carbo ? '' : '<br>(sin carbo)' !!}</p>
                                     @elseif(App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
                                         <del class="font-400">{{ $almuerzo->ejecutivo }}</del> <i
                                             class="fa fa-times-circle color-red-dark me-2"></i>
@@ -1295,8 +1295,8 @@
                                         $almuerzo->dieta_estado &&
                                             $almuerzo->dieta_cant > 0 &&
                                             App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
-                                        <p class="font-400">{{ $almuerzo->dieta }} <i
-                                                class="fa fa-check-circle color-green-dark me-2"></i></p>
+                                        <p class="font-400" style="line-height: 1.2;">{{ $almuerzo->dieta }} <i class="fa fa-check-circle color-green-dark me-2"></i> 
+                                            {!! $almuerzo->dieta_tiene_carbo ? '' : '<br>(sin carbo)' !!}</p>
                                     @elseif(App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
                                         <del class="font-400">{{ $almuerzo->dieta }}</del> <i
                                             class="fa fa-times-circle color-red-dark me-2"></i>
@@ -1312,8 +1312,8 @@
                                         $almuerzo->vegetariano_estado &&
                                             $almuerzo->vegetariano_cant > 0 &&
                                             App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
-                                        <p class="font-400">{{ $almuerzo->vegetariano }} <i
-                                                class="fa fa-check-circle color-green-dark me-2"></i></p>
+                                        <p class="font-400" style="line-height: 1.2;">{{ $almuerzo->vegetariano }} <i class="fa fa-check-circle color-green-dark me-2"></i> 
+                                            {!! $almuerzo->vegetariano_tiene_carbo ? '' : '<br>(sin carbo)' !!}</p>
                                     @elseif(App\Helpers\WhatsappAPIHelper::saber_dia(date('Y-m-d')) == $almuerzo->dia)
                                         <del class="font-400">{{ $almuerzo->vegetariano }}</del> <i
                                             class="fa fa-times-circle color-red-dark me-2"></i>
