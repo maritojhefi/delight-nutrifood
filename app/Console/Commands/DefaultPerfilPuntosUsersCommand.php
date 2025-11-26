@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use App\Models\PerfilPunto;
+use App\Helpers\GlobalHelper;
 use Illuminate\Console\Command;
 
 class DefaultPerfilPuntosUsersCommand extends Command
@@ -48,7 +49,7 @@ class DefaultPerfilPuntosUsersCommand extends Command
         foreach ($usuarios as $usuario) {
             if ($usuario->perfilesPuntos->count() == 0) {
                 //asignar el perfil de puntos default al usuario solo si no tiene ninguno asignado
-                $usuario->perfilesPuntos()->attach($perfilDefault->id);
+                $usuario->perfilesPuntos()->sync([$perfilDefault->id => ['codigo' => GlobalHelper::generarCodigoUnico($usuario->name)]]);
             }
         }
         $this->info('Se asignaron ' . $usuarios->count() . ' perfiles de puntos default a los usuarios');

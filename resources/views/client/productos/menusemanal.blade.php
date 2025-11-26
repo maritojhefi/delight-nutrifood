@@ -1909,7 +1909,7 @@
                 {{-- @dd(auth()->user()->perfilesPuntos()->first()->pivot->codigo) --}}
 
                 <p class="text-center  mb-n1 font-600 color-highlight">Link de Referido </p>
-                <h1 class="text-center font-30 ps-0">Patronicador</h1>
+                <h1 class="text-center font-30 ps-0">Patrocinador</h1>
                 <div class="content text-center mt-0">
                     <p class="pe-3 mb-2">
                         Comparte tu link de referido o tu codigo con tus amigos, familiares o conocidos para ganar puntos de
