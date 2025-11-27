@@ -3,6 +3,8 @@
 namespace App\Observers;
 
 use App\Models\User;
+use App\Models\PerfilPunto;
+use App\Helpers\GlobalHelper;
 use App\Models\RegistroPunto;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -13,7 +15,7 @@ class UserObserver
      * NOTA: Se usa saveQuietly() al actualizar puntos para evitar bucles infinitos.
      * saveQuietly() guarda el modelo sin disparar eventos del Observer.
      */
-    
+
     /**
      * Handle the User "created" event.
      *
@@ -23,6 +25,7 @@ class UserObserver
     public function created(User $user)
     {
         $this->procesarBonoReferido($user);
+        $this->agregarPerfilDefault($user);
     }
 
     /**
@@ -39,6 +42,13 @@ class UserObserver
         }
     }
 
+    private function agregarPerfilDefault(User $user)
+    {
+        $perfilDefault = PerfilPunto::where('default', true)->first();
+        if ($perfilDefault) {
+            $user->perfilesPuntos()->sync([$perfilDefault->id => ['codigo' => GlobalHelper::generarCodigoUnico($user->name)]]);
+        }
+    }
     /**
      * Procesa el bono de referido cuando un usuario es verificado y tiene un partner.
      * 
@@ -49,17 +59,17 @@ class UserObserver
     {
         $verificado = $user->verificado;
         $partner_id = $user->partner_id;
-        
+
         if ($verificado == 1 && $partner_id != null) {
             $partner = User::find($partner_id);
-            
+
             if ($partner && $partner->perfilesPuntos->count() > 0) {
                 $perfilPunto = $partner->perfilesPuntos->first();
-                
+
                 // Agregar puntos al usuario
                 $user->puntos += $perfilPunto->bono;
                 $user->saveQuietly(); // Evita disparar eventos del Observer
-                
+
                 // Registrar el bono en la tabla de registros
                 $registroPunto = new RegistroPunto();
                 $registroPunto->partner_id = $partner->id;
