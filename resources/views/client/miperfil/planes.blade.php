@@ -1,15 +1,14 @@
 @extends('client.master')
 @section('content')
     <x-cabecera-pagina titulo="Mis planes" cabecera="appkit" />
-    @isset($planes)
-        <div class="card card-style guide-card mb-3">
-            <div class="content">
-                <h4 class="font-700">Planes suscritos</h4>
-                <p class="pb-0">
-                    Actualmente estas suscrito en {{ $planes->count() }} plan(es):
-                </p>
-            </div>
+    @if (isset($planes) && $planes->count() > 0)
+        <div class="align-items-center justify-content-center mb-1">
+            <h4 class="font-700 text-center">Planes suscritos</h4>
+            <p class="pb-0 text-center mb-1">
+                Actualmente estas suscrito en {{ $planes->count() }} plan(es):
+            </p>
         </div>
+
         @foreach ($planes as $item)
             @foreach ($usuario->planes as $plane)
                 @if ($plane->id == $item['id'])
@@ -24,7 +23,8 @@
                                     class="ms-3 fa fa-user"></i>
                                 Permisos:{{ $plane->pivot->where('estado', 'permiso')->where('user_id', $usuario->id)->where('plane_id', $plane->id)->count() }}
                             </p>
-                            <p class="color-white font-10 opacity-70"><i class="fa fa-map-marker-alt"></i> Sucursal Central</p>
+                            <p class="color-white font-10 opacity-70"><i class="fa fa-map-marker-alt"></i> Sucursal Central
+                            </p>
 
                         </div>
                         <div class="card-center me-3">
@@ -40,34 +40,24 @@
         @endforeach
 
         <div class="divider bg-mint-dark divider-margins my-3"></div>
-    @endisset
+    @endif
 
-    <a href="#" data-menu="menu-tips-1" style="background-color: #000000;">
-        <div class="card card-style mb-3" style="background-color: #000000 !important;" data-card-height="125"
-            style="height: 145px;">
-            <div class="card-center ">
-                <div class="row mb-0 align-items-center px-1">
-                    <div class="col-10">
-                        <h1 class="color-white font-700 mb-n1 ms-3">Terminos y condiciones</h1>
-                        <p class="color-white opacity-100 mb-0 ms-3">
-                            Leelos antes de ingresar a cualquiera de nuestros planes.
-                        </p>
-                    </div>
-                    <div class="col-2 ">
-                        <i class="fa fa-exclamation text-white fa-3x fa-beat"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="card-overlay terms-button-overlay"></div>
-        </div>
-    </a>
+    <div class="text-center mb-3">
+        <a href="#" class="chip chip-s bg-gray-light" data-menu="menu-tips-1">
+            <i class="fa fa-hand-pointer fa-beat bg-green-dark color-white"></i>
+            <strong class="color-black font-400">Terminos y condiciones</strong>
+        </a>
+        <p class="font-12 opacity-60 mb-0 mt-1">
+            Leelos antes de ingresar a cualquiera de nuestros planes.
+        </p>
+    </div>
 
     <div class="divider bg-mint-dark divider-margins my-3"></div>
-    <div class="card card-style guide-card mb-3">
-        <div class="content">
-            <h4 class="font-700">Estos son todos nuestros planes:</h4>
+    <div class="align-items-center justify-content-center mb-1">
+        <div class="text-center">
+            <h4 class="font-700">Todos los planes:</h4>
         </div>
-    </div>  
+    </div>
     @foreach ($planesTodos as $plan)
         <div data-card-height="150" class="card card-style plan-card round-medium shadow-huge top-30 mb-3"
             style="background-image: url('{{ asset('imagenes/delight/default-bg-horizontal.jpg') }}'); background-size: cover; background-position: center;">
@@ -84,14 +74,11 @@
                     </h2>
                 </div>
                 <button
-                    class="btn add-to-cart confirm-btn text-light rounded-pill fw-bold text-uppercase small carrito flex-shrink-0"
-                    style="z-index: 10;" 
-                    id="{{ $plan->id }}"
-                    data-producto-id="{{$plan->producto_id}}"
-                    data-producto-nombre="{{$plan->nombre}}"
-                    >
+                    class="btn add-to-cart bg-highlight text-light rounded-pill fw-bold text-uppercase small carrito flex-shrink-0"
+                    style="z-index: 10;" id="{{ $plan->id }}" data-producto-id="{{ $plan->producto_id }}"
+                    data-producto-nombre="{{ $plan->nombre }}">
                     <span class="text-white">{{ $plan->producto->precioReal() }} Bs </span>
-                    <i class="fa fa-heart fa-beat" style="color: deeppink;"> </i>
+                    <i class="fa fa-cart-plus fa-beat"> </i>
                 </button>
             </div>
             @if ($plan->editable == true)
@@ -108,7 +95,7 @@
                 <p class="text-white small lh-sm m-0">{{ $plan->producto->detalle }}</p>
             </div>
 
-            <div class="plan-overlay card-overlay opacity-60"></div>
+            <div class="plan-overlay card-overlay"></div>
 
         </div>
     @endforeach
@@ -193,7 +180,7 @@
     </script>
     <script src="{{ asset(path: 'js/producto/producto-service.js') }}"></script>
     <script src="{{ asset('js/carrito/index.js') }}"></script>
-    <script> 
+    <script>
         $(document).ready(function() {
 
             $('.add-to-cart').on('click', agregarAlCarritoHandler);
