@@ -626,15 +626,14 @@ class GlobalHelper
         return $texto;
     }
 
-    public static function obtenerNombresProductos($productoId)
+    public static function obtenerModeloProducto($productoId)
     {
         $producto = Producto::findOrFail($productoId);
         if ($producto) {
-            $nombre = $producto->nombre;
+            return $producto;
         } else {
-            $nombre = 'Producto no encontrado';
+            return null;
         }
-        return $nombre;
     }
     public static function getValorAtributoSetting($atributo)
     {

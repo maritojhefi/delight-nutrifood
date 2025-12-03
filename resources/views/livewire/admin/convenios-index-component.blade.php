@@ -47,7 +47,7 @@
                                     @endphp
                                     @foreach ($productos as $key => $productoId)
                                         <span
-                                            class="badge badge-pill badge-primary badge-xs">{{ \App\Helpers\GlobalHelper::obtenerNombresProductos($productoId) }}</span>
+                                            class="badge badge-pill badge-primary badge-xs">{{ GlobalHelper::obtenerModeloProducto($productoId)->nombre }}</span>
                                     @endforeach
                                 </td>
                                 <td class="m-0 p-1">
@@ -55,7 +55,7 @@
                                         {{ $convenio->fecha_limite }}
                                         <br>
                                         <small
-                                            class="text-muted text-primary"><strong>{{ \App\Helpers\GlobalHelper::timeago($convenio->fecha_limite) }}</strong></small>
+                                            class="text-muted text-primary"><strong>{{ GlobalHelper::timeago($convenio->fecha_limite) }}</strong></small>
                                     @else
                                         <small class="text-muted">(Sin fecha)</small>
                                     @endif

@@ -30,9 +30,9 @@ class SettingSeeder extends Seeder
             'diseno_qr' => ['imagenes/delight/QR-DELIGHT.png', true],
 
             //usuario
-            'mi_perfil_deligth' => ['imagenes/delight/21.jpeg', true],
+            'mi_perfil_deligth' => ['imagenes/delight/hearth-health.jpg', true],
             'gana_puntos' => ['imagenes/delight/8.jpeg', true],
-            'dia_noche_inicio' => ['imagenes/delight/1.jpeg', true],
+            'dia_noche_inicio' => ['imagenes/delight/light-dark.jpg', true],
             'inicio_perfil' => ['imagenes/delight/4.jpeg', true],
 
             'inicio_disfruta' => ['imagenes/delight/2.jpeg', true],
@@ -54,10 +54,11 @@ class SettingSeeder extends Seeder
             'url_instagram' => ['https://www.instagram.com/delight_nutrifood_ecotienda/', false],
             'url_youtube' => ['https://www.youtube.com/channel/UC5MWq8AsnpRYocjfyg_LY8w', false],
             'hora_finalizacion_planes' => ['09:00', false],
-
+            'banner_mi_perfil' => ['imagenes/delight/hearth-health.jpg', true],
+            'avatar_partner_imagen' => ['imagenes/delight/1-edit.jpg', true],
         ];
         foreach ($array as $nombre => $valor) {
-            Setting::firstOrCreate([
+            Setting::updateOrCreate([
                 'atributo' => $nombre
             ], [
                 'valor' => $valor[0],
