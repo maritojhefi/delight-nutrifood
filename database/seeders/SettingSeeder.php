@@ -55,7 +55,7 @@ class SettingSeeder extends Seeder
             'url_youtube' => ['https://www.youtube.com/channel/UC5MWq8AsnpRYocjfyg_LY8w', false],
             'hora_finalizacion_planes' => ['09:00', false],
             'banner_mi_perfil' => ['imagenes/delight/hearth-health.jpg', true],
-            'avatar_partner_imagen' => ['imagenes/delight/1-edit.jpg', true],
+            'avatar_partner_imagen' => ['imagenes/delight/1-edit.JPG', true],
         ];
         foreach ($array as $nombre => $valor) {
             Setting::updateOrCreate([
