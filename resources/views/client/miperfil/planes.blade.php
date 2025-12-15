@@ -74,7 +74,7 @@
                     </h2>
                 </div>
                 <button
-                    class="btn add-to-cart bg-highlight text-light rounded-pill fw-bold text-uppercase small carrito flex-shrink-0"
+                    class="btn add-to-cart bg-highlight text-light rounded-pill fw-bold text-uppercase small flex-shrink-0"
                     style="z-index: 10;" id="{{ $plan->id }}" data-producto-id="{{ $plan->producto_id }}"
                     data-producto-nombre="{{ $plan->nombre }}">
                     <span class="text-white">{{ $plan->producto->precioReal() }} Bs </span>
@@ -198,7 +198,7 @@
             //     showMessage('error', result.message);
             // }
             try {
-                const result = await agregarAlCarrito(product_Id, 1);
+                const result = await carritoStorage.agregarAlCarrito(product_Id, 1);
                 if (result.success) {
                     showMessage('success', 'Item agregado al carrito!');
                 } else {

@@ -19,7 +19,7 @@
         href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900|Roboto:300,300i,400,400i,500,500i,700,700i,900,900i&amp;display=swap"
         rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('fonts/css/fontawesome-all.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_mint.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_mint.css?v=1.0.1') }}">
 
     @env('production')
         <script>
@@ -245,7 +245,7 @@
     @include('client.partials.modalredes')
 
     <div id="shared" class="snackbar-toast bg-blue-dark color-white fade hide" data-delay="3000" data-autohide="true"
-        style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Link copiado!</div>
+        style="z-index: 9999"><i class="fa fa-link me-3"></i>Link copiado!</div>
     @auth
         @php
             $estaCompleto = auth()->user()->tienePerfilCompleto();
