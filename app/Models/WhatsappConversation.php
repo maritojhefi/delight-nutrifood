@@ -9,12 +9,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Modelo para la tabla `whatsapp_conversations`.
- * Almacena los mensajes individuales (tanto de usuario como de agente).
+ * Almacena los mensajes individuales vinculados a una sesión.
+ *
  * @property int $id
- * @property int $user_id
+ * @property int $whatsapp_session_id
+ * @property int|null $user_id
  * @property bool $es_agente
  * @property string|null $tipo
- * @property string|null $contenido
+ * @property array|null $contenido
  * @property bool $archivado
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
@@ -24,6 +26,7 @@ class WhatsappConversation extends Model
     use HasFactory;
 
     protected $fillable = [
+        "whatsapp_session_id",
         "user_id",
         "es_agente",
         "tipo",
@@ -38,7 +41,15 @@ class WhatsappConversation extends Model
     ];
 
     /**
-     * Define la relación: Un mensaje pertenece a un solo Usuario.
+     * Define la relación: Un mensaje pertenece a una Sesión de Whatsapp.
+     */
+    public function session(): BelongsTo
+    {
+        return $this->belongsTo(WhatsappSession::class, 'whatsapp_session_id');
+    }
+
+    /**
+     * Define la relación: Un mensaje puede estar vinculado a un Usuario (opcional).
      */
     public function user(): BelongsTo
     {

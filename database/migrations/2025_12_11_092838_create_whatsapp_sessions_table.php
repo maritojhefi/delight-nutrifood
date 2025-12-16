@@ -15,12 +15,18 @@ class CreateWhatsappSessionsTable extends Migration
     {
         Schema::create('whatsapp_sessions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')
-                    ->unique() // Crucial: Una sola sesión activa por usuario
-                    ->constrained('users') // Vinculado a la tabla de usuarios existente
-                    ->cascadeOnDelete();
 
-            $table->json('metadata')->nullable(); // Almacena el contexto de la conversación activa
+            // Número de teléfono
+            $table->string('telefono')->unique()->index();
+
+            // User ID anulable permitiendo asociar con usuarios registrados o invitados
+            $table->foreignId('user_id')
+                    ->nullable()
+                    ->constrained('users')
+                    ->nullOnDelete(); // De eliminarse el usuario, se mantiene una sesion "desvinculada" o histórica.
+
+            // 3. Contexto de la IA (Estado del flujo, variables temporales, etc.)
+            $table->json('metadata')->nullable();
 
             $table->timestamps();
         });

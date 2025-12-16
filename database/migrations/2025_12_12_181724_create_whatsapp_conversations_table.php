@@ -16,21 +16,26 @@ class CreateWhatsappConversationsTable extends Migration
         Schema::create('whatsapp_conversations', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('user_id')
-                    ->constrained('users') // Vinculado a la tabla de usuarios existente
+            // Vinculado a la sesión
+            $table->foreignId('whatsapp_session_id')
+                    ->constrained('whatsapp_sessions')
                     ->cascadeOnDelete();
 
-            $table->boolean('es_agente')->default(false); // Indica si el mensaje es de un agente
+            // id de usuario anulable
+            $table->foreignId('user_id')
+                    ->nullable()
+                    ->constrained('users')
+                    ->nullOnDelete();
 
+            $table->boolean('es_agente')->default(false); // Indica si el mensaje es de un agente
             $table->string('tipo')->nullable(); // e.g., 'text', 'location', 'image'
             $table->longText('contenido')->nullable(); // Contenido del mensaje
-            $table->boolean('archivado')
-                    ->default(false); // Control de mensajes archivados
+            $table->boolean('archivado')->default(false); // Control de mensajes archivados
 
             $table->timestamps();
 
-            // Optimize for AI context retrieval and 10-minute check
-            $table->index(['user_id', 'archivado', 'created_at']);
+            // Índices optimizados para consultas
+            $table->index(['whatsapp_session_id', 'archivado', 'created_at'], 'wapp_conv_fast_idx');
         });
     }
 

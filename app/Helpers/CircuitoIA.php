@@ -3,23 +3,25 @@
 namespace App\Helpers;
 
 use App\Models\WhatsappConversation;
+use App\Models\WhatsappSession;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\GlobalHelper;
 use App\Helpers\WhatsappNotification;
+use App\Models\User;
 
 class CircuitoIA
 {
     /**
+    * @var WhatsappSession|null Sesión actual del teléfono
+    */
+    public ?WhatsappSession $sesionActual = null;
+
+    /**
     * @var string|null ID del usuario
     */
     public ?int $idUsuario = null;
-
-    /**
-    * @var bool Verdadero si el mensaje es de un usuario, falso si es de la API
-    */
-    public bool $desdeUsuario = false;
 
     /**
     * @var string|null El número de teléfono que envía el mensaje
@@ -40,6 +42,11 @@ class CircuitoIA
     * @var object|null El contenido del mensaje
     */
     public ?object $cuerpo = null;
+
+    /**
+    * @var bool Verdadero si el mensaje es de un usuario, falso si es de la API
+    */
+    public bool $desdeUsuario = false;
 
     public function __construct()
     {
@@ -83,18 +90,34 @@ class CircuitoIA
     */
     public function procesarInformacion($json): bool
     {
-        if (isset($json->message->from)) {
-            $this->cuerpo = $json->message->content;
-            $this->tipo = $json->message->type;
-            $this->idUsuario = 675; // Hardcodeado para tests
-            $this->desdeUsuario = $json->message->from ? true : false;
-            $this->numeroOrigen = $json->message->from;
-            Log::debug("Mensaje recibido desde NÚMERO TELEFÓNICO: " . $this->numeroOrigen);
-            $this->estadoMensaje = $json->message->status;
-            return true;
-        } else {
+        if (!isset($json->message->from)) {
             return false;
         }
+        $this->numeroOrigen = $json->message->from;
+        $this->cuerpo = $json->message->content;
+        $this->tipo = $json->message->type;
+        $this->desdeUsuario = true;
+        $this->estadoMensaje = $json->message->status;
+
+        Log::debug("Mensaje recibido de: " . $this->numeroOrigen);
+
+        // Recuperar la sesión asignada al teléfono
+        $sesion = WhatsappSession::where('telefono', $this->numeroOrigen)->first();
+        if (!$sesion) {
+            // De no existir la sesión - verificar si existe un usuario vinculado al número telefónico
+            $usuario = User::whereRaw("CONCAT(codigo_pais, telf) = ?", [$this->numeroOrigen])->first();
+            // Crear la sesión (Vinculada si se encuentra un usuario, anónima si no)
+            $sesion = WhatsappSession::create([
+                'telefono' => $this->numeroOrigen,
+                'user_id' => $usuario ? $usuario->id : null,
+                'metadata' => WhatsappSession::generarJsonInicial(),
+            ]);
+        }
+
+        $this->sesionActual = $sesion;
+        $this->idUsuario = $sesion->user_id; // Será null si es anónimo
+
+        return true;
     }
 
     /**
@@ -145,29 +168,74 @@ class CircuitoIA
     }
 
 
+    // private function leerYGuardarMensajeProcedencia(): void
+    // {
+    //     if ($this->tipo != "audio") {
+    //         // Almacenar el mensaje del usuario
+    //         WhatsappConversation::create([
+    //             "user_id" => $this->idUsuario,
+    //             "tipo" => $this->tipo,
+    //             "contenido" => $this->cuerpo,
+    //         ]);
+    //     } else {
+    //         // Analizar el audio y almacenar el mensaje del usuario
+    //         $textoTranscrito = self::interpretarAudioATexto();
+    //         WhatsappConversation::create([
+    //             "user_id" => $this->idUsuario,
+    //             "tipo" => "text",
+    //             "contenido" => json_encode(
+    //                 WhatsappNotification::conversation()
+    //                     ->typeContent("text")
+    //                     ->content([$textoTranscrito])
+    //                     ->returnContent()["content"],
+    //             ),
+    //         ]);
+    //     }
+    // }
+
     private function leerYGuardarMensajeProcedencia(): void
     {
-        if ($this->tipo != "audio") {
-            // Almacenar el mensaje del usuario
-            WhatsappConversation::create([
-                "user_id" => $this->idUsuario,
-                "tipo" => $this->tipo,
-                "contenido" => $this->cuerpo,
-            ]);
-        } else {
-            // Analizar el audio y almacenar el mensaje del usuario
+        $contenidoAGuardar = [];
+
+        // Normalización según el tipo de mensaje entrante
+        if ($this->tipo == "audio") {
             $textoTranscrito = self::interpretarAudioATexto();
-            WhatsappConversation::create([
-                "user_id" => $this->idUsuario,
-                "tipo" => "text",
-                "contenido" => json_encode(
-                    WhatsappNotification::conversation()
-                        ->typeContent("text")
-                        ->content([$textoTranscrito])
-                        ->returnContent()["content"],
-                ),
-            ]);
+
+            $this->tipo = "text";
+
+            $contenidoAGuardar = [
+                "text" => $textoTranscrito,
+                "meta" => "transcribed_audio"
+            ];
+        } elseif ($this->tipo == "text") {
+            // Si $this->cuerpo es un objeto/string, normalizar a array.
+            $texto = is_string($this->cuerpo) ? $this->cuerpo : ($this->cuerpo->body ?? $this->cuerpo->text ?? '');
+
+            $contenidoAGuardar = [
+                "text" => $texto
+            ];
+        } elseif ($this->tipo == "location") {
+            // Estructura estándar para ubicación
+            $contenidoAGuardar = [
+                "location" => [
+                    "latitude" => $this->cuerpo->location->latitude ?? null,
+                    "longitude" => $this->cuerpo->location->longitude ?? null,
+                    "address" => $this->cuerpo->location->address ?? null, // Si WhatsApp lo envía
+                ]
+            ];
+        } else {
+            // Fallback para otros tipos (imagen, documento, etc)
+            $contenidoAGuardar = (array) $this->cuerpo;
         }
+
+        // Guardado en la tabla whatsapp_conversations
+        WhatsappConversation::create([
+            "whatsapp_session_id" => $this->sesionActual->id,
+            "user_id" => $this->idUsuario,
+            "tipo" => $this->tipo,
+            "es_agente" => false,
+            "contenido" => $contenidoAGuardar,
+        ]);
     }
 
     private function procesarMedianteAgenteIA()
@@ -184,8 +252,21 @@ class CircuitoIA
             ]
         ];
 
+        $promptInstruccionHistorial = [
+            [
+                "role" => "system",
+                "content" => "Recibirás el historial de la conversación mediante inputs del rol user, solo ten en cuenta los últimos mensajes para entender lo solicitado
+                Si ya has ofrecido una respuesta válida aceptada en el historial, puedes pasar de ella y enfocarte en la última solicitud."
+            ]
+        ];
+
         $historialConversacion = $this->obtenerConversacionDB();
-        $promptsBasePrueba = array_merge($promptsBasePrueba, $historialConversacion);
+
+        $mensajesParaLaIA = array_merge(
+            $promptsBasePrueba,
+            $promptInstruccionHistorial,
+            $historialConversacion
+        );
 
         //  Preparar a la IA con el prompt y enviar el mensaje
         $respuestaIA = Http::withHeaders([
@@ -197,7 +278,7 @@ class CircuitoIA
             [
                 "model" => config("macrobyte.deepseek_ia.model"),
                 "temperature" => 0.5,
-                "messages" => $promptsBasePrueba,
+                "messages" => $mensajesParaLaIA,
                 "max_tokens" => 300,
                 // "response_format" => ["type" => "json_object"],
             ],
@@ -237,13 +318,7 @@ class CircuitoIA
         $totalMensajes = $mensajes->count();
         $indiceActual = 0;
 
-        $promptsHistorialConversacion = [
-            [
-                "role" => "user",
-                "content" => "Recibirás el historial de la conversación mediante inputs del rol user, solo ten en cuenta los últimos mensajes para entender lo solicitado
-                Si ya has ofrecido una respuesta válida aceptada en el historial, puedes pasar de ella y enfocarte en la última solicitud."
-            ]
-        ];
+        $promptsHistorialConversacion = [];
 
         foreach($mensajes as $mensaje) {
             $indiceActual++;
