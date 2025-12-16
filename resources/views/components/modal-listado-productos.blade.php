@@ -257,7 +257,7 @@
 
         const renderizarBotonAgotado = () => {
             return `
-                <button class="btn-accion-circular icon icon-xs rounded-circle shadow-l bg-blue-dark btn-accion-disabled" disabled title="Agotado">
+                <button class="btn-accion-circular icon icon-xs rounded-circle shadow-l bg-gray-dark btn-accion-disabled" disabled title="Agotado">
                     <i class="fa fa-ban"></i>
                 </button>
             `;
