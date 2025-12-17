@@ -241,10 +241,13 @@
                                                         // Crear hora límite con la fecha correcta
                                                         $horaLimite = Carbon\Carbon::createFromFormat('H:i', $horaLimiteStr);
 
+                                                        // Verificar si estamos dentro del horario de despacho
+                                                        $dentroDeHorarioDespacho = $now->between($tiempoInicio, $tiempoFin);
+
                                                         // Lógica de visibilidad del badge
                                                         if (!$plan->editable) {
-                                                            // Si el plan no es editable, ocultar badge
-                                                            $isBadgeVisible = false;
+                                                            // Si el plan no es editable, mostrar badge SOLO si estamos en horario de despacho
+                                                            $isBadgeVisible = $dentroDeHorarioDespacho;
                                                         } elseif ($esParaSiguiente) {
                                                             // Pedido del día siguiente: mostrar badge si aún no alcanzamos la hora límite de mañana
                                                             $horaLimiteSiguiente = $now->copy()->addDay()->setTime(
@@ -256,15 +259,12 @@
                                                                 $isBadgeVisible = false;
                                                             }
                                                         } else {
-                                                            // Pedido de HOY
+                                                            // Pedido de HOY (editable)
                                                             $horaLimiteHoy = $now->copy()->setTime(
                                                                 $horaLimite->hour,
                                                                 $horaLimite->minute,
                                                                 0
                                                             );
-
-                                                            // Verificar si estamos dentro del horario de despacho
-                                                            $dentroDeHorarioDespacho = $now->between($tiempoInicio, $tiempoFin);
 
                                                             if ($dentroDeHorarioDespacho) {
                                                                 // Si estamos en horario de despacho, el badge SIEMPRE es visible
