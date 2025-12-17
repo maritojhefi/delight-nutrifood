@@ -87,7 +87,7 @@
 
             if (remainingSeconds <= 0) {
                 // Countdown is finished or passed
-                $countdownElement.text('¡Hora de servir!');
+                $countdownElement.text('¡Hora de comer!');
                 // Stop the timer
                 clearInterval(timerInterval);
                 // Optionally reload the page or update the target time again

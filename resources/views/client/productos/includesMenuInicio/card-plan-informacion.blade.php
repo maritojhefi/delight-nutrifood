@@ -1,5 +1,5 @@
 @auth
-@php
+{{-- @php
     $horaActual = Carbon\Carbon::now()->hour;
     $periodoDia = '';
     $gradienteClass = '';
@@ -87,7 +87,7 @@
             <circle cx="18" cy="12" r="0.3" fill="#FFD700" opacity="0.3"/>
         </svg>';
     }
-@endphp
+@endphp --}}
 
 
 
@@ -98,6 +98,7 @@
         Carbon\Carbon::now()->format('Y-m-d'),
         Carbon\Carbon::now()->format('H:i'),
     );
+    $horarioActual = GlobalHelper::horarioHoraActual();
 @endphp
 
 @isset($planData)
@@ -111,6 +112,8 @@
         $tiempoRestanteMinutos = $planData->tiempo_restante;
         $planesRestantes = $planData->planes_restantes;
         $fechaPlan = $planData->fecha_plan;
+        $iconoPlanCard = $horarioActual->icono_lucide ?? 'hourglass';
+        // $iconoPlanCard = $plan->horarioActual->icono_lucide ?? 'hourglass';
         // Formatear tiempo restante
         if ($tiempoRestanteMinutos >= 60) {
             $horas = floor($tiempoRestanteMinutos / 60);
@@ -125,7 +128,7 @@
                 $textoTiempo = 'Termina en: ';
                 $mensajeTiempo = 'Termina en ' . $tiempoRestante;
                 $iconoTiempo = 'fa-clock';
-                $iconoTiempoLucide = 'clock';
+                $iconoTiempoLucide = 'utensils';
                 $colorTiempo = 'success';
                 $textodia =
                     'Hoy ' .
@@ -180,7 +183,7 @@
                 <div class="accordion-item plan-accordion-item mb-3">
                     <!-- Header del acordeón (siempre visible) -->
                     <div class="accordion-header" id="planHeader">
-                        <button class="accordion-button plan-accordion-button {{ $gradienteClass }}" type="button"
+                        <button class="accordion-button plan-accordion-button" type="button"
                             aria-expanded="false" aria-controls="planCollapse" {{ $plan->editable != 1 ? 'disabled' : '' }}>
                             <div class="plan-header-content mt-3 px-0"
                                 style="padding-right: 2% !important; padding-left: 2% !important;">
@@ -188,7 +191,7 @@
                                 <div class="day-info d-flex justify-content-evenly">
                                     <div class="day-icon-container">
                                         <div class="day-icon">
-                                            <i data-lucide={{ $lucideDia }} class="lucide-icon color-highlight mt-1"
+                                            <i data-lucide={{ $iconoPlanCard }} class="lucide-icon color-highlight mt-1"
                                                 style="width: 3rem; height: 3rem;"></i>
                                         </div>
                                     </div>
@@ -205,27 +208,87 @@
                                             <!-- Badge de tiempo con estado -->
                                             @if (count($pedidos->filter(fn($pedido) => $pedido->detalle == null)))
                                                 <p
-                                                    class="badge bg-highlight rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
-
                                                     @php
-                                                        // 1. Get the current time in Carbon
+                                                        // Configuración
                                                         $now = Carbon\Carbon::now();
+                                                        $horaLimiteStr = GlobalHelper::getValorAtributoSetting('hora_finalizacion_planes');
 
-                                                        // 2. Set the target time to 9:00 AM today
-                                                        $targetTime = $now->copy()->setTime(9, 0, 0);
+                                                        $isBadgeVisible = true;
 
-                                                        // 3. If 9:00 AM has already passed today, set the target for 9:00 AM tomorrow
-                                                        if ($now->greaterThan($targetTime)) {
-                                                            $targetTime->addDay();
+                                                        // Parsear horarios del plan
+                                                        $horaInicioDespacho = Carbon\Carbon::createFromFormat('H:i', $plan->horario->hora_inicio);
+                                                        $horaFinDespacho = Carbon\Carbon::createFromFormat('H:i', $plan->horario->hora_fin);
+
+                                                        // Verificar si el pedido es para el día siguiente
+                                                        $esParaSiguiente = $estado == "proximo_dia";
+
+                                                        // Determinar la fecha objetivo (hoy o mañana)
+                                                        $fechaObjetivo = $esParaSiguiente ? $now->copy()->addDay() : $now->copy();
+
+                                                        // Combinar fecha objetivo con horarios
+                                                        $tiempoInicio = $fechaObjetivo->copy()->setTime(
+                                                            $horaInicioDespacho->hour,
+                                                            $horaInicioDespacho->minute,
+                                                            0
+                                                        );
+
+                                                        $tiempoFin = $fechaObjetivo->copy()->setTime(
+                                                            $horaFinDespacho->hour,
+                                                            $horaFinDespacho->minute,
+                                                            0
+                                                        );
+
+                                                        // Crear hora límite con la fecha correcta
+                                                        $horaLimite = Carbon\Carbon::createFromFormat('H:i', $horaLimiteStr);
+
+                                                        // Verificar si estamos dentro del horario de despacho
+                                                        $dentroDeHorarioDespacho = $now->between($tiempoInicio, $tiempoFin);
+
+                                                        // Lógica de visibilidad del badge
+                                                        if (!$plan->editable) {
+                                                            // Si el plan no es editable, mostrar badge SOLO si estamos en horario de despacho
+                                                            $isBadgeVisible = $dentroDeHorarioDespacho;
+                                                        } elseif ($esParaSiguiente) {
+                                                            // Pedido del día siguiente: mostrar badge si aún no alcanzamos la hora límite de mañana
+                                                            $horaLimiteSiguiente = $now->copy()->addDay()->setTime(
+                                                                $horaLimite->hour,
+                                                                $horaLimite->minute,
+                                                                0
+                                                            );
+                                                            if ($now->greaterThanOrEqualTo($horaLimiteSiguiente)) {
+                                                                $isBadgeVisible = false;
+                                                            }
+                                                        } else {
+                                                            // Pedido de HOY (editable)
+                                                            $horaLimiteHoy = $now->copy()->setTime(
+                                                                $horaLimite->hour,
+                                                                $horaLimite->minute,
+                                                                0
+                                                            );
+
+                                                            if ($dentroDeHorarioDespacho) {
+                                                                // Si estamos en horario de despacho, el badge SIEMPRE es visible
+                                                                $isBadgeVisible = true;
+                                                            } elseif ($now->greaterThanOrEqualTo($horaLimiteHoy)) {
+                                                                // Si ya pasó la hora límite Y no estamos en horario de despacho, ocultar
+                                                                $isBadgeVisible = false;
+                                                            }
+                                                            // Si no ha pasado la hora límite (antes de 9am), el badge es visible
                                                         }
 
-                                                        // 4. Get the UNIX timestamp (seconds since epoch) for JavaScript
-                                                        $targetTimestamp = $targetTime->timestamp;
+                                                        // Timestamp para JavaScript (usar la hora límite de modificación como referencia)
+                                                        $tiempoObjetivoJS = $esParaSiguiente
+                                                            ? $now->copy()->addDay()->setTime($horaLimite->hour, $horaLimite->minute, 0)
+                                                            : $now->copy()->setTime($horaLimite->hour, $horaLimite->minute, 0);
 
+                                                        $tiempoIniciostamp = $tiempoObjetivoJS->timestamp;
                                                     @endphp
 
+                                                    class="badge bg-highlight rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0
+                                                    {{ $isBadgeVisible ? "" : "d-none"}}">
+
                                                     {{-- The countdown display area --}}
-                                                    <span id="countdown-timer" data-target="{{ $targetTimestamp }}">
+                                                    <span id="countdown-timer" data-target="{{ $tiempoIniciostamp }}">
                                                         Calculando...
                                                     </span>
 
@@ -255,10 +318,10 @@
                                     </div>
                                 </div>
 
-                                <div class="d-flex flex-row justify-content-between w-100 gap-1 align-items-center">
+                                <div class="d-flex flex-row justify-content-evenly w-100 align-items-center">
                                     {{-- FIX: Using align-items-center is usually better than align-items-between --}}
 
-                                    <div class="plan-summary flex-shrink-1 text-wrap"> {{-- FIX: Added flex-grow-0 --}}
+                                    <div class="plan-summary flex-shrink-1 text-wrap {{ $plan->editable ? '': 'd-none'}}"> {{-- FIX: Ocultar en pedidos no editables --}}
                                         <div class="d-flex flex-column gap-2 text-wrap">
                                             <strong class="day-title color-theme font-18 text-wrap">
                                                 {{ $textodia }}
