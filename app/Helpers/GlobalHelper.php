@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Rawilk\Printing\Facades\Printing;
 use App\Events\RefreshMenuHeaderEvent;
+use App\Models\Horario;
 
 class GlobalHelper
 {
@@ -860,5 +861,17 @@ class GlobalHelper
     public static function discoArchivos()
     {
         return config('filesystems.default');
+    }
+
+    public static function horarioHoraActual()
+    {
+        $horaActual = Carbon::now()->format('H:i:s');
+
+        $horario = Horario::whereTime('hora_inicio', '<=', $horaActual)
+            ->whereTime('hora_fin', '>=', $horaActual)
+            ->orderBy('posicion')
+            ->first();
+
+        return $horario;
     }
 }
