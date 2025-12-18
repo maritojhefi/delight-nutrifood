@@ -67,6 +67,7 @@
 <script>
     $(document).ready(function() {
         // Find the countdown element
+        const $countdownText = $('#countdown-timer-text');
         const $countdownElement = $('#countdown-timer');
 
         // Get the target timestamp (in seconds) from the data attribute
@@ -87,7 +88,7 @@
 
             if (remainingSeconds <= 0) {
                 // Countdown is finished or passed
-                $countdownElement.text('¡Hora de comer!');
+                $countdownText.text('¡Hora de comer!');
                 // Stop the timer
                 clearInterval(timerInterval);
                 // Optionally reload the page or update the target time again
@@ -95,6 +96,9 @@
             }
 
             // --- Calculation ---
+            const days = Math.floor(remainingSeconds / 86400); // 86400 = 24*60*60
+            remainingSeconds %= 86400;
+
             const hours = Math.floor(remainingSeconds / 3600);
             remainingSeconds %= 3600;
 
@@ -102,12 +106,13 @@
             const seconds = remainingSeconds % 60;
 
             // --- Formatting (Pads single digits with a leading zero) ---
+            const dDisplay = days > 0 ? `${days}d ` : '';
             const hDisplay = String(hours).padStart(2, '0');
             const mDisplay = String(minutes).padStart(2, '0');
             const sDisplay = String(seconds).padStart(2, '0');
 
             // --- Output ---
-            $countdownElement.text(`Tiempo: ${hDisplay}h ${mDisplay}m ${sDisplay}s`);
+            $countdownElement.text(`${dDisplay}${hDisplay}h ${mDisplay}m ${sDisplay}s`);
         }
 
         // Run the update function immediately
@@ -115,6 +120,59 @@
 
         // Run the update function every second
         const timerInterval = setInterval(updateCountdown, 1000);
+    });
+</script>
+
+<!-- Badge tiempo límite -->
+<script>
+    $(document).ready(function() {
+        // Find all countdown elements (supports multiple timers)
+        const $countdownElements = $('.countdown-plan-timer');
+        if ($countdownElements.length === 0) {
+            return;
+        }
+        // Create individual timers for each element
+        $countdownElements.each(function() {
+            const $element = $(this);
+            const $badge = $element.closest('p.badge'); // Get parent <p> badge
+            const targetTimestamp = parseInt($element.data('target'));
+            if (isNaN(targetTimestamp)) {
+                $element.text('Error en la hora.');
+                return;
+            }
+            // Main update function for this specific element
+            function updateCountdown() {
+                // Get current time in seconds
+                const now = Math.floor(Date.now() / 1000);
+                // Calculate the total remaining seconds
+                let remainingSeconds = targetTimestamp - now;
+                if (remainingSeconds <= 0) {
+                    // Countdown is finished or passed - replace entire badge content
+                    $badge.text('Generando automáticamente...');
+                    // Stop the timer
+                    clearInterval(timerInterval);
+                    return;
+                }
+                // --- Calculation ---
+                const days = Math.floor(remainingSeconds / 86400); // 86400 = 24*60*60
+                remainingSeconds %= 86400;
+                const hours = Math.floor(remainingSeconds / 3600);
+                remainingSeconds %= 3600;
+                const minutes = Math.floor(remainingSeconds / 60);
+                const seconds = remainingSeconds % 60;
+                // --- Formatting (Pads single digits with a leading zero) ---
+                const dDisplay = days > 0 ? `${days}d ` : '';
+                const hDisplay = String(hours).padStart(2, '0');
+                const mDisplay = String(minutes).padStart(2, '0');
+                const sDisplay = String(seconds).padStart(2, '0');
+                // --- Output ---
+                $element.text(`${dDisplay}${hDisplay}h ${mDisplay}m ${sDisplay}s`);
+            }
+            // Run the update function immediately
+            updateCountdown();
+            // Run the update function every second
+            const timerInterval = setInterval(updateCountdown, 1000);
+        });
     });
 </script>
 
