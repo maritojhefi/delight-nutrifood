@@ -1,20 +1,55 @@
 <script>
-    $(document).ready(function() {
-        $('#confirmarModificarPedidoModal').on('show.bs.modal', function(event) {
-            var trigger = $(event.relatedTarget);
-            var url = trigger.data('url');
-            $('#confirmarModificarPedido').data('redirect-url', url);
-        });
+    // Ejecutar inmediatamente cuando el DOM esté listo, con manejo de errores robusto
+    (function() {
+        function initModificarPedidoModal() {
+            try {
+                // Variable para almacenar la URL de redirección
+                var redirectUrl = null;
 
-        $('#confirmarModificarPedido').on('click', function(e) {
-            e.preventDefault();
-            var url = $(this).data('redirect-url');
-            if (url) {
-                window.location.href = url;
+                // Evento cuando se abre el modal - capturar URL del trigger
+                $(document).on('show.bs.modal', '#confirmarModificarPedidoModal', function(event) {
+                    var trigger = $(event.relatedTarget);
+                    if (trigger && trigger.length) {
+                        redirectUrl = trigger.data('url') || trigger.attr('data-url');
+                        console.log('Modal abierto, URL capturada:', redirectUrl);
+                    }
+                });
+
+                // Evento click en el botón confirmar - usar delegación de eventos
+                $(document).on('click', '#confirmarModificarPedido', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    console.log('Click en confirmar, URL:', redirectUrl);
+                    
+                    if (redirectUrl) {
+                        window.location.href = redirectUrl;
+                    } else {
+                        console.error('No se encontró URL de redirección');
+                    }
+                });
+
+                console.log('Modal modificar pedido inicializado correctamente');
+            } catch (error) {
+                console.error('Error inicializando modal modificar pedido:', error);
             }
-        });
-    });
+        }
 
+        // Intentar inicializar cuando jQuery esté listo
+        if (typeof jQuery !== 'undefined') {
+            jQuery(document).ready(initModificarPedidoModal);
+        } else {
+            // Fallback: esperar a que jQuery esté disponible
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof jQuery !== 'undefined') {
+                    initModificarPedidoModal();
+                }
+            });
+        }
+    })();
+</script>
+
+<script>
     $(document).ready(async function() {
         $(document).on('click', '#abrir-venta-qr', async () => {
             // Mockup functionalidad escaneado de QR
@@ -66,60 +101,68 @@
 
 <script>
     $(document).ready(function() {
-        // Find the countdown element
-        const $countdownText = $('#countdown-timer-text');
-        const $countdownElement = $('#countdown-timer');
+        try {
+            // Find the countdown element
+            const $countdownElement = $('#countdown-timer');
+            const $countdownText = $countdownElement.closest('.countdown-timer-text');
 
-        // Get the target timestamp (in seconds) from the data attribute
-        const targetTimestamp = parseInt($countdownElement.data('target'));
+            // Get the target timestamp (in seconds) from the data attribute
+            const targetTimestamp = parseInt($countdownElement.data('target'));
 
-        if (isNaN(targetTimestamp)) {
-            $countdownElement.text('Error en la hora.');
-            return;
-        }
-
-        // Main update function
-        function updateCountdown() {
-            // Get current time in seconds
-            const now = Math.floor(Date.now() / 1000);
-
-            // Calculate the total remaining seconds
-            let remainingSeconds = targetTimestamp - now;
-
-            if (remainingSeconds <= 0) {
-                // Countdown is finished or passed
-                $countdownText.text('¡Hora de comer!');
-                // Stop the timer
-                clearInterval(timerInterval);
-                // Optionally reload the page or update the target time again
+            if (isNaN(targetTimestamp)) {
+                $countdownElement.text('Error en la hora.');
                 return;
             }
 
-            // --- Calculation ---
-            const days = Math.floor(remainingSeconds / 86400); // 86400 = 24*60*60
-            remainingSeconds %= 86400;
+            // Declarar timerInterval antes de usarlo en updateCountdown
+            let timerInterval;
 
-            const hours = Math.floor(remainingSeconds / 3600);
-            remainingSeconds %= 3600;
+            // Main update function
+            function updateCountdown() {
+                // Get current time in seconds
+                const now = Math.floor(Date.now() / 1000);
 
-            const minutes = Math.floor(remainingSeconds / 60);
-            const seconds = remainingSeconds % 60;
+                // Calculate the total remaining seconds
+                let remainingSeconds = targetTimestamp - now;
 
-            // --- Formatting (Pads single digits with a leading zero) ---
-            const dDisplay = days > 0 ? `${days}d ` : '';
-            const hDisplay = String(hours).padStart(2, '0');
-            const mDisplay = String(minutes).padStart(2, '0');
-            const sDisplay = String(seconds).padStart(2, '0');
+                if (remainingSeconds <= 0) {
+                    // Countdown is finished or passed
+                    $countdownElement.text('¡Hora de comer!');
+                    // Hide the "Falta:" label
+                    $countdownText.find('strong').hide();
+                    // Stop the timer
+                    clearInterval(timerInterval);
+                    // Optionally reload the page or update the target time again
+                    return;
+                }
 
-            // --- Output ---
-            $countdownElement.text(`${dDisplay}${hDisplay}h ${mDisplay}m ${sDisplay}s`);
-        }
+                // --- Calculation ---
+                const days = Math.floor(remainingSeconds / 86400); // 86400 = 24*60*60
+                remainingSeconds %= 86400;
 
-        // Run the update function immediately
-        updateCountdown();
+                const hours = Math.floor(remainingSeconds / 3600);
+                remainingSeconds %= 3600;
 
-        // Run the update function every second
-        const timerInterval = setInterval(updateCountdown, 1000);
+                const minutes = Math.floor(remainingSeconds / 60);
+                const seconds = remainingSeconds % 60;
+
+                // --- Formatting (Pads single digits with a leading zero) ---
+                const dDisplay = days > 0 ? `${days}d ` : '';
+                const hDisplay = String(hours).padStart(2, '0');
+                const mDisplay = String(minutes).padStart(2, '0');
+                const sDisplay = String(seconds).padStart(2, '0');
+
+                // --- Output ---
+                $countdownElement.text(`${dDisplay}${hDisplay}h ${mDisplay}m ${sDisplay}s`);
+            }
+
+            // Run the update function immediately
+            updateCountdown();
+
+            // Run the update function every second
+            timerInterval = setInterval(updateCountdown, 1000);
+        } catch (error) { console.error('Countdown error:', error); $('#countdown-timer').text('Error en el contador.'); }
+
     });
 </script>
 

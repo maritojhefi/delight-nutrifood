@@ -132,8 +132,7 @@
                 $colorTiempo = 'success';
                 $textodia =
                     'Hoy ' .
-                    lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now())) .
-                    (!$todosPermiso ? ' te servirás:' : ' solicitaste permiso');
+                    ($plan->editable ? ' te servirás:' : '');
                 break;
             case 'proximo':
                 $textoTiempo = 'Inicia en: ';
@@ -143,7 +142,6 @@
                 $colorTiempo = 'warning';
                 $textodia =
                     'Hoy ' .
-                    lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now())) .
                     (!$todosPermiso ? ' te servirás:' : ' solicitaste permiso');
                 break;
             case 'proximo_dia':
@@ -174,7 +172,9 @@
                 $colorTiempo = 'info';
 
                 if (!$todosPermiso) {
-                    $textodia = $prefijoFecha . ' te servirás:';
+                    $textodia = $plan->editable? $prefijoFecha . ' te servirás:' : ucfirst(
+                        App\Helpers\GlobalHelper::fechaFormateada($formatoFecha, $fechaPlanCarbon)
+                    );
                 } else {
                     $textodia =
                         'Solicitaste permiso ' .
@@ -217,7 +217,7 @@
                                     <div class="day-text d-flex flex-column ms-2">
                                         <div class="d-flex flex-column gap-1">
                                             <p
-                                                class="font-13 d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                class="font-13 line-height-s d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
                                                 <span><strong>Despacho:</strong>
                                                     {{ $plan->horario->hora_inicio . ' - ' . $plan->horario->hora_fin }}</span>
                                                 <i data-lucide="clock" class="lucide-icon color-blue-dark"
@@ -261,9 +261,9 @@
                                                     $tiempoIniciosConteo = $tiempoInicio->timestamp;
                                                 @endphp
 
-                                                <p class="countdown-timer-text font-13 d-flex flex-row gap-1 justify-content-center align-items-center mb-0
+                                                <p class="countdown-timer-text line-height-s font-13 d-flex flex-row gap-1 justify-content-center align-items-center mb-0
                                                     {{ $isBadgeVisible ? "" : "d-none"}}">
-                                                        <strong>Falta:</strong>
+                                                        <span><strong>Falta:</strong></span>
                                                         <span id="countdown-timer" data-target="{{ $tiempoIniciosConteo }}">
                                                             Calculando...
                                                         </span>
@@ -273,9 +273,9 @@
                                                 </p>
                                             @if (count($pedidos) >= 2)
                                                 <p
-                                                    class="badge bg-delight-red rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
-                                                    <span>Porciones: {{ count($pedidos) }}</span>
-                                                    <i data-lucide="utensils" class="lucide-icon"
+                                                    class="font-13 line-height-s d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                    <span><strong>Porciones:</strong> {{ count($pedidos) }}</span>
+                                                    <i data-lucide="cooking-pot" class="lucide-icon color-delight-red"
                                                         style="width: 1rem; height: 1rem;"></i>
                                                 </p>
                                             @endif
@@ -286,9 +286,9 @@
                                 <div class="d-flex flex-row justify-content-evenly w-100 align-items-center">
                                     {{-- FIX: Using align-items-center is usually better than align-items-between --}}
 
-                                    <div class="plan-summary flex-shrink-1 text-wrap {{ $plan->editable ? '': 'd-none'}}"> {{-- FIX: Ocultar en pedidos no editables --}}
+                                    <div class="plan-summary flex-shrink-1 text-wrap"> {{-- FIX: Ocultar en pedidos no editables --}}
                                         <div class="d-flex flex-column gap-2 text-wrap">
-                                            <strong class="day-title color-theme font-16 text-wrap">
+                                            <strong class="day-title color-theme {{ $plan->editable ? 'font-16': 'font-22'}} text-wrap">
                                                 {{ $textodia }}
                                             </strong>
                                         </div>
@@ -486,8 +486,6 @@
                                                                         Pedido</span>
                                                                 </a>
                                                             @else
-                                                                <!-- <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
-                                                                                                                                                                                                                                                                                                                                                                                    class="btn btn-xs flex-shrink-0 gradient-blue rounded-s color-white font-13" style="font-weight: 700 !important;">Controlar Plan</a> -->
                                                                 <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
                                                                     class="btn rounded-s gradient-blue d-flex align-items-center justify-content-center m-0 py-1 px-2 w-auto">
                                                                     <span
