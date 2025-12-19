@@ -19,8 +19,9 @@ class ProductoListado extends JsonResource
         return [
             'id' => $this->id,
             'nombre' => $this->nombre,
-            'imagen'=>  $this->pathAttachment(),
+            'imagen' =>  $this->pathAttachment(),
             'precio' => $precioFinal,
+            'detalle' => $this->detalle,
             'precio_original' => $tieneDescuento ? $precioOriginal : null,
             'tiene_stock' => $tiene_stock,
             'url_detalle' => route('delight.detalleproducto', $this->id),

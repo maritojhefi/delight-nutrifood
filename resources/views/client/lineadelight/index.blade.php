@@ -143,15 +143,27 @@
 
     {{-- MODAL PRODUCTOS POPULARES --}}
     <div class="modal fade" id="popularProductsModal" tabindex="-1" aria-labelledby="popularProductsModalLabel" aria-hidden="true" style="z-index: 1051">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 450px">
-            <div class="modal-content">
-                <!-- Modal Header -->
-                <div class="modal-header mt-2 border-0 gap-4 d-flex align-items-center">
-                    <h4 id="popular-modal-title" class="mb-0 align-self-center text-uppercase">Nuestros productos mas populares!</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <!-- Modal Body -->
-                <div class="modal-body pt-0 px-3 mt-0 d-flex flex-column" id="listado-productos-populares">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 420px">
+            <div class="modal-content border-0 overflow-hidden" style="border-radius: 20px;">
+                <!-- Header que respeta el tema (oscuro / claro) del master -->
+                <div class="position-relative">
+                    <!-- Botón cerrar -->
+                    <button type="button" class="btn-close btn-close-white position-absolute" 
+                        data-bs-dismiss="modal" aria-label="Close"
+                        style="top: 15px; right: 15px; opacity: 0.7; z-index: 10;"></button>
+                    
+                    <!-- Encabezado del modal -->
+                    <div class="px-4 pt-4 pb-3">
+                        <p class="mb-1 font-600 opacity-50 font-12">
+                            <span id="cantidad-populares-listado">{{ $masVendidos->count() }}</span> producto(s) encontrados:
+                        </p>
+                        <h4 id="popular-modal-title" class="color-theme font-22 font-800 mb-0 text-uppercase" style="letter-spacing: 1px;">
+                            Nuestros productos mas populares!
+                        </h4>
+                    </div>
+                    
+                    <!-- Contenedor de productos -->
+                    <div class="px-4 pb-4" style="max-height: 60vh; overflow-y: auto;" id="listado-productos-populares">
                         <!-- Contenedor items individuales-->
                         @if($masVendidos->isEmpty())
                             <div class="d-flex flex-column justify-content-center align-items-center text-center py-5">
@@ -160,9 +172,10 @@
                             </div>
                         @else
                             @foreach ($masVendidos as $masVendido)
-                                <x-producto-card :producto="$masVendido" />
+                                <x-producto-card :producto="$masVendido" :version="2" class="listado-populares-item" />
                             @endforeach
                         @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -173,6 +186,53 @@
     <!-- MODAL ACCIONES PRODUCTO INDIVIDUAL -->
 
 @endsection
+
+@push('styles')
+<style>
+    /* Estilos para el modal de productos populares - Diseño menú elegante */
+    #popularProductsModal .modal-content {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    
+    /* Ajustes visuales para las tarjetas dentro del modal */
+    #popularProductsModal .listado-populares-item {
+        padding: 4px 0;
+    }
+
+    #popularProductsModal .listado-populares-item .card.card-style {
+        margin-bottom: 8px !important;
+        border-radius: 12px;
+        transition: background 0.2s ease;
+    }
+
+    #popularProductsModal .listado-populares-item .card.card-style:hover {
+        background: rgba(0, 0, 0, 0.04) !important;
+    }
+
+    #popularProductsModal .listado-populares-item:last-of-type .card.card-style {
+        margin-bottom: 0 !important;
+    }
+    
+    /* Scrollbar personalizado para el contenedor de productos populares */
+    #listado-productos-populares::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    #listado-productos-populares::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 3px;
+    }
+    
+    #listado-productos-populares::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+    }
+    
+    #listado-productos-populares::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.3);
+    }
+</style>
+@endpush
 
 @push('scripts')
 <!-- SCRIPT CONTROL SLIDER INICIO -->

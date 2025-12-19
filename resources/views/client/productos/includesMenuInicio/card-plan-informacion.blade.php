@@ -1,5 +1,5 @@
 @auth
-@php
+{{-- @php
     $horaActual = Carbon\Carbon::now()->hour;
     $periodoDia = '';
     $gradienteClass = '';
@@ -87,7 +87,7 @@
             <circle cx="18" cy="12" r="0.3" fill="#FFD700" opacity="0.3"/>
         </svg>';
     }
-@endphp
+@endphp --}}
 
 
 
@@ -98,6 +98,7 @@
         Carbon\Carbon::now()->format('Y-m-d'),
         Carbon\Carbon::now()->format('H:i'),
     );
+    $horarioActual = GlobalHelper::horarioHoraActual();
 @endphp
 
 @isset($planData)
@@ -111,6 +112,8 @@
         $tiempoRestanteMinutos = $planData->tiempo_restante;
         $planesRestantes = $planData->planes_restantes;
         $fechaPlan = $planData->fecha_plan;
+        $iconoPlanCard = $horarioActual->icono_lucide ?? 'hourglass';
+        // $iconoPlanCard = $plan->horarioActual->icono_lucide ?? 'hourglass';
         // Formatear tiempo restante
         if ($tiempoRestanteMinutos >= 60) {
             $horas = floor($tiempoRestanteMinutos / 60);
@@ -125,12 +128,11 @@
                 $textoTiempo = 'Termina en: ';
                 $mensajeTiempo = 'Termina en ' . $tiempoRestante;
                 $iconoTiempo = 'fa-clock';
-                $iconoTiempoLucide = 'clock';
+                $iconoTiempoLucide = 'utensils';
                 $colorTiempo = 'success';
                 $textodia =
                     'Hoy ' .
-                    lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now())) .
-                    (!$todosPermiso ? ' te servirás:' : ' solicitaste permiso');
+                    ($plan->editable ? ' te servirás:' : '');
                 break;
             case 'proximo':
                 $textoTiempo = 'Inicia en: ';
@@ -140,25 +142,44 @@
                 $colorTiempo = 'warning';
                 $textodia =
                     'Hoy ' .
-                    lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now())) .
                     (!$todosPermiso ? ' te servirás:' : ' solicitaste permiso');
                 break;
             case 'proximo_dia':
-                $textoTiempo = 'Mañana en: ';
-                $mensajeTiempo = 'Mañana en ' . $tiempoRestante;
+            $fechaPlanCarbon = Carbon\Carbon::parse($fechaPlan);
+
+                $esManana = $fechaPlanCarbon->isTomorrow();
+
+                // Definir el rango de la semana (Lunes → Domingo)
+                $inicioSemana = Carbon\Carbon::now()->startOfWeek(Carbon\Carbon::MONDAY);
+                $finSemana    = Carbon\Carbon::now()->endOfWeek(Carbon\Carbon::SUNDAY);
+
+                // Revisar si la fecha cae en la semana actual
+                $esSemanaActual = $fechaPlanCarbon->betweenIncluded($inicioSemana, $finSemana);
+
+                // Escoger el formato
+                $formatoFecha = $esSemanaActual ? 11 : 1;
+
+                $prefijoFecha = $esManana
+                    ? 'Mañana'
+                    : 'El día ' . ucfirst(
+                        App\Helpers\GlobalHelper::fechaFormateada($formatoFecha, $fechaPlanCarbon)
+                    );
+
+                $textoTiempo = $prefijoFecha . ' en: ';
+                $mensajeTiempo = $prefijoFecha . ' en ' . $tiempoRestante;
                 $iconoTiempo = 'fa-calendar-plus';
                 $iconoTiempoLucide = 'calendar';
                 $colorTiempo = 'info';
 
                 if (!$todosPermiso) {
-                    $textodia =
-                        'Mañana ' .
-                        lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()->addDay())) .
-                        ' te servirás:';
+                    $textodia = $plan->editable? $prefijoFecha . ' te servirás:' : ucfirst(
+                        App\Helpers\GlobalHelper::fechaFormateada($formatoFecha, $fechaPlanCarbon)
+                    );
                 } else {
                     $textodia =
-                        'Solicitaste permiso este ' .
-                        lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, Carbon\Carbon::now()->addDay()));
+                        'Solicitaste permiso ' .
+                        ($esManana ? 'mañana ' : 'el ') .
+                        lcfirst(App\Helpers\GlobalHelper::fechaFormateada(11, $fechaPlanCarbon));
                 }
                 break;
             default:
@@ -180,7 +201,7 @@
                 <div class="accordion-item plan-accordion-item mb-3">
                     <!-- Header del acordeón (siempre visible) -->
                     <div class="accordion-header" id="planHeader">
-                        <button class="accordion-button plan-accordion-button {{ $gradienteClass }}" type="button"
+                        <button class="accordion-button plan-accordion-button" type="button"
                             aria-expanded="false" aria-controls="planCollapse" {{ $plan->editable != 1 ? 'disabled' : '' }}>
                             <div class="plan-header-content mt-3 px-0"
                                 style="padding-right: 2% !important; padding-left: 2% !important;">
@@ -188,79 +209,86 @@
                                 <div class="day-info d-flex justify-content-evenly">
                                     <div class="day-icon-container">
                                         <div class="day-icon">
-                                            <i data-lucide={{ $lucideDia }} class="lucide-icon color-highlight mt-1"
+                                            <i data-lucide={{ $iconoPlanCard }} class="lucide-icon color-highlight mt-1"
                                                 style="width: 3rem; height: 3rem;"></i>
                                         </div>
                                     </div>
 
-                                    <div class="day-text" class="d-flex flex-column ms-2">
+                                    <div class="day-text d-flex flex-column ms-2">
                                         <div class="d-flex flex-column gap-1">
                                             <p
-                                                class="badge gradient-blue rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
-                                                <span>Despacho:
+                                                class="font-13 line-height-s d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                <span><strong>Despacho:</strong>
                                                     {{ $plan->horario->hora_inicio . ' - ' . $plan->horario->hora_fin }}</span>
-                                                <i data-lucide="clock" class="lucide-icon"
+                                                <i data-lucide="clock" class="lucide-icon color-blue-dark"
                                                     style="width: 1rem; height: 1rem;"></i>
                                             </p>
                                             <!-- Badge de tiempo con estado -->
-                                            @if (count($pedidos->filter(fn($pedido) => $pedido->detalle == null)))
-                                                <p
-                                                    class="badge bg-highlight rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                @php
+                                                    // Configuración
+                                                    $now = Carbon\Carbon::now();
 
-                                                    @php
-                                                        // 1. Get the current time in Carbon
-                                                        $now = Carbon\Carbon::now();
+                                                    // Parsear horarios del plan
+                                                    $horaInicioDespacho = Carbon\Carbon::createFromFormat('H:i', $plan->horario->hora_inicio);
+                                                    $horaFinDespacho = Carbon\Carbon::createFromFormat('H:i', $plan->horario->hora_fin);
 
-                                                        // 2. Set the target time to 9:00 AM today
-                                                        $targetTime = $now->copy()->setTime(9, 0, 0);
+                                                    // Verificar si el pedido es para otro día
+                                                    $esParaOtroDia = $estado == "proximo_dia";
 
-                                                        // 3. If 9:00 AM has already passed today, set the target for 9:00 AM tomorrow
-                                                        if ($now->greaterThan($targetTime)) {
-                                                            $targetTime->addDay();
-                                                        }
+                                                    // Determinar la fecha objetivo (hoy o la fecha del plan)
+                                                    $fechaObjetivo = $esParaOtroDia ? Carbon\Carbon::parse($fechaPlan) : $now->copy();
 
-                                                        // 4. Get the UNIX timestamp (seconds since epoch) for JavaScript
-                                                        $targetTimestamp = $targetTime->timestamp;
+                                                    // Combinar fecha objetivo con hora de inicio de despacho
+                                                    $tiempoInicio = $fechaObjetivo->copy()->setTime(
+                                                        $horaInicioDespacho->hour,
+                                                        $horaInicioDespacho->minute,
+                                                        0
+                                                    );
 
-                                                    @endphp
+                                                    $tiempoFin = $fechaObjetivo->copy()->setTime(
+                                                        $horaFinDespacho->hour,
+                                                        $horaFinDespacho->minute,
+                                                        0
+                                                    );
 
-                                                    {{-- The countdown display area --}}
-                                                    <span id="countdown-timer" data-target="{{ $targetTimestamp }}">
-                                                        Calculando...
-                                                    </span>
+                                                    // Verificar si estamos dentro del horario de despacho
+                                                    $dentroDeHorarioDespacho = $now->between($tiempoInicio, $tiempoFin);
 
-                                                    <i data-lucide="{{ $iconoTiempoLucide }}" class="lucide-icon"
+                                                    // Lógica de visibilidad del badge
+                                                    $isBadgeVisible = true;
+
+                                                    // Timestamp para el inicio del despacho (para el countdown)
+                                                    $tiempoIniciosConteo = $tiempoInicio->timestamp;
+                                                @endphp
+
+                                                <p class="countdown-timer-text line-height-s font-13 d-flex flex-row gap-1 justify-content-center align-items-center mb-0
+                                                    {{ $isBadgeVisible ? "" : "d-none"}}">
+                                                        <span><strong>Falta:</strong></span>
+                                                        <span id="countdown-timer" data-target="{{ $tiempoIniciosConteo }}">
+                                                            Calculando...
+                                                        </span>
+
+                                                    <i data-lucide="{{ $iconoTiempoLucide }}" class="lucide-icon color-teal-dark"
                                                         style="width: 1rem; height: 1rem;"></i>
                                                 </p>
-                                            @endif
-
-                                            <!-- <p class="badge bg-highlight rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
-                                                                                                                                                                                                                                                                                                                                                                        <span>{{ $mensajeTiempo }}</span>
-                                                                                                                                                                                                                                                                                                                                                                        <i data-lucide="{{ $iconoTiempoLucide }}" class="lucide-icon" style="width: 1rem; height: 1rem;"></i>
-                                                                                                                                                                                                                                                                                                                                                                    </p> -->
-
                                             @if (count($pedidos) >= 2)
                                                 <p
-                                                    class="badge bg-delight-red rounded rounded-s color-white d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
-                                                    <span>Porciones: {{ count($pedidos) }}</span>
-                                                    <i data-lucide="utensils" class="lucide-icon"
+                                                    class="font-13 line-height-s d-flex flex-row gap-1 justify-content-center align-items-center mb-0 ">
+                                                    <span><strong>Porciones:</strong> {{ count($pedidos) }}</span>
+                                                    <i data-lucide="cooking-pot" class="lucide-icon color-delight-red"
                                                         style="width: 1rem; height: 1rem;"></i>
                                                 </p>
                                             @endif
                                         </div>
-
-
-
-
                                     </div>
                                 </div>
 
-                                <div class="d-flex flex-row justify-content-between w-100 gap-1 align-items-center">
+                                <div class="d-flex flex-row justify-content-evenly w-100 align-items-center">
                                     {{-- FIX: Using align-items-center is usually better than align-items-between --}}
 
-                                    <div class="plan-summary flex-shrink-1 text-wrap"> {{-- FIX: Added flex-grow-0 --}}
+                                    <div class="plan-summary flex-shrink-1 text-wrap"> {{-- FIX: Ocultar en pedidos no editables --}}
                                         <div class="d-flex flex-column gap-2 text-wrap">
-                                            <strong class="day-title color-theme font-18 text-wrap">
+                                            <strong class="day-title color-theme {{ $plan->editable ? 'font-16': 'font-22'}} text-wrap">
                                                 {{ $textodia }}
                                             </strong>
                                         </div>
@@ -270,7 +298,7 @@
                                         {{-- Something here if the condition is met (it's empty now) --}}
                                     @else
                                         <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
-                                            class="btn flex-shrink-0 bg-delight-red rounded-s color-white font-13"
+                                            class="btn flex-shrink-0 mt-1 bg-delight-red rounded-s color-white font-13"
                                             style="font-weight: 700 !important;">Controlar Plan</a>
                                     @endif
                                 </div>
@@ -329,9 +357,44 @@
                                                 class="btn pedido-pendiente btn-s bg-highlight bg-dtheme-blue rounded rounded-s m-0 ">
                                                 <div class="d-flex flex-row justify-content-between align-items-center">
                                                     <h3 class="mb-0 color-white font-18">Pedido {{ $loop->iteration }}</h3>
-                                                    <p
-                                                        class="badge bg-delight-red rounded rounded-s color-white mb-0 font-12">
-                                                        ¡Pendiente!</p>
+                                                    @php
+                                                        // Configuración
+                                                        $now = Carbon\Carbon::now();
+                                                        $horaLimiteStr = GlobalHelper::getValorAtributoSetting('hora_finalizacion_planes');
+
+                                                        // Crear hora límite
+                                                        $horaLimite = Carbon\Carbon::createFromFormat('H:i', $horaLimiteStr);
+
+                                                        // Verificar si el pedido es para otro día
+                                                        $esParaOtroDia = $estado == "proximo_dia";
+
+                                                        // Calcular el timestamp objetivo para el temporizador
+                                                        if ($esParaOtroDia) {
+                                                            // Pedido de otro día: temporizador hasta la hora límite de la fecha del plan
+                                                            $tiempoObjetivoJS = Carbon\Carbon::parse($fechaPlan)->setTime(
+                                                                $horaLimite->hour,
+                                                                $horaLimite->minute,
+                                                                0
+                                                            );
+                                                        } else {
+                                                            // Pedido de hoy: temporizador hasta la hora límite de hoy
+                                                            $tiempoObjetivoJS = $now->copy()->setTime(
+                                                                $horaLimite->hour,
+                                                                $horaLimite->minute,
+                                                                0
+                                                            );
+                                                        }
+                                                        $tiempoInicioConteo = $tiempoObjetivoJS->timestamp;
+                                                    @endphp
+
+                                                    <p class="d-flex flex-column gap-1 badge bg-delight-red rounded rounded-s color-white mb-0 font-12">
+                                                        <span>
+                                                            Alista tu pedido
+                                                        </span>
+                                                        <span class="countdown-plan-timer" data-target="{{ $tiempoInicioConteo }}">
+                                                            Calculando...
+                                                        </span>
+                                                    </p>
                                                 </div>
                                             </a>
                                         @else
@@ -423,8 +486,6 @@
                                                                         Pedido</span>
                                                                 </a>
                                                             @else
-                                                                <!-- <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
-                                                                                                                                                                                                                                                                                                                                                                                    class="btn btn-xs flex-shrink-0 gradient-blue rounded-s color-white font-13" style="font-weight: 700 !important;">Controlar Plan</a> -->
                                                                 <a href="{{ route('calendario.cliente', [$plan->id, auth()->user()->id]) }}"
                                                                     class="btn rounded-s gradient-blue d-flex align-items-center justify-content-center m-0 py-1 px-2 w-auto">
                                                                     <span
@@ -452,8 +513,41 @@
                                         class="btn btn-s bg-highlight bg-dtheme-blue rounded rounded-s m-0">
                                         <div class="d-flex flex-row justify-content-between align-items-center">
                                             <h3 class="mb-0 color-white font-18">Pedido</h3>
-                                            <p class="badge bg-delight-red rounded rounded-s color-white mb-0 font-12">
-                                                ¡Pendiente!</p>
+                                            @php
+                                                // Configuración
+                                                $now = Carbon\Carbon::now();
+                                                $horaLimiteStr = GlobalHelper::getValorAtributoSetting('hora_finalizacion_planes');
+                                                // Crear hora límite
+                                                $horaLimite = Carbon\Carbon::createFromFormat('H:i', $horaLimiteStr);
+                                                // Verificar si el pedido es para otro día
+                                                $esParaOtroDia = $estado == "proximo_dia";
+                                                // Calcular el timestamp objetivo para el temporizador
+                                                if ($esParaOtroDia) {
+                                                    // Pedido de otro día: temporizador hasta la hora límite de la fecha del plan
+                                                    $tiempoObjetivoJS = Carbon\Carbon::parse($fechaPlan)->setTime(
+                                                        $horaLimite->hour,
+                                                        $horaLimite->minute,
+                                                        0
+                                                    );
+                                                } else {
+                                                    // Pedido de hoy: temporizador hasta la hora límite de hoy
+                                                    $tiempoObjetivoJS = $now->copy()->setTime(
+                                                        $horaLimite->hour,
+                                                        $horaLimite->minute,
+                                                        0
+                                                    );
+                                                }
+                                                $tiempoInicioConteo = $tiempoObjetivoJS->timestamp;
+                                            @endphp
+
+                                            <p class="d-flex flex-column gap-1 badge bg-delight-red rounded rounded-s color-white mb-0 font-12">
+                                                <span>
+                                                    Alista tu pedido
+                                                </span>
+                                                <span class="countdown-plan-timer" data-target="{{ $tiempoInicioConteo }}">
+                                                    Calculando...
+                                                </span>
+                                            </p>
                                         </div>
                                     </a>
                                 @else
@@ -666,7 +760,7 @@
 
         .day-title {
             font-size: 18px;
-            font-weight: 900;
+            /*font-weight: 900;*/
             margin: 0;
             opacity: 0.9;
         }

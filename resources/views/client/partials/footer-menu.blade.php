@@ -34,30 +34,12 @@
             });
 
             $(document).ready(function() {
-                // Controlar la visibilidad de un contador
-                const  actualizarVisibilidadCounters = (selector) => {
-                    const counterElement = $(selector);
-
-                    if (counterElement.length === 0) {
-                        return;
-                    }
-
-                    const count = parseInt(counterElement.text().trim(), 10);
-                    
-                    if (isNaN(count) || count === 0) {
-                        counterElement.css('display', 'none');
-                    } else {
-                        counterElement.css('display', 'block');
-                    }
-                }
+                
                 
                 actualizarVisibilidadCounters('#mipedido-counter'); 
                 actualizarVisibilidadCounters('#cart-counter'); 
 
-                window.refrescarContadoresFooter = function() {
-                    actualizarVisibilidadCounters('#mipedido-counter');
-                    actualizarVisibilidadCounters('#cart-counter');
-                };
+               
             });
 
         </script>

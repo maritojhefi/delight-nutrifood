@@ -129,20 +129,19 @@ class UserIndex extends Component
             if ($user->foto) {
                 $rutaArchivo = User::RUTA_FOTO . $user->foto; // Construir ruta correcta
                 $disco = GlobalHelper::discoArchivos();
-                
+
                 if (Storage::disk($disco)->exists($rutaArchivo)) {
                     Storage::disk($disco)->delete($rutaArchivo);
                 }
             }
-            
+
             // Eliminar usuario
             $user->delete();
-            
+
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'warning',
                 'message' => "Usuario: " . $user->name . " eliminado"
             ]);
-            
         } catch (\Throwable $th) {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'error',

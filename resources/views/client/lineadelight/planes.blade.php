@@ -145,10 +145,6 @@
             setTimeout(adjustPlanTitleFontSize, 100);
         });
     </script>
-    <script src="{{ asset('js/carrito/index.js') }}"></script>
-    <script src="{{ asset(path: 'js/producto/producto-service.js') }}"></script>
-
-
     <script> 
         $(document).ready(function() {
             $(document).on('click', '.add-to-cart', agregarAlCarritoHandler);

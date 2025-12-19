@@ -6,7 +6,7 @@
 
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1, user-scalable=0 viewport-fit=cover" />
-    @if(config('app.env') !== 'local')
+    @if (config('app.env') !== 'local')
         <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     @endif
 
@@ -19,7 +19,7 @@
         href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900|Roboto:300,300i,400,400i,500,500i,700,700i,900,900i&amp;display=swap"
         rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('fonts/css/fontawesome-all.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_mint.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('styles/highlights/highlight_mint.css?v=1.0.1') }}">
 
     @env('production')
         <script>
@@ -87,12 +87,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
         $(document).ready(function() {
-            $(document).ajaxStart(function() { 
+            $(document).ajaxStart(function() {
                 // // console.log("AJAX Start detectado - mostrando loader.");
                 LoaderManager.setIsLoading(true);
             });
-            
-            $(document).ajaxStop(function() { 
+
+            $(document).ajaxStop(function() {
                 // // console.log("AJAX Stop detectado - ocultando loader.");
                 LoaderManager.setIsLoading(false);
             });
@@ -143,7 +143,8 @@
     <div id="preloader" style="background: none;">
         <!-- <div class="spinner-border color-highlight" role="status"></div> -->
         <!-- Backdrop -->
-        <div id="loader-backdrop visible" class="loader-backdrop" style="
+        <div id="loader-backdrop visible" class="loader-backdrop"
+            style="
             position: fixed;
             top: 0;
             left: 0;
@@ -155,10 +156,12 @@
             z-index: 9998;
             opacity: 1;
             transition: opacity 600ms ease-in-out;
-        "></div>
+        ">
+        </div>
 
         <!-- Loader Container -->
-        <div id="loader-container visible" class="loader-container" style="
+        <div id="loader-container visible" class="loader-container"
+            style="
             position: fixed;
             top: 0;
             left: 0;
@@ -174,11 +177,8 @@
         ">
             <div class="loader-content">
                 <!-- Animated logo -->
-                <img
-                    src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}"
-                    alt="Loading"
-                    class="loader-logo"
-                />
+                <img src="{{ asset(GlobalHelper::getValorAtributoSetting('logo_small')) }}" alt="Loading"
+                    class="loader-logo" />
 
                 <!-- Pulsing glow effect -->
                 <div class="loader-glow"></div>
@@ -236,16 +236,16 @@
     <div id="toast-cart-item-limit" class="snackbar-toast bg-yellow-dark color-white fade hide" data-autohide="true"
         style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Limite alcanzado!</div>
 
-    <div id="toast-success" class="snackbar-toast bg-green-dark color-white fade hide line-height-l py-2" data-autohide="true"
-    style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Mensaje de exito</div>
-    <div id="toast-warning" class="snackbar-toast bg-yellow-dark color-white fade hide line-height-l py-2" data-autohide="true"
-        style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Mensaje de advertencia</div>
-    <div id="toast-error" class="snackbar-toast bg-red-dark color-white fade hide line-height-l py-2" data-autohide="true"
-        style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Mensaje de error</div>
+    <div id="toast-success" class="snackbar-toast bg-green-dark color-white fade hide line-height-l py-2"
+        data-autohide="true" style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Mensaje de exito</div>
+    <div id="toast-warning" class="snackbar-toast bg-yellow-dark color-white fade hide line-height-l py-2"
+        data-autohide="true" style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Mensaje de advertencia</div>
+    <div id="toast-error" class="snackbar-toast bg-red-dark color-white fade hide line-height-l py-2"
+        data-autohide="true" style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Mensaje de error</div>
     @include('client.partials.modalredes')
 
     <div id="shared" class="snackbar-toast bg-blue-dark color-white fade hide" data-delay="3000" data-autohide="true"
-        style="z-index: 9999"><i class="fa fa-shopping-cart me-3"></i>Link copiado!</div>
+        style="z-index: 9999"><i class="fa fa-link me-3"></i>Link copiado!</div>
     @auth
         @php
             $estaCompleto = auth()->user()->tienePerfilCompleto();
@@ -261,6 +261,26 @@
         };
     </script>
     <script>
+        window.refrescarContadoresFooter = function() {
+            actualizarVisibilidadCounters('#mipedido-counter');
+            actualizarVisibilidadCounters('#cart-counter');
+        };
+        // Controlar la visibilidad de un contador
+        const actualizarVisibilidadCounters = (selector) => {
+            const counterElement = $(selector);
+
+            if (counterElement.length === 0) {
+                return;
+            }
+
+            const count = parseInt(counterElement.text().trim(), 10);
+
+            if (isNaN(count) || count === 0) {
+                counterElement.css('display', 'none');
+            } else {
+                counterElement.css('display', 'block');
+            }
+        }
         // CONTROL PRELOADER EN REDIRECCIONES
         $(document).ready(function() {
             let splideInstances = [];
@@ -290,7 +310,7 @@
 
                 if (typeof Splide !== 'undefined') {
                     await new Promise(resolve => setTimeout(resolve, 150));
-                    
+
                     const splideElements = document.querySelectorAll('.splide');
                     if (splideElements.length > 0) {
                         await new Promise(resolve => setTimeout(resolve, 100));
@@ -298,7 +318,7 @@
                 }
 
                 await new Promise(resolve => setTimeout(resolve, 200));
-                
+
                 $('#preloader').addClass('preloader-hide');
             }
 
@@ -376,7 +396,7 @@
             });
         });
     </script>
-    
+
     <script>
         window.mostrarToastSuccess = (mensaje) => {
             const toastsuccess = $('#toast-success');
@@ -397,7 +417,7 @@
                 toast.hide();
             }, 3000);
         }
-        
+
         window.mostrarToastError = (mensaje) => {
             const toasterror = $('#toast-error');
             toasterror.text(mensaje);
@@ -435,7 +455,7 @@
                 get: function() {
                     // Retornar el valor actual o un string vacio.
                     return originalTransformDescriptor ? originalTransformDescriptor.get.call(this) :
-                    '';
+                        '';
                 },
                 set: function(value) {
                     // // console.log('🚨 TRANFORMACION DIRECTA BLOQUEADA:');
