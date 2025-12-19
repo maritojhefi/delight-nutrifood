@@ -10,8 +10,10 @@ use Illuminate\Support\Facades\Storage;
 use App\Helpers\GlobalHelper;
 use App\Helpers\WhatsappNotification;
 use App\Models\Horario;
+use App\Models\Sucursale;
 use App\Models\User;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 
 class CircuitoIA
 {
@@ -70,9 +72,12 @@ class CircuitoIA
     const TEMA_ABOUT_US = "about_us";
     const TEMA_SOPORTE = "soporte";
     const TEMA_HORARIOS = "horarios";
+    const TEMA_PRODUCTOS_DESCUENTO = "productos_descuento";
     const TEMA_PRODUCTOS_CATEGORIA = "productos_categoria";
     const TEMA_PRODUCTO_ESPECIFICO = "producto_especifico";
+    const TEMA_REALIZAR_PEDIDO = "realizar_pedido";
     const TEMA_DEBUG = "debug";
+    const TEMA_DESCONOCIDO = "tema_desconocido";
 
     const TEMAS_CONVERSACION = [
         self::TEMA_SALUDO,
@@ -80,8 +85,11 @@ class CircuitoIA
         self::TEMA_ABOUT_US,
         self::TEMA_SOPORTE,
         self::TEMA_HORARIOS,
+        self::TEMA_PRODUCTOS_DESCUENTO,
         self::TEMA_PRODUCTOS_CATEGORIA,
         self::TEMA_PRODUCTO_ESPECIFICO,
+        self::TEMA_REALIZAR_PEDIDO,
+        self::TEMA_DESCONOCIDO,
         self::TEMA_DEBUG
     ];
 
@@ -305,6 +313,7 @@ class CircuitoIA
     private function construirPrompts($infoSolicitud): array
     {
         $temaConversacion = $infoSolicitud['tema'];
+        $textoBusqueda = $infoSolicitud['texto_busqueda'];
 
         Log::debug("Información de la solicitud para construir prompts", [
             $infoSolicitud,
@@ -318,14 +327,85 @@ class CircuitoIA
             ]
         ];
 
+        $promptsReglasClave = [
+            [
+                "role" => "system",
+                "content" => "
+                    # REGLAS CLAVE
+
+                    1. Jamás inventes información, usa solo la información que te es proporcionada.
+                    2. Si no sabes la respuesta, di 'No tengo información suficiente para responder a esa pregunta, disculpe.
+                    3. Si debes listar un precio, hazlo en Bs. (Bolivianos)
+                    4. Por el momento:
+                        - Puedes atender consultas sobre productos
+                        - Puedes brindar información sobre horarios de atención
+                        - Puedes saludar a clientes nuevos y presentarte
+                        - No puedes tomar o realizar pedidos
+                        - No puedes tomar o procesar pagos
+                        - No debes ni puedes inventar descuentos
+                        - No conoces la información de los ingredientes, así que no la ofrezcas ni la inventes
+                    5. Si tras realizar tu lógica, identificas que no pudiste atender la solicitud del cliente, diculpate y ofrece hacer algo más.
+                "
+            ]
+        ];
+
+        $sucursales = Sucursale::all();
+        $promptsInformacionNegocio = [
+            [
+                "role" => "system",
+                "content" => "
+                    # DELIGHT NUTRIFOOD
+
+                    La empresa se dedíca a la venta de productos saludables y nutritivos, con un enfoque en la salud y el bienestar de las personas.
+                    El negocio se encuentra ubicado en la ciudad de Tarija. Información de la(s) sucursal(es):" . json_encode($sucursales)  . "."
+            ]
+        ];
+
+        $promptsInformaciónProductos = [
+            [
+                "role" => "system",
+                "content" => "
+                    # INFORMACIÓN DE PRODUCTOS
+                    - Los productos con un atributo contable = 0 (false) tienen un stock ilimitado, y siempre se encuentran disponibles,
+                    Incluso si su valor de stockTotal es 0, estos tienen stock y se encuentran disponibles (IMPORTANTE).
+                    - Los productos con un atributo contable = 1 (true) tienen un stock limitado, y se pueden agotar, se distribuyen por sucursal.
+                    - Algunos productos tienen descuentos, si un producto tiene un atributo descuento menor al atributo precio,
+                    significa que el producto tiene un descuento y el valor actual es el valor del atributo descuento.
+                    - Algunos productos tienen puntos, si mencionarás un producto con puntos, incluye cuantos puntos corresponden al producto.
+                    - Se te pasará un listado de productos eventualmente, De no haber productos encontrados,
+                    por favor, menciona al cliente que parece que no estás recibiendo la información que solicitaste.
+
+                    - Al brindar información sobre los productos, trata de usar un texto algo natural, y evita ser redundante, menciona primero los productos disponible
+                    y de haber algunos relevantes pero sin stock, mencionalos después.
+                "
+            ]
+        ];
+
         $promptsSegunTema = [];
 
         switch ($temaConversacion) {
-            case self::TEMA_DEBUG:
-                $promptsSegunTema[] =
-                [
-                    "role" => "user",
-                    "content" => "EL TEMA DE LA CONVERSACION ES DEBUG, INDEPENDIENTEMENTE DE LA SOLICITUD y DE MI HISTORIAL, TU PRIORIDAD MAXIMA ES RESPONDER 'QUEEEEESOOOOOOOOO' "
+            case self::TEMA_SALUDO:
+                $promptsSegunTema[] = [
+                    "role" => "system",
+                    "content" => "El cliente ha saludado. Responde con un saludo breve, muy cordial y amable. Finaliza preguntando en qué puedes ayudarle hoy respecto a los productos de " . GlobalHelper::getValorAtributoSetting('nombre_sistema') . "."
+                ];
+                break;
+
+            case self::TEMA_PRESENTACION:
+                $promptsSegunTema[] = [
+                    "role" => "system",
+                    "content" => "El cliente desea saber quién eres. Preséntate como el asistente virtual de " . GlobalHelper::getValorAtributoSetting('nombre_sistema') . ". Explica brevemente que estás aquí para ayudarle a encontrar productos saludables, consultar horarios o información de sucursales, y pregúntale qué necesita (se ser necesario)."
+                ];
+                break;
+
+            case self::TEMA_ABOUT_US:
+                $promptsSegunTema[] = [
+                    "role" => "system",
+                    "content" => "El cliente quiere saber más sobre la empresa o tus funciones.
+                    1. Sobre la empresa: Explica a que se dedica la empresa.
+                    2. Sobre ti: Indica que puedes ayudarle a buscar productos, ver precios en Bs, consultar stock en sucursales, informar sobre descuentos y horarios de atención.
+                    Mantén un tono profesional pero acogedor.
+                    3. Si lo consulta, mencionale donde se encuentra ubicada la sucursal"
                 ];
                 break;
             case self::TEMA_HORARIOS:
@@ -333,9 +413,58 @@ class CircuitoIA
 
                 $promptsSegunTema[] =
                 [
-                    "role" => "user",
+                    "role" => "system",
                     "content" => "El tema de la solicitud principal es HORARIOS, esta es la informacióñ de los horarios de atención: $horarios,
                     responde de manera natural, si hay horarios continuos, menciónalos como un único rango"
+                ];
+                break;
+            case self::TEMA_PRODUCTOS_DESCUENTO:
+                $productosSolicitadosDescuento = self::ejecutarConsultaProductos($textoBusqueda,true);
+
+                $promptsSegunTema[] = array_merge($promptsInformaciónProductos,
+                [
+                    "role" => "system",
+                    "content" => "El tema de la solicitud principal es PRODUCTOS POR DESCUENTO, los productos encontrados por el buscador son:" . json_encode($productosSolicitadosDescuento)
+                    . ",identifica los productos relevantes a la petición, y presentalos al cliente.
+                    Si el cliente no parece haber mencionado una categoría que te ayude a identificar los productos relevantes, no menciones los productos listados.
+                    En su lugar, mencionale que necesitas que describa la categoria de productos en descuento que busca."
+                ]);
+                break;
+            case self::TEMA_PRODUCTOS_CATEGORIA:
+                $productosSolicitadosCategoria = self::ejecutarConsultaProductos($textoBusqueda);
+
+                $promptsSegunTema[] = array_merge($promptsInformaciónProductos,
+                [
+                    "role" => "system",
+                    "content" => "El tema de la solicitud principal es PRODUCTOS POR SUBCATEGORÍA, los productos encontrados por el buscador son:" . json_encode($productosSolicitadosCategoria)
+                    . ",identifica los productos relevantes a la petición, y presentalos al cliente.
+                    Antes de responder, recuerda las instrucciones que te asignaron sobre que puedes y que no puedes hacer"
+                ]);
+                break;
+            case self::TEMA_PRODUCTO_ESPECIFICO:
+                $productosSolicitadosEspecificos = self::ejecutarConsultaProductos($textoBusqueda);
+
+                $promptsSegunTema[] = array_merge($promptsInformaciónProductos,
+                [
+                    "role" => "system",
+                    "content" => "El tema de la solicitud principal es PRODUCTO ESPECIFICO, entre los productos encontrados por el buscador están:" . json_encode($productosSolicitadosEspecificos)
+                    . ", identifica el producto relevante a la petición, y presentalo al cliente.
+                    Antes de responder, recuerda las instrucciones que te asignaron sobre que puedes y que no puedes hacer"
+                ]);
+                break;
+            case self::TEMA_REALIZAR_PEDIDO:
+                $promptsSegunTema[] = array_merge($promptsInformaciónProductos,
+                [
+                    "role" => "system",
+                    "content" => "Aún no eres capaz de aceptar o realizar pedidos, disculpate y preguntale al cliente si puedes ayudarlo con otra cosa"
+                ]);
+                break;
+            case self::TEMA_DESCONOCIDO:
+                $promptsSegunTema[] =
+                [
+                    "role" => "system",
+                    "content" => "El tema de la solicitud principal es DESCONOCIDO, no se pudo identificar el tema de la solicitud.
+                    Menciona al cliente que al parecer no eres capaz de cunplir con lo solicitado, y consulta si hay algo más en que puedas ayudarle"
                 ];
                 break;
             default:
@@ -354,9 +483,11 @@ class CircuitoIA
 
         $promptsSolicitudPrincipal = array_merge(
             $promptsIdentidadAgente,        // 1. Identidad del agente
-            $promptsSegunTema,              // 2. Instrucciones específicas del tema (DEBUG, etc.)
+            $promptsInformacionNegocio,     // 2. Información del negocio
+            $promptsSegunTema,              // 3. Instrucciones específicas del tema (DEBUG, etc.)
             $promptInstruccionHistorial,    // 3. Cómo manejar el historial
-            $historialConversacion          // 4. Historial real de mensajes
+            $historialConversacion,         // 5. Historial real de mensajes
+            $promptsReglasClave             // 6. Reglas clave que no debe desobedecer
         );
 
         Log::debug("PromptsSolicitudPrincial", [
@@ -538,6 +669,272 @@ class CircuitoIA
                 "error" => $consultaTema->body(),
             ]);
             throw new Exception("Respuesta errónea de DeepSeek");
+        }
+    }
+
+    // private static function ejecutarConsultaProductos(string $busqueda): array
+    // {
+    //     // 1. Obtener productos del caché
+    //     $productos = Cache::get('productos');
+
+    //     // 2. Si no hay productos o están vacíos, generarlos y asignarlos
+    //     if (!$productos || $productos->isEmpty()) {
+    //         $productos = GlobalHelper::cachearProductos();
+    //     }
+
+    //     $ejemploRecibidos = $productos->take(5)->toArray();
+
+    //     Log::debug("Ejemplo productos obtenidos", [
+    //         "busqueda" => $busqueda,
+    //         "cantidad" => $productos->count(),
+    //         "ejemplos" => $ejemploRecibidos,
+    //     ]);
+
+    //     return $ejemploRecibidos;
+    // }
+
+    private static function ejecutarConsultaProductos(string $busqueda, bool $descuento = false, int $limite = 10): array
+    {
+        try {
+            // 1. Obtener productos del caché
+            $productos = Cache::get('productos');
+
+            // 2. Si no hay productos o están vacíos, generarlos y asignarlos
+            if (!$productos || $productos->isEmpty()) {
+                $productos = GlobalHelper::cachearProductos();
+            }
+
+            // 3. Filtrar productos en descuento si es requerido
+            if ($descuento) {
+                $productos = $productos->filter(function ($producto) {
+                    return $producto->descuento > 0 && $producto->descuento < $producto->precio;
+                });
+
+                Log::debug("Filtro de descuentos aplicado", [
+                    "productos_con_descuento" => $productos->count()
+                ]);
+            }
+
+            // 3. Función auxiliar para normalizar texto
+            $normalizarTexto = function($texto) {
+                $texto = strtolower(trim($texto));
+                $texto = str_replace(
+                    ['á', 'é', 'í', 'ó', 'ú', 'ñ'],
+                    ['a', 'e', 'i', 'o', 'u', 'n'],
+                    $texto
+                );
+                return $texto;
+            };
+
+            // 4. Normalizar búsqueda
+            $queryNormalizado = $normalizarTexto($busqueda);
+            $palabrasBusqueda = array_filter(explode(' ', $queryNormalizado));
+
+            Log::debug("Búsqueda normalizada", [
+                "original" => $busqueda,
+                "normalizado" => $queryNormalizado,
+                "palabras" => $palabrasBusqueda
+            ]);
+
+            // 5. Transformar productos y preparar datos de búsqueda
+            $productosTransformados = $productos->map(function ($producto) use ($normalizarTexto) {
+                $nombreSubcategoria = $producto->subcategoria->nombre ?? '';
+                $nombreCategoria = $producto->subcategoria->categoria->nombre ?? '';
+                $tags = $producto->tag->pluck('nombre')->join(' ');
+
+                return [
+                    'id' => $producto->id,
+                    'nombre' => $producto->nombre,
+                    'precio' => $producto->precio,
+                    'descuento' => $producto->descuento,
+                    'subcategoria_id' => $producto->subcategoria_id,
+                    'imagen' => $producto->imagen,
+                    'contable' => $producto->contable,
+                    'pathImagen' => $producto->pathImagen ?? asset(GlobalHelper::getValorAtributoSetting('busqueda_default')),
+                    'stockTotal' => $producto->contable ? $producto->stockTotal ?? 0 : "Infinito",
+                    'subcategoria' => $producto->subcategoria,
+                    'tag' => $producto->tag,
+                    'sucursale' => $producto->sucursale,
+                    'producto_vinculado_stock' => $producto->producto_vinculado_stock ?? null,
+                    // Campos normalizados para búsqueda
+                    'nombre_normalizado' => $normalizarTexto($producto->nombre),
+                    'subcategoria_normalizada' => $normalizarTexto($nombreSubcategoria),
+                    'categoria_normalizada' => $normalizarTexto($nombreCategoria),
+                    'tags_normalizado' => $normalizarTexto($tags),
+                ];
+            });
+
+            // 6. Calcular peso de relevancia para cada producto
+            $productosConPeso = $productosTransformados->map(function ($producto) use ($queryNormalizado, $palabrasBusqueda) {
+                $peso = 0;
+
+                $nombre = $producto['nombre_normalizado'];
+                $subcategoria = $producto['subcategoria_normalizada'];
+                $categoria = $producto['categoria_normalizada'];
+                $tags = $producto['tags_normalizado'];
+
+                // === COINCIDENCIAS EXACTAS (Máxima prioridad) ===
+
+                // Coincidencia exacta completa en nombre
+                if ($nombre === $queryNormalizado) {
+                    $peso += 1000;
+                }
+
+                // Coincidencia exacta completa en subcategoría
+                if ($subcategoria === $queryNormalizado) {
+                    $peso += 500;
+                }
+
+                // === COINCIDENCIAS PARCIALES (Alta prioridad) ===
+
+                // Query completo contenido en nombre
+                if (str_contains($nombre, $queryNormalizado)) {
+                    $peso += 200;
+                }
+
+                // Query completo contenido en subcategoría
+                if (str_contains($subcategoria, $queryNormalizado)) {
+                    $peso += 150;
+                }
+
+                // Query completo contenido en categoría
+                if (str_contains($categoria, $queryNormalizado)) {
+                    $peso += 100;
+                }
+
+                // Query completo contenido en tags
+                if (str_contains($tags, $queryNormalizado)) {
+                    $peso += 80;
+                }
+
+                // === ANÁLISIS POR PALABRAS (Prioridad media) ===
+
+                foreach ($palabrasBusqueda as $palabra) {
+                    if (strlen($palabra) < 2) continue; // Ignorar palabras muy cortas
+
+                    // Palabra exacta en nombre
+                    if (str_contains($nombre, $palabra)) {
+                        $peso += 50;
+                    }
+
+                    // Palabra exacta en subcategoría
+                    if (str_contains($subcategoria, $palabra)) {
+                        $peso += 40;
+                    }
+
+                    // Palabra exacta en categoría
+                    if (str_contains($categoria, $palabra)) {
+                        $peso += 30;
+                    }
+
+                    // Palabra exacta en tags
+                    if (str_contains($tags, $palabra)) {
+                        $peso += 20;
+                    }
+                }
+
+                // === SIMILITUD CON LEVENSHTEIN (Para typos y variaciones) ===
+
+                // Similitud con nombre completo
+                $distanciaNombre = levenshtein($queryNormalizado, $nombre);
+                $maxLength = max(strlen($queryNormalizado), strlen($nombre));
+                if ($maxLength > 0) {
+                    $similitudNombre = 1 - ($distanciaNombre / $maxLength);
+                    if ($similitudNombre > 0.7) { // 70% de similitud
+                        $peso += (int)($similitudNombre * 100);
+                    }
+                }
+
+                // Similitud con subcategoría
+                $distanciaSubcat = levenshtein($queryNormalizado, $subcategoria);
+                $maxLengthSubcat = max(strlen($queryNormalizado), strlen($subcategoria));
+                if ($maxLengthSubcat > 0) {
+                    $similitudSubcat = 1 - ($distanciaSubcat / $maxLengthSubcat);
+                    if ($similitudSubcat > 0.7) {
+                        $peso += (int)($similitudSubcat * 75);
+                    }
+                }
+
+                // === PALABRAS INDIVIDUALES DEL PRODUCTO ===
+
+                $palabrasNombre = array_filter(explode(' ', $nombre));
+                foreach ($palabrasNombre as $palabraProducto) {
+                    if (strlen($palabraProducto) < 3) continue;
+
+                    foreach ($palabrasBusqueda as $palabraBusqueda) {
+                        if (strlen($palabraBusqueda) < 3) continue;
+
+                        // Coincidencia exacta palabra a palabra
+                        if ($palabraProducto === $palabraBusqueda) {
+                            $peso += 60;
+                        }
+                        // Una palabra contiene a la otra
+                        elseif (str_contains($palabraProducto, $palabraBusqueda) ||
+                                str_contains($palabraBusqueda, $palabraProducto)) {
+                            $peso += 30;
+                        }
+                        // Similitud entre palabras individuales
+                        else {
+                            $distPalabras = levenshtein($palabraBusqueda, $palabraProducto);
+                            $maxLenPalabras = max(strlen($palabraBusqueda), strlen($palabraProducto));
+                            if ($maxLenPalabras > 0) {
+                                $simPalabras = 1 - ($distPalabras / $maxLenPalabras);
+                                if ($simPalabras > 0.75) {
+                                    $peso += (int)($simPalabras * 40);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return [
+                    'producto' => $producto,
+                    'peso' => $peso,
+                ];
+            });
+
+            // 7. Filtrar productos con peso significativo y ordenar
+            $pesoMinimo = 20; // Umbral mínimo de relevancia
+
+            $resultado = $productosConPeso
+                ->filter(fn($item) => $item['peso'] >= $pesoMinimo)
+                ->sortByDesc('peso')
+                ->values()
+                ->take($limite)
+                ->map(function ($item) {
+                    return array_merge($item['producto'], ['peso' => $item['peso']]);
+                })
+                ->toArray();
+
+            Log::debug("Búsqueda ejecutada", [
+                "busqueda" => $busqueda,
+                "query_normalizado" => $queryNormalizado,
+                "solo_descuentos" => $descuento,
+                "total_productos" => $productos->count(),
+                "productos_con_peso" => $productosConPeso->filter(fn($i) => $i['peso'] > 0)->count(),
+                "resultados_encontrados" => count($resultado),
+                "top_5_pesos" => $productosConPeso
+                    ->sortByDesc('peso')
+                    ->take(5)
+                    ->map(fn($i) => [
+                        'id' => $i['producto']['id'],
+                        'nombre' => $i['producto']['nombre'],
+                        'subcategoria' => $i['producto']['subcategoria_normalizada'],
+                        'peso' => $i['peso']
+                    ])
+                    ->values()
+                    ->toArray()
+            ]);
+
+            return $resultado;
+
+        } catch (\Throwable $th) {
+            Log::error("Error al buscar productos en chatbot: " . $th->getMessage(), [
+                'busqueda' => $busqueda,
+                'trace' => $th->getTraceAsString()
+            ]);
+
+            return [];
         }
     }
 
