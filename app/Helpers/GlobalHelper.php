@@ -713,35 +713,43 @@ class GlobalHelper
 
         // Obtener planes del día actual con horarios cargados
         $planesHoy = $usuario->planesHoy($fecha)->get()->load('horario');
-        // Filtrar planes que no tienen horario (la relación es null)
-        $planesHoy = $planesHoy->filter(fn($plan) => $plan->horario !== null);
 
+        // Filtrar planes que no tienen horario Y que no están en permiso
+        $planesHoy = $planesHoy->filter(fn($plan) =>
+            $plan->horario !== null &&
+            $plan->pivot->estado !== "permiso"  // Cambio aquí: pivot->estado
+        );
 
-        // Si no hay planes hoy, buscar planes del día siguiente
+        // Si no hay planes hoy, buscar el próximo plan pendiente
         if ($planesHoy->isEmpty()) {
-            $fechaSiguiente = $fechaActual->copy()->addDay()->format('Y-m-d');
-            $planesSiguiente = $usuario->planesHoy($fechaSiguiente)->get()->load('horario');
+            // Obtener todos los planes pendientes del usuario
+            $planesPendientes = $usuario->planesPendientes()->get()->load('horario');
 
-            //  Filtrar planes que no tienen horario (la relación es null)
-            $planesSiguiente = $planesSiguiente->filter(fn($plan) => $plan->horario !== null);
+            // Filtrar planes que tienen horario, no están en permiso Y son de fecha futura (mayor a hoy)
+            $planesPendientes = $planesPendientes->filter(fn($plan) =>
+                $plan->horario !== null &&
+                $plan->pivot->estado !== "permiso" &&
+                Carbon::parse($plan->pivot->start)->greaterThan($fechaActual)
+            );
 
-            if ($planesSiguiente->isEmpty()) {
+            if ($planesPendientes->isEmpty()) {
                 return null;
             }
 
-            // Ordenar planes del día siguiente por hora de inicio
-            $planesSiguienteOrdenados = $planesSiguiente->sortBy(function ($plan) {
-                return Carbon::parse($plan->horario->hora_inicio);
+            // Ordenar por fecha de inicio (start) y hora de inicio del horario combinados
+            $planesPendientesOrdenados = $planesPendientes->sortBy(function ($plan) {
+                return Carbon::parse($plan->pivot->start)
+                    ->setTimeFromTimeString($plan->horario->hora_inicio)
+                    ->timestamp;
             });
 
-            $planSiguiente = $planesSiguienteOrdenados->first();
+            $planSiguiente = $planesPendientesOrdenados->first();
+            $fechaPlanSiguiente = $planSiguiente->pivot->start;
 
-            $pedidos = self::obtenerPedidosDelPlan($usuario->id, $planSiguiente, $fechaSiguiente);
+            $pedidos = self::obtenerPedidosDelPlan($usuario->id, $planSiguiente, $fechaPlanSiguiente);
 
-            // $horaInicioSiguiente = Carbon::parse($planSiguiente->horario->hora_inicio);
-
-            // Calcular tiempo hasta el inicio del plan de mañana
-            $fechaHoraInicioSiguiente = $fechaActual->copy()->addDay()->setTimeFromTimeString($planSiguiente->horario->hora_inicio);
+            // Calcular tiempo hasta el inicio del plan
+            $fechaHoraInicioSiguiente = Carbon::parse($fechaPlanSiguiente)->setTimeFromTimeString($planSiguiente->horario->hora_inicio);
             $tiempoRestante = $horaActual->diffInMinutes($fechaHoraInicioSiguiente);
 
             return (object) [
@@ -749,11 +757,12 @@ class GlobalHelper
                 'pedidos' => $pedidos,
                 'estado' => 'proximo_dia',
                 'tiempo_restante' => $tiempoRestante,
-                'planes_restantes' => $planesSiguiente->count(),
-                'fecha_plan' => $fechaSiguiente,
+                'planes_restantes' => $planesPendientes->count(),
+                'fecha_plan' => $fechaPlanSiguiente,
             ];
         }
 
+        // Resto del código sin cambios...
         // Ordenar planes del día actual por hora de inicio
         $planesConHorarios = $planesHoy->sortBy(function ($plan) {
             return Carbon::parse($plan->horario->hora_inicio);
@@ -769,7 +778,6 @@ class GlobalHelper
             $horaInicio = Carbon::parse($plan->horario->hora_inicio);
             $horaFin = Carbon::parse($plan->horario->hora_fin);
 
-            // Si estamos dentro del horario del plan
             if ($horaActual->between($horaInicio, $horaFin)) {
                 $planActual = $plan;
                 $estado = 'en_curso';
@@ -777,7 +785,6 @@ class GlobalHelper
                 break;
             }
 
-            // Si el plan aún no ha comenzado
             if ($horaActual->lt($horaInicio)) {
                 if (!$planProximo) {
                     $planProximo = $plan;
@@ -788,26 +795,34 @@ class GlobalHelper
             }
         }
 
-        // Si no hay plan actual ni próximo en el día actual, buscar en el día siguiente
+        // Si no hay plan actual ni próximo en el día actual, buscar próximo plan pendiente
         if (!$planActual && !$planProximo) {
-            $fechaSiguiente = $fechaActual->copy()->addDay()->format('Y-m-d');
-            $planesSiguiente = $usuario->planesHoy($fechaSiguiente)->get()->load('horario');
+            // Obtener todos los planes pendientes del usuario
+            $planesPendientes = $usuario->planesPendientes()->get()->load('horario');
 
-            // Filtrar planes que no tienen horario (la relación es null)
-            $planesSiguiente = $planesSiguiente->filter(fn($plan) => $plan->horario !== null);
+            // Filtrar planes que tienen horario, no están en permiso y son después de hoy
+            $planesPendientes = $planesPendientes->filter(fn($plan) =>
+                $plan->horario !== null &&
+                $plan->pivot->estado !== "permiso" &&
+                Carbon::parse($plan->pivot->start)->greaterThan($fechaActual)
+            );
 
-            if ($planesSiguiente->isNotEmpty()) {
-                // Ordenar planes del día siguiente por hora de inicio
-                $planesSiguienteOrdenados = $planesSiguiente->sortBy(function ($plan) {
-                    return Carbon::parse($plan->horario->hora_inicio);
+            if ($planesPendientes->isNotEmpty()) {
+                // Ordenar por fecha de inicio (start) y luego por hora de inicio del horario
+                $planesPendientesOrdenados = $planesPendientes->sortBy(function ($plan) {
+                    return Carbon::parse($plan->pivot->start)
+                        ->setTimeFromTimeString($plan->horario->hora_inicio)
+                        ->timestamp;
                 });
 
-                $planSiguiente = $planesSiguienteOrdenados->first();
 
-                $pedidos = self::obtenerPedidosDelPlan($usuario->id, $planSiguiente, $fechaSiguiente);
+                $planSiguiente = $planesPendientesOrdenados->first();
+                $fechaPlanSiguiente = $planSiguiente->pivot->start;
 
-                // Calcular tiempo hasta el inicio del plan de mañana
-                $fechaHoraInicioSiguiente = $fechaActual->copy()->addDay()->setTimeFromTimeString($planSiguiente->horario->hora_inicio);
+                $pedidos = self::obtenerPedidosDelPlan($usuario->id, $planSiguiente, $fechaPlanSiguiente);
+
+                // Calcular tiempo hasta el inicio del plan
+                $fechaHoraInicioSiguiente = Carbon::parse($fechaPlanSiguiente)->setTimeFromTimeString($planSiguiente->horario->hora_inicio);
                 $tiempoRestante = $horaActual->diffInMinutes($fechaHoraInicioSiguiente);
 
                 return (object) [
@@ -815,8 +830,8 @@ class GlobalHelper
                     'pedidos' => $pedidos,
                     'estado' => 'proximo_dia',
                     'tiempo_restante' => $tiempoRestante,
-                    'planes_restantes' => $planesSiguiente->count(),
-                    'fecha_plan' => $fechaSiguiente,
+                    'planes_restantes' => $planesPendientes->count(),
+                    'fecha_plan' => $fechaPlanSiguiente,
                 ];
             }
 
