@@ -223,7 +223,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
         Route::get('/reporte/semana', \App\Http\Livewire\Admin\Almuerzos\ReporteSemanal::class)->name('reporte.semana');
         Route::get('/reporte/cocina', \App\Http\Livewire\Admin\Almuerzos\CocinaDespachePlanes::class)->name('reporte.cocina');
         Route::get('/reporte/whatsapp', \App\Http\Livewire\Admin\WhatsappReporteDesarrolloComponent::class)->name('reporte.whatsapp');
-        Route::get('/nutribar', \App\Http\Livewire\Admin\Almuerzos\NutriBarPanelComponent::class)->name('nutribar.index');
+        Route::get('/areapanel/{area?}', \App\Http\Livewire\Admin\Almuerzos\AreaPanelComponent::class)->name('areapanel.index');
     });
     Route::prefix('/perifericos')->group(function () {
         Route::get('/impresoras', \App\Http\Livewire\Perifericos\ImpresorasIndex::class)->name('impresoras.index');

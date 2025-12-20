@@ -7,11 +7,12 @@ use Livewire\Component;
 use App\Models\Producto;
 use App\Models\Categoria;
 use App\Models\Sucursale;
+use App\Models\AreaDespacho;
 use App\Models\Subcategoria;
-use App\Helpers\GlobalHelper;
-use App\Helpers\ProcesarImagen;
 use Livewire\WithPagination;
+use App\Helpers\GlobalHelper;
 use Livewire\WithFileUploads;
+use App\Helpers\ProcesarImagen;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -429,7 +430,7 @@ class ProductTable extends Component
             }
 
             // Validar que la sección sea una de las permitidas
-            if (!in_array($seccion, array_keys(Producto::SECCIONES))) {
+            if (!in_array($seccion, array_keys(AreaDespacho::activos()->get()->pluck('nombre_area', 'codigo_area')->toArray()))) {
                 $this->dispatchBrowserEvent('alert', [
                     'type' => 'error',
                     'message' => 'Sección no válida',

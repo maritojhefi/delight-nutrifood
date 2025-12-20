@@ -1544,21 +1544,11 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         // Solo disparar evento si el producto tiene una sección definida
         if (!empty($producto->seccion)) {
             $userId = auth()->check() ? auth()->user()->id : null;
-            switch ($producto->seccion) {
-                case 'cocina':
-                    $seccion = 'cocina';
-                    break;
-                case 'nutribar':
-                    $seccion = 'nutribar';
-                    break;
-                default:
-                    $seccion = 'cocina';
-                    break;
-            }
+
             if ($venta->cliente) {
                 $mensaje = $mensaje . ', para el cliente: ' . $venta->cliente->name;
             }
-            event(new CocinaPedidoEvent($mensaje, $venta->id, $userId, $seccion, $icono));
+            event(new CocinaPedidoEvent($mensaje, $venta->id, $userId, $producto->seccion, $icono));
         }
     }
 }

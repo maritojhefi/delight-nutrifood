@@ -43,11 +43,6 @@ class Producto extends Model
     const PRIORIDADALTA = "2";
     const PRIORIDADMEDIA = "3";
 
-    const SECCIONES = [
-        'cocina' => 'Cocina',
-        'nutribar' => 'Nutribar',
-    ];
-
     // Constante para la ruta de imágenes de productos en S3
     const RUTA_IMAGENES = '/imagenes/productos/';
     public function sucursale()
@@ -80,6 +75,11 @@ class Producto extends Model
         return $this->belongsTo(Producto::class, 'producto_stock_id');
     }
     protected $appends = ['pathImagen'];
+
+    public function areaDespacho()
+    {
+        return $this->belongsTo(AreaDespacho::class, 'seccion', 'codigo_area');
+    }
 
     public function pathAttachment()
     {

@@ -634,7 +634,7 @@
     });
 
     // Definir las secciones disponibles para productos
-    const SECCIONES_PRODUCTO = {!! json_encode(array_keys(App\Models\Producto::SECCIONES)) !!};
+    const SECCIONES_PRODUCTO = {!! json_encode(array_keys(App\Models\AreaDespacho::activos()->get()->pluck('nombre_area','codigo_area')->toArray())) !!};
 
     function cambiarSeccionProducto(productoId, seccionActual) {
         // Mostrar alerta para seleccionar la sección y emitir evento a Livewire con la selección

@@ -101,11 +101,10 @@
                                 <div class="col">
                                     <a href="#" wire:click="verDetalleItemPOS('{{ $item['pivot_id'] }}')">
                                         <h6 class="my-0" style="font-size:12px">
-                                            <small 
-                                                style="text-decoration: underline; cursor: pointer;" 
-                                                class="@isset($productoapuntado) {{ $item['nombre'] == $productoapuntado->nombre ? 'text-success' : '' }} @endisset"
-                                            >
-                                                {{ Str::limit($item['nombre'], 40, '...') }} <i class="fa fa-info-circle text-info ml-1"></i>
+                                            <small style="text-decoration: underline; cursor: pointer;"
+                                                class="@isset($productoapuntado) {{ $item['nombre'] == $productoapuntado->nombre ? 'text-success' : '' }} @endisset">
+                                                {{ Str::limit($item['nombre'], 40, '...') }} <i
+                                                    class="fa fa-info-circle text-info ml-1"></i>
                                             </small>
                                         </h6>
                                     </a>
@@ -344,19 +343,22 @@
         @endif
 
         @if ($subtotal != 0)
-            <div class="row m-2">
-                @if ($cuenta->pagado)
-                    <button class="btn btn-xs btn-dark light" data-bs-toggle="modal"
-                        data-bs-target="#basicModal">Finalizar venta</button>
-                @else
-                    <button class="btn btn-xs btn-warning" wire:click="actualizarCuenta" data-bs-toggle="modal"
-                        data-bs-target="#basicModal">Cobrar
-                        Cuenta</button>
-                @endif
-
-
+            <div class="row">
+                <div class="btn-group m-2 ms-0" role="group">
+                    @if ($cuenta->pagado)
+                        <button type="button" class="btn btn-xs btn-dark light" data-bs-toggle="modal"
+                            data-bs-target="#basicModal">Finalizar venta</button>
+                    @else
+                        <button type="button" class="btn btn-xs btn-warning" wire:click="actualizarCuenta"
+                            data-bs-toggle="modal" data-bs-target="#basicModal"><i class="fa fa-money"></i> Cobrar
+                            Cuenta</button>
+                    @endif
+                    <button type="button" class="btn btn-xs btn-info" wire:click="imprimirComanda"><i
+                            class="fa fa-print"></i> Imprimir comanda</button>
+                </div>
             </div>
             @include('livewire.admin.ventas.includes-pos.modal-cobranza')
+
         @endif
     </div>
 
@@ -515,7 +517,7 @@
                                                 inputBusquedaMesa.value = '';
                                                 inputBusquedaMesa.style.borderColor = '';
                                                 inputBusquedaMesa.style.backgroundColor =
-                                                '';
+                                                    '';
                                             }
                                             if (resultadosDiv) {
                                                 resultadosDiv.innerHTML =
@@ -605,7 +607,7 @@
                                     const selectHora = document.getElementById('horaReservaCambio');
                                     const radioHoy = document.getElementById('radioHoyCambio');
                                     const radioManana = document.getElementById(
-                                    'radioMananaCambio');
+                                        'radioMananaCambio');
                                     const inputBusquedaClienteReserva = document.getElementById(
                                         'busquedaClienteReservaCambio');
 
@@ -713,32 +715,32 @@
 
                                                 if (!mesa.ocupada || mesa.es_actual) {
                                                     item.addEventListener('click',
-                                                    function() {
-                                                        document.querySelectorAll(
-                                                                '.mesa-item-reserva'
+                                                        function() {
+                                                            document.querySelectorAll(
+                                                                    '.mesa-item-reserva'
                                                                 )
-                                                            .forEach(m => {
-                                                                m.style
-                                                                    .borderColor =
-                                                                    m
-                                                                    .querySelector(
-                                                                        '.badge-success'
-                                                                    ) ?
-                                                                    '#28a745' :
-                                                                    '#e9ecef';
-                                                                m.style
-                                                                    .backgroundColor =
-                                                                    '';
-                                                            });
+                                                                .forEach(m => {
+                                                                    m.style
+                                                                        .borderColor =
+                                                                        m
+                                                                        .querySelector(
+                                                                            '.badge-success'
+                                                                        ) ?
+                                                                        '#28a745' :
+                                                                        '#e9ecef';
+                                                                    m.style
+                                                                        .backgroundColor =
+                                                                        '';
+                                                                });
 
-                                                        this.style.borderColor =
-                                                            '#007bff';
-                                                        this.style.backgroundColor =
-                                                            '#e7f3ff';
-                                                        mesaSeleccionadaId = mesaId;
-                                                        verificarFormularioReservaCambio
-                                                            ();
-                                                    });
+                                                            this.style.borderColor =
+                                                                '#007bff';
+                                                            this.style.backgroundColor =
+                                                                '#e7f3ff';
+                                                            mesaSeleccionadaId = mesaId;
+                                                            verificarFormularioReservaCambio
+                                                                ();
+                                                        });
 
                                                     item.addEventListener('mouseover',
                                                         function() {

@@ -2,11 +2,25 @@
     <div class="deznav-scroll">
         <ul class="metismenu" id="menu">
             @if (auth()->user()->role->nombre == 'cocina')
-                <x-sidebar-elements titulo="Cocina" linkglobal="cocina" :lista="[
-                    'Despachar pedidos' => 'reporte.cocina',
-                    'Agregar stock' => 'sucursal.stock',
-                    'Nutribar' => 'nutribar.index',
-                ]">
+                @php
+                    $areasDespachoCocina = \App\Models\AreaDespacho::activos()
+                        ->where('codigo_area', '!=', 'cocina')
+                        ->get();
+                    
+                    $listaCocina = [
+                        'Despachar pedidos' => 'reporte.cocina',
+                        'Agregar stock' => 'sucursal.stock',
+                    ];
+                    
+                    // Agregar dinámicamente las áreas de despacho (excepto Cocina)
+                    foreach ($areasDespachoCocina as $area) {
+                        $listaCocina[$area->nombre_area] = [
+                            'ruta' => 'areapanel.index',
+                            'params' => ['area' => $area->codigo_area]
+                        ];
+                    }
+                @endphp
+                <x-sidebar-elements titulo="Cocina" linkglobal="cocina" :lista="$listaCocina">
                     <i class="flaticon-025-dashboard"></i>
                 </x-sidebar-elements>
             @endif
@@ -64,17 +78,40 @@
 
 
 
-                <x-sidebar-elements titulo="Almuerzos" linkglobal="admin/almuerzos" :lista="[
-                    'Personalizar dias' => 'almuerzos.listar',
-                    'Reporte Diario' => 'almuerzos.reporte',
-                    'Reporte Semanal' => 'reporte.semana',
-                    'Planes' => 'crear.plan',
-                    'Agregar Plan a Usuario' => 'planes',
-                    'Planes por expirar' => 'planes.expirar',
-                    'Cocina' => 'reporte.cocina',
-                    'Nutribar' => 'nutribar.index',
-                    'Planes en desarrollo(whatsapp)' => 'reporte.whatsapp',
-                ]">
+                @php
+                    $areasDespacho = \App\Models\AreaDespacho::activos()
+                        ->where('codigo_area', '!=', 'cocina')
+                        ->get();
+                    
+                    $areaCocina = \App\Models\AreaDespacho::where('codigo_area', 'cocina')
+                        ->where('activo', true)
+                        ->first();
+                    
+                    $listaAlmuerzos = [
+                        'Personalizar menú semanal' => 'almuerzos.listar',
+                        'Reporte Diario' => 'almuerzos.reporte',
+                        // 'Reporte Semanal' => 'reporte.semana',
+                        'Planes' => 'crear.plan',
+                        'Agregar Plan a Usuario' => 'planes',
+                        'Planes por expirar' => 'planes.expirar',
+                    ];
+                    
+                    // Agregar Cocina solo si está activa
+                    if ($areaCocina) {
+                        $listaAlmuerzos['Cocina'] = 'reporte.cocina';
+                    }
+                    
+                    // Agregar dinámicamente las áreas de despacho (excepto Cocina)
+                    foreach ($areasDespacho as $area) {
+                        $listaAlmuerzos[$area->nombre_area] = [
+                            'ruta' => 'areapanel.index',
+                            'params' => ['area' => $area->codigo_area]
+                        ];
+                    }
+                    
+                    $listaAlmuerzos['Planes en desarrollo(whatsapp)'] = 'reporte.whatsapp';
+                @endphp
+                <x-sidebar-elements titulo="Produccion" linkglobal="admin/almuerzos" :lista="$listaAlmuerzos">
                     <i class="flaticon-381-photo"></i>
                 </x-sidebar-elements>
 

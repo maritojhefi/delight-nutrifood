@@ -7,7 +7,13 @@
     </a>
     <ul aria-expanded="false" class="mm-collapse">
         @foreach ($lista as $subtitulo=>$ruta)
-        <li ><a href="{{route($ruta)}}">{{$subtitulo}}</a></li>
+        <li >
+            @if(is_array($ruta))
+                <a href="{{route($ruta['ruta'], $ruta['params'] ?? [])}}">{{$subtitulo}}</a>
+            @else
+                <a href="{{route($ruta)}}">{{$subtitulo}}</a>
+            @endif
+        </li>
         @endforeach
     </ul>
 </li>
