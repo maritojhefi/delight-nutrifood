@@ -37,6 +37,7 @@ use App\Services\Ventas\Contracts\SaldoServiceInterface;
 use App\Services\Ventas\Contracts\StockServiceInterface;
 use App\Services\Ventas\Contracts\VentaServiceInterface;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use App\Services\Ventas\Contracts\ComandaServiceInterface;
 use App\Services\Ventas\Contracts\ProductoVentaServiceInterface;
 use App\Services\Ventas\Contracts\CalculadoraVentaServiceInterface;
 use App\Rules\ValidarTelefonoPorPais;
@@ -49,6 +50,7 @@ class VentasIndex extends Component
     private SaldoServiceInterface $saldoService;
     private StockServiceInterface $stockService;
     private CalculadoraVentaServiceInterface $calculadoraService;
+    private ComandaServiceInterface $comandaService;
 
     public $metodosPagos,
         $metodosSeleccionados = [],
@@ -112,13 +114,15 @@ class VentasIndex extends Component
         ProductoVentaServiceInterface $productoVentaService,
         SaldoServiceInterface $saldoService,
         StockServiceInterface $stockService,
-        CalculadoraVentaServiceInterface $calculadoraService
+        CalculadoraVentaServiceInterface $calculadoraService,
+        ComandaServiceInterface $comandaService
     ) {
         $this->ventaService = $ventaService;
         $this->productoVentaService = $productoVentaService;
         $this->saldoService = $saldoService;
         $this->stockService = $stockService;
         $this->calculadoraService = $calculadoraService;
+        $this->comandaService = $comandaService;
     }
 
     public function mount()
@@ -1442,5 +1446,100 @@ class VentasIndex extends Component
                 ->get();
         }
         return view('livewire.admin.ventas.ventas-index', compact('mesas', 'ventas', 'sucursales', 'subcategorias', 'productos', 'usuarios'))->extends('admin.master')->section('content');
+    }
+    public function imprimirComanda()
+    {
+        if (!isset($this->cuenta)) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Debe seleccionar una venta',
+            ]);
+            return;
+        }
+
+        $venta = Venta::with('productos.areaDespacho')->find($this->cuenta->id);
+
+        if (!$venta) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Venta no encontrada',
+            ]);
+            return;
+        }
+
+        $response = $this->comandaService->obtenerItemsAgrupadosPorArea($venta);
+
+        if (!$response->success) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => $response->message,
+            ]);
+            return;
+        }
+
+        $itemsAgrupados = $response->data;
+
+        if (empty($itemsAgrupados)) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'info',
+                'message' => 'No hay items que requieran comanda en esta venta',
+            ]);
+            return;
+        }
+
+        // Emitir evento para mostrar el SweetAlert
+        $this->emit('mostrarModalComandas', $itemsAgrupados);
+    }
+
+    public function procesarImpresionComanda($codigoArea, $nroTicket = null, $esReimpresion = false)
+    {
+        if (!isset($this->cuenta)) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Debe seleccionar una venta',
+            ]);
+            return;
+        }
+
+        $venta = Venta::find($this->cuenta->id);
+
+        if (!$venta) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Venta no encontrada',
+            ]);
+            return;
+        }
+
+        if ($esReimpresion) {
+            if (!$nroTicket) {
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'error',
+                    'message' => 'Número de ticket requerido para reimpresión',
+                ]);
+                return;
+            }
+            $response = $this->comandaService->reimprimirComanda($venta, $nroTicket, $codigoArea);
+        } else {
+            $response = $this->comandaService->imprimirComanda($venta, $codigoArea);
+        }
+
+        if ($response->success) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => $response->message,
+            ]);
+
+            // Refrescar la venta para obtener los datos actualizados
+            $this->cuenta->fresh();
+
+            // Volver a mostrar el modal con datos actualizados
+            $this->imprimirComanda();
+        } else {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => $response->message,
+            ]);
+        }
     }
 }

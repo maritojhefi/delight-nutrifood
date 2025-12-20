@@ -1578,5 +1578,179 @@
                 }
             });
         }
+
+        // Modal de comandas
+        Livewire.on('mostrarModalComandas', function(itemsAgrupados) {
+            let htmlContent = '<div style="max-height: 70vh; overflow-y: auto; padding: 10px;">';
+            
+            // Iterar sobre cada área
+            for (const [codigoArea, areaData] of Object.entries(itemsAgrupados)) {
+                const area = areaData.area;
+                const conTicket = areaData.con_ticket || [];
+                const sinTicket = areaData.sin_ticket || [];
+                
+                // Solo mostrar área si tiene items
+                if (conTicket.length === 0 && sinTicket.length === 0) {
+                    continue;
+                }
+                
+                htmlContent += `
+                    <div style="margin-bottom: 30px;">
+                        <h4 style="color: #3085d6; margin-bottom: 20px; font-weight: bold; border-bottom: 2px solid #3085d6; padding-bottom: 8px;">
+                            <i class="fa fa-utensils"></i> ${area.nombre}
+                        </h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+                `;
+                
+                // Items sin ticket - mostrar como un solo bloque
+                if (sinTicket.length > 0) {
+                    let itemsHtml = '';
+                    let cantidadTotal = 0;
+                    
+                    sinTicket.forEach(item => {
+                        cantidadTotal += item.cantidad || 1;
+                        
+                        let adicionalesHtml = '';
+                        if (item.adicionales && item.adicionales.length > 0) {
+                            adicionalesHtml = '<div style="margin-left: 10px; font-size: 11px; color: #666; margin-top: 5px;">';
+                            item.adicionales.forEach(adicional => {
+                                if (typeof adicional === 'object') {
+                                    Object.keys(adicional).forEach(nombre => {
+                                        adicionalesHtml += `+ ${nombre}<br>`;
+                                    });
+                                }
+                            });
+                            adicionalesHtml += '</div>';
+                        }
+                        
+                        const observacionHtml = item.observacion ? 
+                            `<div style="margin-left: 10px; font-size: 11px; color: #856404; font-style: italic; margin-top: 5px;">OBS: ${item.observacion}</div>` : '';
+                        
+                        itemsHtml += `
+                            <div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
+                                <div style="font-weight: bold; font-size: 12px;">
+                                    ${item.cantidad}x ${item.nombre}
+                                </div>
+                                ${adicionalesHtml}
+                                ${observacionHtml}
+                            </div>
+                        `;
+                    });
+                    
+                    htmlContent += `
+                        <div style="padding: 15px; background: #f8f9fa; border: 2px solid #28a745; border-radius: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <h5 style="color: #28a745; font-size: 14px; margin: 0; font-weight: bold;">
+                                    <i class="fa fa-circle" style="font-size: 8px;"></i> Pendientes (${cantidadTotal} items)
+                                </h5>
+                                <button 
+                                    onclick="imprimirComandaArea('${codigoArea}', false)"
+                                    class="btn btn-sm btn-success" 
+                                    style="font-size: 11px;">
+                                    <i class="fa fa-print"></i> Imprimir Todo
+                                </button>
+                            </div>
+                            <div style="max-height: 200px; overflow-y: auto;">
+                                ${itemsHtml}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Items con ticket - agrupados por ticket
+                if (conTicket.length > 0) {
+                    conTicket.forEach(ticketGroup => {
+                        const nroTicket = ticketGroup.nro_ticket;
+                        const fechaImpresion = ticketGroup.fecha_impresion || '';
+                        const items = ticketGroup.items || [];
+                        
+                        let itemsHtml = '';
+                        items.forEach(item => {
+                            let adicionalesHtml = '';
+                            if (item.adicionales && item.adicionales.length > 0) {
+                                adicionalesHtml = '<div style="margin-left: 10px; font-size: 11px; color: #666; margin-top: 5px;">';
+                                item.adicionales.forEach(adicional => {
+                                    if (typeof adicional === 'object') {
+                                        Object.keys(adicional).forEach(nombre => {
+                                            adicionalesHtml += `+ ${nombre}<br>`;
+                                        });
+                                    }
+                                });
+                                adicionalesHtml += '</div>';
+                            }
+                            
+                            const observacionHtml = item.observacion ? 
+                                `<div style="margin-left: 10px; font-size: 11px; color: #856404; font-style: italic; margin-top: 5px;">OBS: ${item.observacion}</div>` : '';
+                            
+                            itemsHtml += `
+                                <div style="padding: 5px 0; border-bottom: 1px dashed #ddd;">
+                                    <div style="font-weight: bold; font-size: 12px;">
+                                        ${item.cantidad}x ${item.nombre}
+                                    </div>
+                                    ${adicionalesHtml}
+                                    ${observacionHtml}
+                                </div>
+                            `;
+                        });
+                        
+                        const fechaFormateada = fechaImpresion ? new Date(fechaImpresion).toLocaleString('es-ES', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) : '';
+                        
+                        htmlContent += `
+                            <div style="padding: 15px; background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <div>
+                                        <h5 style="color: #856404; font-size: 14px; margin: 0; font-weight: bold;">
+                                            <i class="fa fa-ticket-alt"></i> Ticket #${nroTicket}
+                                        </h5>
+                                        ${fechaFormateada ? `<div style="font-size: 10px; color: #856404; margin-top: 3px;">${fechaFormateada}</div>` : ''}
+                                    </div>
+                                    <button 
+                                        onclick="imprimirComandaArea('${codigoArea}', '${nroTicket}', true)"
+                                        class="btn btn-sm btn-warning" 
+                                        style="font-size: 11px;">
+                                        <i class="fa fa-redo"></i> Reimprimir
+                                    </button>
+                                </div>
+                                <div style="max-height: 200px; overflow-y: auto;">
+                                    ${itemsHtml}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                htmlContent += '</div></div>';
+            }
+            
+            htmlContent += '</div>';
+            
+            Swal.fire({
+                title: 'Gestión de Comandas',
+                html: htmlContent,
+                width: '1200px',
+                showConfirmButton: true,
+                confirmButtonText: '<i class="fa fa-times"></i> Cerrar',
+                confirmButtonColor: '#6c757d',
+                customClass: {
+                    popup: 'swal-fondo-blanco'
+                },
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            });
+        });
+        
+        function imprimirComandaArea(codigoArea, nroTicket, esReimpresion) {
+            @this.call('procesarImpresionComanda', codigoArea, nroTicket, esReimpresion);
+        }
     </script>
 @endpush

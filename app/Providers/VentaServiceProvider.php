@@ -7,12 +7,14 @@ use App\Services\Ventas\VentaService;
 use App\Services\Ventas\SaldoService;
 use App\Services\Ventas\StockService;
 use App\Services\Ventas\ConvenioService;
+use App\Services\Ventas\ComandaService;
 use App\Services\Ventas\ProductoVentaService;
 use App\Services\Ventas\CalculadoraVentaService;
 use App\Services\Ventas\Contracts\VentaServiceInterface;
 use App\Services\Ventas\Contracts\SaldoServiceInterface;
 use App\Services\Ventas\Contracts\StockServiceInterface;
 use App\Services\Ventas\Contracts\ConvenioServiceInterface;
+use App\Services\Ventas\Contracts\ComandaServiceInterface;
 use App\Services\Ventas\Contracts\ProductoVentaServiceInterface;
 use App\Services\Ventas\Contracts\CalculadoraVentaServiceInterface;
 
@@ -30,6 +32,7 @@ class VentaServiceProvider extends ServiceProvider
         $this->app->bind(SaldoServiceInterface::class, SaldoService::class);
         $this->app->bind(ProductoVentaServiceInterface::class, ProductoVentaService::class);
         $this->app->bind(VentaServiceInterface::class, VentaService::class);
+        $this->app->bind(ComandaServiceInterface::class, ComandaService::class);
     }
 
     /**

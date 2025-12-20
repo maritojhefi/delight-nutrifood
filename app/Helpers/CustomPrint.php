@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Exception;
+use Carbon\Carbon;
 use Mike42\Escpos\Printer;
 use Illuminate\Support\Str;
 use App\Helpers\GlobalHelper;
@@ -351,6 +352,188 @@ class CustomPrint
             return true;
         } catch (Exception $e) {
             Log::error('Error al imprimir: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public static function imprimirComanda(array $datosComanda, ?string $idImpresora = null)
+    {
+        // Validar que haya id_impresora
+        if (!$idImpresora) {
+            Log::error('No se proporcionó id_impresora para imprimir comanda');
+            return false;
+        }
+
+        // Verificar que la impresora esté online
+        try {
+            $printeractivo = Printing::find($idImpresora);
+            if (!$printeractivo || !$printeractivo->isOnline()) {
+                Log::warning('Impresora offline o no encontrada: ' . $idImpresora);
+                return false;
+            }
+        } catch (\Throwable $th) {
+            Log::error('Error al verificar impresora: ' . $th->getMessage());
+            return false;
+        }
+
+        // Usar WindowsPrintConnector SOLO para generar el contenido codificado (no para imprimir)
+        // El nombre de la impresora es solo para el connector, no se usa para imprimir realmente
+        try {
+            $nombre_impresora = 'POS-58'; // Nombre dummy para el connector
+            $connector = new WindowsPrintConnector($nombre_impresora);
+            $printer = new Printer($connector);
+            ob_start();
+
+            // Encabezado
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->setTextSize(1, 2);
+
+            // Logo
+            try {
+                $img = EscposImage::load(public_path(GlobalHelper::getValorAtributoSetting('logo_small')));
+                $printer->bitImageColumnFormat($img);
+            } catch (Exception $e) {
+                // Si falla la imagen, continuar sin ella
+            }
+
+            $printer->setTextSize(1, 1);
+            $textoNombreTienda = GlobalHelper::limpiarTextoParaPOS(GlobalHelper::getValorAtributoSetting('nombre_empresa'));
+            $printer->text($textoNombreTienda . "\n");
+            $printer->feed(1);
+
+            // Área de despacho
+            $printer->setTextSize(1, 2);
+            $textoArea = GlobalHelper::limpiarTextoParaPOS($datosComanda['area_despacho']);
+            $printer->text($textoArea . "\n");
+            $printer->setTextSize(1, 1);
+            $printer->feed(1);
+
+            // Separador
+            $printer->setTextSize(2, 2);
+            $printer->text(str_repeat('-', 16) . "\n");
+            $printer->setTextSize(1, 1);
+            $printer->feed(1);
+
+            // Número de ticket
+            $printer->setTextSize(1, 2);
+            $printer->text('TICKET #' . $datosComanda['nro_ticket'] . "\n");
+            $printer->setTextSize(1, 1);
+            $printer->feed(1);
+
+            // Separador
+            $printer->text(str_repeat('-', 32) . "\n");
+            $printer->feed(1);
+
+            // Items agrupados
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+
+            if (isset($datosComanda['items']) && is_array($datosComanda['items'])) {
+                // Múltiples items agrupados
+                foreach ($datosComanda['items'] as $item) {
+                    $printer->setTextSize(1, 2);
+                    $nombreProducto = GlobalHelper::limpiarTextoParaPOS($item['nombre']);
+                    $printer->text($item['cantidad'] . 'x ' . $nombreProducto . "\n");
+                    $printer->setTextSize(1, 1);
+
+                    // Adicionales del item
+                    if (!empty($item['adicionales']) && is_array($item['adicionales'])) {
+                        foreach ($item['adicionales'] as $adicional) {
+                            if (is_array($adicional)) {
+                                foreach ($adicional as $nombre => $precio) {
+                                    $nombreAdicional = GlobalHelper::limpiarTextoParaPOS($nombre);
+                                    $printer->text('  + ' . $nombreAdicional . "\n");
+                                }
+                            }
+                        }
+                    }
+
+                    // Observación del item
+                    if (!empty($item['observacion'])) {
+                        $observacion = GlobalHelper::limpiarTextoParaPOS($item['observacion']);
+                        $printer->text('OBS: ' . $observacion . "\n");
+                    }
+
+                    $printer->feed(1);
+                }
+            } else {
+                // Compatibilidad con formato antiguo (un solo producto)
+                $printer->setTextSize(1, 2);
+                $nombreProducto = GlobalHelper::limpiarTextoParaPOS($datosComanda['producto']['nombre']);
+                $printer->text($datosComanda['producto']['cantidad'] . 'x ' . $nombreProducto . "\n");
+                $printer->setTextSize(1, 1);
+                $printer->feed(1);
+
+                // Adicionales
+                if (!empty($datosComanda['adicionales']) && is_array($datosComanda['adicionales'])) {
+                    foreach ($datosComanda['adicionales'] as $adicional) {
+                        if (is_array($adicional)) {
+                            foreach ($adicional as $nombre => $precio) {
+                                $nombreAdicional = GlobalHelper::limpiarTextoParaPOS($nombre);
+                                $printer->text('  + ' . $nombreAdicional . "\n");
+                            }
+                        }
+                    }
+                    $printer->feed(1);
+                }
+
+                // Observación
+                if (!empty($datosComanda['observacion'])) {
+                    $observacion = GlobalHelper::limpiarTextoParaPOS($datosComanda['observacion']);
+                    $printer->text('OBS: ' . $observacion . "\n");
+                    $printer->feed(1);
+                }
+            }
+
+            // Separador final
+            $printer->setTextSize(2, 2);
+            $printer->text(str_repeat('-', 16) . "\n");
+            $printer->setTextSize(1, 1);
+            $printer->feed(1);
+
+            // Información adicional de la venta
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            if (isset($datosComanda['venta'])) {
+                $venta = $datosComanda['venta'];
+
+                // Tipo de entrega
+                if (!empty($venta['tipo_entrega'])) {
+                    $tipoEntrega = GlobalHelper::limpiarTextoParaPOS('Tipo: ' . ucfirst($venta['tipo_entrega']));
+                    $printer->text($tipoEntrega . "\n");
+                }
+
+                // Mesa
+                if (!empty($venta['mesa_numero'])) {
+                    $mesa = GlobalHelper::limpiarTextoParaPOS('Mesa: #' . $venta['mesa_numero']);
+                    $printer->text($mesa . "\n");
+                }
+
+                // Cliente
+                if (!empty($venta['cliente_nombre'])) {
+                    $cliente = GlobalHelper::limpiarTextoParaPOS('Cliente: ' . $venta['cliente_nombre']);
+                    $printer->text($cliente . "\n");
+                }
+
+                $printer->feed(1);
+            }
+
+            // Fecha y hora de impresión
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            if (isset($datosComanda['fecha_impresion'])) {
+                $fechaImpresion = Carbon::parse($datosComanda['fecha_impresion'])->format('d/m/Y H:i:s');
+                $printer->text('Impreso: ' . $fechaImpresion . "\n");
+            } else {
+                $printer->text(date('d/m/Y H:i:s') . "\n");
+            }
+            $printer->feed(5);
+
+            $printer->cut();
+            $contenidoComanda = ob_get_clean();
+
+            // NO cerrar el printer aquí, solo retornar el objeto para que getStringImpresion lo procese
+            // Luego se enviará usando Printing::newPrintTask()
+            return $printer;
+        } catch (\Exception $e) {
+            Log::error('Error al generar contenido de comanda: ' . $e->getMessage());
             return false;
         }
     }
