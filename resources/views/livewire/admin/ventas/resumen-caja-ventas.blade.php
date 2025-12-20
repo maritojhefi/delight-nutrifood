@@ -3,7 +3,7 @@
         <div onclick="showSweetAlertVentasHoy()" style="cursor: pointer;" class="alert alert-primary solid row fade show p-1 align-items-center mx-auto">
             <strong class="letra12 text-center">Ventas hoy</strong>
             <strong class="text-center">
-                {{ $cajaActiva->ventas->sum('total_pagado') }} Bs <i class="fa fa-info-circle"></i>
+                {{ $cajaActiva->totalIngresoAbsoluto() }} Bs <i class="fa fa-info-circle"></i>
             </strong>
         </div>
     </div>
@@ -168,6 +168,22 @@
                         <div style="color: white; font-size: 36px; font-weight: bold; letter-spacing: 1px;">
                             ${parseFloat(data.totalVentas).toFixed(2)} <span style="font-size: 24px;">Bs</span>
                         </div>
+                        <div style="color: white; font-size: 12px; margin-top: 10px; opacity: 0.85; text-align: left; padding: 0 20px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>Ventas:</span>
+                                <span style="font-weight: 600;">${parseFloat(data.totalVentasSinSaldos || 0).toFixed(2)} Bs</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Saldos pagados:</span>
+                                <span style="font-weight: 600;">${parseFloat((data.saldosPagados?.reduce((sum, saldo) => sum + parseFloat(saldo.monto), 0) || 0)).toFixed(2)} Bs</span>
+                            </div>
+                        </div>
+                        <button onclick="abrirRegistrosStock()" 
+                            style="position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.2); border: 2px solid white; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; transition: all 0.3s;"
+                            onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+                            onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                            <i class="fa fa-file-alt"></i> Ver Registros
+                        </button>
                         <button onclick="abrirControlDeStock()" 
                             style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: 2px solid white; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; transition: all 0.3s;"
                             onmouseover="this.style.background='rgba(255,255,255,0.3)'"
@@ -232,6 +248,69 @@
                         </table>
                     </div>
 
+                    <!-- Saldos Pagados y Anticipos -->
+                    <div style="margin-bottom: 25px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <h5 style="color: #495057; margin: 0 0 15px 0; font-size: 16px; font-weight: 600;">
+                            <i class="fa fa-money-bill-wave" style="color: #667eea;"></i> Saldos Pagados y Anticipos
+                        </h5>
+                        <div style="max-height: 350px; overflow-y: auto; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            ${data.saldosPagados && data.saldosPagados.length > 0 ? `
+                                <table style="width: 100%; border-collapse: separate; border-spacing: 0; background: white;">
+                                    <thead style="position: sticky; top: 0; z-index: 10;">
+                                        <tr style="background: linear-gradient(to right, #667eea, #764ba2);">
+                                            <th style="padding: 12px; text-align: left; color: white; font-weight: 600; font-size: 13px;">CLIENTE</th>
+                                            <th style="padding: 12px; text-align: center; color: white; font-weight: 600; font-size: 13px;">MÉTODO</th>
+                                            <th style="padding: 12px; text-align: right; color: white; font-weight: 600; font-size: 13px;">MONTO</th>
+                                            <th style="padding: 12px; text-align: left; color: white; font-weight: 600; font-size: 13px;">DETALLE</th>
+                                            <th style="padding: 12px; text-align: center; color: white; font-weight: 600; font-size: 13px;">HORA</th>
+                                            <th style="padding: 12px; text-align: left; color: white; font-weight: 600; font-size: 13px;">ATENDIDO POR</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${data.saldosPagados.map((saldo, index) => {
+                                            const fecha = new Date(saldo.created_at);
+                                            const hora = fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                                            const metodosHtml = saldo.metodos_pagos && saldo.metodos_pagos.length > 0 
+                                                ? saldo.metodos_pagos.map(metodo => `
+                                                    <span style="display: inline-block; margin: 2px;">
+                                                        <span style="display: inline-block; width: 25px; height: 25px; border-radius: 50%; background-image: url(${metodo.imagen || ''}); background-size: cover; background-position: center; background-repeat: no-repeat; border: 1px solid #dee2e6;" title="${metodo.nombre_metodo_pago}: ${parseFloat(metodo.pivot.monto).toFixed(2)} Bs"></span>
+                                                    </span>
+                                                `).join('')
+                                                : '<span style="color: #6c757d;">N/A</span>';
+                                            return `
+                                                <tr style="background: ${index % 2 === 0 ? '#ffffff' : '#f8f9fa'};">
+                                                    <td style="padding: 12px; color: #495057; border-bottom: 1px solid #e9ecef;">
+                                                        <strong>${saldo.usuario ? saldo.usuario.name : 'N/A'}</strong>
+                                                    </td>
+                                                    <td style="padding: 12px; text-align: center; border-bottom: 1px solid #e9ecef;">
+                                                        ${metodosHtml}
+                                                    </td>
+                                                    <td style="padding: 12px; text-align: right; font-weight: 600; color: #667eea; border-bottom: 1px solid #e9ecef;">
+                                                        ${parseFloat(saldo.monto).toFixed(2)} Bs
+                                                    </td>
+                                                    <td style="padding: 12px; color: #495057; border-bottom: 1px solid #e9ecef;">
+                                                        <span title="${saldo.detalle || 'Sin detalle'}">${(saldo.detalle || 'Sin detalle').substring(0, 20)}${(saldo.detalle || '').length > 20 ? '...' : ''}</span>
+                                                    </td>
+                                                    <td style="padding: 12px; text-align: center; color: #6c757d; font-size: 12px; border-bottom: 1px solid #e9ecef;">
+                                                        ${hora}
+                                                    </td>
+                                                    <td style="padding: 12px; color: #495057; border-bottom: 1px solid #e9ecef;">
+                                                        ${saldo.atendido_por_user ? saldo.atendido_por_user.name : 'N/A'}
+                                                    </td>
+                                                </tr>
+                                            `;
+                                        }).join('')}
+                                    </tbody>
+                                </table>
+                            ` : `
+                                <div style="text-align: center; padding: 40px; color: #6c757d; background: white; border-radius: 6px;">
+                                    <i class="fa fa-inbox" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                                    <p style="margin: 0; font-size: 14px;">No hay saldos pagados registrados hoy</p>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+
                     <!-- Productos Vendidos -->
                     <div style="margin-bottom: 10px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
                         <h5 style="color: #495057; margin: 0 0 15px 0; font-size: 16px; font-weight: 600;">
@@ -286,6 +365,121 @@
                 }
             });
         });
+
+        function abrirRegistrosStock() {
+            Livewire.emit('verRegistrosStock');
+        }
+
+        window.addEventListener('mostrarRegistrosStock', event => {
+            let data = event.detail;
+            
+            let htmlContent = `
+                <div style="text-align: left; background: white; padding: 20px; border-radius: 10px;">
+                    <!-- Título -->
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: center; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
+                        <div style="color: white; font-size: 18px; font-weight: bold;">
+                            <i class="fa fa-file-alt"></i> Registros de Cambios de Stock
+                        </div>
+                    </div>
+
+                    <!-- Lista de Registros -->
+                    <div style="max-height: 500px; overflow-y: auto; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        ${data.registros && data.registros.length > 0 ? `
+                            <div style="display: flex; flex-direction: column; gap: 15px;">
+                                ${data.registros.map((registro, index) => {
+                                    const totalProductos = registro.productos.length;
+                                    const aumentos = registro.productos.filter(p => p.accion === 'aumento').length;
+                                    const disminuciones = registro.productos.filter(p => p.accion === 'disminucion').length;
+                                    const sinCambio = registro.productos.filter(p => p.accion === 'sin_cambio').length;
+                                    
+                                    return `
+                                        <div style="background: ${index % 2 === 0 ? '#ffffff' : '#f8f9fa'}; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; transition: all 0.2s;" 
+                                            onmouseover="this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)'"
+                                            onmouseout="this.style.boxShadow='none'">
+                                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                                <div style="flex: 1;">
+                                                    <div style="font-weight: 600; color: #495057; font-size: 14px; margin-bottom: 5px;">
+                                                        <i class="fa fa-calendar-alt" style="color: #667eea; margin-right: 5px;"></i>
+                                                        ${registro.fecha_formateada}
+                                                    </div>
+                                                    <div style="color: #6c757d; font-size: 12px; margin-bottom: 5px;">
+                                                        <i class="fa fa-user" style="margin-right: 5px;"></i>
+                                                        ${registro.usuario ? registro.usuario.name : 'N/A'}
+                                                    </div>
+                                                    ${registro.caja ? `
+                                                        <div style="color: #6c757d; font-size: 12px;">
+                                                            <i class="fa fa-cash-register" style="margin-right: 5px;"></i>
+                                                            Caja: ${registro.caja.fecha}
+                                                        </div>
+                                                    ` : ''}
+                                                </div>
+                                                <button onclick="descargarPDFRegistro(${registro.id})" 
+                                                    style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; transition: all 0.3s;"
+                                                    onmouseover="this.style.transform='scale(1.05)'"
+                                                    onmouseout="this.style.transform='scale(1)'">
+                                                    <i class="fa fa-file-pdf"></i> PDF
+                                                </button>
+                                            </div>
+                                            <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
+                                                <div style="font-size: 12px; color: #495057; font-weight: 600; margin-bottom: 5px;">
+                                                    <i class="fa fa-info-circle" style="color: #667eea; margin-right: 5px;"></i>
+                                                    Detalle:
+                                                </div>
+                                                <div style="font-size: 12px; color: #6c757d;">
+                                                    ${registro.detalle || 'Sin detalle'}
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                                ${aumentos > 0 ? `
+                                                    <span style="background: #11998e; color: white; padding: 4px 10px; border-radius: 15px; font-size: 11px; font-weight: 600;">
+                                                        <i class="fa fa-arrow-up"></i> Aumentos: ${aumentos}
+                                                    </span>
+                                                ` : ''}
+                                                ${disminuciones > 0 ? `
+                                                    <span style="background: #f5576c; color: white; padding: 4px 10px; border-radius: 15px; font-size: 11px; font-weight: 600;">
+                                                        <i class="fa fa-arrow-down"></i> Disminuciones: ${disminuciones}
+                                                    </span>
+                                                ` : ''}
+                                                ${sinCambio > 0 ? `
+                                                    <span style="background: #6c757d; color: white; padding: 4px 10px; border-radius: 15px; font-size: 11px; font-weight: 600;">
+                                                        <i class="fa fa-minus"></i> Sin cambio: ${sinCambio}
+                                                    </span>
+                                                ` : ''}
+                                                <span style="background: #667eea; color: white; padding: 4px 10px; border-radius: 15px; font-size: 11px; font-weight: 600;">
+                                                    <i class="fa fa-box"></i> Total: ${totalProductos}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        ` : `
+                            <div style="text-align: center; padding: 40px; color: #6c757d; background: white; border-radius: 6px;">
+                                <i class="fa fa-inbox" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                                <p style="margin: 0; font-size: 14px;">No hay registros de cambios de stock</p>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+
+            Swal.fire({
+                html: htmlContent,
+                width: getResponsiveWidth('900px'),
+                showCloseButton: true,
+                showConfirmButton: false,
+                backdrop: true,
+                allowOutsideClick: true,
+                background: '#ffffff',
+                customClass: {
+                    popup: 'swal-popup-ventas'
+                }
+            });
+        });
+
+        function descargarPDFRegistro(registroId) {
+            @this.call('descargarPDFRegistroStock', registroId);
+        }
 
         function showSweetAlertGastosHoy() {
             Livewire.emit('gastosHoy');

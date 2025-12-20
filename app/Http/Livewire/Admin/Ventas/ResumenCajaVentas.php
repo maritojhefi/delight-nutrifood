@@ -11,6 +11,7 @@ use App\Models\RegistroStockCaja;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ResumenCajaVentas extends Component
 {
@@ -33,6 +34,8 @@ class ResumenCajaVentas extends Component
         'abrirControlStock' => 'abrirControlStock',
         'buscarProducto' => 'buscarProducto',
         'confirmarReajustes' => 'confirmarReajustes',
+        'verRegistrosStock' => 'verRegistrosStock',
+        'descargarPDFRegistroStock' => 'descargarPDFRegistroStock',
     ];
     public function actualizarDatosCaja($event)
     {
@@ -59,16 +62,62 @@ class ResumenCajaVentas extends Component
         }
 
         // Obtener datos para el sweet alert
-        $totalVentas = $cajaActiva->ingresoVentasPOS();
-        $ventasPorMetodo = $cajaActiva->ingresosPorMetodoPagoDeVentas();
-        $ventasPorCajero = $cajaActiva->ingresosPorCajeroDeVentas();
+        // Total incluyendo saldos pagados
+        $totalVentas = $cajaActiva->totalIngresoAbsoluto();
+        // Ventas sin saldos pagados (para el desglose)
+        $totalVentasSinSaldos = $cajaActiva->ingresoVentasPOS();
+        // Ventas por método incluyendo saldos pagados
+        $ventasPorMetodo = $cajaActiva->ingresosTotalesPorMetodoPago();
+        // Ventas por cajero incluyendo saldos pagados
+        $ventasPorCajeroArray = $cajaActiva->ingresosTotalesPorCajero();
+        // Convertir array a colección para mantener compatibilidad
+        $ventasPorCajero = collect($ventasPorCajeroArray)->map(function ($item, $key) {
+            return (object)[
+                'cajero_nombre' => $item['nombre'],
+                'total_pagado' => $item['monto']
+            ];
+        })->values();
         $productosVendidos = $cajaActiva->arrayProductosVendidos();
+        
+        // Obtener saldos pagados con relaciones y serializar para JavaScript
+        $saldosPagados = $cajaActiva->saldosPagadosSinVenta()
+            ->with(['usuario', 'atendidoPor', 'metodosPagos'])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($saldo) {
+                return [
+                    'id' => $saldo->id,
+                    'monto' => $saldo->monto,
+                    'detalle' => $saldo->detalle,
+                    'created_at' => $saldo->created_at ? $saldo->created_at->toDateTimeString() : null,
+                    'usuario' => $saldo->usuario ? [
+                        'id' => $saldo->usuario->id,
+                        'name' => $saldo->usuario->name,
+                    ] : null,
+                    'atendido_por_user' => $saldo->atendidoPor ? [
+                        'id' => $saldo->atendidoPor->id,
+                        'name' => $saldo->atendidoPor->name,
+                    ] : null,
+                    'metodos_pagos' => $saldo->metodosPagos->map(function ($metodo) {
+                        return [
+                            'id' => $metodo->id,
+                            'nombre_metodo_pago' => $metodo->nombre_metodo_pago,
+                            'imagen' => $metodo->imagen,
+                            'pivot' => [
+                                'monto' => $metodo->pivot->monto,
+                            ],
+                        ];
+                    })->toArray(),
+                ];
+            })->toArray();
 
         $this->dispatchBrowserEvent('mostrarResumenVentas', [
             'totalVentas' => $totalVentas,
+            'totalVentasSinSaldos' => $totalVentasSinSaldos,
             'ventasPorMetodo' => $ventasPorMetodo,
             'ventasPorCajero' => $ventasPorCajero,
             'productosVendidos' => $productosVendidos,
+            'saldosPagados' => $saldosPagados,
         ]);
     }
 
@@ -378,6 +427,114 @@ class ResumenCajaVentas extends Component
         if ($cantidadRestante > 0) {
             throw new \Exception("Stock insuficiente. Faltan {$cantidadRestante} unidades.");
         }
+    }
+
+    public function verRegistrosStock()
+    {
+        // Obtener todos los registros de stock de todas las cajas, ordenados por más recientes primero
+        $registros = RegistroStockCaja::with(['usuario', 'caja', 'productos'])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($registro) {
+                return [
+                    'id' => $registro->id,
+                    'detalle' => $registro->detalle,
+                    'created_at' => $registro->created_at ? $registro->created_at->toDateTimeString() : null,
+                    'fecha_formateada' => $registro->created_at ? $registro->created_at->format('d/m/Y H:i:s') : 'N/A',
+                    'usuario' => $registro->usuario ? [
+                        'id' => $registro->usuario->id,
+                        'name' => $registro->usuario->name,
+                    ] : null,
+                    'caja' => $registro->caja ? [
+                        'id' => $registro->caja->id,
+                        'fecha' => $registro->caja->created_at ? $registro->caja->created_at->format('d/m/Y') : 'N/A',
+                    ] : null,
+                    'productos' => $registro->productos->map(function ($producto) {
+                        return [
+                            'id' => $producto->id,
+                            'nombre' => $producto->nombre,
+                            'accion' => $producto->pivot->accion,
+                            'cantidad' => $producto->pivot->cantidad,
+                            'detalle' => $producto->pivot->detalle,
+                        ];
+                    })->toArray(),
+                ];
+            })->toArray();
+
+        $this->dispatchBrowserEvent('mostrarRegistrosStock', [
+            'registros' => $registros,
+        ]);
+    }
+
+    public function descargarPDFRegistroStock($registroId)
+    {
+        $registro = RegistroStockCaja::with(['usuario', 'caja', 'productos'])
+            ->find($registroId);
+
+        if (!$registro) {
+            $this->dispatchBrowserEvent('toastAlert', [
+                'type' => 'error',
+                'message' => 'Registro no encontrado',
+            ]);
+            return;
+        }
+
+        // Separar productos por acción y calcular stocks
+        $aumentos = [];
+        $disminuciones = [];
+        $sinCambio = [];
+
+        foreach ($registro->productos as $producto) {
+            $accion = $producto->pivot->accion;
+            $cantidadCambio = $producto->pivot->cantidad;
+            $stockActual = $producto->stockTotal(); // Stock actual del producto
+            
+            // Calcular stock anterior y posterior
+            $stockAnterior = 0;
+            $stockPosterior = $stockActual;
+            
+            if ($accion === 'aumento') {
+                // Si aumentó, el stock anterior era menor
+                $stockAnterior = $stockActual - $cantidadCambio;
+            } elseif ($accion === 'disminucion') {
+                // Si disminuyó, el stock anterior era mayor
+                $stockAnterior = $stockActual + $cantidadCambio;
+            } else {
+                // Sin cambio, ambos son iguales
+                $stockAnterior = $stockActual;
+            }
+
+            $productoData = [
+                'nombre' => $producto->nombre,
+                'cantidad' => $cantidadCambio,
+                'detalle' => $producto->pivot->detalle,
+                'stock_anterior' => $stockAnterior,
+                'stock_posterior' => $stockPosterior,
+            ];
+
+            if ($accion === 'aumento') {
+                $aumentos[] = $productoData;
+            } elseif ($accion === 'disminucion') {
+                $disminuciones[] = $productoData;
+            } else {
+                $sinCambio[] = $productoData;
+            }
+        }
+
+        $data = [
+            'registro' => $registro,
+            'usuario' => $registro->usuario,
+            'caja' => $registro->caja,
+            'fecha' => $registro->created_at ? $registro->created_at->format('d/m/Y H:i:s') : 'N/A',
+            'aumentos' => $aumentos,
+            'disminuciones' => $disminuciones,
+            'sinCambio' => $sinCambio,
+        ];
+
+        $pdf = Pdf::loadView('pdf.registro-stock', $data)->output();
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf;
+        }, 'Registro-Stock-' . $registro->id . '-' . date('d-m-Y-H:i:s') . '.pdf');
     }
 
     public function render()
