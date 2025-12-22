@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
@@ -239,4 +241,23 @@ class User extends Authenticatable
     {
         return $this->direccion && $this->name && $this->telf && $this->verificado && $this->nacimiento;
     }
+
+    // Relaciones conversacion con Agente IA
+
+    /**
+    * Un usuario tiene una sesión de agente (contexto).
+    */
+    public function whatsappSession(): HasOne
+    {
+        return $this->hasOne(WhatsappSession::class);
+    }
+
+    /**
+    * Un usuario tiene muchos mensajes/entradas de conversación.
+    */
+    public function whatsappConversations(): HasMany
+    {
+        return $this->hasMany(WhatsappConversation::class);
+    }
+
 }

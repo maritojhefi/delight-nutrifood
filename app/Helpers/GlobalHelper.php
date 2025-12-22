@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-use Cache;
+// use Cache;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Plane;
@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Rawilk\Printing\Facades\Printing;
 use App\Events\RefreshMenuHeaderEvent;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Horario;
 
 class GlobalHelper
@@ -672,21 +674,28 @@ class GlobalHelper
             return $formateado;
         }
     }
-    public static function cachearProductos()
+
+    public static function cachearProductos(): Collection
     {
         Cache::forget('productos'); // Retirar el viejo valor de cache
 
         // Cacheado de los productos disponibles, incluyendo unicamente la informacion mas relevante
-        Cache::remember('productos', 60, function () {
-            return Producto::publicoTienda()
-                ->select(['id', 'nombre', 'precio', 'descuento', 'subcategoria_id', 'imagen'])
+        return Cache::remember('productos', 60, function () {
+            $productos = Producto::publicoTienda()
+                ->select(['id', 'nombre', 'precio', 'descuento', 'subcategoria_id', 'imagen', 'contable'])
                 ->with([
-                    // Inclusion de registros relacionados necesarios para el manejo comun de los productos
                     'subcategoria:id,nombre,categoria_id',
                     'subcategoria.categoria:id,nombre',
-                    'tag:id,icono',
+                    'tag:id,icono,nombre',
+                    'sucursale', // Eager load sucursales
                 ])
                 ->get();
+
+            $productos->each(function ($producto) {
+                $producto->append('stockTotal');
+            });
+
+            return $productos;
         });
     }
 

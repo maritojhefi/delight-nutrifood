@@ -433,7 +433,7 @@ class Producto extends Model
     }
     public function precioReal()
     {
-        return $this->descuento > 0 ? $this->descuento : $this->precio;
+        return $this->descuento > 0 && $this->descuento < $this->precio ? $this->descuento : $this->precio;
     }
     /**
      * Obtiene el stock total del producto
@@ -451,5 +451,13 @@ class Producto extends Model
     public function productosVinculados()
     {
         return $this->hasMany(Producto::class, 'producto_stock_id');
+    }
+    /**
+     * Accessor para 'stockTotal'.
+     * Permite usar el metodo append sin romper el llamado a stockTotal().
+     */
+    public function getStockTotalAttribute()
+    {
+        return $this->stockTotal();
     }
 }
