@@ -386,43 +386,23 @@ class CustomPrint
 
             // Encabezado
             $printer->setJustification(Printer::JUSTIFY_CENTER);
-            $printer->setTextSize(1, 2);
-
-            // Logo
-            try {
-                $img = EscposImage::load(public_path(GlobalHelper::getValorAtributoSetting('logo_small')));
-                $printer->bitImageColumnFormat($img);
-            } catch (Exception $e) {
-                // Si falla la imagen, continuar sin ella
-            }
-
-            $printer->setTextSize(1, 1);
-            $textoNombreTienda = GlobalHelper::limpiarTextoParaPOS(GlobalHelper::getValorAtributoSetting('nombre_empresa'));
-            $printer->text($textoNombreTienda . "\n");
-            $printer->feed(1);
 
             // Área de despacho
             $printer->setTextSize(1, 2);
             $textoArea = GlobalHelper::limpiarTextoParaPOS($datosComanda['area_despacho']);
             $printer->text($textoArea . "\n");
             $printer->setTextSize(1, 1);
-            $printer->feed(1);
 
             // Separador
-            $printer->setTextSize(2, 2);
-            $printer->text(str_repeat('-', 16) . "\n");
-            $printer->setTextSize(1, 1);
-            $printer->feed(1);
+            $printer->text(str_repeat('-', 32) . "\n");
 
             // Número de ticket
             $printer->setTextSize(1, 2);
             $printer->text('TICKET #' . $datosComanda['nro_ticket'] . "\n");
             $printer->setTextSize(1, 1);
-            $printer->feed(1);
 
             // Separador
             $printer->text(str_repeat('-', 32) . "\n");
-            $printer->feed(1);
 
             // Items agrupados
             $printer->setJustification(Printer::JUSTIFY_LEFT);
@@ -452,8 +432,6 @@ class CustomPrint
                         $observacion = GlobalHelper::limpiarTextoParaPOS($item['observacion']);
                         $printer->text('OBS: ' . $observacion . "\n");
                     }
-
-                    $printer->feed(1);
                 }
             } else {
                 // Compatibilidad con formato antiguo (un solo producto)
@@ -461,7 +439,6 @@ class CustomPrint
                 $nombreProducto = GlobalHelper::limpiarTextoParaPOS($datosComanda['producto']['nombre']);
                 $printer->text($datosComanda['producto']['cantidad'] . 'x ' . $nombreProducto . "\n");
                 $printer->setTextSize(1, 1);
-                $printer->feed(1);
 
                 // Adicionales
                 if (!empty($datosComanda['adicionales']) && is_array($datosComanda['adicionales'])) {
@@ -473,22 +450,17 @@ class CustomPrint
                             }
                         }
                     }
-                    $printer->feed(1);
                 }
 
                 // Observación
                 if (!empty($datosComanda['observacion'])) {
                     $observacion = GlobalHelper::limpiarTextoParaPOS($datosComanda['observacion']);
                     $printer->text('OBS: ' . $observacion . "\n");
-                    $printer->feed(1);
                 }
             }
 
             // Separador final
-            $printer->setTextSize(2, 2);
-            $printer->text(str_repeat('-', 16) . "\n");
-            $printer->setTextSize(1, 1);
-            $printer->feed(1);
+            $printer->text(str_repeat('-', 32) . "\n");
 
             // Información adicional de la venta
             $printer->setJustification(Printer::JUSTIFY_LEFT);
@@ -512,8 +484,6 @@ class CustomPrint
                     $cliente = GlobalHelper::limpiarTextoParaPOS('Cliente: ' . $venta['cliente_nombre']);
                     $printer->text($cliente . "\n");
                 }
-
-                $printer->feed(1);
             }
 
             // Fecha y hora de impresión
