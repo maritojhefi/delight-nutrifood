@@ -434,7 +434,8 @@ class ComandaService implements ComandaServiceInterface
                     'sucursale_id' => $venta->sucursale_id,
                     'tipo_entrega' => $venta->tipo_entrega,
                     'mesa_nombre' => $venta->mesa ? $venta->mesa->nombre_mesa : null,
-                    'cliente_nombre' => $venta->cliente ? $venta->cliente->name : ($venta->usuario_manual ?? 'Anónimo'),
+                    'cliente_nombre' => $venta->cliente ? $venta->cliente->name : null,
+                    'usuario_manual' => $venta->usuario_manual ?? null,
                 ],
             ];
 
@@ -584,7 +585,8 @@ class ComandaService implements ComandaServiceInterface
                     'sucursale_id' => $venta->sucursale_id,
                     'tipo_entrega' => $venta->tipo_entrega,
                     'mesa_nombre' => $venta->mesa ? $venta->mesa->nombre_mesa : null,
-                    'cliente_nombre' => $venta->cliente ? $venta->cliente->name : ($venta->usuario_manual ?? 'Anónimo'),
+                    'cliente_nombre' => $venta->cliente ? $venta->cliente->name : null,
+                    'usuario_manual' => $venta->usuario_manual ?? null,
                 ],
             ];
 
@@ -608,6 +610,143 @@ class ComandaService implements ComandaServiceInterface
             }
         } catch (\Exception $e) {
             return VentaResponse::error('Error al procesar reimpresión: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Imprime una comanda general con todos los items de la venta sin filtrar por área
+     * Usa el área default configurada
+     */
+    public function imprimirComandaGeneral(Venta $venta): VentaResponse
+    {
+        try {
+            // Obtener todos los productos de la venta sin filtrar por área
+            $productos = $venta->productos()->get();
+
+            if ($productos->isEmpty()) {
+                return VentaResponse::error('No hay productos en esta venta');
+            }
+
+            // Buscar el área default para esta sucursal
+            $areaDespacho = AreaDespacho::where('sucursale_id', $venta->sucursale_id)
+                ->where('es_default', true)
+                ->first();
+
+            if (!$areaDespacho) {
+                return VentaResponse::error('No se encontró un área default configurada para esta sucursal. Configure un área como default para poder imprimir comandas generales.');
+            }
+
+            $items = [];
+
+            foreach ($productos as $producto) {
+                $pivot = DB::table('producto_venta')
+                    ->where('producto_id', $producto->id)
+                    ->where('venta_id', $venta->id)
+                    ->first();
+
+                if (!$pivot) {
+                    continue;
+                }
+
+                $adicionales = json_decode($pivot->adicionales ?? '{}', true);
+                $cantidad = $pivot->cantidad;
+
+                // Procesar cada item del producto
+                for ($i = 1; $i <= $cantidad; $i++) {
+                    $items[] = [
+                        'producto_venta_id' => $pivot->id,
+                        'producto_id' => $producto->id,
+                        'item_index' => $i,
+                        'nombre' => $producto->nombre,
+                        'cantidad' => 1,
+                        'observacion' => $pivot->observacion,
+                        'adicionales' => $adicionales[$i]['adicionales'] ?? [],
+                        'precio' => $producto->precioReal(),
+                    ];
+                }
+            }
+
+            if (empty($items)) {
+                return VentaResponse::error('No hay items para imprimir en esta venta');
+            }
+
+            // Agrupar items similares
+            $itemsAgrupados = $this->agruparItemsSimilares($items);
+
+            // Generar número de ticket para el área default
+            $nroTicket = $this->generarSiguienteTicket($areaDespacho);
+            $fechaImpresion = Carbon::now()->format('Y-m-d H:i:s');
+
+            // Obtener id_impresora: primero del área, si no de la sucursal
+            $idImpresora = $areaDespacho->id_impresora;
+            if (!$idImpresora) {
+                $sucursal = $venta->sucursale;
+                $idImpresora = $sucursal->id_impresora ?? null;
+            }
+
+            if (!$idImpresora) {
+                return VentaResponse::error('No hay impresora configurada para el área de despacho ni para la sucursal. Configure una impresora para poder imprimir comandas.');
+            }
+
+            // Cargar relaciones necesarias de la venta
+            $venta->load(['cliente', 'mesa', 'sucursale']);
+
+            // Preparar datos para impresión
+            $itemsParaImprimir = array_map(function ($item) {
+                return [
+                    'nombre' => $item['nombre'],
+                    'cantidad' => $item['cantidad'],
+                    'adicionales' => $item['adicionales'],
+                    'observacion' => $item['observacion'] ?? null,
+                ];
+            }, $itemsAgrupados);
+
+            // Preparar datos para impresión
+            $datosComanda = [
+                'items' => $itemsParaImprimir,
+                'nro_ticket' => $nroTicket,
+                'area_despacho' => $areaDespacho->nombre_area,
+                'fecha_impresion' => $fechaImpresion,
+                'venta' => [
+                    'id' => $venta->id,
+                    'sucursale_id' => $venta->sucursale_id,
+                    'tipo_entrega' => $venta->tipo_entrega,
+                    'mesa_nombre' => $venta->mesa ? $venta->mesa->nombre_mesa : null,
+                    'cliente_nombre' => $venta->cliente ? $venta->cliente->name : null,
+                    'usuario_manual' => $venta->usuario_manual ?? null,
+                ],
+            ];
+
+            // Generar contenido de comanda
+            $comanda = CustomPrint::imprimirComanda($datosComanda, $idImpresora);
+
+            if (!$comanda) {
+                return VentaResponse::warning(
+                    'Error al generar la comanda. El ticket #' . $nroTicket . ' fue generado y puede reimprimirse.',
+                    ['nro_ticket' => $nroTicket]
+                );
+            }
+
+            // Enviar a imprimir
+            $resultadoImpresion = CustomPrint::imprimir($comanda, $idImpresora);
+
+            if ($resultadoImpresion) {
+                // Actualizar nro_ticket en todos los items agrupados usando el área default
+                $this->actualizarNroTicketMultiple($itemsAgrupados, $areaDespacho->codigo_area, $nroTicket, $fechaImpresion);
+
+                return VentaResponse::success(
+                    ['nro_ticket' => $nroTicket],
+                    "Comanda general impresa exitosamente. Ticket: {$nroTicket}"
+                );
+            } else {
+                // Si falla la impresión, aún guardamos el ticket para que pueda reimprimirse después
+                return VentaResponse::warning(
+                    'Error al imprimir la comanda. La impresora puede estar offline o no disponible. El ticket #' . $nroTicket . ' fue generado y puede reimprimirse cuando la impresora esté disponible.',
+                    ['nro_ticket' => $nroTicket]
+                );
+            }
+        } catch (\Exception $e) {
+            return VentaResponse::error('Error al procesar comanda general: ' . $e->getMessage());
         }
     }
 }

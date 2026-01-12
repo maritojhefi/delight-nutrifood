@@ -22,5 +22,11 @@ interface ComandaServiceInterface
      * Reimprime una comanda agrupando todos los items que comparten el mismo nro_ticket
      */
     public function reimprimirComanda(Venta $venta, string $nroTicket, string $codigoArea): VentaResponse;
+
+    /**
+     * Imprime una comanda general con todos los items de la venta sin filtrar por área
+     * Usa el área default configurada
+     */
+    public function imprimirComandaGeneral(Venta $venta): VentaResponse;
 }
 

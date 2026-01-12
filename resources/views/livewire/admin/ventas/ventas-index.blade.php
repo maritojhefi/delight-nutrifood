@@ -1745,12 +1745,36 @@
                 },
                 hideClass: {
                     popup: 'animate__animated animate__fadeOutUp'
+                },
+                didOpen: () => {
+                    // Agregar botón de comanda general al header
+                    const titleElement = document.querySelector('.swal2-title');
+                    if (titleElement) {
+                        titleElement.style.display = 'flex';
+                        titleElement.style.justifyContent = 'space-between';
+                        titleElement.style.alignItems = 'center';
+                        titleElement.style.width = '100%';
+                        
+                        const button = document.createElement('button');
+                        button.className = 'btn btn-sm btn-primary';
+                        button.style.cssText = 'font-size: 12px; padding: 5px 12px; margin-left: auto;';
+                        button.innerHTML = '<i class="fa fa-print"></i> Comanda General';
+                        button.onclick = function() {
+                            imprimirComandaGeneral();
+                        };
+                        
+                        titleElement.appendChild(button);
+                    }
                 }
             });
         });
         
         function imprimirComandaArea(codigoArea, nroTicket, esReimpresion) {
             @this.call('procesarImpresionComanda', codigoArea, nroTicket, esReimpresion);
+        }
+        
+        function imprimirComandaGeneral() {
+            @this.call('procesarImpresionComandaGeneral');
         }
     </script>
 @endpush

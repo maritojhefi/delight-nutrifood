@@ -1467,6 +1467,15 @@ class VentasIndex extends Component
             return;
         }
 
+        // Verificar si la venta tiene productos agregados
+        if ($venta->productos()->count() === 0) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'info',
+                'message' => 'No hay productos agregados en esta venta',
+            ]);
+            return;
+        }
+
         $response = $this->comandaService->obtenerItemsAgrupadosPorArea($venta);
 
         if (!$response->success) {
@@ -1479,16 +1488,8 @@ class VentasIndex extends Component
 
         $itemsAgrupados = $response->data;
 
-        if (empty($itemsAgrupados)) {
-            $this->dispatchBrowserEvent('alert', [
-                'type' => 'info',
-                'message' => 'No hay items que requieran comanda en esta venta',
-            ]);
-            return;
-        }
-
-        // Emitir evento para mostrar el SweetAlert
-        $this->emit('mostrarModalComandas', $itemsAgrupados);
+        // Emitir evento para mostrar el SweetAlert (aunque esté vacío)
+        $this->emit('mostrarModalComandas', $itemsAgrupados ?? []);
     }
 
     public function procesarImpresionComanda($codigoArea, $nroTicket = null, $esReimpresion = false)
@@ -1538,6 +1539,47 @@ class VentasIndex extends Component
         } else {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'error',
+                'message' => $response->message,
+            ]);
+        }
+    }
+
+    public function procesarImpresionComandaGeneral()
+    {
+        if (!isset($this->cuenta)) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Debe seleccionar una venta',
+            ]);
+            return;
+        }
+
+        $venta = Venta::find($this->cuenta->id);
+
+        if (!$venta) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Venta no encontrada',
+            ]);
+            return;
+        }
+
+        $response = $this->comandaService->imprimirComandaGeneral($venta);
+
+        if ($response->success) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => $response->message,
+            ]);
+
+            // Refrescar la venta para obtener los datos actualizados
+            $this->cuenta->fresh();
+
+            // Volver a mostrar el modal con datos actualizados
+            $this->imprimirComanda();
+        } else {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => $response->data ? 'warning' : 'error',
                 'message' => $response->message,
             ]);
         }

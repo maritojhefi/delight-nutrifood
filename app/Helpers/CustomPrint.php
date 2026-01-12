@@ -387,7 +387,7 @@ class CustomPrint
             // Encabezado
             $printer->setJustification(Printer::JUSTIFY_CENTER);
 
-            // Área de despacho
+            // Área de despacho (título de la sección)
             $printer->setTextSize(1, 2);
             $textoArea = GlobalHelper::limpiarTextoParaPOS($datosComanda['area_despacho']);
             $printer->text($textoArea . "\n");
@@ -396,13 +396,58 @@ class CustomPrint
             // Separador
             $printer->text(str_repeat('-', 32) . "\n");
 
+            // Información del cliente debajo del título de la sección (con letra más grande)
+            if (isset($datosComanda['venta'])) {
+                $venta = $datosComanda['venta'];
+
+                // Construir texto del cliente
+                $textoCliente = '';
+
+                // Mostrar cliente si existe
+                if (!empty($venta['cliente_nombre'])) {
+                    $textoCliente = GlobalHelper::limpiarTextoParaPOS($venta['cliente_nombre']);
+                }
+
+                // Mostrar usuario_manual incluso si hay cliente (mostrar ambos)
+                if (!empty($venta['usuario_manual'])) {
+                    $usuarioManual = GlobalHelper::limpiarTextoParaPOS($venta['usuario_manual']);
+                    if (!empty($textoCliente)) {
+                        $textoCliente .= ' / ' . $usuarioManual;
+                    } else {
+                        $textoCliente = $usuarioManual;
+                    }
+                }
+
+                // Si no hay ni cliente ni usuario_manual, mostrar "Anónimo"
+                if (empty($textoCliente)) {
+                    $textoCliente = 'Anonimo';
+                }
+
+                // Mostrar cliente con letra más grande
+                $printer->setTextSize(1, 2);
+                $printer->text($textoCliente . "\n");
+                $printer->setTextSize(1, 1);
+
+                // Mostrar mesa si existe
+                if (!empty($venta['mesa_nombre'])) {
+                    $mesa = GlobalHelper::limpiarTextoParaPOS('Mesa: ' . $venta['mesa_nombre']);
+                    $printer->text($mesa . "\n");
+                }
+
+                // Separador
+                $printer->text(str_repeat('-', 32) . "\n");
+            }
+
             // Número de ticket
             $printer->setTextSize(1, 2);
             $printer->text('TICKET #' . $datosComanda['nro_ticket'] . "\n");
             $printer->setTextSize(1, 1);
 
             // Separador
-            $printer->text(str_repeat('-', 32) . "\n");
+            $printer->text(str_repeat('*', 32) . "\n");
+
+            // Línea superior para encerrar el pedido
+            // $printer->text(str_repeat('-', 32) . "\n");
 
             // Items agrupados
             $printer->setJustification(Printer::JUSTIFY_LEFT);
@@ -459,8 +504,11 @@ class CustomPrint
                 }
             }
 
+            // Línea inferior para encerrar el pedido
+            $printer->text(str_repeat('*', 32) . "\n");
+
             // Separador final
-            $printer->text(str_repeat('-', 32) . "\n");
+            // $printer->text(str_repeat('-', 32) . "\n");
 
             // Información adicional de la venta
             $printer->setJustification(Printer::JUSTIFY_LEFT);
@@ -471,18 +519,6 @@ class CustomPrint
                 if (!empty($venta['tipo_entrega'])) {
                     $tipoEntrega = GlobalHelper::limpiarTextoParaPOS('Tipo: ' . ucfirst($venta['tipo_entrega']));
                     $printer->text($tipoEntrega . "\n");
-                }
-
-                // Mesa
-                if (!empty($venta['mesa_numero'])) {
-                    $mesa = GlobalHelper::limpiarTextoParaPOS('Mesa: #' . $venta['mesa_numero']);
-                    $printer->text($mesa . "\n");
-                }
-
-                // Cliente
-                if (!empty($venta['cliente_nombre'])) {
-                    $cliente = GlobalHelper::limpiarTextoParaPOS('Cliente: ' . $venta['cliente_nombre']);
-                    $printer->text($cliente . "\n");
                 }
             }
 

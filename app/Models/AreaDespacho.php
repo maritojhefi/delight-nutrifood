@@ -14,6 +14,7 @@ class AreaDespacho extends Model
         'codigo_area',
         'descripcion',
         'activo',
+        'es_default',
         'sucursale_id',
         'id_impresora',
     ];
