@@ -1,17 +1,74 @@
 <x-card-col tamano="12">
     <div class="mb-2">
-        <center class="card-intro-title p-2 " style="font-size:15px">Ventas Pendientes</center>
-        <div class="p-2" style="max-height: 450px; overflow-y: auto;">
+        {{-- Filtros de búsqueda y tipo de entrega --}}
+        <div class="p-2 border-bottom mb-2">
+            {{-- Input de búsqueda --}}
+            <div class="mb-2">
+                <input type="text" id="filtro-buscador-ventas" class="form-control form-control-sm bordeado"
+                    placeholder="Buscar ventas..." autocomplete="off">
+            </div>
+
+            {{-- Checkboxes por tipo de entrega --}}
+            <div class="d-flex flex-wrap gap-2" id="filtros-tipo-entrega">
+                @php
+                    $tiposAgrupados = $ventas
+                        ->groupBy('tipo_entrega')
+                        ->map(function ($grupo, $tipo) {
+                            return [
+                                'tipo' => $tipo ?: 'sin_tipo',
+                                'count' => $grupo->count(),
+                                'label' => match ($tipo) {
+                                    'mesa' => 'Mesas',
+                                    'delivery' => 'Delivery',
+                                    'recoger' => 'Venta Rápida',
+                                    default => 'Sin Tipo',
+                                },
+                            ];
+                        })
+                        ->sortBy('tipo');
+                @endphp
+                @if ($tiposAgrupados->count() > 0)
+                    @foreach ($tiposAgrupados as $grupo)
+                        <div class="form-check form-check-inline" style="font-size: 10px; margin-right: 8px;">
+                            <input class="form-check-input filtro-tipo-check" type="checkbox"
+                                value="{{ $grupo['tipo'] }}" id="filtro-tipo-{{ $grupo['tipo'] }}" checked
+                                style="width: 15px; height: 15px; margin-top: 2px; margin-right: 3px; cursor: pointer;">
+                            <label class="form-check-label" for="filtro-tipo-{{ $grupo['tipo'] }}"
+                                style="margin-left: 0; padding-left: 0; cursor: pointer;">
+                                {{ $grupo['label'] }} <strong class="">{{ $grupo['count'] }}</strong>
+                            </label>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="font-weight-bold text-center mx-auto">Sin ventas abiertas</div>
+                @endif
+            </div>
+        </div>
+
+        {{-- <center class="card-intro-title p-2 " style="font-size:15px">Ventas Pendientes</center> --}}
+        <div class="p-2" style="max-height: 450px; overflow-y: auto;" id="contenedor-ventas-pendientes">
             @foreach ($ventas as $item)
+                @php
+                    $tipoEntrega = $item->tipo_entrega ?: 'sin_tipo';
+                    $textoBusqueda = strtolower(
+                        ($item->tipo_entrega == 'mesa' && $item->mesa ? 'mesa ' . $item->mesa->numero : '') .
+                            ($item->cliente ? ' ' . $item->cliente->name : '') .
+                            ($item->usuario_manual ? ' ' . $item->usuario_manual : '') .
+                            ' ' .
+                            $item->id,
+                    );
+                @endphp
                 @if (isset($cuenta) && $cuenta->id == $item->id)
                     <div wire:key="venta-pendiente-{{ $item->id }}"
-                        class="alert mb-1  {{ $item->productos->count() > 0 ? 'border-success alert-success' : 'alert-danger border-danger' }}@isset($cuenta) {{ $item->id == $cuenta->id ? 'solid alert-alt bordeado-pulse' : '' }} @endisset p-1 px-2 pb-2"
-                        style="line-height: 0px; cursor: pointer;" data-registro-venta-id="{{ $item->id }}">
+                        class="venta-item alert mb-1  {{ $item->productos->count() > 0 ? 'border-success alert-success' : 'alert-danger border-danger' }}@isset($cuenta) {{ $item->id == $cuenta->id ? 'solid alert-alt bordeado-pulse' : '' }} @endisset p-1 px-2 pb-2"
+                        style="line-height: 0px; cursor: pointer;" data-registro-venta-id="{{ $item->id }}"
+                        data-tipo-entrega="{{ $tipoEntrega }}" data-texto-busqueda="{{ $textoBusqueda }}">
                     @else
                         <div wire:key="venta-pendiente-{{ $item->id }}"
                             onclick="seleccionar('{{ $item->id }}')"
-                            class="alert mb-1  {{ $item->productos->count() > 0 ? 'border-success alert-success' : 'alert-danger border-danger' }}@isset($cuenta) {{ $item->id == $cuenta->id ? 'solid alert-alt bordeado-pulse' : '' }} @endisset p-1 px-2 pb-2"
-                            style="line-height: 0px; cursor: pointer;" data-registro-venta-id="{{ $item->id }}">
+                            class="venta-item alert mb-1  {{ $item->productos->count() > 0 ? 'border-success alert-success' : 'alert-danger border-danger' }}@isset($cuenta) {{ $item->id == $cuenta->id ? 'solid alert-alt bordeado-pulse' : '' }} @endisset p-1 px-2 pb-2"
+                            style="line-height: 0px; cursor: pointer;" data-registro-venta-id="{{ $item->id }}"
+                            data-tipo-entrega="{{ $tipoEntrega }}" data-texto-busqueda="{{ $textoBusqueda }}">
                 @endif
 
                 <a href="#" class="p-0 m-0" style="line-height: 20px">
@@ -379,10 +436,127 @@
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal"
                     onclick="confirmarVentaDelivery()">Venta Delivery <i class="fa fa-truck"></i></button>
                 <button type="button" class="btn btn-sm btn-success" data-bs-dismiss="modal"
-                    onclick="crearUsuarioRapido(false)">Nuevo Cliente <i class="fa fa-user"></i><i class="fa fa-plus"></i></button>
+                    onclick="crearUsuarioRapido(false)">Nuevo Cliente <i class="fa fa-user"></i><i
+                        class="fa fa-plus"></i></button>
                 <button type="button" class="btn btn-sm btn-info" data-bs-dismiss="modal"
                     onclick="confirmarVentaReserva()">Reserva <i class="flaticon-088-time"></i></button>
             </div>
         </div>
     </div>
 </div>
+
+@push('scripts')
+    <script>
+        (function() {
+            'use strict';
+
+            function inicializarFiltros() {
+                const buscador = document.getElementById('filtro-buscador-ventas');
+                const contenedor = document.getElementById('contenedor-ventas-pendientes');
+
+                if (!buscador || !contenedor) return;
+
+                function obtenerElementos() {
+                    return {
+                        buscador: document.getElementById('filtro-buscador-ventas'),
+                        checksTipo: document.querySelectorAll('.filtro-tipo-check'),
+                        ventasItems: contenedor.querySelectorAll('.venta-item')
+                    };
+                }
+
+                function filtrarVentas() {
+                    const elementos = obtenerElementos();
+                    if (!elementos.buscador || elementos.ventasItems.length === 0) return;
+
+                    const textoBusqueda = elementos.buscador.value.toLowerCase().trim();
+                    const tiposSeleccionados = Array.from(elementos.checksTipo)
+                        .filter(check => check.checked)
+                        .map(check => check.value);
+
+                    elementos.ventasItems.forEach(item => {
+                        const tipoEntrega = item.getAttribute('data-tipo-entrega');
+                        const textoItem = item.getAttribute('data-texto-busqueda') || '';
+
+                        // Verificar tipo de entrega
+                        const tipoCoincide = tiposSeleccionados.includes(tipoEntrega);
+
+                        // Verificar texto de búsqueda
+                        const textoCoincide = textoBusqueda === '' || textoItem.includes(textoBusqueda);
+
+                        // Mostrar u ocultar según los filtros
+                        if (tipoCoincide && textoCoincide) {
+                            item.style.display = '';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    // Actualizar contadores en los checks
+                    actualizarContadores(elementos);
+                }
+
+                function actualizarContadores(elementos) {
+                    if (!elementos) elementos = obtenerElementos();
+
+                    const tiposAgrupados = {};
+
+                    // Contar TODAS las ventas por tipo (sin importar si están visibles o no)
+                    elementos.ventasItems.forEach(item => {
+                        const tipo = item.getAttribute('data-tipo-entrega');
+                        tiposAgrupados[tipo] = (tiposAgrupados[tipo] || 0) + 1;
+                    });
+
+                    // Actualizar badges en los checks con el total siempre
+                    elementos.checksTipo.forEach(check => {
+                        const tipo = check.value;
+                        const label = check.nextElementSibling;
+                        if (label) {
+                            const badge = label.querySelector('.badge');
+                            const count = tiposAgrupados[tipo] || 0;
+                            if (badge) {
+                                badge.textContent = `${count}`;
+                            }
+                        }
+                    });
+                }
+
+                // Obtener elementos iniciales
+                const elementos = obtenerElementos();
+
+                // Event listeners
+                if (elementos.buscador) {
+                    elementos.buscador.addEventListener('input', filtrarVentas);
+                    elementos.buscador.addEventListener('keyup', filtrarVentas);
+                }
+
+                elementos.checksTipo.forEach(check => {
+                    check.addEventListener('change', filtrarVentas);
+                });
+
+                // Inicializar contadores al cargar
+                actualizarContadores(elementos);
+
+                // Re-aplicar filtros después de actualizaciones de Livewire
+                if (typeof Livewire !== 'undefined') {
+                    Livewire.hook('message.processed', () => {
+                        setTimeout(() => {
+                            filtrarVentas();
+                        }, 50);
+                    });
+                }
+            }
+
+            // Inicializar cuando el DOM esté listo
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', inicializarFiltros);
+            } else {
+                inicializarFiltros();
+            }
+
+            // Re-inicializar después de actualizaciones de Livewire
+            if (typeof Livewire !== 'undefined') {
+                document.addEventListener('livewire:load', inicializarFiltros);
+            }
+        })();
+    </script>
+@endpush
