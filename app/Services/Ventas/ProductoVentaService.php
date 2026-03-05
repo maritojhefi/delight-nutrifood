@@ -5,6 +5,7 @@ namespace App\Services\Ventas;
 use App\Models\Venta;
 use App\Models\Producto;
 use App\Models\Adicionale;
+use App\Models\Almuerzo;
 use App\Helpers\GlobalHelper;
 use App\Events\CocinaPedidoEvent;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,8 @@ use App\Services\Ventas\Contracts\CalculadoraVentaServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Log;
+use App\Helpers\WhatsappAPIHelper;
+use Carbon\Carbon;
 
 class ProductoVentaService implements ProductoVentaServiceInterface
 {
@@ -242,8 +245,16 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 return VentaResponse::warning('Solo se pueden agregar adicionales a productos por unidad');
             }
 
-            // Verificar stock del adicional
-            if ($adicional->contable && $adicional->cantidad == 0) {
+            // Determinar si es una reserva futura (ej: para mañana) donde no se debe controlar stock de cocina
+            $esReservaFutura = false;
+            if ($venta->reservado_at) {
+                $fechaReserva = Carbon::parse($venta->reservado_at)->toDateString();
+                $hoy = Carbon::today()->toDateString();
+                $esReservaFutura = $fechaReserva > $hoy;
+            }
+
+            // Verificar stock del adicional solo si no es reserva futura
+            if (!$esReservaFutura && $adicional->contable && $adicional->cantidad == 0) {
                 return VentaResponse::warning("No existe stock para {$adicional->nombre}");
             }
 
@@ -255,13 +266,33 @@ class ProductoVentaService implements ProductoVentaServiceInterface
 
             $array = json_decode($pivot->adicionales, true);
 
+            // Determinar el nombre a guardar para el adicional, considerando reservas
+            $nombreAdicionalParaGuardar = $adicional->nombre;
+            if ($adicional->codigo_cocina && $venta->reservado_at) {
+                $fechaReserva = Carbon::parse($venta->reservado_at)->toDateString();
+                $diaReserva = WhatsappAPIHelper::saber_dia($fechaReserva);
+                $menuReserva = Almuerzo::withoutGlobalScope('diasActivos')
+                    ->where('dia', $diaReserva)
+                    ->first();
+
+                if ($menuReserva) {
+                    $nombreDesdeAlmuerzo = $this->obtenerNombreAdicionalDesdeAlmuerzo(
+                        $adicional->codigo_cocina,
+                        $menuReserva
+                    );
+                    if (!empty($nombreDesdeAlmuerzo)) {
+                        $nombreAdicionalParaGuardar = $nombreDesdeAlmuerzo;
+                    }
+                }
+            }
+
             // Agregar adicional al item específico
             for ($i = 1; $i <= $item; $i++) {
                 if ($i == $item) {
                     // Compatibilidad: verificar si usa formato nuevo o antiguo
                     if (isset($array[$i]['adicionales'])) {
                         // Formato nuevo
-                        $array[$i]['adicionales'][] = [$adicional->nombre => $adicional->precio];
+                        $array[$i]['adicionales'][] = [$nombreAdicionalParaGuardar => $adicional->precio];
                     } else {
                         // Formato antiguo - migrar a nuevo formato
                         $adicionalesAntiguos = $array[$i];
@@ -270,7 +301,7 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                             'agregado_at' => now()->toDateTimeString(),
                             'estado' => 'pendiente'
                         ];
-                        $array[$i]['adicionales'][] = [$adicional->nombre => $adicional->precio];
+                        $array[$i]['adicionales'][] = [$nombreAdicionalParaGuardar => $adicional->precio];
                     }
                 }
             }
@@ -281,8 +312,8 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                 ->where('venta_id', $venta->id)
                 ->update(['adicionales' => json_encode($array)]);
 
-            // Actualizar stock del adicional
-            if ($adicional->contable) {
+            // Actualizar stock del adicional (solo si no es reserva futura)
+            if (!$esReservaFutura && $adicional->contable) {
                 GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'reducir');
                 $adicional->decrement('cantidad');
                 $adicional->save();
@@ -303,6 +334,23 @@ class ProductoVentaService implements ProductoVentaServiceInterface
         } catch (\Exception $e) {
             return VentaResponse::error('Error al agregar adicional: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Obtiene el nombre del adicional de cocina a partir del menú (Almuerzo) según su código.
+     */
+    private function obtenerNombreAdicionalDesdeAlmuerzo(string $codigoCocina, Almuerzo $menu): string
+    {
+        return match ($codigoCocina) {
+            'segundo_ejecutivo' => $menu->ejecutivo ?? '',
+            'segundo_dieta'     => $menu->dieta ?? '',
+            'segundo_veggie'    => $menu->vegetariano ?? '',
+            'carbohidrato_1'    => $menu->carbohidrato_1 ?? '',
+            'carbohidrato_2'    => $menu->carbohidrato_2 ?? '',
+            'carbohidrato_3'    => $menu->carbohidrato_3 ?? '',
+            'sopa'              => $menu->sopa ?? '',
+            default             => '',
+        };
     }
 
     public function eliminarItem(Venta $venta, Producto $producto, int $posicion): VentaResponse
@@ -646,8 +694,30 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     ];
                 }
             } else {
-                // Validar el stock necesario
+                // Determinar si es una reserva futura (no controlar stock de adicionales de cocina)
+                $esReservaFutura = false;
+                $menuReserva = null;
+                $fechaReserva = null;
+
+                if ($venta->reservado_at) {
+                    $fechaReserva = Carbon::parse($venta->reservado_at)->toDateString();
+                    $hoy = Carbon::today()->toDateString();
+                    $esReservaFutura = $fechaReserva > $hoy;
+
+                    // Obtener el menú correspondiente al día de la reserva para nombrar correctamente los adicionales de cocina
+                    $diaReserva = WhatsappAPIHelper::saber_dia($fechaReserva);
+                    $menuReserva = Almuerzo::withoutGlobalScope('diasActivos')
+                        ->where('dia', $diaReserva)
+                        ->first();
+                }
+
+                // Validar el stock necesario (solo cuando aplique control de stock)
                 foreach ($extras as $adicional) {
+                    // Para reservas futuras, no controlar stock de adicionales de cocina (con codigo_cocina)
+                    if ($esReservaFutura && $adicional->codigo_cocina) {
+                        continue;
+                    }
+
                     if ($adicional->contable == true && $adicional->cantidad < $cantidad) {
                         return VentaResponse::warning("No hay stock suficiente para el adicional: {$adicional->nombre}. Stock disponible: {$adicional->cantidad}, requerido: {$cantidad}");
                     }
@@ -659,11 +729,27 @@ class ProductoVentaService implements ProductoVentaServiceInterface
                     $array_extras = [];
 
                     foreach ($extras as $adicional) {
-                        if ($adicional->contable == true && $i == 0) {
+                        // Para reservas futuras no se descuenta stock de adicionales de cocina
+                        $esAdicionalCocinaReservaFutura = $esReservaFutura && $adicional->codigo_cocina;
+
+                        if (!$esAdicionalCocinaReservaFutura && $adicional->contable == true && $i == 0) {
                             $adicional->decrement('cantidad', $cantidad);
                             GlobalHelper::actualizarMenuCantidadDesdePOS($adicional, 'reducir', $cantidad);
                         }
-                        $array_extras[] = [$adicional->nombre => $adicional->precio];
+
+                        // Determinar el nombre correcto del adicional para guardar en función del menú de la reserva (si aplica)
+                        $nombreAdicional = $adicional->nombre;
+                        if ($menuReserva && $adicional->codigo_cocina) {
+                            $nombreDesdeAlmuerzo = $this->obtenerNombreAdicionalDesdeAlmuerzo(
+                                $adicional->codigo_cocina,
+                                $menuReserva
+                            );
+                            if (!empty($nombreDesdeAlmuerzo)) {
+                                $nombreAdicional = $nombreDesdeAlmuerzo;
+                            }
+                        }
+
+                        $array_extras[] = [$nombreAdicional => $adicional->precio];
                     }
 
                     $json[$siguiente_clave] = [

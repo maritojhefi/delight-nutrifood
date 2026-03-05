@@ -13,7 +13,9 @@ use Livewire\Component;
 use App\Models\Producto;
 use App\Models\Sucursale;
 use App\Models\Adicionale;
+use App\Models\Almuerzo;
 use App\Models\MetodoPago;
+use App\Helpers\WhatsappAPIHelper;
 use Mike42\Escpos\Printer;
 use App\Helpers\CreateList;
 use Illuminate\Support\Str;
@@ -824,6 +826,20 @@ class VentasIndex extends Component
         $producto = Producto::find($detalle->producto_id);
         $adicionales = json_decode($detalle->adicionales, true);
 
+        // Obtener la fecha de reserva desde la venta si existe
+        $fechaReserva = null;
+        $menuFecha = null;
+        if ($detalle->venta_id) {
+            $venta = Venta::find($detalle->venta_id);
+            if ($venta && $venta->reservado_at) {
+                $fechaReserva = $venta->reservado_at;
+                $diaFecha = WhatsappAPIHelper::saber_dia($fechaReserva);
+                $menuFecha = Almuerzo::withoutGlobalScope('diasActivos')
+                    ->where('dia', $diaFecha)
+                    ->first();
+            }
+        }
+
         $items = [];
         if ($adicionales) {
             foreach ($adicionales as $indice => $itemData) {
@@ -839,7 +855,22 @@ class VentasIndex extends Component
                         if (is_array($adic)) {
                             // Cada $adic es como {"Omelett de verduras":"0.00"}
                             foreach ($adic as $nombre => $precio) {
-                                $nombresAdicionales[] = $nombre . ($precio > 0 ? ' (' . $precio . ' Bs)' : '');
+                                // Buscar el adicional en la base de datos para obtener codigo_cocina
+                                $nombreFinal = $nombre;
+                                if ($menuFecha) {
+                                    $adicionalModel = Adicionale::where('nombre', $nombre)->first();
+                                    if ($adicionalModel && $adicionalModel->codigo_cocina) {
+                                        $nombreDesdeAlmuerzo = $this->obtenerNombreAdicionalDesdeAlmuerzo(
+                                            $adicionalModel->codigo_cocina,
+                                            $menuFecha
+                                        );
+                                        // Usar el nombre del Almuerzo si está disponible, sino mantener el nombre original
+                                        if (!empty($nombreDesdeAlmuerzo)) {
+                                            $nombreFinal = $nombreDesdeAlmuerzo;
+                                        }
+                                    }
+                                }
+                                $nombresAdicionales[] = $nombreFinal . ($precio > 0 ? ' (' . $precio . ' Bs)' : '');
                             }
                         }
                     }
@@ -1030,10 +1061,11 @@ class VentasIndex extends Component
 
     public function adicionar(Producto $producto)
     {
+        $fecha = $this->cuenta->reservado_at ? Carbon::parse($this->cuenta->reservado_at)->format('Y-m-d') : today();
         // Verificar si el producto tiene adicionales
         if ($this->productoTieneAdicionales($producto)) {
             // Mostrar SweetAlert para seleccionar adicionales
-            $this->mostrarSweetAlertAdicionales($producto);
+            $this->mostrarSweetAlertAdicionales($producto, $fecha);
         } else {
             // Agregar producto directamente
             $this->agregarProductoDirecto($producto);
@@ -1046,10 +1078,10 @@ class VentasIndex extends Component
             $producto->subcategoria->adicionalesGrupo()->isNotEmpty();
     }
 
-    private function mostrarSweetAlertAdicionales(Producto $producto)
+    private function mostrarSweetAlertAdicionales(Producto $producto, $fecha)
     {
         $adicionalesConGrupos = $producto->subcategoria->adicionalesGrupo();
-        $grupos = $this->organizarAdicionalesPorGrupos($adicionalesConGrupos);
+        $grupos = $this->organizarAdicionalesPorGrupos($adicionalesConGrupos, $fecha);
 
         $this->dispatchBrowserEvent('mostrarSweetAlertAdicionales', [
             'producto' => [
@@ -1063,9 +1095,26 @@ class VentasIndex extends Component
         ]);
     }
 
-    private function organizarAdicionalesPorGrupos($adicionalesConGrupos)
+    private function organizarAdicionalesPorGrupos($adicionalesConGrupos, $fecha = null)
     {
         $grupos = [];
+
+        // Determinar si la fecha es futura (reserva para mañana u otro día)
+        $esFechaFutura = false;
+        if ($fecha) {
+            $fechaBase = \Carbon\Carbon::parse($fecha)->toDateString();
+            $hoy = \Carbon\Carbon::today()->toDateString();
+            $esFechaFutura = $fechaBase > $hoy;
+        }
+
+        // Obtener el menú del día correspondiente a la fecha si es necesario
+        $menuFecha = null;
+        if ($fecha) {
+            $diaFecha = WhatsappAPIHelper::saber_dia($fecha);
+            $menuFecha = Almuerzo::withoutGlobalScope('diasActivos')
+                ->where('dia', $diaFecha)
+                ->first();
+        }
 
         foreach ($adicionalesConGrupos as $adicional) {
             $grupoId = $adicional->grupo_id;
@@ -1083,16 +1132,63 @@ class VentasIndex extends Component
                 ];
             }
 
+            // Si el adicional tiene codigo_cocina y tenemos el menú de la fecha, obtener el nombre desde el Almuerzo
+            $nombreAdicional = $adicional->nombre;
+            if ($adicional->codigo_cocina && $menuFecha) {
+                $nombreDesdeAlmuerzo = $this->obtenerNombreAdicionalDesdeAlmuerzo($adicional->codigo_cocina, $menuFecha);
+                // Usar el nombre del Almuerzo si está disponible, sino mantener el nombre original
+                if (!empty($nombreDesdeAlmuerzo)) {
+                    $nombreAdicional = $nombreDesdeAlmuerzo;
+                }
+            }
+
+            // Para reservas futuras de cocina, no limitar por stock (stock "infinito")
+            $contable = (bool) $adicional->contable;
+            $cantidad = $adicional->cantidad;
+            if ($esFechaFutura && $adicional->codigo_cocina) {
+                $contable = false;
+                $cantidad = null;
+            }
+
             $grupos[$grupoId]['adicionales'][] = [
                 'id' => $adicional->id,
-                'nombre' => $adicional->nombre,
+                'nombre' => $nombreAdicional,
                 'precio' => (float) $adicional->precio,
-                'contable' => (bool) $adicional->contable,
-                'cantidad' => $adicional->cantidad
+                'contable' => $contable,
+                'cantidad' => $cantidad
             ];
         }
 
         return array_values($grupos);
+    }
+
+    /**
+     * Obtiene el nombre del adicional desde el modelo Almuerzo según el código_cocina
+     * 
+     * @param string $codigoCocina
+     * @param Almuerzo $menuFecha
+     * @return string
+     */
+    private function obtenerNombreAdicionalDesdeAlmuerzo($codigoCocina, Almuerzo $menuFecha)
+    {
+        switch ($codigoCocina) {
+            case 'segundo_ejecutivo':
+                return $menuFecha->ejecutivo ?? '';
+            case 'segundo_dieta':
+                return $menuFecha->dieta ?? '';
+            case 'segundo_veggie':
+                return $menuFecha->vegetariano ?? '';
+            case 'carbohidrato_1':
+                return $menuFecha->carbohidrato_1 ?? '';
+            case 'carbohidrato_2':
+                return $menuFecha->carbohidrato_2 ?? '';
+            case 'carbohidrato_3':
+                return $menuFecha->carbohidrato_3 ?? '';
+            case 'sopa':
+                return $menuFecha->sopa ?? '';
+            default:
+                return '';
+        }
     }
 
     public function agregarProductoConAdicionales($productoId, $adicionalesSeleccionados, $cantidad = 1, $observacion = null)
