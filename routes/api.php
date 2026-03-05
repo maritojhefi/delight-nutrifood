@@ -9,7 +9,9 @@ use Illuminate\Http\Request;
 use App\Helpers\WhatsappAPIHelper;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\AdminTicketsHelper;
+use App\Helpers\CircuitoIA;
 use App\Models\WhatsappPlanAlmuerzo;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -125,4 +127,30 @@ Route::post('/circuito/delight/planes', function (Request $request) {
             'log' => json_encode($request->all())
         ]);
     }
+});
+
+// Flujo de Agente IA
+// Endpoint oficial
+Route::post("/circuito/agente", function (Request $request) {
+    $json = json_decode(json_encode($request->all()));
+    $circuito = new CircuitoIA();
+    $circuito->circuitoIAWhatsapp($json);
+});
+
+// Endpoint de prueba desde Postman
+Route::post("/circuito/prueba", function (Request $request) {
+    $json = $request->getContent(); // raw JSON string
+    $decoded = json_decode($json); // stdClass, same as before
+
+    $circuito = new CircuitoIA();
+    try {
+        $circuito->circuitoIAWhatsapp($decoded);
+    } catch (\Throwable $th) {
+        Log::error("Error en circuito prueba", [
+            "error" => $th->getMessage(),
+            "trace" => $th->getTraceAsString(),
+        ]);
+    }
+
+    return response()->json(["status" => "ok"]);
 });
