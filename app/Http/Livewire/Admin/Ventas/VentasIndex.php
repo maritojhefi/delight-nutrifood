@@ -693,6 +693,8 @@ class VentasIndex extends Component
             'role_id' => 4,
             'nacimiento' => $this->cumpleano,
             'direccion' => $this->direccion,
+            // Creado por el personal desde el POS: se crea verificado para que acumule puntos
+            'verificado' => true,
         ]);
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
@@ -769,10 +771,12 @@ class VentasIndex extends Component
             $cliente = User::create([
                 'name' => $nombreCompleto,
                 'email' => $email,
-                'password' => bcrypt($telefonoLimpio), // Password temporal igual al teléfono
+                'password' => $telefonoLimpio, // Password temporal igual al teléfono
                 'role_id' => 4,
                 'telf' => $telefonoLimpio,
                 'codigo_pais' => $codigoPais,
+                // El número ya se validó como único arriba: se crea verificado para que acumule puntos
+                'verificado' => true,
             ]);
 
             // Si se solicita asignar a cuenta Y hay una cuenta activa

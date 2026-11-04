@@ -1229,10 +1229,13 @@
                                placeholder="71234567" value="${telefono}"
                                autocomplete="off">
                     </div>
-                    <small class="text-muted mb-3 d-block" id="infoDigitos">
+                    <small class="text-muted mb-2 d-block" id="infoDigitos">
                         <i class="fa fa-info-circle"></i> Debe tener 8 dígitos
                     </small>
-                    
+                    <small class="text-warning mb-3 d-block">
+                        <i class="fa fa-exclamation-triangle"></i> Confirma el número con el cliente: se registra como verificado y nadie más podrá usarlo para crear una cuenta
+                    </small>
+
                     <small class="text-muted">
                         <i class="fa fa-envelope"></i> El correo se generará automáticamente
                     </small>
