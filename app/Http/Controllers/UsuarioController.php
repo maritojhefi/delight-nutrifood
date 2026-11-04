@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Setting;
+use App\Helpers\GlobalHelper;
 use Illuminate\Http\Request;
 use App\Models\RegistroPunto;
 use App\Models\NumeroWhatsapp;
@@ -150,6 +152,23 @@ class UsuarioController extends Controller
 
         // Verificar si el usuario ya existe por su número telefónico
         $user = User::where('codigo_pais', $request->codigo_pais)->where('telf', $request->telefono)->first();
+
+        if ($this->otpRegistroActivo()) {
+            $verificado = $request->telefono_verificado;
+        } else {
+            // OTP omitido: no se permite sobrescribir una cuenta que ya está verificada
+            if ($user && $user->verificado) {
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'errors' => ['telefono' => ['Este número ya tiene una cuenta verificada. Inicia sesión.']],
+                    ],
+                    400,
+                );
+            }
+            // Se verifica solo si ninguna otra cuenta tiene este número verificado
+            $verificado = $this->telefonoVerificadoPorOtro($request->codigo_pais, $request->telefono, $user->id ?? null) ? 0 : 1;
+        }
         // Obtener el primer nombre del usuario para generar su correo
         $nameParts = explode(' ', $request->name);
         $firstName = strtolower($nameParts[0]);
@@ -174,7 +193,7 @@ class UsuarioController extends Controller
                 $user->password = $request->password;
             }
             $user->partner_id = isset($request->partner_id) && $request->partner_id != '' && $request->partner_id != null ? $request->partner_id : null;
-            $user->verificado = $request->telefono_verificado;
+            $user->verificado = $verificado;
         } else {
             // El usuario no existe, entonces creamos uno nuevo
             $user = new User();
@@ -191,7 +210,7 @@ class UsuarioController extends Controller
             $user->hijos = $request->hijos ? 1 : 0;
             $user->password = $request->password;
             $user->partner_id = isset($request->partner_id) && $request->partner_id != '' && $request->partner_id != null ? $request->partner_id : null;
-            $user->verificado = $request->telefono_verificado;
+            $user->verificado = $verificado;
         }
         if ($request->hasFile('foto')) {
             if ($imagenJpg != null) {
@@ -230,6 +249,28 @@ class UsuarioController extends Controller
             ],
             200,
         );
+    }
+
+    /**
+     * Indica si el registro exige verificar el teléfono por OTP de WhatsApp (setting otp_registro_whatsapp).
+     */
+    private function otpRegistroActivo()
+    {
+        return GlobalHelper::getValorAtributoSetting(Setting::OTP_REGISTRO_WHATSAPP) == '1';
+    }
+
+    /**
+     * Indica si otra cuenta (distinta de $exceptoId) ya tiene este número verificado.
+     */
+    private function telefonoVerificadoPorOtro($codigoPais, $telefono, $exceptoId = null)
+    {
+        return User::where('codigo_pais', $codigoPais)
+            ->where('telf', $telefono)
+            ->where('verificado', true)
+            ->when($exceptoId, function ($query) use ($exceptoId) {
+                $query->where('id', '!=', $exceptoId);
+            })
+            ->exists();
     }
 
     public function validarRegistroPaso1(Request $request)
@@ -275,6 +316,25 @@ class UsuarioController extends Controller
         }
 
         $userExists = User::where('codigo_pais', $request->codigo_pais)->where('telf', $request->telefono)->exists();
+
+        // OTP de registro desactivado (setting otp_registro_whatsapp): se avanza sin enviar código
+        if (!$this->otpRegistroActivo()) {
+            if ($this->telefonoVerificadoPorOtro($request->codigo_pais, $request->telefono)) {
+                return response()->json(
+                    [
+                        'status' => 'error',
+                        'errors' => ['telefono' => ['Este número ya tiene una cuenta verificada. Inicia sesión.']],
+                    ],
+                    422,
+                );
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Paso 1 validado correctamente',
+                'user_exists' => $userExists,
+            ]);
+        }
 
         // if ($userExists) {
         //     $customErrors = [

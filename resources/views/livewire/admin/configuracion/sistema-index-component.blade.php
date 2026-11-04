@@ -19,7 +19,36 @@
                                     wire:ignore.self>
                                     <div class="email-list mt-3">
                                         @foreach ($configuraciones as $index => $configuracion)
-                                            @if (!$configuracion['es_imagen'])
+                                            @if (!empty($configuracion['es_booleano']))
+                                                <div class="message" wire:key="setting-bool-{{ $configuracion['id'] }}">
+                                                    <div>
+                                                        <div class="d-flex message-single">
+                                                            <div class="ps-1 align-self-center col-4">
+                                                                <label for="{{ $configuracion['clave'] }}"
+                                                                    class="form-label mb-0">
+                                                                    {{ ucfirst(str_replace('_', ' ', $configuracion['clave'])) }}
+                                                                </label>
+                                                            </div>
+                                                            <div class="ms-2 col-6 align-self-center">
+                                                                @if ($configuracion['descripcion'])
+                                                                    <small class="text-muted d-block">{{ $configuracion['descripcion'] }}</small>
+                                                                @endif
+                                                            </div>
+                                                            <div class="col-2 d-flex justify-content-center align-items-center">
+                                                                <div class="form-check form-switch mb-0">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        role="switch" id="{{ $configuracion['clave'] }}"
+                                                                        style="width: 2.5em; height: 1.3em; cursor: pointer;"
+                                                                        wire:model.defer="configuraciones.{{ $index }}.valor"
+                                                                        wire:change="saveBooleanSetting({{ $index }})"
+                                                                        wire:loading.attr="disabled"
+                                                                        wire:target="saveBooleanSetting">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @elseif (!$configuracion['es_imagen'])
                                                 <div class="message">
                                                     <div>
                                                         <div class="d-flex message-single">

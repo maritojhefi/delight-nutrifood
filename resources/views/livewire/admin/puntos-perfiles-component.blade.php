@@ -10,107 +10,234 @@
             </div>
         @endif
 
-        <div class="form-head mb-1 d-flex flex-wrap align-items-center">
-            <div class="me-auto">
-                <h2 class="font-w600 mb-0">Listado de Perfiles de Puntos
-                    <div wire:loading class="spinner-border" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </h2>
-            </div>
-            <div class="input-group search-area2 d-xl-inline-flex mb-2 me-lg-4 me-md-2">
-                <button class="input-group-text"><i class="flaticon-381-search-2 text-primary"></i></button>
-                <input type="text" class="form-control" placeholder="Buscar por nombre..."
-                    wire:model.debounce.700ms="search">
-            </div>
-            <div class="col-3">
-                <button type="button" class="btn btn-primary btn-lg btn-block rounded text-white"
-                    wire:click="crearNuevo">
-                    <i class="fa fa-plus-circle"></i> Nuevo
-                </button>
-            </div>
-        </div>
+        @php
+            // Venta de ejemplo para simular el reparto (misma fórmula que HistorialVentaObserver)
+            $ppEjemplo = 100;
+        @endphp
 
-        <div class="col-lg-12">
-            <div class="card">
-             
-                <div class="card-body p-3">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped table-responsive-md m-0 p-0 letra12">
-                            <thead class="m-2 p-3 bg-primary text-white">
-                                <tr class="m-2 p-3">
-                                    <th class="m-2 p-3">Nombre</th>
-                                    <th class="m-2 p-3">Porcentaje</th>
-                                    <th class="m-2 p-3">Bono</th>
-                                    <th class="m-2 p-3">Usuarios</th>
-                                    <th class="m-2 p-3">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody class="m-0 p-0">
-                                @if ($perfiles->isNotEmpty())
-                                    @foreach ($perfiles as $perfil)
-                                        <tr wire:key="perfil-{{ $perfil->id }}" class="m-0 p-0">
-                                            <td class="m-0 p-0">
-                                                <div class="d-flex align-items-center justify-content-center">
-                                                    <span class="w-space-no">{{ $perfil->nombre }}</span>
-                                                </div>
-                                            </td>
-                                            <td class="m-0 p-0 text-center">{{ $perfil->porcentaje }}%</td>
-                                            <td class="m-0 p-0 text-center">{{ $perfil->bono }} Pts</td>
-                                            <td class="m-0 p-0 text-center">
-                                                <button type="button"
-                                                    class="mt-1 mb-1 btn btn-xxs btn-rounded {{ $perfil->usuarios->count() > 0 ? 'btn-primary' : 'btn-info' }}"
-                                                    wire:loading.attr="disabled" wire:target="agregarUsuarios"
-                                                    wire:click="agregarUsuarios({{ $perfil->id }})">
-                                                    <span
-                                                        class="btn-icon-start {{ $perfil->usuarios->count() > 0 ? 'text-primary' : 'text-info' }}"><strong>{{ $perfil->usuarios->count() }}</strong>
-                                                    </span>
-                                                    {!! $perfil->usuarios->count() > 0
-                                                        ? 'Ver <i class="fa fa-info-circle ms-2"></i>'
-                                                        : 'Agregar <i class="fa fa-plus-circle ms-2"></i>' !!}
-                                                </button>
-                                            </td>
-                                            <td class="m-0 p-0 text-center">
-                                                <div class="d-flex align-items-center justify-content-center">
-                                                    <button type="button"
-                                                        class="btn btn-primary shadow btn-xs sharp me-1"
-                                                        wire:click="editarPerfil({{ $perfil->id }})" title="Editar">
-                                                        <i class="fa fa-pencil"></i>
-                                                    </button>
-                                                    {{-- <button type="button" class="btn btn-danger shadow btn-xs sharp"
-                                                        onclick="eliminarPerfil({{ $perfil->id }})" title="Eliminar">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button> --}}
-                                                    <button type="button" class="btn btn-info shadow btn-xs sharp ms-1"
-                                                        wire:click="agregarUsuarios({{ $perfil->id }})"
-                                                        title="Agregar Usuarios">
-                                                        <i class="fa fa-plus-circle"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @else
-                                    <tr class="m-0 p-0">
-                                        <td colspan="5" class="text-center">No se encontraron perfiles de puntos</td>
-                                    </tr>
-                                @endif
-                            </tbody>
-                        </table>
+        <div class="col-lg-12 cv-ui" id="perfilesPuntosPage">
+            <div class="card cl-card pp-card">
+                <div class="cl-header">
+                    <div>
+                        <h4 class="cl-title">
+                            Perfiles de puntos
+                            <span wire:loading class="spinner-border spinner-border-sm text-primary ms-2"
+                                role="status"><span class="sr-only">Cargando...</span></span>
+                        </h4>
+                        <p class="cl-sub">Definen cuánto gana quien refiere a un cliente y qué bono recibe ese cliente</p>
                     </div>
-                    @if ($perfiles->isNotEmpty())
-                        <div class="row d-flex justify-content-between align-items-center flex-wrap mt-3 px-3"
-                            style="justify-content: center !important;">
-                           
-                            <div class="col-12 d-flex justify-content-center">
-                                {{ $perfiles->links() }}
+                    <div class="cl-header-actions">
+                        <div class="cv-search cl-search">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <circle cx="11" cy="11" r="7"></circle>
+                                <path d="m20 20-3.5-3.5"></path>
+                            </svg>
+                            <input type="search" placeholder="Buscar perfil…" aria-label="Buscar perfiles"
+                                wire:model.debounce.700ms="search">
+                        </div>
+                        <button type="button" class="btn btn-primary cl-btn-nuevo" wire:click="crearNuevo">
+                            <i class="fa fa-plus me-2"></i>Nuevo perfil
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Explicación general del sistema de puntos --}}
+                <details class="pp-guide">
+                    <summary>
+                        <i class="fa fa-info-circle"></i>
+                        ¿Cómo funcionan los perfiles de puntos?
+                        <span class="pp-guide-chevron" aria-hidden="true"></span>
+                    </summary>
+                    <div class="pp-guide-body">
+                        <div class="pp-step">
+                            <span class="pp-step-n">1</span>
+                            <div>
+                                <strong>El perfil pertenece al que refiere</strong>
+                                <p>Cada usuario tiene un perfil y un código. Cuando un cliente nuevo se registra con
+                                    ese código, el dueño del código pasa a ser su <em>referidor</em>.</p>
                             </div>
                         </div>
-                    @endif
+                        <div class="pp-step">
+                            <span class="pp-step-n">2</span>
+                            <div>
+                                <strong>Bono: una sola vez, para el cliente nuevo</strong>
+                                <p>Cuando el cliente referido verifica su cuenta recibe el <b>bono</b> del perfil de su
+                                    referidor. El referidor no recibe puntos por esto.</p>
+                            </div>
+                        </div>
+                        <div class="pp-step">
+                            <span class="pp-step-n">3</span>
+                            <div>
+                                <strong>Porcentaje: en cada compra, se reparte</strong>
+                                <p>Los puntos de cada venta del cliente referido se dividen: el <b>porcentaje</b> va al
+                                    referidor y el resto al cliente. No son puntos extra: salen de los del cliente.</p>
+                            </div>
+                        </div>
+                        <p class="pp-guide-note">
+                            Solo aplica a clientes verificados. Los clientes sin referidor (o cuyo referidor no tiene
+                            perfil o tiene 0%) reciben el 100% de sus puntos. El perfil marcado como
+                            <b>Por defecto</b> se asigna automáticamente a cada usuario nuevo.
+                        </p>
+                    </div>
+                </details>
+
+                <div class="cl-table" role="table" aria-label="Perfiles de puntos">
+                    <div class="cl-row pp-row cl-row-head" role="row">
+                        <div role="columnheader">Perfil</div>
+                        <div role="columnheader">
+                            <span class="pp-th">Porcentaje
+                                <span class="pp-tip">
+                                    <button type="button" class="pp-info" aria-label="¿Qué es el porcentaje?">i</button>
+                                    <span class="pp-pop" role="tooltip">
+                                        <strong>Reparto por compra</strong>
+                                        Parte de los puntos de cada compra de un cliente referido que se lleva su
+                                        referidor. Se descuenta de los puntos del cliente y se redondea al entero más
+                                        cercano.
+                                    </span>
+                                </span>
+                            </span>
+                        </div>
+                        <div role="columnheader">
+                            <span class="pp-th">Bono
+                                <span class="pp-tip">
+                                    <button type="button" class="pp-info" aria-label="¿Qué es el bono?">i</button>
+                                    <span class="pp-pop" role="tooltip">
+                                        <strong>Bienvenida, una sola vez</strong>
+                                        Puntos que recibe el cliente nuevo cuando verifica su cuenta, si se registró
+                                        con el código de un usuario de este perfil. El referidor no recibe el bono.
+                                    </span>
+                                </span>
+                            </span>
+                        </div>
+                        <div role="columnheader">
+                            <span class="pp-th">Ejemplo de reparto
+                                <span class="pp-tip">
+                                    <button type="button" class="pp-info" aria-label="¿Cómo leer el ejemplo?">i</button>
+                                    <span class="pp-pop pp-pop-end" role="tooltip">
+                                        <strong>Simulación</strong>
+                                        Cómo se dividen {{ $ppEjemplo }} pts de una compra de un cliente referido por
+                                        alguien con este perfil. Usa la misma fórmula y redondeo que el sistema.
+                                    </span>
+                                </span>
+                            </span>
+                        </div>
+                        <div role="columnheader">Usuarios</div>
+                        <div role="columnheader" class="cl-right">Acciones</div>
+                    </div>
+
+                    @forelse ($perfiles as $perfil)
+                        @php
+                            $pct = (float) $perfil->porcentaje;
+                            $ptsReferidor = ($ppEjemplo * $pct) / 100;
+                            if (fmod($ptsReferidor, 1) != 0) {
+                                $ptsReferidor = round($ptsReferidor);
+                            }
+                            $ptsCliente = $ppEjemplo - $ptsReferidor;
+                            $pctTexto = rtrim(rtrim(number_format($pct, 2), '0'), '.');
+                            $bono = (float) $perfil->bono;
+                            $bonoTexto = rtrim(rtrim(number_format($bono, 2), '0'), '.');
+                            $nUsuarios = $perfil->usuarios->count();
+                        @endphp
+                        <div class="cl-row pp-row" role="row" wire:key="perfil-{{ $perfil->id }}">
+                            {{-- Perfil --}}
+                            <div class="cl-cell cl-cell-main" role="cell">
+                                <span class="cl-name">{{ $perfil->nombre }}</span>
+                                @if ($perfil->default)
+                                    <span class="pp-badge pp-tip">
+                                        <span tabindex="0">Por defecto</span>
+                                        <span class="pp-pop" role="tooltip">
+                                            Se asigna automáticamente a cada usuario nuevo que se registra.
+                                        </span>
+                                    </span>
+                                @endif
+                            </div>
+
+                            {{-- Porcentaje --}}
+                            <div class="cl-cell" role="cell" data-label="Porcentaje">
+                                <span class="pp-metric">
+                                    <strong>{{ $pctTexto }}%</strong>
+                                    <small>al referidor</small>
+                                </span>
+                            </div>
+
+                            {{-- Bono --}}
+                            <div class="cl-cell" role="cell" data-label="Bono">
+                                <span class="pp-metric pp-metric-bono">
+                                    <strong>{{ $bonoTexto }} pts</strong>
+                                    <small>al cliente nuevo</small>
+                                </span>
+                            </div>
+
+                            {{-- Ejemplo --}}
+                            <div class="cl-cell" role="cell" data-label="Ejemplo ({{ $ppEjemplo }} pts)">
+                                @if ($pct > 0)
+                                    <div class="pp-split" aria-label="De {{ $ppEjemplo }} puntos: {{ $ptsReferidor }} al referidor y {{ $ptsCliente }} al cliente">
+                                        <div class="pp-bar" aria-hidden="true">
+                                            <span class="pp-bar-ref" style="width: {{ min(100, max(0, $ptsReferidor)) }}%"></span>
+                                            <span class="pp-bar-cli" style="width: {{ min(100, max(0, $ptsCliente)) }}%"></span>
+                                        </div>
+                                        <div class="pp-legend">
+                                            <span><i class="pp-dot pp-dot-ref"></i>Referidor
+                                                <b>{{ $ptsReferidor + 0 }}</b></span>
+                                            <span><i class="pp-dot pp-dot-cli"></i>Cliente
+                                                <b>{{ $ptsCliente + 0 }}</b></span>
+                                        </div>
+                                    </div>
+                                @else
+                                    <span class="cl-muted">Sin reparto: el cliente recibe el 100%</span>
+                                @endif
+                            </div>
+
+                            {{-- Usuarios --}}
+                            <div class="cl-cell" role="cell" data-label="Usuarios">
+                                <button type="button" class="pp-users {{ $nUsuarios ? '' : 'is-empty' }}"
+                                    wire:click="agregarUsuarios({{ $perfil->id }})" wire:loading.attr="disabled"
+                                    wire:target="agregarUsuarios">
+                                    <strong>{{ number_format($nUsuarios) }}</strong>
+                                    <span>{{ $nUsuarios ? ($nUsuarios === 1 ? 'usuario' : 'usuarios') : 'Asignar usuarios' }}</span>
+                                </button>
+                            </div>
+
+                            {{-- Acciones --}}
+                            <div class="cl-cell cl-actions" role="cell">
+                                <button type="button" class="cl-icon-btn" title="Editar perfil"
+                                    aria-label="Editar {{ $perfil->nombre }}"
+                                    wire:click="editarPerfil({{ $perfil->id }})">
+                                    <i class="fa fa-pencil"></i>
+                                </button>
+                                <button type="button" class="cl-icon-btn" title="Gestionar usuarios"
+                                    aria-label="Gestionar usuarios de {{ $perfil->nombre }}"
+                                    wire:click="agregarUsuarios({{ $perfil->id }})">
+                                    <i class="fa fa-users"></i>
+                                </button>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="cl-empty">
+                            @if ($search)
+                                <strong>Sin resultados</strong>
+                                <span>No hay perfiles que coincidan con “{{ $search }}”.</span>
+                            @else
+                                <strong>Todavía no hay perfiles</strong>
+                                <span>Crea el primero con el botón “Nuevo perfil”.</span>
+                            @endif
+                        </div>
+                    @endforelse
                 </div>
+
+                @if ($perfiles->hasPages())
+                    <div class="cl-footer">
+                        <span></span>
+                        <div>{{ $perfiles->links() }}</div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
+
+    @push('css')
+        @include('admin.partials.ui-kit')
+    @endpush
 
     <!-- Modal para CRUD -->
     @if ($showModal)
@@ -146,6 +273,8 @@
                                     @error('porcentaje')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
+                                    <div class="form-text">Parte de los puntos de cada compra de un cliente referido que se
+                                        lleva el referidor. Se descuenta de los puntos del cliente.</div>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
@@ -157,6 +286,8 @@
                                     @error('bono')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
+                                    <div class="form-text">Puntos únicos que recibe el cliente nuevo al verificar su cuenta si
+                                        se registró con el código de alguien de este perfil.</div>
                                 </div>
                             </div>
                         </form>
@@ -349,6 +480,7 @@
         }
 
         document.addEventListener('livewire:load', function() {
+            window.cvAplicarColorTema && window.cvAplicarColorTema(document.getElementById('perfilesPuntosPage'));
             Livewire.on('abrirModalUsuarios', function() {
                 $('#usuariosModal').modal('show');
             });

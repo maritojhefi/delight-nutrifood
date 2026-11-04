@@ -30,11 +30,14 @@ class SistemaIndexComponent extends Component
     {
         $this->configuraciones = Setting::all()
             ->map(function ($item) {
+                $esBooleano = array_key_exists($item->atributo, Setting::ATRIBUTOS_BOOLEANOS);
                 return [
                     'id' => $item->id,
                     'clave' => $item->atributo,
-                    'valor' => $item->valor,
+                    'valor' => $esBooleano ? $item->valor == '1' : $item->valor,
                     'es_imagen' => (bool) $item->es_imagen,
+                    'es_booleano' => $esBooleano,
+                    'descripcion' => Setting::ATRIBUTOS_BOOLEANOS[$item->atributo] ?? null,
                     'valor_file' => null,
                 ];
             })
@@ -64,6 +67,24 @@ class SistemaIndexComponent extends Component
         } finally {
             $this->saving = false;
         }
+    }
+
+    public function saveBooleanSetting($index)
+    {
+        $setting = $this->configuraciones[$index];
+        if (empty($setting['es_booleano'])) {
+            return;
+        }
+
+        $activo = (bool) $setting['valor'];
+        Setting::find($setting['id'])->update([
+            'valor' => $activo ? '1' : '0',
+        ]);
+
+        $this->emit('notify', [
+            'type' => 'success',
+            'message' => ucfirst(str_replace('_', ' ', $setting['clave'])) . ($activo ? ' activado' : ' desactivado'),
+        ]);
     }
 
     public function saveImageSetting($index)

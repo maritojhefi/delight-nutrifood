@@ -112,8 +112,9 @@ class UserIndex extends Component
             'nacimiento' => $this->cumpleano,
             'direccion' => $this->direccion,
             'telf' => $this->telf,
-            'codigo_pais' => $this->codigo_pais
-
+            'codigo_pais' => $this->codigo_pais,
+            // El teléfono ya se validó como único en $rules: se crea verificado para que acumule puntos
+            'verificado' => true,
         ]);
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
