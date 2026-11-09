@@ -5,6 +5,8 @@ namespace App\Services\Ventas;
 use Carbon\Carbon;
 use App\Models\Caja;
 use App\Models\User;
+use App\Models\Setting;
+use App\Helpers\GlobalHelper;
 use App\Models\Venta;
 use App\Models\MetodoPago;
 use App\Models\Historial_venta;
@@ -47,6 +49,12 @@ class VentaService implements VentaServiceInterface
         try {
             // Validaciones previas
             $validacion = $this->validarVentaCobrable($venta, $metodosSeleccionados, $totalAcumulado, $subtotalConDescuento);
+            if (!$validacion->success) {
+                return $validacion;
+            }
+
+            // El descuento manual puede haber quedado por encima del límite (p. ej. si se quitaron productos)
+            $validacion = $this->validarDescuentoManual($venta);
             if (!$validacion->success) {
                 return $validacion;
             }
@@ -227,9 +235,56 @@ class VentaService implements VentaServiceInterface
         }
     }
 
+    /**
+     * Límite del descuento manual (aplica a todos los roles, admin incluido).
+     * La base es el total a pagar sin descuento manual ni descuento por saldo.
+     */
+    public function limiteDescuentoManual(Venta $venta): ?array
+    {
+        $valor = GlobalHelper::getValorAtributoSetting(Setting::DESCUENTO_MANUAL_MAXIMO);
+        $porcentaje = is_numeric($valor) ? max(0, min(100, (float) $valor)) : 100;
+
+        $calculos = $this->calculadoraService->calcularVenta($venta);
+        $base = max(0, $calculos->subtotalConDescuento + (float) $venta->descuento);
+
+        return [
+            'porcentaje' => $porcentaje,
+            'base' => round($base, 2),
+            // Redondeo hacia abajo a 2 decimales para no permitir más del porcentaje
+            'maximo' => floor($base * $porcentaje) / 100,
+        ];
+    }
+
+    /**
+     * Valida que el descuento manual (el indicado o el que ya tiene la venta) no supere el límite
+     */
+    public function validarDescuentoManual(Venta $venta, ?float $descuento = null): VentaResponse
+    {
+        $descuento = $descuento ?? (float) $venta->descuento;
+
+        if ($descuento < 0) {
+            return VentaResponse::error('El descuento manual no puede ser negativo');
+        }
+
+        $limite = $this->limiteDescuentoManual($venta);
+        if ($limite && $descuento > $limite['maximo'] + 0.001) {
+            return VentaResponse::error(
+                'El descuento manual máximo permitido por el administrador es ' . number_format($limite['maximo'], 2, '.', '')
+                    . ' Bs (' . (float) $limite['porcentaje'] . '% del total). Corrige el descuento manual.'
+            );
+        }
+
+        return VentaResponse::success($venta);
+    }
+
     public function editarDescuento(Venta $venta, float $descuento): VentaResponse
     {
         try {
+            $validacion = $this->validarDescuentoManual($venta, $descuento);
+            if (!$validacion->success) {
+                return $validacion;
+            }
+
             $venta->descuento = $descuento;
             $venta->save();
 

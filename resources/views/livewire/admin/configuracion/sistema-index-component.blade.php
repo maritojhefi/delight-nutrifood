@@ -1,4 +1,18 @@
-<div>
+<div class="config-sistema">
+    <style>
+        /* El tema fija .email-list .message a 50px de alto (pensado para una bandeja de correo):
+           con descripciones las filas se encimaban. Aquí cada fila crece con su contenido. */
+        .config-sistema .email-list .message {
+            height: auto;
+            line-height: 1.5;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        .config-sistema .email-list .message:last-child { border-bottom: 0; }
+        .config-sistema .email-list .message-single { align-items: center; }
+        .config-sistema .email-list .message small.text-muted { font-size: 12px; line-height: 1.4; }
+        .config-sistema .email-list .form-label { margin-bottom: 0; }
+    </style>
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -24,10 +38,12 @@
                                                     <div>
                                                         <div class="d-flex message-single">
                                                             <div class="ps-1 align-self-center col-4">
-                                                                <label for="{{ $configuracion['clave'] }}"
-                                                                    class="form-label mb-0">
-                                                                    {{ ucfirst(str_replace('_', ' ', $configuracion['clave'])) }}
-                                                                </label>
+                                                                <div class="form-check custom-checkbox">
+                                                                    <label for="{{ $configuracion['clave'] }}"
+                                                                        class="form-label mb-0">
+                                                                        {{ ucfirst(str_replace('_', ' ', $configuracion['clave'])) }}
+                                                                    </label>
+                                                                </div>
                                                             </div>
                                                             <div class="ms-2 col-6 align-self-center">
                                                                 @if ($configuracion['descripcion'])
@@ -70,6 +86,9 @@
                                                                     class="form-control form-control-sm"
                                                                     id="{{ $configuracion['clave'] }}"
                                                                     wire:model.defer="configuraciones.{{ $index }}.valor">
+                                                                @if (!empty($configuracion['descripcion']))
+                                                                    <small class="text-muted d-block mt-1">{{ $configuracion['descripcion'] }}</small>
+                                                                @endif
                                                             </div>
                                                             <div class="col-2 text-center">
                                                                 <button type="button"

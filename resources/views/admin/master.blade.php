@@ -172,7 +172,7 @@
             Nav header start
         ***********************************-->
             <div class="nav-header">
-                <a href="{{ route('ventas.listar') }}" class="brand-logo">
+                <a href="{{ \App\Helpers\PermisoHelper::urlEntradaPanel('ventas.listar') }}" class="brand-logo">
                     <!-- <img class="logo-abbr" src="./images/logo.png" alt="">
     <div class="brand-title">Ventic</div> -->
                     <img class="logo-abbr" width="54" viewBox="0 0 54 54" fill="none"

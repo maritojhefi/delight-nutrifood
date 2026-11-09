@@ -29,6 +29,16 @@ class LoginController extends Controller
      */
     protected $redirectTo = RouteServiceProvider::HOME;
 
+    // El personal entra a HOME si su rol la tiene permitida; si no, a su primera sección permitida.
+    // Los clientes siguen yendo a HOME (checkrol los manda a /miperfil, como antes).
+    public function redirectTo()
+    {
+        if (auth()->user()->role_id == \App\Models\Role::CLIENTE) {
+            return RouteServiceProvider::HOME;
+        }
+        return \App\Helpers\PermisoHelper::urlEntradaPanel('reporte.cocina');
+    }
+
     /**
      * Create a new controller instance.
      *

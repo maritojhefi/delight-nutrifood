@@ -11,11 +11,17 @@ class SidebarElementsSimple extends Component
      *
      * @return void
      */
-    public $titulo, $url;
-    public function __construct($titulo, $url)
+    public $titulo, $url, $modulo;
+    public function __construct($titulo, $url, $modulo = null)
     {
         $this->titulo = $titulo;
         $this->url = $url;
+        $this->modulo = $modulo;
+    }
+
+    public function shouldRender()
+    {
+        return !$this->modulo || \App\Helpers\PermisoHelper::puede($this->modulo, $this->url);
     }
 
     /**

@@ -27,4 +27,9 @@ interface ConvenioServiceInterface
      * Obtiene el precio con descuento de convenio aplicado
      */
     public function obtenerPrecioConDescuentoConvenio(Producto $producto, User $usuario): float;
+
+    /**
+     * Convenios activos del usuario para mostrarlos en el POS (incluye los informativos sin productos)
+     */
+    public function resumenConveniosActivos(User $usuario): array;
 }

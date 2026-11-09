@@ -99,7 +99,7 @@
     @endguest
     @auth
         @if (auth()->user()->role_id == 1 || auth()->user()->role_id == 2)
-            <a id="nav-media" href="{{ route('ventas.listar') }}" class="">
+            <a id="nav-media" href="{{ \App\Helpers\PermisoHelper::urlEntradaPanel('ventas.listar') }}" class="">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round" class="feather feather-hexagon" data-feather-line="1" data-feather-size="16"
@@ -119,7 +119,7 @@
                 <i class="fa fa-circle"></i>
             </a>
         @elseif(auth()->user()->role_id == 3)
-            <a id="nav-media" href="{{ route('reporte.cocina') }}" class="">
+            <a id="nav-media" href="{{ \App\Helpers\PermisoHelper::urlEntradaPanel('reporte.cocina') }}" class="">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round" class="feather feather-hexagon" data-feather-line="1" data-feather-size="16"

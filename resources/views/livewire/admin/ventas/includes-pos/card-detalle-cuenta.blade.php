@@ -35,9 +35,61 @@
 
 
             @if ($cuenta->cliente)
+                <span class="d-inline-flex align-items-center">
                 <a href="#" data-bs-toggle="modal" data-bs-target="#planesusuario"><span
                         class=" letra12 p-1 text-secondary" style="cursor: pointer;text-decoration: underline;"><i
                             class="fa fa-user"></i> {{ Str::before($cuenta->cliente->name, ' ') }} </span></a>
+                @if (count($conveniosCliente ?? []) > 0)
+                    {{-- Convenios del cliente: los informativos (sin productos) se aplican como descuento manual --}}
+                    <span x-data="{ open: false }" class="position-relative" @click.outside="open = false">
+                        <button type="button" class="btn p-0 border-0 bg-transparent text-info letra12"
+                            style="line-height: 1;" @click="open = !open"
+                            title="Convenios de {{ Str::before($cuenta->cliente->name, ' ') }}"
+                            aria-label="Ver convenios del cliente">
+                            <i class="fa fa-handshake-o"></i>
+                        </button>
+                        <div x-show="open" x-cloak class="card shadow position-absolute p-2 mb-0"
+                            style="z-index: 30; top: 120%; left: -8px; width: 250px; font-size: 12px; font-weight: 400; line-height: 1.4; text-align: left;">
+                            @foreach ($conveniosCliente as $conv)
+                                @php
+                                    $esPorcentaje = $conv['tipo_descuento'] === 'porcentaje';
+                                    $valorTexto = $esPorcentaje
+                                        ? (float) $conv['valor_descuento'] . '%'
+                                        : number_format($conv['valor_descuento'], 2, '.', '') . ' Bs';
+                                    $tope = $limiteDescuentoManual;
+                                    $sugerido = null;
+                                    if ($conv['informativo'] && $tope) {
+                                        $sugerido = $esPorcentaje
+                                            ? floor($tope['base'] * $conv['valor_descuento']) / 100
+                                            : (float) $conv['valor_descuento'];
+                                    }
+                                @endphp
+                                <div class="{{ !$loop->last ? 'border-bottom pb-2 mb-2' : '' }}">
+                                    <strong class="d-block">{{ $conv['nombre'] }}: {{ $valorTexto }}</strong>
+                                    @if ($conv['informativo'])
+                                        <span class="d-block text-muted">Sin productos: aplícalo como descuento manual.</span>
+                                        @if ($sugerido !== null)
+                                            @if ($sugerido > $tope['maximo'] + 0.001)
+                                                <span class="d-block text-danger">
+                                                    Serían {{ number_format($sugerido, 2, '.', '') }} Bs, pero el máximo permitido es
+                                                    {{ (float) $tope['porcentaje'] }}% ({{ number_format($tope['maximo'], 2, '.', '') }} Bs).
+                                                </span>
+                                            @else
+                                                <span class="d-block">En esta venta: <strong>{{ number_format($sugerido, 2, '.', '') }} Bs</strong></span>
+                                            @endif
+                                        @endif
+                                    @else
+                                        <span class="d-block text-muted">
+                                            Se aplica automáticamente a {{ $conv['cantidad_productos'] }}
+                                            {{ $conv['cantidad_productos'] == 1 ? 'producto' : 'productos' }}.
+                                        </span>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    </span>
+                @endif
+                </span>
             @else
                 @if ($cuenta->usuario_manual)
                     <a href="#" data-bs-toggle="modal" data-bs-target="#modalClientes"><span
@@ -300,9 +352,27 @@
                     </li>
                 @endif
                 <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:12px">
-                    <small>Descuento Manual</small>
+                    @php
+                        // Límite del descuento manual (aplica a todos los roles; null solo si aún no se calculó)
+                        $maxDescuento = $limiteDescuentoManual['maximo'] ?? null;
+                        $infoDescuento = $limiteDescuentoManual
+                            ? 'Máximo permitido por el administrador: ' . number_format($limiteDescuentoManual['maximo'], 2, '.', '') . ' Bs (' . (float) $limiteDescuentoManual['porcentaje'] . '% de ' . number_format($limiteDescuentoManual['base'], 2, '.', '') . ' Bs)'
+                            : 'El descuento manual tiene un máximo de ' . (float) GlobalHelper::getValorAtributoSetting(\App\Models\Setting::DESCUENTO_MANUAL_MAXIMO) . '% del total, configurado por el administrador.';
+                    @endphp
+                    <small>Descuento Manual
+                        <i class="fa fa-info-circle text-muted" style="cursor: help;" title="{{ $infoDescuento }}"
+                            aria-label="{{ $infoDescuento }}"></i>
+                    </small>
                     @if (!$cuenta->pagado)
-                        <div x-data="{ open: false }">
+                        <div x-data="{
+                            open: false,
+                            valor: '',
+                            max: {{ $maxDescuento !== null ? $maxDescuento : 'null' }},
+                            get excede() {
+                                const n = parseFloat(String(this.valor).replace(',', '.'));
+                                return this.max !== null && !isNaN(n) && n > this.max;
+                            }
+                        }">
                             <span style="cursor: pointer;"
                                 @click="open = ! open; $nextTick(() => $refs.descuentoInput.focus())"
                                 class=""><i class="fa fa-edit"></i> Editar</span>
@@ -310,14 +380,23 @@
                             <div x-show="open" @click.outside="open = false">
                                 <div class="input-group input-dark" style="width: 50px; height: 30px;">
                                     <input type="text" wire:model.lazy="descuento" class="form-control"
-                                        placeholder="" x-ref="descuentoInput"
+                                        placeholder="" x-ref="descuentoInput" @input="valor = $event.target.value"
+                                        :class="excede ? 'is-invalid' : ''"
                                         style="height: 30px; width: 30px; font-size: 12px; padding: 2px;">
                                     <a href="#" class="input-group-text m-0 p-0" wire:click="editardescuento"
+                                        x-show="!excede"
                                         style="min-width:0px;height: 30px; width: 20px !important; font-size: 8px; padding: 2px;"><i
                                             class="fa fa-save"></i></a>
+                                    <span class="input-group-text m-0 p-0 text-danger" x-show="excede"
+                                        title="Supera el máximo permitido"
+                                        style="min-width:0px;height: 30px; width: 20px !important; font-size: 8px; padding: 2px; cursor: not-allowed;"><i
+                                            class="fa fa-ban"></i></span>
                                 </div>
-
-
+                                @if ($maxDescuento !== null)
+                                    <small x-show="excede" class="text-danger d-block" style="font-size: 10px;">
+                                        Máx. {{ number_format($maxDescuento, 2, '.', '') }} Bs
+                                    </small>
+                                @endif
                             </div>
                         </div>
                     @endif
@@ -325,6 +404,12 @@
                         <span class="text-danger">- {{ $cuenta->descuento }} Bs</span>
                     @endif
                 </li>
+                @if (!$cuenta->pagado && $maxDescuento !== null && $cuenta->descuento > $maxDescuento + 0.001)
+                    <li class="list-group-item p-0 m-0 text-danger" style="font-size: 11px;">
+                        <i class="fa fa-exclamation-triangle"></i> El descuento manual supera el máximo de
+                        {{ number_format($maxDescuento, 2, '.', '') }} Bs. Corrígelo para poder cobrar o imprimir la comanda.
+                    </li>
+                @endif
 
                 <li class="list-group-item d-flex justify-content-between p-0 m-0" style="font-size:15px">
                     @if (!$cuenta->pagado)

@@ -151,7 +151,7 @@ Route::post('perfil/guardarPerfilFaltante', [
     ->middleware('auth')
     ->name('guardarPerfilFaltante');
 
-Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], function () {
+Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol', 'checkPermiso']], function () {
     Route::prefix('/inicio')->group(function () {
         Route::get('resumen', [App\Http\Controllers\admin\ProductosController::class, 'resumen'])->name('resumen');
         Route::get('ventas/sucursal', [App\Http\Controllers\admin\ProductosController::class, 'resumen'])->name('ventas.sucursal');
@@ -174,6 +174,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'checkrol']], functi
     Route::prefix('/usuarios')->group(function () {
         Route::get('/index', \App\Http\Livewire\Admin\Usuarios\UserIndex::class)->name('usuario.listar');
         Route::get('/roles', \App\Http\Livewire\Admin\Usuarios\RolesIndex::class)->name('usuario.roles');
+        Route::get('/permisos', \App\Http\Livewire\Admin\Usuarios\PermisosIndex::class)->name('usuario.permisos');
         Route::get('/miperfil', \App\Http\Livewire\Admin\Usuarios\PerfilUsuario::class)->name('usuario.perfil');
         Route::get('/pensionados', \App\Http\Livewire\Admin\Usuarios\Pensionados::class)->name('pensionados');
         Route::get('/planes', \App\Http\Livewire\Admin\Usuarios\Planes::class)->name('planes');

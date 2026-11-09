@@ -65,7 +65,7 @@
                     {{-- Productos --}}
                     <div class="cl-cell" role="cell" data-label="Productos">
                         @if (count($ids) === 0)
-                            <span class="cl-muted">Sin productos</span>
+                            <span class="cl-muted" title="Sin productos: en el punto de venta se muestra para aplicarlo como descuento manual">Informativo (sin productos)</span>
                         @else
                             <div class="cl-products">
                                 <span class="cl-products-count">{{ count($ids) }}
@@ -155,7 +155,7 @@
                     <div class="cv-head-text">
                         <h5 class="cv-title" id="cpTitulo">{{ $is_editing ? 'Editar convenio' : 'Nuevo convenio' }}</h5>
                         <p class="cv-subtitle">
-                            {{ $is_editing ? 'Modifica las condiciones y los productos con descuento.' : 'Define el descuento y los productos a los que aplica.' }}
+                            {{ $is_editing ? 'Modifica las condiciones y los productos con descuento.' : 'Define el descuento y los productos a los que aplica. Sin productos, el convenio es informativo.' }}
                         </p>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -215,8 +215,8 @@
                             </div>
 
                             <div class="cv-field">
-                                <label class="cv-label" for="cpFecha">Fecha límite <small>Opcional</small></label>
-                                <input id="cpFecha" type="date" min="{{ $hoy }}"
+                                <label class="cv-label" for="cpFecha">Fecha límite</label>
+                                <input id="cpFecha" type="date" min="{{ $hoy }}" required
                                     class="cv-input @error('fecha_limite') is-invalid @enderror"
                                     wire:model.defer="fecha_limite">
                                 @error('fecha_limite')
@@ -228,7 +228,7 @@
                         {{-- Columna derecha: productos afectados --}}
                         <div class="cv-field">
                             <span class="cv-label">
-                                Productos con descuento
+                                Productos con descuento (opcional)
                                 <small id="cpContador" wire:ignore>0 seleccionados</small>
                             </span>
 
@@ -368,7 +368,7 @@
                 function renderChips() {
                     const chips = el('cpChips');
                     if (seleccion.size === 0) {
-                        chips.innerHTML = '<span class="cv-placeholder">Aún no elegiste productos.</span>';
+                        chips.innerHTML = '<span class="cv-placeholder">Sin productos: el convenio será informativo. En el punto de venta se mostrará para aplicarlo como descuento manual.</span>';
                         return;
                     }
                     chips.innerHTML = [...seleccion].map((id) => {
