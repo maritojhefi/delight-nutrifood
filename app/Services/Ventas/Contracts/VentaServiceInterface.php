@@ -44,6 +44,16 @@ interface VentaServiceInterface
     public function editarDescuento(Venta $venta, float $descuento): VentaResponse;
 
     /**
+     * Límite del descuento manual ['porcentaje', 'base', 'maximo'] (aplica a todos los roles)
+     */
+    public function limiteDescuentoManual(Venta $venta): ?array;
+
+    /**
+     * Valida que el descuento manual no supere el porcentaje configurado en settings
+     */
+    public function validarDescuentoManual(Venta $venta, ?float $descuento = null): VentaResponse;
+
+    /**
      * Envía pedido a cocina
      */
     public function enviarACocina(Venta $venta): VentaResponse;

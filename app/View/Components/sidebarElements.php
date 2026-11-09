@@ -11,10 +11,12 @@ class sidebarElements extends Component
      *
      * @return void
      */
-    public $lista, $linkglobal, $titulo;
-    public function __construct($lista, $linkglobal, $titulo)
+    public $lista, $linkglobal, $titulo, $modulo;
+    public function __construct($lista, $linkglobal, $titulo, $modulo = null)
     {
-        $this->lista=$lista;
+        // Con modulo: solo se muestran las opciones permitidas al rol (config/permisos.php)
+        $this->lista = $modulo ? \App\Helpers\PermisoHelper::filtrarLista($modulo, $lista) : $lista;
+        $this->modulo=$modulo;
         $this->linkglobal=$linkglobal;
         $this->titulo=$titulo;
     }
@@ -24,6 +26,11 @@ class sidebarElements extends Component
      *
      * @return \Illuminate\Contracts\View\View|\Closure|string
      */
+    public function shouldRender()
+    {
+        return count($this->lista) > 0;
+    }
+
     public function render()
     {
         return view('components.sidebar-elements');

@@ -1,7 +1,9 @@
 <div class="deznav">
     <div class="deznav-scroll">
         <ul class="metismenu" id="menu">
-            @if (auth()->user()->role->nombre == 'cocina')
+            {{-- Cada bloque muestra solo las opciones permitidas al rol (config/permisos.php, Usuarios > Permisos) --}}
+            {{-- El admin tiene todo, pero el bloque Cocina repite opciones de Produccion: se le oculta como antes --}}
+            @if (!\App\Helpers\PermisoHelper::esAdmin())
                 @php
                     $areasDespachoCocina = \App\Models\AreaDespacho::activos()
                         ->where('codigo_area', '!=', 'cocina')
@@ -20,24 +22,23 @@
                         ];
                     }
                 @endphp
-                <x-sidebar-elements titulo="Cocina" linkglobal="cocina" :lista="$listaCocina">
+                <x-sidebar-elements titulo="Cocina" linkglobal="cocina" modulo="cocina" :lista="$listaCocina">
                     <i class="flaticon-025-dashboard"></i>
                 </x-sidebar-elements>
             @endif
 
-            @if (auth()->user()->role->nombre == 'admin')
-                <x-sidebar-elements titulo="Inicio" linkglobal="admin/inicio" :lista="['Resumen de hoy' => 'caja.diaria']">
+                <x-sidebar-elements titulo="Inicio" linkglobal="admin/inicio" modulo="inicio" :lista="['Resumen de hoy' => 'caja.diaria']">
                     <i class="flaticon-025-dashboard"></i>
                 </x-sidebar-elements>
 
-                <x-sidebar-elements titulo="Estadisticas" linkglobal="admin/caja" :lista="['Reporte Diario' => 'caja.reportes.v2', 'Reporte Mensual' => 'caja.reporte.mensual']">
+                <x-sidebar-elements titulo="Estadisticas" linkglobal="admin/caja" modulo="estadisticas" :lista="['Reporte Diario' => 'caja.reportes.v2', 'Reporte Mensual' => 'caja.reporte.mensual']">
                     <i class="flaticon-041-graph"></i>
                 </x-sidebar-elements>
 
                 {{-- <x-sidebar-elements titulo="Sucursales" linkglobal="admin/sucursales" :lista="['Todas' => 'sucursal.listar', 'Agregar Stock' => 'sucursal.stock']">
                     <i class="flaticon-086-star"></i>
                 </x-sidebar-elements> --}}
-                <x-sidebar-elements titulo="Nutri-Tips" linkglobal="admin/tienda" :lista="[
+                <x-sidebar-elements titulo="Nutri-Tips" linkglobal="admin/tienda" modulo="nutritips" :lista="[
                     'Galeria de fotos' => 'tienda.galeria',
                     'Videos' => 'tienda.tutoriales',
                     'Novedades' => 'tienda.novedades',
@@ -45,14 +46,13 @@
                     <i class="fa fa-camera"></i>
                 </x-sidebar-elements>
 
-                <x-sidebar-elements titulo="Gestión de puntos" linkglobal="admin/puntos" :lista="[
+                <x-sidebar-elements titulo="Gestión de puntos" linkglobal="admin/puntos" modulo="puntos" :lista="[
                     'Perfiles' => 'perfiles.index',
                     'Registros Históricos' => 'registros.index',
                 ]">
                     <i class="flaticon-064-pin"></i>
                 </x-sidebar-elements>
-            @endif
-            <x-sidebar-elements titulo="Productos" linkglobal="admin/productos" :lista="[
+            <x-sidebar-elements titulo="Productos" linkglobal="admin/productos" modulo="productos" :lista="[
                 'Listar Productos' => 'producto.listar',
                 'Crear Nuevo' => 'producto.crear',
                 'Almacen y stock' => 'producto.expiracion',
@@ -64,15 +64,15 @@
             ]">
                 <i class="flaticon-043-menu"></i>
             </x-sidebar-elements>
-            @if (auth()->user()->role->nombre != 'cocina')
-                <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" :lista="[
+                {{-- Permisos: solo admin, no forma parte del catálogo asignable --}}
+                <x-sidebar-elements titulo="Usuarios" linkglobal="admin/usuarios" modulo="usuarios" :lista="array_merge([
                     'Listar Usuarios' => 'usuario.listar',
                     'Roles' => 'usuario.roles',
                     'Colaboradores' => 'usuario.empleo',
                     'Billeteras y saldos' => 'usuario.saldos',
                     'Asistencia' => 'usuario.asistencia',
                     'Cumpleaños' => 'usuario.cumpleanos',
-                ]">
+                ], \App\Helpers\PermisoHelper::esAdmin() ? ['Permisos' => 'usuario.permisos'] : [])">
                     <i class="flaticon-381-user"></i>
                 </x-sidebar-elements>
 
@@ -111,30 +111,30 @@
                     
                     $listaAlmuerzos['Planes en desarrollo(whatsapp)'] = 'reporte.whatsapp';
                 @endphp
-                <x-sidebar-elements titulo="Produccion" linkglobal="admin/almuerzos" :lista="$listaAlmuerzos">
+                <x-sidebar-elements titulo="Produccion" linkglobal="admin/almuerzos" modulo="produccion" :lista="$listaAlmuerzos">
                     <i class="flaticon-381-photo"></i>
                 </x-sidebar-elements>
 
-                <x-sidebar-elements titulo="Ventas" linkglobal="admin/ventas" :lista="[
+                <x-sidebar-elements titulo="Ventas" linkglobal="admin/ventas" modulo="ventas" :lista="[
                     'Ventas diarias' => 'ventas.listar',
                     'Prospectos de Clientes' => 'ventas.prospectos',
                     'Mesas' => 'ventas.mesas',
                 ]">
                     <i class="flaticon-013-checkmark"></i>
                 </x-sidebar-elements>
-                <x-sidebar-elements titulo="Convenios" linkglobal="admin/convenios" :lista="[
+                <x-sidebar-elements titulo="Convenios" linkglobal="admin/convenios" modulo="convenios" :lista="[
                     'Crear' => 'convenio.index',
                     'Vincular Usuario' => 'convenio.vincular.usuario',
                 ]">
                     <i class="flaticon-381-panel"></i>
                 </x-sidebar-elements>
-                <x-sidebar-elements titulo="Perifericos" linkglobal="admin/perifericos" :lista="['Impresoras' => 'impresoras.index']">
+                <x-sidebar-elements titulo="Perifericos" linkglobal="admin/perifericos" modulo="perifericos" :lista="['Impresoras' => 'impresoras.index']">
                     <i class="flaticon-072-printer"></i>
                 </x-sidebar-elements>
 
 
 
-                <x-sidebar-elements titulo="Otros" linkglobal="admin/otros" :lista="[
+                <x-sidebar-elements titulo="Otros" linkglobal="admin/otros" modulo="otros" :lista="[
                     'Importar excel' => 'importar.index',
                     'Historial enviados' => 'whatsapp.historial',
                     'Tickets whatsapp' => 'whatsapp.index',
@@ -142,14 +142,13 @@
                     <i class="flaticon-022-copy"></i>
                 </x-sidebar-elements>
 
-                <x-sidebar-elements titulo="Configuraciones" linkglobal="admin/Configuraciones" :lista="['Sistema' => 'sistema.index']">
+                <x-sidebar-elements titulo="Configuraciones" linkglobal="admin/Configuraciones" modulo="configuraciones" :lista="['Sistema' => 'sistema.index']">
                     <i class="fa fa-gears"></i>
                 </x-sidebar-elements>
 
-                <x-sidebar-elements-simple titulo="Horarios" linkglobal="admin/Horarios" url="index.horarios">
+                <x-sidebar-elements-simple titulo="Horarios" linkglobal="admin/Horarios" url="index.horarios" modulo="horarios">
                     <i class="fa fa-clock-o"></i>
                 </x-sidebar-elements-simple>
-            @endif
 
         </ul>
 

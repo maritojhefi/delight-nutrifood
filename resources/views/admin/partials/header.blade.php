@@ -50,7 +50,7 @@
                                 </svg>
                                 <span class="ms-2">Perfil </span>
                             </a>
-                            @if (auth()->user()->role->nombre == 'admin' || auth()->user()->role->nombre == 'cajero')
+                            @if (\App\Helpers\PermisoHelper::puede('caja_diaria', 'caja.diaria'))
                                 <a href="{{ route('caja.diaria') }}" class="dropdown-item ai-icon">
                                     <i class="la la-dollar"></i> <span class="ms-2">Caja Diaria</span>
                                 </a>

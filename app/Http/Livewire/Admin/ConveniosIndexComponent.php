@@ -77,12 +77,14 @@ class ConveniosIndexComponent extends Component
                 'nombre_convenio' => 'required|string|max:255',
                 'tipo_descuento' => 'required|in:porcentaje,fijo',
                 'valor_descuento' => 'required|numeric|min:0',
-                'productos_afectados' => 'required|array|min:1',
+                // Sin productos = convenio informativo: el POS lo muestra para aplicarlo como descuento manual
+                'productos_afectados' => 'nullable|array',
                 'productos_afectados.*' => 'required|exists:productos,id',
-                'fecha_limite' => 'nullable|date|after_or_equal:today',
+                // Obligatoria: un convenio sin fecha nunca se considera activo (ConvenioService filtra por fecha_limite >= hoy)
+                'fecha_limite' => 'required|date|after_or_equal:today',
             ],
             [
-                'productos_afectados.required' => 'Debe seleccionar al menos un producto.',
+                'fecha_limite.required' => 'Indica hasta qué fecha es válido el convenio.',
                 'fecha_limite.after_or_equal' => 'La fecha límite no puede ser anterior a hoy.',
             ],
         );
@@ -91,7 +93,7 @@ class ConveniosIndexComponent extends Component
             'nombre_convenio' => $this->nombre_convenio,
             'tipo_descuento' => $this->tipo_descuento,
             'valor_descuento' => $this->valor_descuento,
-            'productos_afectados' => json_encode($this->productos_afectados),
+            'productos_afectados' => json_encode(array_values($this->productos_afectados ?? [])),
             'fecha_limite' => $this->fecha_limite,
         ];
 

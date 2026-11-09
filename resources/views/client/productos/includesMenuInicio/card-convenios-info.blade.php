@@ -185,7 +185,11 @@
                                 @endif
 
                                 <p class="mt-n2 mb-2">
-                                    Aplicable en los siguientes productos:
+                                    @if (count(json_decode(auth()->user()->convenios->first()->productos_afectados, true) ?: []) > 0)
+                                        Aplicable en los siguientes productos:
+                                    @else
+                                        Pide este descuento al momento de pagar.
+                                    @endif
                                 </p>
                             </div>
                             <div class="row mb-0">

@@ -37,7 +37,7 @@ class SistemaIndexComponent extends Component
                     'valor' => $esBooleano ? $item->valor == '1' : $item->valor,
                     'es_imagen' => (bool) $item->es_imagen,
                     'es_booleano' => $esBooleano,
-                    'descripcion' => Setting::ATRIBUTOS_BOOLEANOS[$item->atributo] ?? null,
+                    'descripcion' => Setting::ATRIBUTOS_BOOLEANOS[$item->atributo] ?? Setting::ATRIBUTOS_DESCRIPCION[$item->atributo] ?? null,
                     'valor_file' => null,
                 ];
             })
@@ -50,6 +50,18 @@ class SistemaIndexComponent extends Component
 
         try {
             $setting = $this->configuraciones[$index];
+
+            if ($setting['clave'] === Setting::DESCUENTO_MANUAL_MAXIMO) {
+                $valor = str_replace(',', '.', trim((string) $setting['valor']));
+                if (!is_numeric($valor) || $valor < 0 || $valor > 100) {
+                    $this->emit('notify', [
+                        'type' => 'error',
+                        'message' => 'El descuento manual máximo debe ser un número entre 0 y 100',
+                    ]);
+                    return;
+                }
+                $setting['valor'] = $this->configuraciones[$index]['valor'] = (string) (float) $valor;
+            }
 
             Setting::find($setting['id'])->update([
                 'valor' => $setting['valor'],

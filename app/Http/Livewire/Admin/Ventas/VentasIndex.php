@@ -91,7 +91,9 @@ class VentasIndex extends Component
         $saldoSobranteCheck = false,
         $maxDescuentoSaldo,
         $descuentoConvenio,
-        $totalAdicionales;
+        $totalAdicionales,
+        $limiteDescuentoManual, // ['porcentaje', 'base', 'maximo']
+        $conveniosCliente = []; // convenios activos del cliente (informativos y con productos)
     public $subcategoriaSeleccionada;
     protected $rules = [
         'sucursal' => 'required|integer',
@@ -927,6 +929,8 @@ class VentasIndex extends Component
     public function actualizarCuenta()
     {
         $this->actualizarlista($this->cuenta);
+        // Aviso al abrir el cobro; cobrarVenta lo bloquea de todas formas
+        $this->descuentoManualExcedido();
     }
     public function actualizarlista($cuenta)
     {
@@ -939,6 +943,10 @@ class VentasIndex extends Component
         $this->descuentoConvenio = $calculos->descuentoConvenio;
         $this->subtotalConDescuento = $calculos->subtotalConDescuento;
         $this->totalAdicionales = $calculos->totalAdicionales;
+        $this->limiteDescuentoManual = $this->ventaService->limiteDescuentoManual($cuenta);
+        $this->conveniosCliente = $cuenta->cliente
+            ? app(\App\Services\Ventas\Contracts\ConvenioServiceInterface::class)->resumenConveniosActivos($cuenta->cliente)
+            : [];
 
         $this->cuenta->puntos = $calculos->puntos;
 
@@ -1547,6 +1555,22 @@ class VentasIndex extends Component
         }
         return view('livewire.admin.ventas.ventas-index', compact('mesas', 'ventas', 'sucursales', 'subcategorias', 'productos', 'usuarios'))->extends('admin.master')->section('content');
     }
+    /**
+     * Avisa y devuelve true si el descuento manual de la venta supera el límite configurado
+     */
+    private function descuentoManualExcedido(): bool
+    {
+        $validacion = $this->ventaService->validarDescuentoManual(Venta::find($this->cuenta->id));
+        if ($validacion->success) {
+            return false;
+        }
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'error',
+            'message' => $validacion->message,
+        ]);
+        return true;
+    }
+
     public function imprimirComanda()
     {
         if (!isset($this->cuenta)) {
@@ -1554,6 +1578,10 @@ class VentasIndex extends Component
                 'type' => 'error',
                 'message' => 'Debe seleccionar una venta',
             ]);
+            return;
+        }
+
+        if ($this->descuentoManualExcedido()) {
             return;
         }
 
@@ -1612,6 +1640,10 @@ class VentasIndex extends Component
             return;
         }
 
+        if ($this->descuentoManualExcedido()) {
+            return;
+        }
+
         if ($esReimpresion) {
             if (!$nroTicket) {
                 $this->dispatchBrowserEvent('alert', [
@@ -1661,6 +1693,10 @@ class VentasIndex extends Component
                 'type' => 'error',
                 'message' => 'Venta no encontrada',
             ]);
+            return;
+        }
+
+        if ($this->descuentoManualExcedido()) {
             return;
         }
 

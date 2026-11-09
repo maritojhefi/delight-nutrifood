@@ -12,9 +12,38 @@ class ConvenioService implements ConvenioServiceInterface
 {
     public function obtenerConvenioActivo(User $usuario): ?Convenio
     {
+        // Si el cliente tiene varios, primero los que tienen productos: un convenio informativo
+        // (sin productos) no debe tapar el descuento automático de otro
         return $usuario->convenios()
             ->where('fecha_limite', '>=', Carbon::today())
+            ->orderByRaw("CASE WHEN productos_afectados IS NULL OR productos_afectados IN ('', '[]', 'null') THEN 1 ELSE 0 END")
+            ->orderByDesc('convenios.id')
             ->first();
+    }
+
+    /**
+     * Convenios activos del cliente para mostrarlos en el POS.
+     * Los informativos (sin productos) se aplican a mano como descuento manual.
+     */
+    public function resumenConveniosActivos(User $usuario): array
+    {
+        return $usuario->convenios()
+            ->where('fecha_limite', '>=', Carbon::today())
+            ->orderByDesc('convenios.id')
+            ->get()
+            ->map(function (Convenio $convenio) {
+                $productos = json_decode($convenio->productos_afectados, true) ?: [];
+                return [
+                    'nombre' => $convenio->nombre_convenio,
+                    'tipo_descuento' => $convenio->tipo_descuento,
+                    'valor_descuento' => (float) $convenio->valor_descuento,
+                    'cantidad_productos' => count($productos),
+                    'informativo' => count($productos) === 0,
+                    'fecha_limite' => $convenio->fecha_limite,
+                ];
+            })
+            ->values()
+            ->toArray();
     }
 
     public function tieneDescuentoConvenio(Producto $producto, User $usuario): bool

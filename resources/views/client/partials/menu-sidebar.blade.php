@@ -54,7 +54,7 @@
     @auth
         {{-- ADMINISTRADOR --}}
         @if (auth()->user()->role_id == 1 || auth()->user()->role_id == 2)
-        <a id="nav-admin" href="{{ route('ventas.listar') }}">
+        <a id="nav-admin" href="{{ \App\Helpers\PermisoHelper::urlEntradaPanel('ventas.listar') }}">
             <i class="fa fa-lock gradient-night color-white"></i>
                 <span>Ir al administrador</span>
             <i class="fa fa-angle-right"></i>
@@ -66,7 +66,7 @@
         </a>
         {{-- ADMINISTRADOR MENOR --}}
         @elseif(auth()->user()->role_id == 3)
-        <a id="nav-admin" href="{{ route('ventas.listar') }}">
+        <a id="nav-admin" href="{{ \App\Helpers\PermisoHelper::urlEntradaPanel('ventas.listar') }}">
             <i class="fa fa-lock gradient-night color-white"></i>
                 <span>Ir al administrador</span>
             <i class="fa fa-angle-right"></i>
