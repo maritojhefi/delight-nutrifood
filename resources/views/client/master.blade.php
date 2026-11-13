@@ -6,6 +6,12 @@
 
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1, user-scalable=0 viewport-fit=cover" />
+        
+    <!-- Verificacion de meta en facebook -->
+    @if (env('FACEBOOK_DOMAIN_VERIFICATION'))
+    <meta name="facebook-domain-verification" content="{{ env('FACEBOOK_DOMAIN_VERIFICATION') }}" />
+    @endif
+
     @if (config('app.env') !== 'local')
         <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     @endif
