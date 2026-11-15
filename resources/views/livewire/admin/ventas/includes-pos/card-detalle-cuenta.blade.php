@@ -364,7 +364,9 @@
                             aria-label="{{ $infoDescuento }}"></i>
                     </small>
                     @if (!$cuenta->pagado)
-                        <div x-data="{
+                        {{-- wire:key con venta y máximo: si cambian, Livewire reemplaza el nodo y Alpine se reinicia con el máximo actual (x-data solo se lee al iniciar) --}}
+                        <div wire:key="descuento-manual-{{ $cuenta->id }}-{{ $maxDescuento ?? 'na' }}"
+                            x-data="{
                             open: false,
                             valor: '',
                             max: {{ $maxDescuento !== null ? $maxDescuento : 'null' }},
